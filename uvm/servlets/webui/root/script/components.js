@@ -1054,7 +1054,7 @@ Ext.define("Ung.AppItem", {
             name=config.node.displayName;
             this.item=config.node;
         } else {
-           this.isValid=false;
+            this.isValid=false;
             return;
         }
         this.id = "app-item_" + name;
@@ -4063,7 +4063,6 @@ Ext.define('Ung.RowEditorWindow', {
         }
     },
     updateAction: function() {
-        startTime=(new Date()).getTime();
         if (this.isFormValid()!==true) {
             return false;
         }
@@ -4081,7 +4080,6 @@ Ext.define('Ung.RowEditorWindow', {
             }
         }
         this.hide();
-        console.log("updateAction", this.record.data, (new Date()).getTime()-startTime);
         return true;
         
         

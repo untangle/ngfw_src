@@ -342,8 +342,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'symbolicDev'
                 }, {
-                    name: 'configType'
-                }, {
                     name: 'isWan'
                 }, {
                     name: 'isVlanInterface'
@@ -351,6 +349,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'vlanTag'
                 }, {
                     name: 'vlanParent'
+                }, {
+                    name: 'configType'
                 }, {
                     name: 'bridgedTo'
                 }, {
@@ -423,6 +423,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'dhcpDnsOverride'
                 }, {
                     name: 'dhcpOptions'
+                }, {
+                    name: 'aliases'
+                }, {
+                    name: 'downloadBandwidthKbps'
+                }, {
+                    name: 'uploadBandwidthKbps'
                 }, {
                     name: 'javaClass'
                 }, 
@@ -836,7 +842,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: 'IPv4 Aliases',
                 height: 180,
                 width: 450,
-                noHide: true,
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
@@ -890,7 +895,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: 'IPv6 Aliases',
                 height: 180,
                 width: 450,
-                noHide: true,
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
@@ -944,7 +948,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: 'DHCP Options',
                 height: 180,
                 width: 450,
-                noHide: true,
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
@@ -1137,6 +1140,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoAddressOverride",
                                 fieldLabel: this.i18n._("Address Override"),
+                                noHide: true,
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1193,6 +1197,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoGatewayOverride",
                                 fieldLabel: this.i18n._("Gateway Override"),
                                 vtype: "ip4Address",
+                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1219,6 +1224,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoDns1Override",
                                 fieldLabel: this.i18n._("Primary DNS Override"),
                                 vtype: "ip4Address",
+                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1245,6 +1251,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoDns2Override",
                                 fieldLabel: this.i18n._("Secondary DNS Override"),
                                 vtype: "ip4Address",
+                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1403,21 +1410,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "dhcpEnabled",
-                        boxLabel: this.i18n._("Enable DHCP Serving"),
-                        noHide: true
+                        boxLabel: this.i18n._("Enable DHCP Serving")
                     }, {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
-                        noHide: true,
                         vtype: "ip4Address",
+                        noHide: true,
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
-                        noHide: true,
                         vtype: "ip4Address",
+                        noHide: true,
                         width: 350
                     }, {
                         xtype: 'container',
@@ -1427,7 +1433,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype: 'textfield',
                             dataIndex: "dhcpLeaseDuration",
                             fieldLabel: this.i18n._("Lease Duration"),
-                            noHide: true,
                             labelWidth: 150,
                             width: 350
                         }, {
@@ -1448,14 +1453,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
-                            noHide: true,
                             vtype: "ip4Address",
+                            noHide: true,
                             width: 350
                         }, {
                             xtype: "combo",
                             dataIndex: "dhcpPrefixOverride",
                             fieldLabel: this.i18n._("Netmask Override"),
-                            noHide: true,
                             store: Ung.Util.getV4NetmaskList( true ),
                             queryMode: 'local',
                             editable: false,
@@ -1487,7 +1491,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var property;
                     var cmp;
                     
-                    startTime=(new Date()).getTime();
                     if(!this.cmps) {
                         this.cmps = {
                             isVlanInterface: this.query('checkbox[dataIndex="isVlanInterface"]')[0],
@@ -1503,9 +1506,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             v4StaticDns1: this.query('textfield[dataIndex="v4StaticDns1"]')[0],
                             v4StaticDns2: this.query('textfield[dataIndex="v4StaticDns2"]')[0],
                             
+                            v4AutoAddressOverride: this.query('textfield[dataIndex="v4AutoAddressOverride"]')[0],
+                            v4AutoGatewayOverride: this.query('textfield[dataIndex="v4AutoGatewayOverride"]')[0],
+                            v4AutoDns1Override: this.query('textfield[dataIndex="v4AutoDns1Override"]')[0],
+                            v4AutoDns2Override: this.query('textfield[dataIndex="v4AutoDns2Override"]')[0],
+                            
                             v4AutoAddressOverrideContainer: this.query('container[name="v4AutoAddressOverrideContainer"]')[0],
-                            v4AutoGatewayOverrideContainer: this.query('container[name="v4AutoGatewayOverrideContainer"]')[0],
                             v4AutoPrefixOverrideContainer: this.query('container[name="v4AutoPrefixOverrideContainer"]')[0],
+                            v4AutoGatewayOverrideContainer: this.query('container[name="v4AutoGatewayOverrideContainer"]')[0],
                             v4AutoDns1OverrideContainer: this.query('container[name="v4AutoDns1OverrideContainer"]')[0],
                             v4AutoDns2OverrideContainer: this.query('container[name="v4AutoDns2OverrideContainer"]')[0],
                             
@@ -1517,7 +1525,6 @@ if (!Ung.hasResource["Ung.Network"]) {
     
                             v4NatEgressTraffic: this.query('checkbox[dataIndex="v4NatEgressTraffic"]')[0],
                             v4NatIngressTraffic: this.query('checkbox[dataIndex="v4NatIngressTraffic"]')[0],
-                            v4Aliases: this.query('grid[dataIndex="v4Aliases"]')[0],
 
                             v6Config: this.query('fieldset[name="v6Config"]')[0],
                             v6ConfigType: this.query('combo[dataIndex="v6ConfigType"]')[0],
@@ -1527,39 +1534,29 @@ if (!Ung.hasResource["Ung.Network"]) {
                             v6StaticDns1: this.query('textfield[dataIndex="v6StaticDns1"]')[0],
                             v6StaticDns2: this.query('textfield[dataIndex="v6StaticDns2"]')[0],
                             v6AliasesContainer: this.query('container[name="v6AliasesContainer"]')[0],
-                            v6Aliases: this.query('grid[dataIndex="v6Aliases"]')[0],
                             v6OptionsContainer: this.query('container[name="v6OptionsContainer"]')[0],
                             v6SendRouterAdvertisements: this.query('checkbox[dataIndex="raEnabled"]')[0],
                             v6SendRouterAdvertisementsWarning: this.query('label[name="v6RouterAdvertisementWarning"]')[0],                              
 
                             dhcp: this.query('fieldset[name="dhcp"]')[0],
-                            dhcpEnabled: this.query('checkbox[dataIndex="dhcpEnabled"]')[0],
                             dhcpRangeStart: this.query('textfield[dataIndex="dhcpRangeStart"]')[0],
                             dhcpRangeEnd: this.query('textfield[dataIndex="dhcpRangeEnd"]')[0],
-                            dhcpLeaseDuration: this.query('textfield[dataIndex="dhcpLeaseDuration"]')[0],
                             dhcpGatewayOverride: this.query('textfield[dataIndex="dhcpGatewayOverride"]')[0],
-                            dhcpPrefixOverride: this.query('combo[dataIndex="dhcpPrefixOverride"]')[0],
                             dhcpDnsOverride: this.query('textfield[dataIndex="dhcpDnsOverride"]')[0],
-                            dhcpOptions: this.query('grid[dataIndex="dhcpOptions"]')[0],
-                            
                             bridgedTo: this.query('combo[dataIndex="bridgedTo"]')[0]
                             
                         };
                         this.configType=this.query('combo[dataIndex="configType"]')[0];
                         for( property in this.cmps ) {
-                            cmp = this.cmps[property];
+                            cmp = this.cmps[property]; 
                             if(!cmp.noHide) {
-                                this.cmps[property].setVisible(false);    
+                                cmp.setVisible(false);
                             }
                         }
                     }
                     for( property in this.cmps ) {
                         this.cmps[property].status=false;
                     }
-                    /*
-                    for(var property in this.cmps) {
-                        this.cmps[property].setVisible(false);
-                    }*/
                     var configTypeValue = this.configType.getValue();
                     var isVlanInterfaceValue = this.cmps.isVlanInterface.getValue();
                     var isWanValue = this.cmps.isWan.getValue();
@@ -1580,8 +1577,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         this.cmps.isWan.status = true;
                         this.cmps.v4Config.status = true;
                         this.cmps.v6Config.status = true;
-                        this.cmps.v4Aliases.status = true;
-                        this.cmps.v6Aliases.status = true;
                         // if not a WAN, must configure statically
                         // if a WAN, can use auto or static
                         if ( isWanValue ) {
@@ -1591,7 +1586,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         } else {
                             this.cmps.v4ConfigType.setValue("STATIC"); //don't allow auto/pppoe for non-WAN
                             this.cmps.v6ConfigType.setValue("STATIC"); //don't allow auto for non-WAN
-                            this.cmps.v6ConfigType.status = true; //don't allow auto/pppoe for non-WAN
+                            this.cmps.v6ConfigType.status = false; //don't allow auto/pppoe for non-WAN
                             
                             this.cmps.v4StaticGateway.status = false; // no gateways for non-WAN
                             this.cmps.v6StaticGateway.status = false; // no gateways for non-WAN
@@ -1599,14 +1594,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v4NatIngressTraffic.status = true; // show NAT ingress options on non-WANs
                             
                             this.cmps.dhcp.status = true; // show DHCP options on non-WANs
-                            this.cmps.dhcpEnabled.status = true;
                             this.cmps.dhcpRangeStart.status = true;
                             this.cmps.dhcpRangeEnd.status = true;
-                            this.cmps.dhcpLeaseDuration.status = true;
                             this.cmps.dhcpGatewayOverride.status = true;
-                            this.cmps.dhcpPrefixOverride.status = true;
                             this.cmps.dhcpDnsOverride.status = true;
-                            this.cmps.dhcpOptions.status = true;
                         }
                         
                         // if static show static fields
@@ -1626,6 +1617,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v4AutoGatewayOverrideContainer.status = true;
                             this.cmps.v4AutoDns1OverrideContainer.status = true;
                             this.cmps.v4AutoDns2OverrideContainer.status = true;
+                            
+                            this.cmps.v4AutoAddressOverride.status = true;
+                            this.cmps.v4AutoGatewayOverride.status = true;
+                            this.cmps.v4AutoDns1Override.status = true;
+                            this.cmps.v4AutoDns2Override.status = true;
+                            
+                            
                         } else if ( this.cmps.v4ConfigType.getValue() == "PPPOE" ) {
                             this.cmps.v4PPPoEUsername.status = true;
                             this.cmps.v4PPPoEPassword.status = true;
@@ -1640,7 +1638,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         // if auto show override fields
                         if ( this.cmps.v6ConfigType.getValue() == "STATIC" ) {
                             this.cmps.v6AliasesContainer.status = true;
-                            this.cmps.v6Aliases.status = true;
                             this.cmps.v6StaticAddress.status = true;
                             this.cmps.v6StaticPrefixLength.status = true;
                             if (isWanValue) {
@@ -1656,7 +1653,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }
                         } else if ( this.cmps.v6ConfigType.getValue() == "AUTO" ) {
                             this.cmps.v6AliasesContainer.status = true;
-                            this.cmps.v6Aliases.status = true;
                         } else { //v6ConfigType == DISABLED
                             this.cmps.v6Config.collapse();
                         }
@@ -1665,14 +1661,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                         cmp = this.cmps[property];
                         if(!cmp.noHide && cmp.isHidden() === cmp.status) {
                             cmp.setVisible(cmp.status);
-                            console.log("syncComponents setVisible: ",cmp.name,cmp.dataIndex, cmp.status, (new Date()).getTime()-startTime);
                         }
                         if(cmp.status && cmp.isDisabled()) {
                             cmp.enable();
-                            console.log("syncComponents enable: ",cmp.name, cmp.dataIndex, (new Date()).getTime()-startTime);
                         }
                     }
-                    console.log("syncComponents end", (new Date()).getTime()-startTime);
                 },
                 populate: function(record, addMode) {
                     var interfaceId=record.get("interfaceId");
@@ -1696,22 +1689,16 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 },
                 updateAction: function() {
-                    startTime=(new Date()).getTime();
                     //many fields must be set empty when not displayed
                     for(var property in this.cmps) {
                         var cmp=this.cmps[property];
                         if(!cmp.status) {
-                            if(cmp.allowBlank === false) {
+                            if((cmp.allowBlank === false || cmp.vtype ) && !cmp.isDisabled()) {
                                 cmp.disable();
-                                console.log("updateAction disable", cmp.dataIndex, (new Date()).getTime()-startTime);
-                            }
-                            if(cmp.valueWhenHidden !== undefined) {
-                                cmp.setValue(cmp.valueWhenHidden);
-                                console.log("updateAction valueWhenHidden", cmp.dataIndex, cmp.valueWhenHidden, (new Date()).getTime()-startTime);
+                                console.log("updateAction disable", cmp.dataIndex);
                             }
                         }
                     }
-                    console.log("updateAction start", (new Date()).getTime()-startTime);
                     if(Ung.RowEditorWindow.prototype.updateAction.apply(this, arguments)) {
                         var interfaces = this.grid.getPageList();
                         var interfacesMap=Ung.Util.createRecordsMap(interfaces, "interfaceId");
@@ -1728,10 +1715,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 });
                             }
                         });
-                        qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                         qosBandwidthStore.resumeEvents();
+                        qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                         this.grid.settingsCmp.gridQosWanBandwidth.updateTotalBandwidth();
-                        console.log("updateAction sync", (new Date()).getTime()-startTime);
                     }
                 }
             }) );
@@ -3011,7 +2997,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 columnsDefaultSortable: false,
                 updateTotalBandwidth: Ext.bind(function() {
-                    console.log("updateTotalBandwidth");
                     var interfaceList=this.gridQosWanBandwidth.getPageList();
                     var u = 0;
                     var d = 0;
