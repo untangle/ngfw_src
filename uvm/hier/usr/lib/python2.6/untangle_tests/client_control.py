@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import time
 
 class ClientControl:
 
@@ -38,7 +39,7 @@ class ClientControl:
 
         result = 1
         try:
-            sshCommand = "ssh -i %s %s@%s \"%s %s\" %s" % (ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
+            sshCommand = "ssh -o StrictHostKeyChecking=no -i %s %s@%s \"%s %s\" %s" % (ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
             if (ClientControl.verbosity > 1):
                 print "\nRunning command          : %s" % sshCommand
             if (ClientControl.verbosity > 0):
@@ -47,6 +48,9 @@ class ClientControl:
                 sshCommand += " & " # don't wait for process to complete
             if (not stdout):
                 result = os.system(sshCommand)
+                # If nowait, sleep for a second to give time for the ssh to connect and run the command before returning
+                if (nowait):
+                    time.sleep(1)
                 if result == 0:
                     return 0
                 else:
@@ -55,6 +59,9 @@ class ClientControl:
                 # send command and read stdout
                 rtn_cmd = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE)
                 rtn_stdout = rtn_cmd.communicate()[0].strip()
+                # If nowait, sleep for a second to give time for the ssh to connect and run the command before returning
+                if (nowait):
+                    time.sleep(1)
                 return rtn_stdout 
         finally:
             if (ClientControl.logfile != None):

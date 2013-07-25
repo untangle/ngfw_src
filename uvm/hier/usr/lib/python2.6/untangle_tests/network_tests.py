@@ -243,12 +243,12 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
+        pass
+
+    def test_010_clientIsOnline(self):
+        # save original network settings
         global orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        # print "orig_netsettings <%s>" % orig_netsettings
-        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
-        
-    def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
@@ -305,7 +305,6 @@ class NetworkTests(unittest2.TestCase):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,11234))
         clientControl.runCommand("nohup netcat -l 0.0.0.0 11234 >/dev/null 2>&1",False,True)
-        time.sleep(1)
         result = clientControl.runCommand("echo test | netcat %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
         assert(result == 0)
@@ -454,8 +453,6 @@ class NetworkTests(unittest2.TestCase):
         # In case firewall is still installed.
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
             uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
-        # In case test_050_portForwardAlt fails and leaves the python web server running
-        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         node = None
         nodeFW = None
 
