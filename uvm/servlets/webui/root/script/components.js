@@ -1510,8 +1510,6 @@ Ext.define("Ung.Node", {
                 break;
               case "DESTROYED":
                 //update app display
-                main.updateSeparator();
-                main.loadApps();
                 main.loadRackView();
                 break;
             default:
