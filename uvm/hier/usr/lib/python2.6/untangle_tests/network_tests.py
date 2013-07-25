@@ -1,3 +1,4 @@
+import socket
 import unittest2
 import os
 import sys
@@ -21,17 +22,12 @@ nodeFW = None
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
-# ATS Radius server
-external_client = "10.5.6.71" 
-dogfood = "10.0.0.1"
-dogfood_alt = "10.0.0.2"
 orig_netsettings = None
+test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
-def createPortForwardLocalMatcherRule( matcherType, value, destinationIP):
-    matcherTypeStr = str(matcherType)
-    valueStr = str(value)
+def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
     return {
-        "description": "forward " + matcherTypeStr + value + " test", 
+        "description": "port forward  -> " + str(destinationIP) + ":" + str(destinationPort) + " test", 
         "enabled": True, 
         "javaClass": "com.untangle.uvm.network.PortForwardRule", 
         "matchers": {
@@ -40,54 +36,20 @@ def createPortForwardLocalMatcherRule( matcherType, value, destinationIP):
                 {
                     "invert": False, 
                     "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": "DST_LOCAL", 
-                    "value": "true"
+                    "matcherType": str(matcherType1), 
+                    "value": str(value1)
                 }, 
                 {
                     "invert": False, 
                     "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": matcherTypeStr,
-                    "value": value
+                    "matcherType": str(matcherType2),
+                    "value": str(value2)
                 }, 
                 {
                     "invert": False, 
                     "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
-                    "value": "TCP,UDP"
-                }
-            ]
-        }, 
-        "newDestination": destinationIP,
-        "ruleId": 1
-    } 
-
-def createPortForwardNewPortMatcherRule( matcherType, value, destinationIP, destinationPort):
-    matcherTypeStr = str(matcherType)
-    valueStr = str(value)
-    return {
-        "description": "forward " + matcherTypeStr + " " + value + " test", 
-        "enabled": True, 
-        "javaClass": "com.untangle.uvm.network.PortForwardRule", 
-        "matchers": {
-            "javaClass": "java.util.LinkedList", 
-            "list": [
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": "DST_LOCAL", 
-                    "value": "true"
-                }, 
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": matcherTypeStr,
-                    "value": value
-                }, 
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.uvm.network.PortForwardRuleMatcher", 
-                    "matcherType": "PROTOCOL", 
-                    "value": "TCP,UDP"
+                    "matcherType": str(matcherType3), 
+                    "value": str(value3)
                 }
             ]
         }, 
@@ -97,11 +59,9 @@ def createPortForwardNewPortMatcherRule( matcherType, value, destinationIP, dest
     } 
 
 def createBypassMatcherRule( matcherType, value):
-    matcherTypeStr = str(matcherType)
-    valueStr = str(value)
     return {
         "bypass": True, 
-        "description": "test bypass", 
+        "description": "test bypass " + str(matcherType) + " " + str(value), 
         "enabled": True, 
         "javaClass": "com.untangle.uvm.network.BypassRule", 
         "matchers": {
@@ -110,8 +70,8 @@ def createBypassMatcherRule( matcherType, value):
                 {
                     "invert": False, 
                     "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
-                    "value": value
+                    "matcherType": str(matcherType), 
+                    "value": str(value)
                 }, 
                 {
                     "invert": False, 
@@ -125,13 +85,11 @@ def createBypassMatcherRule( matcherType, value):
     } 
 
 def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
-    matcherTypeStr = str(matcherType)
-    valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
-        "description": "Single Matcher: " + matcherTypeStr + " = " + valueStr, 
+        "description": "Single Matcher: " + str(matcherType) + " = " + str(value), 
         "flag": flagged, 
         "block": blocked, 
         "matchers": {
@@ -140,8 +98,8 @@ def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
                 {
                     "invert": False, 
                     "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
-                    "matcherType": matcherTypeStr, 
-                    "value": valueStr
+                    "matcherType": str(matcherType), 
+                    "value": str(value)
                     }
                 ]
             }
@@ -157,7 +115,7 @@ def createRouteRule( networkAddr, netmask, gateway):
         "ruleId": 1, 
         "toAddr": True, 
         "toDev": False
-         }
+        }
 
 def createDNSRule( networkAddr, name):
     return {
@@ -165,6 +123,16 @@ def createDNSRule( networkAddr, name):
         "javaClass": "com.untangle.uvm.network.DnsStaticEntry", 
         "name": name
          }
+
+def getPorts():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    return (netsettings['httpPort'], netsettings['httpsPort'])
+
+def setPorts(httpPort, httpsPort):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['httpPort'] = httpPort
+    netsettings['httpsPort'] = httpsPort
+    uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def appendForward(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -191,7 +159,7 @@ def appendDNSRule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
     
-def nukeFWRules():
+def nukePortForwardRules():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['portForwardRules']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -275,19 +243,108 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global orig_netsettings, utBridged, externalClientResult
+        global orig_netsettings, utBridged
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         # print "orig_netsettings <%s>" % orig_netsettings
         utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
-        externalClientResult = subprocess.call(["ping","-c","1",external_client],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        print "externalClientResult <%s>" % externalClientResult
         
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
-    def test_020_enableQoS(self):
+    # test basic port forward (tcp port 80)
+    def test_020_portForward80(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        assert(result == 0)
+
+    # test basic port forward (tcp port 443)
+    def test_021_portForward443(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        assert(result == 0)
+
+    # test port forward (changing the port 80 -> 81)
+    def test_022_portForwardNewPort(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","81","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4:81/test/testPage1.html 2>&1 | grep -q text123")
+        assert(result == 0)
+
+    # test port forward using DST_LOCAL condition
+    def test_023_portForwardDstLocal(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s:81/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        assert(result == 0)
+
+    # test port forward that uses the http port (move http to different port)
+    def test_024_portForwardPort80LocalHttpPort(self):
+        orig_ports = getPorts()
+        setPorts( 8080, 4343 )
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        setPorts( orig_ports[0], orig_ports[1])
+        assert(result == 0)
+
+    # test port forward that uses the https port (move https to different port)
+    def test_025_portForwardPort443LocalHttpsPort(self):
+        orig_ports = getPorts()
+        setPorts( 8080, 4343 )
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        setPorts( orig_ports[0], orig_ports[1])
+        assert(result == 0)
+
+    # test hairpin port forward (back to original client)
+    def test_026_portForwardHairPin(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,11234))
+        clientControl.runCommand("nohup netcat -l 0.0.0.0 11234 >/dev/null 2>&1",False,True)
+        time.sleep(1)
+        result = clientControl.runCommand("echo test | netcat %s 11234" % uvmContext.networkManager().getFirstWanAddress())
+        print "result: %s" % str(result) 
+        assert(result == 0)
+
+    # test port forward to multiple ports (tcp port 80,443)
+    def test_027_portForwardMultiport(self):
+        nukePortForwardRules()
+        appendForward(createPortForwardTripleCondition("DST_PORT","80,443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,None))
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        assert(result == 0)
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        assert(result == 0)
+
+    # test a port forward from outside if possibel
+    def test_030_portForwardInbound(self):
+        # We will use 10.5.6.71 for this test. Test to see if we can reach it.
+        externalClientResult = subprocess.call(["ping","-c","1","10.5.6.71"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+        # Also test that it can probably reach us (we're on a 10.x network)
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (wan_IP.split(".")[0] != "10"):
+            raise unittest2.SkipTest("Not on 10.x network, skipping")
+
+        # start netcat on client
+        clientControl.runCommand("nohup netcat -l 0.0.0.0 11245 >/dev/null 2>&1",False,True)
+
+        # port forward 11245 to client box
+        appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,"11245"))
+
+        # try connecting to netcat on client from "outside" box
+        tmp_hostIP = ClientControl.hostIP
+        ClientControl.hostIP = "10.5.6.71"
+        result = clientControl.runCommand("echo test | netcat %s 11245" % uvmContext.networkManager().getFirstWanAddress())
+        ClientControl.hostIP = tmp_hostIP
+        assert (result == 0)
+
+    def test_050_enableQoS(self):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Record average speed with QoS at 10M configured
         # Download file and record the average speed in which the file was download
@@ -295,131 +352,21 @@ class NetworkTests(unittest2.TestCase):
         netsettings['qosSettings']['qosEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)            
         wget_speed_pre_QoSLimit = getDownloadSpeed()
+        wanLimit = int((wget_speed_pre_QoSLimit*8) * .8)
         
         netsettings['qosSettings']['qosEnabled'] = True
         i = 0
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
-                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=10000
-                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=10000
+                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=wanLimit
+                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=wanLimit
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
         wget_speed_post_QoSLimit= getDownloadSpeed()
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         print "Result of wget_speed_pre_QoSLimit <%s> wget_speed_post_QoSLimit <%s>" % (wget_speed_pre_QoSLimit,wget_speed_post_QoSLimit)
         assert ((wget_speed_pre_QoSLimit) and (wget_speed_post_QoSLimit))
-        assert (wget_speed_pre_QoSLimit >  wget_speed_post_QoSLimit)
-
-    def test_030_port80Forward(self):
-        nukeFWRules()
-        netstatResult = int(clientControl.runCommand("netstat -an | grep '0.0.0.0:80 ' | wc -l",True))
-        print "netstatResult <%s>" % netstatResult
-        if (netstatResult == 0):
-            raise unittest2.SkipTest("No web server running on client, skipping port 80 forwarding test")
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping port 80 forwarding test")
-        clientControl.runCommand("rm -f /tmp/network_test_030*")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        # print "wan_IP <%s>" % wan_IP
-        # port forward 80 to client box
-        appendForward(createPortForwardLocalMatcherRule("DST_PORT","80",ClientControl.hostIP))
-        tmp_hostIP = clientControl.hostIP
-        # switch client to external box
-        clientControl.hostIP = external_client
-        resultUntangle = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
-        resultWeb = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
-        # print resultUntangle
-        # print resultWeb
-        clientControl.hostIP = tmp_hostIP
-        # Check that the Untangle page is not shown
-        assert (resultUntangle != 0)
-        # Check for HTTP code is 200 not the 302 (Untangle)
-        assert (resultWeb == 0)
-        # check if hairpin works only on non bridge setups
-        if not utBridged:
-            resultUntangle = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
-            resultWeb = clientControl.runCommand("wget -SO- -T 1 -t 1 http://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
-            # Check that the Untangle page is not shown
-            assert (resultUntangle != 0)
-            # Check for HTTP code is 200 not the 302 (Untangle)
-            assert (resultWeb == 0)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
-    def test_040_port443Forward(self):
-        netstatResult = int(clientControl.runCommand("netstat -an | grep 0.0.0.0:443 | wc -l",True))
-        # print "netstatResult <%s>" % netstatResult
-        if (netstatResult == 0):
-            raise unittest2.SkipTest("No ssl web server running on client, skipping port 443 forwarding test")
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping port 443 forwarding test")
-        nukeFWRules()            
-        clientControl.runCommand("rm -f /tmp/network_test_040*")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        # Move Admin port 443 to 4443
-        netsettings['httpsPort'] = 4443
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        # port forward 443 to client box
-        appendForward(createPortForwardLocalMatcherRule("DST_PORT","443",ClientControl.hostIP))
-        tmp_hostIP = ClientControl.hostIP
-        # switch client to external box
-        ClientControl.hostIP = external_client
-        resultUntangle = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
-        resultWeb = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
-        ClientControl.hostIP = tmp_hostIP
-        # Check that the Untangle page is not shown
-        assert (resultUntangle != 0)
-        # Check for HTTP code is 200 not the 302 (Untangle)
-        assert (resultWeb == 0)
-        clientControl.runCommand("rm -f /tmp/network_test_040*")
-        # check if hairpin works
-        if not utBridged:
-            resultUntangle = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i welcome.do >/dev/null")
-            resultWeb = clientControl.runCommand("wget -SO- --no-check-certificate -T 1 -t 1 https://" + wan_IP + " 2>&1 | egrep -i '200 OK' >/dev/null")
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # Move Admin port back to 443
-        netsettings['httpsPort'] = 443
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        nukeFWRules()
-        # Check that the Untangle page is not shown
-        assert (resultUntangle != 0)
-        # Check for HTTP code is 200 not the 302 (Untangle)
-        assert (resultWeb == 0)
-
-    def test_050_portForwardAlt(self):
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
-        clientControl.runCommand("rm -f /tmp/network_test_050*")
-        # port forward to a different port that the incoming port.
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        # Start remote web server on 8080
-        clientControl.runCommand("rm -f index.html")
-        clientControl.runCommand("nohup python -m SimpleHTTPServer 8080 2> /dev/null < /dev/null &",False,True)
-
-        # port forward 80 to client box port 8080
-        appendForward(createPortForwardNewPortMatcherRule("DST_PORT","80",ClientControl.hostIP,"8080"))
-        tmp_hostIP = ClientControl.hostIP
-        # switch client to external box
-        ClientControl.hostIP = external_client
-        clientControl.runCommand("rm -f /tmp/network_test_050*")
-        result = clientControl.runCommand("wget -a /tmp/network_test_050a.log -O /tmp/network_test_050a.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
-        # Check listing from python HTTP server
-        search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050a.out")  
-        ClientControl.hostIP = tmp_hostIP
-        assert (search == 0)
-
-        # check if hairpin works
-        # hairpin is not a valid test if on port 80 and in bridge mode
-        if not utBridged:
-            result = clientControl.runCommand("wget -a /tmp/network_test_050b.log -O /tmp/network_test_050b.out -t 4 -T 20 \'http://" + wan_IP + "\'" ,True)
-            # Check listing from python HTTP server
-            search = clientControl.runCommand("grep -q 'Directory listing' /tmp/network_test_050b.out")  # check for default apache web page
-            assert (search == 0)
-        # kill the 8080 web server
-        clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert (wget_speed_pre_QoSLimit * .9 >  wget_speed_post_QoSLimit)
 
     def test_060_bypassRules(self):
         global nodeFW
@@ -469,19 +416,20 @@ class NetworkTests(unittest2.TestCase):
         appendDNSRule(createDNSRule(ip_address_testuntangle,"www.foobar.com"))
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         print "wan_IP <%s>" % wan_IP
-        if utBridged:
-            # allow DNS on the WAN
-            netsettings = uvmContext.networkManager().getNetworkSettings()
-            i = 0
-            for packetFilter in netsettings['inputFilterRules']['list']:
-                if packetFilter['description'] == "Allow DNS on non-WANs":
-                    j = 0
-                    for pktRule in packetFilter['matchers']['list']:
-                        if pktRule["matcherType"] == "SRC_INTF":
-                            netsettings['inputFilterRules']['list'][i]['matchers']['list'][j]["value"] = "non_wan,wan"
-                        j += 1
-                i += 1
-            uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # allow DNS on the WAN
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        i = 0
+        for packetFilter in netsettings['inputFilterRules']['list']:
+            if packetFilter['description'] == "Allow DNS on non-WANs":
+                j = 0
+                for pktRule in packetFilter['matchers']['list']:
+                    if pktRule["matcherType"] == "SRC_INTF":
+                        netsettings['inputFilterRules']['list'][i]['matchers']['list'][j]["value"] = "non_wan,wan"
+                    j += 1
+            i += 1
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
         result = clientControl.runCommand("host -4 www.foobar.com " + wan_IP, True)
         # print "Results of www.foobar.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
