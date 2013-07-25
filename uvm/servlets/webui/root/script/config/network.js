@@ -253,7 +253,9 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 title: i18n._('Network')
             }];
-            this.refreshSettings();
+            this.settings = main.getNetworkManager().getNetworkSettings();
+            rpc.networkSettings = this.settings;
+
             // builds the tabs
             this.buildInterfaces();
             this.buildHostName();
@@ -569,6 +571,23 @@ if (!Ung.hasResource["Ung.Network"]) {
                     handler : this.openPingTest,
                     scope : this
                 }],
+                initialLoad: function() {
+                    this.getView().setLoading(true);
+                    var interfaceStatus=main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
+                        var deviceStatus=main.getNetworkManager().getDeviceStatus();
+                        var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+                        for(var i=0; i<this.settingsCmp.settings.interfaces.list.length; i++) {
+                            var intf=this.settingsCmp.settings.interfaces.list[i];
+                            var deviceStatusInner = deviceStatusMap[intf.physicalDev];
+                            Ext.applyIf(intf, deviceStatusInner);
+                            var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
+                            Ext.applyIf(intf, interfaceStatusInner);
+                        }
+                        Ung.EditorGrid.prototype.initialLoad.call(this);
+                    }, this));
+                },
                 onMapDevices: Ext.bind(function() {
                     Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
                     if (!this.winMapDevices) {
@@ -4545,21 +4564,6 @@ if (!Ung.hasResource["Ung.Network"]) {
             main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.settings);
-        },
-        refreshSettings: function() {
-            this.settings = main.getNetworkManager().getNetworkSettings();
-            var deviceStatus=main.getNetworkManager().getDeviceStatus();
-            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
-            var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
-            var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
-            for(var i=0; i<this.settings.interfaces.list.length; i++) {
-                var intf=this.settings.interfaces.list[i];
-                var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-                Ext.applyIf(intf, deviceStatusInner);
-                var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-                Ext.applyIf(intf, interfaceStatusInner);
-            }
-            rpc.networkSettings = this.settings;
         },
         beforeSave: function(isApply, handler) {
             this.beforeSaveCount = 13;

@@ -3237,7 +3237,7 @@ Ext.define('Ung.MonitorGrid', {
         this.reload();
     },
     initialLoad: function() {
-        this.getView().setLoading(true);  
+        this.getView().setLoading(true);
         this.getData({list:[]}); //Inital load with empty data
         this.afterDataBuild(Ext.bind(function() {
             this.getStore().loadPage(1, {
