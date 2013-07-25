@@ -124,11 +124,11 @@ def createDNSRule( networkAddr, name):
         "name": name
          }
 
-def getPorts():
+def getHttpHttpsPorts():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     return (netsettings['httpPort'], netsettings['httpsPort'])
 
-def setPorts(httpPort, httpsPort):
+def setHttpHttpsPorts(httpPort, httpsPort):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['httpPort'] = httpPort
     netsettings['httpsPort'] = httpsPort
@@ -174,41 +174,41 @@ def nukeBypassRules():
     netsettings['bypassRules']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)    
 
-def nukeRouteRules():
+def nukeRoutes():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'][:] = []
     uvmContext.networkManager().setNetworkSettings(netsettings)    
 
-def isBridgeMode(clientIPAdress):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    for interface in netsettings['interfaces']['list']:
-        if interface['isWan']:
-            if interface['v4StaticGateway']:
-                wanIP = interface['v4StaticGateway']
-                wanNetmask = interface['v4StaticNetmask']
-                systemProperties = system_props.SystemProperties()
-                wanNetSize = systemProperties.get_net_size(wanNetmask)
-                wanRange = wanIP + '/' + wanNetSize
-                wanNet = ipaddr.IPNetwork(wanRange)
-                wanAddr = ipaddr.IPAddress(clientIPAdress)
-            elif (interface['v4ConfigType'] in ['AUTO','PPPOE']):
-                # is this a dynamic IP w/o PPPOE
-                nicDevice = str(interface['symbolicDev'])
-                systemProperties = system_props.SystemProperties()
-                wanIP = systemProperties.get_ip_address(nicDevice)
-                wanNetmask =  systemProperties.get_netmask(nicDevice)
-                wanRange = wanIP + '/' + systemProperties.get_net_size(wanNetmask)
-                wanNet = ipaddr.IPNetwork(wanRange)
-                wanAddr = ipaddr.IPAddress(clientIPAdress)
-            else:
-                raise unittest2.SkipTest("Unable to determine WAN IP")
-            if wanAddr in wanNet:
-                return True
-            else:
-                pass
-        else:
-            pass
-    return False
+# def isBridgeMode(clientIPAdress):
+#     netsettings = uvmContext.networkManager().getNetworkSettings()
+#     for interface in netsettings['interfaces']['list']:
+#         if interface['isWan']:
+#             if interface['v4StaticGateway']:
+#                 wanIP = interface['v4StaticGateway']
+#                 wanNetmask = interface['v4StaticNetmask']
+#                 systemProperties = system_props.SystemProperties()
+#                 wanNetSize = systemProperties.get_net_size(wanNetmask)
+#                 wanRange = wanIP + '/' + wanNetSize
+#                 wanNet = ipaddr.IPNetwork(wanRange)
+#                 wanAddr = ipaddr.IPAddress(clientIPAdress)
+#             elif (interface['v4ConfigType'] in ['AUTO','PPPOE']):
+#                 # is this a dynamic IP w/o PPPOE
+#                 nicDevice = str(interface['symbolicDev'])
+#                 systemProperties = system_props.SystemProperties()
+#                 wanIP = systemProperties.get_ip_address(nicDevice)
+#                 wanNetmask =  systemProperties.get_netmask(nicDevice)
+#                 wanRange = wanIP + '/' + systemProperties.get_net_size(wanNetmask)
+#                 wanNet = ipaddr.IPNetwork(wanRange)
+#                 wanAddr = ipaddr.IPAddress(clientIPAdress)
+#             else:
+#                 raise unittest2.SkipTest("Unable to determine WAN IP")
+#             if wanAddr in wanNet:
+#                 return True
+#             else:
+#                 pass
+#         else:
+#             pass
+#     return False
 
 def getDownloadSpeed():
     # Download file and record the average speed in which the file was download
@@ -243,10 +243,9 @@ class NetworkTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global orig_netsettings, utBridged
+        global orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         # print "orig_netsettings <%s>" % orig_netsettings
-        utBridged = isBridgeMode(ClientControl.hostIP)
         clientControl.runCommand("kill $(ps aux | grep SimpleHTTPServer | grep -v grep | awk '{print $2}') 2>/dev/null")
         
     def test_010_clientIsOnline(self):
@@ -283,22 +282,22 @@ class NetworkTests(unittest2.TestCase):
 
     # test port forward that uses the http port (move http to different port)
     def test_024_portForwardPort80LocalHttpPort(self):
-        orig_ports = getPorts()
-        setPorts( 8080, 4343 )
+        orig_ports = getHttpHttpsPorts()
+        setHttpHttpsPorts( 8080, 4343 )
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80))
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
-        setPorts( orig_ports[0], orig_ports[1])
+        setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
     # test port forward that uses the https port (move https to different port)
     def test_025_portForwardPort443LocalHttpsPort(self):
-        orig_ports = getPorts()
-        setPorts( 8080, 4343 )
+        orig_ports = getHttpHttpsPorts()
+        setHttpHttpsPorts( 8080, 4343 )
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443))
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
-        setPorts( orig_ports[0], orig_ports[1])
+        setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
     # test hairpin port forward (back to original client)
@@ -344,14 +343,15 @@ class NetworkTests(unittest2.TestCase):
         ClientControl.hostIP = tmp_hostIP
         assert (result == 0)
 
+    # Test that QoS limits speed
     def test_050_enableQoS(self):
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        # Record average speed with QoS at 10M configured
-        # Download file and record the average speed in which the file was download
-        # remove previous test file and log
-        netsettings['qosSettings']['qosEnabled'] = False
-        uvmContext.networkManager().setNetworkSettings(netsettings)            
+        if netsettings['qosSettings']['qosEnabled']:
+            netsettings['qosSettings']['qosEnabled'] = False
+            uvmContext.networkManager().setNetworkSettings(netsettings)            
+
         wget_speed_pre_QoSLimit = getDownloadSpeed()
+        # set limit to 80% of measured speed
         wanLimit = int((wget_speed_pre_QoSLimit*8) * .8)
         
         netsettings['qosSettings']['qosEnabled'] = True
@@ -366,9 +366,12 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         print "Result of wget_speed_pre_QoSLimit <%s> wget_speed_post_QoSLimit <%s>" % (wget_speed_pre_QoSLimit,wget_speed_post_QoSLimit)
         assert ((wget_speed_pre_QoSLimit) and (wget_speed_post_QoSLimit))
+        # since the limit is 80% of first measure, check that second measure is < 90% of first measure
         assert (wget_speed_pre_QoSLimit * .9 >  wget_speed_post_QoSLimit)
 
+    # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
+        nukeBypassRules()
         global nodeFW
         if nodeFW == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
@@ -389,7 +392,9 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
 
+    # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_070_routes(self):        
+        nukeRoutes()
         clientControl.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         result = clientControl.runCommand("host www.playboy.com", True)
@@ -405,6 +410,7 @@ class NetworkTests(unittest2.TestCase):
         assert (result != 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
+    # Test static DNS entry
     def test_080_DNS(self):        
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nukeDNSRules()
