@@ -566,13 +566,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.execManager = new ExecManagerImpl();
 
-        createUID();
-        
         this.settingsManager = new SettingsManagerImpl();
-        
-        this.sessionMonitor = new SessionMonitorImpl();
-
-        this.hostTableImpl = new HostTableImpl();
         
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
@@ -581,7 +575,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }
+
+        createUID();
         
+        this.sessionMonitor = new SessionMonitorImpl();
+
+        this.hostTableImpl = new HostTableImpl();
+
         this.servletFileManager = new ServletFileManagerImpl();
 
         this.languageManager = new LanguageManagerImpl();
