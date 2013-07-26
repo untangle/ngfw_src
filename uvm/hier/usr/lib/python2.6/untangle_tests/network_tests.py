@@ -304,8 +304,8 @@ class NetworkTests(unittest2.TestCase):
     def test_026_portForwardHairPin(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,11234))
-        clientControl.runCommand("nohup netcat -l 0.0.0.0 11234 >/dev/null 2>&1",False,True)
-        result = clientControl.runCommand("echo test | netcat %s 11234" % uvmContext.networkManager().getFirstWanAddress())
+        clientControl.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",False,True)
+        result = clientControl.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
         assert(result == 0)
 
@@ -330,7 +330,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
 
         # start netcat on client
-        clientControl.runCommand("nohup netcat -l 0.0.0.0 11245 >/dev/null 2>&1",False,True)
+        clientControl.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",False,True)
 
         # port forward 11245 to client box
         appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,"11245"))
@@ -338,7 +338,7 @@ class NetworkTests(unittest2.TestCase):
         # try connecting to netcat on client from "outside" box
         tmp_hostIP = ClientControl.hostIP
         ClientControl.hostIP = "10.5.6.71"
-        result = clientControl.runCommand("echo test | netcat %s 11245" % uvmContext.networkManager().getFirstWanAddress())
+        result = clientControl.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
         ClientControl.hostIP = tmp_hostIP
         assert (result == 0)
 
