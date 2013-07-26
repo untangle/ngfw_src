@@ -26,7 +26,6 @@ if (typeof String.prototype.trim !== "function") {
     };
 }
 
-
 var i18n=Ext.create('Ung.I18N',{"map":null}); // the main internationalization object
 var rpc=null; // the main json rpc object
 var testMode = false;
@@ -890,7 +889,6 @@ Ung.Util.RetryHandler = {
             "timeout": timeout,
             "count": count
         };
-
         this.callFunction( input );
     },
 
@@ -1709,8 +1707,6 @@ Ext.define("Ung.Node", {
                             }
                         }
                         main.updateSeparator();
-                        // update AppItem button
-                        main.loadApps();
                         main.loadRackView();
                     }
                 }, this), this.nodeId);

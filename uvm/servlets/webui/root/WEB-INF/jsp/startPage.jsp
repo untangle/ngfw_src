@@ -32,6 +32,7 @@
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
         var isWizardComplete = ${isWizardComplete};
+        var main;
         function init() {
             main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});
             main.init();

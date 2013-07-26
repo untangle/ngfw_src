@@ -1714,7 +1714,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if(!cmp.status) {
                             if((cmp.allowBlank === false || cmp.vtype ) && !cmp.isDisabled()) {
                                 cmp.disable();
-                                console.log("updateAction disable", cmp.dataIndex);
                             }
                         }
                     }

@@ -27,6 +27,7 @@ Ext.define("Ung.Main", {
     upgradeLastCheckTime: null,
     firstTimeRun: null,
     policyNodeWidget:null,
+    initialScreenShowed: false,
     
     // init function
     constructor: function(config) {
@@ -730,7 +731,7 @@ Ext.define("Ung.Main", {
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
-            Ext.Function.defer(this.addNode,1, this,[node]);
+            this.addNode(node);
         }
         if(!main.disableThreads) {
             Ung.MessageManager.start(true);
@@ -757,7 +758,6 @@ Ext.define("Ung.Main", {
             main.buildApps();
             main.buildNodes();
         }, this);
-
         Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadApps: function() {
@@ -769,7 +769,6 @@ Ext.define("Ung.Main", {
             rpc.rackView=result;
             main.buildApps();
         }, this);
-
         Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadLicenses: function() {
@@ -1281,6 +1280,10 @@ Ext.define("Ung.Main", {
      *  Prepares the uvm to display the welcome screen
      */      
     showInitialScreen: function () {
+        if(this.initialScreenShowed) {
+            return;
+        }
+        this.initialScreenShowed=true;
         try {
             Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
             rpc.aptManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
