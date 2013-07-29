@@ -36,8 +36,6 @@ package com.untangle.node.token;
 /**
  * Signals a problem parsing the stream.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class ParseException extends Exception

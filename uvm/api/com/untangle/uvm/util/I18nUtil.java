@@ -39,8 +39,6 @@ import java.util.Map;
 /**
  * I18n utility functions.
  *
- * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
- * @version 1.0
  */
 public class I18nUtil
 {

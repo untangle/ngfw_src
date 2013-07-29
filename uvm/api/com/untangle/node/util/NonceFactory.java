@@ -43,8 +43,6 @@ import java.util.TimerTask;
  * Factory for creating nonces associated with some data. A thread
  * cleans out nonces after 600000 milliseconds have elapsed.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class NonceFactory<T>
 {

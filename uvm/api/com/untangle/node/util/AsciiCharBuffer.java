@@ -11,8 +11,6 @@ import java.nio.ReadOnlyBufferException;
  * Wraps a ByteBuffer to implement <code>CharSequence</code>,
  * <code>Appendable</code>, and <code>Comparable</code>.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class AsciiCharBuffer
     implements CharSequence, Appendable, Comparable<AsciiCharBuffer>

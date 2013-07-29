@@ -38,8 +38,6 @@ import java.nio.ByteBuffer;
 /**
  * Token that represents metadata about the stream rather than content.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class MetadataToken implements Token
 {

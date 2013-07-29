@@ -42,8 +42,6 @@ import java.util.RandomAccess;
  * Streams out <code>Token</code>s from a series of
  * <code>TokenStreamer</code>s.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class SeriesTokenStreamer implements TokenStreamer
 {

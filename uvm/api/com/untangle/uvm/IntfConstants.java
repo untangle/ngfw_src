@@ -36,8 +36,6 @@ package com.untangle.uvm;
 /**
  * These are constants for the indices and names of the Network Interfaces on the box.
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
  */
 public class IntfConstants
 {

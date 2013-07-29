@@ -36,8 +36,6 @@ package com.untangle.uvm.util;
 /**
  * XML utility functions.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class XmlUtil
 {

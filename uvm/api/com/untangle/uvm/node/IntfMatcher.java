@@ -19,7 +19,6 @@ import com.untangle.uvm.UvmContext;
  * "1"
  * "1,2"
  *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  */
 public class IntfMatcher
 {

@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 /**
  * TCP chunk result -- returned by node's event handler to indicate disposition of chunk
  *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public class TCPChunkResult extends IPDataResult
 {

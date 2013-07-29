@@ -40,8 +40,6 @@ import com.untangle.uvm.vnet.event.TCPChunkResult;
 /**
  * Parses a stream of bytes into tokens.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface Parser
 {

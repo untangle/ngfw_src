@@ -6,8 +6,6 @@ package com.untangle.uvm.logging;
 /**
  * Log event for system stats.
  *
- * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class SystemStatEvent extends LogEvent

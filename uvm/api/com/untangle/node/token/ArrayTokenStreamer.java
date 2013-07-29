@@ -36,8 +36,6 @@ package com.untangle.node.token;
 /**
  * Token streamer that streams an array of tokens.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class ArrayTokenStreamer implements TokenStreamer
 {

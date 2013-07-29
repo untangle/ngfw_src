@@ -36,8 +36,6 @@ package com.untangle.uvm.vnet;
 /**
  * Represents affinity for a particular side of the pipeline.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class Affinity
 {

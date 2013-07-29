@@ -37,8 +37,6 @@ package com.untangle.node.token;
 /**
  * Flushes a session when parser receives a <code>Release</code>.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class ReleaseTokenStreamer implements TokenStreamer
 {

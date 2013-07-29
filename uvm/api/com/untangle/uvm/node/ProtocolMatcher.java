@@ -19,7 +19,6 @@ import com.untangle.uvm.vnet.Protocol;
  *
  * ProtocolMatcher it is case insensitive
  *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  */
 public class ProtocolMatcher
 {

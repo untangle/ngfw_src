@@ -11,8 +11,6 @@ import org.apache.commons.fileupload.FileItem;
 /**
  * Allows the user to customize the language of the product.
  *
- * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
- * @version 1.0
  */
 public interface LanguageManager
 {

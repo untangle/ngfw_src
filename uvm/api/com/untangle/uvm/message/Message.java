@@ -12,8 +12,6 @@ import org.json.JSONString;
 /**
  * Marker class for messages.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  * @see MessageQueue
  */
 @SuppressWarnings("serial")

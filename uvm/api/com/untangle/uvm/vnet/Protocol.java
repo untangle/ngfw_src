@@ -37,8 +37,6 @@ package com.untangle.uvm.vnet;
 /**
  * The <code>Protocol</code> interface represents an IP protocol.
  *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public enum Protocol
 {

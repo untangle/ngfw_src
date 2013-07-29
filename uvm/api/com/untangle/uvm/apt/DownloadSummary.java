@@ -38,8 +38,6 @@ import com.untangle.uvm.message.Message;
 /**
  * Summary of pending downloads.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class DownloadSummary extends Message

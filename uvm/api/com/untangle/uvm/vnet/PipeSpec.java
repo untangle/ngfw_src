@@ -12,8 +12,6 @@ import com.untangle.uvm.node.Node;
 /**
  * Describes the fittings for this pipe.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public abstract class PipeSpec
 {

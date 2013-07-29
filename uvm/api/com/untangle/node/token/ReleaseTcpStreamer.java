@@ -40,8 +40,6 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * Flushes a session when unparser receives a <code>Release</code>.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class ReleaseTcpStreamer implements TCPStreamer
 {

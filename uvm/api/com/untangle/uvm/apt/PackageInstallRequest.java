@@ -38,8 +38,6 @@ import com.untangle.uvm.message.Message;
 /**
  * Signals a request from the GUI to initiate installation of a Debian package.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class PackageInstallRequest extends Message

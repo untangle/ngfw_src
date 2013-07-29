@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 /**
  * Utilities for escaping URIs.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class UriUtil
 {

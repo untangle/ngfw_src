@@ -17,7 +17,6 @@ import com.untangle.uvm.servlet.ServletUtils;
 /**
  * This is a command line utility for adding a main to a class.  If you create an instance with base, it allows you to run all of the public methods using JSON on the comand line.
  * For instance, if you define an object A
- * @author rbscott
  *
  */
 public class CommandLineUtil<T>

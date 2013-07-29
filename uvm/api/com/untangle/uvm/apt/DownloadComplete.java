@@ -38,8 +38,6 @@ import com.untangle.uvm.message.Message;
 /**
  * Signals that download is complete.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class DownloadComplete extends Message

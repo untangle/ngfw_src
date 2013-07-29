@@ -43,8 +43,6 @@ import java.nio.ByteBuffer;
 /**
  * Utility methods for parsing <code>ByteBuffer</code>s.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class BufferUtil
 {

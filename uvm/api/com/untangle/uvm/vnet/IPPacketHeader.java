@@ -36,8 +36,6 @@ package com.untangle.uvm.vnet;
 /**
  * This class just contains IP header low-level data from a UDP packet such as TTL, TOS and options.
  *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public class IPPacketHeader
 {

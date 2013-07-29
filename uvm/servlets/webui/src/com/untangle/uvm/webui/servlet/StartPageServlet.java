@@ -18,7 +18,6 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * A servlet which will display the start page
  *
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
 public class StartPageServlet extends HttpServlet

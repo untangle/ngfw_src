@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.vnet;
@@ -20,9 +20,6 @@ import com.untangle.uvm.node.Node;
 
 /**
  * <code>PipeSpec</code> for a <code>Casing</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class CasingPipeSpec extends PipeSpec
 {

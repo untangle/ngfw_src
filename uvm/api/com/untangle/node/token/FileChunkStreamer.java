@@ -48,8 +48,6 @@ import org.apache.log4j.Logger;
 /**
  * Streams a file out as chunks.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class FileChunkStreamer implements TokenStreamer
 {

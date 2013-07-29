@@ -37,8 +37,6 @@ package com.untangle.node.token;
 /**
  * Marks the end of a set of {@link Chunk}s.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class EndMarker extends MetadataToken
 {

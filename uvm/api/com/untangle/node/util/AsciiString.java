@@ -36,8 +36,6 @@ package com.untangle.node.util;
 /**
  * Wraps a byte array to create a <code>CharSequence</code>.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class AsciiString implements CharSequence
 {

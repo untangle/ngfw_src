@@ -43,8 +43,6 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * Adapts a TokenStreamer to a TCPStreamer.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class TokenStreamerAdaptor implements TCPStreamer
 {

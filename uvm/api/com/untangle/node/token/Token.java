@@ -39,8 +39,6 @@ import java.nio.ByteBuffer;
  * A pipeline token. This interface will have stuff like toBytes,
  * size, etc...
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface Token
 {

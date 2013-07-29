@@ -41,8 +41,6 @@ import java.nio.ByteBuffer;
 /**
  * An Unparser nodes tokens into bytes.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface Unparser
 {
