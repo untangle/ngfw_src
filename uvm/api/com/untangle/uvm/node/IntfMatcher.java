@@ -78,6 +78,17 @@ public class IntfMatcher
     {
         InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId(interfaceId);
 
+        /**
+         * OpenVPN (250) interface special handling
+         * Create a fake "interface settings" object
+         * because OpenVPN interface doesnt have settings
+         */
+        if ( interfaceId == 0xfa ) {
+            intfSettings = new InterfaceSettings();
+            intfSettings.setInterfaceId( 250 );
+            intfSettings.setIsWan( false );
+        }
+
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);
             return false;
@@ -92,7 +103,7 @@ public class IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch(InterfaceSettings intfSettings)
+    public boolean isMatch( InterfaceSettings intfSettings )
     {
         switch (this.type) {
 
@@ -121,7 +132,7 @@ public class IntfMatcher
             return false;
 
         default:
-            logger.warn("Unknown port matcher type: " + this.type);
+            logger.warn("Unknown intf matcher type: " + this.type);
             return false;
         }
     }
