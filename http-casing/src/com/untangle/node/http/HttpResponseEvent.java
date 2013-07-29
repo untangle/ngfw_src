@@ -8,8 +8,6 @@ import com.untangle.uvm.logging.LogEvent;
 /**
  * Log event for response.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class HttpResponseEvent extends LogEvent

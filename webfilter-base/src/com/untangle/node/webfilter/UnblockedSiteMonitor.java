@@ -22,8 +22,6 @@ import com.untangle.uvm.util.WorkerRunner;
  * Regularly monitor user-unblocked sites and expire them after a
  * certain delay.
  *
- * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
- * @version 1.0
  */
 class UnblockedSitesMonitor
 {

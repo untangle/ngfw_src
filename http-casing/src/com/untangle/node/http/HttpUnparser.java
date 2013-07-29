@@ -37,8 +37,6 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 /**
  * An HTTP <code>Unparser</code>.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class HttpUnparser extends AbstractUnparser
 {

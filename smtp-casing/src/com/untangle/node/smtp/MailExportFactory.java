@@ -8,8 +8,6 @@ import org.apache.log4j.Logger;
 /**
  * Factory for the exported MailNode interface.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class MailExportFactory
 {

@@ -9,8 +9,6 @@ import com.untangle.node.smtp.MessageInfo;
 /**
  * Setting for safelist (recipient and sender pair).
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class SafelistSettings implements Serializable

@@ -8,8 +8,6 @@ import java.util.LinkedList;
 /**
  * Settings for the ProtoFilter node.
  *
- * @author <a href="mailto:mahotz@untangle.com">Michael Hotz</a>
- * @version 2.0
  */
 @SuppressWarnings("serial")
 public class ProtoFilterSettings implements java.io.Serializable

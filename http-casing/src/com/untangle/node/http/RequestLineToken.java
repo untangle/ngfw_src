@@ -41,8 +41,6 @@ import com.untangle.node.token.Token;
 /**
  * The in-memory token passed through the pipeline.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class RequestLineToken implements Token
 {

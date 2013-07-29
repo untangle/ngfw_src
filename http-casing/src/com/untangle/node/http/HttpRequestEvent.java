@@ -13,8 +13,6 @@ import com.untangle.uvm.node.SessionEvent;
 /**
  * Log event for a request.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class HttpRequestEvent extends LogEvent

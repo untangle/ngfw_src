@@ -36,8 +36,6 @@ package com.untangle.node.http;
 /**
  * Interface for the HTTP node.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface HttpNode { 
     HttpSettings getHttpSettings();

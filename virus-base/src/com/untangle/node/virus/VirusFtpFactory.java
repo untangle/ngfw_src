@@ -26,8 +26,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * Factory for FTP <code>TokenHandler</code>s.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class VirusFtpFactory implements TokenHandlerFactory
 {

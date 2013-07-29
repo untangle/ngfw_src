@@ -41,8 +41,6 @@ import com.untangle.node.token.Token;
 /**
  * Holds a RFC 2616 status-line.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class StatusLine implements Token
 {

@@ -23,8 +23,6 @@ import com.untangle.node.http.BlockDetails;
 /**
  * BlockDetails for Virus.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class VirusBlockDetails extends BlockDetails

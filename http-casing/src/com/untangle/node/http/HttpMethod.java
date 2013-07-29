@@ -40,8 +40,6 @@ import java.util.Map;
 /**
  * HTTP method, RFC 2616 section 5.1.1.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class HttpMethod implements Serializable

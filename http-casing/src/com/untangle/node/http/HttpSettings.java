@@ -38,8 +38,6 @@ import java.io.Serializable;
 /**
  * Http casing settings.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class HttpSettings implements Serializable

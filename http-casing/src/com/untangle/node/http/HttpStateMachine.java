@@ -58,8 +58,6 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * Adapts a stream of HTTP tokens to methods relating to the protocol
  * state.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public abstract class HttpStateMachine extends AbstractTokenHandler
 {

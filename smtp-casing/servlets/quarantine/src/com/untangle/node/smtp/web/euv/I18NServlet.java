@@ -19,7 +19,6 @@ import com.untangle.uvm.UvmContext;
  * A servlet that when given a module name returns a javascript hash containing
  * all the key-value pairs in that module.
  * 
- * @author Catalin Matei <cmatei@untangle.com>
  */
 @SuppressWarnings("serial")
 public class I18NServlet extends HttpServlet

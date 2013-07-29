@@ -8,8 +8,6 @@ import java.io.Serializable;
 /**
  * Rule for proto filter patterns
  *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class ProtoFilterPattern implements Serializable
