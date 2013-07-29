@@ -631,7 +631,8 @@ Ung.Util = {
             
             data.push( [ key, name ] );
         }
-
+        data.push( [ 250, "OpenVPN" ] );
+        
         if (wanMatchers) {
             data.unshift( ["wan",i18n._("Any WAN")] );
             data.unshift( ["non_wan",i18n._("Any Non-WAN")] );
