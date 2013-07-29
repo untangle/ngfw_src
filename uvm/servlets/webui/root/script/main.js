@@ -1053,12 +1053,12 @@ Ext.define("Ung.Main", {
             this.policyNodeWidget = nodeWidget;
         }
     },
-    addNodePreview: function (md) {
-        var nodeWidget=new Ung.NodePreview(md);
-        var place=(md.type=="FILTER")?'filter_nodes':'service_nodes';
-        var position=this.getNodePosition(place,md.viewPosition);
+    addNodePreview: function ( packageDesc ) {
+        var nodeWidget=new Ung.NodePreview( packageDesc );
+        var place = (packageDesc.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
+        var position = this.getNodePosition( place, packageDesc.viewPosition );
         nodeWidget.render(place,position);
-        main.nodePreviews[md.name]=true;
+        main.nodePreviews[packageDesc.name]=true;
     },
     removeNodePreview: function(nodeName) {
         if(main.nodePreviews[nodeName]!==undefined)
