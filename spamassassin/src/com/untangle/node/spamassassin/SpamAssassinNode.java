@@ -78,6 +78,6 @@ public class SpamAssassinNode extends SpamNodeImpl
 
     public String getVendor()
     {
-        return "sa";
+        return "spamassassin";
     }
 }
