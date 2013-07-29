@@ -657,6 +657,17 @@ Ung.Util = {
         }
         return data;
     },
+    getInterface: function( networkSettings, interfaceId ) {
+        if ( ! networkSettings )
+            return null;
+        var intfs = networkSettings.interfaces;
+        for( var x = 0 ; x < intfs.list.length ; x++) {
+            var intf = intfs.list[x];
+            if ( intf['interfaceId'] === interfaceId )
+                return intf;
+        }
+        return null;
+    },
     getWanList: function() {
         var data = [];
         var networkSettings = main.getNetworkSettings();
