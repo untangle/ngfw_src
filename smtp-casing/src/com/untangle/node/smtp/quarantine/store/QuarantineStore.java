@@ -630,14 +630,14 @@ public class QuarantineStore
         try {
             if (!baseDir.exists()) {
                 // InboxIndexDriver.createBlankIndex(lcAddress, subDir);
-                InboxIndexImpl inboxIndex = new InboxIndexImpl();
-                inboxIndex.setOwnerAddress(lcAddress);
-                QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
-                m_masterTable.addInbox(lcAddress);
                 if (!baseDir.mkdirs()) {
                     m_logger.warn("Inbox for \"", lcAddress, "\" could not be created.");
                     return null;
                 }
+                InboxIndexImpl inboxIndex = new InboxIndexImpl();
+                inboxIndex.setOwnerAddress(lcAddress);
+                QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
+                m_masterTable.addInbox(lcAddress);
             } else {
                 m_logger.debug("Inbox for \"", lcAddress, "\" created by concurrent thread");
                 // subDir = new File(m_rootDir, subDirName.relativePath);
