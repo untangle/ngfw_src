@@ -91,7 +91,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">\n");
         w.write("<div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">\n");
         w.write("<center>");
-        w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
+        w.write("<img alt=\"\" src=\"/images/BrandingLogo.png\" /><br /><br />\n");
         w.write("<b>");
         w.write(tr("{0} Server", companyName, i18nMap));
         w.write("</b><br /><br />\n");

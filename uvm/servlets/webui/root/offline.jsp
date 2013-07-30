@@ -28,7 +28,7 @@ String[] messageArguments = {
     <link rel="stylesheet" href="/skins/welcome/css/include.css" type="text/css" media="screen, print, projection">
     <style type="text/css">
         .logo{
-            background-image:url('/images/BrandingLogo.gif?1259630081068');
+            background-image:url('/images/BrandingLogo.png');
         }
     </style>
     <script type="text/javascript">

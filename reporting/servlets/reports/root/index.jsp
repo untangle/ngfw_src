@@ -43,7 +43,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
  <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
  <!-- Content Start -->
     <div class="page_head">
-        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
+        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.png" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
     </div>
     <hr />
     <center>

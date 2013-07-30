@@ -171,27 +171,21 @@ Ext.define("Ung.Main", {
                 border: false,
                 width: this.contentLeftWidth,
                 bodyStyle: 'background-color: transparent;',
-                footer: false,
                 buttonAlign: 'left',
                 items: [{
                     cls: "logo",
-                    html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0"/>',
+                    html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
                     border: false,
                     height: 100,
                     bodyStyle: 'background-color: transparent;'
                 }, {
-                    layout: "anchor",
+                    layout: "fit",
                     border: false,
                     cls: "left-tabs",
                     items: this.leftTabs = new Ext.TabPanel({
                         activeTab: 0,
-                        height: 400,
-                        anchor: "100% 100%",
-                        autoWidth: true,
                         deferredRender: false,
                         defaults: {
-                            anchor: '100% 100%',
-                            autoWidth: true,
                             autoScroll: true
                         },
                         items:[{
@@ -208,7 +202,7 @@ Ext.define("Ung.Main", {
                         }]
                     })
                 }],
-                bbar: Ext.create('Ext.toolbar.Toolbar',{columns:3,style:'text-align:left',items:[{
+                bbar: [{
                     xtype: 'button',
                     name: 'Help',
                     iconCls: 'icon-help',
@@ -233,7 +227,7 @@ Ext.define("Ung.Main", {
                     handler: function() {
                         window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                     }
-                }]})
+                }]
              }, {
                 region:'center',
                 id: 'center',

@@ -35,7 +35,7 @@
   <body class="quarantine">
     <div id="content">
       <div id="header">
-        <a href="${companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
 

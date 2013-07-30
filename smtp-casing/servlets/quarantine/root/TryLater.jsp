@@ -21,7 +21,7 @@ String companyUrl = uvm.brandingManager().getCompanyUrl();
 </head>
 <body class="quarantine">
 <div id="content" class="service-error-height">
-	<div id="header"><a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a><div class="title">Quarantine Service Error</div></div>
+	<div id="header"><a href="<%=companyUrl%>"><img src="/images/BrandingLogo.png" border="0" alt="<%=company%> logo"/></a><div class="title">Quarantine Service Error</div></div>
 	<div id="main">
 		<div style="padding: 7em 0 0 10px;  ">
 	        The <%=company%> Server has encountered an error.

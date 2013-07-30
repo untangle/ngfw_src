@@ -399,7 +399,7 @@ hr {
               <td valign="middle" width="150">
 #if ($company_name == "Untangle")
                 <a href="http://www.untangle.com">
-                  <img src="$image_root/Logo150x96.gif" border="0" alt="$company_name"/>
+                  <img src="$image_root/Logo150x96.png" border="0" alt="$company_name"/>
                 </a>
 #end
               </td>

@@ -278,7 +278,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports):
 
     story.append(Spacer(1, 3 * inch))
 
-    story.append(Image('/var/www/images/BrandingLogo.gif'))
+    story.append(Image('/var/www/images/BrandingLogo.png'))
     story.append(Spacer(1, 0.5 * inch))
     story.append(Paragraph(title, STYLESHEET['MainTitle']))
 
@@ -293,7 +293,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports):
                           STYLESHEET['Heading1'])],
                [Paragraph(date_str, STYLESHEET['Heading3'])]],
               style=[('BOTTOMPADDING', (0,0), (-1,-1), 25)])
-    top = Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
+    top = Table([[Image('/var/www/images/BrandingLogo.png'), t]],
                        style=[('VALIGN', (1,0), (1,0), 'TOP')])
     story.append(top)
 

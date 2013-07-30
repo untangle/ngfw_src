@@ -269,7 +269,7 @@ Ext.define('Ung.Reports', {
                 items: [
                 {
                     xtype:'panel',
-                    html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
+                    html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0" height="50"/>',
                     region: 'west',
                     border: 0,
                     width: 100
@@ -1063,7 +1063,7 @@ Ext.define('Ung.ReportDetails', {
     buildHighlightSection: function (highlights,tabName) {
         var items = [],i,str;
         items.push({
-            html: '<div class="summary-header"><img height="50" border="0" src="/images/BrandingLogo.gif"/><strong>'+i18n._('Reports Summary')+'</strong></div>',
+            html: '<div class="summary-header"><img height="50" border="0" src="/images/BrandingLogo.png"/><strong>'+i18n._('Reports Summary')+'</strong></div>',
             colspan: 2
             
         });
