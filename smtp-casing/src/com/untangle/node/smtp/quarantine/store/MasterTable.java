@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 
 //========================================================
@@ -227,7 +228,7 @@ final class MasterTable
         public void visit(File f)
         {
             String emailAddress = f.getName();
-            InboxIndexImpl inboxIndex = QuarantineStorageManager.readQuarantine(emailAddress, f.getAbsolutePath());
+            InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(emailAddress, f.getAbsolutePath());
             if (inboxIndex != null) {
                 long totalSz = 0;
                 int totalMails = 0;

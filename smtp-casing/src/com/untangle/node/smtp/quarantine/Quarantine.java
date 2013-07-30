@@ -17,34 +17,15 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.SmtpNodeImpl;
-import com.untangle.node.smtp.GlobEmailAddressList;
-import com.untangle.node.smtp.GlobEmailAddressMapper;
-import com.untangle.node.smtp.quarantine.store.InboxIndexImpl;
-import com.untangle.node.smtp.quarantine.store.QuarantinePruningObserver;
-import com.untangle.node.smtp.quarantine.store.QuarantineStore;
 import com.untangle.node.smtp.EmailAddressPairRule;
 import com.untangle.node.smtp.EmailAddressRule;
+import com.untangle.node.smtp.GlobEmailAddressList;
+import com.untangle.node.smtp.GlobEmailAddressMapper;
+import com.untangle.node.smtp.SmtpNodeImpl;
 import com.untangle.node.smtp.SmtpNodeSettings;
-import com.untangle.node.smtp.quarantine.BadTokenException;
-import com.untangle.node.smtp.quarantine.Inbox;
-import com.untangle.node.smtp.quarantine.InboxAlreadyRemappedException;
-import com.untangle.node.smtp.quarantine.InboxArray;
-import com.untangle.node.smtp.quarantine.InboxComparator;
-import com.untangle.node.smtp.quarantine.InboxIndex;
-import com.untangle.node.smtp.quarantine.InboxRecord;
-import com.untangle.node.smtp.quarantine.InboxRecordArray;
-import com.untangle.node.smtp.quarantine.InboxRecordComparator;
-import com.untangle.node.smtp.quarantine.InboxRecordCursor;
-import com.untangle.node.smtp.quarantine.MailSummary;
-import com.untangle.node.smtp.quarantine.NoSuchInboxException;
-import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
-import com.untangle.node.smtp.quarantine.QuarantineMaintenenceView;
-import com.untangle.node.smtp.quarantine.QuarantineNodeView;
-import com.untangle.node.smtp.quarantine.QuarantineSettings;
-import com.untangle.node.smtp.quarantine.QuarantineUserActionFailedException;
-import com.untangle.node.smtp.quarantine.QuarantineUserView;
 import com.untangle.node.smtp.mime.EmailAddress;
+import com.untangle.node.smtp.quarantine.store.QuarantinePruningObserver;
+import com.untangle.node.smtp.quarantine.store.QuarantineStore;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.uvm.CronJob;
@@ -202,7 +183,7 @@ public class Quarantine
 
         for(Inbox inbox : allInboxes) {
 
-            Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
+            Pair<QuarantineStore.GenericStatus, InboxIndex> result =
                 m_store.getIndex(inbox.getAddress());
 
             if(result.a == QuarantineStore.GenericStatus.SUCCESS) {
@@ -403,7 +384,7 @@ public class Quarantine
                             String...doomedMails)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
-        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result =
             m_store.purge(account, doomedMails);
 
         checkAndThrowCommonErrors(result.a, account);
@@ -415,7 +396,7 @@ public class Quarantine
                              String...rescuedMails)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
-        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result =
             m_store.rescue(account, m_rescueHandler, rescuedMails);
 
         checkAndThrowCommonErrors(result.a, account);
@@ -448,7 +429,7 @@ public class Quarantine
     public InboxIndex getInboxIndex(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
-        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store.getIndex(account);
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.getIndex(account);
 
         checkAndThrowCommonErrors(result.a, account);
 
@@ -475,7 +456,7 @@ public class Quarantine
                                                  boolean isAscending )
         throws NoSuchInboxException, QuarantineUserActionFailedException
     {
-        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store.getIndex(account);
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.getIndex(account);
 
         checkAndThrowCommonErrors(result.a, account);
 
@@ -492,7 +473,7 @@ public class Quarantine
 
     public InboxRecordArray getInboxRecordArray(String account )
             throws NoSuchInboxException, QuarantineUserActionFailedException {
-        Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store
                 .getIndex(account);
 
         checkAndThrowCommonErrors(result.a, account);

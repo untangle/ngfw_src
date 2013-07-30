@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.untangle.node.smtp.quarantine.Inbox;
+import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.MailSummary;
 import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
@@ -306,10 +307,10 @@ public class QuarantineStore
             // }
 
             // Read the index (it may not exist)
-            // Pair<InboxIndexDriver.FileReadOutcome, InboxIndexImpl> read =
+            // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
             // InboxIndexDriver.readIndex(
             // new File(m_rootDir, dirName.relativePath));
-            InboxIndexImpl inboxIndex = QuarantineStorageManager.readQuarantine(account, getInboxPath(account));
+            InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(account, getInboxPath(account));
 
             boolean shouldDelete = false;
 
@@ -373,7 +374,7 @@ public class QuarantineStore
      * 
      * @return the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> getIndex(String address)
+    public Pair<GenericStatus, InboxIndex> getIndex(String address)
     {
         address = address.toLowerCase();
 
@@ -384,15 +385,15 @@ public class QuarantineStore
         // any mails from the in-memory
         // index which are in our
         // list and add them to a new list
-        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndexImpl> read =
+        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
         // InboxIndexDriver.readIndex(dir);
-        InboxIndexImpl inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
+        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
         m_addressLock.unlock(address);
         if (inboxIndex == null) {
             m_logger.warn("Unable to read index for " + address);
-            return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.ERROR);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
-        return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, inboxIndex);
+        return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
     }
 
     /**
@@ -402,7 +403,7 @@ public class QuarantineStore
      * @return the result. If <code>SUCCESS</code>, then the index just after
      *         the modification is returned attached to the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> rescue(String address, QuarantineEjectionHandler handler,
+    public Pair<GenericStatus, InboxIndex> rescue(String address, QuarantineEjectionHandler handler,
             String... mailIDs)
     {
         m_logger.debug("Rescue requested for ", mailIDs.length, " mails for account \"", address, "\"");
@@ -416,7 +417,7 @@ public class QuarantineStore
      * @return the result. If <code>SUCCESS</code>, then the index just after
      *         the modification is returned attached to the result
      */
-    public Pair<GenericStatus, InboxIndexImpl> purge(String address, String... mailIDs)
+    public Pair<GenericStatus, InboxIndex> purge(String address, String... mailIDs)
     {
         m_logger.debug("Purge requested for ", mailIDs.length, " mails for account \"", address, "\"");
         return eject(address, m_deleter, new ListEjectionSelector(mailIDs));
@@ -433,7 +434,7 @@ public class QuarantineStore
     // the index just after the modification is
     // returned attached to the result
     //
-    private Pair<GenericStatus, InboxIndexImpl> eject(String address, QuarantineEjectionHandler handler,
+    private Pair<GenericStatus, InboxIndex> eject(String address, QuarantineEjectionHandler handler,
             EjectionSelector selector)
     {
 
@@ -443,7 +444,7 @@ public class QuarantineStore
         File dirRF = getInboxDir(address, false);
         if (dirRF == null) {
             m_logger.warn("Unable to purge mails for \"" + address + "\"  No such inbox");
-            return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.NO_SUCH_INBOX);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.NO_SUCH_INBOX);
         }
 
         // lock the inbox
@@ -453,14 +454,14 @@ public class QuarantineStore
         // any mails from the in-memory
         // index which are in our
         // list and add them to a new list
-        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndexImpl> read =
+        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
         // InboxIndexDriver.readIndex(dir);
-        InboxIndexImpl inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
+        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
 
         if (inboxIndex == null) {
             m_logger.warn("Unable to purge mails for " + address);
             m_addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.ERROR);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
 
         List<InboxRecord> toDelete = selector.selectEjections(inboxIndex, dirRF);
@@ -469,7 +470,7 @@ public class QuarantineStore
             // Nothing to do, and we don't want to update the
             // index w/ a NOOP
             m_addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, inboxIndex);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
         }
 
         // Update the index. We'll defer actual ejection
@@ -478,7 +479,7 @@ public class QuarantineStore
         if (!QuarantineStorageManager.writeQuarantineIndex(address, inboxIndex, getInboxPath(address))) {
             m_logger.warn("Unable to replace index for address \"" + address + "\".  Abort purge");
             m_addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.ERROR);
+            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
 
         // Unlock
@@ -505,7 +506,7 @@ public class QuarantineStore
             }
         }
 
-        return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, inboxIndex);
+        return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
     }
 
     //
@@ -524,7 +525,7 @@ public class QuarantineStore
         // summary,
         // recipients));
         return QuarantineStorageManager.writeQuarantineRecord(inboxAddr,
-                new InboxRecordImpl(fileNameInInbox, System.currentTimeMillis(), summary, recipients), getInboxPath(inboxAddr));
+                new InboxRecord(fileNameInInbox, System.currentTimeMillis(), summary, recipients), getInboxPath(inboxAddr));
 
     }
 
@@ -634,7 +635,7 @@ public class QuarantineStore
                     m_logger.warn("Inbox for \"", lcAddress, "\" could not be created.");
                     return null;
                 }
-                InboxIndexImpl inboxIndex = new InboxIndexImpl();
+                InboxIndex inboxIndex = new InboxIndex();
                 inboxIndex.setOwnerAddress(lcAddress);
                 QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
                 m_masterTable.addInbox(lcAddress);
@@ -657,7 +658,7 @@ public class QuarantineStore
         // Any in the returned list <b>must</b>
         // be removed from index
         //
-        abstract List<InboxRecord> selectEjections(InboxIndexImpl index, File rf);
+        abstract List<InboxRecord> selectEjections(InboxIndex index, File rf);
     }
 
     private class PruningSelector extends EjectionSelector
@@ -673,7 +674,7 @@ public class QuarantineStore
             m_doomedInboxes = new ArrayList<String>();
         }
 
-        List<InboxRecord> selectEjections(InboxIndexImpl index, File rf)
+        List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
             ArrayList<InboxRecord> ret = new ArrayList<InboxRecord>();
 
@@ -711,7 +712,7 @@ public class QuarantineStore
             m_list = list;
         }
 
-        List<InboxRecord> selectEjections(InboxIndexImpl index, File rf)
+        List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
             List<InboxRecord> toEject = new ArrayList<InboxRecord>();
 

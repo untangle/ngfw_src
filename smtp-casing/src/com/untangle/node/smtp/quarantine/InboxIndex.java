@@ -2,46 +2,118 @@
  * $Id$
  */
 package com.untangle.node.smtp.quarantine;
+
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
  *
  */
-public interface InboxIndex
-    extends Iterable<InboxRecord>, Serializable
+
+@SuppressWarnings("serial")
+public final class InboxIndex implements Serializable, Iterable<InboxRecord>
 {
-    /**
-     * Iterate over the contents of this
-     * InboxIndex (can be used with the nifty-new
-     * 1.5 "foreach" loops).
-     */
-    public Iterator<InboxRecord> iterator();
+
+    private String m_address;
+    private long m_timestamp;
+
+    private HashMap<String, InboxRecord> inboxMap = new HashMap<String, InboxRecord>();
+
+    public void setOwnerAddress(String address)
+    {
+        m_address = address;
+    }
+
+    public String getOwnerAddress()
+    {
+        return m_address;
+    }
+
+    public long getLastAccessTimestamp()
+    {
+        return m_timestamp;
+    }
+
+    public void setLastAccessTimestamp(long timestamp)
+    {
+        m_timestamp = timestamp;
+    }
 
     /**
-     * Get the email address of the "owner" of this inbox
+     * Helper method which returns the timestamp of the most recently added
+     * mail, or 0 if the inbox is empty.
      */
-    public String getOwnerAddress();
+    public long getNewestMailTimestamp()
+    {
+        if (inboxMap.size() == 0) {
+            return 0;
+        }
+        InboxRecord rec = Collections.max(inboxMap.values(),
+                InboxRecordComparator.getComparator(InboxRecordComparator.SortBy.INTERN_DATE, true));
+        return rec == null ? 0 : rec.getInternDate();
+    }
 
-    /**
-     * Get the time that this inbox was last accessed.  This
-     * includes additions, as well as any end-user maintenence.
-     */
-    public long getLastAccessTimestamp();
+    public Iterator<InboxRecord> iterator()
+    {
+        return inboxMap.values().iterator();
+    }
 
-    /**
-     * Get the number of mails within the index (inbox)
-     * - HashMap size() method
-     */
-    public int size();
+    public int inboxCount()
+    {
+        return inboxMap.size();
+    }
 
-    public int inboxCount();
-    public long inboxSize();
+    public long inboxSize()
+    {
+        long inboxSize = 0;
+        for (InboxRecord iRecord : this.inboxMap.values()) {
+            inboxSize += iRecord.getSize();
+        }
+        return inboxSize;
+    }
 
-    /**
-     * Returns null if not found
-     */
-    public InboxRecord getRecord(String id);
+    public InboxRecord getRecord(String mailID)
+    {
+        return inboxMap.get(mailID);
+    }
 
-    public InboxRecord[] allRecords();
+    public InboxRecord[] allRecords()
+    {
+        return inboxMap.values().toArray(new InboxRecord[inboxMap.size()]);
+    }
+
+    public HashMap<String, InboxRecord> getInboxMap()
+    {
+        return inboxMap;
+    }
+
+    public void setInboxMap(HashMap<String, InboxRecord> inboxMap)
+    {
+        this.inboxMap = inboxMap;
+    }
+
+    protected void debugPrint()
+    {
+        System.out.println("Access: " + getLastAccessTimestamp());
+        System.out.println("Owner: " + getOwnerAddress());
+        for (InboxRecord record : this.inboxMap.values()) {
+            System.out.println("----- RECORD -----");
+            System.out.println("\tID: " + record.getMailID());
+            System.out.println("\tDate: " + record.getInternDate());
+            System.out.println("\tSize: " + record.getSize());
+            System.out.println("\tSender: " + record.getMailSummary().getTruncatedSender());
+            System.out.println("\tSubject: " + record.getMailSummary().getTruncatedSubject());
+            System.out.println("\tAttchCount: " + record.getMailSummary().getAttachmentCount());
+            System.out.println("\tCat: " + record.getMailSummary().getQuarantineCategory());
+            System.out.println("\tDetail: " + record.getMailSummary().getQuarantineDetail());
+        }
+    }
+
+    public int size()
+    {
+        return inboxMap.size();
+    }
+
 }

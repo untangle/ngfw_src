@@ -2,6 +2,7 @@ package com.untangle.node.smtp.quarantine.store;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -22,15 +23,15 @@ public class QuarantineStorageManager
      * @param quarantineFile
      * @return
      */
-    public static InboxIndexImpl readQuarantineFromFile(String quarantineFile)
+    public static InboxIndex readQuarantineFromFile(String quarantineFile)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        InboxIndexImpl inboxIndex = null;
+        InboxIndex inboxIndex = null;
 
         logger.info("Loading quarantine index from " + quarantineFile);
 
         try {
-            inboxIndex = settingsManager.load(InboxIndexImpl.class, quarantineFile);
+            inboxIndex = settingsManager.load(InboxIndex.class, quarantineFile);
         } catch (Exception exn) {
             logger.error("Could not read quarantine index from file " + quarantineFile, exn);
         }
@@ -48,7 +49,7 @@ public class QuarantineStorageManager
      * @param emailAddress
      * @return
      */
-    public static InboxIndexImpl readQuarantine(String emailAddress, String baseDir)
+    public static InboxIndex readQuarantine(String emailAddress, String baseDir)
     {
         return readQuarantineFromFile(baseDir + "/" + emailAddress + ".js");
     }
@@ -64,14 +65,14 @@ public class QuarantineStorageManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String quarantineFile = baseDir + "/" + emailAddress + ".js";
-        InboxIndexImpl inboxIndex = readQuarantine(emailAddress, baseDir);
+        InboxIndex inboxIndex = readQuarantine(emailAddress, baseDir);
         if (inboxIndex == null) {
-            inboxIndex = new InboxIndexImpl();
+            inboxIndex = new InboxIndex();
             inboxIndex.setOwnerAddress(emailAddress);
         }
         inboxIndex.getInboxMap().put(newRecord.getMailID(), newRecord);
         try {
-            settingsManager.save(InboxIndexImpl.class, quarantineFile, inboxIndex, false);
+            settingsManager.save(InboxIndex.class, quarantineFile, inboxIndex, false);
         } catch (Exception exn) {
             logger.error("Could not save quarantine record", exn);
             return false;
@@ -86,13 +87,13 @@ public class QuarantineStorageManager
      * @param inboxIndex
      * @return
      */
-    public static boolean writeQuarantineIndex(String emailAddress, InboxIndexImpl inboxIndex, String baseDir)
+    public static boolean writeQuarantineIndex(String emailAddress, InboxIndex inboxIndex, String baseDir)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String quarantineFile = baseDir + "/" + emailAddress + ".js";
 
         try {
-            settingsManager.save(InboxIndexImpl.class, quarantineFile, inboxIndex, false);
+            settingsManager.save(InboxIndex.class, quarantineFile, inboxIndex, false);
         } catch (Exception exn) {
             logger.error("Could not save quarantine record", exn);
             return false;
