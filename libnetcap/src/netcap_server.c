@@ -389,42 +389,12 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
     /**
      * if they only want a half complete connection.  Connections are always unfinished
      */
-    if ( 1 ) {
-        _server_unlock();
-        if ( netcap_tcp_accept_hook( cli_sock, cli_addr ) < 0 ) {
-            if (close(cli_sock)<0)
-                perrlog("close");
-        }
-        return 0;
-    }
-
-    errlog(ERR_CRITICAL,"non UNFINI mode is UNSUPPORTED at the moment.\n");
     _server_unlock();
-    return -1;
-    
-    /**
-     * otherwise start completeing the connection
-     */
-/*     if ((srv_sock = _start_open_connection(&dst.addr,dst_port))<0) { */
-/*         errlog(ERR_WARNING,"Error completing connection %s:%i -> ",inet_ntoa(&cli_addr.sin_addr),ntohs(cli_addr.sin_port)); */
-/*         errlog(ERR_WARNING,"%s:%i   %s\n",inet_ntoa(dst_addr),dst_port,strerror(errno)); */
-/*         if (close(cli_sock)<0) perrlog("close"); */
-/*         _server_unlock(); */
-/*         return -1; */
-/*     } */
-    
-    /**
-     * add the new connection it to the epoll list (wait on it to complete)
-     */
-/*     if (_epoll_info_add(srv_sock,EPOLL_OUTPUT_SET,POLL_TCP_WAITING,info->sub,netcap_sess)<0) { */
-/*         netcap_tcp_session_raze(1, netcap_sess); */
-/*         if (close(cli_sock)<0) perrlog("close"); */
-/*         _server_unlock(); */
-/*         return errlog(ERR_CRITICAL,"Unable to add new epollinfo_t\n"); */
-/*     } */
-    
-/*     _server_unlock(); */
-/*     return 0; */
+    if ( netcap_tcp_accept_hook( cli_sock, cli_addr ) < 0 ) {
+        if (close(cli_sock)<0)
+            perrlog("close");
+    }
+    return 0;
 }
 
 static int  _handle_completion (epoll_info_t* info, int revents)

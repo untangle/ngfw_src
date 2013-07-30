@@ -321,20 +321,21 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         /* Verify the packet is from the same interface */
         if ( intf != pkt->src_intf ) {
             errlog( ERR_WARNING, "UDP: Packet from the incorrect interface expected %d actual %d. Dropping...\n", intf, pkt->src_intf );
-            netcap_pkt_raze( pkt );
+            netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
             return 0;
         }
                 
         // Put the packet into the mailbox
         if (mailbox_size(mb) > MAX_MB_SIZE ) {
-            errlog(ERR_WARNING,"Mailbox Full: Dropping Packet (from %s:%i)\n",
-                   inet_ntoa(pkt->src.host),pkt->src.port);
-            netcap_pkt_raze(pkt);
+            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
+            netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
         } else {
             if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
-                netcap_pkt_raze(pkt);
+                netcap_pkt_action_raze( pkt, NF_DROP );
                 perrlog("mailbox_put");
                 full_pkt = NULL;
             }
