@@ -155,9 +155,6 @@ def read_from_cmd():
                reset_command_socket()
                time.sleep( RETRY_TIME_SHORT ); return;
      except Exception,e:
-          # this can happen frequently using stunnel 
-          # because it connects to stunnel even when the server is unreachable
-          # as such, sleep for LONG time
           sys.stderr.write("Failed to read: (%s)\n" % e )
           reset_command_socket()
           time.sleep( RETRY_TIME_LONG ); return;
