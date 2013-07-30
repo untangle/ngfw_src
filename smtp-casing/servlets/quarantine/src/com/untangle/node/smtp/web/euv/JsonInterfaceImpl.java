@@ -97,7 +97,7 @@ public class JsonInterfaceImpl implements JsonInterface
         if ( sortBy == null ) sortBy = DEFAULT_SORT_COLUMN;
 
         InboxRecordCursor cursor = 
-            InboxRecordCursor.get( index.getAllRecords(), sortBy, isAscending, start, limit );
+            InboxRecordCursor.get( index.allRecords(), sortBy, isAscending, start, limit );
 
         List<JsonInboxRecord> records = new ArrayList<JsonInboxRecord>( cursor.size());
 

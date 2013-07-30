@@ -485,7 +485,7 @@ public class Quarantine
         InboxIndex index = result.b;
 
         InboxRecordCursor cursor =
-            InboxRecordCursor.get( index.getAllRecords(), sortBy, isAscending, start, limit );
+            InboxRecordCursor.get( index.allRecords(), sortBy, isAscending, start, limit );
 
         return new InboxRecordArray( cursor.getRecords(), index.size());
     }
@@ -499,7 +499,7 @@ public class Quarantine
 
         InboxIndex index = result.b;
 
-        return new InboxRecordArray(index.getAllRecords(), index.size());
+        return new InboxRecordArray(index.allRecords(), index.size());
     }
 
     public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)

@@ -157,7 +157,7 @@ public class InboxMaintenenceControler extends HttpServlet
 
             QuarantineFunctions.setCurrentIndex(req,
                                                 InboxRecordCursor.get(
-                                                                      index.getAllRecords(),
+                                                                      index.allRecords(),
                                                                       sortBy,
                                                                       ascending,
                                                                       startingAt,

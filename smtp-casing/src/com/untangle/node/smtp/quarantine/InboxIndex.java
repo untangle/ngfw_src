@@ -43,5 +43,5 @@ public interface InboxIndex
      */
     public InboxRecord getRecord(String id);
 
-    public InboxRecord[] getAllRecords();
+    public InboxRecord[] allRecords();
 }

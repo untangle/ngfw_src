@@ -71,7 +71,7 @@ public final class InboxIndexImpl implements InboxIndex, Serializable
     public InboxRecord getRecord(String mailID) {
         return inboxMap.get(mailID);
     }
-    public InboxRecord[] getAllRecords() {
+    public InboxRecord[] allRecords() {
         return inboxMap.values().toArray(new InboxRecord[inboxMap.size()]);
     }
     
