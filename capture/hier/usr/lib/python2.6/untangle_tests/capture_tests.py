@@ -217,8 +217,14 @@ class CaptureTests(unittest2.TestCase):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
         # Configure RADIUS settings
         nodeAD.setSettings(createRadiusSettings())
-        testResultString = nodeAD.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
-        print 'testResultString %s' % testResultString  # debug line
+        attempts = 0
+        while attempts < 3:
+            testResultString = node.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
+            if ("success" in testResultString):
+                break
+            else:
+                attempts += 1
+        print 'testResultString %s attempts %s' % (testResultString, attempts) # debug line
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
         nodeData['authenticationType']="RADIUS"
