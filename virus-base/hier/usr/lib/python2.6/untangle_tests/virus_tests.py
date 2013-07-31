@@ -5,13 +5,14 @@ from datetime import datetime
 import sys
 import os
 import subprocess
+import socket
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
 
-ftp_server = "10.5.6.48"
+ftp_server = "test.untangle.com"
 ftp_virus_file_name = "FedEx-Shipment-Notification-Jan23-2012-100100.zip"
 
 uvmContext = Uvm().getUvmContext()
@@ -77,9 +78,6 @@ class VirusTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_022_ftpVirusBlocked(self):
-        adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (adResult != 0):
-            raise unittest2.SkipTest("FTP server not available")
         clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
         result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
         assert (result == 0)
@@ -96,7 +94,8 @@ class VirusTests(unittest2.TestCase):
         assert(events['list'])  # pass if event list is not empty
         assert(len(events['list']) > 0)
         print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['s_server_addr'] == ftp_server)
+        ftp_server_IP = socket.gethostbyname(ftp_server)
+        assert(events['list'][0]['s_server_addr'] == ftp_server_IP)  # IP address of ftp server
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['uri'] == ftp_virus_file_name)
         assert(events['list'][0][ self.shortName() + '_name'] != None)
