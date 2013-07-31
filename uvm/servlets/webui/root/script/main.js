@@ -161,92 +161,87 @@ Ext.define("Ung.Main", {
             '</div>'];
 
         var cssRule = Ext.util.CSS.getRule(".content-left",true);
-        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width, 10 ): 214;
+        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width, 10 ): 215;
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
             items:[{
                 region: 'west',
                 id: 'west',
                 cls: "content-left",
-                border: false,
+                xtype: 'container',
                 width: this.contentLeftWidth,
-                bodyStyle: 'background-color: transparent;',
-                buttonAlign: 'left',
+                layout: { type: 'vbox', align: 'stretch' },
                 items: [{
+                    xtype: 'container',
                     cls: "logo",
                     html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
                     border: false,
-                    height: 100,
-                    bodyStyle: 'background-color: transparent;'
-                }, {
-                    layout: "fit",
+                    height: 141,
+                    flex: 0
+                }, this.leftTabs = new Ext.TabPanel({
+                    activeTab: 0,
+                    deferredRender: false,
                     border: false,
-                    cls: "left-tabs",
-                    items: this.leftTabs = new Ext.TabPanel({
-                        activeTab: 0,
-                        deferredRender: false,
-                        defaults: {
-                            autoScroll: true
-                        },
-                        items:[{
-                            title: i18n._('Apps'),
-                            id: 'leftTabApps',
-                            helpSource: 'apps',
-                            html:'<div id="appsItems"></div>',name:'Apps'
-                        },{
-                            title: i18n._('Config'),
-                            id: 'leftTabConfig',
-                            html: '<div id="configItems"></div>',
-                            helpSource: 'config',
-                            name: 'Config'
-                        }]
-                    })
-                }],
-                bbar: [{
-                    xtype: 'button',
-                    name: 'Help',
-                    iconCls: 'icon-help',
-                    text: i18n._('Help'),
-                    handler: function() {
-                        var helpSource=main.leftTabs.getActiveTab().helpSource;
-                        main.openHelp(helpSource);
-                    }
-                }, {
-                    name: 'MyAccount',                       
-                    iconCls: 'icon-myaccount',
-                    text: i18n._('My Account'),
-                    tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
-                    handler: function() {
-                       main.openMyAccountScreen();
-                    }
-                }, {
-                    xtype: 'button',
-                    name: 'Logout',
-                    iconCls: 'icon-logout',
-                    text: i18n._('Logout'),
-                    handler: function() {
-                        window.location.href = '/auth/logout?url=/webui&realm=Administrator';
-                    }
-                }]
-             }, {
+                    flex: 1,
+                    bodyStyle: 'background-color: transparent;',
+                    defaults: {
+                        autoScroll: true,
+                        border: false,
+                        bodyStyle: 'background-color: transparent;'
+                    },
+                    items:[{
+                        xtype: 'panel',
+                        title: i18n._('Apps'),
+                        id: 'leftTabApps',
+                        helpSource: 'apps',
+                        html:'<div id="appsItems"></div>',name:'Apps'
+                    },{
+                        xtype: 'panel',
+                        title: i18n._('Config'),
+                        id: 'leftTabConfig',
+                        html: '<div id="configItems"></div>',
+                        helpSource: 'config',
+                        name: 'Config'
+                    }],
+                    bbar: [{
+                        xtype: 'button',
+                        name: 'Help',
+                        iconCls: 'icon-help',
+                        text: i18n._('Help'),
+                        handler: function() {
+                            var helpSource=main.leftTabs.getActiveTab().helpSource;
+                            main.openHelp(helpSource);
+                        }
+                    }, {
+                        name: 'MyAccount',                       
+                        iconCls: 'icon-myaccount',
+                        text: i18n._('My Account'),
+                        tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
+                        handler: function() {
+                           main.openMyAccountScreen();
+                        }
+                    }, {
+                        xtype: 'button',
+                        name: 'Logout',
+                        iconCls: 'icon-logout',
+                        text: i18n._('Logout'),
+                        handler: function() {
+                            window.location.href = '/auth/logout?url=/webui&realm=Administrator';
+                        }
+                    }]
+                })
+            ]}, {
                 region:'center',
                 id: 'center',
+                xtype: 'container',
                 html: contentRightArr.join(""),
-                border: false,
                 cls: 'center-region',
-                bodyStyle: 'background-color: transparent;',
                 autoScroll: true
             }
         ]});
         Ext.QuickTips.init();
 
         main.systemStats = new Ung.SystemStats({});
-        Ext.getCmp("west").on("resize", function() {
-            var newHeight = Math.max(this.getEl().getHeight()-175,100);
-            main.leftTabs.setHeight(newHeight);
-        });
-
-        Ext.getCmp("west").fireEvent("resize");
         this.loadConfig();
         this.loadPolicies();
     },
