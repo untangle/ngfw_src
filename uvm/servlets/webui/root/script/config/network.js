@@ -552,7 +552,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     scope : this
                 },'-',{
                     xtype: "button",
-                    text : this.i18n._( "Add 802.1q Tagged Interface" ),
+                    text : this.i18n._( "Add Tagged VLAN Interface" ),
                     iconCls : "icon-add-row",
                     handler: function() {
                         this.gridInterfaces.addHandler();
