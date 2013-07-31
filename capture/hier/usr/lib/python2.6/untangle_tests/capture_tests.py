@@ -114,7 +114,7 @@ class CaptureTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD
+        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
@@ -128,6 +128,9 @@ class CaptureTests(unittest2.TestCase):
             nodeAD = uvmContext.nodeManager().instantiateAndStart(self.nodeNameAD(), defaultRackId)
             nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
         # remove previous temp files
         clientControl.runCommand("rm -f /tmp/capture_test_010.log /tmp/capture_test_010.out \
                                   /tmp/capture_test_020.log /tmp/capture_test_020.out \
@@ -163,11 +166,10 @@ class CaptureTests(unittest2.TestCase):
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
 
-    adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    
-    @unittest2.skipIf(adResult != 0,  "No AD server available")
     def test_030_captureADLogin(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
+        if (adResult != 0):
+            raise unittest2.SkipTest("No AD server available")
         # Configure AD settings
         testResultString = nodeAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createADSettings())
         # print 'testResultString %s' % testResultString  # debug line
@@ -211,15 +213,16 @@ class CaptureTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030d.out")
         assert (search == 0)
 
-    RadiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    @unittest2.skipIf(RadiusResult != 0,  "No RADIUS server available")
     def test_040_captureRadiusLogin(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
+        if (radiusResult != 0):
+            raise unittest2.SkipTest("No RADIUS server available")
+
         # Configure RADIUS settings
         nodeAD.setSettings(createRadiusSettings())
         attempts = 0
         while attempts < 3:
-            testResultString = node.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
+            testResultString = nodeAD.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
             if ("success" in testResultString):
                 break
             else:
