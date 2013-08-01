@@ -1419,14 +1419,14 @@ Ext.define("Ung.Node", {
             handler: Ext.bind(function() {
                 this.onSettingsAction();
             }, this)
-        }, {
-            xtype: "button",
-            name: "Help",
-            iconCls: 'icon-help',
-            text: i18n._('Help'),
-            handler: Ext.bind(function() {
-                this.onHelpAction();
-            }, this)
+            // },{
+            //     xtype: "button",
+            //     name: "Help",
+            //     iconCls: 'icon-help',
+            //     text: i18n._('Help'),
+            //     handler: Ext.bind(function() {
+            //         this.onHelpAction();
+            //     }, this)
         },{
             xtype: "button",
             name: "Buy",
