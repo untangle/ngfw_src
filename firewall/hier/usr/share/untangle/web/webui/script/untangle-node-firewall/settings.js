@@ -45,7 +45,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         buildRules: function() {
             this.panelRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelRules',
-                helpSource: 'rules',
+                helpSource: 'firewall_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Rules'),
                 layout: 'anchor',
@@ -173,6 +173,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         buildEventLog: function() {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: "firewall_event_log",
                 fields: [{
                     name: 'id'
                 }, {

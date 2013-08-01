@@ -28,7 +28,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildWeb: function() {
             this.panelWeb = Ext.create('Ext.panel.Panel',{
                 name: 'Web',
-                helpSource: 'web',
+                //helpSource: 'virus_blocker_web',
+                //helpSource: 'virus_blocker_lite_web',
+                helpSource: this.helpSourceName + '_web',
                 // private fields
                 winExtensions: null,
                 winMimeTypes: null,
@@ -331,10 +333,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildFtp: function() {
             this.panelFtp = Ext.create('Ext.panel.Panel',{
                 name: 'FTP',
-                helpSource: 'ftp',
-                // private fields
+                //helpSource: 'virus_blocker_ftp',
+                //helpSource: 'virus_blocker_lite_ftp',
+                helpSource: this.helpSourceName + '_ftp',
                 parentId: this.getId(),
-
                 title: this.i18n._('FTP'),
                 cls: 'ung-panel',
                 autoScroll: true,
@@ -369,7 +371,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildEmail: function() {
             this.panelEmail = Ext.create('Ext.panel.Panel',{
                 name: 'Email',
-                helpSource: 'email',
+                //helpSource: 'virus_blocker_email',
+                //helpSource: 'virus_blocker_lite_email',
+                helpSource: this.helpSourceName + '_email',
                 // private fields
                 parentId: this.getId(),
 
@@ -436,7 +440,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildWebEventLog: function() {
             this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Web Event Log',
-                helpSource: 'web_event_log',
+                //helpSource: 'virus_blocker_web_event_log',
+                //helpSource: 'virus_blocker_lite_web_event_log',
+                helpSource: this.helpSourceName + '_web_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Web Event Log"),
                 eventQueriesFn: this.getRpcNode().getWebEventQueries,
@@ -510,7 +516,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildMailEventLog: function() {
             this.gridMailEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Email Event Log',
-                helpSource: 'email_event_log',
+                //helpSource: 'virus_blocker_email_event_log',
+                //helpSource: 'virus_blocker_lite_email_event_log',
+                helpSource: this.helpSourceName + '_email_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Email Event Log"),
                 eventQueriesFn: this.getRpcNode().getMailEventQueries,
@@ -586,7 +594,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildFtpEventLog: function() {
             this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Ftp Event Log',
-                helpSource: 'ftp_event_log',
+                //helpSource: 'virus_blocker_ftp_event_log',
+                //helpSource: 'virus_blocker_lite_ftp_event_log',
+                helpSource: this.helpSourceName + '_ftp_event_log',
                 settingsCmp: this,
                 title: this.i18n._("Ftp Event Log"),
                 eventQueriesFn: this.getRpcNode().getFtpEventQueries,

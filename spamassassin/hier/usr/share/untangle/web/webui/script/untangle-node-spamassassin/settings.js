@@ -92,7 +92,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.emailPanel = Ext.create('Ext.panel.Panel',{
                 title: this.i18n._('Email'),
                 name: 'Email',
-                helpSource: 'email',
+                helpSource: 'spam_blocker_email',
                 layout: "anchor",
                 defaults: {
                     anchor: '98%',
@@ -432,7 +432,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         // Event Log
         buildEventLog: function() {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
-                helpSource: 'event_log',
+                helpSource: 'spam_blocker_event_log',
                 settingsCmp: this,
                 // the list of fields
                 fields: [{
@@ -540,7 +540,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.gridDnsblEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
                 name: 'Tarpit Event Log',
-                helpSource: 'tarpit_event_log',
+                helpSource: 'spam_blocker_tarpit_event_log',
                 eventQueriesFn: this.getRpcNode().getTarpitEventQueries,
                 title: this.i18n._("Tarpit Event Log"),
                 // the list of fields

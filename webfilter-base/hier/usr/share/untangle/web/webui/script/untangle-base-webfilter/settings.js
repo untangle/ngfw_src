@@ -20,8 +20,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildBlockLists: function() {
             this.panelBlockLists = Ext.create('Ext.panel.Panel',{
                 name: 'Block Lists',
-                helpSource: 'block_lists',
-                // private fields
+                //helpSource: 'web_filter_block_lists',
+                //helpSource: 'web_filter_lite_block_lists',
+                helpSource: this.helpSourceName + '_block_lists',
                 winCategories: null,
                 winBlockedUrls: null,
                 winBlockedExtensions: null,
@@ -717,7 +718,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.panelPassLists = Ext.create('Ext.panel.Panel',{
             // private fields
                 name: 'Pass Lists',
-                helpSource: 'pass_lists',
+                //helpSource: 'web_filter_pass_lists',
+                //helpSource: 'web_filter_lite_pass_lists',
+                helpSource: this.helpSourceName + '_pass_lists',
                 winPassedUrls: null,
                 winPassedClients: null,
                 parentId: this.getId(),
@@ -1022,6 +1025,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildEventLog: function() {
             this.gridEventLog = new Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                //helpSource: 'web_filter_event_log',
+                //helpSource: 'web_filter_lite_event_log',
+                helpSource: this.helpSourceName + '_event_log',
                 fields: [{
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp

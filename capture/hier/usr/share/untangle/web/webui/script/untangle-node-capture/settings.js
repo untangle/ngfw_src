@@ -167,7 +167,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         buildCaptureRules: function() {
             this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelCaptureRules',
-                helpSource: 'capture_rules',
+                helpSource: 'captive_portal_capture_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Capture Rules'),
                 layout: 'anchor',
@@ -294,7 +294,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
             this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
                 name: "panelPassedHosts",
-                helpSource: "passed_hosts",
+                helpSource: "captive_portal_passed_hosts",
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._("Passed Hosts"),
@@ -396,7 +396,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
             this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
                 name: "panelUserAuthentication",
-                helpSource: "user_authentication",
+                helpSource: "captive_portal_user_authentication",
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._("User Authentication"),
@@ -565,7 +565,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
             this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
                 name: "panelCaptivePage",
-                helpSource: "captive_page",
+                helpSource: "captive_portal_captive_page",
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._("Captive Page"),
@@ -944,7 +944,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         buildUserEventLog: function() {
             this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
                 title: this.i18n._( "User Event Log" ),
-                helpSource: "login_event_log",
+                helpSource: "captive_portal_login_event_log",
                 eventQueriesFn: this.getRpcNode().getUserEventQueries,
                 settingsCmp: this,
                 fields: [{
@@ -1029,7 +1029,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         buildRuleEventLog: function() {
             this.gridRuleEventLog = Ext.create('Ung.GridEventLog',{
                 title: this.i18n._( "Rule Event Log" ),
-                helpSource: "rule_event_log",
+                helpSource: "captive_portal_rule_event_log",
                 eventQueriesFn: this.getRpcNode().getRuleEventQueries,
                 settingsCmp: this,
                 fields: [{

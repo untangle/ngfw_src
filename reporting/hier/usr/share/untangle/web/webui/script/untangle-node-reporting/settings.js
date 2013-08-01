@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelStatus = Ext.create('Ext.panel.Panel',{
                 title: this.i18n._('Status'),
                 name: 'Status',
-                helpSource: 'status',
+                helpSource: 'reports_status',
                 // layout: "form",
                 autoScroll: true,
                 cls: 'ung-panel',
@@ -97,7 +97,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelGeneration = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Generation',
-                helpSource: 'generation',
+                helpSource: 'reports_generation',
                 parentId: this.getId(),
                 title: this.i18n._('Generation'),
                 layout: "anchor",
@@ -244,7 +244,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelEmail = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Email',
-                helpSource: 'email',
+                helpSource: 'reports_email',
                 parentId: this.getId(),
                 title: this.i18n._('Email'),
                 layout: "anchor",
@@ -450,7 +450,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelSyslog = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Syslog',
-                helpSource: 'syslog',
+                helpSource: 'reports_syslog',
                 parentId: this.getId(),
                 title: this.i18n._('Syslog'),
                 layout: "anchor",
@@ -553,7 +553,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelDatabase = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Database',
-                helpSource: 'database',
+                helpSource: 'reports_database',
                 parentId: this.getId(),
                 title: this.i18n._('Database'),
                 layout: "anchor",
@@ -648,7 +648,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.gridHostnameMap = Ext.create('Ung.EditorGrid',{
                 settingsCmp: this,
                 name: 'Name Map',
-                helpSource: 'ip_addresses',
+                helpSource: 'reports_name_map',
                 title: this.i18n._("Name Map"),
                 paginated: false,
                 emptyRow: {

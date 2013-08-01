@@ -4,8 +4,8 @@ Ung.NodeWin.dependency["untangle-node-clam"] = {
         if (!Ung.hasResource["Ung.Clam"]) {
             Ung.hasResource["Ung.Clam"] = true;
             Ung.NodeWin.registerClassName('untangle-node-clam', 'Ung.Clam');
-            Ext.define('Ung.Clam', {
-                extend:'Ung.Virus'
+            Ung.Clam = Ext.extend(Ung.Virus, {
+                helpSourceName: 'virus_blocker_lite'
             });
         }
     }

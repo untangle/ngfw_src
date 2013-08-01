@@ -193,14 +193,12 @@ Ext.define("Ung.Main", {
                         xtype: 'panel',
                         title: i18n._('Apps'),
                         id: 'leftTabApps',
-                        helpSource: 'apps',
                         html:'<div id="appsItems"></div>',name:'Apps'
                     },{
                         xtype: 'panel',
                         title: i18n._('Config'),
                         id: 'leftTabConfig',
                         html: '<div id="configItems"></div>',
-                        helpSource: 'config',
                         name: 'Config'
                     }],
                     bbar: [{
@@ -209,8 +207,7 @@ Ext.define("Ung.Main", {
                         iconCls: 'icon-help',
                         text: i18n._('Help'),
                         handler: function() {
-                            var helpSource=main.leftTabs.getActiveTab().helpSource;
-                            main.openHelp(helpSource);
+                            main.openHelp(null);
                         }
                     }, {
                         name: 'MyAccount',                       
@@ -279,8 +276,8 @@ Ext.define("Ung.Main", {
     openHelp: function( topic ) {
         var baseUrl =  rpc.jsonrpc.UvmContext.getHelpUrl();
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
+        console.log("Open Help:", topic);
         //this.openIFrame( url, i18n._("Help") );
-        console.log("Open Window:", url);
         window.open(url); // open a new window
     },
     openSupportScreen: function() {

@@ -19,7 +19,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         buildStatus: function() {
             this.panelStatus = Ext.create('Ext.panel.Panel',{
                 name: 'Status',
-                helpSource: 'status',
+                helpSource: 'application_control_lite_status',
                 parentId: this.getId(),
                 isDirty: function() {
                     return false;
@@ -68,7 +68,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             this.gridProtocolList = Ext.create('Ung.EditorGrid',{
                 settingsCmp: this,
                 name: 'Signatures',
-                helpSource: 'protocol_list',
+                helpSource: 'application_control_lite_signatures',
                 paginated: false,
                 dataProperty: "patterns",
                 emptyRow: {
@@ -216,6 +216,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         buildEventLog: function() {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'application_control_lite_event_log',
                 fields: [{
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
@@ -278,5 +279,4 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         }
     });
 }
-
 //@ sourceURL=protofilter-settings.js

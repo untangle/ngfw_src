@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             
             this.panelStatus = Ext.create('Ext.panel.Panel', {
                 name: 'Status',
-                helpSource: 'status',
+                helpSource: 'openvpn_status',
                 title: this.i18n._("Status"),
                 parentId: this.getId(),
                 layout: 'anchor',
@@ -336,6 +336,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildConnectionEventLog: function() {
             this.gridConnectionEventLog = Ext.create('Ung.GridEventLog', {
                 settingsCmp: this,
+                helpSource: 'openvpn_event_log',
                 eventQueriesFn: this.getRpcNode().getStatusEventsQueries,
                 name: "Event Log",
                 title: i18n._('Event Log'),
@@ -576,7 +577,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.panelClient = Ext.create('Ext.panel.Panel', {
                 name: 'Servers',
-                helpSource: 'servers',
+                helpSource: 'openvpn_servers',
                 parentId: this.getId(),
                 title: this.i18n._('Client'),
                 layout: 'anchor',
@@ -748,7 +749,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var gridExports = Ext.create('Ung.EditorGrid', {
                 settingsCmp: this,
                 name: 'Exports',
-                helpSource: 'exports',
+                helpSource: 'openvpn_exports',
                 // the total records is set from the base settings
                 sortable: true,
                 paginated: false,
@@ -999,7 +1000,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.panelServer = Ext.create('Ext.panel.Panel', {
                 name: 'Server',
-                helpSource: 'general',
+                helpSource: 'openvpn_server',
                 title: this.i18n._("Server"),
                 parentId: this.getId(),
 

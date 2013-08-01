@@ -1302,9 +1302,9 @@ Ung.AppItem.getAppByLibItem = function(libItemName) {
 Ext.define("Ung.Node", {
     extend: "Ext.Component",
     statics: {
-        // Get node component by tid
-        getCmp: function(tid) {
-            return Ext.getCmp("node_" + tid);
+        // Get node component by nodeId
+        getCmp: function(nodeId) {
+            return Ext.getCmp("node_" + nodeId);
         },
         getStatusTip: function() {
             return [
@@ -3528,13 +3528,15 @@ Ext.define("Ung.SettingsWin", {
         }, this.tabs);
     },
     helpAction: function() {
-        var helpSource=this.helpSource;
+        var helpSource;
         if(this.tabs && this.tabs.getActiveTab()!=null) {
-            var tabHelpSource=this.tabs.getActiveTab().helpSource;
-            if(tabHelpSource!=null) {
-                helpSource+="_"+tabHelpSource;
+            if( this.tabs.getActiveTab().helpSource != null ) {
+                helpSource = this.tabs.getActiveTab().helpSource;
             }
+        } else {
+            helpSource = this.helpSource;
         }
+
         main.openHelp(helpSource);
     },
     closeWindow: function(handler) {

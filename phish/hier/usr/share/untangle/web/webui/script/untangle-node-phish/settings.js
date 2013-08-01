@@ -45,7 +45,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.emailPanel = Ext.create('Ext.panel.Panel',{
                 title: this.i18n._('Email'),
                 name: 'Email',
-                helpSource: 'email',
+                helpSource: 'phish_blocker_email',
                 autoScroll: true,
                 cls: 'ung-panel',
                 items: [{
@@ -93,10 +93,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Event Log
         buildEmailEventLog: function() {
             this.gridEmailEventLog = Ext.create('Ung.GridEventLog',{
-                name: 'Email Event Log',
-                helpSource: 'email_event_log',
+                name: 'Event Log',
+                helpSource: 'phish_blocker_event_log',
                 settingsCmp: this,
-                title: this.i18n._("Email Event Log"),
+                title: this.i18n._("Event Log"),
                 fields: [{
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp

@@ -20,7 +20,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             this.statusPanel = Ext.create('Ext.panel.Panel',{
                 title: this.i18n._('Status'),
                 name: 'Status',
-                helpSource: 'status',
+                helpSource: 'shield_status',
                 autoScroll: true,
                 cls: 'ung-panel',
                 items: [{
@@ -53,7 +53,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             this.gridExceptions = Ext.create('Ung.EditorGrid',{
                 settingsCmp: this,
                 name: 'Exceptions',
-                helpSource: 'exceptions',
+                helpSource: 'shield_exceptions',
                 emptyRow: {
                     "enabled": true,
                     "address": "1.2.3.4",
@@ -172,6 +172,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
         buildEventLog: function() {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'shield_event_log',
                 fields: [{
                     name: 'id'
                 }, {

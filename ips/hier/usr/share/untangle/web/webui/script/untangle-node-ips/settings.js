@@ -24,7 +24,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildStatus: function() {
             this.panelStatus = Ext.create('Ext.panel.Panel',{
                 name: 'Status',
-                helpSource: 'status',
+                helpSource: 'intrusion_prevention_status',
                 parentId: this.getId(),
                 title: this.i18n._('Status'),
                 cls: 'ung-panel',
@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildRules: function() {
             this.panelRules = Ext.create('Ext.panel.Panel',{
                 name: 'panelRules',
-                helpSource: 'rules',
+                helpSource: 'intrusion_prevention_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Rules'),
                 autoScroll: true,
@@ -316,6 +316,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildEventLog: function() {
             this.gridEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'intrusion_prevention_event_log',
                 fields: [{
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
