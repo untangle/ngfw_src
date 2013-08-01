@@ -22,7 +22,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         buildLocalDirectory: function() {
             this.gridUsers = Ext.create('Ung.EditorGrid',{
                 name: 'Local Users',
-                helpSource: 'local_users',
+                helpSource: 'local_directory_local_users',
                 title: this.i18n._('Local Users'),
                 hasImportExport: false, /* password not actually in grid - cant export */
                 settingsCmp: this,
