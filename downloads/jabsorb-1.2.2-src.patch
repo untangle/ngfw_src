@@ -130,30 +130,33 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
        // Invoke the method
        Object returnObj = method.invoke(itsThis, javaArgs);
  
-@@ -677,6 +673,8 @@
+@@ -677,6 +673,9 @@
          }
        }
        log.error("exception occured",e);
-+      if (e.getCause() != null)
-+          log.error("exception cause",e.getCause());
++      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++          log.error("exception cause: ", cause);
++      }
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_UNMARSHALL, requestId,
            e.getMessage());
      }
-@@ -690,6 +688,8 @@
+@@ -690,6 +688,9 @@
          }
        }
        log.error("exception occured",e);
-+      if (e.getCause() != null)
-+          log.error("exception cause",e.getCause());
++      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++          log.error("exception cause: ", cause);
++      }
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_MARSHALL, requestId, e
            .getMessage());
      }
-@@ -707,6 +707,8 @@
+@@ -707,6 +707,9 @@
          }
        }
        log.error("exception occured",e);
-+      if (e.getCause() != null)
-+          log.error("exception cause",e.getCause());
++      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++          log.error("exception cause: ", cause);
++      }
        result = new JSONRPCResult(JSONRPCResult.CODE_REMOTE_EXCEPTION,
            requestId, exceptionTransformer.transform(e));
      }
