@@ -3,6 +3,9 @@
  */
 package com.untangle.node.smtp.web.euv.tags;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.servlet.jsp.PageContext;
 
 import com.untangle.node.smtp.quarantine.InboxRecord;
@@ -74,15 +77,47 @@ public final class InboxRecordTag extends SingleValueTag
             return record.getMailSummary().getFormattedQuarantineDetail();
         }
         if(name.equals(FDATE_PROP)) {
-            return record.getFormattedDate();
+            return getFormattedDate(record.getInternDate());
         }
         if(name.equals(FTIME_PROP)) {
-            return record.getFormattedTime();
+            return getFormattedTime(record.getInternDate());
         }
         if(name.equals(FSIZE_PROP)) {
-            return record.getFormattedSize();
+            return getFormattedSize(record.getSize());
         }
         return null;
+    }
+    
+    private static final String getFormattedDate(long internDate)
+    {
+        try {
+            Date iDate = new Date(internDate);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yy");
+            return dateFormat.format(iDate).toString();
+        } catch (Exception ex) {
+            return "<unknown>";
+        }
+    }
+
+    private static final String getFormattedTime(long internDate)
+    {
+        try {
+            Date iDate = new Date(internDate);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm");
+            return dateFormat.format(iDate).toString();
+        } catch (Exception ex) {
+            return "<unknown>";
+        }
+    }
+
+    private static final String getFormattedSize(long size)
+    {
+        try {
+            // in kilobytes
+            return String.format("%01.1f", new Float(size / 1024.0));
+        } catch (Exception ex) {
+            return "<unknown>";
+        }
     }
 
     /**

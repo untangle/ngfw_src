@@ -34,8 +34,6 @@
 package com.untangle.node.smtp.quarantine;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Representation of a mail quarantined within a given
@@ -135,50 +133,6 @@ public final class InboxRecord implements Serializable
     public final void setSize(long size)
     {
         m_mailSummary.setQuarantineSize(size);
-    }
-
-    // need get and set pair prefixes for velocity
-    public final Date getInternDateAsDate()
-    {
-        return new Date(getInternDate());
-    }
-
-    public final void setInternDateAsDate(Date date)
-    {
-        setInternDate(date.getTime());
-    }
-
-    public final String getFormattedDate()
-    {
-        try {
-            Date iDate = new Date(getInternDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yy");
-            return dateFormat.format(iDate).toString();
-        } catch (Exception ex) {
-            return "<unknown>";
-        }
-    }
-
-    public final String getFormattedTime()
-    {
-        try {
-            Date iDate = new Date(getInternDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm");
-            return dateFormat.format(iDate).toString();
-        } catch (Exception ex) {
-            return "<unknown>";
-        }
-    }
-
-    // need get and set pair prefixes for velocity
-    public final String getFormattedSize()
-    {
-        try {
-            // in kilobytes
-            return String.format("%01.1f", new Float(getSize() / 1024.0));
-        } catch (Exception ex) {
-            return "<unknown>";
-        }
     }
 
     @Override

@@ -1070,8 +1070,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: 'mailID'
                 }, {
                     name: 'quarantinedDate',
-                    mapping: 'internDateAsDate',
-                    sortType: Ung.SortTypes.asTimestamp
+                    mapping: 'internDate'
                 }, {
                     name: 'size'
                 }, {
@@ -1094,6 +1093,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     width: 140,
                     dataIndex: 'quarantinedDate',
                     renderer: function(value) {
+                        var date = new Date();
+                        date.setTime( value );
                         return i18n.timestampFormat(value);
                     }
                 }, {
