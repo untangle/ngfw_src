@@ -134,7 +134,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
          }
        }
        log.error("exception occured",e);
-+      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++      for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
 +          log.error("exception cause: ", cause);
 +      }
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_UNMARSHALL, requestId,
@@ -144,7 +144,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
          }
        }
        log.error("exception occured",e);
-+      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++      for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
 +          log.error("exception cause: ", cause);
 +      }
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_MARSHALL, requestId, e
@@ -154,7 +154,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
          }
        }
        log.error("exception occured",e);
-+      for ( Throwable cause = e ; cause != null ; cause = cause.getCause() ) {
++      for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
 +          log.error("exception cause: ", cause);
 +      }
        result = new JSONRPCResult(JSONRPCResult.CODE_REMOTE_EXCEPTION,
