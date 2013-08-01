@@ -88,8 +88,6 @@ public class InterfaceSettings implements Serializable, JSONString
     
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
     
-    private List<IPMaskedAddress> aliases; /* alias addresses for static & dhcp */
-
     private Integer downloadBandwidthKbps;
     private Integer uploadBandwidthKbps;
     
@@ -212,9 +210,6 @@ public class InterfaceSettings implements Serializable, JSONString
     public InetAddress getV6StaticDns2( ) { return this.v6StaticDns2; }
     public void setV6StaticDns2( InetAddress newValue ) { this.v6StaticDns2 = newValue; }
     
-    public List<IPMaskedAddress> getAliases( ) { return this.aliases; }
-    public void setAliases( List<IPMaskedAddress> newValue ) { this.aliases = newValue; }
-
     public Boolean getDhcpEnabled() { return this.dhcpEnabled; }
     public void setDhcpEnabled( Boolean newValue ) { this.dhcpEnabled = newValue; }
 

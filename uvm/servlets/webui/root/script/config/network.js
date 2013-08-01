@@ -426,8 +426,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'dhcpOptions'
                 }, {
-                    name: 'aliases'
-                }, {
                     name: 'downloadBandwidthKbps'
                 }, {
                     name: 'uploadBandwidthKbps'
@@ -463,7 +461,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columns: [{
                     header: this.i18n._("Id"),
                     width: 30,
-                    dataIndex: 'interfaceId'
+                    dataIndex: 'interfaceId',
+                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                        if ( value < 0 ) return ""; // hide -1, it will get a real Id when saved
+                        return value;
+                    }, this)
                 }, {
                     header: this.i18n._("Name"),
                     dataIndex: 'name',
