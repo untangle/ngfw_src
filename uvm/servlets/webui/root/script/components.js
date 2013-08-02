@@ -438,7 +438,7 @@ Ung.Util = {
                     handler = Ung.Util.goToStartPage; //override handler
             }
             /* special text for "method not found" and "Service Temporarily Unavailable" */
-            if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
+            if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Unavailable") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0 || exception.message.indexOf("his application is not currently available") >= 0) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
@@ -469,7 +469,6 @@ Ung.Util = {
                 message = i18n._("An unknown error has occurred.") + "<br/>";
                 message += i18n._("Please Try Again");
             }
-            
             if (handler==null) {
                 Ext.MessageBox.alert(i18n._("Warning"), message);
             } else if(type==null || type== "alertCallback") {
