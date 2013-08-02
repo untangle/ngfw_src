@@ -58,35 +58,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
                 {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
             ];
-        },
-        onRefreshDeviceStatus: function(settingsCmp, grid) {
-            Ext.MessageBox.wait(settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
-            main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
-                grid.getStore().suspendEvents();
-                grid.getStore().each(function( currentRow ) {
-                    var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
-                    if(deviceStatus) {
-                        var isDirty = currentRow.dirty;
-                        currentRow.set({
-                            "macAddress": deviceStatus.macAddress,
-                            "duplex": deviceStatus.duplex,
-                            "vendor": deviceStatus.vendor,
-                            "mbit": deviceStatus.mbit,
-                            "connected": deviceStatus.connected
-                        });
-                        //To prevent coloring the row when device status is changed
-                        if(!isDirty) {
-                            currentRow.commit();
-                        }
-                    }
-                });
-                grid.getStore().resumeEvents();
-                grid.getView().refresh();
-
-                Ext.MessageBox.hide();
-            }, this));
         }
     };
     Ext.define("Ung.NetworkTest", {
@@ -254,6 +225,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: i18n._('Network')
             }];
             this.settings = main.getNetworkManager().getNetworkSettings();
+            var deviceStatus=main.getNetworkManager().getDeviceStatus();
+            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+            var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
+            var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
+            for(var i=0; i<this.settings.interfaces.list.length; i++) {
+                var intf=this.settings.interfaces.list[i];
+                var deviceStatusInner = deviceStatusMap[intf.physicalDev];
+                Ext.applyIf(intf, deviceStatusInner);
+                var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
+                Ext.applyIf(intf, interfaceStatusInner);
+            }
             rpc.networkSettings = this.settings;
 
             // builds the tabs
@@ -547,9 +529,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },'-',{
                     xtype: "button",
                     iconCls: 'icon-refresh',
-                    text: this.i18n._("Refresh Device Status"),
+                    text: this.i18n._("Refresh"),
                     handler: function() {
-                        Ung.NetworkUtil.onRefreshDeviceStatus(this, this.gridInterfaces);
+                        this.gridInterfaces.onRefreshStatus();
                     },
                     scope : this
                 },'-',{
@@ -570,25 +552,54 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "button",
                     text : this.i18n._( "Ping Test" ),
                     iconCls : "icon-test-ping",
-                    handler : this.openPingTest,
+                    handler : function() {
+                        this.openPingTest("");
+                    },
                     scope : this
                 }],
-                initialLoad: function() {
-                    this.getView().setLoading(true);
-                    var interfaceStatus=main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                onRefreshStatus: function() {
+                    var grid = this;
+                    Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), i18n._("Please wait"));
+                    main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
-                        var deviceStatus=main.getNetworkManager().getDeviceStatus();
-                        var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
-                        for(var i=0; i<this.settingsCmp.settings.interfaces.list.length; i++) {
-                            var intf=this.settingsCmp.settings.interfaces.list[i];
-                            var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-                            Ext.applyIf(intf, deviceStatusInner);
-                            var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-                            Ext.applyIf(intf, interfaceStatusInner);
-                        }
-                        Ung.EditorGrid.prototype.initialLoad.call(this);
-                    }, this));
+                        var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                        main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                            var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
+                            grid.getStore().suspendEvents();
+                            grid.getStore().each(function( currentRow ) {
+                                var isDirty = currentRow.dirty;
+                                var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
+                                var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
+                                if(deviceStatus) {
+                                    currentRow.set({
+                                        "macAddress": deviceStatus.macAddress,
+                                        "duplex": deviceStatus.duplex,
+                                        "vendor": deviceStatus.vendor,
+                                        "mbit": deviceStatus.mbit,
+                                        "connected": deviceStatus.connected
+                                    });
+                                }
+                                if(interfaceStatus) {
+                                    currentRow.set({
+                                        "v4Address": interfaceStatus.v4Address,
+                                        "v4Netmask": interfaceStatus.v4Netmask,
+                                        "v4Gateway": interfaceStatus.v4Gateway,
+                                        "v4Dns1": interfaceStatus.v4Dns1,
+                                        "v4Dns2": interfaceStatus.v4Dns2,
+                                        "v4PrefixLength": interfaceStatus.v4PrefixLength
+                                    });
+                                    
+                                }
+                                //To prevent coloring the row when status is changed
+                                if(!isDirty && deviceStatus || interfaceStatus) {
+                                    currentRow.commit();
+                                }
+                            });
+                            grid.getStore().resumeEvents();
+                            grid.getView().refresh();
+                            Ext.MessageBox.hide();
+                        }, this));
+                    }, this.settingsCmp));
                 },
                 onMapDevices: Ext.bind(function() {
                     Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
@@ -607,6 +618,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             store: this.mapDevicesStore,
                             loadMask: true,
                             stripeRows: true,
+                            settingsCmp: this,
                             enableColumnResize: true,
                             enableColumnHide: false,
                             enableColumnMove: false,
@@ -621,7 +633,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 iconCls: 'icon-refresh',
                                 text: this.i18n._("Refresh Device Status"),
                                 handler: function() {
-                                    Ung.NetworkUtil.onRefreshDeviceStatus(this, this.gridMapDevices);
+                                    this.gridMapDevices.onRefreshDeviceStatus();
                                 },
                                 scope : this
                             }],
@@ -781,7 +793,37 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     }
                                     return text; 
                                 }
-                            }]
+                            }],
+                            onRefreshDeviceStatus: function() {
+                                var grid = this;
+                                Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
+                                main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                                    grid.getStore().suspendEvents();
+                                    grid.getStore().each(function( currentRow ) {
+                                        var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
+                                        if(deviceStatus) {
+                                            var isDirty = currentRow.dirty;
+                                            currentRow.set({
+                                                "macAddress": deviceStatus.macAddress,
+                                                "duplex": deviceStatus.duplex,
+                                                "vendor": deviceStatus.vendor,
+                                                "mbit": deviceStatus.mbit,
+                                                "connected": deviceStatus.connected
+                                            });
+                                            //To prevent coloring the row when device status is changed
+                                            if(!isDirty) {
+                                                currentRow.commit();
+                                            }
+                                        }
+                                    });
+                                    grid.getStore().resumeEvents();
+                                    grid.getView().refresh();
+
+                                    Ext.MessageBox.hide();
+                                }, this.settingsCmp));
+                            }
                         });
                         
                         this.winMapDevices = Ext.create('Ung.EditWindow', {
@@ -2085,11 +2127,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             items: [{
                                 xtype: "panel",
                                 layout: 'anchor',
-                                cls: 'ung-panel',
+                                autoScroll: true,
                                 items: [{
                                     xtype: 'fieldset',
                                     layout: "vbox",
                                     cls: 'description',
+                                    style: "margin-top: 10px",
                                     title: this.i18n._('Troubleshooting Port Forwards'),
                                     items: [{
                                         xtype: "label",
@@ -2417,7 +2460,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // NatRules Panel
         buildNatRules: function() {
             this.gridNatRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% -80',
+                flex: 1,
                 name: 'NAT Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -2483,12 +2526,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_nat_rules',
                 parentId: this.getId(),
                 title: this.i18n._('NAT Rules'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('NAT Rules'),
+                    flex: 0,
                     html: this.i18n._("NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.")
                 },  this.gridNatRules]
             });
@@ -2559,7 +2603,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // BypassRules Panel
         buildBypassRules: function() {
             this.gridBypassRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% -80',
+                flex: 1,
                 name: 'Bypass Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -2629,11 +2673,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_bypass_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Bypass Rules'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
+                    flex: 0,
                     title: this.i18n._('Bypass Rules'),
                     html: this.i18n._("Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.")
                 }, this.gridBypassRules]
@@ -2820,7 +2865,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Routes'),
                 autoScroll: true,
-                //layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 layout: "anchor",
                 cls: 'ung-panel',
                 items: [{
@@ -3272,7 +3316,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Data"),
                     dataIndex: 'sent',
                     width: 150,
-                    flex:1
+                    flex: 1
                 }],
                 groupField:'interface_name'
             });
@@ -3345,7 +3389,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Priority"),
                     dataIndex: 'priority',
                     width: 150,
-                    flex:1,
+                    flex: 1,
                     renderer: Ext.bind(function( value, metadata, record ) { 
                         return this.qosPriorityMap[value];
                     }, this )
