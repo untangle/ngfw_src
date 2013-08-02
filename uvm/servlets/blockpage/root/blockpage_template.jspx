@@ -48,7 +48,7 @@
   
   <body id="simple" class="blockpage">
     <div id="content" style="width:738px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
-      <div id="header" style="margin:3px !important;">
+      <div id="header" style="margin:15px 3px 3px 15px !important;">
         <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
@@ -66,7 +66,7 @@
         <p class="contact" style="bottom:110px !important;left:70px;">
 
         </p>        
-        <div class="info-list" style="float:left;background-color:#EFEFEF !important;margin-bottom:10px !important;">
+        <div class="info-list" style="float:left;margin-bottom:10px !important;">
           <div><b style="margin-right:5px;"><uvm:i18n>Host:</uvm:i18n> </b><c:out value="${bd.formattedHost}"/></div>
           <div><b style="margin-right:5px;"><uvm:i18n>URL:</uvm:i18n> </b><c:out value="${bd.formattedUrl}"/></div>
           <c:if test="${!empty reason}">
