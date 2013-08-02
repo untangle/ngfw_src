@@ -148,6 +148,7 @@ public class MailSenderImpl implements MailSender
             syncConfigFiles();
         }
 
+        refreshSessions();
         logger.info("Initialized MailSender");
     }
 
