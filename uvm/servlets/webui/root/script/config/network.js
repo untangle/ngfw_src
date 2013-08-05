@@ -116,6 +116,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         emptyText : this.testEmptyText,
                         hideLabel : true,
                         readOnly : true,
+                        scrollTop: 99999,
                         anchor : "100% 100%",
                         cls : "ua-test-output",
                         style : "padding: 8px"
@@ -187,7 +188,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     this.finishNetworkUtility();
                 }
                 this.output.setValue( text.join( "" ));
-                element.scroll( "b", 10000 );
+
+                //FIXME, auto scroll to bottom
+                //does not work
+                //element.scroll( "b", 10000 );
+                //this.output.scrollBy(10000 ,10000, true );
                
             }, this));
         },
@@ -4170,6 +4175,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     action : "openTracerouteTest",
                     name : this.i18n._( "Traceroute Test" )
                 },{
+                    divClass : "ua-cell-test-download",
+                    action : "openDownloadTest",
+                    name : this.i18n._( "Download Test" )
+                },{
                     divClass : "ua-cell-test-packet",
                     action : "openPacketTest",
                     name : this.i18n._( "Packet Test" )
@@ -4440,11 +4449,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             width : 100,
                             value : "U",
                             store : [['U','UDP'], ['T','TCP'], ['I','ICMP']]
-                            // Ext.create('Ext.data.ArrayStore',{
-                            //     idIndex:0,
-                            //     fields: ['key', 'name'],
-                            //     data: 
-                            // })
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
@@ -4484,6 +4488,60 @@ if (!Ung.hasResource["Ung.Network"]) {
                 this.subCmps.push(this.tracerouteTest);
             }
             this.tracerouteTest.show();
+        },
+        openDownloadTest: function() {
+            if(!this.downloadTest) {
+                this.downloadTest = Ext.create('Ung.NetworkTest',{
+                    helpSource: 'network_troubleshooting',
+                    settingsCmp: this,
+                    title: this.i18n._('Download Test'),
+                    testDescription: this.i18n._("The <b>Download Test</b> downloads a file."),
+                    testErrorMessage : this.i18n._( "Unable to complete the Download Test." ),
+                    testEmptyText: this.i18n._("Download Test Output"),
+                    initComponent : function() {
+                        this.testTopToolbar = [this.url = new Ext.form.field.ComboBox({
+                            xtype : "combo",
+                            editable : true,
+                            style : "margin-left: 10px",
+                            width : 500,
+                            value : "http://download.untangle.com/data.php",
+                            store : [['http://download.untangle.com/data.php','http://download.untangle.com/data.php'],
+                                     ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
+                                     ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip']]
+                        })];
+                        Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+                    },
+                    getCommand: function() {
+                        var url = this.url.getValue();
+                        var script = ['wget --output-document=/dev/null ' + ' ' + url + ' ;',
+                          'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
+                        return ["/bin/sh","-c", script.join("")];
+                    },
+                    enableParameters : function( isEnabled ){
+                        if ( isEnabled ) {
+                            this.url.enable();
+                        } else {
+                            this.url.disable();
+                        }
+                    },
+                    isValid : function() {
+                        var url = this.url.getValue();
+                        
+                        if ( Ext.isEmpty( url ) ) {
+                            Ext.MessageBox.show({
+                                title : this.settingsCmp.i18n._( "Warning" ),
+                                msg : this.settingsCmp.i18n._( "Please enter a valid Url" ),
+                                icon : Ext.MessageBox.WARNING,
+                                buttons : Ext.MessageBox.OK
+                            });
+                            return false;
+                        }
+                        return true;
+                    }
+                });
+                this.subCmps.push(this.downloadTest);
+            }
+            this.downloadTest.show();
         },
         openPacketTest: function() {
             if(!this.packetTest) {
