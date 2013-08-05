@@ -4433,20 +4433,35 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype : "textfield",
                             width:150,
                             emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                        }), this.protocol = new Ext.form.field.ComboBox({
+                            xtype : "combo",
+                            editable : false,
+                            style : "margin-left: 10px",
+                            width : 100,
+                            value : "U",
+                            store : [['U','UDP'], ['T','TCP'], ['I','ICMP']]
+                            // Ext.create('Ext.data.ArrayStore',{
+                            //     idIndex:0,
+                            //     fields: ['key', 'name'],
+                            //     data: 
+                            // })
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
                     getCommand: function() {
                         var destination = this.destination.getValue();
-                        var script = ['traceroute '+destination + ';',
+                        var protocol = "-" + this.protocol.getValue();
+                        var script = ['traceroute' + ' ' + protocol + ' ' + destination + ' ;',
                           'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
                         return ["/bin/sh","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
                             this.destination.enable();
+                            this.protocol.enable();
                         } else {
                             this.destination.disable();
+                            this.protocol.disable();
                         }
                     },
                     isValid : function() {
