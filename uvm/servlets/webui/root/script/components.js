@@ -360,7 +360,7 @@ Ung.Util = {
             
         if(exception instanceof JSONRpcClient.Exception)
         {
-            if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
+            if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0)
             {
                 Ext.MessageBox.alert(i18n._("Warning"),i18n._("The connection to the server has been lost. Press OK to return to the login page."), Ung.Util.goToStartPage);
             }/* else {
@@ -420,11 +420,13 @@ Ung.Util = {
                 message += i18n._("Each application can only be installed once in each policy/rack.");
             }
             /* handle connection lost */
-            if(exception.code==550 || exception.code == 12029 || exception.code == 12019) {
+            if(exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                if ( exception.code != 0) {
+                    message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                }
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
@@ -1817,7 +1819,7 @@ Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{
 // Message Manager object
 Ung.MessageManager = {
     // update interval in millisecond
-    normalFrequency: 5000,
+    normalFrequency: 3000,
     highFrequency: 1000,
     started: false,
     intervalId: null,
