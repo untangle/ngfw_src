@@ -225,11 +225,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: i18n._('Network')
             }];
             this.settings = main.getNetworkManager().getNetworkSettings();
+            var i=0;
             var deviceStatus=main.getNetworkManager().getDeviceStatus();
             var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
             var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
             var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
-            for(var i=0; i<this.settings.interfaces.list.length; i++) {
+            for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
                 var intf=this.settings.interfaces.list[i];
                 var deviceStatusInner = deviceStatusMap[intf.physicalDev];
                 Ext.applyIf(intf, deviceStatusInner);
@@ -255,9 +256,9 @@ if (!Ung.hasResource["Ung.Network"]) {
             // Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
             // in order to make the user save the valid settings when new WANs are added
             if(this.settings.qosSettings.qosEnabled) {
-                for(var i=0; i<this.settings.interfaces.list.length; i++) {
-                    var intf =this.settings.interfaces.list[i];
-                    if(intf.isWan && (Ext.isEmpty(intf.downloadBandwidthKbps) || Ext.isEmpty(intf.uploadBandwidthKbps))) {
+                for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
+                    var intfx =this.settings.interfaces.list[i];
+                    if(intfx.isWan && (Ext.isEmpty(intfx.downloadBandwidthKbps) || Ext.isEmpty(intfx.uploadBandwidthKbps))) {
                         this.markDirty();
                         break;
                     }
