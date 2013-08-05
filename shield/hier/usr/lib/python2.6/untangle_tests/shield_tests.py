@@ -42,7 +42,7 @@ class ShieldTests(unittest2.TestCase):
 
     def test_011_shieldDetectsNmap(self):
         startTime = datetime.now()
-        result = clientControl.runCommand("nmap -PN -sT -T5 -p10000-10500 1.2.3.4 2>&1 >/dev/null")
+        result = clientControl.runCommand("nmap -PN -sT -T5 --min-parallelism 5 -p10000-11000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
         flushEvents()
         query = None;
