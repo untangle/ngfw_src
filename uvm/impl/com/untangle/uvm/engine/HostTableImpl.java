@@ -51,6 +51,8 @@ public class HostTableImpl implements HostTable
 
     private volatile Thread reverseLookupThread;
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
+
+    private int maxSize = 0;
     
     protected HostTableImpl()
     {
@@ -76,6 +78,7 @@ public class HostTableImpl implements HostTable
         if ( entry == null && createIfNecessary ) {
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
+            adjustMaxSizeIfNecessary();
             this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
         }
 
@@ -85,6 +88,7 @@ public class HostTableImpl implements HostTable
     public void setHostTableEntry( InetAddress addr, HostTableEntry entry )
     {
         hostTable.put( addr, entry );
+        adjustMaxSizeIfNecessary();
     }
 
     public LinkedList<HostTableEntry> getHosts()
@@ -408,6 +412,11 @@ public class HostTableImpl implements HostTable
     {
         return new EventLogQuery[] { this.quotaEventQuery };
     }
+
+    public int getMaxSize()
+    {
+        return this.maxSize;
+    }
     
     private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
@@ -418,6 +427,12 @@ public class HostTableImpl implements HostTable
         entry.setLastAccessTime( entry.getCreationTime() );
 
         return entry;
+    }
+
+    private void adjustMaxSizeIfNecessary()
+    {
+        if (this.hostTable.size() > this.maxSize)
+            this.maxSize = this.hostTable.size();
     }
 
     /**
@@ -549,5 +564,4 @@ public class HostTableImpl implements HostTable
             }
         }
     }
-    
 }

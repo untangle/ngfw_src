@@ -32,6 +32,11 @@ public interface HostTable
     HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
 
     /**
+     * return the largest size the table has ever been
+     */
+    int getMaxSize();
+        
+    /**
      * Save the specified entry for the specified addr
      * Will overwrite existing value
      */
