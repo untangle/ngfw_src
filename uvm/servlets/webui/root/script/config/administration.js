@@ -938,7 +938,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },
                     items: [{
                         xtype: 'checkbox',
-                        boxLabel: Ext.String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'),
+                        boxLabel: this.i18n._('Enable SNMP Monitoring.'),
                         hideLabel: true,
                         name: 'snmpEnabled',
                         checked: this.getSystemSettings().snmpSettings.enabled,
@@ -999,7 +999,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype: 'checkbox',
                         itemCls: 'left-indent-1',
-                        boxLabel: Ext.String.format(this.i18n._('{0}Enable Traps{1} so no trap events are generated.'), '<b>', '</b>'),
+                        boxLabel: this.i18n._('Enable Traps'),
                         hideLabel: true,
                         name: 'sendTraps',
                         id: 'administration_snmp_sendTraps',
