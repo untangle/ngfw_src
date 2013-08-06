@@ -100,7 +100,7 @@ Ung.Quarantine.prototype = {
         this.safelistButton = Ext.create('Ext.button.Button', {
             handler: Ext.bind(function() { this.safelist(); }, this ),
             iconCls:'icon-safe-list',
-            text: i18n._( "Release to Inbox & Add Senders to Safelist" ),
+            text: i18n._( "Release to Inbox & Add Senders to Safe List" ),
             disabled: true
         } );
 
@@ -141,7 +141,7 @@ Ung.Quarantine.prototype = {
     },
 
     safelist: function( addresses ) {
-        Ext.MessageBox.wait( i18n._("Releasing and adding Senders to Safelist...") , i18n._("Please wait"));
+        Ext.MessageBox.wait( i18n._("Releasing and adding Senders to Safe List...") , i18n._("Please wait"));
         if(addresses == null) {
             addresses = [];
         }
@@ -497,9 +497,9 @@ function completeInit() {
         layout: "border"
     } ));
 
-    message = i18n._( "You can use the Safelist to make sure that messages from these senders are never quarantined." );
+    message = i18n._( "You can use the Safe List to make sure that messages from these senders are never quarantined." );
     panels.push( Ext.create('Ext.panel.Panel',{
-        title: i18n._("Safelist" ),
+        title: i18n._("Safe List" ),
         items: [ { xtype:'label', text: message, region: "north", cls:'message',ctCls:'message-container' ,margins:'4 4 4 4' }, safelist.grid ],
         layout: "border"
     } ));
