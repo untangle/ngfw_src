@@ -937,30 +937,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelWidth: 150
                     },
                     items: [{
-                        xtype: 'radio',
-                        boxLabel: Ext.String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'),
-                        hideLabel: true,
-                        name: 'snmpEnabled',
-                        checked: !this.getSystemSettings().snmpSettings.enabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    this.getSystemSettings().snmpSettings.enabled = !checked;
-                                    if (checked) {
-                                        Ext.getCmp('administration_snmp_communityString').disable();
-                                        Ext.getCmp('administration_snmp_sysContact').disable();
-                                        Ext.getCmp('administration_snmp_sysLocation').disable();
-                                        Ext.getCmp('administration_snmp_sendTraps_disable').disable();
-                                        Ext.getCmp('administration_snmp_sendTraps_enable').disable();
-                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
-                                        Ext.getCmp('administration_snmp_trapHost').disable();
-                                        Ext.getCmp('administration_snmp_trapPort').disable();
-                                    }
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'radio',
+                        xtype: 'checkbox',
                         boxLabel: Ext.String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'),
                         hideLabel: true,
                         name: 'snmpEnabled',
@@ -973,14 +950,21 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_snmp_communityString').enable();
                                         Ext.getCmp('administration_snmp_sysContact').enable();
                                         Ext.getCmp('administration_snmp_sysLocation').enable();
-                                        Ext.getCmp('administration_snmp_sendTraps_disable').enable();
-                                        var sendTrapsEnableCmp = null;
-                                        (sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable')).enable();
-                                        if (sendTrapsEnableCmp.getValue()) {
+                                        Ext.getCmp('administration_snmp_sendTraps').enable();
+                                        var sendTrapsCmp = Ext.getCmp('administration_snmp_sendTraps');
+                                        if (sendTrapsCmp.getValue()) {
                                             Ext.getCmp('administration_snmp_trapCommunity').enable();
                                             Ext.getCmp('administration_snmp_trapHost').enable();
                                             Ext.getCmp('administration_snmp_trapPort').enable();
                                         }
+                                    } else {
+                                        Ext.getCmp('administration_snmp_communityString').disable();
+                                        Ext.getCmp('administration_snmp_sysContact').disable();
+                                        Ext.getCmp('administration_snmp_sysLocation').disable();
+                                        Ext.getCmp('administration_snmp_sendTraps').disable();
+                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
+                                        Ext.getCmp('administration_snmp_trapHost').disable();
+                                        Ext.getCmp('administration_snmp_trapPort').disable();
                                     }
                                 }, this)
                             }
@@ -1013,41 +997,26 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         value: this.getSystemSettings().snmpSettings.sysLocation == 'MY_LOCATION' ? this.i18n._('MY_LOCATION'): this.getSystemSettings().snmpSettings.sysLocation,
                         disabled: !this.getSystemSettings().snmpSettings.enabled
                     },{
-                        xtype: 'radio',
+                        xtype: 'checkbox',
                         itemCls: 'left-indent-1',
-                        boxLabel: Ext.String.format(this.i18n._('{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'),
+                        boxLabel: Ext.String.format(this.i18n._('{0}Enable Traps{1} so no trap events are generated.'), '<b>', '</b>'),
                         hideLabel: true,
                         name: 'sendTraps',
-                        id: 'administration_snmp_sendTraps_disable',
-                        checked: !this.getSystemSettings().snmpSettings.sendTraps,
-                        disabled: !this.getSystemSettings().snmpSettings.enabled,
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                    if (checked) {
-                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
-                                        Ext.getCmp('administration_snmp_trapHost').disable();
-                                        Ext.getCmp('administration_snmp_trapPort').disable();
-                                    }
-                                }, this)
-                            }
-                        }
-                    },{
-                        xtype: 'radio',
-                        itemCls: 'left-indent-1',
-                        boxLabel: Ext.String.format(this.i18n._('{0}Enable Traps{1} so trap events are sent when they are generated.'), '<b>', '</b>'),
-                        hideLabel: true,
-                        name: 'sendTraps',
-                        id: 'administration_snmp_sendTraps_enable',
+                        id: 'administration_snmp_sendTraps',
                         checked: this.getSystemSettings().snmpSettings.sendTraps,
                         disabled: !this.getSystemSettings().snmpSettings.enabled,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, checked) {
-                                    if (this.getSystemSettings().snmpSettings.enabled && checked) {
+                                    this.getSystemSettings().snmpSettings.sendTraps = checked;
+                                    if (checked) {
                                         Ext.getCmp('administration_snmp_trapCommunity').enable();
                                         Ext.getCmp('administration_snmp_trapHost').enable();
                                         Ext.getCmp('administration_snmp_trapPort').enable();
+                                    } else {
+                                        Ext.getCmp('administration_snmp_trapCommunity').disable();
+                                        Ext.getCmp('administration_snmp_trapHost').disable();
+                                        Ext.getCmp('administration_snmp_trapPort').disable();
                                     }
                                 }, this)
                             }
@@ -1302,8 +1271,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     return false;
                 }
 
-                var sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable');
-                var isTrapEnabled = sendTrapsEnableCmp.getValue();
+                var sendTrapsCmp = Ext.getCmp('administration_snmp_sendTraps');
+                var isTrapEnabled = sendTrapsCmp.getValue();
                 var snmpTrapCommunityCmp, snmpTrapHostCmp, snmpTrapPortCmp;
                 if (isTrapEnabled) {
                     snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
