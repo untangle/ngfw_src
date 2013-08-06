@@ -38,7 +38,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
     private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
     
-    private static final String LICENSE_SCRIPT_NUMUSERS = "license-numdevices.sh";
     private static final String EXPIRED = "expired";
 
     /* update every 12 hours, leaves an hour window */
@@ -602,16 +601,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      */
     private int _getEstimatedNumDevices()
     {
-        try {
-            String command = System.getProperty("uvm.bin.dir") + "/" + LICENSE_SCRIPT_NUMUSERS;
-            String wholeOutput = UvmContextFactory.context().execManager().execOutput(command);
-            Integer result = new Integer(wholeOutput.replaceAll("\\W",""));
-            return result;
-        } catch (Exception e) {
-            logger.warn("Unabled to estimate seats",e);
-        }
-
-        return -1;
+        return UvmContextFactory.context().hostTable().getMaxSize();
     }
 
     /**
