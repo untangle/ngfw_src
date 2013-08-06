@@ -4,7 +4,7 @@ if (!Ung.hasResource["Ung.Email"]) {
     Ext.define('Ung.Email', {
         extend: 'Ung.ConfigWin',
         panelOutgoingServer: null,
-        panelFromSafeList: null,
+        panelEmailSafeList: null,
         panelQuarantine: null,
         gridSafelistGlobal: null,
         gridSafelistUser: null,
@@ -29,13 +29,13 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.buildOutgoingServer();
             if( this.isMailLoaded() ) {
                 this.getMailNodeSettings();
-                this.buildFromSafeList();
+                this.buildEmailSafeList();
                 this.buildQuarantine();
             }
             // builds the tab panel with the tabs
             var pageTabs = [this.panelOutgoingServer];
             if( this.isMailLoaded() ) {
-                pageTabs.push( this.panelFromSafeList );
+                pageTabs.push( this.panelEmailSafeList );
                 pageTabs.push( this.panelQuarantine );
             }
             this.buildTabPanel(pageTabs);
@@ -253,7 +253,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     buttonAlign: 'left'
                 },
                 items: [{
-                    title: this.i18n._('Outgoing Email Server (SMTP)'),
+                    title: this.i18n._('Outgoing Email Server'),
                     items: [{
                         xtype: 'label',
                         html: Ext.String.format(this.i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
@@ -445,7 +445,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 
         
         },
-        buildFromSafeList: function() {
+        buildEmailSafeList: function() {
             var showDetailColumn = Ext.create('Ext.grid.column.Action',{
                 header: this.i18n._("Show Detail"),
                 width: 100,
@@ -465,7 +465,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.loadedGlobalSafelist = true;
             this.gridSafelistGlobal = Ext.create('Ung.EditorGrid', {
                 name: 'Global',
-                title: this.i18n._('Global'),
+                title: this.i18n._('Global Safe List'),
                 hasEdit: false,
                 settingsCmp: this,
                 paginated: false,
@@ -504,7 +504,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 
             this.gridSafelistUser = Ext.create('Ung.EditorGrid', {
                 name: 'Per User',
-                title: this.i18n._('Per User'),
+                title: this.i18n._('Per User Safe Lists'),
                 selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                 hasEdit: false,
                 hasAdd: false,
@@ -572,7 +572,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             settingsCmp: this,
                             showForCurrentAccount: function(emailAddress) {
                                 this.account = emailAddress;  
-                                var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
+                                var newTitle = this.settingsCmp.i18n._('Safe List Details for: ') + emailAddress;
                                 this.setTitle(newTitle);
                                 
                                 this.show();
@@ -595,11 +595,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, this)
             });
                 
-            this.panelFromSafeList = Ext.create('Ext.panel.Panel', {
-                name: 'From-Safe List',
-                helpSource: 'email_from_safe_list',
+            this.panelEmailSafeList = Ext.create('Ext.panel.Panel', {
+                name: 'Safe List',
+                helpSource: 'email_safe_list',
                 parentId: this.getId(),
-                title: this.i18n._('From-Safe List'),
+                title: this.i18n._('Safe List'),
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [this.gridSafelistGlobal, this.gridSafelistUser]

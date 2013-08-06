@@ -1102,10 +1102,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: [{
                     title: this.i18n._('Administration Skin'),
                     items: [{
-                        cls: 'description',
-                        border: false,
-                        html: this.i18n._("This skin will used in the administration client")
-                    }, {
                         xtype: 'combo',
                         name: "skinName",
                         id: "administration_admin_client_skin_combo",
