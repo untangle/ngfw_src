@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AlertManager;
+import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
@@ -47,6 +48,8 @@ public class AlertManagerImpl implements AlertManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private I18nUtil i18nUtil;
+
+    private ExecManager execManager = null;
     
     public AlertManagerImpl()
     {
@@ -54,10 +57,12 @@ public class AlertManagerImpl implements AlertManager
         this.i18nUtil = new I18nUtil(i18nMap);
     }
     
-    public List<String> getAlerts()
+    public synchronized List<String> getAlerts()
     {
         LinkedList<String> alertList = new LinkedList<String>();
         boolean dnsWorking = false;
+
+        this.execManager = UvmContextFactory.context().createExecManager();
         
         try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -75,6 +80,9 @@ public class AlertManagerImpl implements AlertManager
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
+        this.execManager.close();
+        this.execManager = null;
+        
         return alertList;
     }
 
@@ -167,7 +175,7 @@ public class AlertManagerImpl implements AlertManager
                 return;
             }
                 
-            int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
+            int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
             if (result != 0)
                 alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
         } catch (Exception e) {
@@ -181,7 +189,7 @@ public class AlertManagerImpl implements AlertManager
         if (UvmContextFactory.context().isDevel()) /* dont test dev boxes */
             return;
 
-        String result = UvmContextFactory.context().execManager().execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
+        String result = this.execManager.execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
 
         try {
             int percentUsed = Integer.parseInt(result);
@@ -289,7 +297,7 @@ public class AlertManagerImpl implements AlertManager
             }
             String bridgeName = master.getSymbolicDev();
             
-            String result = UvmContextFactory.context().execManager().execOutput( "brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
+            String result = this.execManager.execOutput( "brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
             if (result == null || "".equals(result)) {
                 logger.warn("Unable to build bridge map");
                 continue;
@@ -331,7 +339,7 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Lookup gateway MAC using arp -a
              */
-            String gatewayMac = UvmContextFactory.context().execManager().execOutput( "arp -a " + gateway.getHostAddress() + " | awk '{print $4}' ");
+            String gatewayMac = this.execManager.execOutput( "arp -a " + gateway.getHostAddress() + " | awk '{print $4}' ");
             if ( gatewayMac == null ) {
                 logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
                 return;
@@ -345,7 +353,7 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Lookup gateway bridge port # using brctl showmacs
              */
-            String portNo = UvmContextFactory.context().execManager().execOutput( "brctl showmacs " + bridgeName + " | grep \"" + gatewayMac + "\" | awk '{print $1}'");
+            String portNo = this.execManager.execOutput( "brctl showmacs " + bridgeName + " | grep \"" + gatewayMac + "\" | awk '{print $1}'");
             if ( portNo == null) {
                 logger.warn("Unable to find port number for MAC: " + gatewayMac);
                 return;
@@ -417,7 +425,7 @@ public class AlertManagerImpl implements AlertManager
             if ( intf.getSystemDev() == null )
                 continue;
             
-            String lines = UvmContextFactory.context().execManager().execOutput( "ifconfig " + intf.getPhysicalDev() + " | grep errors | awk '{print $3}'");
+            String lines = this.execManager.execOutput( "ifconfig " + intf.getPhysicalDev() + " | grep errors | awk '{print $3}'");
             String type = "RX";  //first line is RX erros
 
             for (String line : lines.split("\n")) {
@@ -504,7 +512,7 @@ public class AlertManagerImpl implements AlertManager
                 }
                 /* otherwise check each DNS against spamhaus */
                 else {
-                    int result = UvmContextFactory.context().execManager().execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
+                    int result = this.execManager.execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
                     if (result != 0) {
                         String alertText = "";
                         alertText += nodeName + " " + i18nUtil.tr("is installed but but a DNS server");
@@ -576,7 +584,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testQueueFullMessages(List<String> alertList)
     {
-        int result = UvmContextFactory.context().execManager().execResult("tail -n 100 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
+        int result = this.execManager.execResult("tail -n 100 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
         if ( result == 0 ) {
             String alertText = "";
             alertText += i18nUtil.tr("Packet processing recently overloaded.");
@@ -626,7 +634,7 @@ public class AlertManagerImpl implements AlertManager
             /**
              * If already in the ARP table, continue
              */
-            result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
             if ( result == 0 )
                 continue;
 
@@ -634,8 +642,8 @@ public class AlertManagerImpl implements AlertManager
              * If not, force arp resolution with ping
              * Then recheck ARP table
              */
-            result = UvmContextFactory.context().execManager().execResult("ping -c1 -W1 " + route.getNextHop());
-            result = UvmContextFactory.context().execManager().execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
+            result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
+            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q HWaddress");
             if ( result == 0 )
                 continue;
             
