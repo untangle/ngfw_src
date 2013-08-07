@@ -332,6 +332,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'symbolicDev'
                 }, {
+                    name: 'imqDev'
+                }, {
                     name: 'isWan'
                 }, {
                     name: 'isVlanInterface'
@@ -501,6 +503,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     hidden: true,
                     header: this.i18n._("Symbolic Dev"),
                     dataIndex: 'symbolicDev',
+                    width:80
+                }, {
+                    hidden: true,
+                    header: this.i18n._("IMQ Dev"),
+                    dataIndex: 'imqDev',
                     width:80
                 }, {
                     header: this.i18n._("Config"),
@@ -3057,7 +3064,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if (Ext.isEmpty(value)) {
                             return this.i18n._("Not set"); 
                         } else {
-                            return value + this.i18n._( " kbps" );
+                            var mbit_value = value/1000;
+                            return value + " kbps" + " (" + mbit_value + " Mbit" + ")"; 
                         }
                     }, this )
                 }, {
@@ -3074,7 +3082,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if (Ext.isEmpty(value)) {
                             return this.i18n._("Not set"); 
                         } else {
-                            return value + this.i18n._( " kbps" );
+                            var mbit_value = value/1000;
+                            return value + " kbps" + " (" + mbit_value + " Mbit" + ")"; 
                         }
                     }, this )
                 }],
@@ -3330,7 +3339,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Priority"),
                     dataIndex: 'priority',
-                    width: 150,
+                    width: 150
                 }, {
                     header: this.i18n._("Data"),
                     dataIndex: 'sent',

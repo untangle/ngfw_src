@@ -706,6 +706,19 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
+         * Set all IMQ devices for wans
+         */
+        int wanIndex = 0;
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if ( intf.getIsWan() && intf.getConfigType() ==  InterfaceSettings.ConfigType.ADDRESSED ) {
+                intf.setImqDev( "imq" + wanIndex );
+                wanIndex++;
+            } else {
+                intf.setImqDev( null );
+            }
+        }
+        
+        /**
          * If hostname is null, set it to the default
          * Make sure hostname is not fully qualified
          */

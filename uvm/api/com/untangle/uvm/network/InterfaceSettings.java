@@ -30,6 +30,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private String  physicalDev; /* physical interface name: eth0, etc */
     private String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
     private String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, etc */
+    private String  imqDev; /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
 
     private boolean isWan = false; /* is a WAN interface? */
 
@@ -114,6 +115,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public String getSymbolicDev( ) { return this.symbolicDev; }
     public void setSymbolicDev( String newValue ) { this.symbolicDev = newValue; }
 
+    public String getImqDev( ) { return this.imqDev; }
+    public void setImqDev( String newValue ) { this.imqDev = newValue; }
+    
     public boolean getIsWan( ) { return this.isWan; }
     public void setIsWan( boolean newValue ) { this.isWan = newValue; }
 
