@@ -3295,11 +3295,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasEdit: false,
                 dataRoot:'',
                 dataFn: function() {
-                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_statistics.py");
+                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-get-statistics.py");
                     try {
                         return eval(output);
                     } catch (e) {
-                        console.error("Could not execute /usr/share/untangle-netd/bin/get_statistics.py output: ", output, e);
+                        console.error("Could not execute /usr/share/untangle-netd/bin/qos-get-statistics.py output: ", output, e);
                         return [];
                     }
                 },
@@ -3351,11 +3351,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasEdit: false,
                 dataRoot:'',
                 dataFn: function() {
-                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/get_sessions.py");
+                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-get-sessions.py");
                     try {
                         return eval(output);
                     } catch (e) {
-                        console.error("Could not execute /usr/share/untangle-netd/bin/get_sessions.py output: ", output, e);
+                        console.error("Could not execute /usr/share/untangle-netd/bin/qos-get-sessions.py output: ", output, e);
                         return [];
                     }
                 },
