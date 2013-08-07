@@ -38,7 +38,7 @@ public class ExecManagerImpl implements ExecManager
     private BufferedReader in  = null;
 
     protected ExecManagerImpl()
-    { 
+    {
         initDaemon();
     }
 
@@ -50,7 +50,7 @@ public class ExecManagerImpl implements ExecManager
     public synchronized void close()
     {
         if (in != null || out != null || proc != null)
-            logger.info("Shutting down ut-exec-launcher...");
+            logger.debug("Shutting down ut-exec-launcher...");
         try { in.close(); } catch (Exception ex) { }
         try { out.close(); } catch (Exception ex) { }
         try { proc.destroy(); } catch (Exception ex) { }
@@ -160,7 +160,7 @@ public class ExecManagerImpl implements ExecManager
         String launcher = System.getProperty("uvm.bin.dir") + "/ut-exec-launcher";
 
         try {
-            logger.info("Launching ut-exec-launcher: " + launcher);
+            logger.debug("Launching ut-exec-launcher: " + launcher);
             proc = Runtime.getRuntime().exec(launcher);
         } catch (IOException e) {
             logger.error("Couldn't start ut-exec-launcher", e);
