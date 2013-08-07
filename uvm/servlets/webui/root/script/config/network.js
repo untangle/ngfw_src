@@ -448,12 +448,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 columns: [{
                     header: this.i18n._("Id"),
-                    width: 30,
+                    width: 35,
                     dataIndex: 'interfaceId',
-                    renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                        if ( value < 0 ) return ""; // hide -1, it will get a real Id when saved
-                        return value;
-                    }, this)
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
                 }, {
                     header: this.i18n._("Name"),
                     dataIndex: 'name',
@@ -1773,16 +1776,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var qosBandwidthStore=this.grid.settingsCmp.gridQosWanBandwidth.getStore();
                         qosBandwidthStore.suspendEvents();
                         qosBandwidthStore.clearFilter();
-                        qosBandwidthStore.each( function( currentRow ) {
-                            var interfaceData = interfacesMap[currentRow.get("interfaceId")];
-                            if(interfaceData) {
-                                currentRow.set({
-                                    "isWan": interfaceData.isWan,
-                                    "name": interfaceData.name,
-                                    "configType": interfaceData.configType
-                                });
-                            }
-                        });
+                        //reload grid data, in case of new/removed vlans
+                        qosBandwidthStore.getProxy().data = interfaces; 
+                        qosBandwidthStore.load();
+                        // qosBandwidthStore.each( function( currentRow ) {
+                        //     var interfaceData = interfacesMap[currentRow.get("interfaceId")];
+                        //     if(interfaceData) {
+                        //         currentRow.set({
+                        //             "isWan": interfaceData.isWan,
+                        //             "name": interfaceData.name,
+                        //             "configType": interfaceData.configType
+                        //         });
+                        //     }
+                        // });
                         qosBandwidthStore.resumeEvents();
                         qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                         this.grid.settingsCmp.gridQosWanBandwidth.updateTotalBandwidth();
@@ -3021,7 +3027,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columns: [{
                     header: this.i18n._("Id"),
                     width: 30,
-                    dataIndex: 'interfaceId'
+                    dataIndex: 'interfaceId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
                 }, {
                     header: this.i18n._("WAN"),
                     width: 150,
