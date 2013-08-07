@@ -389,6 +389,63 @@ Ung.Util = {
             Ext.MessageBox.alert(i18n._("Warning"), message);
         }
     },
+    
+    showWarningMessage:function(message, details, errorHandler) {
+        var wnd = Ext.create('Ext.window.Window', {
+            title: i18n._('Warning'),
+            width: 400,
+            height: 250,
+            layout: 'auto',
+            modal:true,
+            closable:false,
+            items:[{
+                xtype:'fieldset',
+                layout:'auto',
+                title:'',
+                width:'100%',
+                height:'100%',
+                items:[{   
+                    width:'100%',
+                    xtype: 'text',  
+                    border: false,
+                    html:message
+                },
+                {
+                    xtype:'button',
+                    text:i18n._('Show details'),
+                    width:'30%',
+                    handler:function() {
+                        var techmsg = wnd.query('[name="techMsg"]')[0];
+                        techmsg.setVisible( !techmsg.isVisible());
+                        this.setText(techmsg.isVisible() ? i18n._('Hide details'):i18n._('Show details'));
+                    }
+                },
+                {
+                    width:'100%',
+                    margin:'10 0 0 0',
+                    name:'techMsg',
+                    xtype: 'text',  
+                    border: false,
+                    hidden:true,
+                    html:details ? details : ''
+                }]
+            }],
+            buttons:[
+                {
+                    text:i18n._('OK'), 
+                    handler:function() { 
+                        if ( errorHandler) {
+                            errorHandler();
+                        } else {
+                            wnd.close();
+                        }
+                    }
+                }
+            ]
+        });
+        wnd.show();
+    },
+    
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
             console.log("handleException:", exception);
@@ -396,6 +453,7 @@ Ung.Util = {
                 exception.message = "";
             }
             var message=null;
+            var details = null;
             var gotoStartPage=false;
             /* special text for apt error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("exited with") >= 0)) {
@@ -403,8 +461,8 @@ Ung.Util = {
                 message += i18n._("Check internet connectivity and the network/DNS settings.") + "<br/>";
                 message += i18n._("Check that the server is fully up to date.") + "<br/>";
                 message += i18n._("<br/>");
-                message =  i18n._("Unable to contact app store") + ":<br/>";
-                message += i18n._("An error has occured: ") + exception.message + "<br/>";
+                details =  i18n._("Unable to contact app store") + ":<br/>";
+                details += "<br/><b>Exception message:&nbsp;</b>" + exception.message + "<br/>";
             }
             /* special text for apt error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("timed out") >= 0)) {
@@ -412,7 +470,8 @@ Ung.Util = {
                 message += i18n._("Connection timed out") + "<br/>";
                 message += i18n._("<br/>");
                 message += i18n._("Check internet connectivity and network/DNS settings.") + "<br/>";
-                message += i18n._("An error has occured: ") + exception.message + "<br/>";
+                details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
+                details += "<br/><b>" + i18n._("Exception message") +":&nbsp;</b>" + exception.message + "<br/>";
             }
             /* special text for rack error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") >= 0)) {
@@ -423,9 +482,9 @@ Ung.Util = {
             if(exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += i18n._("<br/>");
                 if ( exception.code != 0) {
-                    message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                    details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
+                    details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
                 }
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
@@ -435,7 +494,8 @@ Ung.Util = {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                details = "<b>" + i18n._("Exception name") + ":&nbsp;</b>" + exception.name + "<br/>";
+                details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
@@ -444,26 +504,25 @@ Ung.Util = {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
-                message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                details = "<b>" +i18n._("Exception name") + ":&nbsp;</b>" + exception.name + "<br/>";
+                details += "<br/><b>" + i18n._("Exception message") +":&nbsp;</b>" + exception.message + "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
 
             /* otherwise just describe the exception */
             if (message == null && exception != null) {
-                message  = i18n._("An exception has occurred") + ":" + "<br/>";
+                message  = i18n._("An error has occurred") + "<br/>";
                 message += i18n._("<br/>");
                 if (exception.name != null)
-                    message += exception.name + "<br/>";
+                    details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
                 if (exception.message !== "")
-                    message += exception.message + "<br/>";
+                    details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
                 if (exception.stack != null) {
-                    message += "<br/>";
-                    message += exception.stack + "<br/>";
+                    details += "<br/><b>" + i18n._("Exception stack") +":&nbsp;</b>" +exception.stack + "<br/>";
                 }
                 if (exception.javaStack != null) {
-                    message += "<br/>";
-                    message += exception.javaStack + "<br/>";
+                    details += "<br/><b>" + i18n._("Exception Java stack") +":&nbsp;</b>" + exception.javaStack + "<br/>";
                 }
             }
             /* worst case - just say something */
@@ -472,12 +531,12 @@ Ung.Util = {
                 message += i18n._("Please Try Again");
             }
             if (handler==null) {
-                Ext.MessageBox.alert(i18n._("Warning"), message);
+                this.showWarningMessage(message);
             } else if(type==null || type== "alertCallback") {
-                Ext.MessageBox.alert(i18n._("Warning"), message, handler);
+                this.showWarningMessage(message,details, handler);
             } else if (type== "alert") {
-                Ext.MessageBox.alert(i18n._("Warning"), message);
-                handler();
+                  this.showWarningMessage(message,details);
+                  handler();
             } else if (type== "noAlert") {
                 handler();
             }
