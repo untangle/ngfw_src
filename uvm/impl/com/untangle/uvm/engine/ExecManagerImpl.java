@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
 
@@ -37,9 +38,17 @@ public class ExecManagerImpl implements ExecManager
     private OutputStreamWriter out = null;
     private BufferedReader in  = null;
 
+    private Level level;
+    
     protected ExecManagerImpl()
     {
         initDaemon();
+        level = Level.INFO;
+    }
+
+    public void setLevel( Level level )
+    {
+        this.level = level;
     }
 
     public void setSerializer(JSONSerializer serializer)
@@ -68,7 +77,7 @@ public class ExecManagerImpl implements ExecManager
         cmd.replace('\n',' ');
         
         try {
-            logger.info("ExecManager.exec(" + cmd + ")");
+            logger.log( this.level, "ExecManager.exec(" + cmd + ")" );
             // write the command to the launcher daemon
             out.write(cmd + "\n", 0, cmd.length() + 1);
             out.flush();
@@ -79,7 +88,7 @@ public class ExecManagerImpl implements ExecManager
             ExecManagerResult result = (ExecManagerResult) serializer.fromJSON(line);
             long t1 = System.currentTimeMillis();
 
-            logger.info("ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1-t0) + " ms.");
+            logger.log( this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1-t0) + " ms.");
 
             if (result == null) {
                 logger.warn("Failed to serialize ExecManagerResult");

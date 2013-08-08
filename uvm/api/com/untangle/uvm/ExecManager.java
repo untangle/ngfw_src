@@ -12,6 +12,8 @@ public interface ExecManager
      */
     ExecManagerResult exec( String cmd );
 
+    void setLevel( org.apache.log4j.Level level );
+    
     /**
      * Execute the specified command and return the exit code
      */
