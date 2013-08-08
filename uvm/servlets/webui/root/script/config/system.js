@@ -934,6 +934,8 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     name: 'uid'
                 }, {
+                    name: 'shield_blocked'
+                }, {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
@@ -979,6 +981,18 @@ if (!Ung.hasResource["Ung.System"]) {
                     width: Ung.Util.portFieldWidth, 
                     sortable: true,
                     dataIndex: 'serverPort'
+                }, {
+                    header: this.i18n._("Action"),
+                    width: 150, 
+                    sortable: true,
+                    dataIndex: 'shield_blocked',
+                    renderer: function(value) {
+                        if (value)
+                            return i18n._("blocked");
+                        else
+                            return i18n._("passed");
+                    }
+
                 }]
             });
 
