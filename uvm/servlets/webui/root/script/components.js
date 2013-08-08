@@ -395,25 +395,25 @@ Ung.Util = {
             title: i18n._('Warning'),
             width: 400,
             height: 250,
-            layout: 'auto',
+            layout: 'anchor',
             modal:true,
             closable:false,
-            items:[{
+            items:{
                 xtype:'fieldset',
-                layout:'auto',
+                anchor:'100% 100%',
+                layout:'anchor',
                 title:'',
-                width:'100%',
-                height:'100%',
                 items:[{   
-                    width:'100%',
                     xtype: 'text',  
                     border: false,
-                    html:message
+                    html:message,
+                    anchor:'100% 30%',
                 },
                 {
                     xtype:'button',
                     text:i18n._('Show details'),
-                    width:'30%',
+                    width:50,
+                    anchor:'30% 15%',
                     handler:function() {
                         var techmsg = wnd.query('[name="techMsg"]')[0];
                         techmsg.setVisible( !techmsg.isVisible());
@@ -421,15 +421,15 @@ Ung.Util = {
                     }
                 },
                 {
-                    width:'100%',
                     margin:'10 0 0 0',
                     name:'techMsg',
                     xtype: 'text',  
+                    anchor:'100% 50%',
                     border: false,
                     hidden:true,
                     html:details ? details : ''
                 }]
-            }],
+            },
             buttons:[
                 {
                     text:i18n._('OK'), 
