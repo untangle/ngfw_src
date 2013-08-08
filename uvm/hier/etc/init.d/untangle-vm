@@ -210,7 +210,7 @@ case "$1" in
             echo -n "."
             sleep 1
             # If the log contains "shutdown complete" and the PID is gone - it was a clean shutdown
-            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null && [ "`uvmStatus`" == "stopped" ] ; then
+            if tail -n 1000 $UVM_CONSOLE_LOG | grep -qi 'shutdown complete' 2>/dev/null && [ "`uvmStatus`" == "stopped" ] ; then
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             # If the log does not contain "shutdown complete" but the PID is gone - it was not clean
@@ -231,7 +231,7 @@ case "$1" in
         # Wait for completion
         for i in `seq 1 5` ; do
             echo -n "."
-            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
+            if tail -n 1000 $UVM_CONSOLE_LOG | grep -qi 'shutdown complete' 2>/dev/null ; then
                 sleep 1 
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
