@@ -1,5 +1,6 @@
-/* $HeadURL$ */
-/* @author: Dirk Morris <dmorris@untangle.com> */
+/**
+ * $Id$
+ */
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
