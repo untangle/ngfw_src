@@ -176,10 +176,7 @@ public interface SessionEventListener extends java.util.EventListener
     void handleTCPFinalized(TCPSessionEvent event);
 
     /**
-     * <code>handleTCPComplete</code> is delivered when a session is:
-     *   a released session
-     *   that needs finalization
-     *   where the pipeline has been registered (server and client connected, or session rejected)
+     * <code>handleTCPComplete</code> is delivered when a session completed on both sides
      *
      * It is delivered just after the pipeline endpoints have been registered
      * but before vectoring has begun.
@@ -276,9 +273,7 @@ public interface SessionEventListener extends java.util.EventListener
     void handleUDPFinalized(UDPSessionEvent event);
 
     /**
-     * <code>handleUDPComplete</code> is delivered when a session is:
-     *   a released session
-     *   that needs finalization
+     * <code>handleUDPComplete</code> is delivered when a session is completed on both sides
      *   where the pipeline has been registered (server and client connected, or session rejected)
      *
      * It is delivered just after the pipeline endpoints have been registered

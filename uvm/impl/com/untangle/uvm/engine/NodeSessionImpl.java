@@ -42,7 +42,6 @@ public abstract class NodeSessionImpl implements NodeSession
     protected Logger logger = Logger.getLogger(NodeSessionImpl.class);
 
     protected boolean released = false;
-    protected boolean needsFinalization = true;
 
     protected final short protocol;
     protected final InetAddress clientAddr;
@@ -459,18 +458,9 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void release()
     {
-        // 8/8/05 jdi -- default changed to true -- finalization is
-        // almost always important when it is defined.
-        release(true);
-    }
-
-    // This one is for releasing once the session has been alive.
-    public void release(boolean needsFinalization)
-    {
         cancelTimer();
 
         released = true;
-        this.needsFinalization = needsFinalization;
     }
 
     public boolean released()
@@ -949,11 +939,6 @@ public abstract class NodeSessionImpl implements NodeSession
         cancelTimer();
 
         dispatcher.removeSession(this);
-    }
-
-    protected boolean needsFinalization()
-    {
-        return needsFinalization;
     }
 
     /**

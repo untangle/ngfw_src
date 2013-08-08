@@ -215,25 +215,13 @@ public interface NodeSession extends SessionTuple
     void killSession();
 
     /**
-     * <code>release</code> releases all interest in all non-final events for this session.  Only
-     * the finalization event will be delievered, when the resulting session ends.
+     * <code>release</code> releases all interest in all non-final events for this session.
      *
      * This call is only valid while in NORMAL_MODE.
      * Note: Just calls release(true);
      *
      */
     void release();
-
-    /**
-     * <code>release</code> notifies the TAPI that this session may continue,
-     * but no data events will be delivered for
-     * the session.  If needsFinalization is false, no further events will be delivered for the session
-     * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
-     * event when the resulting session ends.
-     *
-     * @param needsFinalization a <code>boolean</code> true if the node needs a finalization event when the released session ends.
-     */
-    void release(boolean needsFinalization);
 
     /**
      * <code>scheduleTimer</code> sets the timer for this session to fire in
