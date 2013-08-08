@@ -1,14 +1,6 @@
-/*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
- * $Id: ip.h 8515 2007-01-03 00:13:24Z rbscott $
+/**
+ * $Id: netcap_nfconntrack.h,v 1.00 2013/08/08 11:34:10 dmorris Exp $
  */
-
 #ifndef __NETCAP_NFCONNTRACK_H
 #define __NETCAP_NFCONNTRACK_H
 

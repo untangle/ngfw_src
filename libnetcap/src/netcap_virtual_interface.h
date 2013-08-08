@@ -1,14 +1,6 @@
-/*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
- * $Id: ip.h 8515 2007-01-03 00:13:24Z rbscott $
+/**
+ * $Id: netcap_virtual_interface.h,v 1.00 2013/08/08 11:32:06 dmorris Exp $
  */
-
 #ifndef __NETCAP_VIRTUAL_INTERFACE_H
 #define __NETCAP_VIRTUAL_INTERFACE_H
 
