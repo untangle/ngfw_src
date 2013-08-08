@@ -357,7 +357,7 @@ public class OpenVpnManager
                 if ( dns2 != null )
                     sb.append( "push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
                 String dnsDomain = group.getPushDnsDomain();
-                if ( dnsDomain != null ) 
+                if ( dnsDomain != null && !"".equals(dnsDomain.trim()) 
                     sb.append( "push" + " " + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + "\n");
             }
 
