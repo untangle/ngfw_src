@@ -30,6 +30,8 @@ class EventHandler extends AbstractEventHandler
     
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
+    private long lastLoggedWarningTime = System.currentTimeMillis();
+    
     public EventHandler( ShieldNodeImpl node )
     {
         super( node );
@@ -80,7 +82,10 @@ class EventHandler extends AbstractEventHandler
         stats.pulse(0);
 
         if ( multiplier != 0 && stats.load5 > ( node.getSettings().getRequestPerSecondLimit() * 5 * multiplier ) ) {
-            logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",stats.load5) );
+            if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
+                logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",stats.load5) );
+                this.lastLoggedWarningTime = System.currentTimeMillis();
+            }
 
             ShieldEvent evt = new ShieldEvent( request.sessionEvent(), true );
             node.logEvent( evt );
