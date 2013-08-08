@@ -105,6 +105,7 @@ public abstract class NodeSessionImpl implements NodeSession
             serverOutgoingSocketQueue = new OutgoingSocketQueue();
         } else {
             this.isVectored           = false;
+
             clientIncomingSocketQueue = null;
             clientOutgoingSocketQueue = null;
 
@@ -348,6 +349,16 @@ public abstract class NodeSessionImpl implements NodeSession
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+
+            if ( clientIncomingSocketQueue() != null )
+                clientIncomingSocketQueue().raze();
+            if ( serverIncomingSocketQueue() != null )
+                serverIncomingSocketQueue().raze();
+            if ( clientOutgoingSocketQueue() != null )
+                clientOutgoingSocketQueue().raze();
+            if ( serverOutgoingSocketQueue() != null )
+                serverOutgoingSocketQueue().raze();
+
             if (released) {
                 logger.debug("raze released");
             } else {
