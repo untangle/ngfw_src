@@ -195,7 +195,7 @@ public abstract class NetcapHook implements Runnable
             initNodes( sessionEvent );
 
             /* Connect to the server */
-            serverActionCompleted = connectServer();
+            serverActionCompleted = connectServerIfNecessary();
 
             /* Now generate the server side since the nodes may have
              * modified the sessionEvent (we can't do it until we connect
@@ -211,7 +211,7 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.serverSide().server().port());
 
             /* Connect to the client */
-            clientActionCompleted = connectClient();
+            clientActionCompleted = connectClientIfNecessary();
 
             /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
             if (  clientSide.getServerIntf() != serverSide.getServerIntf() ||
@@ -254,7 +254,7 @@ public abstract class NetcapHook implements Runnable
             }
 
             /* Only start vectoring if the session is alive */
-            if ( alive()) {
+            if ( alive() ) {
                 try {
                     /* Build the pipeline */
                     buildPipeline();
@@ -363,14 +363,14 @@ public abstract class NetcapHook implements Runnable
     }
     
     /**
-     * Initialize each of the nodes for the new session. </p>
+     * Initialize each of the nodes for the new session.
      */
     private void initNodes( SessionEvent event )
     {
         for ( Iterator<PipelineConnectorImpl> iter = pipelineConnectors.iterator() ; iter.hasNext() ; ) {
             PipelineConnectorImpl agent = iter.next();
 
-            if ( state == IPNewSessionRequestImpl.REQUESTED ) {
+            if ( this.state == IPNewSessionRequestImpl.REQUESTED ) {
                 newSessionRequest( agent, iter, event );
             } else {
                 /* NodeSession has been rejected or endpointed, remaining
@@ -389,15 +389,15 @@ public abstract class NetcapHook implements Runnable
      * @return a <code>boolean</code> true if the server was completed
      * OR we explicitly rejected
      */
-    private boolean connectServer()
+    private boolean connectServerIfNecessary()
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequestImpl.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
-            if ( !serverComplete()) {
+            if ( !serverComplete() ) {
                 /* ??? May want to send different codes, or something ??? */
-                if ( vectorReset()) {
+                if ( vectorReset() ) {
                     /* Forward the rejection type that was passed from
                      * the server */
                     state        = IPNewSessionRequestImpl.REJECTED;
@@ -428,7 +428,7 @@ public abstract class NetcapHook implements Runnable
      * @return a <code>boolean</code> true if the client was completed
      * OR we explicitly rejected.
      */
-    private boolean connectClient()
+    private boolean connectClientIfNecessary()
     {
         boolean clientActionCompleted = true;
 
@@ -639,7 +639,7 @@ public abstract class NetcapHook implements Runnable
             session.serverIncomingSocketQueue().send_event( reset );
 
             /* Empty the server queue */
-            while ( session.serverIncomingSocketQueue() != null && !session.serverIncomingSocketQueue().isEmpty()) {
+            while ( session.serverIncomingSocketQueue() != null && !session.serverIncomingSocketQueue().isEmpty() ) {
                 logger.debug( "vectorReset: Removing crumb left in IncomingSocketQueue:" );
                 session.serverIncomingSocketQueue().read();
             }
@@ -655,7 +655,7 @@ public abstract class NetcapHook implements Runnable
                 
             } else {
 
-                if ( session.clientOutgoingSocketQueue() != null && !session.clientOutgoingSocketQueue().containsReset()) {
+                if ( session.clientOutgoingSocketQueue() != null && !session.clientOutgoingSocketQueue().containsReset() ) {
                     /* Sent data or non-reset, catch this error. */
                     logger.error( "Sent non-reset crumb before vectoring." );
                 }

@@ -288,7 +288,6 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         state = REJECTED_SILENT;
     }
 
-    // May only call if the session is in the requested state
     public void endpoint()
     {
         if ( state != REQUESTED ) {
