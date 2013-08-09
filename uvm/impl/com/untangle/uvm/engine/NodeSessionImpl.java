@@ -336,17 +336,8 @@ public abstract class NodeSessionImpl implements NodeSession
      */
     public void raze()
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: raze for node in state " + xform.getRunState();
-            logger.warn(message);
-            // No need to kill the session, it's already dead.
-            // killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode( pipelineConnector().node().getNodeSettings().getId() );
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             if ( this.clientIncomingSocketQueue != null )
@@ -539,16 +530,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void complete()
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: complete(in) for node in state " + xform.getRunState();
-            logger.warn(message);
-            // killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
@@ -566,16 +549,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void clientEvent(IncomingSocketQueue in)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
-            logger.warn(message);
-            killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             readEvent(CLIENT, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -584,16 +559,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void serverEvent(IncomingSocketQueue in)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
-            logger.warn(message);
-            killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             readEvent(SERVER, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -602,16 +569,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void clientEvent(OutgoingSocketQueue out)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
-            logger.warn(message);
-            killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             writeEvent(CLIENT, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -620,16 +579,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void serverEvent(OutgoingSocketQueue out)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
-            logger.warn(message);
-            killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             writeEvent(SERVER, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -641,16 +592,8 @@ public abstract class NodeSessionImpl implements NodeSession
      * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: output reset(client) for node in state " + xform.getRunState();
-            logger.warn(message);
-            // killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = clientIncomingSocketQueue();
@@ -674,16 +617,8 @@ public abstract class NodeSessionImpl implements NodeSession
      * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = pipelineConnector().node();
-        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
-            String message = "killing: output reset(server) for node in state " + xform.getRunState();
-            logger.warn(message);
-            // killSession();
-            return;
-        }
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = serverIncomingSocketQueue();
