@@ -349,14 +349,14 @@ public abstract class NodeSessionImpl implements NodeSession
             UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            if ( clientIncomingSocketQueue() != null )
-                clientIncomingSocketQueue().raze();
-            if ( serverIncomingSocketQueue() != null )
-                serverIncomingSocketQueue().raze();
-            if ( clientOutgoingSocketQueue() != null )
-                clientOutgoingSocketQueue().raze();
-            if ( serverOutgoingSocketQueue() != null )
-                serverOutgoingSocketQueue().raze();
+            if ( this.clientIncomingSocketQueue != null )
+                this.clientIncomingSocketQueue.raze();
+            if ( this.serverIncomingSocketQueue != null )
+                this.serverIncomingSocketQueue.raze();
+            if ( this.clientOutgoingSocketQueue != null )
+                this.clientOutgoingSocketQueue.raze();
+            if ( this.serverOutgoingSocketQueue != null )
+                this.serverOutgoingSocketQueue.raze();
 
             if (released) {
                 logger.debug("raze released");
