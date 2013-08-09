@@ -123,6 +123,10 @@ int  netcap_queue_init (void)
         if (( _queue.nfq_fd = nfnl_fd( nfq_nfnlh( _queue.nfq_h ))) <= 0 ) {
             return errlog( ERR_CRITICAL, "nfnl_fd/nfq_nfnlh\n" );
         }
+        int bufsize = 1048576*2; /* 2 meg */
+        if ( setsockopt( _queue.nfq_fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof( bufsize )) < 0 ) {
+            perrlog("setsockopt");
+        }
 
         return 0;
     }

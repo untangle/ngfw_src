@@ -339,7 +339,7 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
     do {
         debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket, unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
         if ( bind( newsocket, (struct sockaddr*)&src_addr, sizeof(src_addr)) < 0 ) {
-            ret = errlog( ERR_WARNING,"bind(%s) failed: %s\n",unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), errstr );
+            ret = errlog( ERR_WARNING,"bind(%s:%i) failed: %s\n", unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ), errstr );
             break;
         }
         
