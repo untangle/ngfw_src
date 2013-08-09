@@ -584,7 +584,7 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testQueueFullMessages(List<String> alertList)
     {
-        int result = this.execManager.execResult("tail -n 100 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
+        int result = this.execManager.execResult("tail -n 20 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
         if ( result == 0 ) {
             String alertText = "";
             alertText += i18nUtil.tr("Packet processing recently overloaded.");
