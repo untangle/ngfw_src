@@ -1786,9 +1786,9 @@ Ext.define("Ung.Node", {
         } else { // not a trial
             if (this.license.valid) { 
                 // if its valid - say if its close to expiring otherwise say nothing
-                if (this.license.daysRemaining < 5) {
-                    licenseMessage = i18n._("Expires in") + Ext.String.format(" {0} ", this.license.daysRemaining) + i18n._("days");
-                } 
+                // if (this.license.daysRemaining < 5) {
+                //    licenseMessage = i18n._("Expires in") + Ext.String.format(" {0} ", this.license.daysRemaining) + i18n._("days");
+                // } 
             } else {
                 // if its invalid say the reason
                 licenseMessage = this.license.status;
