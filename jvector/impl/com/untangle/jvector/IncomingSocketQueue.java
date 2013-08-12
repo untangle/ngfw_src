@@ -277,12 +277,8 @@ public class IncomingSocketQueue extends Sink
         return this.listenerList.add( l );
     }
 
-    // public boolean unregisterListener( SocketQueueListener l )
-    // {
-    //     return this.listenerList.remove( l );
-    // }
-
-    public int poll() {
+    public int poll()
+    {
         if ( isShutdown ) return Vector.MVPOLLHUP;
         if ( isEnabled )  return Vector.MVPOLLOUT;
 
@@ -291,7 +287,8 @@ public class IncomingSocketQueue extends Sink
 
     private void mvpollNotifyObservers()
     {
-        mvpollNotifyObservers( this.pointer, poll());
+        if ( this.pointer != 0L )
+            mvpollNotifyObservers( this.pointer, poll() );
     }
 
     private native long create();

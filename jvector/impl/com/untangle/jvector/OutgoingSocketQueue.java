@@ -247,11 +247,6 @@ public class OutgoingSocketQueue extends Source
         return this.listenerList.add( l );
     }
 
-    // public boolean unregisterListener( SocketQueueListener l )
-    // {
-    //     return this.listenerList.remove( l );
-    // }
-
     public int poll()
     {
         /* If the relay side is closed, always return HUP */
@@ -280,7 +275,8 @@ public class OutgoingSocketQueue extends Source
 
     private void mvpollNotifyObservers()
     {
-        mvpollNotifyObservers( this.pointer, poll());
+        if ( this.pointer != 0L )
+            mvpollNotifyObservers( this.pointer, poll());
     }
 
     private void callListenersRemove() /* call Listeners Non Full (writable) Event */

@@ -6,7 +6,7 @@ package com.untangle.jvector;
 public abstract class Sink
 {
     protected long pointer;
-    
+
     protected long snk_ptr() 
     { 
         return pointer;
@@ -31,7 +31,7 @@ public abstract class Sink
         pointer = 0L;
     }
 
-    /* 
+    /**
      * This function is called by vectoring once it completes.  The C component is 
      * freed automatically.
      */

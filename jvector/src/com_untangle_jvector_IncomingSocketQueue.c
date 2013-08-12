@@ -52,9 +52,10 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_IncomingSocketQueue_mvpollNotif
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)(uintptr_t)pointer;
     
-    if (( jv_snk == NULL ) || ( jv_snk->key == NULL )) {
-        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL sink or key\n" );
-    }
+    if ( jv_snk == NULL )
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL sink\n" );
+    if ( jv_snk->key == NULL ) 
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL key\n" );
     
     mvpoll_key_notify_observers( jv_snk->key, (eventmask_t)eventmask );
 }
