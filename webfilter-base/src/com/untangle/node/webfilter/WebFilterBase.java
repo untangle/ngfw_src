@@ -109,9 +109,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return settings.getUnblockMode();
     }
 
-    public boolean isHttpsEnabled()
+    public boolean isHttpsEnabledSniIpFallback()
     {
-        return settings.getEnableHttps();
+        return settings.getEnableHttpsSniIpFallback();
     }
 
     public boolean isHttpsEnabledSni()

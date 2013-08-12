@@ -27,8 +27,8 @@ public class WebFilterSettings implements Serializable
 
     private Integer version = new Integer(1);
 
-    private Boolean enableHttps = false;
     private Boolean enableHttpsSni = true;
+    private Boolean enableHttpsSniIpFallback = false;
     private Boolean unblockPasswordEnabled = false;
     private Boolean unblockPasswordAdmin = false;
     private String  unblockPassword = "";
@@ -82,8 +82,8 @@ public class WebFilterSettings implements Serializable
     /**
      * If true, enables checking of HTTPS traffic.
      */
-    public Boolean getEnableHttps() { return enableHttps; }
-    public void setEnableHttps( Boolean enableHttps ) { this.enableHttps = enableHttps; }
+    public Boolean getEnableHttpsSniIpFallback() { return enableHttpsSniIpFallback; }
+    public void setEnableHttpsSniIpFallback( Boolean newValue ) { this.enableHttpsSniIpFallback = newValue; }
 
     public Boolean getEnableHttpsSni() { return enableHttpsSni; }
     public void setEnableHttpsSni( Boolean enableHttpsSni ) { this.enableHttpsSni = enableHttpsSni; }

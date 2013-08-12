@@ -75,6 +75,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }]
                 },{
                     name: "fieldset_miscellaneous",
+                    title: this.i18n._("Advanced Options"),
                     items: [{
                         xtype: "checkbox",
                         boxLabel: this.i18n._("Block pages from IP only hosts"),
