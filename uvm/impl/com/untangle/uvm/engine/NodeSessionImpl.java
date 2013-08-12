@@ -313,9 +313,6 @@ public abstract class NodeSessionImpl implements NodeSession
             if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.kill();
             if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.kill();
             if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.kill();
-
-            /* Call the raze method */
-            raze();
         } catch ( Exception ex ) {
             logger.warn( "Error while killing a session", ex );
         }
