@@ -354,7 +354,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         group.setGroupId(1);
         group.setName(I18nUtil.marktr("Default Group"));
         group.setFullTunnel( false );
-        group.setPushDns( true );
+        group.setPushDns( false );
         groups.add( group );
         newSettings.setGroups( groups );
 
