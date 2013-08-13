@@ -409,11 +409,8 @@ public class NetworkManagerImpl implements NetworkManager
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
-         * FIXME:
          * validate settings
-         * validatU: routes must route traffic to reachable destinations
          * validate: routes can not route traffic to self
-         * validate: two interfaces can't have the identical subnet (192.168.1.2/24 external and 192.168.1.3/24 internal)
          */
         sanityCheckNetworkSettings( newSettings );
         
@@ -573,7 +570,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV4StaticPrefix( 24 );
                 internal.setDhcpEnabled( true );
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC ); 
-                internal.setV6StaticAddress( InetAddress.getByName("2001:db8:85a3:0:0:8a2e:370:7334") ); // FIXME what to set IPv6 to?
+                internal.setV6StaticAddress( null ); // FIXME what to set IPv6 
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
                 interfaces.add(internal);
