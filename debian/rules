@@ -30,10 +30,10 @@ build-arch: configure-stamp  build-arch-stamp
 build-arch-stamp:
 	@dh_testdir
 
-# FIXME: only one of the 2 build- is needed
+# XXX: only one of the 2 build- is needed
 #	rake build
 
-# FIXME: what's that ?
+# XXX: what's that ?
 	rm -f ./debian/tmp/stamp*
 
 	@touch build-arch-stamp
@@ -46,22 +46,11 @@ build-indep-stamp:
 
 build: build-arch build-indep
 
-clean:
-	@dh_testdir
-	@dh_testroot
-	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-#	@rm -f ./debian/*.init
-	@dh_clean
-	rake clean
-
-# FIXME: they look about the same to me...
-# distclean is too agressive to run in developer trees, so only run
-# for 'make release'
+clean: distclean
 distclean:
 	@dh_testdir
 	@dh_testroot
 	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-#	@rm -f ./debian/*.init
 	@dh_clean
 
 install: build
