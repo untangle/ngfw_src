@@ -445,7 +445,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     name: 'displayAction',
                     mapping:  this.getRpcNode().getVendor() + '_action',
                     type: 'string',
-                    convert: Ext.bind( function(value, rec ) { // FIXME: make that a switch
+                    convert: Ext.bind( function(value, rec ) { 
                             if (value == 'P') { // PASSED
                                 return this.i18n._("pass message");
                             } else if (value == 'M') { // MARKED
