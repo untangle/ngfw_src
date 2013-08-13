@@ -329,9 +329,7 @@ class VirusHttpHandler extends HttpStateMachine
             logger.warn("Unable to create temporary file: " + e);
             this.scan = false;
             releaseResponse();
-        } finally {
-            try { fileBuf.delete(); } catch (Exception ignore) {}
-        }
+        } 
     }
 
     private Chunk bufferOrTrickle(Chunk chunk) throws TokenException
