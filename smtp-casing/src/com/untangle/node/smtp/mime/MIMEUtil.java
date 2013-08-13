@@ -152,7 +152,7 @@ public class MIMEUtil
      *        such that lines are not longer than 76 chars).
      * @param oldMsg the old message
      */
-    public static MIMEMessage simpleWrap(String plainBodyContent, MIMEMessage oldMsg) throws Exception /* FIXME */
+    public static MIMEMessage simpleWrap(String plainBodyContent, MIMEMessage oldMsg) throws Exception
     {
         //First, we need to "steal" the old headers.  This
         // is easiest by simply re-parsing them
