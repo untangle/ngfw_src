@@ -401,8 +401,10 @@ static event_action_t    _sink_send_event     ( sink_t* snk, event_t* event )
         return EVENT_ACTION_ERROR;
     }
 
-    /* XXX FIXME arg? ??? ??? *
-     * RBS - Not quite sure what this is about */
+    /**
+     * XXX arg? ??? ??? *
+     * RBS - Not quite sure what this is about
+     */
     switch ( jv_event->ev.type & EVENT_TYPE_MASK ) {
     case JV_EVENT_TYPE:
         action = (*env)->CallIntMethod( env, jv_snk->this, mid, jv_event->obj );
