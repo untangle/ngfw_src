@@ -297,7 +297,5 @@ class SessionRedirect
         if (result != 0) {
             logger.warn( "Command failed: " + cmd );
         }
-        
-        //FIXME need to destroy iptables rule
     }
 }
