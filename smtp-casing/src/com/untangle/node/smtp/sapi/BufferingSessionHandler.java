@@ -572,7 +572,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
             m_isMessageMaster = true;
             //TODO bscott Should we close the file of accumulated MIME?  It is really
             //     an error to have the file at all
-            
+			
             m_accumulator = null;
 
             handleMIMEChunk(true, true, null, actions);
@@ -649,7 +649,10 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.transactionEnded(this);
                         getTransaction().reset();
                         finalReport();
-
+                        if (m_accumulator != null){
+                            m_accumulator.dispose();
+                            m_accumulator = null;
+                        }
                         break;
                     case TEMPORARILY_REJECT:
                         //We're blocking the message
@@ -667,7 +670,10 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.transactionEnded(this);
                         getTransaction().reset();
                         finalReport();
-
+                        if (m_accumulator != null){
+                            m_accumulator.dispose();
+                            m_accumulator = null;
+                        }
                         break;
                     default:
                         m_logger.warn("unhandled action: " + action);
