@@ -208,7 +208,7 @@ class SnmpExtensionUvm(SnmpExtension):
 
   COUNTS = { 'count' : 1,
              'countSinceMidnight' : 2,
-             'lastActivityDate' : 8 } # FIXME: move 1 up
+             'lastActivityDate' : 8 } 
 
   @staticmethod
   def createMibData():
@@ -299,7 +299,7 @@ bwc-foo OBJECT-TYPE
         for k, v in myStats.iteritems():
           for k2, v in v.iteritems():
             name = self.getName(tid, k, k2)
-            if k2.count('Date'): # FIXME
+            if k2.count('Date'): 
               type = "timeticks"
             else:
               type = "integer"
