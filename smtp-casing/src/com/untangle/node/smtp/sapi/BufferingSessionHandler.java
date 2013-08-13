@@ -572,6 +572,9 @@ public abstract class BufferingSessionHandler extends SessionHandler
             m_isMessageMaster = true;
             //TODO bscott Should we close the file of accumulated MIME?  It is really
             //     an error to have the file at all
+            if (m_accumulator != null){
+                m_accumulator.dispose();
+            }
             m_accumulator = null;
 
             handleMIMEChunk(true, true, null, actions);
@@ -947,12 +950,15 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.sendFinalMIMEToServer(
                                                       new ContinuedMIMEToken(m_accumulator.createChunk(null, true)),
                                                       new MailTransmissionContinuation());
+                        if (m_accumulator != null){
+                            m_accumulator.dispose();
+                        }
                         m_accumulator = null;
                     }
                     else {
                         m_txLog.add("Passing along parsed MIME in one token");
                         if(m_accumulator != null) {
-                            m_accumulator.closeInput();
+                            m_accumulator.dispose();
                             m_accumulator = null;
                         }
                         actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_msg, m_messageInfo),
