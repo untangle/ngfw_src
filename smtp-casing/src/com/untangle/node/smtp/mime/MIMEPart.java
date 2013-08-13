@@ -547,7 +547,7 @@ public class MIMEPart
         }
 
         // 8/11/05 jdi -- User provided file name removed.
-        String fileNamePrefix = "mimepart";
+        String fileNamePrefix = "MimePart-";
 
         if(!decoded) {
             return getRawContentRecord().source.toFile( fileNamePrefix );
@@ -586,7 +586,7 @@ public class MIMEPart
             return m_sourceRecord;
         }
         if(m_rawContentRecord == null) {
-            File file = decodeToFile( "RAWMIMEPART" + System.identityHashCode(this), new NOOPDecoderFactory());
+            File file = decodeToFile( "MimePartRaw-" + System.identityHashCode(this), new NOOPDecoderFactory());
             m_rawContentRecord = new MIMESourceRecord( new FileMIMESource(file), 0, (int) file.length(), false);
         }
         return m_rawContentRecord;
