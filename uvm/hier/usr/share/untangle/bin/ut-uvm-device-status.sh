@@ -22,9 +22,19 @@ interfaceList=$*
 function getInterfaceStatus()
 {
     local t_intf=$1
+    local t_comma=$2
     local t_isConnected=${FLAG_UNKNOWN}
     local t_speed="0"
     local t_duplex=${FLAG_UNKNOWN}
+
+    if [ ! -e /sys/class/net/${t_intf} ] ; then
+        # device does not exists
+        return
+    fi
+
+    if [ ! -z "${t_comma}" ] ; then 
+        echo "    ${t_comma}" ; 
+    fi
 
     t_status=`ethtool ${t_intf} | grep -v Supported | egrep '(Speed|Duplex|Link detected)' | sed -e '{:start;N;s/\n/ /g;t start}'`
     if [ -n "${t_status}" ]; then
@@ -116,8 +126,7 @@ echo "    \"javaClass\" : \"java.util.LinkedList\","
 echo "    \"list\" : ["
 
 for t_intf in ${interfaceList} ; do 
-    if [ ! -z "$COMMA" ] ; then echo "    $COMMA" ; fi
-    getInterfaceStatus ${t_intf};  
+    getInterfaceStatus ${t_intf} ${COMMA};  
     COMMA=","
 done
 
