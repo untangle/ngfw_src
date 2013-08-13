@@ -51,8 +51,7 @@ typedef enum {
     POLL_MESSAGE = 1,      /* poll type for message queue */
     POLL_TCP_INCOMING,     /* poll type for accepting new tcp connections */
     POLL_UDP_INCOMING,     /* poll type for accepting udp packets */
-    POLL_NFQUEUE_INCOMING, /* poll type for accepting netfilter queued packets */
-    POLL_TCP_WAITING       /* poll type for waiting on connections to complete */
+    POLL_NFQUEUE_INCOMING /* poll type for accepting netfilter queued packets */
 } poll_type_t;
     
 /**
@@ -70,12 +69,6 @@ typedef struct epoll_info {
      */
     poll_type_t     type;
     
-    /**
-     * the tcp sessi pertaining to this epoll fd (if any)
-     * used in type = {POLL_TCP_WAITING}
-     */
-    // netcap_tcp_sess_t* tcp_sess;
-    
     netcap_session_t* netcap_sess;
     
 } epoll_info_t;
@@ -84,7 +77,6 @@ typedef struct epoll_info {
 
 static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int sock );
 static int  _handle_message (epoll_info_t* info, int revents);
-static int  _handle_completion (epoll_info_t* info, int revents);
 static int  _handle_udp (epoll_info_t* info, int revents, int sock );
 static int  _handle_nfqueue (epoll_info_t* info, int revents);
 
@@ -243,9 +235,6 @@ int  netcap_server (void)
             case POLL_UDP_INCOMING:
                 _handle_udp(info, events[i].events, events[i].data.fd );
                 break;
-            case POLL_TCP_WAITING:
-                _handle_completion(info, events[i].events);
-                break;
             case POLL_NFQUEUE_INCOMING:
                 _handle_nfqueue(info, events[i].events);
             }
@@ -381,95 +370,6 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
             perrlog("close");
     }
     return 0;
-}
-
-static int  _handle_completion (epoll_info_t* info, int revents)
-{
-    int            result      = -1;
-    u_int          result_size = sizeof(result);
-    int            flags;
-    netcap_session_t*  netcap_sess;
-
-    _server_unlock();
-
-    /* FIXME */
-    return errlog(ERR_CRITICAL,"Unimplemented\n");
-    
-    /**
-     * Sanity checks
-     */
-    if ( !info || !info->netcap_sess ) {
-        debug(1,"0x%08x 0x%08x\n",info,info->netcap_sess);
-        _server_unlock();
-        return errlogargs();
-    }
-
-    netcap_sess = info->netcap_sess;
-    
-    if (!(revents & EPOLLOUT)) {
-        netcap_tcp_session_debug(netcap_sess, 8, "Unable to Complete Connection");
-
-        // This should close and then free the session
-        netcap_tcp_session_raze(1, netcap_sess);
-        _server_unlock();
-        return 0;
-    }
-
-    /**
-     * first remove it from the epoll list 
-     * then release the lock
-     */
-    _epoll_info_del(info);
-    _server_unlock();
-
-    /**
-     * set server socket back to a blocking socket
-     */
-    if ((flags = fcntl(netcap_sess->server_sock,F_GETFL))<0) {
-        netcap_tcp_session_raze(1, netcap_sess);
-        return perrlog("fcntl");
-    }
-    if (fcntl(netcap_sess->server_sock,F_SETFL,flags & (O_NDELAY ^ 0xffffffff))<0) {
-        netcap_tcp_session_raze(1, netcap_sess);
-        return perrlog("fcntl");
-    }
-    
-    /**
-     * check if the connection finished
-     */
-    if (getsockopt(netcap_sess->server_sock,SOL_SOCKET,SO_ERROR,&result,&result_size)<0) {
-        netcap_tcp_session_raze(1, netcap_sess);
-        return perrlog("getsockopt");
-    }
-    
-    /**
-     * if the connection could not be completed 
-     * pass it to the hook anyway 
-     * usually this is never result as POLL_HUP will be set by poll 
-     * and this handled elswhere
-     */
-    if (result) {
-        netcap_tcp_session_debug(netcap_sess, 8, "Unable to Complete Connection");
-
-        /* close just the server sock and set it to -2 */
-        if (close(netcap_sess->server_sock)<0) {
-            perrlog("close");
-        }
-
-/*         netcap_sess->server_sock = -2; */
-/*         netcap_tcp_call_hooks(NULL, netcap_sess,sub->arg); */
-        return 0;
-    }
-
-    /**
-     * otherwise the connection is ready to be passed up
-     */
-    else {
-        netcap_tcp_session_debug(netcap_sess,8,"Completed Connection");
-/*         netcap_tcp_call_hooks(NULL,netcap_sess,sub->arg); */
-        return 0;
-    }
-    
 }
 
 static int  _handle_udp (epoll_info_t* info, int revents, int sock )
