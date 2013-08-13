@@ -264,7 +264,6 @@ public class MessageManagerImpl implements MessageManager
             long time = System.nanoTime();
             if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
                 SystemStatEvent sse = new SystemStatEvent();
-                // FIXME: wrap the following in public method in SystemStatEvent
                 sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
                 sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
                 sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
@@ -285,12 +284,10 @@ public class MessageManagerImpl implements MessageManager
             systemStats = Collections.unmodifiableMap(m);
         }
 
-        private void readMeminfo(Map<String, Object> m)
-            throws IOException
+        private void readMeminfo(Map<String, Object> m) throws IOException
         {
 
-            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m,
-                         1024);
+            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m, 1024);
 
             Long memFree = (Long)m.get("MemFree");
             if (null == memFree) {
@@ -312,16 +309,12 @@ public class MessageManagerImpl implements MessageManager
             m.put("MemFree", memFree);
         }
 
-        private void readVmstat(Map<String, Object> m)
-            throws IOException
+        private void readVmstat(Map<String, Object> m) throws IOException
         {
             readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m, 1);
         }
 
-        private void readProcFile(String filename, Pattern p,
-                                  Set<String> keepers, Map<String, Object> m,
-                                  int multiple)
-            throws IOException
+        private void readProcFile(String filename, Pattern p, Set<String> keepers, Map<String, Object> m, int multiple) throws IOException
         {
             BufferedReader br = null;
             try {
@@ -347,8 +340,7 @@ public class MessageManagerImpl implements MessageManager
             }
         }
 
-        private void readCpuinfo(Map<String, Object> m)
-            throws IOException
+        private void readCpuinfo(Map<String, Object> m) throws IOException
         {
             String cpuModel = null;
             double cpuSpeed = 0;
@@ -386,8 +378,7 @@ public class MessageManagerImpl implements MessageManager
             m.put("numCpus", numCpus);
         }
 
-        private void readUptime(Map<String, Object> m)
-            throws IOException
+        private void readUptime(Map<String, Object> m) throws IOException
         {
             BufferedReader br = null;
             try {
@@ -409,8 +400,7 @@ public class MessageManagerImpl implements MessageManager
             }
         }
 
-        private void readLoadAverage(Map<String, Object> m)
-            throws IOException
+        private void readLoadAverage(Map<String, Object> m) throws IOException
         {
             BufferedReader br = null;
             try {
@@ -452,8 +442,7 @@ public class MessageManagerImpl implements MessageManager
             m.put("numProcs", numProcs);
         }
 
-        private void getCpuUsage(Map<String, Object> m)
-            throws IOException
+        private void getCpuUsage(Map<String, Object> m) throws IOException
         {
             BufferedReader br = null;
             try {
@@ -574,8 +563,7 @@ public class MessageManagerImpl implements MessageManager
             lastNetDevUpdate = currentTime;
         }
 
-        private synchronized void getDiskUsage(Map<String, Object> m)
-            throws IOException
+        private synchronized void getDiskUsage(Map<String, Object> m) throws IOException
         {
             File root = new File("/");
             m.put("totalDiskSpace", root.getTotalSpace());
