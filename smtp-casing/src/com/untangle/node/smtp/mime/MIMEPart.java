@@ -587,12 +587,7 @@ public class MIMEPart
         }
         if(m_rawContentRecord == null) {
             File file = decodeToFile( "RAWMIMEPART" + System.identityHashCode(this), new NOOPDecoderFactory());
-
-            m_rawContentRecord = new MIMESourceRecord(
-                                                      new FileMIMESource(file),
-                                                      0,
-                                                      (int) file.length(),//Someday when we have 2+ gig files.......
-                                                      false);
+            m_rawContentRecord = new MIMESourceRecord( new FileMIMESource(file), 0, (int) file.length(), false);
         }
         return m_rawContentRecord;
     }
@@ -601,11 +596,7 @@ public class MIMEPart
         throws IOException
     {
         File file = decodeToFile( fileName, decoderFactory);
-        m_decodedContentRecord = new MIMESourceRecord(
-                                                      new FileMIMESource(file),
-                                                      0,
-                                                      (int) file.length(),//Someday when we have 2+ gig files.......
-                                                      false);
+        m_decodedContentRecord = new MIMESourceRecord( new FileMIMESource(file), 0, (int) file.length(), false);
     }
 
     private void pipeToFile( InputStream in, File f )
@@ -647,13 +638,12 @@ public class MIMEPart
         }
         catch(IOException ex) {
             close(mpIS);
-            if(newFile != null) {
+            if ( newFile != null )
                 newFile.delete();
-            }
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex2;
-        }
+        } 
     }
 
     //============== Inner Class =================

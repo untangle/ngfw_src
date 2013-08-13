@@ -310,8 +310,10 @@ class VirusHttpHandler extends HttpStateMachine
     private void setupFile(String reason)
     {
         logger.debug("VIRUS: Scanning because of: " + reason);
+        File fileBuf = null;
+
         try {
-            File fileBuf = File.createTempFile("VirusHttpHandler-", null);
+            fileBuf = File.createTempFile("VirusHttpHandler-", null);
 
             this.scanfile = fileBuf;
 
@@ -327,6 +329,8 @@ class VirusHttpHandler extends HttpStateMachine
             logger.warn("Unable to create temporary file: " + e);
             this.scan = false;
             releaseResponse();
+        } finally {
+            try { fileBuf.delete(); } catch (Exception ignore) {}
         }
     }
 
