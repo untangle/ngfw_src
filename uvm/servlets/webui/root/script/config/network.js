@@ -116,7 +116,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         emptyText : this.testEmptyText,
                         hideLabel : true,
                         readOnly : true,
-                        scrollTop: 99999,
                         anchor : "100% 100%",
                         cls : "ua-test-output",
                         style : "padding: 8px"
@@ -158,6 +157,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.enableParameters( true );
             this.runTest.enable();
             this.execResultReader = null;
+            this.scrollStart=0;
         },
         continueNetworkUtility: function(){
             if( this.execResultReader === null ) {
@@ -187,13 +187,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     text.push( "" + new Date() + " - " + this.settingsCmp.i18n._("Test Completed") +"\n\n");
                     this.finishNetworkUtility();
                 }
-                this.output.setValue( text.join( "" ));
-
-                //FIXME, auto scroll to bottom
-                //does not work
-                //element.scroll( "b", 10000 );
-                //this.output.scrollBy(10000 ,10000, true );
-               
+                this.output.setValue( text.join(""));
+                //scroll to bottom
+                var t =this.query('textarea[name="output"]')[0];
+                var t1 = t.getEl().down('textarea');
+                t1.dom.scrollTop = 99999;
             }, this));
         },
         onClearOutput: function() {
