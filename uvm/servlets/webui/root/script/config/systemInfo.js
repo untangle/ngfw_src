@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
      Ext.define("Ung.SystemInfo", {
         extend: "Ung.StatusWin",
-        panelVersion: null,
+        panelServer: null,
         panelLicenses: null,
         panelLicenseAgreement: null,
         initComponent: function() {
@@ -15,21 +15,21 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }, {
                 title: i18n._('System Info')
             }];
-            this.buildVersion();
+            this.buildServer();
             this.buildLicenses();
             this.buildLicenseAgreement();
             
             // builds the tab panel with the tabs
-            var pageTabs = [this.panelVersion, this.panelLicenses, this.panelLicenseAgreement];
+            var pageTabs = [this.panelServer, this.panelLicenses, this.panelLicenseAgreement];
             this.buildTabPanel(pageTabs);
             this.callParent(arguments);
         },
-        buildVersion: function() {
-            this.panelVersion = Ext.create('Ext.panel.Panel',{
-                name: 'Version',
-                helpSource: 'system_info_version',
+        buildServer: function() {
+            this.panelServer = Ext.create('Ext.panel.Panel',{
+                name: 'Server',
+                helpSource: 'system_info_server',
                 parentId: this.getId(),
-                title: this.i18n._('Version'),
+                title: this.i18n._('Server'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 items: [{
