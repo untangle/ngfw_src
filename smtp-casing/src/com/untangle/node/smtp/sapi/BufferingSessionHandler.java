@@ -575,7 +575,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
 			
             m_accumulator = null;
 
-            handleMIMEChunk(true, true, null, actions);
+            handleMIMEChunk(true, true, token, actions);
 
             //      m_messageInfo = null;
         }
@@ -585,8 +585,23 @@ public abstract class BufferingSessionHandler extends SessionHandler
             closeMessageResources(true);
         }
 
-        private void handleMIMEChunk(boolean isFirst, boolean isLast, ContinuedMIMEToken continuedToken, Session.SmtpCommandActions actions)
+        private void cleanupTempFile(Token token){
+            if (m_accumulator != null){
+                m_accumulator.dispose();
+                m_accumulator = null;
+            } else {
+                if (token != null && token instanceof CompleteMIMEToken){
+                    ((CompleteMIMEToken) token).getMessage().dispose();
+                }
+            }
+        }
+        
+        private void handleMIMEChunk(boolean isFirst, boolean isLast, Token token, Session.SmtpCommandActions actions)
         {
+            ContinuedMIMEToken continuedToken = null;
+            if (token != null && token instanceof ContinuedMIMEToken){
+                continuedToken = (ContinuedMIMEToken) token;
+            }
             switch(m_state) {
             case INIT:
             case GATHER_ENVELOPE:
@@ -649,10 +664,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.transactionEnded(this);
                         getTransaction().reset();
                         finalReport();
-                        if (m_accumulator != null){
-                            m_accumulator.dispose();
-                            m_accumulator = null;
-                        }
+                        cleanupTempFile(token);
                         break;
                     case TEMPORARILY_REJECT:
                         //We're blocking the message
@@ -670,10 +682,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.transactionEnded(this);
                         getTransaction().reset();
                         finalReport();
-                        if (m_accumulator != null){
-                            m_accumulator.dispose();
-                            m_accumulator = null;
-                        }
+                        cleanupTempFile(token);
                         break;
                     default:
                         m_logger.warn("unhandled action: " + action);
