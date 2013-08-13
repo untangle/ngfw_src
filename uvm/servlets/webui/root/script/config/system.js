@@ -821,6 +821,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         buildShield: function() {
             var multiplierData = [
+                [1, 1 + ' ' + this.i18n._("1 user")], 
                 [5, 5 + ' ' + this.i18n._("users")], 
                 [25, 25 + ' ' + this.i18n._("users")],
                 [40, 50 + ' ' + this.i18n._("users")],
