@@ -162,7 +162,6 @@ class VirusHighlight(Highlight):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        # FIXME: doing it twice is nasty...
         query_web = """
 SELECT COALESCE(sum(hits), 0)::int AS documents,
        COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses
@@ -731,7 +730,7 @@ class VirusMailDetail(DetailSection):
 
         rv += [ColumnDesc('%s_name' % (self.__vendor_name,), _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('addr', _('Recipient'), 'EmailLink'), # FIXME: or is it sender ?
+               ColumnDesc('addr', _('Recipient'), 'EmailLink'),
                ColumnDesc('c_client_addr', _('Client Ip')),
                ColumnDesc('c_client_port', _('Client Port'))]
 
