@@ -417,7 +417,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     return true;
                 },
                 items: [{
-                    title: this.i18n._("From File"),
+                    title: this.i18n._("Restore from File"),
                     xtype: "fieldset",
                     items: [{
                         border: false,
