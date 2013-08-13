@@ -570,7 +570,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV4StaticPrefix( 24 );
                 internal.setDhcpEnabled( true );
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC ); 
-                internal.setV6StaticAddress( null ); // FIXME what to set IPv6 
+                internal.setV6StaticAddress( null );
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
                 interfaces.add(internal);
