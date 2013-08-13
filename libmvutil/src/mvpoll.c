@@ -211,7 +211,6 @@ int           mvpoll_key_base_init   ( mvpoll_key_t* key )
     return 0;
 }
 
-
 mvpoll_key_t* mvpoll_key_base_create ()
 {
     mvpoll_key_t* key = malloc(sizeof(mvpoll_key_t));
@@ -361,7 +360,7 @@ static int _mvpoll_collect_events ( mvpoll_t* mvp, mvpoll_event_t* event, int ma
 {
     int if_rdy = 0;
     int evcount,step,evstep=0;
-    int maxkeys = list_length(&mvp->keys);  /* FIXME are fd's in keys? */
+    int maxkeys = list_length(&mvp->keys);  /* XXX are fd's in keys? */
     struct epoll_event localevent[maxkeys+1]; /* +1 for mailbox */
     
     debug(10,"MVPOLL: epoll_wait(epfd=%i,timeout=%i)\n",mvp->epfd,timeout);
