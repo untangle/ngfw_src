@@ -56,7 +56,7 @@ class VirusHttpHandler extends HttpStateMachine
     private File scanfile;
     private FileChannel outFile;
     private FileChannel inFile;
-    private File file;
+   // private File file;
 
     // constructors -----------------------------------------------------------
 
@@ -219,8 +219,9 @@ class VirusHttpHandler extends HttpStateMachine
 
             if (Mode.QUEUEING == getResponseMode()) {
                 releaseResponse();
+                try { scanfile.delete(); } catch (Exception ignore) {}
             } else {
-                preStream(new FileChunkStreamer(file, inFile, null, null, false));
+                preStream(new FileChunkStreamer(scanfile, inFile, null, null, false));
             }
 
         } else {
@@ -323,7 +324,7 @@ class VirusHttpHandler extends HttpStateMachine
 
             this.outFile = (new FileOutputStream(fileBuf)).getChannel();
             this.inFile = (new FileInputStream(fileBuf)).getChannel();
-            this.file = fileBuf;
+            this.scanfile = fileBuf;
             this.scan = true;
         } catch (IOException e) {
             logger.warn("Unable to create temporary file: " + e);
@@ -368,7 +369,7 @@ class VirusHttpHandler extends HttpStateMachine
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
                 scan = false;
                 FileChunkStreamer streamer = new FileChunkStreamer
-                    (file, inFile, null, null, false);
+                    (scanfile, inFile, null, null, false);
                 preStream(streamer);
 
                 return Chunk.EMPTY;
