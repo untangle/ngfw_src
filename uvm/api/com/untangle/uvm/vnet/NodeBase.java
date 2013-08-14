@@ -526,8 +526,6 @@ public abstract class NodeBase implements Node
      */
     protected void killMatchingSessionsGlobal( SessionMatcher matcher )
     {
-        logger.info("killMatchingSessionsGlobal()");
-
         if (matcher == null)
             return;
 
