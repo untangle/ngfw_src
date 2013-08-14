@@ -217,6 +217,37 @@ public class IPMaskedAddress implements Serializable
             return null;
         }
     }
+
+    /**
+     * This bitwise ANDs the mask with addr and adds one and returns the result:
+     * Example getMaskedAddress of 192.168.1.1 and 255.255.0.0 returns 192.168.0.1
+     */
+    public InetAddress getFirstMaskedAddress()
+    {
+        byte[] addr = this.getAddress().getAddress();
+        byte[] mask = prefixLengthToByteMask( this.getPrefixLength(), addr.length );
+        
+        if (addr.length != mask.length) {
+            logger.warn("Invalid addr/mask: " + this.address + "/" + this.prefixLength);
+            return null;
+        }
+
+        byte[] result = addr;
+        for ( int i = 0; i < addr.length ; i++ ) {
+            result[i] = (byte)( addr[i] & mask[i] );
+            if (i == (addr.length - 1)) //if last byte
+                result[i] += 1;
+        }
+
+
+        try {
+            InetAddress a = InetAddress.getByAddress( result );
+            return a;
+        } catch ( Exception e ) {
+            logger.warn( "Exception: ", e );
+            return null;
+        }
+    }
     
     public boolean isNode()
     {
@@ -643,47 +674,103 @@ public class IPMaskedAddress implements Serializable
         return mask;
     }
 
-    public static void runTests( )
+    public static boolean runTests( )
     {
         try {
-            InetAddress addr = InetAddress.getByName("1.2.3.4");
+            InetAddress inetaddr  = InetAddress.getByName("1.2.3.4");
+            InetAddress inetaddr1 = InetAddress.getByName("1.2.3.1");
         
             IPMaskedAddress addr1 = new IPMaskedAddress("1.2.3.4");
-            logger.warn("TEST: " + addr1.toString().equals("1.2.3.4"));
+            if ( ! addr1.toString().equals("1.2.3.4") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
 
             IPMaskedAddress addr2 = new IPMaskedAddress("1.2.3.0/24");
-            logger.warn("TEST: " + addr2.toString().equals("1.2.3.0/24"));
+            if ( ! addr2.toString().equals("1.2.3.0/24") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
 
             IPMaskedAddress addr3 = new IPMaskedAddress("1.2.4.0/24");
-            logger.warn("TEST: " + addr3.toString().equals("1.2.4.0/24"));
+            if ( ! addr3.toString().equals("1.2.4.0/24") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
             
             IPMaskedAddress addr4 = new IPMaskedAddress("1.2.3.4/24");
-            logger.warn("TEST: " + addr4.getMaskedAddress().getHostAddress().equals("1.2.3.0"));
+            if ( ! addr4.getMaskedAddress().getHostAddress().equals("1.2.3.0") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
 
             IPMaskedAddress addr5 = new IPMaskedAddress("1.2.3.4", "255.255.255.0");
             IPMaskedAddress addr6 = new IPMaskedAddress("1.2.3.4", 24);
             IPMaskedAddress addr7 = new IPMaskedAddress("1.2.3.4", 25);
-            logger.warn("TEST: " + addr4.equals(addr5));
-            logger.warn("TEST: " + addr4.equals(addr6));
-            logger.warn("TEST: " + !addr4.equals(addr7));
+            if ( ! addr4.equals(addr5) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( ! addr4.equals(addr6) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( addr4.equals(addr7) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
             
-            logger.warn("TEST: " + addr4.getNetmaskString().equals("255.255.255.0"));
-            logger.warn("TEST: " + addr1.getNetmaskString().equals("255.255.255.255"));
+            if ( ! addr4.getNetmaskString().equals("255.255.255.0") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( ! addr1.getNetmaskString().equals("255.255.255.255") ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
         
-            logger.warn("TEST: " + addr2.contains(addr));
-            logger.warn("TEST: " + !addr3.contains(addr));
+            if ( ! addr2.contains( inetaddr ) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( addr3.contains( inetaddr ) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
 
-            logger.warn("TEST: " + !addr2.isIntersecting(addr3));
-            logger.warn("TEST: " + addr2.isIntersecting(addr1));
-            logger.warn("TEST: " + !addr3.isIntersecting(addr1));
+            if ( addr2.isIntersecting(addr3) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( ! addr2.isIntersecting(addr1) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( addr3.isIntersecting(addr1) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
 
-            logger.warn("TEST: " + addr1.isNode());
-            logger.warn("TEST: " + !addr2.isNode());
+            if ( ! addr1.isNode() ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+            if ( addr2.isNode() ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
+
+            // test getFirstMaskedAddress
+            if ( ! addr2.getFirstMaskedAddress().equals( inetaddr1 ) ) {
+                logger.warn("FAIL TEST", new Exception());
+                return false;
+            }
         }
         catch (Exception e) {
             logger.warn("TEST FAILED:", e);
+            return false;
         }
-        
 
+        return true;
     }
 }
