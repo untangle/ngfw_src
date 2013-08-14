@@ -68,6 +68,8 @@ public class MIMEMessage extends MIMEPart implements TemplateValues
     private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
     private static final String FROM_TV = "FROM".toLowerCase();
     private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
+    
+    private File file;
 
     public MIMEMessage ()
     {
@@ -199,8 +201,9 @@ public class MIMEMessage extends MIMEPart implements TemplateValues
         if(isChanged() || getSourceRecord() == null) {
             FileOutputStream fOut = null;
             try {
-                File ret = File.createTempFile("MIMEMessage-", null);
-                fOut = new FileOutputStream(ret);
+                try {if (file != null)file.delete();} catch (Exception ignore) {}
+                file = File.createTempFile("MIMEMessage-", null);
+                fOut = new FileOutputStream(file);
                 BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
                 MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
                 writeTo(mimeOut);
@@ -208,7 +211,7 @@ public class MIMEMessage extends MIMEPart implements TemplateValues
                 bufOut.flush();
                 fOut.flush();
                 fOut.close();
-                return ret;
+                return file;
             }
             catch(IOException ex) {
                 try{fOut.close();}catch(Exception ignore){}
@@ -220,6 +223,16 @@ public class MIMEMessage extends MIMEPart implements TemplateValues
         return getSourceRecord().source.toFile( );
     }
 
+    @Override
+    public void dispose()
+    {
+        try {
+            if (file != null)
+                file.delete();
+        } catch (Exception ignore) {
+        }
+        super.dispose();
+    }
     /**
      * <b>Do not use this method.  It is for debugging.  It will
      * cause too much to be read into memory</b>

@@ -24,6 +24,8 @@ public class AttachedMIMEMessage extends MIMEPart
     private final Logger m_logger = Logger.getLogger(AttachedMIMEMessage.class);
 
     private MIMEMessage m_attach;
+    
+    private File file;
 
     public AttachedMIMEMessage(MIMEPartHeaders headers) throws IOException,
                                                                InvalidHeaderDataException,
@@ -115,12 +117,12 @@ public class AttachedMIMEMessage extends MIMEPart
     public File getContentAsFile( boolean decoded ) throws IOException
     {
         checkDisposed();
-
-        File f = File.createTempFile("AttachedMIMEMessage-", null);
+        try {if (file != null)file.delete();} catch (Exception ignore) {}
+        file = File.createTempFile("AttachedMIMEMessage-", null);
         FileOutputStream fOut = null;
         try {
             //TODO bscott Again, this is a waste.  Cache files better!
-            fOut = new FileOutputStream(f);
+            fOut = new FileOutputStream(file);
             BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
             m_attach.writeTo(mimeOut);
@@ -128,15 +130,26 @@ public class AttachedMIMEMessage extends MIMEPart
             bufOut.flush();
             fOut.flush();
             fOut.close();
-            return f;
+            return file;
         }
         catch(IOException ex) {
-            try {f.delete();}catch(Exception ignore){}
+            try {file.delete();}catch(Exception ignore){}
             try {fOut.close();}catch(Exception ignore){}
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex2;
         }
+    }
+    
+    @Override
+    public void dispose()
+    {
+        try {
+            if (file != null)
+                file.delete();
+        } catch (Exception ignore) {
+        }
+        super.dispose();
     }
 
     @Override
