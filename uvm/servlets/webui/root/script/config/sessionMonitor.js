@@ -370,7 +370,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     type: 'string'
                 }
             },{
-                hidden: true,
                 header: this.i18n._("Application") +  this.i18n._(" (Application Control)"),
                 dataIndex: "classd-application",
                 width: 100,
