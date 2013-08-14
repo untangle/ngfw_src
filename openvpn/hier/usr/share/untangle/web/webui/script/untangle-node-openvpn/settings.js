@@ -853,6 +853,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'pushDns'
                 }, {
+                    name: 'pushDnsSelf'
+                }, {
                     name: 'pushDns1'
                 }, {
                     name: 'pushDns2'
@@ -929,10 +931,44 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     id: "pushDnsSettings",
                     title: this.i18n._('Push DNS Configuration'),
                     items: [{
+                        xtype: "combo",
+                        name: "Push DNS Server",
+                        dataIndex: "pushDnsSelf",
+                        fieldLabel: this.i18n._("Push DNS Server"),
+                        displayField: 'name',
+                        editable: false,
+                        store: [[true,i18n._('OpenVPN Server')], [false,i18n._('Custom')]],
+                        queryMode: 'local',
+                        width: 300,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    if (newValue) {
+                                        Ext.getCmp('pushDns1').disable();
+                                        Ext.getCmp('pushDns2').disable();
+                                    } else {
+                                        Ext.getCmp('pushDns1').enable();
+                                        Ext.getCmp('pushDns2').enable();
+                                    }
+                                }, this)
+                            },
+                            "render": {
+                                fn: Ext.bind(function(field) {
+                                    if (field.value) {
+                                        Ext.getCmp('pushDns1').disable();
+                                        Ext.getCmp('pushDns2').disable();
+                                    } else {
+                                        Ext.getCmp('pushDns1').enable();
+                                        Ext.getCmp('pushDns2').enable();
+                                    }
+                                }, this)
+                            }
+                        }
+                    }, {
                         xtype: "textfield",
                         id: "pushDns1",
                         dataIndex: "pushDns1",
-                        fieldLabel: this.i18n._("DNS 1"),
+                        fieldLabel: this.i18n._("Push DNS Override 1"),
                         allowBlank: true,
                         vtype: 'ipAddress',
                         width: 300
@@ -940,7 +976,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: "textfield",
                         id: "pushDns2",
                         dataIndex: "pushDns2",
-                        fieldLabel: this.i18n._("DNS 2"),
+                        fieldLabel: this.i18n._("Push DNS Override 2"),
                         allowBlank: true,
                         vtype: 'ipAddress',
                         width: 300

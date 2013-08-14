@@ -350,12 +350,20 @@ public class OpenVpnManager
              */
             if( group.getPushDns() ) {
 
-                InetAddress dns1 = group.getPushDns1();
-                if ( dns1 != null )
-                    sb.append( "push" + " " + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + "\n");
-                InetAddress dns2 = group.getPushDns2();
-                if ( dns2 != null )
-                    sb.append( "push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
+                /**
+                 * If push DNS Self is set, push openvpn's addr
+                 * Otherwise, push custom
+                 */
+                if ( group.getPushDnsSelf() ) {
+                    sb.append( "push" + " " + "\"dhcp-option DNS " + settings.getAddressSpace().getFirstMaskedAddress().getHostAddress() + "\"" + "\n");
+                } else {
+                    InetAddress dns1 = group.getPushDns1();
+                    if ( dns1 != null )
+                        sb.append( "push" + " " + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + "\n");
+                    InetAddress dns2 = group.getPushDns2();
+                    if ( dns2 != null )
+                        sb.append( "push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
+                }
                 String dnsDomain = group.getPushDnsDomain();
                 if ( dnsDomain != null && !"".equals(dnsDomain.trim()) ) 
                     sb.append( "push" + " " + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + "\n");

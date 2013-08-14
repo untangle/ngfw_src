@@ -19,7 +19,8 @@ public class OpenVpnGroup implements java.io.Serializable
 
     private boolean fullTunnel = false;
 
-    private boolean pushDns = false;
+    private boolean pushDns = true;
+    private boolean pushDnsSelf = true;
     private InetAddress pushDns1;
     private InetAddress pushDns2;
     private String pushDnsDomain;
@@ -45,11 +46,17 @@ public class OpenVpnGroup implements java.io.Serializable
     public void setFullTunnel( boolean fullTunnel ) { this.fullTunnel = fullTunnel; }
 
     /**
-     * Should clients use DNS from the server
+     * Should the server push DNS config to the clients
      */
     public boolean getPushDns() { return pushDns; }
     public void setPushDns( boolean newValue ) { this.pushDns = newValue; }
 
+    /**
+     * Should clients use DNS from the server itself
+     */
+    public boolean getPushDnsSelf() { return pushDnsSelf; }
+    public void setPushDnsSelf( boolean newValue ) { this.pushDnsSelf = newValue; }
+    
     public InetAddress getPushDns1() { return this.pushDns1; }
     public void setPushDns1( InetAddress newValue ) { this.pushDns1 = newValue; }
 

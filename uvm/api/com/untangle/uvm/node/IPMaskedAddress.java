@@ -235,7 +235,7 @@ public class IPMaskedAddress implements Serializable
         byte[] result = addr;
         for ( int i = 0; i < addr.length ; i++ ) {
             result[i] = (byte)( addr[i] & mask[i] );
-            if (i == (addr.length - 1)) //if last byte
+            if ( i == (addr.length - 1) && (result[i] != (byte)0xff) ) //if last byte
                 result[i] += 1;
         }
 
