@@ -276,7 +276,8 @@ Ext.define("Ung.Main", {
     openHelp: function( topic ) {
         var baseUrl =  rpc.jsonrpc.UvmContext.getHelpUrl();
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
-        console.log("Open Help:", topic);
+        console.log("Open Help Topic :", topic);
+        console.log("Open Help Url   :", url);
         //this.openIFrame( url, i18n._("Help") );
         window.open(url); // open a new window
     },
