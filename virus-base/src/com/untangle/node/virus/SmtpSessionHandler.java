@@ -8,7 +8,6 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
-import com.untangle.node.smtp.SMTPNotifyAction;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.sapi.BufferingSessionHandler;
 import com.untangle.node.smtp.WrappedMessageGenerator;

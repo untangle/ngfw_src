@@ -5,37 +5,33 @@ package com.untangle.node.virus;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
+import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
-import java.net.InetAddress;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.json.JSONString;
 
-import com.untangle.uvm.SettingsManager;
-import com.untangle.node.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.GenericRule;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * Virus Node.
