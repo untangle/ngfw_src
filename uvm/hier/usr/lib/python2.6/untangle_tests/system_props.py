@@ -17,8 +17,15 @@ uvmContext = Uvm().getUvmContext()
 
 class SystemProperties():
 
+    global prefix
+    prefix = "@PREFIX@"
+
     global network_settings_file
     network_settings_file = '/usr/share/untangle/settings/untangle-vm/network.js'
+
+    def getPrefix(self):
+        global prefix
+        return prefix
 
     def getInterface(self, name):
         NETCONFIG_JSON_OBJ = json.loads(open(network_settings_file , 'r').read())
