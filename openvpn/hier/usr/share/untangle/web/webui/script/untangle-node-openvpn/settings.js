@@ -703,7 +703,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel: this.i18n._("Type"),
                     displayField: 'name',
                     editable: false,
-                    store: [[false,i18n._('Remote Client')], [true,i18n._('Remote Network')]],
+                    store: [[false,i18n._('Individual Client')], [true,i18n._('Network')]],
                     queryMode: 'local',
                     width: 300,
                     listeners: {
@@ -968,7 +968,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: "textfield",
                         id: "pushDns1",
                         dataIndex: "pushDns1",
-                        fieldLabel: this.i18n._("Push DNS Override 1"),
+                        fieldLabel: this.i18n._("Push DNS Custom 1"),
                         allowBlank: true,
                         vtype: 'ipAddress',
                         width: 300
@@ -976,7 +976,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: "textfield",
                         id: "pushDns2",
                         dataIndex: "pushDns2",
-                        fieldLabel: this.i18n._("Push DNS Override 2"),
+                        fieldLabel: this.i18n._("Push DNS Custom 2"),
                         allowBlank: true,
                         vtype: 'ipAddress',
                         width: 300
@@ -984,7 +984,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: "textfield",
                         id: "pushDnsDomain",
                         dataIndex: "pushDnsDomain",
-                        fieldLabel: this.i18n._("DNS Domain"),
+                        fieldLabel: this.i18n._("Push DNS Domain"),
                         allowBlank: true,
                         width: 300
                     }]
