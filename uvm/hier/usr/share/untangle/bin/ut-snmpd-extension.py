@@ -5,14 +5,13 @@ as we need to run in unbuffered mode."""
 
 import os.path, signal, sys, time
 
-# in-house modules
-sys.path.append("@PREFIX@/usr/lib/python2.6")
-from untangle.log import *
+from reports.log import *
+logger = getLogger('snmp')
 
-sys.path.append("@PREFIX@/usr/share/untangle/pycli")
-import message_queue
+import uvm
+from uvm import Uvm
 
-logger = getLogger('snmp', False)
+uvm = Uvm().getUvmContext( )
 
 class Oid:
   def __init__(self, name, type, value):
@@ -286,8 +285,11 @@ bwc-foo OBJECT-TYPE
 
   @SnmpExtension.cached
   def getData(self):
-    tids, queue = message_queue.query()
+    tids, queue = self.query()
 
+    # FIXME 
+    # the structure is no longer like this
+    # This fails
     for tid, stats in queue['stats']['map'].iteritems():
       if tid != '0':
         tid = tids[tid]
@@ -320,6 +322,20 @@ bwc-foo OBJECT-TYPE
                 aggOid.value = max(aggOid.value, oid.value)
             else:
               self.oids[aggName] = Oid(aggName, oid.type, oid.value)
+
+  def query(self):
+    global uvm
+
+    nodeManager = uvm.nodeManager()
+    messageManager = uvm.messageManager()
+
+    queue = messageManager.getMessageQueue()
+    tids = nodeManager.nodeInstancesIds()
+
+    print queue
+    print tids
+
+    return tids, queue
 
 ## main
 
