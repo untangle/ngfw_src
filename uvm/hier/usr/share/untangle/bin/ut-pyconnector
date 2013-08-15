@@ -106,6 +106,16 @@ def connect():
      try:
           write_cert_file()
           command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+          # turn on keepalive
+          command_socket.setsockopt( socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+          # turn on keepalive after 60 seconds (overrides kernel default in /proc/sys/net/ipv4/tcp_keepalive_time)
+          command_socket.setsockopt( socket.SOL_TCP, socket.TCP_KEEPIDLE, 60) 
+          # set keepalive interval to 60 seconds (overrides kernel default in /proc/sys/net/ipv4/tcp_keepalive_intvl)
+          command_socket.setsockopt( socket.SOL_TCP, socket.TCP_KEEPINTVL, 60) 
+          # set keepalive probe count to 2 (overrides kernel default in /proc/sys/net/ipv4/tcp_keepalive_probes)
+          command_socket.setsockopt( socket.SOL_TCP, socket.TCP_KEEPCNT, 2) 
+
           command_socket = ssl.wrap_socket( command_socket, ca_certs=CERTS_FILE, cert_reqs=ssl.CERT_REQUIRED )
           command_socket.connect( ( UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0] ) )
      except Exception,e:
