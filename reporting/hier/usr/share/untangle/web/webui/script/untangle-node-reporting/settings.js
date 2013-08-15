@@ -553,7 +553,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelDatabase = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Database',
-                helpSource: 'reports_database',
+                // helpSource: 'reports_database', //DISABLED
                 parentId: this.getId(),
                 title: this.i18n._('Database'),
                 layout: "anchor",
