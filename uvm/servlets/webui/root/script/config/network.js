@@ -274,24 +274,22 @@ if (!Ung.hasResource["Ung.Network"]) {
             var settingsCmp = this;
             var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
                 menuDisabled: true,
-                dataIndex: 'isVlanInterface',
-                header: this.i18n._("Delete VLAN"),
-                width: 80,
+                header: this.i18n._("Delete VLAN or interface"),
+                width: 140,
                 init:function(grid) {
                     this.grid=grid;
                 },
                 handler: function(view, rowIndex, colIndex) {
                     var rec = view.getStore().getAt(rowIndex);
-                    if(rec.get("isVlanInterface")) {
+                    if(rec.get("isVlanInterface") || rec.get("connected")=='') {
                         this.grid.deleteHandler(rec);
                     }
                 },
                 getClass: function(value, metadata, record) { 
-                    if(record.get("isVlanInterface")) {
+                    if(record.get("isVlanInterface") || record.get("connected")=='') {
                         return 'icon-delete-row'; 
                     } else {
                         return 'x-hide-display';
-                                       
                     }
                 }
             }); 
