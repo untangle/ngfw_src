@@ -5,6 +5,7 @@ import subprocess
 import sys
 import re
 import urllib2
+import time
 reload(sys)
 sys.setdefaultencoding("utf-8")
 import re
@@ -77,6 +78,7 @@ class UvmTests(unittest2.TestCase):
                     url = "http://www.untangle.com/docs/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=10.0.0&webui=true&lang=en"
                     print "Checking %s = %s " % (helpSource, url)
                     ret = urllib2.urlopen( url )
+                    time.sleep(.1) # dont flood wiki
                     assert(ret)
                     result = ret.read()
                     assert(result)
