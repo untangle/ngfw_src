@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
 
     Ext.define('Ung.HostMonitor', {
         extend: 'Ung.StatusWin',
-        helpSource: 'host_monitor',
+        helpSource: 'host_viewer',
         sortField:'bypassed',
         sortOrder: 'ASC',
         defaultBandwidthColumns: false,

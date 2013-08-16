@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
     
     Ext.define('Ung.SessionMonitor', {
         extend: 'Ung.StatusWin',
-        helpSource: 'session_monitor',
+        helpSource: 'session_viewer',
         sortField:'bypassed',
         sortOrder: 'ASC',
         bandwidthColumns: false,

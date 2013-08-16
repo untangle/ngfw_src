@@ -127,7 +127,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.buildStatus();
             this.buildServer();
-            this.buildRemoteServers();
+            this.buildClient();
             this.buildConnectionEventLog();
 
             this.buildTabPanel( [ this.panelStatus, this.panelServer, this.panelClient, this.gridConnectionEventLog ] );
@@ -521,7 +521,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
-        buildRemoteServers: function() {
+        buildClient: function() {
             this.buildGridServers();
 
             this.submitForm = Ext.create('Ext.form.Panel', {
@@ -576,10 +576,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 });
 
             this.panelClient = Ext.create('Ext.panel.Panel', {
-                name: 'Servers',
-                helpSource: 'openvpn_servers',
+                name: 'Client',
                 parentId: this.getId(),
                 title: this.i18n._('Client'),
+                helpSource: 'openvpn_client',
                 layout: 'anchor',
                 cls: 'ung-panel',
                 items: [{
@@ -749,7 +749,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var gridExports = Ext.create('Ung.EditorGrid', {
                 settingsCmp: this,
                 name: 'Exports',
-                helpSource: 'openvpn_exports',
                 // the total records is set from the base settings
                 sortable: true,
                 paginated: false,

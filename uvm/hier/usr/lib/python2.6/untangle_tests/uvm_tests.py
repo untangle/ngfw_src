@@ -51,7 +51,6 @@ class UvmTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_helpLinks(self):
-        raise unittest2.SkipTest("TEMP")
         output, error = subprocess.Popen(['find',
                                           '%s/usr/share/untangle/web/webui/script/'%systemProperties.getPrefix(),
                                           '-name',
@@ -75,8 +74,9 @@ class UvmTests(unittest2.TestCase):
                     helpSource = match.group(1)
                     assert(helpSource)
 
-                    print "Checking %s... " % helpSource
-                    ret = urllib2.urlopen("http://www.untangle.com/docs/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=10.0.0&webui=true&lang=en")
+                    url = "http://www.untangle.com/docs/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=10.0.0&webui=true&lang=en"
+                    print "Checking %s = %s " % (helpSource, url)
+                    ret = urllib2.urlopen( url )
                     assert(ret)
                     result = ret.read()
                     assert(result)
