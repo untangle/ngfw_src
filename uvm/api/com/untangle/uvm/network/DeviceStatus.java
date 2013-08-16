@@ -25,7 +25,7 @@ public class DeviceStatus implements Serializable, JSONString
 
     private String macAddress;
     
-    public static enum ConnectedStatus { CONNECTED, DISCONNECTED, UNKNOWN };
+    public static enum ConnectedStatus { CONNECTED, DISCONNECTED, UNKNOWN, MISSING };
     private ConnectedStatus connected;
 
     private Integer mbit; /* 10, 100, 1000, null(unknown) */

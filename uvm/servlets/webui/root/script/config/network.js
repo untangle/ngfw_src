@@ -274,19 +274,19 @@ if (!Ung.hasResource["Ung.Network"]) {
             var settingsCmp = this;
             var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
                 menuDisabled: true,
-                header: this.i18n._("Delete VLAN or interface"),
-                width: 140,
+                header: this.i18n._("Delete"),
+                width: 80,
                 init:function(grid) {
                     this.grid=grid;
                 },
                 handler: function(view, rowIndex, colIndex) {
                     var rec = view.getStore().getAt(rowIndex);
-                    if(rec.get("isVlanInterface") || rec.get("connected")=='') {
+                    if( rec.get("isVlanInterface") || rec.get("connected")=='MISSING' ) {
                         this.grid.deleteHandler(rec);
                     }
                 },
                 getClass: function(value, metadata, record) { 
-                    if(record.get("isVlanInterface") || record.get("connected")=='') {
+                    if( record.get("isVlanInterface") || record.get("connected")=='MISSING' ) {
                         return 'icon-delete-row'; 
                     } else {
                         return 'x-hide-display';
@@ -472,6 +472,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                             divClass = "ua-cell-enabled";
                         } else if ( value == "DISCONNECTED" ) {
                             connectedStr = this.i18n._("disconnected");
+                        } else if ( value == "MISSING" ) {
+                            connectedStr = this.i18n._("missing");
                         }
                         return "<div class='" + divClass + "'>" + connectedStr + "</div>";
                     }, this)
@@ -767,6 +769,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                                         divClass = "ua-cell-enabled";
                                     } else if ( value == "DISCONNECTED" ) {
                                         connectedStr = this.i18n._("disconnected");
+                                    } else if ( value == "MISSING" ) {
+                                        connectedStr = this.i18n._("missing");
                                     }
                                     return "<div class='" + divClass + "'>" + connectedStr + "</div>";
                                 }, this)
