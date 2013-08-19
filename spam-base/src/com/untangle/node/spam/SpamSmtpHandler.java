@@ -192,7 +192,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                     if (quarantineMail(msg, tx, report, f)) {
                         spamImpl.incrementQuarantineCount();
                         postSpamEvent(msgInfo, report, SpamMessageAction.QUARANTINE);
-                        return BLOCK_MESSAGE;
+                        return DROP_MESSAGE;
                     } else {
                         logger.debug("Quarantine failed.  Fall back to mark");
                         spamImpl.incrementMarkCount();
@@ -201,11 +201,21 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                         MIMEMessage wrappedMsg = this.getMsgGenerator().wrap(msg, tx, report);
                         return new BPMEvaluationResult(wrappedMsg);
                     }
-                } else {
+                } else if (action == SpamMessageAction.DROP) {
                     logger.debug("Blocking SPAM message as-per policy");
                     postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                     spamImpl.incrementBlockCount();
-                    return BLOCK_MESSAGE;
+                    return DROP_MESSAGE;
+                } else if (action == SpamMessageAction.BLOCK) {
+                    logger.debug("Blocking SPAM message as-per policy");
+                    postSpamEvent(msgInfo, report, SpamMessageAction.BLOCK);
+                    spamImpl.incrementBlockCount();
+                    return DROP_MESSAGE;
+                } else {
+                    logger.warn("Unknown Action: " + action);
+                    postSpamEvent(msgInfo, report, SpamMessageAction.BLOCK);
+                    return DROP_MESSAGE;
+                    
                 }
             } else {
                 markHeaders(msg, report);
@@ -343,7 +353,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                     logger.debug("Mail quarantined");
                     postSpamEvent(msgInfo, report, SpamMessageAction.QUARANTINE);
                     spamImpl.incrementQuarantineCount();
-                    return BlockOrPassResult.BLOCK;
+                    return BlockOrPassResult.DROP;
                 } else {
                     logger.debug("Quarantine failed.  Fall back to pass");
                     postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
@@ -354,7 +364,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                 logger.debug("Blocking SPAM message as-per policy");
                 postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
-                return BlockOrPassResult.BLOCK;
+                return BlockOrPassResult.DROP;
             }
         } else {
             logger.debug("Not Spam");

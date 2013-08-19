@@ -82,7 +82,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
      * means "block" or "don't block"
      */
     public enum BlockOrPassResult {
-        BLOCK,
+        DROP,
         PASS,
         TEMPORARILY_REJECT
     };
@@ -116,7 +116,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
 
         public boolean isBlock()
         {
-            return action == BlockOrPassResult.BLOCK;
+            return action == BlockOrPassResult.DROP;
         }
 
         public BlockOrPassResult getAction()
@@ -137,7 +137,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
     /**
      * Result from {@link #blockPassOrModify blockPassOrModify} indicating block message
      */
-    public static BPMEvaluationResult BLOCK_MESSAGE = new BPMEvaluationResult(BlockOrPassResult.BLOCK);
+    public static BPMEvaluationResult DROP_MESSAGE = new BPMEvaluationResult(BlockOrPassResult.DROP);
     /**
      * Result from {@link #blockPassOrModify blockPassOrModify} indicating pass message
      */
@@ -646,7 +646,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         //It only ever gets callback and does some reporting
 
                         break;
-                    case BLOCK:
+                    case DROP:
                         //TODO bscott is it safe to nuke the accumulator and/or message
                         //     here, or do we wait for the callback?
                         //We're blocking the message
@@ -793,7 +793,7 @@ public abstract class BufferingSessionHandler extends SessionHandler
                         actions.sendFinalMIMEToServer(continuedToken,
                                                       new MailTransmissionContinuation());
                         break;
-                    case BLOCK:
+                    case DROP:
                         //Block, the hard way...
                         m_txLog.add("Evaluation failed.  Send a \"fake\" 250 to client then shutdown server");
                         actions.appendSyntheticResponse(new FixedSyntheticResponse(250, "OK"));

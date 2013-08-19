@@ -128,7 +128,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
             if("block".equals(actionTaken)) {
                 this.logger.debug("Returning BLOCK as-per policy");
                 this.virusImpl.incrementBlockCount();
-                return BLOCK_MESSAGE;
+                return DROP_MESSAGE;
             }
             else if("remove".equals(actionTaken)) {
                 this.logger.debug("REMOVE (wrap) message");
@@ -163,8 +163,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
         if("remove".equals(action)) {
             //Change action now, as it'll make the event logs
             //more accurate
-            this.logger.debug("Implicitly converting policy from \"REMOVE\"" +
-                           " to \"BLOCK\" as we have already begun to trickle");
+            this.logger.debug("Implicitly converting policy from \"REMOVE\"" + " to \"BLOCK\" as we have already begun to trickle");
             action = "block";
         }
 
@@ -215,7 +214,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
             if("block".equals(action)) {
                 this.logger.debug("Blocking mail as-per policy");
                 this.virusImpl.incrementBlockCount();
-                return BlockOrPassResult.BLOCK;
+                return BlockOrPassResult.DROP;
             }
         }
         this.virusImpl.incrementPassCount();
