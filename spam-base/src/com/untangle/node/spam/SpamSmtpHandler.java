@@ -149,9 +149,6 @@ public class SpamSmtpHandler extends BufferingSessionHandler
             if (report == null) { // Handle error case
                 if (config.getFailClosed()) {
                     logger.warn("Error scanning message. Failing closed");
-                    /* FIXME  */
-                    /* We don't actually DROP here, we close the connection so a retransmit will happen */
-                    /* We should log a different event */
                     postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.BLOCK);
                     spamImpl.incrementBlockCount();
                     return TEMPORARILY_REJECT;
