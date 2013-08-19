@@ -34,8 +34,6 @@ import com.untangle.uvm.network.StaticRoute;
  * alerts when the admin logs into the UI.
  *
  * Possible future alerts to add:
- * FIXME: detect missing interfaces - suggest remap
- * FIXME: detect new interfaces - suggest remap
  * recent high load?
  * frequent reboots?
  * semi-frequent power loss?
