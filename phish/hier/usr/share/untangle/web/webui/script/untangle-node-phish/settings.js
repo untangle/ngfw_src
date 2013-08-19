@@ -107,7 +107,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     name: 'displayAction',
                     mapping: 'phish_action',
                     type: 'string',
-                    convert: Ext.bind(function(value, rec ) { // FIXME: make that a switch
+                    convert: Ext.bind(function(value, rec ) {
                             if (value == 'P') { // PASSED
                                 return this.i18n._("pass message");
                             } else if (value == 'M') { // MARKED
