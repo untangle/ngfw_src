@@ -239,7 +239,7 @@ class Section:
     def __init__(self, name, title):
         self.__name = name
         self.__title = title
-        if self.__title: # FIXME: why ???
+        if self.__title:
             self.__title = self.__title.decode('utf-8')
 
     @property
@@ -381,7 +381,7 @@ class ColumnDesc():
         self.__name = name
 
         self.__title = title
-        if self.__title: # FIXME: why ???
+        if self.__title:
             self.__title = self.__title.decode('utf-8')
 
         self.__type = type
@@ -694,14 +694,12 @@ class Chart:
         self.__type = type
 
         self.__title = title
-        if self.__title: # FIXME: why ???
+        if self.__title:
             self.__title = self.__title.decode('utf-8')
         self.__xlabel = xlabel
-        if self.__xlabel: # FIXME: why ???
+        if self.__xlabel:
             self.__xlabel = self.__xlabel.decode('utf-8')
         self.__ylabel = ylabel
-#         if self.__ylabel: # FIXME: why ???
-#             self.__ylabel = self.__ylabel.decode('utf-8')
             
         self.__major_formatter = major_formatter
 

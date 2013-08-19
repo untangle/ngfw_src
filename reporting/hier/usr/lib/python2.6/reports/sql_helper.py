@@ -313,9 +313,8 @@ def get_max_timestamp_with_interval(table, time_column='date', interval='1 day')
         sd = sd[0]
     return sd
 
-def set_update_info(tablename, last_update, connection=None,
-                    auto_commit=True, origin_table=None):
-    # FIXME: last_update is now ignored and re-calculated from the
+def set_update_info(tablename, last_update, connection=None, auto_commit=True, origin_table=None):
+    # XXX: last_update is now ignored and re-calculated from the
     # info in the corresponding table; change all the calls to this
     # new signature at some point
     if not connection:
