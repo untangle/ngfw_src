@@ -214,6 +214,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                 } else {
                     logger.warn("Unknown Action: " + action);
                     postSpamEvent(msgInfo, report, SpamMessageAction.BLOCK);
+                    spamImpl.incrementBlockCount();
                     return DROP_MESSAGE;
                     
                 }
