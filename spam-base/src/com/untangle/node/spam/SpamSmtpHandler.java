@@ -152,7 +152,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                     /* FIXME  */
                     /* We don't actually DROP here, we close the connection so a retransmit will happen */
                     /* We should log a different event */
-                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.DROP);
+                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.BLOCK);
                     spamImpl.incrementBlockCount();
                     return TEMPORARILY_REJECT;
                 } else {

@@ -450,8 +450,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 return this.i18n._("pass message");
                             } else if (value == 'M') { // MARKED
                                 return this.i18n._("mark message");
-                            } else if (value == 'B') { // DROP
+                            } else if (value == 'D') { // DROP
                                 return this.i18n._("drop message");
+                            } else if (value == 'B') { // DROP
+                                return this.i18n._("block message");
                             } else if (value == 'Q') { // QUARANTINED
                                 return this.i18n._("quarantine message");
                             } else if (value == 'S') { // SAFELISTED

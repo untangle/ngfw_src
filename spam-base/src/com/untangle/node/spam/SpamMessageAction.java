@@ -7,14 +7,16 @@ public enum SpamMessageAction
 {
     PASS('P', "pass message"),
     MARK('M', "mark message"),
-    DROP('B', "drop message"),
+    DROP('D', "drop message"),
+    BLOCK('B', "block message"),
     QUARANTINE('Q', "quarantine message"),
-    SAFELIST('S', "safelist message"),
-    OVERSIZE('Z', "oversize message"),
-    OUTBOUND('O', "outbound message");
+    SAFELIST('S', "pass safelist message"),
+    OVERSIZE('Z', "pass oversize message"),
+    OUTBOUND('O', "pass outbound message");
 
     public static final char PASS_KEY = 'P';
     public static final char MARK_KEY = 'M';
+    public static final char DROP_KEY = 'D';
     public static final char BLOCK_KEY = 'B';
     public static final char QUARANTINE_KEY = 'Q';
     public static final char SAFELIST_KEY = 'S'; // special pass case
@@ -41,11 +43,13 @@ public enum SpamMessageAction
         return null;
     }
 
-    public char getKey() {
+    public char getKey()
+    {
         return key;
     }
     
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 }

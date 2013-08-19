@@ -517,6 +517,7 @@ class SpamDetail(DetailSection):
         sql = """\
 SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
        CASE m1.%s_action WHEN 'P' THEN '%s'
+                      WHEN 'D' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
                       WHEN 'Q' THEN '%s'
@@ -532,6 +533,7 @@ AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
        _('Passed'),
+       _('Dropped'),
        _('Blocked'),
        _('Marked'),
        _('Quarantined'),
@@ -578,6 +580,7 @@ class SpamDetailAll(DetailSection):
         sql = """\
 SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
        CASE m1.%s_action WHEN 'P' THEN '%s'
+                      WHEN 'D' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
                       WHEN 'Q' THEN '%s'
@@ -593,6 +596,7 @@ AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
        _('Passed'),
+       _('Dropped'),
        _('Blocked'),
        _('Marked'),
        _('Quarantined'),
