@@ -697,6 +697,10 @@ public class NetworkManagerImpl implements NetworkManager
         for (FilterRule rule : networkSettings.getForwardFilterRules()) {
             rule.setRuleId(++idx);
         }
+        idx = 0;
+        for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
+            rule.setRuleId(++idx);
+        }
 
         /**
          * Reset all symbolic devs to system devs
