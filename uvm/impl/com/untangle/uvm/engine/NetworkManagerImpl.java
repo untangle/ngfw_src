@@ -1114,6 +1114,25 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpMatchers.add(ruleHttpMatcher3);
         filterRuleHttp.setMatchers( ruleHttpMatchers );
 
+        FilterRule filterRuleSnmp = new FilterRule();
+        filterRuleSnmp.setEnabled( true );
+        filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
+        filterRuleSnmp.setBlocked( false );
+        List<FilterRuleMatcher> ruleSnmpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleSnmpMatcher1 = new FilterRuleMatcher();
+        ruleSnmpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleSnmpMatcher1.setValue("161");
+        FilterRuleMatcher ruleSnmpMatcher2 = new FilterRuleMatcher();
+        ruleSnmpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleSnmpMatcher2.setValue("udp");
+        FilterRuleMatcher ruleSnmpMatcher3 = new FilterRuleMatcher();
+        ruleSnmpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleSnmpMatcher3.setValue("non_wan");
+        ruleSnmpMatchers.add(ruleSnmpMatcher1);
+        ruleSnmpMatchers.add(ruleSnmpMatcher2);
+        ruleSnmpMatchers.add(ruleSnmpMatcher3);
+        filterRuleSnmp.setMatchers( ruleSnmpMatchers );
+
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setDescription( "Block All" );
