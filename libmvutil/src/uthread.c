@@ -5,10 +5,12 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+#include <sys/utsname.h>
 
 #include "mvutil/errlog.h"
 
-#define SMALL_STACK_SIZE 96*1024
+#define AMD64_STACK_SIZE 256*1024
+#define I386_STACK_SIZE 96*1024
 
 uthread_attr_t uthread_attr;
 
@@ -26,16 +28,30 @@ int uthread_init (void)
 {
     int c;
     unsigned int min, max;
+    struct utsname utsn;
 
     if (pthread_attr_init(&small_detached_attr)<0)
         return perrlog("pthread_attr_init");
-
-    if (pthread_attr_setstacksize(&small_detached_attr,SMALL_STACK_SIZE)<0)
-        return perrlog("pthread_attr_setstacksize");
     if (pthread_attr_setdetachstate(&small_detached_attr,PTHREAD_CREATE_DETACHED)<0)
         return perrlog("pthread_attr_setdetachstate");
-/*     if (pthread_attr_setschedpolicy(&small_detached_attr,SCHED_RR)<0) */
-/*         return perrlog("pthread_attr_setschedpolicy"); */
+    if (uname(&utsn) < 0) {
+        return perrlog("uname");
+    }
+    if ( strstr(utsn.release,"amd64") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, AMD64_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
+    else if ( strstr(utsn.release,"i386") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
+    else {
+        errlog( ERR_WARNING, "Unknown architecture: %s\n", utsn.release );
+        errlog( ERR_WARNING, "Using amd64 stack size.\n" );
+        if ( pthread_attr_setstacksize( &small_detached_attr, AMD64_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+        
+    }
 
     min = sched_get_priority_min(SCHED_RR);
     max = sched_get_priority_max(SCHED_RR);
@@ -43,18 +59,12 @@ int uthread_init (void)
     rr_high_priority.sched_priority = rr_medium_priority.sched_priority + 1;
     rr_low_priority.sched_priority = rr_medium_priority.sched_priority - 1;
 
-    /* XXX According to the man page, Priority doesn't matter for SCHED_OTHER threads */
+    /* According to the man page, Priority doesn't matter for SCHED_OTHER threads */
     min = sched_get_priority_min(SCHED_OTHER);
     max = sched_get_priority_max(SCHED_OTHER);
     other_medium_priority.sched_priority = (min+max)/2;
     other_high_priority.sched_priority = other_medium_priority.sched_priority + 1;
     other_low_priority.sched_priority  = other_medium_priority.sched_priority - 1;
-    //other_low_priority.sched_priority  = 0;
-
-    // We do this even though it apparently has no effect with NPTL -- be sure to
-    // call pthread_setschedparam() manually after creating each new thread. XX
-/*     if (pthread_attr_setschedparam(&small_detached_attr,&rr_medium_priority)<0) */
-/*         return perrlog("pthread_attr_setschedparam"); */
 
     for ( c = 0 ; c < ( sizeof ( uthread_attr) / sizeof ( pthread_attr_t ) ) ; c++ ) {
         memcpy(&(((pthread_attr_t*)&uthread_attr)[c]), &small_detached_attr, sizeof ( pthread_attr_t ) );
