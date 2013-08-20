@@ -27,7 +27,8 @@ class ArgumentParser(object):
         self.repeat = False
         self.externalIntfId = 1
         self.internalIntfId = 2
-        self.nodesToTest = ['all']
+        self.testsToRun = ['all']
+        self.testsToExclude = []
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -47,8 +48,11 @@ class ArgumentParser(object):
     def set_repeat( self, arg ):
         self.repeat = True
 
-    def set_nodesToTest( self, arg ):
-        self.nodesToTest = arg.split(",")
+    def set_testsToRun( self, arg ):
+        self.testsToRun = arg.split(",")
+
+    def set_testsToExclude( self, arg ):
+        self.testsToExclude = arg.split(",")
 
     def increase_verbosity( self, arg ):
         self.verbosity += 1
@@ -68,13 +72,14 @@ class ArgumentParser(object):
             '-v' : self.increase_verbosity,
             '-q' : self.set_fastfail,
             '-r' : self.set_repeat,
-            '-t' : self.set_nodesToTest,
+            '-t' : self.set_testsToRun,
+            '-e' : self.set_testsToExclude,
             '-d' : self.set_externalIntfId,
             '-s' : self.set_internalIntfId
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:vqr')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqr')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -93,7 +98,8 @@ def printUsage():
     -l <file>  : log file
     -d <int>   : interface ID of the external interface (outside) default: 1
     -s <int>   : interface ID of the internal interface (client) default: 2
-    -t <nodes> : comma seperated list nodes to test (default: "all") (exm: "webfilter,adblocker")
+    -t <tests> : comma seperated list tests to run (default: "all") (exm: "webfilter,adblocker")
+    -e <tests> : comma seperated list tests to EXCLUDE (default: "all") (exm: "webfilter,adblocker")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
     -r         : repeat test indefinitely (or until failure if -q is specified)
@@ -183,17 +189,23 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
     print "== Installing untangle-node-reporting =="
     reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
 
-if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
+if ("environment" in parser.testsToRun or "all" in parser.testsToRun) and "environment" not in parser.testsToExclude:
     runTestEnvironmentTests()
-if "all" in parser.nodesToTest:
-    parser.nodesToTest = TestDict.allNodes()
+
+if "all" in parser.testsToRun:
+    parser.testsToRun = TestDict.allNodes()
+
+# remove excluded tests
+for testName in parser.testsToExclude:
+    if testName in parser.testsToRun:
+        parser.testsToRun.remove(testName)
 
 while True:
     rc = 0
     total = 0
     skipc = 0
 
-    for node in parser.nodesToTest:
+    for node in parser.testsToRun:
         if node == "environment":
             continue
         testClz = TestDict.test(node)
