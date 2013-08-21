@@ -673,7 +673,7 @@ public class AlertManagerImpl implements AlertManager
             if ( "".equals(result) )
                 return;
 
-            int memTotal = Integer.parseInt( result.trim() );
+            int memTotal = Integer.parseInt( result );
             if ( memTotal < 1900000 ) {
                 String alertText = i18nUtil.tr("Running 64-bit with less than 2 gigabytes RAM is not suggested.");
                 alertList.add(alertText);
