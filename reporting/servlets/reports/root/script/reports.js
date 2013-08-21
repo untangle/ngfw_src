@@ -899,7 +899,7 @@ Ext.define('Ung.ReportDetails', {
             stripeRows: true,
             hideHeaders: true,
             enableColumnHide: false,
-            enableColumnMove: false,
+            enableColumnMove: false
         });
     },
 
@@ -938,6 +938,10 @@ Ext.define('Ung.ReportDetails', {
                     {name: 'name'},
                     {name: 'linkType'} //this is not used currently
                 ],
+                sorters: {
+                    property: "name",
+                    direction: "ASC"
+                },
                 data: data }),
             columns: [{
                 header: title,
