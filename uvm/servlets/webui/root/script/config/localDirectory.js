@@ -28,7 +28,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 settingsCmp: this,
                 height: 500,
                 paginated: false,
-                tbar: [
+                bbar: [
                         '-',
                         {
                             xtype: 'button',
