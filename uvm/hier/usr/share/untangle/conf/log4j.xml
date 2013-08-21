@@ -171,7 +171,7 @@
   </category>
 
   <category name="com.untangle.node.classd">
-    <priority value="INFO"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.node.commtouchas">

@@ -14,5 +14,5 @@ public interface CertificateManager
 
     boolean generateCertificateAuthority(String certSubject);
 
-    boolean generateServerCertificate(String certSubject);
+    boolean generateServerCertificate(String certSubject,String altNames);
 }

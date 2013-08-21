@@ -676,7 +676,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title: titleText,
                 layout: 'fit',
                 width: 600,
-                height: 320,
+                height: (certMode === "ROOT" ? 320 : 450),
                 border: true,
                 xtype: 'form',
                 modal: true,
@@ -741,8 +741,26 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
-                        disabled: (hostName === null ? false : true),
                         value: hostName
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: this.i18n._('Subject Alternative Names'),
+                        labelWidth: 150,
+                        name: "AltNames",
+                        id: "AltNames",
+                        margin: "10 10 10 10",
+                        size: 200,
+                        allowBlank: true,
+                        hidden: (certMode === "ROOT" ? true : false)
+                    },{
+                        xtype:'fieldset',
+                        title: this.i18n._('Note:'),
+                        items: [{
+                            xtype: 'label',
+                            html: this.i18n._('The <b>Subject Alternative Names</b> field can contain an optional comma separated list of one or more alternative host names or addresses in the following format:<br><br>') +
+                                this.i18n._('DNS:some.name.com,DNS:other.name.com,IP:1.2.3.4,IP:50.60.70.80')
+                        }],
+                        hidden: (certMode === "ROOT" ? true : false)
                     },{
                         xtype: "button",
                         text: this.i18n._("Generate"),
@@ -776,6 +794,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var form_O = Ext.getCmp('Organization');
             var form_OU = Ext.getCmp('OrganizationalUnit');
             var form_CN = Ext.getCmp('CommonName');
+            var form_SAN = Ext.getCmp('AltNames');
 
             if (form_CN.getValue().length == 0)
             {
@@ -790,6 +809,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if ((form_O.getValue()) && (form_O.getValue().length > 0)) certSubject += ("/O=" + form_O.getValue());
             if ((form_OU.getValue()) && (form_OU.getValue().length > 0)) certSubject += ("/OU=" + form_OU.getValue());
 
+            altNames = "";
+            if ((form_SAN.getValue()) && (form_SAN.getValue().length > 0)) altNames = form_SAN.getValue();
+
             // for a CSR we handle it like a file download which will cause the
             // client browser to prompt the user to save the resulting file
             if (certMode === "CSR")
@@ -798,6 +820,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var downloadForm = document.getElementById('downloadForm');
                 downloadForm["type"].value = "certificate_request_download";
                 downloadForm["arg1"].value = certSubject;
+                downloadForm["arg2"].value = altNames;
                 downloadForm.submit();
                 return;
             }
@@ -820,7 +843,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 {
                     Ext.MessageBox.alert(i18n._("Failure"), this.i18n._("Error during certificate generation"));
                 }
-            }, this), certSubject);
+            }, this), certSubject, altNames);
         },
 
         handleCertificateUpload: function() {

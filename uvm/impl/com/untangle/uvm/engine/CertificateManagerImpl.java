@@ -195,8 +195,9 @@ public class CertificateManagerImpl implements CertificateManager
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
             String certSubject = req.getParameter("arg1");
+            String altNames = req.getParameter("arg2");
 
-            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " REQUEST " + certSubject);
+            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " REQUEST " + certSubject + " " + altNames);
 
             try {
                 File certFile = new File(SERVER_CSR_FILE);
@@ -289,12 +290,12 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     // called by the UI to generate a new server certificate
-    public boolean generateServerCertificate(String certSubject)
+    public boolean generateServerCertificate(String certSubject, String altNames)
     {
         logger.info("Creating new locally signed apache certificate: " + certSubject);
 
         // APACHE argument puts the cert file in our settings directory
-        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE " + certSubject);
+        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE " + certSubject + " " + altNames);
 
         // now copy the pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
