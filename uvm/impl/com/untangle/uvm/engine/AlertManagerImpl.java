@@ -77,6 +77,7 @@ public class AlertManagerImpl implements AlertManager
         try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         this.execManager.close();
         this.execManager = null;
@@ -654,4 +655,34 @@ public class AlertManagerImpl implements AlertManager
         }
         
     }
+
+    private void testServerConf( List<String> alertList )
+    {
+        try {
+            String arch = System.getProperty("sun.arch.data.model") ;
+
+            // only check 64-bit machines
+            if ( arch == null || ! "64".equals( arch ) )
+                return;
+            
+            // check total memory, return if unable to check total memory
+            String result = this.execManager.execOutput( "awk '/MemTotal:/ {print $2}' /proc/meminfo" );
+            if ( result == null )
+                return;
+            result = result.trim();
+            if ( "".equals(result) )
+                return;
+
+            int memTotal = Integer.parseInt( result.trim() );
+            if ( memTotal < 1900000 ) {
+                String alertText = i18nUtil.tr("Running 64-bit with less than 2 gigabytes RAM is not suggested.");
+                alertList.add(alertText);
+            }
+        } catch (Exception e) {
+            logger.warn("Exception testing system: ",e);
+        }
+
+            
+    }
+
 }
