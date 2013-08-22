@@ -6,10 +6,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
     Ext.namespace('Ung.Node');
     Ext.namespace('Ung.Node.OpenVPN');
 
-    Ext.define('Ung.Node.OpenVPN.DistributeClient', {
+    Ext.define('Ung.Node.OpenVPN.DownloadClient', {
         extend: 'Ung.Window',
         constructor: function( config ) {
-            this.title = config.i18n._('Distribute VPN Client');
+            this.title = config.i18n._('Download OpenVPN Client');
             this.i18n = config.i18n;
             this.node = config.node;
             this.callParent(arguments);
@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 items: [{
                     xtype: 'fieldset',
                     cls: "description",
-                    title: this.i18n._('Download Config'),
+                    title: this.i18n._('Download'),
                     labelWidth: 150,
                     items: [{
                         html: this.i18n._('These files can be used to configure your Remote Clients.'),
@@ -410,10 +410,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
-        getDistributeColumn: function() {
+        getDownloadColumn: function() {
             return Ext.create('Ext.grid.column.Action', {
                 width: 110,
-                header: this.i18n._("Distribute"),
+                header: this.i18n._("Download"),
                 dataIndex: null,
                 i18n: this.i18n,
                 iconCls:'',
@@ -425,7 +425,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     var out= '';
                     if(record.data.internalId>=0) {
                         //adding the x-action-col-0 class to force the processing of click event
-                        out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Distribute Client") + '</div>';
+                        out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Download Client") + '</div>';
                     }
                     return out;
                 }, this )
@@ -602,7 +602,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildGridClients: function() {
             this.gridRemoteClients = Ext.create('Ung.EditorGrid', {
                 initComponent: function() {
-                    this.distributeWindow = Ext.create('Ung.Node.OpenVPN.DistributeClient', {
+                    this.distributeWindow = Ext.create('Ung.Node.OpenVPN.DownloadClient', {
                         i18n: this.settingsCmp.i18n,
                         node: this.settingsCmp.getRpcNode()
                     });
@@ -659,7 +659,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     },
                     this.getGroupsColumn(),
-                    this.getDistributeColumn()],
+                    this.getDownloadColumn()],
                 columnsDefaultSortable: true
             });
             this.gridRemoteClients.setRowEditor( Ext.create('Ung.RowEditorWindow',{
