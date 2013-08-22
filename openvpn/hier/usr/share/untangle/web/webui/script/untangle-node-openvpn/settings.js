@@ -660,9 +660,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     },
                     this.getGroupsColumn(),
                     this.getDistributeColumn()],
-                columnsDefaultSortable: true,
-                // the row input lines used by the row editor window
-                rowEditorInputLines: [{
+                columnsDefaultSortable: true
+            });
+            this.gridRemoteClients.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+                inputLines: [{
                     xtype: 'checkbox',
                     name: "Enabled",
                     dataIndex: "enabled",
@@ -708,36 +709,31 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 300,
                     listeners: {
                         "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                if (newValue) {
-                                    Ext.getCmp('remoteClientNetwork').enable();
-                                } else {
-                                    Ext.getCmp('remoteClientNetwork').disable();
-                                }
-                            }, this)
-                        },
-                        "render": {
-                            fn: Ext.bind(function(field) {
-                                if (field.value) {
-                                    Ext.getCmp('remoteClientNetwork').enable();
-                                } else {
-                                    Ext.getCmp('remoteClientNetwork').disable();
-                                }
-                            }, this),
+                            fn: function(elem, newValue) {
+                                this.gridRemoteClients.rowEditor.syncComponents();
+                            },
                             scope: this
                         }
                     }
                 }, {
                     xtype: "textfield",
-                    id: "remoteClientNetwork",
                     name: "Remote Network",
                     dataIndex: "exportNetwork",
                     fieldLabel: this.i18n._("Remote Network"),
                     allowBlank: false,
                     vtype: 'cidrBlock',
                     width: 300
-                }]
-            });
+                }],
+                syncComponents: function () {
+                    var type = this.query('combo[dataIndex="export"]')[0];
+                    var exportNetwork  = this.query('textfield[dataIndex="exportNetwork"]')[0];
+                    if (type.value) {
+                        exportNetwork.enable();
+                    } else {
+                        exportNetwork.disable();
+                    }
+                }
+            }));
         },
         buildRemoteClients: function() {
         },
