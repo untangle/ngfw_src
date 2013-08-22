@@ -12,7 +12,7 @@ public interface CertificateManager
 {
     CertificateInformation getCertificateInformation();
 
-    boolean generateCertificateAuthority(String certSubject);
+    boolean generateCertificateAuthority(String certSubject, String dummy);
 
-    boolean generateServerCertificate(String certSubject,String altNames);
+    boolean generateServerCertificate(String certSubject, String altNames);
 }

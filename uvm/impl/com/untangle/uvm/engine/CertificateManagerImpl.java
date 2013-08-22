@@ -282,7 +282,8 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     // called by the UI to generate a new root certificate authority
-    public boolean generateCertificateAuthority(String certSubject)
+    // the dummy argument is not used and makes the JavaScript a little simpler
+    public boolean generateCertificateAuthority(String certSubject, String dummy)
     {
         logger.info("Creating new root certificate authority: " + certSubject);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " " + certSubject);
