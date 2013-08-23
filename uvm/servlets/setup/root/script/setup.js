@@ -528,7 +528,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 }
             }
 
-            if ( interfaceList.length != this.interfaceStore.getCount()) {
+            if ( interfaceList.length != this.interfaceStore.getCount() ) {
                 Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
                 return;
             }
@@ -539,6 +539,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     return;
                 }
 
+                if ( result == null )
+                    return;
+                
                 var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
                 
                 //update device connected status
