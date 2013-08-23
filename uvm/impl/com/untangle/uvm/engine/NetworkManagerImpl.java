@@ -453,29 +453,13 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void checkForNewDevices( NetworkSettings netSettings )
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
-        String deviceNames[] = result.getOutput().split("\\r?\\n");
-
-        /**
-         * Check all device names, remove anly blanks
-         */
-        List<String> deviceNamesTmp = new LinkedList<String>();
-        for ( String devName : deviceNames ) {
-            if( ! "".equals( devName.trim() ) ) {
-                deviceNamesTmp.add( devName.trim() );
-            }
-        }
-        deviceNames = deviceNamesTmp.toArray( deviceNames );
+        LinkedList<String> deviceNames = getEthernetDeviceNames();
         
         /**
          * For each physical device look for the settings in interfaces
          * If not found, create some reasonable defaults
          */
         for ( String deviceName : deviceNames ) {
-            // ignore vlan interfaces, don't create new settings for them
-            if ( deviceName.matches(".*\\.[0-9]+$") )  
-                continue;
-            
             boolean foundMatchingInterface = false;
             if ( netSettings.getInterfaces() != null ) {
                 for ( InterfaceSettings interfaceSettings : netSettings.getInterfaces() ) {
@@ -507,10 +491,6 @@ public class NetworkManagerImpl implements NetworkManager
          * If not found, create some reasonable defaults
          */
         for ( String deviceName : deviceNames ) {
-            // ignore vlan interfaces, don't create new settings for them
-            if ( deviceName.matches(".*\\.[0-9]+$") )  
-                continue;
-
             boolean foundMatchingDevice = false;
             if ( netSettings.getDevices() != null ) {
                 for ( DeviceSettings deviceSettings : netSettings.getDevices() ) {
@@ -536,16 +516,16 @@ public class NetworkManagerImpl implements NetworkManager
     private NetworkSettings defaultSettings()
     {
         NetworkSettings newSettings = new NetworkSettings();
-
-        newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
-        newSettings.setDomainName( "example.com" );
-
-        newSettings.setHttpsPort( 443 );
-        
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
-        String deviceNames[] = result.getOutput().split("\\r?\\n");
         
         try {
+            newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
+            newSettings.setDomainName( "example.com" );
+            newSettings.setHttpPort( 80 );
+            newSettings.setHttpsPort( 443 );
+        
+            LinkedList<String> deviceNames = getEthernetDeviceNames();
+
+            String devName = null;
             LinkedList<DeviceSettings> devices = new LinkedList<DeviceSettings>();
             for (String deviceName : deviceNames) {
                 DeviceSettings deviceSettings = new DeviceSettings();
@@ -556,14 +536,15 @@ public class NetworkManagerImpl implements NetworkManager
             
             LinkedList<InterfaceSettings> interfaces = new LinkedList<InterfaceSettings>();
 
-            if (deviceNames.length > 0) {
+            devName = deviceNames.poll();
+            if ( devName != null ) {
                 InterfaceSettings external = new InterfaceSettings();
                 external.setInterfaceId( 1 );
                 external.setName( "External" );
                 external.setIsWan( true );
-                external.setPhysicalDev( deviceNames[0] );
-                external.setSystemDev( deviceNames[0] );
-                external.setSymbolicDev( deviceNames[0] );
+                external.setPhysicalDev( devName );
+                external.setSystemDev( devName );
+                external.setSymbolicDev( devName );
                 external.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
                 external.setV6ConfigType( InterfaceSettings.V6ConfigType.AUTO );
@@ -571,14 +552,15 @@ public class NetworkManagerImpl implements NetworkManager
                 interfaces.add( external );
             }
         
-            if (deviceNames.length > 1) {
+            devName = deviceNames.poll();
+            if ( devName != null ) {
                 InterfaceSettings internal = new InterfaceSettings();
                 internal.setInterfaceId( 2 );
                 internal.setName( "Internal" );
                 internal.setIsWan( false );
-                internal.setPhysicalDev( deviceNames[1] );
-                internal.setSystemDev( deviceNames[1] );
-                internal.setSymbolicDev( deviceNames[1] );
+                internal.setPhysicalDev( devName );
+                internal.setSystemDev( devName );
+                internal.setSymbolicDev( devName );
                 internal.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
@@ -591,21 +573,23 @@ public class NetworkManagerImpl implements NetworkManager
                 interfaces.add(internal);
             }
 
-            for (int i = 2 ; i < deviceNames.length ; i++ ) {
+            int i = 2;
+            for ( devName = deviceNames.poll() ; devName != null ; devName = deviceNames.poll() ) {
                 String[] greekNames = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
                 
                 InterfaceSettings intf = new InterfaceSettings();
                 intf.setInterfaceId( i + 1 );
                 try {
-                    intf.setName("Interface " + greekNames[i + 1]);
+                    intf.setName("Interface " + greekNames[i]);
                 } catch (Exception e) {
                     intf.setName("Interface " + (i + 1));
                 }
-                intf.setPhysicalDev(deviceNames[i]);
-                intf.setSystemDev(deviceNames[i]);
-                intf.setSymbolicDev(deviceNames[i]);
+                intf.setPhysicalDev( devName);
+                intf.setSystemDev( devName );
+                intf.setSymbolicDev( devName );
                 intf.setConfigType( InterfaceSettings.ConfigType.DISABLED );
                 interfaces.add( intf );
+                i++;
             }
 
             newSettings.setInterfaces(interfaces);
@@ -1211,5 +1195,27 @@ public class NetworkManagerImpl implements NetworkManager
                 free = intfSettings.getInterfaceId() + 1;
         }
         return free;
+    }
+
+    private LinkedList<String> getEthernetDeviceNames()
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        String deviceNamesArr[] = result.getOutput().split("\\r?\\n");
+        LinkedList<String> deviceNames = new LinkedList<String>( );
+        for ( String name : deviceNamesArr ) {
+
+            String devName = name.trim();
+            
+            // ignore vlan devices (ie eth0.3)
+            if ( devName.matches(".*\\.[0-9]+$") )  
+                continue;
+            // ignore blanks
+            if( "".equals( devName ) )
+                continue;
+            
+            deviceNames.add( devName );
+        }
+
+        return deviceNames;
     }
 }
