@@ -457,6 +457,17 @@ public class NetworkManagerImpl implements NetworkManager
         String deviceNames[] = result.getOutput().split("\\r?\\n");
 
         /**
+         * Check all device names, remove anly blanks
+         */
+        List<String> deviceNamesTmp = new LinkedList<String>();
+        for ( String devName : deviceNames ) {
+            if( ! "".equals( devName.trim() ) ) {
+                deviceNamesTmp.add( devName.trim() );
+            }
+        }
+        deviceNames = deviceNamesTmp.toArray( deviceNames );
+        
+        /**
          * For each physical device look for the settings in interfaces
          * If not found, create some reasonable defaults
          */
