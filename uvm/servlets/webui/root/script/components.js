@@ -393,57 +393,55 @@ Ung.Util = {
     showWarningMessage:function(message, details, errorHandler) {
         var wnd = Ext.create('Ext.window.Window', {
             title: i18n._('Warning'),
-            width: 400,
-            height: 250,
-            layout: 'anchor',
+            width: 500,
+            height: 300,
+            layout: { type: 'vbox', align: 'stretch'},
             modal:true,
             closable:false,
-            items:{
-                xtype:'fieldset',
-                anchor:'100% 100%',
-                layout:'anchor',
-                title:'',
-                items:[{   
-                    xtype: 'text',  
-                    border: false,
-                    html:message,
-                    anchor:'100% 30%',
-                },
-                {
-                    xtype:'button',
-                    text:i18n._('Show details'),
-                    width:50,
-                    anchor:'30% 15%',
-                    handler:function() {
-                        var techmsg = wnd.query('[name="techMsg"]')[0];
-                        techmsg.setVisible( !techmsg.isVisible());
-                        this.setText(techmsg.isVisible() ? i18n._('Hide details'):i18n._('Show details'));
-                    }
-                },
-                {
-                    margin:'10 0 0 0',
-                    name:'techMsg',
-                    xtype: 'text',  
-                    anchor:'100% 50%',
-                    border: false,
-                    hidden:true,
-                    html:details ? details : ''
-                }]
-            },
-            buttons:[
-                {
-                    text:i18n._('OK'), 
-                    handler:function() { 
-                        if ( errorHandler) {
-                            errorHandler();
-                        } else {
-                            wnd.close();
+            items: [{
+                xtype: 'fieldset',
+                flex: 0,
+                cls: 'description',
+                html: message
+            }, {
+                flex:1,
+                xtype: "fieldset",
+                title: i18n._('Show details'),
+                collapsible: true,
+                collapsed: true,
+                autoScroll: true,
+                border: true,
+                hidden: details==null,
+                listeners: {
+                    "collapse": {
+                        fn: function(f, eOpts) {
+                            f.setTitle(i18n._('Show details'));
+                        }
+                    },
+                    "expand": {
+                        fn: function(f, eOpts) {
+                            f.setTitle(i18n._('Hide details'));
                         }
                     }
+                },
+                items: {
+                    xtype: 'text',
+                    html: details ? details : ''
                 }
-            ]
+            }],
+            buttons: [{
+                text: i18n._('OK'), 
+                handler: function() { 
+                    if ( errorHandler) {
+                        errorHandler();
+                    } else {
+                        wnd.close();
+                    }
+                }
+            }]
         });
         wnd.show();
+        Ext.MessageBox.hide();
     },
     
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
@@ -462,7 +460,7 @@ Ung.Util = {
                 message += i18n._("Check that the server is fully up to date.") + "<br/>";
                 message += i18n._("<br/>");
                 details =  i18n._("Unable to contact app store") + ":<br/>";
-                details += "<br/><b>Exception message:&nbsp;</b>" + exception.message + "<br/>";
+                details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
             }
             /* special text for apt error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("timed out") >= 0)) {
@@ -517,12 +515,12 @@ Ung.Util = {
                 if (exception.name != null)
                     details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
                 if (exception.message !== "")
-                    details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
+                    details += "<b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
                 if (exception.stack != null) {
-                    details += "<br/><b>" + i18n._("Exception stack") +":&nbsp;</b>" +exception.stack + "<br/>";
+                    details += "<b>" + i18n._("Exception stack") +":&nbsp;</b>" +exception.stack + "<br/>";
                 }
                 if (exception.javaStack != null) {
-                    details += "<br/><b>" + i18n._("Exception Java stack") +":&nbsp;</b>" + exception.javaStack + "<br/>";
+                    details += "<b>" + i18n._("Exception Java stack") +":&nbsp;</b>" + exception.javaStack + "<br/>";
                 }
             }
             /* worst case - just say something */
@@ -531,7 +529,7 @@ Ung.Util = {
                 message += i18n._("Please Try Again");
             }
             if (handler==null) {
-                this.showWarningMessage(message);
+                this.showWarningMessage(message, details);
             } else if(type==null || type== "alertCallback") {
                 this.showWarningMessage(message,details, handler);
             } else if (type== "alert") {
