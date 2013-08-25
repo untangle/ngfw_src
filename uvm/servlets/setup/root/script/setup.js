@@ -915,7 +915,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         var wanSettings = this.getFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
-        wanSettings.v4ConfigType = "pppoe";
+        wanSettings.v4ConfigType = "PPPOE";
         wanSettings.v4NatEgressTraffic = true;
         wanSettings.v4PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
         wanSettings.v4PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
