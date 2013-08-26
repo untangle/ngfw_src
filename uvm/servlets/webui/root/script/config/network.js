@@ -1347,6 +1347,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 cls: 'boxlabel'
                             }]
                         }, {
+                            xtype: 'button',
+                            name: "v4AutoRenewDhcpLease",
+                            text: this.i18n._( "Renew DHCP Lease" ),
+                            //FIXME button width
+                            handler: Ext.bind(function() {
+                                //FIXME call networkManager.renewDhcpLease( interfaceId )
+                                //FIXME refresh DHCP status or refresh all settings?
+                            }, this)
+                        }, {
                             xtype:'textfield',
                             dataIndex: "v4PPPoEUsername",
                             fieldLabel: this.i18n._("Username"),
@@ -1595,6 +1604,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             v4AutoGatewayOverrideContainer: this.query('container[name="v4AutoGatewayOverrideContainer"]')[0],
                             v4AutoDns1OverrideContainer: this.query('container[name="v4AutoDns1OverrideContainer"]')[0],
                             v4AutoDns2OverrideContainer: this.query('container[name="v4AutoDns2OverrideContainer"]')[0],
+                            v4AutoRenewDhcpLeaseButton: this.query('button[name="v4AutoRenewDhcpLease"]')[0],
                             
                             v4PPPoEUsername: this.query('textfield[dataIndex="v4PPPoEUsername"]')[0],
                             v4PPPoEPassword: this.query('textfield[dataIndex="v4PPPoEPassword"]')[0],
@@ -1696,13 +1706,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v4AutoGatewayOverrideContainer.status = true;
                             this.cmps.v4AutoDns1OverrideContainer.status = true;
                             this.cmps.v4AutoDns2OverrideContainer.status = true;
+                            this.cmps.v4AutoRenewDhcpLeaseButton.status = true;
                             
                             this.cmps.v4AutoAddressOverride.status = true;
                             this.cmps.v4AutoGatewayOverride.status = true;
                             this.cmps.v4AutoDns1Override.status = true;
                             this.cmps.v4AutoDns2Override.status = true;
-                            
-                            
                         } else if ( this.cmps.v4ConfigType.getValue() == "PPPOE" ) {
                             this.cmps.v4PPPoEUsername.status = true;
                             this.cmps.v4PPPoEPassword.status = true;
