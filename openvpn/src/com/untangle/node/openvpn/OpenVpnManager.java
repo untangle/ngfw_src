@@ -246,8 +246,9 @@ public class OpenVpnManager
         /**
          * Write the address pool
          * This is necessary because the block page is displayed on these addresses (ie 172.16.0.1)
+         * XXX: After testing this does not seem necessary. -dmorris
          */
-        writePushRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask() );
+        //writePushRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask() );
         
         /**
          * Write the exports
