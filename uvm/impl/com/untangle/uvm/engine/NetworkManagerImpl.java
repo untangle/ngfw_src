@@ -184,6 +184,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public void renewDhcpLease( int interfaceId )
     {
+        ExecManagerResult result;
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
 
         if ( intfSettings == null ) {
