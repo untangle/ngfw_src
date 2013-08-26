@@ -26,6 +26,8 @@ public interface NetworkManager
 
     void unregisterListener( NetworkSettingsListener networkListener );
 
+    void renewDhcpLease( int interfaceId );
+    
     /* convenience methods */
 
     List<InterfaceSettings> getEnabledInterfaces();
