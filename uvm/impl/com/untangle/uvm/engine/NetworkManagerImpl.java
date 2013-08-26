@@ -922,7 +922,7 @@ public class NetworkManagerImpl implements NetworkManager
         rule1Matcher1.setValue("5060");
         QosRuleMatcher rule1Matcher2 = new QosRuleMatcher();
         rule1Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
-        rule1Matcher2.setValue("tcp,udp");
+        rule1Matcher2.setValue("TCP,UDP");
         rule1Matchers.add(rule1Matcher1);
         rule1Matchers.add(rule1Matcher2);
 
@@ -943,7 +943,7 @@ public class NetworkManagerImpl implements NetworkManager
         rule2Matcher1.setValue("4569");
         QosRuleMatcher rule2Matcher2 = new QosRuleMatcher();
         rule2Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
-        rule2Matcher2.setValue("tcp,udp");
+        rule2Matcher2.setValue("TCP,UDP");
         rule2Matchers.add(rule2Matcher1);
         rule2Matchers.add(rule2Matcher2);
 
@@ -991,7 +991,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSshMatcher1.setValue("22");
         FilterRuleMatcher ruleSshMatcher2 = new FilterRuleMatcher();
         ruleSshMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleSshMatcher2.setValue("tcp");
+        ruleSshMatcher2.setValue("TCP");
         ruleSshMatchers.add(ruleSshMatcher1);
         ruleSshMatchers.add(ruleSshMatcher2);
         filterRuleSsh.setMatchers( ruleSshMatchers );
@@ -1006,7 +1006,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpsWanMatcher1.setValue("443");
         FilterRuleMatcher ruleHttpsWanMatcher2 = new FilterRuleMatcher();
         ruleHttpsWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpsWanMatcher2.setValue("tcp");
+        ruleHttpsWanMatcher2.setValue("TCP");
         FilterRuleMatcher ruleHttpsWanMatcher3 = new FilterRuleMatcher();
         ruleHttpsWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleHttpsWanMatcher3.setValue("wan");
@@ -1025,7 +1025,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpsNonWanMatcher1.setValue("443");
         FilterRuleMatcher ruleHttpsNonWanMatcher2 = new FilterRuleMatcher();
         ruleHttpsNonWanMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpsNonWanMatcher2.setValue("tcp");
+        ruleHttpsNonWanMatcher2.setValue("TCP");
         FilterRuleMatcher ruleHttpsNonWanMatcher3 = new FilterRuleMatcher();
         ruleHttpsNonWanMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleHttpsNonWanMatcher3.setValue("non_wan");
@@ -1066,7 +1066,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleDnsMatcher1.setValue("53");
         FilterRuleMatcher ruleDnsMatcher2 = new FilterRuleMatcher();
         ruleDnsMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleDnsMatcher2.setValue("tcp,udp");
+        ruleDnsMatcher2.setValue("TCP,UDP");
         FilterRuleMatcher ruleDnsMatcher3 = new FilterRuleMatcher();
         ruleDnsMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleDnsMatcher3.setValue("non_wan");
@@ -1085,7 +1085,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleDhcpMatcher1.setValue("67");
         FilterRuleMatcher ruleDhcpMatcher2 = new FilterRuleMatcher();
         ruleDhcpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleDhcpMatcher2.setValue("udp");
+        ruleDhcpMatcher2.setValue("UDP");
         FilterRuleMatcher ruleDhcpMatcher3 = new FilterRuleMatcher();
         ruleDhcpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleDhcpMatcher3.setValue("non_wan");
@@ -1104,7 +1104,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpMatcher1.setValue("80");
         FilterRuleMatcher ruleHttpMatcher2 = new FilterRuleMatcher();
         ruleHttpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleHttpMatcher2.setValue("tcp");
+        ruleHttpMatcher2.setValue("TCP");
         FilterRuleMatcher ruleHttpMatcher3 = new FilterRuleMatcher();
         ruleHttpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleHttpMatcher3.setValue("non_wan");
@@ -1123,7 +1123,7 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSnmpMatcher1.setValue("161");
         FilterRuleMatcher ruleSnmpMatcher2 = new FilterRuleMatcher();
         ruleSnmpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleSnmpMatcher2.setValue("udp");
+        ruleSnmpMatcher2.setValue("UDP");
         FilterRuleMatcher ruleSnmpMatcher3 = new FilterRuleMatcher();
         ruleSnmpMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
         ruleSnmpMatcher3.setValue("non_wan");
