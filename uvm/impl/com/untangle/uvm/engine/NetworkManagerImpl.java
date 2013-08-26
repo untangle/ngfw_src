@@ -1081,7 +1081,7 @@ public class NetworkManagerImpl implements NetworkManager
         List<FilterRuleMatcher> rulePingMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher rulePingMatcher1 = new FilterRuleMatcher();
         rulePingMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        rulePingMatcher1.setValue("icmp");
+        rulePingMatcher1.setValue("ICMP");
         rulePingMatchers.add(rulePingMatcher1);
         filterRulePing.setMatchers( rulePingMatchers );
 
@@ -1092,7 +1092,7 @@ public class NetworkManagerImpl implements NetworkManager
         List<FilterRuleMatcher> ruleIPsecMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleIPsecMatcher1 = new FilterRuleMatcher();
         ruleIPsecMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleIPsecMatcher1.setValue("esp,ah");
+        ruleIPsecMatcher1.setValue("ESP,AH");
         ruleIPsecMatchers.add(ruleIPsecMatcher1);
         filterRuleIPsec.setMatchers( ruleIPsecMatchers );
         
