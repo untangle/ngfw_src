@@ -1350,10 +1350,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype: 'button',
                             name: "v4AutoRenewDhcpLease",
                             text: this.i18n._( "Renew DHCP Lease" ),
-                            //FIXME button width
+                            width: 195,
+                            margin: "5 0 5 155",
                             handler: Ext.bind(function() {
-                                //FIXME call networkManager.renewDhcpLease( interfaceId )
-                                //FIXME refresh DHCP status or refresh all settings?
+                                this.gridInterfaces.rowEditor.onRenewDhcpLease();
                             }, this)
                         }, {
                             xtype:'textfield',
@@ -1809,6 +1809,38 @@ if (!Ung.hasResource["Ung.Network"]) {
                         qosBandwidthStore.filter([{property: "configType", value: "ADDRESSED"}, {property:"isWan", value: true}]);
                         this.grid.settingsCmp.gridQosWanBandwidth.updateTotalBandwidth();
                     }
+                },
+                onRenewDhcpLease: function() {
+                    var settingsCmp = this.grid.settingsCmp;
+                    Ext.MessageBox.wait( settingsCmp.i18n._( "Renewing DHCP Lease..." ), settingsCmp.i18n._( "Please wait" ));
+                    var inerfaceId = this.record.get("interfaceId");
+                    main.getNetworkManager().renewDhcpLease(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        //refresh DHCP status
+                        main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            var interfaceStatus = result;
+                            for( i=0 ; i<settingsCmp.settings.interfaces.list.length; i++) {
+                                var intf=settingsCmp.settings.interfaces.list[i];
+                                if(interfaceStatus.interfaceId=intf.interfaceId) {
+                                    delete interfaceStatus.javaClass;
+                                    delete interfaceStatus.interfaceId;
+                                    this.grid.getStore().suspendEvents();
+                                    this.record.set(interfaceStatus); // apply to the current record
+                                    this.grid.getStore().resumeEvents();
+                                    Ext.apply(intf, interfaceStatus); // apply to settings
+                                    //apply in the current rowEditor
+                                    this.query('label[dataIndex="v4Address"]')[0].setValue(this.record.get("v4Address"),this.record);
+                                    this.query('label[dataIndex="v4Gateway"]')[0].setValue(this.record.get("v4Gateway"),this.record);
+                                    this.query('label[dataIndex="v4Dns1"]')[0].setValue(this.record.get("v4Dns1"),this.record);
+                                    this.query('label[dataIndex="v4Dns2"]')[0].setValue(this.record.get("v4Dns2"),this.record);
+                                    this.query('label[dataIndex="v4PrefixLength"]')[0].setValue(this.record.get("v4PrefixLength"),this.record);
+                                    break;
+                                }
+                            }
+                            Ext.MessageBox.hide();
+                        }, this), inerfaceId);
+                    }, this), inerfaceId);
                 }
             }) );
         },
