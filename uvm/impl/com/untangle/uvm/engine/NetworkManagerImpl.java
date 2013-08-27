@@ -191,7 +191,8 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Interface not found. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
-        if ( intfSettings.getSystemDev() == null ) {
+        String devName = intfSettings.getSymbolicDev();
+        if ( devName == null ) {
             logger.warn("Interface missing systemDev. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
@@ -199,20 +200,20 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Interface not type AUTO. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
-
+        
         // just bring the interface up and down 
-        result = UvmContextFactory.context().execManager().exec( "ifdown " + intfSettings.getSystemDev() );
+        result = UvmContextFactory.context().execManager().exec( "ifdown " + devName );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifdown " + intfSettings.getSystemDev() + ": ");
+            logger.info("ifdown " + devName + ": ");
             for ( String line : lines )
                 logger.info("ifdown: " + line);
         } catch (Exception e) {}
 
-        result = UvmContextFactory.context().execManager().exec( "ifup " + intfSettings.getSystemDev() );
+        result = UvmContextFactory.context().execManager().exec( "ifup " + devName );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifup " + intfSettings.getSystemDev() + ": ");
+            logger.info("ifup " + devName + ": ");
             for ( String line : lines )
                 logger.info("ifup: " + line);
         } catch (Exception e) {}
