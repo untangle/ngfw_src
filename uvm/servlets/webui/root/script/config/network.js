@@ -1822,7 +1822,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             var interfaceStatus = result;
                             for( i=0 ; i<settingsCmp.settings.interfaces.list.length; i++) {
                                 var intf=settingsCmp.settings.interfaces.list[i];
-                                if(interfaceStatus.interfaceId=intf.interfaceId) {
+                                if( interfaceStatus.interfaceId == intf.interfaceId ) {
                                     delete interfaceStatus.javaClass;
                                     delete interfaceStatus.interfaceId;
                                     this.grid.getStore().suspendEvents();
