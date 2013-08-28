@@ -757,8 +757,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         title: this.i18n._('Note:'),
                         items: [{
                             xtype: 'label',
-                            html: this.i18n._('The <b>Subject Alternative Names</b> field can contain an optional comma separated list of one or more alternative host names or addresses in the following format:<br><br>') +
-                                this.i18n._('DNS:some.name.com,DNS:other.name.com,IP:1.2.3.4,IP:50.60.70.80')
+                            html: this.i18n._('The <b>Subject Alternative Names</b> field can contain an optional comma separated list of one or more alternative host names or addresses.')
                         }],
                         hidden: (certMode === "ROOT" ? true : false)
                     },{
@@ -810,8 +809,24 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if ((form_OU.getValue()) && (form_OU.getValue().length > 0)) certSubject += ("/OU=" + form_OU.getValue());
 
             altNames = "";
-            if ((form_SAN.getValue()) && (form_SAN.getValue().length > 0)) altNames = form_SAN.getValue();
-
+            if ((form_SAN.getValue()) && (form_SAN.getValue().length > 0)) {
+                altNames = form_SAN.getValue();
+                var hostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
+                //parse subject alt name list. for ips prefix with "IP:", for hostnames prefix with "DNS:", otherwise is left unchanged
+                var altNameTokens = altNames.split(',');
+                var altNamesArray=[];
+                for(var i=0; i<altNameTokens.length; i++) {
+                    var altName = altNameTokens[i].trim();
+                    if(Ext.form.VTypes.ipAddress(altName)) {
+                        altName="IP:"+altName;
+                    } else if(hostnameRegex.test(altName)) {
+                        altName="DNS:"+altName;
+                    }
+                    altNamesArray.push(altName);
+                }
+                altNames = altNamesArray.join(',');
+            }
+            
             // for a CSR we handle it like a file download which will cause the
             // client browser to prompt the user to save the resulting file
             if (certMode === "CSR")
