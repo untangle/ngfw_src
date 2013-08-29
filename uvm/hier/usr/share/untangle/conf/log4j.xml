@@ -199,7 +199,7 @@
   </category>
 
   <category name="com.untangle.node.https">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node.ips">

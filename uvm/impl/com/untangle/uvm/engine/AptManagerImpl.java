@@ -296,13 +296,13 @@ public class AptManagerImpl implements AptManager
         if ( ! UvmContextFactory.context().isDevel() ) {
             List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
             if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
-                installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
-                installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                installableLibitems.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+                installableNodes.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
             License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
             if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
-                installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
-                installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
+                installableLibitems.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+                installableNodes.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
         }
         
