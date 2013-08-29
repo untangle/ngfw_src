@@ -1000,6 +1000,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelShield = Ext.create('Ext.panel.Panel',{
                 parentId: this.getId(),
                 title: this.i18n._('Shield'),
+                helpSource: "system_shield",
                 cls: 'ung-panel',
                 layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 items: [{
