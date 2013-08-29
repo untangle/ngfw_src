@@ -51,7 +51,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
         if( exception ) {
             Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message );
             return;
-            }
+        }
 
         var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
 
@@ -474,8 +474,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 //console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with physical device "+intf["physicalDev"]);
             }
         }
-        rpc.networkManager.setNetworkSettings(Ext.bind(function( result, exception ) {
-            if(exception != null) {
+        rpc.networkManager.setNetworkSettings( Ext.bind(function( result, exception ) {
+            if( exception != null ) {
                 Ext.MessageBox.alert(exception);
                 return;
             }
@@ -485,7 +485,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     },
 
     errorHandler: function( result, exception, foo, handler ) {
-        if(exception) {
+        if( exception ) {
             Ext.MessageBox.alert(i18n._( "Unable to remap the interfaces." ), exception.message );
             return;
         }
@@ -533,8 +533,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 return;
             }
             
-            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
-                if(exception != null) {
+            var deviceStatus=rpc.networkManager.getDeviceStatus( Ext.bind( function( result, exception ) {
+                if( exception != null ) {
                     Ext.MessageBox.alert(exception);
                     return;
                 }
@@ -582,7 +582,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
             
             var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
-                if(exception != null) {
+                if( exception != null ) {
                     Ext.MessageBox.alert(exception);
                     return;
                 }
@@ -927,9 +927,9 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
-        if(exception) {
+        if( exception ) {
             Ext.MessageBox.show({
-                title:i18n._( "Network Settings" ),
+                title:i18n._( "Exception" ),
                 msg:exception.message,
                 width:300,
                 buttons:Ext.MessageBox.OK,
@@ -1337,7 +1337,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     },
 
     complete: function( result, exception, foo, handler ) {
-        if(exception) {
+        if( exception ) {
             Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Local Network Settings" ) + "<br/>" + exception.message );
             return;
         }
@@ -1440,7 +1440,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
 
     },
     complete: function( result, exception, foo, handler ) {
-        if(exception) {
+        if( exception ) {
             Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Automatic Upgrade Settings" ) + exception.message );
             return;
         }
