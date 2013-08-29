@@ -463,7 +463,14 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         if (captureSettings.getConcurrentLoginsEnabled() == false)
         {
-            CaptureUserEntry entry = captureUserTable.searchByUsername(username);
+            boolean ignoreCase = false;
+
+            if (captureSettings.getAuthenticationType() == CaptureSettings.AuthenticationType.ACTIVE_DIRECTORY)
+            {
+                ignoreCase = true;
+            }
+            
+            CaptureUserEntry entry = captureUserTable.searchByUsername(username,ignoreCase);
 
             if (entry != null)
             {

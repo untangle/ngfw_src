@@ -78,14 +78,25 @@ public class CaptureUserTable
         return(userTable.get(address));
     }
 
-    public CaptureUserEntry searchByUsername(String username)
+    public CaptureUserEntry searchByUsername(String username,boolean ignoreCase)
     {
         Enumeration ee = userTable.elements();
 
         while (ee.hasMoreElements())
         {
             CaptureUserEntry item = (CaptureUserEntry)ee.nextElement();
-            if (username.equals(item.getUserName()) == true) return(item);
+
+            // if the ignoreCase flag is set we compare both as lowercase
+            if (ignoreCase == true)
+            {
+                if (username.toLowerCase().equals(item.getUserName().toLowerCase()) == true) return(item);
+            }
+
+            // ignoreCase flag is not set so do a direct comparison
+            else
+            {
+                if (username.equals(item.getUserName()) == true) return(item);
+            }
         }
 
         return(null);
@@ -113,7 +124,7 @@ public class CaptureUserTable
                 logger.warn("HostTableEntry missing for logged in Captive Portal Entry: " + item.getUserAddress().getHostAddress() + " : " + item.getUserName() );
                 idleTrigger = ((item.getSessionActivity() / 1000) + userTimeout);
             }
-            
+
             // look for users with no traffic within the configured non-zero idle timeout
             if ( ( idleTimeout > 0) && ( currentTime > idleTrigger ) ) {
                 logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
