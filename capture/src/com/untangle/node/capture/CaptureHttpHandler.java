@@ -45,49 +45,44 @@ class CaptureHttpHandler extends HttpStateMachine
         NodeTCPSession session = getSession();
 
         // first check to see if the user is already authenticated
-        if (node.isClientAuthenticated(session.getClientAddr()) == true)
-        {
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+        if (node.isClientAuthenticated(session.getClientAddr()) == true) {
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
             releaseRequest();
-            return(requestHeader);
+            return (requestHeader);
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(session.getClientAddr(),session.getServerAddr());
+        PassedAddress passed = node.isSessionAllowed(session.getClientAddr(), session.getServerAddr());
 
-            if (passed != null)
-            {
-                if (passed.getLog() == true)
-                {
+        if (passed != null) {
+            if (passed.getLog() == true) {
                 CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), false);
                 node.logEvent(logevt);
-                }
-
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
-            releaseRequest();
-            return(requestHeader);
             }
+
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
+            releaseRequest();
+            return (requestHeader);
+        }
 
         // not authenticated and no pass list match so check the rules
         CaptureRule rule = node.checkCaptureRules(session);
 
         // by default we allow traffic so if there is no rule pass the traffic
-        if (rule == null)
-        {
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+        if (rule == null) {
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
             releaseRequest();
-            return(requestHeader);
+            return (requestHeader);
         }
 
         // if we found a pass rule then log and let the traffic pass
-        if (rule.getCapture() == false)
-        {
+        if (rule.getCapture() == false) {
             CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
             node.logEvent(logevt);
 
-            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW,1);
+            node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
             releaseRequest();
-            return(requestHeader);
+            return (requestHeader);
         }
 
         String method = getRequestLine().getMethod().toString();
@@ -97,32 +92,32 @@ class CaptureHttpHandler extends HttpStateMachine
         String host = getRequestLine().getRequestUri().getHost();
 
         // if not found there look in the request header
-        if (host == null) host = requestHeader.getValue("Host");
+        if (host == null)
+            host = requestHeader.getValue("Host");
 
         // if still not found then just use the IP address of the server
-        if (host == null) host = getSession().getServerAddr().getHostAddress().toString();
+        if (host == null)
+            host = getSession().getServerAddr().getHostAddress().toString();
 
         host = host.toLowerCase();
 
         // look for prefetch shenaniganery
         String prefetch = requestHeader.getValue("X-moz");
 
-            // found a prefetch request so return a special error response
-            if ((prefetch != null) && (prefetch.contains("prefetch") == true))
-            {
-                response = generatePrefetchResponse();
-            }
+        // found a prefetch request so return a special error response
+        if ((prefetch != null) && (prefetch.contains("prefetch") == true)) {
+            response = generatePrefetchResponse();
+        }
 
-            // not a prefetch so generate the captive portal redirect
-            else
-            {
-                CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
-                response = node.generateResponse(details, session);
-            }
+        // not a prefetch so generate the captive portal redirect
+        else {
+            CaptureBlockDetails details = new CaptureBlockDetails(host, uri, method);
+            response = node.generateResponse(details, session);
+        }
 
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         node.logEvent(logevt);
-        node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK,1);
+        node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK, 1);
         blockRequest(response);
         return requestHeader;
     }
@@ -146,13 +141,13 @@ class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( Chunk chunk ) throws TokenException
+    protected Chunk doResponseBody(Chunk chunk) throws TokenException
     {
         return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd( ) throws TokenException
+    protected void doResponseBodyEnd() throws TokenException
     {
     }
 
@@ -168,7 +163,7 @@ class CaptureHttpHandler extends HttpStateMachine
         return statusLine;
     }
 
-///// Generate a forbidden response for prefetch queries
+    // Generate a forbidden response for prefetch queries
 
     private Token[] generatePrefetchResponse()
     {
@@ -187,6 +182,6 @@ class CaptureHttpHandler extends HttpStateMachine
 
         response[2] = Chunk.EMPTY;
         response[3] = EndMarker.MARKER;
-        return(response);
+        return (response);
     }
 }

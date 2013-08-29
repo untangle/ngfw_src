@@ -12,7 +12,10 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class CaptureUserEvent extends LogEvent
 {
-    public enum EventType { LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT };
+    public enum EventType
+    {
+        LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT
+    };
 
     private InetAddress clientAddr;
     private String loginName;
@@ -22,7 +25,9 @@ public class CaptureUserEvent extends LogEvent
 
     // constructors --------------------------------------------------------
 
-    public CaptureUserEvent() { }
+    public CaptureUserEvent()
+    {
+    }
 
     public CaptureUserEvent(Long policyId, InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
     {
@@ -35,38 +40,85 @@ public class CaptureUserEvent extends LogEvent
 
     // accessors -----------------------------------------------------------
 
-    public InetAddress getClientAddr() { return clientAddr; }
-    public void setClientAddr( InetAddress clientAddr ) { this.clientAddr = clientAddr; }
+    public InetAddress getClientAddr()
+    {
+        return clientAddr;
+    }
 
-    public String getLoginName() { return loginName; }
-    public void setLoginName( String loginName ) { this.loginName = loginName; }
+    public void setClientAddr(InetAddress clientAddr)
+    {
+        this.clientAddr = clientAddr;
+    }
 
-    private String getEventValue() { return eventValue; }
-    private void setEventValue( String eventValue ) { this.eventValue = eventValue; }
+    public String getLoginName()
+    {
+        return loginName;
+    }
 
-    public EventType getEvent() { return EventType.valueOf(this.eventValue); }
-    public void setEvent( EventType newEvent ) { this.eventValue = newEvent.toString(); }
+    public void setLoginName(String loginName)
+    {
+        this.loginName = loginName;
+    }
 
-    public Long getPolicyId() { return policyId; }
-    public void setPolicyId(Long policyId) { this.policyId = policyId; }
+    private String getEventValue()
+    {
+        return eventValue;
+    }
 
-    private String getAuthenticationTypeValue() { return authenticationTypeValue; }
-    private void setAuthenticationTypeValue( String newValue ) { this.authenticationTypeValue = newValue; }
+    private void setEventValue(String eventValue)
+    {
+        this.eventValue = eventValue;
+    }
 
-    public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
-    public void setAuthenticationType( AuthenticationType newValue ) { this.authenticationTypeValue = newValue.toString(); }
+    public EventType getEvent()
+    {
+        return EventType.valueOf(this.eventValue);
+    }
 
-    private static String sql = "INSERT INTO reports.capture_user_events " +
-        "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " +
-        "values ( ?, ?, ?, ?, ?, ? )";
+    public void setEvent(EventType newEvent)
+    {
+        this.eventValue = newEvent.toString();
+    }
+
+    public Long getPolicyId()
+    {
+        return policyId;
+    }
+
+    public void setPolicyId(Long policyId)
+    {
+        this.policyId = policyId;
+    }
+
+    private String getAuthenticationTypeValue()
+    {
+        return authenticationTypeValue;
+    }
+
+    private void setAuthenticationTypeValue(String newValue)
+    {
+        this.authenticationTypeValue = newValue;
+    }
+
+    public AuthenticationType getAuthenticationType()
+    {
+        return AuthenticationType.valueOf(this.authenticationTypeValue);
+    }
+
+    public void setAuthenticationType(AuthenticationType newValue)
+    {
+        this.authenticationTypeValue = newValue.toString();
+    }
+
+    private static String sql = "INSERT INTO reports.capture_user_events " + "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " + "values ( ?, ?, ?, ?, ?, ? )";
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
         int i = 0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setLong(++i, getPolicyId().longValue());
         pstmt.setString(++i, getLoginName());
         pstmt.setString(++i, getEvent().toString());

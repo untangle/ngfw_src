@@ -85,13 +85,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private EventLogQuery passEventQuery;
     private EventLogQuery captureEventQuery;
 
-/**
- * nodeInstanceCount stores the number of this node type initialized thus far
- * nodeInstanceNum stores the number of this given node type
- * This is done so each node of this type has a unique sequential identifier
- */
+    /**
+     * nodeInstanceCount stores the number of this node type initialized thus
+     * far nodeInstanceNum stores the number of this given node type This is
+     * done so each node of this type has a unique sequential identifier
+     */
     private static int nodeInstanceCount = 0;
     private final int nodeInstanceNum;
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -167,16 +169,18 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
     }
 
-/**
- * The UI components seem to automagically call getSettings and setSettings
- * to handle the load and save stuff, so these functions just call
- * our getCaptureSettings and setCaptureSettings functions.
- */
+// THIS IS FOR ECLIPSE - @formatter:on
+
+    /**
+     * The UI components seem to automagically call getSettings and setSettings
+     * to handle the load and save stuff, so these functions just call our
+     * getCaptureSettings and setCaptureSettings functions.
+     */
 
     @Override
     public CaptureSettings getSettings()
     {
-        return(getCaptureSettings());
+        return (getCaptureSettings());
     }
 
     @Override
@@ -187,7 +191,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public CaptureSettings getCaptureSettings()
     {
-        return(this.captureSettings);
+        return (this.captureSettings);
     }
 
     public void setCaptureSettings(CaptureSettings newSettings)
@@ -206,7 +210,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     public ArrayList<CaptureUserEntry> getActiveUsers()
     {
-        return(captureUserTable.buildUserList());
+        return (captureUserTable.buildUserList());
     }
 
     @Override
@@ -221,15 +225,24 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return new EventLogQuery[] { this.captureEventQuery, this.passEventQuery, this.allEventQuery };
     }
 
-    public void incrementBlinger(BlingerType blingerType, long delta )
+    public void incrementBlinger(BlingerType blingerType, long delta)
     {
-        switch ( blingerType )
-        {
-        case SESSALLOW: adjustMetric(STAT_SESSALLOW, delta); break;
-        case SESSBLOCK: adjustMetric(STAT_SESSBLOCK, delta); break;
-        case SESSQUERY: adjustMetric(STAT_SESSQUERY, delta); break;
-        case AUTHGOOD: adjustMetric(STAT_AUTHGOOD, delta); break;
-        case AUTHFAIL: adjustMetric(STAT_AUTHFAIL, delta); break;
+        switch (blingerType) {
+        case SESSALLOW:
+            adjustMetric(STAT_SESSALLOW, delta);
+            break;
+        case SESSBLOCK:
+            adjustMetric(STAT_SESSBLOCK, delta);
+            break;
+        case SESSQUERY:
+            adjustMetric(STAT_SESSQUERY, delta);
+            break;
+        case AUTHGOOD:
+            adjustMetric(STAT_AUTHGOOD, delta);
+            break;
+        case AUTHFAIL:
+            adjustMetric(STAT_AUTHFAIL, delta);
+            break;
         }
     }
 
@@ -241,7 +254,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // create a new settings object
         CaptureSettings localSettings = new CaptureSettings();
 
-        //  setup all the defaults
+        // setup all the defaults
         BrandingManager brand = UvmContextFactory.context().brandingManager();
 
         localSettings.setBasicLoginPageTitle("Captive Portal");
@@ -283,12 +296,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         try {
             readSettings = settingsManager.load(CaptureSettings.class, settingsFile);
         } catch (Exception e) {
-            logger.warn("Error loading node settings",e);
-            return(null);
+            logger.warn("Error loading node settings", e);
+            return (null);
         }
 
-        if (readSettings != null) logger.info("Loaded node settings from " + settingsFile);
-        return(readSettings);
+        if (readSettings != null)
+            logger.info("Loaded node settings from " + settingsFile);
+        return (readSettings);
     }
 
     private void saveNodeSettings(CaptureSettings argSettings)
@@ -296,7 +310,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         try {
             settingsManager.save(CaptureSettings.class, settingsFile, argSettings);
         } catch (Exception e) {
-            logger.warn("Error in saveNodeSettings",e);
+            logger.warn("Error in saveNodeSettings", e);
             return;
         }
 
@@ -311,7 +325,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // set a unique id for each capture rule
         int idx = (this.nodeInstanceNum * 1000);
-        for (CaptureRule rule : argSettings.getCaptureRules()) rule.setId(++idx);
+        for (CaptureRule rule : argSettings.getCaptureRules())
+            rule.setId(++idx);
 
         this.captureSettings = argSettings;
     }
@@ -328,39 +343,36 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
             // for every session we have to check all the rules to make
             // sure we don't kill anything that shouldn't be captured
-            public boolean isMatch( Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+            public boolean isMatch(Long policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
                 // if userAddress is not null and this session is for someone
                 // other than userAddress then we just leave it alone
-                if ( (userAddress != null) && (clientAddr.equals( userAddress ) == false ) ) return(false);
+                if ((userAddress != null) && (clientAddr.equals(userAddress) == false))
+                    return (false);
 
                 // if session is for any active authenticated user return false
-                if ( captureUserTable.searchByAddress(clientAddr ) != null) return(false);
+                if (captureUserTable.searchByAddress(clientAddr) != null)
+                    return (false);
 
                 // if session matches any pass list return false
-                if ( isSessionAllowed( clientAddr, serverAddr ) != null) return(false);
+                if (isSessionAllowed(clientAddr, serverAddr) != null)
+                    return (false);
 
                 // check the session against the rule list
-                for (CaptureRule rule : ruleList)
-                {
-                    if ( rule.isMatch( protocol,
-                                       clientIntf, serverIntf,
-                                       clientAddr, serverAddr,
-                                       clientPort, serverPort))
-                        {
+                for (CaptureRule rule : ruleList) {
+                    if (rule.isMatch(protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort)) {
                         // on a matching rule continue if capture is false
-                        if (rule.getCapture() == false) continue;
+                        if (rule.getCapture() == false)
+                            continue;
 
                         // capture is true so log and kill the session
-                        logger.debug("Validate killing " +
-                                     clientAddr.getHostAddress().toString() + ":" + clientPort + " --> " +
-                                     serverAddr.getHostAddress().toString() + ":" + serverPort );
-                        return(true);
-                        }
+                        logger.debug("Validate killing " + clientAddr.getHostAddress().toString() + ":" + clientPort + " --> " + serverAddr.getHostAddress().toString() + ":" + serverPort);
+                        return (true);
+                    }
                 }
 
                 // no matches anywhere so leave the session alone
-                return(false);
+                return (false);
             }
         });
     }
@@ -368,7 +380,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
-        return(pipeSpecs);
+        return (pipeSpecs);
     }
 
     @Override
@@ -376,10 +388,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
 
         // run a script to add www-data to the uvmlogin group
-        UvmContextFactory.context().execManager().execOutput( CAPTURE_PERMISSIONS_SCRIPT );
+        UvmContextFactory.context().execManager().execOutput(CAPTURE_PERMISSIONS_SCRIPT);
 
         // run a script to create the directory for the custom captive page
-        UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath );
+        UvmContextFactory.context().execManager().execOutput(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
     }
 
     @Override
@@ -388,7 +400,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         logger.debug("Creating session cleanup timer task");
         captureTimer = new CaptureTimer(this);
         timer = new Timer();
-        timer.schedule(captureTimer,CLEANUP_INTERVAL,CLEANUP_INTERVAL);
+        timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
     }
 
     @Override
@@ -415,203 +427,186 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         CaptureSettings readSettings = loadNodeSettings();
 
-            if (readSettings == null)
-            {
-                // we didn't get anything from the load function so we call
-                // the initialize function which will take care of
-                // creating, writing, and applying a new settings object
-                initializeSettings();
-            }
+        if (readSettings == null) {
+            // we didn't get anything from the load function so we call
+            // the initialize function which will take care of
+            // creating, writing, and applying a new settings object
+            initializeSettings();
+        }
 
-            else
-            {
-                // we got something back from the load so pass it
-                // to the common apply function
-                applyNodeSettings(readSettings);
-            }
+        else {
+            // we got something back from the load so pass it
+            // to the common apply function
+            applyNodeSettings(readSettings);
+        }
     }
 
-    @Override protected void uninstall()
+    @Override
+    protected void uninstall()
     {
         super.uninstall();
 
         // run a script to remove the directory for the custom captive page
-        UvmContextFactory.context().execManager().execOutput( CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath );
+        UvmContextFactory.context().execManager().execOutput(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
     }
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
     {
-        return replacementGenerator.generateResponse( block, session );
+        return replacementGenerator.generateResponse(block, session);
     }
 
-///// ------------------------------------------------------------------------
-///// public methods for user control
+    // public methods for user control ----------------------------------------
 
     public int userAuthenticate(InetAddress address, String username, String password)
     {
         boolean isAuthenticated = false;
 
-        try
-        {
-            password = URLDecoder.decode(password,"UTF-8");
+        try {
+            password = URLDecoder.decode(password, "UTF-8");
         }
 
-        catch (Exception e)
-        {
-            logger.warn("Using raw password due to URLDecodeer exception",e);
+        catch (Exception e) {
+            logger.warn("Using raw password due to URLDecodeer exception", e);
         }
 
-        if (captureSettings.getConcurrentLoginsEnabled() == false)
-        {
+        if (captureSettings.getConcurrentLoginsEnabled() == false) {
             boolean ignoreCase = false;
 
-            if (captureSettings.getAuthenticationType() == CaptureSettings.AuthenticationType.ACTIVE_DIRECTORY)
-            {
+            if (captureSettings.getAuthenticationType() == CaptureSettings.AuthenticationType.ACTIVE_DIRECTORY) {
                 ignoreCase = true;
             }
-            
-            CaptureUserEntry entry = captureUserTable.searchByUsername(username,ignoreCase);
 
-            if (entry != null)
-            {
-                CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
+            CaptureUserEntry entry = captureUserTable.searchByUsername(username, ignoreCase);
+
+            if (entry != null) {
+                CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
                 logEvent(event);
-                incrementBlinger(BlingerType.AUTHFAIL,1);
+                incrementBlinger(BlingerType.AUTHFAIL, 1);
                 logger.info("Authenticate duplicate " + username + " " + address);
-                return(2);
+                return (2);
             }
         }
 
-        switch( captureSettings.getAuthenticationType() )
-        {
-            case NONE:
-                isAuthenticated = true;
-                break;
+        switch (captureSettings.getAuthenticationType()) {
+        case NONE:
+            isAuthenticated = true;
+            break;
 
-            case ACTIVE_DIRECTORY:
-                try
-                {
-                    // first create a copy of the original username and another
-                    // that is stripped of all the Active Directory foo:
-                    //   domain*backslash*user -> user
-                    //   user@domain -> user
-                    // We'll always use the stripped version internally but
-                    // well try both for authentication.  See bug #7951
-                    String originalUsername = username;
-                    String strippedUsername = username;
-                    strippedUsername = strippedUsername.replaceAll(".*\\\\","");
-                    strippedUsername = strippedUsername.replaceAll("@.*","");
+        case ACTIVE_DIRECTORY:
+            try {
+                // first create a copy of the original username and another
+                // that is stripped of all the Active Directory foo:
+                // domain*backslash*user -> user
+                // user@domain -> user
+                // We'll always use the stripped version internally but
+                // well try both for authentication. See bug #7951
+                String originalUsername = username;
+                String strippedUsername = username;
+                strippedUsername = strippedUsername.replaceAll(".*\\\\", "");
+                strippedUsername = strippedUsername.replaceAll("@.*", "");
 
-                    // we always want to use the stripped version internally
-                    username = strippedUsername;
+                // we always want to use the stripped version internally
+                username = strippedUsername;
 
-                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                    if (adconnector == null) break;
+                DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                if (adconnector == null)
+                    break;
 
-                    // try the original first and then the stripped version
-                    isAuthenticated = adconnector.activeDirectoryAuthenticate( originalUsername, password );
-                    if (isAuthenticated == false) isAuthenticated = adconnector.activeDirectoryAuthenticate( strippedUsername, password );
-                }
-                catch (Exception e)
-                {
-                    logger.warn("Active Directory failure", e);
-                    isAuthenticated = false;
-                }
-                break;
-
-            case LOCAL_DIRECTORY:
-                try
-                {
-                    isAuthenticated = UvmContextFactory.context().localDirectory().authenticate( username, password );
-                }
-                catch (Exception e)
-                {
-                    logger.warn("Local Directory failure", e);
-                    isAuthenticated = false;
-                }
-                break;
-
-            case RADIUS:
-                try
-                {
-                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                    if (adconnector != null) isAuthenticated = adconnector.radiusAuthenticate( username, password );
-                }
-                catch (Exception e)
-                {
-                    logger.warn( "Radius Directory failure", e );
-                    isAuthenticated = false;
-                }
-                break;
+                // try the original first and then the stripped version
+                isAuthenticated = adconnector.activeDirectoryAuthenticate(originalUsername, password);
+                if (isAuthenticated == false)
+                    isAuthenticated = adconnector.activeDirectoryAuthenticate(strippedUsername, password);
+            } catch (Exception e) {
+                logger.warn("Active Directory failure", e);
+                isAuthenticated = false;
             }
+            break;
 
-        if ( !isAuthenticated )
-        {
-            CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
+        case LOCAL_DIRECTORY:
+            try {
+                isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Local Directory failure", e);
+                isAuthenticated = false;
+            }
+            break;
+
+        case RADIUS:
+            try {
+                DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                if (adconnector != null)
+                    isAuthenticated = adconnector.radiusAuthenticate(username, password);
+            } catch (Exception e) {
+                logger.warn("Radius Directory failure", e);
+                isAuthenticated = false;
+            }
+            break;
+        }
+
+        if (!isAuthenticated) {
+            CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
             logEvent(event);
-            incrementBlinger(BlingerType.AUTHFAIL,1);
+            incrementBlinger(BlingerType.AUTHFAIL, 1);
             logger.info("Authenticate failure " + username + " " + address);
-            return(1);
+            return (1);
         }
 
-        captureUserTable.insertActiveUser(address,username,false);
+        captureUserTable.insertActiveUser(address, username, false);
 
-        CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN);
         logEvent(event);
-        incrementBlinger(BlingerType.AUTHGOOD,1);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Authenticate success " + username + " " + address);
-        return(0);
+        return (0);
     }
 
     public int userActivate(InetAddress address, String agree)
     {
-            if (agree.equals("agree") == false)
-            {
-                CaptureUserEvent event = new CaptureUserEvent( policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED );
-                logEvent(event);
-                incrementBlinger(BlingerType.AUTHFAIL,1);
-                logger.info("Activate failure " + address);
-                return(1);
-            }
+        if (agree.equals("agree") == false) {
+            CaptureUserEvent event = new CaptureUserEvent(policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
+            logEvent(event);
+            incrementBlinger(BlingerType.AUTHFAIL, 1);
+            logger.info("Activate failure " + address);
+            return (1);
+        }
 
-        captureUserTable.insertActiveUser(address,"Anonymous",true);
+        captureUserTable.insertActiveUser(address, "Anonymous", true);
 
-        CaptureUserEvent event = new CaptureUserEvent( policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent(policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN);
         logEvent(event);
-        incrementBlinger(BlingerType.AUTHGOOD,1);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Activate success " + address);
-        return(0);
+        return (0);
     }
 
     public int userLogin(InetAddress address, String username)
     {
-        captureUserTable.insertActiveUser(address,username,false);
+        captureUserTable.insertActiveUser(address, username, false);
 
-        CaptureUserEvent event = new CaptureUserEvent( policyId, address, username, CaptureSettings.AuthenticationType.CUSTOM, CaptureUserEvent.EventType.LOGIN );
+        CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, CaptureSettings.AuthenticationType.CUSTOM, CaptureUserEvent.EventType.LOGIN);
         logEvent(event);
-        incrementBlinger(BlingerType.AUTHGOOD,1);
+        incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Login success " + address);
-        return(0);
+        return (0);
     }
 
     public int userLogout(InetAddress address)
     {
-        return(userLogout(address,CaptureUserEvent.EventType.USER_LOGOUT));
+        return (userLogout(address, CaptureUserEvent.EventType.USER_LOGOUT));
     }
 
     public int userAdminLogout(InetAddress address)
     {
-        return(userLogout(address,CaptureUserEvent.EventType.ADMIN_LOGOUT));
+        return (userLogout(address, CaptureUserEvent.EventType.ADMIN_LOGOUT));
     }
 
-    public int userLogout(InetAddress address,CaptureUserEvent.EventType reason)
+    public int userLogout(InetAddress address, CaptureUserEvent.EventType reason)
     {
         CaptureUserEntry user = captureUserTable.searchByAddress(address);
 
-        if (user == null)
-        {
+        if (user == null) {
             logger.info("Logout failure: " + address);
-            return(1);
+            return (1);
         }
 
         // remove from the user table
@@ -621,95 +616,85 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // user we just logged out to clean up any outstanding sessions
         validateAllSessions(address);
 
-        CaptureUserEvent event = new CaptureUserEvent( policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason );
+        CaptureUserEvent event = new CaptureUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
         logEvent(event);
         logger.info("Logout success: " + address);
 
-        return(0);
+        return (0);
     }
 
-///// ------------------------------------------------------------------------
-///// public method for testing all rules for a session
+    // public method for testing all rules for a session ----------------------
 
     public boolean isClientAuthenticated(InetAddress clientAddr)
     {
         // search for the address in the active user table
         CaptureUserEntry user = captureUserTable.searchByAddress(clientAddr);
 
-            // if we have an authenticated user update activity and allow
-            if (user != null)
-            {
-                user.updateActivityTimer();
-                return(true);
-            }
+        // if we have an authenticated user update activity and allow
+        if (user != null) {
+            user.updateActivityTimer();
+            return (true);
+        }
 
-        return(false);
+        return (false);
     }
 
-    public PassedAddress isSessionAllowed(InetAddress clientAddr,InetAddress serverAddr)
+    public PassedAddress isSessionAllowed(InetAddress clientAddr, InetAddress serverAddr)
     {
         List<PassedAddress> clientList = getCaptureSettings().getPassedClients();
         List<PassedAddress> serverList = getCaptureSettings().getPassedServers();
         PassedAddress checker = null;
 
         // see if the client is in the pass list
-        for (int cc = 0; cc < clientList.size(); cc++)
-        {
+        for (int cc = 0; cc < clientList.size(); cc++) {
             checker = clientList.get(cc);
-            if (checker.getLive() != true) continue;
-            if (checker.getAddress().isMatch(clientAddr) != true) continue;
+            if (checker.getLive() != true)
+                continue;
+            if (checker.getAddress().isMatch(clientAddr) != true)
+                continue;
             logger.debug("Client " + clientAddr.getHostAddress().toString() + " found in pass list");
-            return(checker);
+            return (checker);
         }
 
         // see if the server is in the pass list
-        for(int ss = 0; ss < serverList.size(); ss++)
-        {
+        for (int ss = 0; ss < serverList.size(); ss++) {
             checker = serverList.get(ss);
-            if (checker.getLive() != true) continue;
-            if (checker.getAddress().isMatch(serverAddr) != true) continue;
+            if (checker.getLive() != true)
+                continue;
+            if (checker.getAddress().isMatch(serverAddr) != true)
+                continue;
             logger.debug("Server " + serverAddr.getHostAddress().toString() + " found in pass list");
-            return(checker);
+            return (checker);
         }
 
-        return(null);
+        return (null);
     }
 
     public CaptureRule checkCaptureRules(IPNewSessionRequest sessreq)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 
-            // check the session against the rule list
-            for (CaptureRule rule : ruleList)
-            {
-                if (rule.isMatch(sessreq.getProtocol(),
-                    sessreq.getClientIntf(), sessreq.getServerIntf(),
-                    sessreq.getClientAddr(), sessreq.getServerAddr(),
-                    sessreq.getClientPort(), sessreq.getServerPort()))
-                    {
-                    return(rule);
-                    }
+        // check the session against the rule list
+        for (CaptureRule rule : ruleList) {
+            if (rule.isMatch(sessreq.getProtocol(), sessreq.getClientIntf(), sessreq.getServerIntf(), sessreq.getClientAddr(), sessreq.getServerAddr(), sessreq.getClientPort(), sessreq.getServerPort())) {
+                return (rule);
             }
+        }
 
-        return(null);
+        return (null);
     }
 
     public CaptureRule checkCaptureRules(NodeTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 
-            // check the session against the rule list
-            for (CaptureRule rule : ruleList)
-            {
-                if (rule.isMatch(session.getProtocol(),
-                    session.getClientIntf(), session.getServerIntf(),
-                    session.getClientAddr(), session.getServerAddr(),
-                    session.getClientPort(), session.getServerPort()))
-                    {
-                    return(rule);
-                    }
+        // check the session against the rule list
+        for (CaptureRule rule : ruleList) {
+            if (rule.isMatch(session.getProtocol(), session.getClientIntf(), session.getServerIntf(), session.getClientAddr(), session.getServerAddr(), session.getClientPort(), session.getServerPort())) {
+                return (rule);
             }
+        }
 
-        return(null);
+        return (null);
     }
 }

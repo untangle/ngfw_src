@@ -16,6 +16,9 @@ import com.untangle.uvm.node.NodeSettings;
 class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetails>
 {
     private final Logger logger = Logger.getLogger(getClass());
+
+// THIS IS FOR ECLIPSE - @formatter:off
+    
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>\r\n"
         + "<TITLE>Captive Portal - Access Denied - Authentication Required</TITLE>\r\n"
@@ -26,6 +29,8 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
         + "<P><H3>URI: %s</H3></P>"
         + "<P><H3>Please contact %s for assistance.</H3></P>"
         + "</BODY></HTML>";
+
+// THIS IS FOR ECLIPSE - @formatter:on
 
     CaptureReplacementGenerator(NodeSettings tid)
     {
@@ -39,11 +44,7 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
 
         logger.debug("getReplacement DETAILS:" + details.toString());
 
-        return String.format(BLOCK_TEMPLATE,
-            details.getMethod(),
-            details.getHost(),
-            details.getUri(),
-            uvm.brandingManager().getContactHtml());
+        return String.format(BLOCK_TEMPLATE, details.getMethod(), details.getHost(), details.getUri(), uvm.brandingManager().getContactHtml());
     }
 
     @Override
@@ -51,11 +52,11 @@ class CaptureReplacementGenerator extends ReplacementGenerator<CaptureBlockDetai
     {
         CaptureBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
-        String retval =  ("http://" + host + "/capture/handler.py/index?nonce=" + nonce);
+        String retval = ("http://" + host + "/capture/handler.py/index?nonce=" + nonce);
         retval = (retval + "&method=" + details.getMethod());
         retval = (retval + "&appid=" + nodeSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
-        return(retval);
+        return (retval);
     }
 }

@@ -17,10 +17,11 @@ import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * This in the implementation of a Capture Rule
- *
- * A rule is basically a collection of CaptureRuleMatchers (matchers)
- * and what to do if the matchers match (capture, log, etc)
+ * 
+ * A rule is basically a collection of CaptureRuleMatchers (matchers) and what
+ * to do if the matchers match (capture, log, etc)
  */
+
 @SuppressWarnings("serial")
 public class CaptureRule implements JSONString, Serializable
 {
@@ -50,14 +51,13 @@ public class CaptureRule implements JSONString, Serializable
         return this.matchers;
     }
 
-    public void setMatchers( List<CaptureRuleMatcher> matchers )
+    public void setMatchers(List<CaptureRuleMatcher> matchers)
     {
         this.matchers = matchers;
     }
 
     /**
-     * Use RuleId instead
-     * Kept for backwards compatability
+     * Use RuleId instead Kept for backwards compatability
      */
     public Integer getId()
     {
@@ -65,8 +65,7 @@ public class CaptureRule implements JSONString, Serializable
     }
 
     /**
-     * Use RuleId instead
-     * Kept for backwards compatability
+     * Use RuleId instead Kept for backwards compatability
      */
     public void setId(Integer ruleId)
     {
@@ -88,7 +87,7 @@ public class CaptureRule implements JSONString, Serializable
         return enabled;
     }
 
-    public void setEnabled( Boolean enabled )
+    public void setEnabled(Boolean enabled)
     {
         this.enabled = enabled;
     }
@@ -98,7 +97,7 @@ public class CaptureRule implements JSONString, Serializable
         return capture;
     }
 
-    public void setCapture( Boolean capture )
+    public void setCapture(Boolean capture)
     {
         this.capture = capture;
     }
@@ -108,7 +107,7 @@ public class CaptureRule implements JSONString, Serializable
         return description;
     }
 
-    public void setDescription( String description )
+    public void setDescription(String description)
     {
         this.description = description;
     }
@@ -119,15 +118,10 @@ public class CaptureRule implements JSONString, Serializable
         return jO.toString();
     }
 
-    public boolean isMatch( short protocol,
-                            int srcIntf, int dstIntf,
-                            InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort)
+    public boolean isMatch(short protocol, int srcIntf, int dstIntf, InetAddress srcAddress, InetAddress dstAddress, int srcPort, int dstPort)
     {
         if (!getEnabled())
             return false;
-
-        //logger.debug("Checking rule " + getId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
 
         /**
          * If no matchers return true
@@ -140,8 +134,8 @@ public class CaptureRule implements JSONString, Serializable
         /**
          * IF any matcher doesn't match - return false
          */
-        for ( CaptureRuleMatcher matcher : matchers ) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
+        for (CaptureRuleMatcher matcher : matchers) {
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
                 return false;
         }
 

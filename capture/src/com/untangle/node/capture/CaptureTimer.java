@@ -26,15 +26,15 @@ public class CaptureTimer extends TimerTask
 
     public void SessionCleanup()
     {
-        ArrayList<CaptureUserTable.StaleUser> staleUsers = node.captureUserTable.buildStaleList(node.getCaptureSettings().getIdleTimeout(),node.getCaptureSettings().getUserTimeout());
+        ArrayList<CaptureUserTable.StaleUser> staleUsers = node.captureUserTable.buildStaleList(node.getCaptureSettings().getIdleTimeout(), node.getCaptureSettings().getUserTimeout());
         int counter = 0;
 
-        for(CaptureUserTable.StaleUser item: staleUsers)
-        {
-            node.userLogout(item.address,item.reason);
+        for (CaptureUserTable.StaleUser item : staleUsers) {
+            node.userLogout(item.address, item.reason);
             counter++;
         }
 
-        if (counter > 0) logger.info("Cleaned up " + counter + " expired sessions");
+        if (counter > 0)
+            logger.info("Cleaned up " + counter + " expired sessions");
     }
 }

@@ -24,9 +24,9 @@ public class CaptureBlockDetails extends BlockDetails
     {
         return method;
     }
-    
+
     public String toString()
     {
-        return("HOST:" + getHost() + " URI:" + getUri() + " METHOD:" + getMethod());
+        return ("HOST:" + getHost() + " URI:" + getUri() + " METHOD:" + getMethod());
     }
 }

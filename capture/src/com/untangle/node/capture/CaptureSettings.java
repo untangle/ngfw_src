@@ -11,8 +11,15 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class CaptureSettings implements Serializable
 {
-    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, CUSTOM, NONE };
-    public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
+    public static enum AuthenticationType
+    {
+        ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, CUSTOM, NONE
+    };
+
+    public static enum PageType
+    {
+        BASIC_LOGIN, BASIC_MESSAGE, CUSTOM
+    };
 
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
     private List<PassedAddress> passedClients = new LinkedList<PassedAddress>();
@@ -46,11 +53,10 @@ public class CaptureSettings implements Serializable
 
     public List<CaptureRule> getCaptureRules()
     {
-        if ( this.captureRules == null )
-        {
+        if (this.captureRules == null) {
             this.captureRules = new LinkedList<CaptureRule>();
         }
-        
+
         return this.captureRules;
     }
 
@@ -84,7 +90,7 @@ public class CaptureSettings implements Serializable
         return this.authenticationType;
     }
 
-    public void setAuthenticationType( AuthenticationType newValue )
+    public void setAuthenticationType(AuthenticationType newValue)
     {
         this.authenticationType = newValue;
     }
@@ -94,7 +100,7 @@ public class CaptureSettings implements Serializable
         return this.idleTimeout;
     }
 
-    public void setIdleTimeout( int newValue )
+    public void setIdleTimeout(int newValue)
     {
         this.idleTimeout = newValue;
     }
@@ -104,7 +110,7 @@ public class CaptureSettings implements Serializable
         return this.userTimeout;
     }
 
-    public void setUserTimeout( int newValue )
+    public void setUserTimeout(int newValue)
     {
         this.userTimeout = newValue;
     }
@@ -114,7 +120,7 @@ public class CaptureSettings implements Serializable
         return this.areConcurrentLoginsEnabled;
     }
 
-    public void setConcurrentLoginsEnabled( boolean newValue)
+    public void setConcurrentLoginsEnabled(boolean newValue)
     {
         this.areConcurrentLoginsEnabled = newValue;
     }
@@ -124,7 +130,7 @@ public class CaptureSettings implements Serializable
         return this.pageType;
     }
 
-    public void setPageType( PageType newValue)
+    public void setPageType(PageType newValue)
     {
         this.pageType = newValue;
     }
@@ -134,7 +140,7 @@ public class CaptureSettings implements Serializable
         return this.redirectUrl;
     }
 
-    public void setRedirectUrl( String newValue)
+    public void setRedirectUrl(String newValue)
     {
         this.redirectUrl = newValue;
     }
@@ -144,34 +150,128 @@ public class CaptureSettings implements Serializable
         return this.customFileName;
     }
 
-    public void setCustomFilename( String newValue )
+    public void setCustomFilename(String newValue)
     {
         this.customFileName = newValue;
     }
 
-    public String getBasicLoginPageTitle()      { return this.basicLoginPageTitle; }
-    public String getBasicLoginPageWelcome()    { return this.basicLoginPageWelcome; }
-    public String getBasicLoginUsername()       { return this.basicLoginUsername; }
-    public String getBasicLoginPassword()       { return this.basicLoginPassword; }
-    public String getBasicLoginMessageText()    { return this.basicLoginMessageText; }
-    public String getBasicLoginFooter()         { return this.basicLoginFooter; }
-    public String getBasicMessagePageTitle()    { return this.basicMessagePageTitle; }
-    public String getBasicMessagePageWelcome()  { return this.basicMessagePageWelcome; }
-    public String getBasicMessageMessageText()  { return this.basicMessageMessageText; }
-    public boolean getBasicMessageAgreeBox()    { return this.basicMessageAgreeBox; }
-    public String getBasicMessageAgreeText()    { return this.basicMessageAgreeText; }
-    public String getBasicMessageFooter()       { return this.basicMessageFooter; }
+    public String getBasicLoginPageTitle()
+    {
+        return this.basicLoginPageTitle;
+    }
 
-    public void setBasicLoginPageTitle( String newValue )       { this.basicLoginPageTitle = newValue; }
-    public void setBasicLoginPageWelcome( String newValue )     { this.basicLoginPageWelcome = newValue; }
-    public void setBasicLoginUsername( String newValue )        { this.basicLoginUsername = newValue; }
-    public void setBasicLoginPassword( String newValue )        { this.basicLoginPassword = newValue; }
-    public void setBasicLoginMessageText( String newValue )     { this.basicLoginMessageText = newValue; }
-    public void setBasicLoginFooter( String newValue )          { this.basicLoginFooter = newValue; }
-    public void setBasicMessagePageTitle( String newValue )     { this.basicMessagePageTitle = newValue; }
-    public void setBasicMessagePageWelcome( String newValue )   { this.basicMessagePageWelcome = newValue; }
-    public void setBasicMessageMessageText( String newValue )   { this.basicMessageMessageText = newValue; }
-    public void setBasicMessageAgreeBox( boolean newValue )     { this.basicMessageAgreeBox = newValue; }
-    public void setBasicMessageAgreeText( String newValue )     { this.basicMessageAgreeText = newValue; }
-    public void setBasicMessageFooter( String newValue )        { this.basicMessageFooter = newValue; }
+    public String getBasicLoginPageWelcome()
+    {
+        return this.basicLoginPageWelcome;
+    }
+
+    public String getBasicLoginUsername()
+    {
+        return this.basicLoginUsername;
+    }
+
+    public String getBasicLoginPassword()
+    {
+        return this.basicLoginPassword;
+    }
+
+    public String getBasicLoginMessageText()
+    {
+        return this.basicLoginMessageText;
+    }
+
+    public String getBasicLoginFooter()
+    {
+        return this.basicLoginFooter;
+    }
+
+    public String getBasicMessagePageTitle()
+    {
+        return this.basicMessagePageTitle;
+    }
+
+    public String getBasicMessagePageWelcome()
+    {
+        return this.basicMessagePageWelcome;
+    }
+
+    public String getBasicMessageMessageText()
+    {
+        return this.basicMessageMessageText;
+    }
+
+    public boolean getBasicMessageAgreeBox()
+    {
+        return this.basicMessageAgreeBox;
+    }
+
+    public String getBasicMessageAgreeText()
+    {
+        return this.basicMessageAgreeText;
+    }
+
+    public String getBasicMessageFooter()
+    {
+        return this.basicMessageFooter;
+    }
+
+    public void setBasicLoginPageTitle(String newValue)
+    {
+        this.basicLoginPageTitle = newValue;
+    }
+
+    public void setBasicLoginPageWelcome(String newValue)
+    {
+        this.basicLoginPageWelcome = newValue;
+    }
+
+    public void setBasicLoginUsername(String newValue)
+    {
+        this.basicLoginUsername = newValue;
+    }
+
+    public void setBasicLoginPassword(String newValue)
+    {
+        this.basicLoginPassword = newValue;
+    }
+
+    public void setBasicLoginMessageText(String newValue)
+    {
+        this.basicLoginMessageText = newValue;
+    }
+
+    public void setBasicLoginFooter(String newValue)
+    {
+        this.basicLoginFooter = newValue;
+    }
+
+    public void setBasicMessagePageTitle(String newValue)
+    {
+        this.basicMessagePageTitle = newValue;
+    }
+
+    public void setBasicMessagePageWelcome(String newValue)
+    {
+        this.basicMessagePageWelcome = newValue;
+    }
+
+    public void setBasicMessageMessageText(String newValue)
+    {
+        this.basicMessageMessageText = newValue;
+    }
+
+    public void setBasicMessageAgreeBox(boolean newValue)
+    {
+        this.basicMessageAgreeBox = newValue;
+    }
+
+    public void setBasicMessageAgreeText(String newValue)
+    {
+        this.basicMessageAgreeText = newValue;
+    }
+
+    public void setBasicMessageFooter(String newValue)
+    {
+        this.basicMessageFooter = newValue;
+    }
 }

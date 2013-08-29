@@ -15,7 +15,7 @@ public class CaptureUserEntry
     private long sessionActivity;
     private long sessionCounter;
 
-    public CaptureUserEntry(InetAddress userAddress,String userName,Boolean isAnonymous)
+    public CaptureUserEntry(InetAddress userAddress, String userName, Boolean isAnonymous)
     {
         this.userAddress = userAddress;
         this.userName = userName;
@@ -26,32 +26,32 @@ public class CaptureUserEntry
 
     public InetAddress getUserAddress()
     {
-        return(userAddress);
+        return (userAddress);
     }
 
     public String getUserName()
     {
-        return(userName);
+        return (userName);
     }
 
     public Boolean getAnonymous()
     {
-        return(isAnonymous);
+        return (isAnonymous);
     }
 
     public long getSessionCreation()
     {
-        return(sessionCreation);
+        return (sessionCreation);
     }
 
     public long getSessionActivity()
     {
-        return(sessionActivity);
+        return (sessionActivity);
     }
 
     public long getSessionCounter()
     {
-        return(sessionCounter);
+        return (sessionCounter);
     }
 
     public void updateActivityTimer()
