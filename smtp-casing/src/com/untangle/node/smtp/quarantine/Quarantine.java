@@ -36,10 +36,10 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  *
  */
-public class Quarantine
-    implements QuarantineNodeView,
-               QuarantineMaintenenceView, QuarantineUserView {
-
+public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView, QuarantineUserView
+{
+    private final Logger logger = Logger.getLogger(Quarantine.class);
+    
     private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
     private static final int DIGEST_SEND_DELAY_MILLISEC = 500; 
     
@@ -53,28 +53,23 @@ public class Quarantine
     private GlobEmailAddressList m_quarantineForList;
     private GlobEmailAddressMapper m_addressAliases;
     private SmtpNodeImpl m_impl;
+    private boolean m_opened = false;
 
     private static final Map<String, InboxComparator.SortBy> NAME_TO_I_SORT_BY;
     private static final InboxComparator.SortBy DEFAULT_I_SORT_COLUMN = InboxComparator.SortBy.ADDRESS;
 
     private static final Map<String, InboxRecordComparator.SortBy> NAME_TO_IR_SORT_BY;
-    private static final InboxRecordComparator.SortBy DEFAULT_IR_SORT_COLUMN =
-        InboxRecordComparator.SortBy.INTERN_DATE;
+    private static final InboxRecordComparator.SortBy DEFAULT_IR_SORT_COLUMN = InboxRecordComparator.SortBy.INTERN_DATE;
 
-
-
-    public Quarantine() {
-        m_store = new QuarantineStore(
-                                      new File(new File(System.getProperty("uvm.conf.dir")), "quarantine")
-                                      );
+    public Quarantine()
+    {
+        m_store = new QuarantineStore( new File(new File(System.getProperty("uvm.conf.dir")), "quarantine") );
         m_digestGenerator = new DigestGenerator();
         m_atm = new AuthTokenManager();
 
-        m_quarantineForList = new GlobEmailAddressList(
-                                                       java.util.Arrays.asList(new String[] {"*"}));
+        m_quarantineForList = new GlobEmailAddressList( java.util.Arrays.asList(new String[] {"*"}));
 
-        m_addressAliases = new GlobEmailAddressMapper(new
-                                                      ArrayList<Pair<String, String>>());
+        m_addressAliases = new GlobEmailAddressMapper(new ArrayList<Pair<String, String>>());
     }
 
     /**
@@ -82,8 +77,8 @@ public class Quarantine
      * by the Quarantine (i.e. the UI does not
      * talk to the Quarantine).
      */
-    public void setSettings(SmtpNodeImpl impl,
-                            QuarantineSettings settings) {
+    public void setSettings( SmtpNodeImpl impl, QuarantineSettings settings )
+    {
         m_impl = impl;
         m_settings = settings;
 
@@ -92,34 +87,34 @@ public class Quarantine
         //Handle nulls (defaults)
         if(settings.getAllowedAddressPatterns() == null ||
            settings.getAllowedAddressPatterns().size() == 0) {
-            settings.setAllowedAddressPatterns(
-                                               java.util.Arrays.asList(
-                                                                       new EmailAddressRule[] {new EmailAddressRule("*")}));
+            settings.setAllowedAddressPatterns( java.util.Arrays.asList( new EmailAddressRule[] {new EmailAddressRule("*")}));
         }
         if(settings.getAddressRemaps() == null) {
             settings.setAddressRemaps(new ArrayList<EmailAddressPairRule>());
         }
 
         //Update address mapping
-        m_addressAliases = new GlobEmailAddressMapper(
-                                                      fromEmailAddressRuleListPair(settings.getAddressRemaps()));
+        m_addressAliases = new GlobEmailAddressMapper( fromEmailAddressRuleListPair(settings.getAddressRemaps()));
 
         //Update the quarantine-for stuff
-        m_quarantineForList = new GlobEmailAddressList(
-                                                       fromEmailAddressRule(settings.getAllowedAddressPatterns()));
+        m_quarantineForList = new GlobEmailAddressList( fromEmailAddressRule(settings.getAllowedAddressPatterns()));
 
         if (null != m_cronJob) {
             int h = m_settings.getDigestHourOfDay();
             int m = m_settings.getDigestMinuteOfDay();
-            m_cronJob.reschedule(DayOfWeekMatcher.getAnyMatcher(), h, m);
+            try {
+                m_cronJob.reschedule(DayOfWeekMatcher.getAnyMatcher(), h, m);
+            } catch (Exception e) {
+                logger.warn( "Exception rescheduling cronjob.", e );
+            }
         }
     }
 
-    private boolean m_opened = false;
     /**
      * Call that the Quarantine should "open"
      */
-    public void open() {
+    public void open()
+    {
         if(!m_opened) {
             synchronized(this) {
                 if(!m_opened) {
@@ -149,7 +144,8 @@ public class Quarantine
      * may still be made (thread timing), but will likely be
      * slower.
      */
-    public void close() {
+    public void close()
+    {
         m_store.close();
         if (null != m_cronJob) {
             m_cronJob.cancel();
@@ -160,7 +156,8 @@ public class Quarantine
      * Callback from the Chron thread that we should send
      * digests and purge the store.
      */
-    void cronCallback() {
+    void cronCallback()
+    {
         m_logger.debug("Cron callback for Quarantine management");
         pruneStoreNow();
 
@@ -168,16 +165,16 @@ public class Quarantine
             sendDigestsNow();
     }
 
-    public void pruneStoreNow() {
-        m_store.prune(m_settings.getMaxMailIntern(),
-                      m_settings.getMaxIdleInbox(),
-                      QuarantinePruningObserver.NOOP);
+    public void pruneStoreNow()
+    {
+        m_store.prune(m_settings.getMaxMailIntern(), m_settings.getMaxIdleInbox(), QuarantinePruningObserver.NOOP);
     }
 
     /**
      * Warning - this method executes synchronously
      */
-    public void sendDigestsNow() {
+    public void sendDigestsNow()
+    {
         List<Inbox> allInboxes = m_store.listInboxes();
         long cutoff = System.currentTimeMillis() - ONE_DAY;
 
@@ -210,10 +207,8 @@ public class Quarantine
 
     //--QuarantineNodeView--
 
-    public boolean quarantineMail(File file,
-                                  MailSummary summary,
-                                  EmailAddress...recipients) {
-
+    public boolean quarantineMail(File file, MailSummary summary, EmailAddress...recipients)
+    {
         //Check for out-of-space condition
         if(m_store.getTotalSize() > m_settings.getMaxQuarantineTotalSz()) {
             //TODO This will be very anoying, as we'll have *way* too many
@@ -392,10 +387,9 @@ public class Quarantine
         return result.b;
     }
 
-    public InboxIndex rescue(String account,
-                             String...rescuedMails)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
-
+    public InboxIndex rescue(String account, String...rescuedMails)
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         Pair<QuarantineStore.GenericStatus, InboxIndex> result =
             m_store.rescue(account, m_rescueHandler, rescuedMails);
 
@@ -405,8 +399,8 @@ public class Quarantine
     }
 
     public void rescueInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
-
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         InboxIndex index = getInboxIndex(account);
 
         String[] ids = new String[index.size()];
@@ -418,7 +412,8 @@ public class Quarantine
     }
 
     public void rescueInboxes(String[] accounts)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         if (accounts != null && accounts.length > 0) {
             for (int i = 0; i < accounts.length; i++) {
                 rescueInbox(accounts[i]);
@@ -427,7 +422,8 @@ public class Quarantine
     }
 
     public InboxIndex getInboxIndex(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
 
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.getIndex(account);
 
@@ -472,7 +468,8 @@ public class Quarantine
     }
 
     public InboxRecordArray getInboxRecordArray(String account )
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store
                 .getIndex(account);
 
@@ -484,8 +481,8 @@ public class Quarantine
     }
 
     public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
-
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         String sortColumn = null;
         boolean isAscending = true;
         if (0 < sortColumns.length) {
@@ -506,11 +503,13 @@ public class Quarantine
     }
 
     public int getInboxTotalRecords( String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         return getInboxRecordArray(account).getTotalRecords();
     }
 
-    public void test() {
+    public void test()
+    {
         //Do nothing.
     }
 
@@ -518,21 +517,25 @@ public class Quarantine
     //--QuarantineMaintenenceView --
 
     public long getInboxesTotalSize()
-        throws QuarantineUserActionFailedException {
+        throws QuarantineUserActionFailedException
+    {
         return m_store.getTotalSize();
     }
 
-    public String getFormattedInboxesTotalSize(boolean inMB) {
+    public String getFormattedInboxesTotalSize(boolean inMB)
+    {
         return m_store.getFormattedTotalSize(inMB);
     }
 
     public List<Inbox> listInboxes()
-        throws QuarantineUserActionFailedException {
+        throws QuarantineUserActionFailedException
+    {
         return m_store.listInboxes();
     }
 
     public void deleteInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         switch(m_store.deleteInbox(account)) {
         case NO_SUCH_INBOX:
             //Just supress this one for now
@@ -544,7 +547,8 @@ public class Quarantine
     }
 
     public void deleteInboxes(String[] accounts)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
         if (accounts != null && accounts.length > 0) {
             for (int i = 0; i < accounts.length; i++) {
                 deleteInbox(accounts[i]);
@@ -555,7 +559,8 @@ public class Quarantine
     //--QuarantineUserView--
 
     public String getAccountFromToken(String token)
-        throws /*NoSuchInboxException, */BadTokenException {
+        throws /*NoSuchInboxException, */BadTokenException
+    {
 
         Pair<AuthTokenManager.DecryptOutcome, String> p =
             m_atm.decryptAuthToken(token);
@@ -573,7 +578,8 @@ public class Quarantine
     }
 
     public boolean requestDigestEmail(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+    {
 
         boolean ret = sendDigestEmail(account, getInboxIndex(account));
 
@@ -586,7 +592,8 @@ public class Quarantine
     }
 
     public void remapSelfService(String from, String to)
-        throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
+        throws QuarantineUserActionFailedException, InboxAlreadyRemappedException
+    {
 
         if (( from == null ) || ( to == null )) {
             m_logger.warn( "empty from or to string." );
@@ -622,9 +629,8 @@ public class Quarantine
     }
 
     public boolean unmapSelfService(String inboxName, String aliasToRemove)
-        throws QuarantineUserActionFailedException {
-
-
+        throws QuarantineUserActionFailedException
+    {
         if (( inboxName == null ) || ( aliasToRemove == null )) {
             m_logger.warn( "empty from or to string." );
             return false;
@@ -693,8 +699,8 @@ public class Quarantine
     }
 
     public String[] getMappedFrom(String account)
-        throws QuarantineUserActionFailedException {
-
+        throws QuarantineUserActionFailedException
+    {
         return m_addressAliases.getReverseMapping(account);
     }
 
@@ -756,7 +762,8 @@ public class Quarantine
         return ret;
     }
 
-    private List<EmailAddressPairRule> toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
+    private List<EmailAddressPairRule> toEmailAddressPairRuleList(List<Pair<String, String>> typedList)
+    {
         ArrayList<EmailAddressPairRule> ret = new ArrayList<EmailAddressPairRule>();
 
         for(Pair<String, String> pair : typedList) {
@@ -765,9 +772,9 @@ public class Quarantine
         return ret;
     }
 
-    private List<Pair<String, String>> fromEmailAddressRuleListPair(List<EmailAddressPairRule> list) {
-        ArrayList<Pair<String, String>> ret =
-            new ArrayList<Pair<String, String>>();
+    private List<Pair<String, String>> fromEmailAddressRuleListPair(List<EmailAddressPairRule> list)
+    {
+        ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
 
         for(EmailAddressPairRule eaPair : list) {
             ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
@@ -777,14 +784,10 @@ public class Quarantine
 
     //------------- Inner Class --------------------
 
-    private class RescueEjectionHandler
-        implements QuarantineEjectionHandler {
-
-        public void ejectMail(InboxRecord record,
-                              String inboxAddress,
-                              String[] recipients,
-                              File data) {
-
+    private class RescueEjectionHandler implements QuarantineEjectionHandler
+    {
+        public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
+        {
             FileInputStream fIn = null;
             try {
                 fIn = new FileInputStream(data);
@@ -809,8 +812,7 @@ public class Quarantine
 
     static
     {
-        Map <String,InboxRecordComparator.SortBy> irNameMap =
-            new HashMap<String,InboxRecordComparator.SortBy>();
+        Map <String,InboxRecordComparator.SortBy> irNameMap = new HashMap<String,InboxRecordComparator.SortBy>();
 
         irNameMap.put( "sender", InboxRecordComparator.SortBy.SENDER );
         irNameMap.put( "attachmentCount", InboxRecordComparator.SortBy.ATTACHMENT_COUNT );
@@ -834,50 +836,3 @@ public class Quarantine
     }
 }
 
-/*
-  new Thread(new Runnable() {
-  public void run() {
-  try {
-  System.out.println("********* Sleep for 2 minutes");
-  Thread.currentThread().sleep(1000*60*2);
-  System.out.println("********* Woke up");
-  com.untangle.node.smtp.EmailAddressRule wrapper1 =
-  new com.untangle.node.smtp.EmailAddressRule("*1@shoop.com");
-  com.untangle.node.smtp.EmailAddressRule wrapper2 =
-  new com.untangle.node.smtp.EmailAddressRule("billtest3@shoop.com");
-  SmtpNodeSettings settings = getSmtpNodeSettings();
-  com.untangle.node.smtp.quarantine.QuarantineSettings qs =
-  settings.getQuarantineSettings();
-  java.util.ArrayList list = new java.util.ArrayList();
-  list.add(wrapper1);
-  list.add(wrapper2);
-
-  qs.setAllowedAddressPatterns(list);
-  setSmtpNodeSettings(settings);
-
-
-  //              SmtpNodeSettings settings = getSmtpNodeSettings();
-  //              com.untangle.node.smtp.quarantine.QuarantineSettings qs =
-  //                settings.getQuarantineSettings();
-  //              com.untangle.node.smtp.EmailAddressPair p1 =
-  //                new com.untangle.node.smtp.EmailAddressPair("billtest1@shoop.com",
-  //                  "billtest2@shoop.com");
-  //              com.untangle.node.smtp.EmailAddressPair p2 =
-  //                new com.untangle.node.smtp.EmailAddressPair("billtest3@shoop.com",
-  //                  "foo@billsco.com");
-  //              java.util.ArrayList list = new java.util.ArrayList();
-  //              list.add(p1);
-  //              list.add(p2);
-
-  //              qs.setAddressRemaps(list);
-  //              setSmtpNodeSettings(settings);
-  System.out.println("********* Done.");
-
-  }
-  catch(Exception ex) {
-  ex.printStackTrace();
-  }
-  }
-  }).start();
-
-*/

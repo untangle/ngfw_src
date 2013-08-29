@@ -185,7 +185,7 @@ public class AlertManagerImpl implements AlertManager
 
     private void testDiskFree(List<String> alertList)
     {
-        if (UvmContextFactory.context().isDevel()) /* dont test dev boxes */
+        if ( UvmContextFactory.context().isDevel() ) /* dont test dev boxes */
             return;
 
         String result = this.execManager.execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
