@@ -22,7 +22,7 @@ RequestExecutionLevel admin
 
 !define PRODUCT_NAME "OpenVPN"
 !define OPENVPN_VERSION "2.2.2"
-!define GUI_VERSION "1.0.3"
+!define GUI_VERSION "5.0.0"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
 !define TAP "tap0901"
@@ -331,56 +331,22 @@ Section "OpenSSL Utilities" SecOpenSSLUtilities
 
 SectionEnd
 
-Section "TAP-Win32/Win64 Virtual Ethernet Adapter" SecTAP
+Section "TAP Virtual Ethernet Adapter" SecTAP
 
-SetOverwrite on
-FileOpen $R0 "$INSTDIR\bin\addtap.bat" w
-FileWrite $R0 "rem Add a new TAP-Win32/Win64 virtual ethernet adapter$\r$\n"
-FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}$\r$\n'
-FileWrite $R0 "pause$\r$\n"
-FileClose $R0
+	SetOverwrite on
+	SetOutPath "$TEMP"
 
-FileOpen $R0 "$INSTDIR\bin\deltapall.bat" w
-FileWrite $R0 "echo WARNING: this script will delete ALL TAP-Win32/Win64 virtual adapters (use the device manager to delete adapters one at a time)$\r$\n"
-FileWrite $R0 "pause$\r$\n"
-FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}$\r$\n'
-FileWrite $R0 "pause$\r$\n"
-FileClose $R0
+	File "${HOME}\tap-installer\tap-windows.exe"
 
- GetVersion::WindowsPlatformArchitecture
-  Pop $R0
+	DetailPrint "TAP INSTALL (May need confirmation)"
+	nsExec::ExecToLog '"$TEMP\tap-windows.exe" /S /SELECT_UTILITIES=1'
+	Pop $R0 # return value/error/timeout
 
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
+	Delete "$TEMP\tap-windows.exe"
 
-W32:
-DetailPrint "We are running on a 32-bit system."
-SetOutPath "$INSTDIR\bin"
-File "${BIN}\ti3790\32\tapinstall.exe"
-SetOutPath "$INSTDIR\driver"
-File "${HOME}\tap-win32\i386\${TAPDRV}"
-File /nonfatal "${HOME}\tap-win32\i386\${TAPDRVCAT}"
-File "${HOME}\tap-win32\i386\OemWin2k.inf"
-goto end
-
-W64:
-DetailPrint "We are running on a 64-bit system."
-SetOutPath "$INSTDIR\bin"
-File "${BIN}\ti3790\64\tapinstall.exe"
-SetOutPath "$INSTDIR\driver"
-File "${HOME}\tap-win64\amd64\${TAPDRV}"
-File /nonfatal "${HOME}\tap-win64\amd64\${TAPDRVCAT}"
-File "${HOME}\tap-win64\amd64\OemWin2k.inf"
-goto end
-
-end:
+	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "tap" "installed"
 SectionEnd
+
 
 Section "Add OpenVPN to PATH" SecAddPath
 
@@ -475,65 +441,6 @@ SectionEnd
 ;Post-install section
 
 Section -post
-
-  ; delete old devcon.exe
-  Delete "$INSTDIR\bin\devcon.exe"
-
-  ;
-  ; install/upgrade TAP-Win32 driver if selected, using tapinstall.exe
-  ;
-  SectionGetFlags ${SecTAP} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} "" notap notap
-    ; TAP install/update was selected.
-    ; Should we install or update?
-    ; If tapinstall error occurred, $5 will
-    ; be nonzero.
-    IntOp $5 0 & 0
-    nsExec::ExecToStack '"$INSTDIR\bin\tapinstall.exe" hwids ${TAP}'
-    Pop $R0 # return value/error/timeout
-    IntOp $5 $5 | $R0
-    DetailPrint "tapinstall hwids returned: $R0"
-
-    ; If tapinstall output string contains "${TAP}" we assume
-    ; that TAP device has been previously installed,
-    ; therefore we will update, not install.
-    Push "${TAP}"
-    Call StrStr
-    Pop $R0
-
-    IntCmp $5 0 "" tapinstall_check_error tapinstall_check_error
-    IntCmp $R0 -1 tapinstall
-
- ;tapupdate:
-    DetailPrint "TAP-Win32 UPDATE"
-    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" update "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
-    Pop $R0 # return value/error/timeout
-    Call CheckReboot
-    IntOp $5 $5 | $R0
-    DetailPrint "tapinstall update returned: $R0"
-    Goto tapinstall_check_error
-
- tapinstall:
-    DetailPrint "TAP-Win32 REMOVE OLD TAP"
-    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAP'
-    Pop $R0 # return value/error/timeout
-    DetailPrint "tapinstall remove TAP returned: $R0"
-    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAPDEV'
-    Pop $R0 # return value/error/timeout
-    DetailPrint "tapinstall remove TAPDEV returned: $R0"
-
-    DetailPrint "TAP-Win32 INSTALL (${TAP})"
-    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
-    Pop $R0 # return value/error/timeout
-    Call CheckReboot
-    IntOp $5 $5 | $R0
-    DetailPrint "tapinstall install returned: $R0"
-
- tapinstall_check_error:
-    DetailPrint "tapinstall cumulative status: $5"
-    IntCmp $5 0 notap
-    MessageBox MB_OK "An error occurred installing the TAP-Win32 device driver."
 
  notap:
 
@@ -809,12 +716,17 @@ SetShellVarContext all
   nsExec::ExecToLog '"$INSTDIR\bin\openvpnserv.exe" -remove'
   Pop $R0 # return value/error/timeout
 
-  Sleep 2000
-
-  DetailPrint "TAP-Win32/Win64 REMOVE"
-  nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}'
-  Pop $R0 # return value/error/timeout
-  DetailPrint "tapinstall remove returned: $R0"
+  Sleep 3000
+  
+  	ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "tap"
+		${If} $R0 == "installed"
+			ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\TAP-Windows" "UninstallString"
+			${If} $R0 != ""
+				DetailPrint "TAP UNINSTALL"
+				nsExec::ExecToLog '"$R0" /S'
+				Pop $R0 # return value/error/timeout
+			${EndIf}
+		${EndIf}
 
   Push "$INSTDIR\bin"
   Call un.RemoveFromPath
