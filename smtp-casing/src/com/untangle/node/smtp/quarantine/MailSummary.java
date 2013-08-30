@@ -125,6 +125,8 @@ public final class MailSummary implements Serializable
     public String getFormattedQuarantineDetail() {
         //Attempts to convert to a formatted float.  If this fails (i.e.
         //it isn't a number) then just return the detail.
+        if (m_quarantineDetail == null)
+            return null;
         try {
             float f = Float.parseFloat(m_quarantineDetail);
             return String.format("%03.1f", f);
@@ -144,6 +146,8 @@ public final class MailSummary implements Serializable
     }
 
     private String truncate(String source, int maxLength) {
+        if (source == null)
+            return null;
         StringBuffer truncateSource = new StringBuffer(source);
         if (maxLength < truncateSource.length()) {
             truncateSource.setLength(maxLength);
