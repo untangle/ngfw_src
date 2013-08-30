@@ -950,9 +950,11 @@ Ext.define('Ung.SetupWizard.Internet', {
     refresh: function() {
         Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please Wait"));
 
-        var handler = function() {
+        var handler = Ext.bind(function() {
+            //redresh network data
+            this.refreshNetworkDisplay();
             Ext.MessageBox.hide();
-        };
+        }, this);
 
         this.saveData( handler, false );
     },
