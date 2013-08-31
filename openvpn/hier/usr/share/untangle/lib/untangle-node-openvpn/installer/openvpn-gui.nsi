@@ -12,6 +12,7 @@ SetCompressor lzma
 
 ; Modern user interface
 !include "MUI.nsh"
+!include "LogicLib.nsh"
 
 ; Install for all users. MultiUser.nsh also calls SetShellVarContext to point
 ; the installer to global directories (e.g. Start menu, desktop, etc.)
@@ -279,9 +280,6 @@ end:
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_dir"     "$INSTDIR\log"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "priority"    "NORMAL_PRIORITY_CLASS"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_append"  "0"
-	; JCC make openvpn-gui run as administrator
-	!insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
-	
 
 	; install openvpnserv as a service (to be started manually from service control manager)
 	DetailPrint "Service INSTALL"
@@ -312,6 +310,8 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
 	
 	SetOutPath "$INSTDIR\bin"
 	File "${OPENVPN_ROOT}\gui\openvpn-gui.exe"
+	
+	!insertmacro WriteRegStringIfUndef HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe" "RUNASADMIN"
 
 	${If} ${SectionIsSelected} ${SecAddShortcutsWorkaround}
 		CreateDirectory "$SMPROGRAMS\${PACKAGE_NAME}"
@@ -328,7 +328,6 @@ Section /o "${PACKAGE_NAME} File Associations" SecFileAssociation
 	WriteRegStr HKCR "${PACKAGE_NAME}File\shell\open\command" "" 'notepad.exe "%1"'
 	WriteRegStr HKCR "${PACKAGE_NAME}File\shell\run" "" "Start ${PACKAGE_NAME} on this config file"
 	WriteRegStr HKCR "${PACKAGE_NAME}File\shell\run\command" "" '"$INSTDIR\bin\openvpn.exe" --pause-exit --config "%1"'
-
 SectionEnd
 
 Section /o "OpenSSL Utilities" SecOpenSSLUtilities
@@ -561,7 +560,6 @@ Section -post
 	; Store install folder in registry
 	WriteRegStr HKLM "SOFTWARE\${PACKAGE_NAME}" "" "$INSTDIR"
 
-
 	; Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -654,6 +652,7 @@ Section "Uninstall"
 	RMDir "$INSTDIR"
 	RMDir /r "$SMPROGRAMS\${PACKAGE_NAME}"
 
+        !insertmacro DelRegKeyIfUnchanged HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$INSTDIR\bin\openvpn-gui.exe"
 	!insertmacro DelRegKeyIfUnchanged HKCR ".${OPENVPN_CONFIG_EXT}" "${PACKAGE_NAME}File"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
