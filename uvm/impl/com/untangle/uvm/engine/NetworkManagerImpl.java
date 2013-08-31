@@ -1225,7 +1225,6 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    
     private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
     {
         if (netSettings == null)
