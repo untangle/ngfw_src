@@ -5,10 +5,21 @@
 # WARNING: This script is destructive!  Any existing root CA will be
 # unconditionally deleted and a new one created from scratch.
 
+OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
 ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
 CERT_PATH="/var/cache/untangle-https"
 SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+
+# Even though these aren't used when creating the root certificate
+# we have to define and export them since they are referenced
+# in parts of our ut-openssl.cnf file.
+UT_ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
+UT_ROOT_MODE="CA_onehost"
+UT_SAN_LIST="empty"
+export UT_ROOT_PATH
+export UT_ROOT_MODE
+export UT_SAN_LIST
 
 # We use /dev/urandom because it does not block and because all of the security
 # articles I found suggest it has plenty of entropy and should always be used
@@ -63,7 +74,7 @@ date +%s000000 > $ROOT_PATH/serial.txt
 touch $ROOT_PATH/index.txt
 
 # create the CA certificate and key
-$OPENSSL_TOOL req -batch -nodes -new -x509 -extensions v3_ca -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj $SUBJECT
+$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj $SUBJECT
 
 # only root should have access to the key
 chmod 600 $ROOT_PATH/untangle.key
