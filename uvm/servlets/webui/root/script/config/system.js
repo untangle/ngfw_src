@@ -619,7 +619,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         cls: "description"
                     },
                     items: [{
-                        html: this.i18n._("time is automatically synced via NTP")
+                        html: this.i18n._("Time is automatically synced via NTP")
                     }, {
                         id: "system_regionalSettings_currentTime",
                         html: ".",//rpc.adminManager.getDate(),
