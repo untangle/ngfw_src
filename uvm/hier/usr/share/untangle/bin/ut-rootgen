@@ -74,7 +74,7 @@ date +%s000000 > $ROOT_PATH/serial.txt
 touch $ROOT_PATH/index.txt
 
 # create the CA certificate and key
-$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj $SUBJECT
+$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj "$SUBJECT"
 
 # only root should have access to the key
 chmod 600 $ROOT_PATH/untangle.key
