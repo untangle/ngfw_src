@@ -476,7 +476,7 @@ public class NetworkManagerImpl implements NetworkManager
              * If its the dev env also save to /etc
              */
             if ( UvmContextFactory.context().isDevel() ) {
-                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings);
+                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings, false);
             }
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
