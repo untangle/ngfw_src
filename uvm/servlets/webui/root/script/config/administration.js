@@ -671,7 +671,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         certGeneratorPopup: function(certMode, hostName, titleText)
         {
-            master = this;
             popup = new Ext.Window({
                 title: titleText,
                 layout: 'fit',
@@ -826,7 +825,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 altNames = altNamesArray.join(',');
             }
-            
+
             // for a CSR we handle it like a file download which will cause the
             // client browser to prompt the user to save the resulting file
             if (certMode === "CSR")
@@ -862,6 +861,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
 
         handleCertificateUpload: function() {
+            master = this;
             popup = new Ext.Window({
                 title: this.i18n._("Import Signed Server Certificate"),
                 layout: 'fit',
@@ -929,12 +929,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 waitMsg: this.i18n._("Uploading certificate..."),
                 success: function(form, action) {
                     popup.close();
-                    Ext.MessageBox.alert(this.i18n._("Success"), action.result.msg);
+                    Ext.MessageBox.alert(i18n._("Success"), action.result.msg);
                     master.updateCertificateDisplay();
                     },
                 failure: function(form, action) {
                     popup.close();
-                    Ext.MessageBox.alert(this.i18n._("Failure"), action.result.msg);
+                    Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
                     }
                 });
 
