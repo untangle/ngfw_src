@@ -675,7 +675,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title: titleText,
                 layout: 'fit',
                 width: 600,
-                height: (certMode === "ROOT" ? 320 : 450),
+                height: (certMode === "ROOT" ? 320 : 360),
                 border: true,
                 xtype: 'form',
                 modal: true,
@@ -689,76 +689,131 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         labelWidth: 150,
                         name: 'Country',
                         id: 'Country',
+                        helptip: this.i18n._("Select the country in which your organization is legally registered."),
                         margin: "10 10 10 10",
                         size: 50,
                         allowBlank: true,
                         store: Ung.Country.getCountryStore(i18n),
                         queryMode: 'local',
-                        editable: false
+                        editable: false,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
-                        fieldLabel: this.i18n._('State') + " (ST)",
+                        fieldLabel: this.i18n._('State/Province') + " (ST)",
                         labelWidth: 150,
                         name: "State",
                         id: "State",
+                        helptip: this.i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
                         margin: "10 10 10 10",
                         size: 200,
-                        allowBlank: true
+                        allowBlank: false,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
-                        fieldLabel: this.i18n._('Locality') + " (L)",
+                        fieldLabel: this.i18n._('City/Locality') + " (L)",
                         labelWidth: 150,
                         name: "Locality",
                         id: "Locality",
+                        helptip: this.i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
                         margin: "10 10 10 10",
                         size: 200,
-                        allowBlank: true
+                        allowBlank: false,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Organization') + " (O)",
                         labelWidth: 150,
                         name: "Organization",
                         id: "Organization",
+                        helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field."),
                         margin: "10 10 10 10",
                         size: 200,
-                        allowBlank: true
+                        allowBlank: false,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Organaizationl Unit') + " (OU)",
                         labelWidth: 150,
                         name: "OrganizationalUnit",
                         id: "OrganizationalUnit",
+                        helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field."),
                         margin: "10 10 10 10",
                         size: 200,
-                        allowBlank: true
+                        allowBlank: true,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Common Name') + " (CN)",
                         labelWidth: 150,
                         name: "CommonName",
                         id: "CommonName",
+                        helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name for the website you will be using the certificate for (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
-                        value: hostName
+                        value: hostName,
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Subject Alternative Names'),
                         labelWidth: 150,
                         name: "AltNames",
                         id: "AltNames",
+                        helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website you will be using the certificate for."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: true,
-                        hidden: (certMode === "ROOT" ? true : false)
-                    },{
-                        xtype:'fieldset',
-                        title: this.i18n._('Note:'),
-                        items: [{
-                            xtype: 'label',
-                            html: this.i18n._('The <b>Subject Alternative Names</b> field can contain an optional comma separated list of one or more alternative host names or addresses.')
-                        }],
-                        hidden: (certMode === "ROOT" ? true : false)
+                        hidden: (certMode === "ROOT" ? true : false),
+                        listeners: {
+                            render: function(c) {
+                                Ext.create('Ext.tip.ToolTip', {
+                                    target: c.getEl(),
+                                    html: c.helptip
+                                });
+                            }
+                        }
                     },{
                         xtype: "button",
                         text: this.i18n._("Generate"),
