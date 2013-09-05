@@ -393,42 +393,49 @@ Ung.Util = {
     showWarningMessage:function(message, details, errorHandler) {
         var wnd = Ext.create('Ext.window.Window', {
             title: i18n._('Warning'),
-            width: 500,
-            height: 300,
-            layout: { type: 'vbox', align: 'stretch'},
             modal:true,
             closable:false,
-            items: [{
-                xtype: 'fieldset',
-                flex: 0,
-                cls: 'description',
-                html: message
-            }, {
-                flex:1,
-                xtype: "fieldset",
-                title: i18n._('Show details'),
-                collapsible: true,
-                collapsed: false, //FIXME must be false otherwise details won't display in firefox
-                autoScroll: true,
-                border: true,
-                hidden: details==null,
-                listeners: {
-                    "collapse": {
-                        fn: function(f, eOpts) {
-                            f.setTitle(i18n._('Show details'));
-                        }
-                    },
-                    "expand": {
-                        fn: function(f, eOpts) {
-                            f.setTitle(i18n._('Hide details'));
-                        }
-                    }
-                },
-                items: {
-                    xtype: 'text',
-                    html: details ? details : ''
-                }
-            }],
+            maximizable: true,
+            layout: "fit",
+            items: {
+                xtype: "panel",
+                minWidth: 350,
+                items: [{
+                    xtype: "fieldset",
+                    items: [{
+                        xtype: "label",
+                        html: message
+                    },{
+                        xtype: "button",
+                        name: "details_button",
+                        text: i18n._("Show details"),
+                        hidden: details==null,
+                        handler: function() {
+                            var detailsComp = wnd.query('fieldset[name="details"]')[0];
+                            var detailsButton = wnd.query('button[name="details_button"]')[0];
+                            if(detailsComp.isHidden()) {
+                                wnd.initialHeight = wnd.getHeight();
+                                detailsComp.show();
+                                detailsButton.setText(i18n._('Hide details'));
+                                wnd.maximize();
+                            } else {
+                                detailsComp.hide();
+                                detailsButton.setText(i18n._('Show details'));
+                                wnd.restore();
+                                wnd.setHeight(wnd.initialHeight);
+                                wnd.center();
+                            }
+                        },
+                        scope : this
+                            
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    name: "details",
+                    hidden: true,
+                    html: details!=null ? details : ''
+                }]
+            },
             buttons: [{
                 text: i18n._('OK'), 
                 handler: function() { 
