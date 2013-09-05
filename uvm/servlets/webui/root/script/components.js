@@ -408,7 +408,7 @@ Ung.Util = {
                 xtype: "fieldset",
                 title: i18n._('Show details'),
                 collapsible: true,
-                collapsed: true,
+                collapsed: false, //FIXME must be false otherwise details won't display in firefox
                 autoScroll: true,
                 border: true,
                 hidden: details==null,
