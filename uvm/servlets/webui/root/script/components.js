@@ -19,6 +19,18 @@ if(typeof console === "undefined") {
     };
 }
 
+window.onerror = function(msg, url, linenumber) {
+    var exception = {};
+    exception.name = msg.split('\n')[0];
+    exception.javaStack = msg;
+    exception.stack = url + ":" + linenumber;
+
+    console.error('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
+    if(Ung.Util.handleException(exception)) return true;
+    
+    return true;
+};
+
 if (typeof String.prototype.trim !== "function") {
     // implement trim for browsers like IceWeasel 3.0.6
     String.prototype.trim = function () {
