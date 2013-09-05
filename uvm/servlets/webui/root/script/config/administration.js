@@ -849,11 +849,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var form_CN = Ext.getCmp('CommonName');
             var form_SAN = Ext.getCmp('AltNames');
 
-            if (form_CN.getValue().length == 0)
-            {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Common Name field must not be empty'));
-                return;
-            }
+            if (form_C.getValue() == null)  { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Country field must not be empty')); return; }
+            if (form_ST.getValue().length == 0) { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The State field must not be empty')); return; }
+            if (form_L.getValue().length == 0)  { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Locality field must not be empty')); return; }
+            if (form_O.getValue().length == 0)  { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Organization field must not be empty')); return; }
+            if (form_CN.getValue().length == 0) { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Common Name field must not be empty')); return; }
 
             var certSubject = ("/CN=" + form_CN.getValue());
             if ((form_C.getValue()) && (form_C.getValue().length > 0)) certSubject += ("/C=" + form_C.getValue());
