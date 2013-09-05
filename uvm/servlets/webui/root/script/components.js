@@ -457,90 +457,75 @@ Ung.Util = {
             if(exception.message == null) {
                 exception.message = "";
             }
-            var message=null;
-            var details = null;
+            var message = null;
             var gotoStartPage=false;
             /* special text for apt error */
-            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("exited with") >= 0)) {
+            if (exception.name == "java.lang.Exception" && ( exception.message.indexOf("exited with") != -1 || exception.message.indexOf("timed out") != -1 )) {
                 message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
-                message += i18n._("Check internet connectivity and the network/DNS settings.") + "<br/>";
-                message += i18n._("Check that the server is fully up to date.") + "<br/>";
-                message += i18n._("<br/>");
-                details =  i18n._("Unable to contact app store") + ":<br/>";
-                details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
-            }
-            /* special text for apt error */
-            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("timed out") >= 0)) {
-                message  = i18n._("Unable to contact the app store") + ":<br/>";
-                message += i18n._("Connection timed out") + "<br/>";
-                message += i18n._("<br/>");
-                message += i18n._("Check internet connectivity and network/DNS settings.") + "<br/>";
-                details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
-                details += "<br/><b>" + i18n._("Exception message") +":&nbsp;</b>" + exception.message + "<br/>";
+                message += i18n._("Check internet connectivity and the network/DNS configuration.") + "<br/>";
+                message += "<br/>";
             }
             /* special text for rack error */
-            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") >= 0)) {
+            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") != -1)) {
                 message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
-                message += i18n._("Each application can only be installed once in each policy/rack.");
+                message += i18n._("Each application can only be installed once in each policy/rack.") + "<br/>";
+                message += "<br/>";
             }
             /* handle connection lost */
             if(exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                if ( exception.code != 0) {
-                    details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
-                    details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
-                }
+                message += "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
             /* handle connection lost (this happens on windows only for some reason) */
-            if(exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") >= 0) {
+            if(exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += i18n._("<br/>");
-                details = "<b>" + i18n._("Exception name") + ":&nbsp;</b>" + exception.name + "<br/>";
-                details += "<br/><b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
+                message += "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
             /* special text for "method not found" and "Service Temporarily Unavailable" */
-            if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Unavailable") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0 || exception.message.indexOf("his application is not currently available") >= 0) {
+            if (exception.message.indexOf("method not found") != -1 ||
+                exception.message.indexOf("Service Unavailable") != -1 ||
+                exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
+                exception.message.indexOf("This application is not currently available") != -1) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += i18n._("<br/>");
-                details = "<b>" +i18n._("Exception name") + ":&nbsp;</b>" + exception.name + "<br/>";
-                details += "<br/><b>" + i18n._("Exception message") +":&nbsp;</b>" + exception.message + "<br/>";
+                message += "<br/>";
                 if (type !== "noAlert")
                     handler = Ung.Util.goToStartPage; //override handler
             }
-
-            /* otherwise just describe the exception */
-            if (message == null && exception != null) {
-                message  = i18n._("An error has occurred") + "<br/>";
-                message += i18n._("<br/>");
-                if (exception.name != null)
-                    details = "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name + "<br/>";
-                if (exception.message !== "")
-                    details += "<b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message + "<br/>";
-                if (exception.stack != null) {
-                    details += "<b>" + i18n._("Exception stack") +":&nbsp;</b>" +exception.stack + "<br/>";
-                }
-                if (exception.javaStack != null) {
-                    details += "<b>" + i18n._("Exception Java stack") +":&nbsp;</b>" + exception.javaStack + "<br/>";
-                }
-            }
             /* worst case - just say something */
             if (message == null) {
-                message = i18n._("An unknown error has occurred.") + "<br/>";
-                message += i18n._("Please Try Again");
+                message = i18n._("An error has occurred.") + "<br/>";
+                message += "<br/>";
             }
+            
+            var details = "";
+            if ( exception ) {
+                if ( exception.javaStack )
+                    exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+                if ( exception.name )
+                    details += "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name.replace("\n","<br/>") + "<br/><br/>";
+                if ( exception.code )
+                    details += "<b>" + i18n._("Exception code") +":&nbsp;</b>" + exception.code + "<br/><br/>";
+                if ( exception.message )
+                    details += "<b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message.replace("\n","<br/>") + "<br/><br/>";
+                if ( exception.javaStack )
+                    details += "<b>" + i18n._("Exception java stack") +":&nbsp;</b>" + exception.javaStack.replace("\n","<br/>") + "<br/><br/>";
+                if ( exception.stack ) 
+                    details += "<b>" + i18n._("Exception js stack") +":&nbsp;</b>" + exception.stack.replace("\n","<br/>") + "<br/><br/>";
+            }
+            
             if (handler==null) {
                 this.showWarningMessage(message, details);
             } else if(type==null || type== "alertCallback") {
-                this.showWarningMessage(message,details, handler);
+                this.showWarningMessage(message, details, handler);
             } else if (type== "alert") {
-                  this.showWarningMessage(message,details);
+                  this.showWarningMessage(message, details);
                   handler();
             } else if (type== "noAlert") {
                 handler();
