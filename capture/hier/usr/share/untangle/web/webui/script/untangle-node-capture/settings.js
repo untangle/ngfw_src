@@ -393,7 +393,12 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 elem.setValue(this.settings.authenticationType);
                 elem.clearDirty();
             }, this);
-
+            var adconnectorLicense;
+            try {
+                adconnectorLicense = main.getLicenseManager().getLicense("untangle-node-adconnector");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
                 name: "panelUserAuthentication",
                 helpSource: "captive_portal_user_authentication",
@@ -436,7 +441,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),
                                                   "<i>", "</i>" ),
                         hideLabel: true,
-                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        disabled: !adconnectorLicense,
                         name: "authenticationType",
                         inputValue: "RADIUS",
                         listeners: {
@@ -445,7 +450,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         }
                     },{
                         xtype: "button",
-                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        disabled: !adconnectorLicense,
                         name: "configureRadiusServer",
                         text: this.i18n._("Configure RADIUS"),
                         handler: Ext.bind(this.configureRadius, this )
@@ -453,7 +458,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         xtype: "radio",
                         boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                         hideLabel: true,
-                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        disabled: !adconnectorLicense,
                         name: "authenticationType",
                         inputValue: "ACTIVE_DIRECTORY",
                         listeners: {
@@ -462,7 +467,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         }
                     },{
                         xtype: "button",
-                        disabled: !main.getLicenseManager().getLicense("untangle-node-adconnector"),
+                        disabled: !adconnectorLicense,
                         name: "configureActiveDirectory",
                         text: this.i18n._("Configure Active Directory"),
                         handler: Ext.bind(this.configureActiveDirectory, this )

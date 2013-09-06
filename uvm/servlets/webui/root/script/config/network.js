@@ -227,24 +227,25 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 title: i18n._('Network')
             }];
+            var deviceStatus, interfaceStatus;
             try {
                 this.settings = main.getNetworkManager().getNetworkSettings();
-                var i=0;
-                var deviceStatus=main.getNetworkManager().getDeviceStatus();
-                var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
-                var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
-                var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
-                for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
-                    var intf=this.settings.interfaces.list[i];
-                    var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-                    Ext.applyIf(intf, deviceStatusInner);
-                    var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-                    Ext.applyIf(intf, interfaceStatusInner);
-                }
-                rpc.networkSettings = this.settings;
+                deviceStatus=main.getNetworkManager().getDeviceStatus();
+                interfaceStatus=main.getNetworkManager().getInterfaceStatus();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
+            var i=0;
+            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+            var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
+            for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
+                var intf=this.settings.interfaces.list[i];
+                var deviceStatusInner = deviceStatusMap[intf.physicalDev];
+                Ext.applyIf(intf, deviceStatusInner);
+                var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
+                Ext.applyIf(intf, interfaceStatusInner);
+            }
+            rpc.networkSettings = this.settings;
 
             // builds the tabs
             this.buildInterfaces();
@@ -3349,7 +3350,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasEdit: false,
                 dataRoot:'',
                 dataFn: function() {
-                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-service.py status");
+                    var output;
+                    try {
+                        output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-service.py status");
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
                     try {
                         return eval(output);
                     } catch (e) {
@@ -3405,7 +3411,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                 hasEdit: false,
                 dataRoot:'',
                 dataFn: function() {
-                    var output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-service.py sessions");
+                    var output;
+                    try {
+                        output=main.getExecManager().execOutput("/usr/share/untangle-netd/bin/qos-service.py sessions");
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
                     try {
                         return eval(output);
                     } catch (e) {
@@ -4063,7 +4074,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }),
                 dataRoot: null,
                 dataFn: function() {
-                    var leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");  
+                    var leaseText;
+                    try {
+                        leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+
                     var lines = leaseText.split("\n");
                     var leases = [];
                     for ( var i = 0 ; i < lines.length ; i++ ) {

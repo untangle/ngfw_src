@@ -54,7 +54,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Note'),
-                    html: Ext.String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
+                    html: Ext.String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."), rpc.companyName)
                 },  this.gridRules= Ext.create('Ung.EditorGrid',{
                     anchor: '100% -80',
                     name: 'Rules',

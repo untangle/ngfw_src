@@ -352,7 +352,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     xtype: 'fieldset',
                     items: [{
                         cls: 'description',
-                        html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), main.getBrandingManager().getCompanyName()),
+                        html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName),
                         bodyStyle: 'padding-bottom:10px;',
                         border: false
                     },{
@@ -374,7 +374,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         cls: 'description',
-                        html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), main.getBrandingManager().getCompanyName()),
+                        html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName),
                         bodyStyle: 'padding:0px 5px 10px 25px;',
                         border: false
                     },{
@@ -397,7 +397,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         cls: 'description',
                         html: Ext.String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
-                                                 main.getBrandingManager().getCompanyName()),
+                                rpc.companyName),
                         bodyStyle: 'padding:0px 5px 5px 25px;',
                         border: false
                     }, {
@@ -436,7 +436,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         cls: 'description',
                         html: Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'),
-                                                 main.getBrandingManager().getCompanyName()),
+                                rpc.companyName),
                         bodyStyle: 'padding:0px 5px 5px 25px;',
                         border: false
                     },{

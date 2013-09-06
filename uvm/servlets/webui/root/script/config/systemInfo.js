@@ -25,6 +25,16 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             this.callParent(arguments);
         },
         buildServer: function() {
+            var serverUID, fullVersionAndRevision, kernelVersion, modificationState, rebootCount;
+            try {
+                serverUID = rpc.jsonrpc.UvmContext.getServerUID();
+                fullVersionAndRevision = rpc.adminManager.getFullVersionAndRevision();
+                kernelVersion = rpc.adminManager.getKernelVersion();
+                modificationState = rpc.adminManager.getModificationState();
+                rebootCount = rpc.adminManager.getRebootCount();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             this.panelServer = Ext.create('Ext.panel.Panel',{
                 name: 'Server',
                 helpSource: 'system_info_server',
@@ -46,7 +56,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         width: 600,
                         height: 40,
                         value: this.i18n._('Do not publicly post or share the UID.') + "\n" +
-                            this.i18n._('UID')+": " + rpc.jsonrpc.UvmContext.getServerUID()
+                            this.i18n._('UID')+": " + serverUID
                     }, {
                         xtype: 'textarea',
                         name: 'System Info',
@@ -55,10 +65,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         style: 'font-weight: bold;',
                         width: 600,
                         height: 400,
-                        value: this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
-                            this.i18n._('Kernel') + ": " + rpc.adminManager.getKernelVersion() + "\n" +
-                            this.i18n._('History') + ": " + rpc.adminManager.getModificationState() + "\n" +
-                            this.i18n._('Reboots') + ": " + rpc.adminManager.getRebootCount()
+                        value: this.i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
+                            this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
+                            this.i18n._('History') + ": " + modificationState + "\n" +
+                            this.i18n._('Reboots') + ": " + rebootCount
                     }]
                 }]
             });

@@ -43,8 +43,11 @@ if (!Ung.hasResource["Ung.System"]) {
             }, {
                 title: i18n._("System")
             }];
-            this.companyName=main.getBrandingManager().getCompanyName();
-            this.oemName=main.getOemManager().getOemName();
+            try {
+                this.oemName=main.getOemManager().getOemName();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             if (this.oemName == "Untangle") {
                 this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
             } else {
@@ -230,7 +233,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items: [{
                         border: false,
                         cls: "description",
-                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>", this.companyName)
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>", rpc.companyName)
                     },{
                         xtype: "button",
                         text: this.i18n._("Reboot"),
@@ -238,14 +241,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                                Ext.String.format(this.i18n._("The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ),
+                                Ext.String.format(this.i18n._("The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), rpc.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.rebootBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"), this.companyName));
+                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to reboot {0} Server"), rpc.companyName));
                                         } else {
-                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is rebooting."), this.companyName), i18n._("Please wait"));
+                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is rebooting."), rpc.companyName), i18n._("Please wait"));
                                         }
                                     }, this));
                                 }
@@ -258,7 +261,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items: [{
                         border: false,
                         cls: "description",
-                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>", this.companyName)
+                        html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>", rpc.companyName)
                     },{
                         xtype: "button",
                         text: this.i18n._("Shutdown"),
@@ -266,14 +269,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
-                                Ext.String.format(this.i18n._("The {0} Server is about to shutdown.  This will stop all network operations."), this.companyName ),
+                                Ext.String.format(this.i18n._("The {0} Server is about to shutdown.  This will stop all network operations."), rpc.companyName ),
                                 Ext.bind(function(btn) {
                                 if (btn == "yes") {
                                     rpc.jsonrpc.UvmContext.shutdownBox(Ext.bind(function (result, exception) {
                                         if(exception) {
-                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"), this.companyName));
+                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),Ext.String.format(this.i18n._("Error: Unable to shutdown {0} Server"), rpc.companyName));
                                         } else {
-                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is shutting down."), this.companyName), i18n._("Please wait"));
+                                            Ext.MessageBox.wait(Ext.String.format(this.i18n._("The {0} Server is shutting down."), rpc.companyName), i18n._("Please wait"));
                                         }
                                     }, this));
                                 }
@@ -294,7 +297,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls: "reboot-icon",
                         handler: Ext.bind(function() {
                             Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ),
+                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
                                Ext.bind(function(btn) {
                                    if (btn == "yes") {
                                        main.openSetupWizardScreen();
@@ -590,13 +593,25 @@ if (!Ung.hasResource["Ung.System"]) {
         buildRegional: function() {
             // keep initial language settings
             this.initialLanguage = this.getLanguageSettings().language;
+            var languagesList;
+            try {
+                languagesList = rpc.languageManager.getLanguagesList();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             var languagesStore =Ext.create("Ext.data.Store", {
                 fields: ["code", "name"],
-                data: rpc.languageManager.getLanguagesList().list
+                data: languagesList.list
             });
 
             var timeZones = [];
-            var timeZoneData = eval(rpc.jsonrpc.UvmContext.adminManager().getTimeZones());
+            var timeZonesResult;
+            try {
+                timeZonesResult = rpc.adminManager.getTimeZones();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+            var timeZoneData = eval(timeZonesResult);
             for (var i = 0; i < timeZoneData.length; i++) {
                 timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
             }
@@ -763,7 +778,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         parentId: cmp.getId(),
                         waitMsg: cmp.i18n._("Please wait while your language pack is uploaded..."),
                         success: function(form, action) {
-                            languagesStore.loadData(rpc.languageManager.getLanguagesList().list);
+                            var languagesList;
+                            try {
+                                languagesList = rpc.languageManager.getLanguagesList();
+                            } catch (e) {
+                                Ung.Util.rpcExHandler(e);
+                            }
+
+                            languagesStore.loadData(languagesList.list);
                             var cmp = Ext.getCmp(action.parentId);
                             if(action.result.success===true) {
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"));

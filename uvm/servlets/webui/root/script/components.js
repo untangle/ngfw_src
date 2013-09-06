@@ -1625,7 +1625,11 @@ Ext.define("Ung.Node", {
     getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.rpcNode === undefined) {
-            this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
+            try {
+                this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             handler.call(this);
         } else {
             handler.call(this);
@@ -5778,7 +5782,12 @@ Ext.define('Ung.UserEditorWindow', {
     },
     populate: function(record, value, rulebuilder) {
         var data = [];
-        var node = rpc.nodeManager.node("untangle-node-adconnector");
+        var node;
+        try {
+            node = rpc.nodeManager.node("untangle-node-adconnector");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         if (node != null) {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             data = node.getUserEntries().list;
@@ -5929,7 +5938,12 @@ Ext.define('Ung.GroupEditorWindow', {
     },
     populate: function(record, value, rulebuilder) {
         var data = [];
-        var node = rpc.nodeManager.node("untangle-node-adconnector");
+        var node;
+        try {
+            node = rpc.nodeManager.node("untangle-node-adconnector");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         if (node != null) {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             data = node.getGroupEntries().list;

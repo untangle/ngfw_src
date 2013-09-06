@@ -53,11 +53,20 @@ Ext.define("Ung.Main", {
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
         //load all managers and startup info
-        var startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
+        var startupInfo;
+        try {
+            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         Ext.applyIf(rpc, startupInfo);
         
-        //Had to get policyManager this way because startupInfo.policyManager contains an object instead of a callableReference
-        rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+        //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
+        try {
+            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         
         i18n=new Ung.I18N({"map":rpc.translations});
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
@@ -244,11 +253,19 @@ Ext.define("Ung.Main", {
     },
     systemInfo: function ()
     {
+        var serverUID, fullVersion, language;
+        try {
+            serverUID = rpc.jsonrpc.UvmContext.getServerUID();
+            fullVersion = rpc.adminManager.getFullVersion();
+            language = rpc.languageManager.getLanguageSettings()['language']
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var query = "";
-        query = query + "uid=" + rpc.jsonrpc.UvmContext.getServerUID();
-        query = query + "&" + "version=" + rpc.jsonrpc.UvmContext.getFullVersion();
+        query = query + "uid=" + serverUID;
+        query = query + "&" + "version=" + fullVersion;
         query = query + "&" + "webui=true";
-        query = query + "&" + "lang=" + rpc.languageManager.getLanguageSettings()['language'];
+        query = query + "&" + "lang=" + language;
 
         return query;
     },
@@ -269,12 +286,22 @@ Ext.define("Ung.Main", {
         this.openIFrame( url, i18n._("Setup Wizard") );
     },     
     openLegal: function( topic ) {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getLegalUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getLegalUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + this.systemInfo();
         this.openIFrame( url, i18n._("Legal") );
     },
     openHelp: function( topic ) {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getHelpUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getHelpUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
         console.log("Open Help Topic :", topic);
         console.log("Open Help Url   :", url);
@@ -282,22 +309,42 @@ Ext.define("Ung.Main", {
         window.open(url); // open a new window
     },
     openSupportScreen: function() {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + "action=support" + "&" + this.systemInfo();
         this.openIFrame( url, i18n._("Get Support") );
     },
     openMyAccountScreen: function() {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + "action=my_account" + "&" + this.systemInfo();
         this.openIFrame( url, i18n._("Welcome") );
     },
     openWelcomeScreen: function () {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + "action=welcome" + "&" + this.systemInfo();
         this.openIFrame( url, i18n._("Welcome") );
     },
     openLibItemStore: function (libItemName, title) {
-        var baseUrl =  rpc.jsonrpc.UvmContext.getStoreUrl();
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         var url = baseUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
         this.openIFrame( url, title );
     },
@@ -759,10 +806,13 @@ Ext.define("Ung.Main", {
         Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadLicenses: function() {
-        //force re-sync with server
-        main.getLicenseManager().reloadLicenses();
-        var callback = Ext.bind(function(result,exception)
-        {
+        try {
+          //force re-sync with server
+          main.getLicenseManager().reloadLicenses();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e, true);
+        }
+        var callback = Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             for (var i = 0; i < main.nodes.length; i++) {
@@ -1035,7 +1085,11 @@ Ext.define("Ung.Main", {
         Ung.AppItem.updateState(node.displayName, null);
         if ( node.name == 'untangle-node-policy') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
+            try {
+                rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             Ext.getCmp('policyManagerMenuItem').enable();
             this.policyNodeWidget = nodeWidget;
         }

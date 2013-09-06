@@ -1029,6 +1029,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             }, this);
 
+            var publicUrl;
+            try {
+                publicUrl = rpc.systemManager.getPublicUrl();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+            
             this.panelServer = Ext.create('Ext.panel.Panel', {
                 name: 'Server',
                 helpSource: 'openvpn_server',
@@ -1079,7 +1086,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         width:300,
                         fieldLabel: this.i18n._('Site URL'),
                         name: 'Site URL',
-                        value: rpc.systemManager.getPublicUrl().split(":")[0]+":"+this.getSettings().port,
+                        value: publicUrl.split(":")[0]+":"+this.getSettings().port,
                         id: 'openvpn_options_siteUrl'
                     }, {
                         xtype: 'checkbox',

@@ -92,9 +92,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         },
         getAppList: function() {
             var appList=[{value:0, name: this.i18n._("All Sessions")}];
-            var nodeIds = rpc.nodeManager.nodeInstancesIds();
-            var allNodeProperties = rpc.nodeManager.allNodeProperties();
-            var allNodeSettings = rpc.nodeManager.allNodeSettings();
+            var nodeIds, allNodeProperties, allNodeSettings;
+            try {
+                nodeIds = rpc.nodeManager.nodeInstancesIds();
+                allNodeProperties = rpc.nodeManager.allNodeProperties();
+                allNodeSettings = rpc.nodeManager.allNodeSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             for (var i = 0 ; i < nodeIds.list.length ; i++) {
                 var nodeId = nodeIds.list[i];
                 var nodeProperties = allNodeProperties.map[nodeId];

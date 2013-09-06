@@ -257,7 +257,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [{
                         xtype: 'label',
                         html: Ext.String.format(this.i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
-                            main.getBrandingManager().getCompanyName())
+                                rpc.companyName)
                     }, {
                         xtype: 'radio',
                         id: 'email_smtpDisabled',
@@ -386,8 +386,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [{
                         cls: 'description',
                         border: false,
-                        html: Ext.String.format(this.i18n._("The {0} Server will send email from this address."),
-                                             main.getBrandingManager().getCompanyName())
+                        html: Ext.String.format(this.i18n._("The {0} Server will send email from this address."), rpc.companyName)
                     }, {
                         xtype: 'textfield',
                         name: 'Email From Address',
@@ -674,6 +673,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }
             });
             
+            var publicUrl;
+            try {
+                publicUrl = rpc.systemManager.getPublicUrl();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+
             this.panelQuarantine = Ext.create('Ext.panel.Panel',{
                 name: 'panelQuarantine',
                 helpSource: 'email_quarantine',
@@ -758,7 +764,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         cls: 'description',
                         border: false,
-                        html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), rpc.systemManager.getPublicUrl())
+                        html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), publicUrl)
                     }]
                 }, 
                 this.userQuarantinesGrid = Ext.create('Ung.EditorGrid', {
