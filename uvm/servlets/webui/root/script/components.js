@@ -407,8 +407,13 @@ Ung.Util = {
             title: i18n._('Warning'),
             modal:true,
             closable:false,
-            maximizable: true,
             layout: "fit",
+            setSizeToRack: function () {
+                var objSize = main.viewport.getSize();
+                objSize.width = objSize.width - main.contentLeftWidth;
+                this.setPosition(main.contentLeftWidth, 0);
+                this.setSize(objSize);
+            },
             items: {
                 xtype: "panel",
                 minWidth: 350,
@@ -416,7 +421,7 @@ Ung.Util = {
                     xtype: "fieldset",
                     items: [{
                         xtype: "label",
-                        html: message
+                        html: message+"<br>",
                     },{
                         xtype: "button",
                         name: "details_button",
@@ -427,14 +432,16 @@ Ung.Util = {
                             var detailsButton = wnd.query('button[name="details_button"]')[0];
                             if(detailsComp.isHidden()) {
                                 wnd.initialHeight = wnd.getHeight();
+                                wnd.initialWidth = wnd.getWidth();
                                 detailsComp.show();
                                 detailsButton.setText(i18n._('Hide details'));
-                                wnd.maximize();
+                                wnd.setSizeToRack();
                             } else {
                                 detailsComp.hide();
                                 detailsButton.setText(i18n._('Show details'));
                                 wnd.restore();
                                 wnd.setHeight(wnd.initialHeight);
+                                wnd.setWidth(wnd.initialWidth);
                                 wnd.center();
                             }
                         },
