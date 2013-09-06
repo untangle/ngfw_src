@@ -16,6 +16,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
@@ -41,6 +42,13 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // first we look for and ignore all traffic on port 80 since
         // the http-casing handler will take care of all that
         if (sessreq.getNatToPort() == 80) {
+            sessreq.release();
+            return;
+        }
+
+        // if the https inspector has attached the session manager then
+        // we can allow the traffic since it will come later as http
+        if (sessreq.globalAttachment(NodeSession.KEY_HTTPS_SERVER_MANAGER) != null) {
             sessreq.release();
             return;
         }
