@@ -256,7 +256,7 @@ Ext.define("Ung.Main", {
         var serverUID, fullVersion, language;
         try {
             serverUID = rpc.jsonrpc.UvmContext.getServerUID();
-            fullVersion = rpc.adminManager.getFullVersion();
+            fullVersion = rpc.jsonrpc.UvmContext.getFullVersion();
             language = rpc.languageManager.getLanguageSettings()['language'];
         } catch (e) {
             Ung.Util.rpcExHandler(e);
