@@ -540,12 +540,12 @@ Ung.Util = {
             }
             
             if (handler==null) {
-                this.showWarningMessage(message, details);
+                Ung.Util.showWarningMessage(message, details);
             } else if(type==null || type== "alertCallback") {
-                this.showWarningMessage(message, details, handler);
+                Ung.Util.showWarningMessage(message, details, handler);
             } else if (type== "alert") {
-                  this.showWarningMessage(message, details);
-                  handler();
+                Ung.Util.showWarningMessage(message, details);
+                handler();
             } else if (type== "noAlert") {
                 handler();
             }
