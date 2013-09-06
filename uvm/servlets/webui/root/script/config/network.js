@@ -227,20 +227,24 @@ if (!Ung.hasResource["Ung.Network"]) {
             }, {
                 title: i18n._('Network')
             }];
-            this.settings = main.getNetworkManager().getNetworkSettings();
-            var i=0;
-            var deviceStatus=main.getNetworkManager().getDeviceStatus();
-            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
-            var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
-            var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
-            for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
-                var intf=this.settings.interfaces.list[i];
-                var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-                Ext.applyIf(intf, deviceStatusInner);
-                var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-                Ext.applyIf(intf, interfaceStatusInner);
+            try {
+                this.settings = main.getNetworkManager().getNetworkSettings();
+                var i=0;
+                var deviceStatus=main.getNetworkManager().getDeviceStatus();
+                var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+                var interfaceStatus=main.getNetworkManager().getInterfaceStatus();
+                var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
+                for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
+                    var intf=this.settings.interfaces.list[i];
+                    var deviceStatusInner = deviceStatusMap[intf.physicalDev];
+                    Ext.applyIf(intf, deviceStatusInner);
+                    var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
+                    Ext.applyIf(intf, interfaceStatusInner);
+                }
+                rpc.networkSettings = this.settings;
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
             }
-            rpc.networkSettings = this.settings;
 
             // builds the tabs
             this.buildInterfaces();

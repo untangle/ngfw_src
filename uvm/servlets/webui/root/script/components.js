@@ -19,18 +19,6 @@ if(typeof console === "undefined") {
     };
 }
 
-window.onerror = function(msg, url, linenumber) {
-    var exception = {};
-    exception.name = msg.split('\n')[0];
-    exception.javaStack = msg;
-    exception.stack = url + ":" + linenumber;
-
-    console.error('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
-    if(Ung.Util.handleException(exception)) return true;
-    
-    return true;
-};
-
 if (typeof String.prototype.trim !== "function") {
     // implement trim for browsers like IceWeasel 3.0.6
     String.prototype.trim = function () {
@@ -363,45 +351,6 @@ Ung.Util = {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.href="/webui";
     },
-    rpcExHandler: function(exception, continueExecution) {
-        if (exception != null) {
-            console.error("In rpcExHandler: ", exception);
-        } else{
-            console.error("In rpcExHandler: null");
-        }
-            
-        if(exception instanceof JSONRpcClient.Exception)
-        {
-            if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0)
-            {
-                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The connection to the server has been lost. Press OK to return to the login page."), Ung.Util.goToStartPage);
-            }/* else {
-                Ext.MessageBox.alert(i18n._("Warning"), exception.code+"-"+exception.message);
-                return;
-            }*/
-        }
-        if(!continueExecution) {
-            if(exception) {
-                throw exception;
-            }
-            else {
-                throw i18n._("Error making rpc request to server");
-            }
-        } else {
-            var message = exception.message;
-            if(!exception.message) {
-                message=i18n._("An error has occured!");
-                if(exception.name) {
-                    message +="<br/><b>" + exception.name+"</b>";
-                }
-                if(exception.javaStack) {
-                    message +="<br/>" + exception.javaStack;
-                }
-            }
-            Ext.MessageBox.alert(i18n._("Warning"), message);
-        }
-    },
-    
     showWarningMessage:function(message, details, errorHandler) {
         var wnd = Ext.create('Ext.window.Window', {
             title: i18n._('Warning'),
@@ -469,10 +418,20 @@ Ung.Util = {
         wnd.show();
         Ext.MessageBox.hide();
     },
-    
+    rpcExHandler: function(exception, continueExecution) {
+        Ung.Util.handleException(exception);
+        if(!continueExecution) {
+            if(exception) {
+                throw exception;
+            }
+            else {
+                throw i18n._("Error making rpc request to server");
+            }
+        }
+    },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
-            console.log("handleException:", exception);
+            console.error("handleException:", exception);
             if(exception.message == null) {
                 exception.message = "";
             }
