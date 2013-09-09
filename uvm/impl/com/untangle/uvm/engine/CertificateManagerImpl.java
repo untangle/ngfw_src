@@ -131,10 +131,8 @@ public class CertificateManagerImpl implements CertificateManager
                 testFlag++;
             if (certString.contains("END CERTIFICATE") == true)
                 testFlag++;
-            if (certString.contains("PRIVATE KEY") == true)
-                testFlag++;
 
-            if (testFlag != 3)
+            if (testFlag != 2)
                 return new ExecManagerResult(1, "The uploaded certificate must be in PEM file format");
 
             // first write the pem file to our settings directory
