@@ -124,7 +124,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
                 Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
+            if(Ext.form.VTypes["openvpnSiteNameVal"]==null) {
+                Ext.form.VTypes["openvpnSiteNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
+                Ext.form.VTypes["openvpnSiteName"] = function(v) {
+                    return Ext.form.VTypes["openvpnSiteNameVal"].test(v);
+                };
+                Ext.form.VTypes["openvpnSiteNameMask"] = /[-_.0-9A-Za-z]*/;
+                Ext.form.VTypes["openvpnSiteNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
+            }
 
+            
             this.buildStatus();
             this.buildServer();
             this.buildClient();
@@ -1069,6 +1078,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         fieldLabel: this.i18n._('Site Name'),
                         name: 'Site Name',
                         value: this.getSettings().siteName,
+                        vtype: 'openvpnSiteName',
                         id: 'openvpn_options_siteName',
                         allowBlank: false,
                         blankText: this.i18n._("You must enter a site name."),
