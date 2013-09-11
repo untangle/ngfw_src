@@ -1740,7 +1740,9 @@ Ext.define("Ung.Node", {
                         this.getEl().stopAnimation();
                     }, this),"alert")) return;
                     if (this) {
-                        this.getEl().stopAnimation();
+                        if(this.getEl()) {
+                            this.getEl().stopAnimation();    
+                        }
                         var nodeName = this.name;
                         var cmp = this;
                         Ext.destroy(cmp);
