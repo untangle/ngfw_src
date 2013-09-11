@@ -94,6 +94,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             };
             this.gridCurrentHosts = Ext.create('Ung.MonitorGrid',{
                 name: "gridCurrentHosts",
+                helpSource: 'host_viewer',
                 settingsCmp: this,
                 height: 500,
                 sortField: this.sortField,
@@ -318,6 +319,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildGridPenaltyBox: function() {
             this.gridPenaltyBox = Ext.create('Ung.EditorGrid',{
                 anchor: '100% -60',
+                helpSource: 'host_viewer',
                 name: "gridPenaltyBox",
                 settingsCmp: this,
                 parentId: this.getId(),
@@ -397,6 +399,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             this.gridQuotaBox = Ext.create('Ung.EditorGrid',{
                 anchor: '100% -60',
                 name: "gridQuotaBox",
+                helpSource: 'host_viewer',
                 settingsCmp: this,
                 parentId: this.getId(),
                 hasAdd: false,
@@ -509,6 +512,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildPenaltyBoxEventLog: function() {
             this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'host_viewer',
                 eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
                 title: this.i18n._("Penalty Box Event Log"),
                 fields: [{
@@ -557,6 +561,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildQuotaEventLog: function() {
             this.gridQuotaEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'host_viewer',
                 eventQueriesFn: rpc.hostTable.getQuotaEventQueries,
                 title: this.i18n._("Quota Event Log"),
                 fields: [{
