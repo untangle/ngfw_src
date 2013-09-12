@@ -71,21 +71,24 @@ fi
 
 SERIAL=`cat $UT_ROOT_PATH/serial.txt`
 
-# The CA is ready to go so we create a certificate signing request
-$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -newkey rsa:2048 -keyout $TEMP/server.key -out $TEMP/server.csr -subj "$2"
-
-# Next sign the CSR with our CA cert and key but skip this for CSR requests
-if [ "$1" != "REQUEST" ]; then
+if [ "$1" == "REQUEST" ]; then
+    # for a server CSR request we generate a new CSR with the existing key
+    $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -key $UT_ROOT_PATH/apache.key -out $TEMP/server.csr -subj "$2"
+else
+    # not a server CSR request so generate a new CSR and sign with our CA cert
+    $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -newkey rsa:2048 -keyout $TEMP/server.key -out $TEMP/server.csr -subj "$2"
     $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -policy policy_anything -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $TEMP/server.csr
 fi
 
 if [ "$1" = "APACHE" ]; then
-    # when generating the Apache server certificate we create a PEM file
-    cp $TEMP/server.key $UT_ROOT_PATH/apache.pem
-    grep -A 1000 BEGIN $TEMP/server.crt >> $UT_ROOT_PATH/apache.pem
+    # when generating the Apache server certificate we keep a copy
+    # of the CRT and KEY files and then dump then into a PEM file
+    cp $TEMP/server.key $UT_ROOT_PATH/apache.key
+    grep -A 1000 BEGIN $TEMP/server.crt > $UT_ROOT_PATH/apache.crt
+    cat $UT_ROOT_PATH/apache.key $UT_ROOT_PATH/apache.crt > $UT_ROOT_PATH/apache.pem
 elif [ "$1" = "REQUEST" ]; then
-    # when generating a CSR we just need to copy the file already created
-    cp $TEMP/server.csr $UT_ROOT_PATH/untangle.csr
+    # when generating a server CSR we just copy the file already created
+    cp $TEMP/server.csr $UT_ROOT_PATH/apache.csr
 else
     # for all other put the signed server key and cert into a PKCS12 file
     $OPENSSL_TOOL pkcs12 -passout pass:password -export -name default -in $TEMP/server.crt -inkey $TEMP/server.key -out "$CERT_PATH/$1"
