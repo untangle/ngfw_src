@@ -7,7 +7,6 @@
 
 OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
-ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
 CERT_PATH="/var/cache/untangle-https"
 SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
 
@@ -46,8 +45,8 @@ if [ -z $1 ]; then
 fi
 
 # first we make sure the root CA directory exists
-if [ ! -d $ROOT_PATH ]; then
-    mkdir -p $ROOT_PATH
+if [ ! -d $UT_ROOT_PATH ]; then
+    mkdir -p $UT_ROOT_PATH
 fi
 
 # next we make sure the cert directory exists
@@ -62,19 +61,19 @@ fi
 
 # next cleanup any existing files
 rm -f $CERT_PATH/*
-rm -f $ROOT_PATH/untangle.crt
-rm -f $ROOT_PATH/untangle.key
-rm -f $ROOT_PATH/index*
-rm -f $ROOT_PATH/serial*
+rm -f $UT_ROOT_PATH/untangle.crt
+rm -f $UT_ROOT_PATH/untangle.key
+rm -f $UT_ROOT_PATH/index*
+rm -f $UT_ROOT_PATH/serial*
 
 # create the initial serial using the current epoch time plus six extra digits
-date +%s000000 > $ROOT_PATH/serial.txt
+date +%s000000 > $UT_ROOT_PATH/serial.txt
 
 # create the certificate index file
-touch $ROOT_PATH/index.txt
+touch $UT_ROOT_PATH/index.txt
 
 # create the CA certificate and key
-$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $ROOT_PATH/untangle.key -out $ROOT_PATH/untangle.crt -days 7305 -subj "$SUBJECT"
+$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $UT_ROOT_PATH/untangle.key -out $UT_ROOT_PATH/untangle.crt -days 7305 -subj "$SUBJECT"
 
 # only root should have access to the key
-chmod 600 $ROOT_PATH/untangle.key
+chmod 600 $UT_ROOT_PATH/untangle.key
