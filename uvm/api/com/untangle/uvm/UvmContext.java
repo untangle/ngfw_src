@@ -312,4 +312,6 @@ public interface UvmContext
     void logEvent(LogEvent evt);
 
     org.json.JSONObject getWebuiStartupInfo();
+    
+    org.json.JSONObject getSetupStartupInfo();
 }

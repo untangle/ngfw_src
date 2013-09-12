@@ -21,6 +21,7 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/setup.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
       Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";

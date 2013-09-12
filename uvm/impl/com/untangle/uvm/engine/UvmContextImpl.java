@@ -555,6 +555,27 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return json;
     }
     
+    /**
+     * This call returns one big JSONObject with references to all the important information
+     * This is used to avoid lots of separate synchornous calls via the Setup UI.
+     * Reducing all these seperate calls to initialize the UI reduces startup time
+     */
+    public org.json.JSONObject getSetupStartupInfo()
+    {
+        org.json.JSONObject json = new org.json.JSONObject();
+        
+        try {
+            json.put("adminManager", this.adminManager());
+            json.put("networkManager", this.networkManager());
+            json.put("connectivityTester", this.getConnectivityTester());
+            json.put("aptManager", this.aptManager());
+            json.put("systemManager", this.systemManager());
+            json.put("mailSender", this.mailSender());
+        } catch (Exception e) {
+            logger.error( "Error generating Setup startup object", e );
+        }
+        return json;
+    }
     // UvmContextBase methods --------------------------------------------------
 
     @Override

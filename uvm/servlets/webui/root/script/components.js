@@ -418,7 +418,9 @@ Ung.Util = {
             }]
         });
         wnd.show();
-        Ext.MessageBox.hide();
+        if(Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();    
+        }
     },
     rpcExHandler: function(exception, continueExecution) {
         Ung.Util.handleException(exception);
@@ -467,7 +469,6 @@ Ung.Util = {
             /* worst case - just say something */
             if (message == null) {
                 message = i18n._("An error has occurred.");
-                message += "<br/>";
             }
             
             var details = "";

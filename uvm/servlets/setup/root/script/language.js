@@ -68,16 +68,7 @@ Ext.define('Ung.SetupWizard.Language', {
     },
 
     complete: function( result, exception, foo, handler ) {
-        if ( exception ) {
-            var message = exception.message;
-            if (message == null || message == "Unknown") {
-                message = i18n._("Please Try Again");
-            }
-            
-            Ext.MessageBox.alert("Failed.",message);
-            return;
-        }
-
+        if(Ung.Util.handleException(exception, "Unable to save the language")) return;
         // Send the user to the setup wizard.
         parent.location = "index.do";
     },
@@ -93,8 +84,8 @@ Ung.Language = {
         if ( this.isInitialized == true ) return;
         this.isInitialized = true;
 
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         rpc = {};
-
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
         i18n = new Ung.I18N( { "map": {} });

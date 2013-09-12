@@ -48,23 +48,14 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
     },
 
     saveTimeZone: function( result, exception ) {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message );
-            return;
-        }
-
+        if(Ung.Util.handleException(exception, "Unable to save the admin password")) return;
         var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
-
         rpc.setup.setTimeZone( Ext.bind(this.authenticate,this ), timezone );
     },
 
     authenticate: function( result, exception ) {
-        if ( exception ) {
-            Ext.MessageBox.alert(i18n._("Unable to save Time zone settings"), exception.message);
-            return;
-        }
-        
-        // console.log("Authenticating...");
+        if(Ung.Util.handleException(exception, "Unable to save Time Zone settings")) return;
+        Ext.MessageBox.wait( i18n._( "Authenticating" ), i18n._( "Please Wait" ));
         Ext.Ajax.request({
             params: {
                 username: 'admin',
@@ -85,19 +76,23 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
         if ( success ) {
             // It is very wrong to do this all synchronously
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-            rpc.adminManager = rpc.jsonrpc.UvmContext.adminManager();
-            rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
-            rpc.connectivityTester = rpc.jsonrpc.UvmContext.getConnectivityTester();
-            rpc.aptManager = rpc.jsonrpc.UvmContext.aptManager();
-            rpc.systemManager = rpc.jsonrpc.UvmContext.systemManager();
-            rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
-            rpc.keepAlive = function() { rpc.jsonrpc.UvmContext.getFullVersion(); Ext.defer(rpc.keepAlive,300000); };
-            rpc.keepAlive();
+            rpc.jsonrpc.UvmContext.getSetupStartupInfo(Ext.bind(function(result, exception){
+                if(Ung.Util.handleException(exception)) return;
+                Ext.applyIf(rpc, result);
+                rpc.keepAlive = function() {
+                    rpc.jsonrpc.UvmContext.getFullVersion(Ext.bind(function(result, exception){
+                        if(Ung.Util.handleException(exception)) return;
+                        Ext.defer(rpc.keepAlive,300000);
+                    }, this));
+                };
+                rpc.keepAlive();
 
-            if (Ext.MessageBox.rendered) {
-                Ext.MessageBox.hide();
-            }
-            this.handler();
+                if (Ext.MessageBox.rendered) {
+                    Ext.MessageBox.hide();
+                }
+                this.handler();
+            }, this));
+            
         } else {
             Ext.MessageBox.alert( i18n._( "Unable to save password." ));
         }
@@ -475,21 +470,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
         }
         rpc.networkManager.setNetworkSettings( Ext.bind(function( result, exception ) {
-            if( exception != null ) {
-                Ext.MessageBox.alert(exception);
-                return;
-            }
+            if(Ung.Util.handleException(exception)) return;
             Ext.MessageBox.hide();
             handler();
         }, this ), this.networkSettings);
     },
 
     errorHandler: function( result, exception, foo, handler ) {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Unable to remap the interfaces." ), exception.message );
-            return;
-        }
-
+        if(Ung.Util.handleException(exception, "Unable to remap the interfaces.")) return;
         Ext.MessageBox.hide();
         handler();
     },
@@ -509,17 +497,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             if ( ! this.enableAutoRefresh ) {
                 return; // if auto refresh is now disabled, just return
             }
-
-            if ( exception ) {
-                Ext.MessageBox.show({
-                    title:i18n._( "Unable to refresh the interfaces." ),
-                    msg:exception.message,
-                    width:300,
-                    buttons:Ext.MessageBox.OK,
-                    icon:Ext.MessageBox.INFO
-                });
-                return;
-            }
+            if(Ung.Util.handleException(exception, "Unable to refresh the interfaces.")) return;
             var interfaceList = [];
             var allInterfaces = result.interfaces.list;
             for(var i=0; i<allInterfaces.length; i++) {
@@ -534,10 +512,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
             
             var deviceStatus=rpc.networkManager.getDeviceStatus( Ext.bind( function( result, exception ) {
-                if( exception != null ) {
-                    Ext.MessageBox.alert(exception);
-                    return;
-                }
+                if(Ung.Util.handleException(exception)) return;
 
                 if ( result == null )
                     return;
@@ -562,16 +537,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
-            if ( exception ) {
-                Ext.MessageBox.show({
-                    title:i18n._( "Unable to refresh the interfaces." ),
-                    msg:exception.message,
-                    width:300,
-                    buttons:Ext.MessageBox.OK,
-                    icon:Ext.MessageBox.INFO
-                });
-                return;
-            }
+            if(Ung.Util.handleException(exception, "Unable to refresh the interfaces.")) return;
+            
             this.networkSettings=result;
             var interfaceList = [];
             var allInterfaces = result.interfaces.list;
@@ -582,10 +549,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }
             
             var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
-                if( exception != null ) {
-                    Ext.MessageBox.alert(exception);
-                    return;
-                }
+                if(Ung.Util.handleException(exception)) return;
+                
                 Ext.MessageBox.hide();
                 var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
                 
@@ -927,16 +892,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
-        if( exception ) {
-            Ext.MessageBox.show({
-                title:i18n._( "Exception" ),
-                msg:exception.message,
-                width:300,
-                buttons:Ext.MessageBox.OK,
-                icon:Ext.MessageBox.INFO
-            });
-            return;
-        }
+        if(Ung.Util.handleException(exception)) return;
 
         if ( hideWindow || ( hideWindow == null ) ) {
             Ext.MessageBox.hide();
@@ -1339,11 +1295,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     },
 
     complete: function( result, exception, foo, handler ) {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Local Network Settings" ) + "<br/>" + exception.message );
-            return;
-        }
-
+        if(Ung.Util.handleException(exception, "Unable to save Local Network Settings")) return;
         Ext.MessageBox.hide();
         handler();
     }
@@ -1431,22 +1383,15 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
 
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
-        var systemSettings = rpc.systemManager.getSettings();
-        if ( value == "yes" ) {
-            systemSettings.autoUpgrade = true;
+        rpc.systemManager.getSettings(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var systemSettings = result;
+            systemSettings.autoUpgrade = (value == "yes");
             rpc.systemManager.setSettings( delegate, systemSettings );
-        } else {
-            systemSettings.autoUpgrade = false;
-            rpc.systemManager.setSettings( delegate, systemSettings );
-        }
-
+        }, this));
     },
     complete: function( result, exception, foo, handler ) {
-        if( exception ) {
-            Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Automatic Upgrade Settings" ) + exception.message );
-            return;
-        }
-
+        if(Ung.Util.handleException(exception, "Unable to save Automatic Upgrade Settings")) return;
         Ext.MessageBox.hide();
         handler();
     }
@@ -1479,10 +1424,11 @@ Ext.define('Ung.SetupWizard.Complete', {
         Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please Wait" ));
 
         //and set a flag so the wizard wont run again
-        rpc.jsonrpc.UvmContext.wizardComplete();
-
-        //now open the UI
-        window.location.href="/webui/startPage.do?firstTimeRun=true";
+        rpc.jsonrpc.UvmContext.wizardComplete(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+          //now open the UI
+            window.location.href="/webui/startPage.do?firstTimeRun=true";
+        }, this));
     }
 });
 
@@ -1496,6 +1442,7 @@ Ung.Setup = {
 
         Ext.WindowMgr.zseed = 20000;
 
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         rpc = {};
 
         Ung.SetupWizard.LabelWidth = 180;
@@ -1543,15 +1490,20 @@ Ung.Setup = {
         };
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
-        
+
         // Initialize the timezone data
+        var timeZonesResult;
         Ung.SetupWizard.TimeZoneStore = [];
-        var timeZoneData = eval(rpc.setup.getTimeZones());
+        try {
+            timeZonesResult = rpc.setup.getTimeZones();
+            oemName = rpc.setup.getOemName();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        var timeZoneData = eval(timeZonesResult);
         for ( var i = 0; i < timeZoneData.length; i++) {
             Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
-
-        oemName = rpc.setup.getOemName();
 
         i18n = new Ung.I18N( { "map": Ung.SetupWizard.CurrentValues.languageMap });
 
