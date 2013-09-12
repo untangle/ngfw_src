@@ -370,8 +370,11 @@ Ung.Util = {
                     xtype: "fieldset",
                     items: [{
                         xtype: "label",
-                        html: message+"<br>",
-                    },{
+                        html: message
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    items: [{
                         xtype: "button",
                         name: "details_button",
                         text: i18n._("Show details"),
@@ -395,7 +398,6 @@ Ung.Util = {
                             }
                         },
                         scope : this
-                            
                     }]
                 }, {
                     xtype: "fieldset",
@@ -441,44 +443,30 @@ Ung.Util = {
             if (exception.name == "java.lang.Exception" && ( exception.message.indexOf("exited with") != -1 || exception.message.indexOf("timed out") != -1 )) {
                 message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
                 message += i18n._("Check internet connectivity and the network/DNS configuration.") + "<br/>";
-                message += "<br/>";
             }
             /* special text for rack error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") != -1)) {
                 message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
                 message += i18n._("Each application can only be installed once in each policy/rack.") + "<br/>";
-                message += "<br/>";
             }
             /* handle connection lost */
-            if(exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0) {
-                message  = i18n._("The connection to the server has been lost.") + "<br/>";
-                message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += "<br/>";
-                if (type !== "noAlert")
-                    handler = Ung.Util.goToStartPage; //override handler
-            }
-            /* handle connection lost (this happens on windows only for some reason) */
-            if(exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) {
-                message  = i18n._("The connection to the server has been lost.") + "<br/>";
-                message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += "<br/>";
-                if (type !== "noAlert")
-                    handler = Ung.Util.goToStartPage; //override handler
-            }
-            /* special text for "method not found" and "Service Temporarily Unavailable" */
-            if (exception.message.indexOf("method not found") != -1 ||
+            if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+                /* handle connection lost (this happens on windows only for some reason) */
+                (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
+                /* special text for "method not found" and "Service Temporarily Unavailable" */
+                exception.message.indexOf("method not found") != -1 ||
                 exception.message.indexOf("Service Unavailable") != -1 ||
                 exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
                 exception.message.indexOf("This application is not currently available") != -1) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                message += "<br/>";
-                if (type !== "noAlert")
+                if (type !== "noAlert") {
                     handler = Ung.Util.goToStartPage; //override handler
+                }
             }
             /* worst case - just say something */
             if (message == null) {
-                message = i18n._("An error has occurred.") + "<br/>";
+                message = i18n._("An error has occurred.");
                 message += "<br/>";
             }
             
@@ -506,7 +494,7 @@ Ung.Util = {
                 Ung.Util.showWarningMessage(message, details);
                 handler();
             } else if (type== "noAlert") {
-                handler();
+                handler(message, details);
             }
             return !continueExecution;
         }
@@ -1585,9 +1573,9 @@ Ext.define("Ung.Node", {
             this.setPowerOn(true);
             this.setState("attention");
             this.rpcNode.start(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception, Ext.bind(function() {
+                if(Ung.Util.handleException(exception, Ext.bind(function(message, details) {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
-                    Ext.MessageBox.alert(title, exception.message);
+                    Ung.Util.showWarningMessage(title, details);
                    //this.updateRunState("INITIALIZED");
                 }, this),"noAlert")) return;
             }, this));
