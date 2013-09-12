@@ -1032,13 +1032,20 @@ Ext.define('Ung.SetupWizard.Internet', {
     // displayed inside of the User Interface.
     refreshNetworkDisplay: function() {
         var c = 0;
-
-        var networkSettings = rpc.networkManager.getNetworkSettings(); // XXX async?
+        var networkSettings, firstWanStatus;
+        try {
+            networkSettings = rpc.networkManager.getNetworkSettings();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         Ung.SetupWizard.CurrentValues.networkSettings = networkSettings;
 
         var firstWan = this.getFirstWanSettings( networkSettings );
-        var firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId ); // XXX async?
-
+        try {
+            firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId );
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
         
         if ( networkSettings['interfaces'] == null && networkSettings['interfaces']['list'] == null ) {
             console.error("Missing interface information.");
