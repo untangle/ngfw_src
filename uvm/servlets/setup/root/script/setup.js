@@ -1364,12 +1364,14 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         };
     },
     onLoadAutoSuggestion: function( complete ) {
-        var autoUpgradesEnabled = rpc.systemManager.getSettings().autoUpgrade;
-        if (!autoUpgradesEnabled) {
-            this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
-            this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
-        } 
-        complete();
+        rpc.systemManager.getSettings(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            if (!result.autoUpgrade) {
+                this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
+                this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
+            } 
+            complete();
+        }, this));
     },
     validateAutoUpgrades: function() {
         return true;
