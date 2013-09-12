@@ -71,7 +71,7 @@ fi
 
 SERIAL=`cat $UT_ROOT_PATH/serial.txt`
 
-if [ "$1" == "REQUEST" ]; then
+if [ "$1" = "REQUEST" ]; then
     # for a server CSR request we generate a new CSR with the existing key
     $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -key $UT_ROOT_PATH/apache.key -out $TEMP/server.csr -subj "$2"
 else
