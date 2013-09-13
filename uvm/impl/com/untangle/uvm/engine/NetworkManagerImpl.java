@@ -434,9 +434,6 @@ public class NetworkManagerImpl implements NetworkManager
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
     {
-        if (true)
-            return null;
-        
         String argStr = "";
         for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
             argStr = argStr + " " + intfSettings.getPhysicalDev() + " ";
