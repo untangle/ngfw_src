@@ -55,6 +55,7 @@ Ung.Util = {
                 }, {
                     xtype: "fieldset",
                     name: "details",
+                    autoScroll: true,
                     hidden: true,
                     html: details!=null ? details : ''
                 }]
@@ -131,15 +132,18 @@ Ung.Util = {
                 if ( exception.javaStack )
                     exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
                 if ( exception.name )
-                    details += "<b>" + i18n._("Exception name") +":&nbsp;</b>" + exception.name.replace("\n","<br/>") + "<br/><br/>";
+                    details += "<b>" + i18n._("Exception name") +":</b> " + exception.name + "<br/><br/>";
                 if ( exception.code )
-                    details += "<b>" + i18n._("Exception code") +":&nbsp;</b>" + exception.code + "<br/><br/>";
+                    details += "<b>" + i18n._("Exception code") +":</b> " + exception.code + "<br/><br/>";
                 if ( exception.message )
-                    details += "<b>" + i18n._("Exception message") + ":&nbsp;</b>" + exception.message.replace("\n","<br/>") + "<br/><br/>";
+                    details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
                 if ( exception.javaStack )
-                    details += "<b>" + i18n._("Exception java stack") +":&nbsp;</b>" + exception.javaStack.replace("\n","<br/>") + "<br/><br/>";
+                    details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
                 if ( exception.stack ) 
-                    details += "<b>" + i18n._("Exception js stack") +":&nbsp;</b>" + exception.stack.replace("\n","<br/>") + "<br/><br/>";
+                    details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( rpc.fullVersionAndRevision != null ) 
+                    details += "<b>" + i18n._("Build") +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>"
+                details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
             }
             
             if (handler==null) {

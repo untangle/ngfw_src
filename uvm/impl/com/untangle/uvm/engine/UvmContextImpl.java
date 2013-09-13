@@ -549,6 +549,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "hostname", this.networkManager().getNetworkSettings().getHostName());
             json.put( "messageManagerKey", this.messageManager().getMessageKey());
             json.put( "companyName", this.brandingManager().getCompanyName());
+            json.put( "fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
         } catch (Exception e) {
             logger.error( "Error generating WebUI startup object", e );
         }
@@ -571,6 +572,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("aptManager", this.aptManager());
             json.put("systemManager", this.systemManager());
             json.put("mailSender", this.mailSender());
+            json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
         } catch (Exception e) {
             logger.error( "Error generating Setup startup object", e );
         }
