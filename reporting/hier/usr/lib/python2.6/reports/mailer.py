@@ -126,7 +126,9 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
         machine_name = str(os.uname()[1])
     except:
         pass
-    msgRoot['Subject'] = Header(_('%s %s Report [%s]') % (company_name, length_name, machine_name), 'utf-8')
+
+    subject = ('%s %s' % (company_name, length_name)) + ' ' + _('Report Summary') + ' ' + ('[%s]' % machine_name)
+    msgRoot['Subject'] = Header(subject, 'utf-8')
     msgRoot['From'] = "%s" % Header(sender, 'utf-8')
     msgRoot['To'] = "%s" % Header(receiver, 'utf-8')
 
@@ -185,7 +187,7 @@ def __get_branding_info():
 def __get_url(date):
     url = "unknown.ip"
     publicUrlMethod = get_uvm_settings_item('system','publicUrlMethod')
-    httpsPort = get_uvm_settings_item('system','httpsPort')
+    httpsPort = get_uvm_settings_item('network','httpsPort')
     try:
         if publicUrlMethod == "external":
             url = reports.engine.get_wan_ip() + ":" + str(httpsPort)

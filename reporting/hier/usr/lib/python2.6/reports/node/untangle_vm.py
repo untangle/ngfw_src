@@ -529,56 +529,17 @@ WHERE start_time >= %s AND start_time < %s"""
             for r in curs.fetchall():
                 address = r[0]
                 time = r[1]
-                ks = KeyStatistic(address, time, _('seconds'), link_type=reports.HOSTNAME_LINK)
+                ks = KeyStatistic(address, time, _('seconds'), link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 pds[address] = time
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Address'),
-                     ylabel=_('seconds'))
+        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Address'), ylabel=_('seconds'))
 
         plot.add_pie_dataset(pds, display_limit=10)
 
         return (lks, plot, 10)
-
-class Lease:
-    def __init__(self, row):
-        self.start = row[0]
-        self.end_of_lease = row[1]
-        self.ip = row[2]
-        self.hostname = row[3]
-        self.event_type = row[4]
-
-    def after(self, event):
-        return self.start > event.end_of_lease
-
-    def intersects_before(self, event):
-        return ((self.start > event.start
-                 and self.start < event.end_of_lease)
-                and (self.end_of_lease > event.end_of_lease
-                     or self.end_of_lease == event.end_of_lease))
-
-    def intersects_after(self, event):
-        return ((self.start < event.start
-                 and self.end_of_lease > event.start)
-                and (self.end_of_lease == event.end_of_lease
-                     or self.end_of_lease < event.end_of_lease))
-
-    def encompass(self, event):
-        return ((self.start == event.start or self.start < event.start)
-                and (self.end_of_lease == event.end_of_lease
-                     or self.end_of_lease > event.end_of_lease))
-
-    def encompassed(self, event):
-        return ((self.start == event.start or self.start > event.start)
-                and ( self.end_of_lease == event.end_of_lease
-                      or self.end_of_lease < event.end_of_lease))
-
-    def values(self):
-        return (self.ip, self.hostname,
-                TimestampFromMx(sql_helper.date_convert(self.start)),
-                TimestampFromMx(sql_helper.date_convert(self.end_of_lease)))
 
 class AdministrativeLoginsDetail(DetailSection):
     def __init__(self):

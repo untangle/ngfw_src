@@ -53,7 +53,7 @@ def get_wan_ip():
     for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
         if intf.get('isWan'):
             try:
-                STATUS_JSON = json.loads(opens('/var/lib/untangle-netd/interface-' + intf.get('interfaceId') + '-status.js').read())
+                STATUS_JSON = json.loads(open('/var/lib/untangle-netd/interface-' + str(intf.get('interfaceId')) + '-status.js').read())
                 addr = STATUS_JSON.get('v4Address')
                 if addr != None:
                     return addr
