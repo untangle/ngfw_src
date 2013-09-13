@@ -236,7 +236,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 Ung.Util.rpcExHandler(e);
             }
             var i=0;
-            var deviceStatusMap=Ung.Util.createRecordsMap(deviceStatus.list, "deviceName");
+            var deviceStatusMap=Ung.Util.createRecordsMap(( deviceStatus == null ? [] : deviceStatus.list ), "deviceName");
             var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
             for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
                 var intf=this.settings.interfaces.list[i];
@@ -581,7 +581,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), i18n._("Please wait"));
                     main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                        var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
                         main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
                             var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
                             grid.getStore().suspendEvents();
@@ -820,7 +820,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
                                 main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    var deviceStatusMap=Ung.Util.createRecordsMap(result.list, "deviceName");
+                                    var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
                                     grid.getStore().suspendEvents();
                                     grid.getStore().each(function( currentRow ) {
                                         var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
