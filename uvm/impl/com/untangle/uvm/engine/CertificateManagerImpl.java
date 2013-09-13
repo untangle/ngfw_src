@@ -6,13 +6,12 @@ package com.untangle.uvm.engine;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.File;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +25,6 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 
-@SuppressWarnings("deprecation")
 public class CertificateManagerImpl implements CertificateManager
 {
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
@@ -40,6 +38,7 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
 
     protected CertificateManagerImpl()
     {
@@ -81,19 +80,12 @@ public class CertificateManagerImpl implements CertificateManager
             }
         }
 
-        // now that we know we have a root CA we check for the local
-        // apache.pem and create it here if it doesn't yet exist
-        if (localPem.exists() == false) {
+        // we should have a root CA at this point so we check the local apache
+        // cert files and create them now if either is missing
+        if ((localCrt.exists() == false) || (localKey.exists() == false)) {
             String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
             logger.info("Creating default locally signed apache certificate for " + hostName);
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
-
-            // If in the development enviroment save these to a global location
-            // so they will
-            // survive a rake clean
-            if (UvmContextFactory.context().isDevel()) {
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
-            }
         }
 
         File apachePem = new File(APACHE_PEM_FILE);
@@ -240,8 +232,8 @@ public class CertificateManagerImpl implements CertificateManager
             certObject = (X509Certificate) factory.generateCertificate(certStream);
             certStream.close();
 
-            certInfo.setRootcaDateValid(new Date(certObject.getNotBefore().toString()));
-            certInfo.setRootcaDateExpires(new Date(certObject.getNotAfter().toString()));
+            certInfo.setRootcaDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
+            certInfo.setRootcaDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
             certInfo.setRootcaSubject(certObject.getSubjectDN().toString());
 
             // Now grab the info from the Apache certificate. This is a little
@@ -270,8 +262,8 @@ public class CertificateManagerImpl implements CertificateManager
             ByteArrayInputStream byteStream = new ByteArrayInputStream(certString.getBytes());
             certObject = (X509Certificate) factory.generateCertificate(byteStream);
 
-            certInfo.setServerDateValid(new Date(certObject.getNotBefore().toString()));
-            certInfo.setServerDateExpires(new Date(certObject.getNotAfter().toString()));
+            certInfo.setServerDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
+            certInfo.setServerDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
             certInfo.setServerSubject(certObject.getSubjectDN().toString());
             certInfo.setServerIssuer(certObject.getIssuerDN().toString());
         }
