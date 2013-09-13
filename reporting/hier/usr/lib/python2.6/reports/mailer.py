@@ -192,7 +192,9 @@ def __get_url(date):
         if publicUrlMethod == "external":
             url = reports.engine.get_wan_ip() + ":" + str(httpsPort)
         elif publicUrlMethod == "hostname":
-            url = os.uname()[1] + ":" + str(httpsPort)
+            hostname = get_uvm_settings_item('network','hostName')
+            domain = get_uvm_settings_item('network','domainName')
+            url = hostname + "." + domain + ":" + str(httpsPort)
         elif publicUrlMethod == "address_and_port":
             publicUrlAddress = get_uvm_settings_item('system','publicUrlAddress')
             publicUrlPort = get_uvm_settings_item('system','publicUrlPort')
