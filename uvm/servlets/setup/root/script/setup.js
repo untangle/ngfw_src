@@ -517,7 +517,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 if ( result == null )
                     return;
                 
-                var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
+                var deviceStatusMap = this.createRecordsMap( ( result == null ? [] : result.list ), "deviceName");
                 
                 //update device connected status
                 this.interfaceStore.each( function(currentRow) {
@@ -552,7 +552,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 if(Ung.Util.handleException(exception)) return;
                 
                 Ext.MessageBox.hide();
-                var deviceStatusMap = this.createRecordsMap(result.list, "deviceName");
+
+                var deviceStatusMap = this.createRecordsMap( ( result == null ? [] : result.list ), "deviceName");
                 
                 for(var i=0; i<interfaceList.length; i++) {
                     var intf=interfaceList[i];
