@@ -25,7 +25,7 @@ function getInterfaceStatus()
     local t_speed=${FLAG_UNKNOWN}
     local t_duplex=${FLAG_UNKNOWN}
 
-    t_status=`ethtool ${t_intf} | grep -v Supported | egrep '(Speed|Duplex|Link detected)' | sed -e '{:start;N;s/\n/ /g;t start}'`
+    t_status=`ethtool ${t_intf} 2>/dev/null | grep -v Supported | egrep '(Speed|Duplex|Link detected)' | sed -e '{:start;N;s/\n/ /g;t start}'`
     if [ -n "${t_status}" ]; then
         ## Check for link
         if [ "${t_status/Link detected: yes}" != "${t_status}" ]; then
@@ -45,7 +45,7 @@ function getInterfaceStatus()
         fi
     else
         ##  Use mii-tool instead
-        local t_status=`mii-tool ${t_intf}`
+        local t_status=`mii-tool ${t_intf} 2>/dev/null`
         if [ "${t_status%link ok}" != "${t_status}" ]; then
             t_isConnected="${FLAG_CONNECTED}"
         else 
