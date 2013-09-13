@@ -760,7 +760,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype: 'textfield',
-                        fieldLabel: this.i18n._('Organaizationl Unit') + " (OU)",
+                        fieldLabel: this.i18n._('Organizational Unit ') + " (OU)",
                         labelWidth: 150,
                         name: "OrganizationalUnit",
                         id: "OrganizationalUnit",
