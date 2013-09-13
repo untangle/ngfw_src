@@ -7,7 +7,7 @@ Build-Depends: untangle-development-build
 Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
-Architecture: i386 amd64
+Architecture: any
 Depends: ${misc:Depends}, libc6 (>= 2.3.2), untangle-libnetfilter-queue0 (>= 0.0.15), libnetfilter-conntrack3 | libnetfilter-conntrack1 (>= 0.0.81) | untangle-libnetfilter-conntrack1 (>= 0.0.81), gawk
 XB-Display-Name: Untangle Core Library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
