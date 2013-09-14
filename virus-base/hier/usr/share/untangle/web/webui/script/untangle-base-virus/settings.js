@@ -455,7 +455,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'server',
                     mapping: 'c_server_addr'
@@ -489,7 +489,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Host"),
                     width: Ung.Util.hostnameFieldWidth,
@@ -531,7 +531,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'server',
                     mapping: 'c_server_addr'
@@ -609,7 +609,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'server',
                     mapping: 'c_server_addr'
@@ -640,7 +640,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("File Name"),
                     flex:1,

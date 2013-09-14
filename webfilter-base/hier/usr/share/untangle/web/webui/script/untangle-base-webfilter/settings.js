@@ -1048,7 +1048,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'server',
                     mapping: 'c_server_addr'
@@ -1106,7 +1106,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }, {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Host"),
                     width: Ung.Util.hostnameFieldWidth,

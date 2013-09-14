@@ -955,7 +955,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'shield_blocked'
                 }, {
@@ -993,7 +993,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,

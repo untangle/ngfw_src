@@ -227,7 +227,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }, {
                     name: 'server',
                     mapping: 'c_server_addr'
@@ -253,7 +253,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Protocol"),
                     width: 120,

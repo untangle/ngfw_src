@@ -340,7 +340,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name: 'server',
                     mapping: 'c_server_addr'
                 }, {
-                    name: 'uid'
+                    name: 'username'
                 }],
                 columns: [{
                     header: this.i18n._("Timestamp"),
@@ -359,7 +359,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'uid'
+                    dataIndex: 'username'
                 }, {
                     header: this.i18n._("Blocked"),
                     width: Ung.Util.booleanFieldWidth,
