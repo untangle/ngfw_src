@@ -12,6 +12,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         gridFtpEventLog: null,
         // called when the component is rendered
         initComponent: function() {
+            this.lastUpdate = this.getRpcNode().getLastSignatureUpdate();
             this.nodeName=this.getRpcNode().getName();
             this.buildWeb();
             this.buildEmail();
@@ -87,7 +88,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
+                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
                 }],
 
                 onManageExtensions: function() {

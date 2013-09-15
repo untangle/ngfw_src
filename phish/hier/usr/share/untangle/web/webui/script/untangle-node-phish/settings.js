@@ -86,7 +86,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     title: this.i18n._('Note'),
                     cls: 'description',
                     html: this.i18n._('Phish Blocker email signatures were last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
+                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
                 }]
             });
         },

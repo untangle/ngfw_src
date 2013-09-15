@@ -423,9 +423,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title: this.i18n._('Note'),
                     cls: 'description',
                     html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        (this.lastCheck != null ? i18n.timestampFormat(this.lastCheck): i18n._("unknown")) + '<br\>' +
+                        (this.lastCheck != null && this.lastCheck.time != 0 ? i18n.timestampFormat(this.lastCheck): i18n._("never")) + '<br\>' +
                         this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate): i18n._("unknown"))
+                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
             }]
             });
         },
