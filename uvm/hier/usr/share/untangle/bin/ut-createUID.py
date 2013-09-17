@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # This file creates a UID 
-# and writes the username file  (default: /usr/share/untangle/conf/username)
+# and writes the uid file  (default: /usr/share/untangle/conf/uid)
 # and writes the sources file (default: /etc/apt/sources.list.d/untangle.list)
 
 import getopt
@@ -30,7 +30,7 @@ class ArgumentParser(object):
         global CURRENT_NAME
         CURRENT_NAME = arg
 
-    def set_usernamefile( self, arg ):
+    def set_uidfile( self, arg ):
         global UID_FILENAME
         UID_FILENAME = arg
 
@@ -46,7 +46,7 @@ class ArgumentParser(object):
         handlers = {
             '-d' : self.set_distro,
             '-n' : self.set_name,
-            '-f' : self.set_usernamefile,
+            '-f' : self.set_uidfile,
             '-a' : self.set_aptfile,
             '-u' : self.set_updatesrv
         }
@@ -67,7 +67,7 @@ def printUsage():
   required args:
     -d <current_stable_distro> example: "stable-10"
     -n <current_stable_name>   example: "focus"
-    -f <username_filename>          example: "/usr/share/untangle/conf/username"
+    -f <uid_filename>          example: "/usr/share/untangle/conf/uid"
   optional args:
     -a <apt_sources_filename>  default: "/etc/apt/sources.list.d/untangle.list"
     -u <update_server>         default: "updates.untangle.com"
@@ -106,15 +106,15 @@ platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8' }
 versions = { 'hardware':'1', 'iso':'2' }
 
 # generate UID (mostly random bytes)
-username_quad1 = ''.join(random.choice('0123456789abcdef') for i in range(4))
-username_quad2 = ''.join(random.choice('0123456789abcdef') for i in range(4))
-username_quad3 = ''.join(random.choice('0123456789abcdef') for i in range(4))
-username_quad4 = ''.join(random.choice('0123456789abcdef') for i in range(2)) + platforms[debian_distro] + versions['iso']
-username = username_quad1 + "-" + username_quad2 + "-" + username_quad3 + "-" + username_quad4
+uid_quad1 = ''.join(random.choice('0123456789abcdef') for i in range(4))
+uid_quad2 = ''.join(random.choice('0123456789abcdef') for i in range(4))
+uid_quad3 = ''.join(random.choice('0123456789abcdef') for i in range(4))
+uid_quad4 = ''.join(random.choice('0123456789abcdef') for i in range(2)) + platforms[debian_distro] + versions['iso']
+uid = uid_quad1 + "-" + uid_quad2 + "-" + uid_quad3 + "-" + uid_quad4
 
 # write UID file
 file = open( UID_FILENAME, "w+" )
-file.write(username + "\n")
+file.write(uid + "\n")
 file.flush()
 file.close()
 
@@ -122,8 +122,8 @@ file.close()
 file = open( SOURCES_FILENAME, "w+" )
 file.write("## Auto Generated on %s\n" % datetime.datetime.now());
 file.write("## DO NOT EDIT. Changes will be overwritten.\n" + "\n");
-file.write("deb http://%s:untangle@%s/public/%s %s main premium upstream" % (username, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
-file.write("deb http://%s:untangle@%s/public/%s %s main premium upstream" % (username, UPDATE_SERVER, debian_distro, CURRENT_NAME)+ "\n")
+file.write("deb http://%s:untangle@%s/public/%s %s main premium upstream" % (uid, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
+file.write("deb http://%s:untangle@%s/public/%s %s main premium upstream" % (uid, UPDATE_SERVER, debian_distro, CURRENT_NAME)+ "\n")
 file.flush()
 file.close()
 
