@@ -200,34 +200,23 @@ def custom_upload(req,upload_file,appid):
     if (checker == 0):
         return extjs_reply(False,'The uploaded ZIP file does not contain custom.html or custom.py')
 
-    # setup the message we return to the caller
-    detail = "Extracted the following files and directories from " + upload_file.filename + "&LT;HR&GT;"
+    # count the number of files and directories for the return status message
+    fcount = dcount = 0
+    for item in zlist:
+        (filepath,filename) = os.path.split(item)
+        if (filename == ''):
+            dcount += 1
+        else:
+            fcount += 1
 
-    # extract all of the files into the custom directory and append the
-    # name of each one to the result message we sending back
     try:
-        for item in zlist:
-            (filepath,filename) = os.path.split(item)
-            if (filename == ''):    # ignore directories since we create below
-                continue
-            if (filepath == ''):
-                fd = open(custpath + '/' + filename,"w")
-            else:
-                if not os.path.exists(custpath + '/' + filepath):
-                    os.mkdir(custpath + '/' + filepath)
-                fd = open(custpath + '/' + filepath + '/' + filename,"w")
-
-            fd.write(zfile.read(item))
-            fd.close()
-
-            if (filepath == ''):
-                detail += " " + filename
-            else:
-                detail += ' ' + filepath + '/' + filename
+        zfile.extractall(custpath)
     except:
-        return extjs_reply(False,custpath + '/' + filepath + '/' + filename)
+        return extjs_reply(False,'The uploaded ZIP file could not be extracted')
 
     # return the status
+    detail = "Extracted %d files and %d directories from %s" % (fcount,dcount,upload_file.filename)
+
     return extjs_reply(True,detail,upload_file.filename)
 
 #-----------------------------------------------------------------------------
