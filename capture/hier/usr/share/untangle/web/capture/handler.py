@@ -208,7 +208,6 @@ def custom_upload(req,upload_file,appid):
             dcount += 1
         else:
             fcount += 1
-
     try:
         zfile.extractall(custpath)
     except:
