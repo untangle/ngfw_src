@@ -84,7 +84,7 @@ class InboxDirectoryTree
      */
     void deleteInboxDir(String dir)
     {
-        IOUtil.rmDir(new File(m_quarantineRootDir, dir));
+        IOUtil.rmDir(new File(m_inboxRootDir, dir));
     }
 
 //    private File createInboxDirImpl()
