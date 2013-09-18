@@ -63,6 +63,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         panelAdmin: null,
         panelPublicAddress: null,
         panelCertificates: null,
+        certGeneratorWindow: null,
         panelSnmp: null,
         panelSkins: null,
         uploadedCustomLogo: false,
@@ -671,7 +672,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         certGeneratorPopup: function(certMode, hostName, titleText)
         {
-            popup = new Ext.Window({
+            var helptipRenderer = function(c) {
+                Ext.create('Ext.tip.ToolTip', {
+                    target: c.getEl(),
+                    html: c.helptip,
+                    dismissDelay: 0,
+                    anchor: 'bottom'
+                });
+            };
+            
+            this.certGeneratorWindow = new Ext.Window({
                 title: titleText,
                 layout: 'fit',
                 width: 600,
@@ -681,7 +691,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 modal: true,
                 items: [{
                     xtype: "form",
-                    id: "cert_info_form",
                     border: false,
                     items: [{
                         xtype: 'combo',
@@ -697,122 +706,81 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         queryMode: 'local',
                         editable: false,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('State/Province') + " (ST)",
                         labelWidth: 150,
                         name: "State",
-                        id: "State",
                         helptip: this.i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('City/Locality') + " (L)",
                         labelWidth: 150,
                         name: "Locality",
-                        id: "Locality",
                         helptip: this.i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Organization') + " (O)",
                         labelWidth: 150,
                         name: "Organization",
-                        id: "Organization",
                         helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Organizational Unit ') + " (OU)",
                         labelWidth: 150,
                         name: "OrganizationalUnit",
-                        id: "OrganizationalUnit",
                         helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: true,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Common Name') + " (CN)",
                         labelWidth: 150,
                         name: "CommonName",
-                        id: "CommonName",
                         helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name for the website you will be using the certificate for (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
                         value: hostName,
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Subject Alternative Names'),
                         labelWidth: 150,
                         name: "AltNames",
-                        id: "AltNames",
                         helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website you will be using the certificate for."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: true,
                         hidden: (certMode === "ROOT" ? true : false),
                         listeners: {
-                            render: function(c) {
-                                Ext.create('Ext.tip.ToolTip', {
-                                    target: c.getEl(),
-                                    html: c.helptip
-                                });
-                            }
+                            render: helptipRenderer
                         }
                     },{
                         xtype: "button",
@@ -830,24 +798,24 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width: 100,
                         margin: "20 10 10 10",
                         handler: Ext.bind(function() {
-                            popup.close();
+                            this.certGeneratorWindow.close();
                         }, this)
                     }]
                 }]
             });
 
-            popup.show();
+            this.certGeneratorWindow.show();
         },
 
         certGeneratorWorker: function(certMode)
         {
-            var form_C = Ext.getCmp('Country');
-            var form_ST = Ext.getCmp('State');
-            var form_L = Ext.getCmp('Locality');
-            var form_O = Ext.getCmp('Organization');
-            var form_OU = Ext.getCmp('OrganizationalUnit');
-            var form_CN = Ext.getCmp('CommonName');
-            var form_SAN = Ext.getCmp('AltNames');
+            var form_C = this.certGeneratorWindow.query('[name="Country"]')[0];
+            var form_ST = this.certGeneratorWindow.query('[name="State"]')[0];
+            var form_L = this.certGeneratorWindow.query('[name="Locality"]')[0];
+            var form_O = this.certGeneratorWindow.query('[name="Organization"]')[0];
+            var form_OU = this.certGeneratorWindow.query('[name="OrganizationalUnit"]')[0];
+            var form_CN = this.certGeneratorWindow.query('[name="CommonName"]')[0];
+            var form_SAN = this.certGeneratorWindow.query('[name="AltNames"]')[0];
 
             if (form_C.getValue() == null)  { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Country field must not be empty')); return; }
             if (form_ST.getValue().length == 0) { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The State field must not be empty')); return; }
@@ -885,7 +853,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // client browser to prompt the user to save the resulting file
             if (certMode === "CSR")
             {
-                popup.close();
+                this.certGeneratorWindow.close();
                 var downloadForm = document.getElementById('downloadForm');
                 downloadForm["type"].value = "certificate_request_download";
                 downloadForm["arg1"].value = certSubject;
@@ -899,7 +867,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             certFunction(Ext.bind(function(result, exception)
             {
-                popup.close();
+                this.certGeneratorWindow.close();
 
                 if(Ung.Util.handleException(exception)) return;
 
