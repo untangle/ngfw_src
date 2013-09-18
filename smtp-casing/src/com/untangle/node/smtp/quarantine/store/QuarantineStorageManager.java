@@ -1,5 +1,7 @@
 package com.untangle.node.smtp.quarantine.store;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.quarantine.InboxIndex;
@@ -32,6 +34,8 @@ public class QuarantineStorageManager
 
         try {
             inboxIndex = settingsManager.load(InboxIndex.class, quarantineFile);
+            File f = new File(quarantineFile);
+            inboxIndex.setLastAccessTimestamp(f.lastModified());
         } catch (Exception exn) {
             logger.error("Could not read quarantine index from file " + quarantineFile, exn);
         }
