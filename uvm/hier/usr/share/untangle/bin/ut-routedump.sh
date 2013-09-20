@@ -3,24 +3,47 @@
 # This script just prints most of the relevent routing rules/tables
 # to show the current routing state of the system
 
-echo " = Rules = "
-ip rule ls
-echo 
+echo " = IPv4 Rules = "
+ip -4 rule ls
+echo
 
-echo " = Table main = "
-ip route show table main | grep -v '192.0.2.42'
-echo 
+echo " = IPv4 Table main = "
+ip -4 route show table main | grep -v '192.0.2.42'
+echo
 
-echo " = Table balance = "
-ip route show table balance
-echo 
+echo " = IPv4 Table balance = "
+ip -4 route show table balance
+echo
 
 cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
-    echo " = Table $table = "
-    ip route show table $table
+    echo " = IPv4 Table $table = "
+    ip -4 route show table $table
     echo
 done
 
-echo " = Route rules = "
-iptables -t mangle -nL splitd-route-rules 2>/dev/null | grep -v Chain 
+echo " = IPv4 Route Rules = "
+iptables -t mangle -nL splitd-route-rules 2>/dev/null | grep -v -E '(Chain|target)'
+
 echo
+echo
+echo
+
+
+echo " = IPv6 Rules = "
+ip -6 rule ls
+echo
+
+echo " = IPv6 Table main = "
+ip -6 route show table main
+echo
+
+#echo " = IPv6 Table balance = "
+#ip -6 route show table balance
+#echo
+
+#cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
+#    echo " = IPv6 Table $table = "
+#    ip -6 route show table $table
+#    echo
+#done
+
