@@ -29,6 +29,7 @@ task :clean => [:download_clean, :kindaclean]
 
 task :download do
   Kernel.system("make --no-print-directory -C downloads")
+  raise unless $?.success?
 end
 
 task :core => :download do
