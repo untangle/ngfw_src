@@ -37,13 +37,14 @@ echo " = IPv6 Table main = "
 ip -6 route show table main
 echo
 
+# Currently there is no balance table for IPv6
 #echo " = IPv6 Table balance = "
 #ip -6 route show table balance
 #echo
 
-#cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
-#    echo " = IPv6 Table $table = "
-#    ip -6 route show table $table
-#    echo
-#done
+cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
+    echo " = IPv6 Table $table = "
+    ip -6 route show table $table
+    echo
+done
 
