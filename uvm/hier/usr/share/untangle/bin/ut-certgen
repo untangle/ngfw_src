@@ -64,6 +64,16 @@ if [ ! -r $UT_ROOT_PATH/untangle.key -o ! -r $UT_ROOT_PATH/untangle.crt ]; then
     exit 3
 fi
 
+# if the serial.txt file doesn't exist we create it now
+if [ ! -r $UT_ROOT_PATH/serial.txt ]; then
+    date +%s000000 > $UT_ROOT_PATH/serial.txt
+fi
+
+# if the index.txt file doesn't exist we create it now
+if [ ! -r $UT_ROOT_PATH/index.txt ]; then
+    touch $UT_ROOT_PATH/index.txt
+fi
+
 # make sure the destination path for certificates exists
 if [ ! -r $CERT_PATH ]; then
     mkdir -p $CERT_PATH
