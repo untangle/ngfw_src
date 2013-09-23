@@ -51,6 +51,7 @@ class Firewall(Node):
 
     def get_report(self):
         sections = []
+
         s = reports.SummarySection('summary', _('Summary Report'),
                                    [FirewallHighlight(self.name),
                                     DailyRules(),
@@ -275,8 +276,7 @@ class TopTenFlaggedHostsByHits(Graph):
         Graph.__init__(self, 'top-firewall-flagged-hosts-by-hits', _('Top Firewall Flagged Hosts By Hits'))
 
     @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
@@ -331,8 +331,7 @@ class TopTenFlaggedUsersByHits(Graph):
         Graph.__init__(self, 'top-firewall-flagged-users-by-hits', _('Top Firewall Flagged Users By Hits'))
 
     @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
@@ -389,8 +388,7 @@ class TopTenBlockingRulesByHits(Graph):
         Graph.__init__(self, 'top-firewall-blocking-rules-by-hits', _('Top Firewall Blocking Rules By Hits'))
 
     @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
@@ -447,8 +445,7 @@ class TopTenBlockedHostsByHits(Graph):
         Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
 
     @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
@@ -503,8 +500,7 @@ class TopTenBlockedUsersByHits(Graph):
         Graph.__init__(self, 'top-firewall-blocked-users-by-hits', _('Top Firewall Blocked Users By Hits'))
 
     @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
@@ -552,62 +548,6 @@ AND firewall_rule_index IS NOT NULL"""
                      xlabel=_('User'),
                      ylabel=_('Blocks Per Day'))
 
-        plot.add_pie_dataset(dataset, display_limit=10)
-
-        return (lks, plot, 10)
-
-
-    def __init__(self):
-        Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
-
-    @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        query = """\
-SELECT hostname, count(*) as hits_sum
-FROM reports.session_totals
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND firewall_blocks > 0
-AND firewall_rule_index IS NOT NULL"""
-
-        if host:
-            query += " AND hostname = %s"
-        elif user:
-            query += " AND username = %s"
-
-        query = query + " GROUP BY hostname ORDER BY hits_sum DESC"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-            dataset = {}
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_week, ed, host))
-            elif user:
-                curs.execute(query, (one_week, ed, user))
-            else:
-                curs.execute(query, (one_week, ed))
-
-                for r in curs.fetchall():
-                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
-                    lks.append(ks)
-                    dataset[r[0]] = r[1]
-        finally:
-            conn.commit()
-
-        plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Firewall Blocked Hosts (by Hits)'),
-                     xlabel=_('Host'),
-                     ylabel=_('Blocks Per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
