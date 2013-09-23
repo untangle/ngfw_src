@@ -103,9 +103,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
         List<Fitting> fittings = new LinkedList<Fitting>();
 
-        printPipelineConnectorList( this.pipelineConnectors );
-        printPipelineConnectorList( this.casings.keySet() );
-        
         /**
          * Check fittingHints for hints
          */
@@ -326,11 +323,22 @@ public class PipelineFoundryImpl implements PipelineFoundry
                  * We now need to calculate the correct result from scratch
                  */
                 if ( pipelineConnectorList == null ) {
+
                     pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
 
-                    addPipelineConnectors( pipelineConnectorList, fitting, policyId );
+                    List<PipelineConnectorImpl> availablePipelineConnectorsNodes = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
+                    List<PipelineConnectorImpl> availablePipelineConnectorsCasings = new LinkedList<PipelineConnectorImpl>( this.casings.keySet() );
 
-                    removeDuplicates( policyId, pipelineConnectorList );
+                    removeDuplicates( policyId, availablePipelineConnectorsNodes );
+                    printPipelineConnectorList( "nodes: ", availablePipelineConnectorsNodes );
+
+                    removeDuplicates( policyId, availablePipelineConnectorsCasings );
+                    printPipelineConnectorList( "casings: ", availablePipelineConnectorsCasings );
+                    
+                    addPipelineConnectors( pipelineConnectorList,
+                                           availablePipelineConnectorsNodes,
+                                           availablePipelineConnectorsCasings,
+                                           fitting, policyId );
 
                     fittingCache.put( fitting, pipelineConnectorList );
                 }
@@ -343,14 +351,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Add all netcap connectors to the list that match this policy and fitting type
      */
-    private boolean addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList, Fitting fitting, Long policyId )
+    private boolean addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
+                                           List<PipelineConnectorImpl> availableConnectors,
+                                           List<PipelineConnectorImpl> availableCasings, Fitting fitting, Long policyId )
     {
         boolean added = false;
 
         /**
          * Iterate through all the netcapConnections and look for ones that fit the current fitting type
          */
-        for ( Iterator<PipelineConnectorImpl> i = pipelineConnectors.iterator(); i.hasNext() ; ) {
+        for ( Iterator<PipelineConnectorImpl> i = availableConnectors.iterator(); i.hasNext() ; ) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
             /**
@@ -372,7 +382,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Now we should add in any casings
          */
-        boolean addedCasings = addCasings( pipelineConnectorList, fitting, policyId );
+        boolean addedCasings = addCasings( pipelineConnectorList, availableConnectors, availableCasings, fitting, policyId );
         if ( addedCasings ) {
             added = true;
         }
@@ -385,11 +395,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Also calls addPipelineConnectors recursively to add netcap connectors
      * for the "inner" fitting type
      */
-    private boolean addCasings( List<PipelineConnectorImpl> pipelineConnectorList, Fitting fitting, Long policyId )
+    private boolean addCasings( List<PipelineConnectorImpl> pipelineConnectorList,
+                                List<PipelineConnectorImpl> availableConnectors,
+                                List<PipelineConnectorImpl> availableCasings, Fitting fitting, Long policyId )
     {
         boolean addedCasing = false;
 
-        for (Iterator<PipelineConnectorImpl> i = casings.keySet().iterator(); i.hasNext();) {
+        for (Iterator<PipelineConnectorImpl> i = availableCasings.iterator(); i.hasNext();) {
             PipelineConnectorImpl insidePipelineConnector = i.next();
             PipelineConnectorImpl outsidePipelineConnector = casings.get( insidePipelineConnector );
             
@@ -413,7 +425,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * add in any pipelineConnectors that should be inside the casing
              */
-            boolean addedSubPipelineConnectors = addPipelineConnectors( pipelineConnectorList, insidePipelineConnector.getOutputFitting(), policyId );
+            boolean addedSubPipelineConnectors = addPipelineConnectors( pipelineConnectorList, availableConnectors, availableCasings, insidePipelineConnector.getOutputFitting(), policyId );
 
             /**
              * If no nodes were interested in this casing's traffic, just remove it
@@ -613,31 +625,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Lookup a list of netcap connector for the given fittings & policyId
-     */
-    private List<PipelineConnectorImpl> cacheLookup( Long policyId, Fitting fitting )
-    {
-        /**
-         * Check if there is a cache for this policy. First time is without the lock
-         */
-        Map<Fitting, List<PipelineConnectorImpl>> fittingCache = pipelineFoundryCache.get(policyId);
-
-        if ( fittingCache == null )
-            return null;
-        
-        /**
-         * If there is a cache, return the result that exists for this fitting (or null)
-         */
-        return fittingCache.get( fitting );
-    }
-    
-    /**
      * Utility function to print any list of pipelineConnectors
      */
-    private void printPipelineConnectorList( java.util.Collection<PipelineConnectorImpl> pipelineConnectors )
+    private void printPipelineConnectorList( String prefix, java.util.Collection<PipelineConnectorImpl> pipelineConnectors )
     {
         if (logger.isDebugEnabled()) {
-            String strList = "pipelineConnectors: [";
+            String strList = prefix + "pipelineConnectors: [";
 
             if ( pipelineConnectors == null )
                 strList += " null";
