@@ -519,10 +519,10 @@ public class Dispatcher
             session.attach(request.attachment());
 
             // Send the new session event.  
-            if (logger.isInfoEnabled())
-                logger.info("New TCP session " +
-                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+            if (logger.isDebugEnabled())
+                logger.debug("New TCP session " +
+                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
@@ -581,10 +581,10 @@ public class Dispatcher
 
             // Send the new session event.  Maybe this should be done on the session handler
             // thread instead?  XXX
-            if (logger.isInfoEnabled())
-                logger.info("New UDP session " +
-                            session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                            session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+            if (logger.isDebugEnabled())
+                logger.debug("New UDP session " +
+                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {

@@ -94,20 +94,12 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.engine.SessionGlobalState">
-    <priority value="WARN"/>
-  </category>
-
   <category name="com.untangle.uvm.engine.PipelineFoundryImpl">
     <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.uvm.engine.SettingsManagerImpl">
     <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.engine.Dispatcher">
-    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.uvm.networking">
