@@ -3430,11 +3430,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     name: 'src'
                 },{
-                    name: 'dest'
+                    name: 'dst'
                 },{
                     name: 'src_port'
-                },
-                {
+                },{
                     name: 'dst_port'
                 },{
                     name:'priority'
@@ -3459,7 +3458,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 150
                 }, {
                     header: this.i18n._("Destination IP"),
-                    dataIndex: 'dest',
+                    dataIndex: 'dst',
                     width: 150
                 }, {
                     header: this.i18n._("Source port"),
