@@ -19,7 +19,7 @@ import ssl
 from uvm import Manager
 from uvm import Uvm
 
-UNTANGLE_CMD_PORTS   = [4443,443,80,587,993,995,8080,53,25]
+UNTANGLE_CMD_PORTS   = [443,4443,80,587,993,995,8080,53,25]
 UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", '74.123.28.85']
 RETRY_TIME_LONG = 10
 RETRY_TIME_SHORT = 5
