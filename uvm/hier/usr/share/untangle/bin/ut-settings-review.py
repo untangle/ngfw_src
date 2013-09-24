@@ -29,7 +29,17 @@ if prefix == "@PREFIX@": prefix = "" # for running in src
 prev = None
 
 cmd = "/usr/bin/find %s/usr/share/untangle/settings/ -type f -name '%s*' | xargs ls -1tr " % (prefix, filename)
-for file in subprocess.Popen(["/bin/sh","-c",cmd], stdout=subprocess.PIPE).communicate()[0].split('\n'):
+lines = subprocess.Popen(["/bin/sh","-c",cmd], stdout=subprocess.PIPE).communicate()[0].split('\n')
+
+print "There are %i changes:" % (len(lines)-2) 
+print "\n"
+for file in lines:
+    print file
+print "\n"
+
+raw_input("Press Enter to review 1st change...")
+
+for file in lines:
     if file == None or file.strip() == "":
         continue
     if prev == None:
