@@ -1,8 +1,10 @@
 # Sebastien Delafond <seb@untangle.com>
 # Dirk Morris <dmorris@untangle.com>
 
+arch = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
 
-ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
+jvm = (arch == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
+ENV["JAVA_HOME"] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
 
