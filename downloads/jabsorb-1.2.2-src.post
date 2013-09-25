@@ -1,8 +1,6 @@
-
 #!/bin/sh
 
 set -e
-set -x
 
 rm -rf $1/jabsorb-1.2.2
 mv $1/jabsorb-1.2.2-src/jabsorb-1.2.2 $1/jabsorb-1.2.2
