@@ -76,7 +76,9 @@ end
 include Debug
 
 class BuildEnv
-  JAVA_HOME = '/usr/lib/jvm/java-6-sun'
+  ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
+  JVM = (ARCH == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
+  JAVA_HOME = "/usr/lib/jvm/#{JVM}"
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   SERVLET_COMMON = "./servlet/common"
