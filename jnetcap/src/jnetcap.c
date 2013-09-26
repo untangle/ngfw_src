@@ -41,10 +41,8 @@
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
 
-/* 10,000 sessions is the default session limit */
-#define _SESSION_LIMIT_DEFAULT 10000
-// XXXX Set this to 20 or something.
-#define _SESSION_LIMIT_MIN     5
+/* default session limit ( 0 means no limit ) */
+#define _SESSION_LIMIT_DEFAULT 0
 
 /* WARN: These are overriden by the netcap property, so ignore them */
 #define _NEW_SESSION_SCHED_POLICY_DEFAULT   SCHED_NORMAL
@@ -227,11 +225,6 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
 JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
   (JNIEnv *env, jobject _this, jint limit )
 {
-    if ( limit < _SESSION_LIMIT_MIN )  {
-        errlog( ERR_CRITICAL, "The session limit must be greater than %d\n", _SESSION_LIMIT_MIN );
-        return;
-    }
-
     debug( 0, "JNETCAP: Setting session limit to %d\n", limit );
 
     _jnetcap.session_limit = limit;
@@ -830,8 +823,15 @@ static int _increment_session_count()
     int ret = 0;
     if ( pthread_mutex_lock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_lock" );
     
-    if ( _jnetcap.session_count < _jnetcap.session_limit ) _jnetcap.session_count++;
-    else ret = -1;
+    /**
+     * if there is no session_limit, or we have no yet hit the session limit
+     * accept and return updated session count
+     * otherwise return -1
+     */
+    if ( _jnetcap.session_limit < 1 || _jnetcap.session_count < _jnetcap.session_limit )
+        _jnetcap.session_count++;
+    else
+        ret = -1;
                                                               
     if ( pthread_mutex_unlock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_unlock" );
     return ret;

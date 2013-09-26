@@ -57,13 +57,19 @@ else
     GC_MIN_CYCLE=10
 fi
 
+if [ $ARCH = 'x86_64' ]; then
+    SESSION_LIMIT=0
+else
+    SESSION_LIMIT=10000
+fi
+
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
 
 echo "    Maximum heap size        -> ${MAX_HEAP_SIZE}"
 echo "    Maximum virtual size     -> ${MAX_VIRTUAL_SIZE}"
 echo "    GC safety factor         -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
-echo "    Max load for reports     -> ${REPORTS_MAX_LOAD}"
+echo "    Session limit            -> ${SESSION_LIMIT}"
 
 #
 # Apply the settings
@@ -75,4 +81,6 @@ max_heap_size="$MAX_HEAP_SIZE"
 max_virtual_size="$MAX_VIRTUAL_SIZE"
 gc_safety_factor="$GC_SAFETY_FACTOR"
 gc_min_cycle="$GC_MIN_CYCLE"
+session_limit="$SESSION_LIMIT"
 EOF
+
