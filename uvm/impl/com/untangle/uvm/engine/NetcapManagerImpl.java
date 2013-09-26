@@ -32,7 +32,7 @@ public class NetcapManagerImpl implements NetcapManager
     int jvectorDebugLevel   = 0;
     int mvutilDebugLevel    = 0;
 
-    int sessionThreadLimit  = 10000;
+    int sessionThreadLimit  = 0;
     int newSessionSchedPolicy  = SCHED_NORMAL;
     int sessionSchedPolicy  = SCHED_NORMAL;
 
@@ -142,9 +142,11 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.getInstance().setNewSessionSchedPolicy( this.newSessionSchedPolicy );
         Netcap.getInstance().setSessionSchedPolicy( this.sessionSchedPolicy );
 
+        if ( this.sessionThreadLimit > 0 )
+            Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
+
         /* Donate a few threads */
         Netcap.donateThreads( numThreads );
-        Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
     }
 
     public void destroy()
