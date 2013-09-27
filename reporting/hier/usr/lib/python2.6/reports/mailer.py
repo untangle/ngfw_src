@@ -246,10 +246,8 @@ def __make_zip_file(end_date, report_days, mail_reports):
             finally:
                 f.close()
 
-    os.system("""
-{ pushd %s ;
-  zip -r reports.zip ./reports ;
-  popd ; } > /dev/null 2>&1"""
-              % tmp_dir)
+    logger.info("Creating zip file: %s/reports.zip" % tmp_dir)
+
+    os.system(""" cd %s ; zip -r reports.zip ./reports """ % tmp_dir)
 
     return tmp_dir
