@@ -177,7 +177,21 @@ def nukeBypassRules():
 def nukeRoutes():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'][:] = []
-    uvmContext.networkManager().setNetworkSettings(netsettings)    
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+    
+def setDynDNS():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dynamicDnsServiceEnabled'] = True
+    netsettings['dynamicDnsServiceHostnames'] = "testuntangle.dyndns-pics.com"
+    netsettings['dynamicDnsServiceName'] = "dyndns"
+    netsettings['dynamicDnsServicePassword'] = "untangledyn"
+    netsettings['dynamicDnsServiceUsername'] = "testuntangle"
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def nukeDynDNS():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dynamicDnsServiceEnabled'] = False
+    uvmContext.networkManager().setNetworkSettings(netsettings)
 
 # def isBridgeMode(clientIPAdress):
 #     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -444,6 +458,19 @@ class NetworkTests(unittest2.TestCase):
         print "Result DNS lookup 1:\"%s\" 2:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
         assert(ip_address_testuntangle == ip_address_foobar)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        
+    # Test dynamic hostname
+    def test_090_DynamicDns(self):
+        # Set DynDNS info
+        setDynDNS()
+        time.sleep(60) # wait a max of 1 minute for dyndns to update.
+        outsideIP = clientControl.runCommand("wget -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",True)
+        result = clientControl.runCommand("host testuntangle.dyndns-pics.com", True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        dynIP = (match.group()).replace('address ','')
+        # print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
+        assert(outsideIP == dynIP)
+        nukeDynDNS()
         
     def test_999_finalTearDown(self):
         global node,nodeFW
