@@ -468,9 +468,9 @@ class NetworkTests(unittest2.TestCase):
         result = clientControl.runCommand("host testuntangle.dyndns-pics.com", True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         dynIP = (match.group()).replace('address ','')
-        # print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
-        assert(outsideIP == dynIP)
+        print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
         nukeDynDNS()
+        assert(outsideIP == dynIP)
         
     def test_999_finalTearDown(self):
         global node,nodeFW
