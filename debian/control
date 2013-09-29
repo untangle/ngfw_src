@@ -764,7 +764,7 @@ Description: Phish Blocker
 
 Package: untangle-node-openvpn
 Architecture: all
-Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
+Depends: untangle-vm, untangle-nsis-addons | oracle-java7-jdk, openssl, openvpn
 XB-Display-Name: OpenVPN
 XB-View-Position: 1080
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
@@ -1259,7 +1259,7 @@ Description: Platform Thirdparty Libraries
 
 Package: untangle-vm
 Architecture: all
-Depends: conntrack, untangle-keyring, sun-java6-jdk | oracle-java7-jdk, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-image, untangle-hardware-config, untangle-monit-config, untangle-ntp-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd, untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, python-py | python-codespeak-lib, python-reportlab, python-imaging
+Depends: conntrack, untangle-keyring, sun-java6-jdk | oracle-java7-jdk, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons | oracle-java7-jdk, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-image, untangle-hardware-config, untangle-monit-config, untangle-ntp-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd, untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, python-py | python-codespeak-lib, python-reportlab, python-imaging
 XB-Display-Name: Platform
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
