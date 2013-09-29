@@ -74,7 +74,7 @@ public class AlertManagerImpl implements AlertManager
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        //try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }

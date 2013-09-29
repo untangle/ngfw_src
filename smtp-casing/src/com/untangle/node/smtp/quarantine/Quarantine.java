@@ -110,6 +110,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         }
     }
 
+
     /**
      * Call that the Quarantine should "open"
      */
