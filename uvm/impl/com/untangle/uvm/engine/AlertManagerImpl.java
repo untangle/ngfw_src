@@ -39,7 +39,6 @@ import com.untangle.uvm.network.StaticRoute;
  * semi-frequent power loss?
  * disk almost full?
  * modified sources.list?
- * change ifconfig to check percentage of errors
  */
 public class AlertManagerImpl implements AlertManager
 {
@@ -74,10 +73,15 @@ public class AlertManagerImpl implements AlertManager
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        //try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+
+
+        /**
+         * Disabled Tests
+         */
+        //try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         this.execManager.close();
         this.execManager = null;
