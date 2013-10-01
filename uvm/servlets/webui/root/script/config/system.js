@@ -846,8 +846,8 @@ if (!Ung.hasResource["Ung.System"]) {
                 [1, 1 + ' ' + this.i18n._("1 user")], 
                 [5, 5 + ' ' + this.i18n._("users")], 
                 [25, 25 + ' ' + this.i18n._("users")],
-                [40, 50 + ' ' + this.i18n._("users")],
-                [75, 100 + ' ' + this.i18n._("users")],
+                [50, 50 + ' ' + this.i18n._("users")],
+                [100, 100 + ' ' + this.i18n._("users")],
                 [-1, this.i18n._("unlimited")]
             ];
             this.gridShieldRules = Ext.create( 'Ung.EditorGrid', {

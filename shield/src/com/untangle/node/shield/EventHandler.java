@@ -81,7 +81,7 @@ class EventHandler extends AbstractEventHandler
         //update stats
         stats.pulse(0);
 
-        if ( multiplier != 0 && stats.load5 > ( node.getSettings().getRequestPerSecondLimit() * 5 * multiplier ) ) {
+        if ( multiplier > 0 && stats.load5 > ( node.getSettings().getRequestPerSecondLimit() * 5 * multiplier ) ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
                 this.lastLoggedWarningTime = System.currentTimeMillis();
                 logger.info("Host " + clientAddr.getHostAddress() + " exceeded limit. 5-second load: " + String.format("%.2f",stats.load5) );
