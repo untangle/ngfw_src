@@ -159,7 +159,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
      */
     void cronCallback()
     {
-        m_logger.debug("Cron callback for Quarantine management");
+        m_logger.info("Quarantine management cron running...");
         pruneStoreNow();
 
         if (m_settings.getSendDailyDigests())
@@ -192,7 +192,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
                                        result.b.getNewestMailTimestamp() + " millis)");
                     } else {
                         if(sendDigestEmail(inbox.getAddress(), result.b)) {
-                            m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+                            m_logger.info("Sent digest to \"" + inbox.getAddress() + "\"");
                         } else {
                             m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
                         }
