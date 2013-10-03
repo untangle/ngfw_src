@@ -132,7 +132,8 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     }
 
-    public IpsDetectionEngine getEngine() {
+    public IpsDetectionEngine getEngine()
+    {
         return engine;
     }
 

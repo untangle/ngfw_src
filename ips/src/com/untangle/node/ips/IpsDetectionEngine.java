@@ -139,7 +139,7 @@ public class IpsDetectionEngine
         List<IpsRuleHeader> s2cList = portS2CMap.get(request.getServerPort());
 
         if(c2sList == null) {
-            c2sList = manager.matchingPortsList(request.getServerPort(), IpsRuleManager.TO_SERVER);
+            c2sList = manager.matchingPortsList( request.getServerPort(), true );
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
@@ -161,7 +161,7 @@ public class IpsDetectionEngine
         }
 
         if(s2cList == null) {
-            s2cList = manager.matchingPortsList(request.getServerPort(), IpsRuleManager.TO_CLIENT);
+            s2cList = manager.matchingPortsList( request.getServerPort(), false );
             synchronized(allPortMapLists) {
                 boolean found = false;
                 for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
@@ -196,14 +196,16 @@ public class IpsDetectionEngine
             incoming = sourceIntf.getIsWan();
         }
         
-        Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);
-        Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_CLIENT, s2cList);
+        Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, true, c2sList);
+        Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, false, s2cList);
 
         if (logger.isDebugEnabled())
             logger.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " + c2sSignatures.size());
+
         if (c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
             request.attach(new Object[] { c2sSignatures, s2cSignatures });
         } else {
+            logger.debug("Releasing session (no rules to evaluate): " + request);
             request.release();
         }
     }

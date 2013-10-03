@@ -67,21 +67,33 @@ public class IpsStringParser
         /*Parse server and client IP data - this will throw exceptions*/
         clientIPFlag    = parseNegation(tokens[1]);
         tokens[1]       = stripNegation(tokens[1]);
-        if (tokens[1].equalsIgnoreCase(EXTERNAL_IP))
+        if (tokens[1].equalsIgnoreCase(EXTERNAL_IP)) {
             dir = IpsRuleHeader.Direction.INBOUND;
-        else if (tokens[1].equalsIgnoreCase(HOME_IP))
+            clientIPList    = parseIPToken("any");
+        }
+        else if (tokens[1].equalsIgnoreCase(HOME_IP)) {
             dir = IpsRuleHeader.Direction.OUTBOUND;
-        else
+            clientIPList    = parseIPToken("any");
+        }
+        else {
+            dir = IpsRuleHeader.Direction.BOTH;
             clientIPList    = parseIPToken(tokens[1]);
+        }
 
         serverIPFlag    = parseNegation(tokens[4]);
         tokens[4]       = stripNegation(tokens[4]);
-        if (tokens[4].equalsIgnoreCase(EXTERNAL_IP))
+        if (tokens[4].equalsIgnoreCase(EXTERNAL_IP)) {
             dir = IpsRuleHeader.Direction.OUTBOUND;
-        else if (tokens[4].equalsIgnoreCase(HOME_IP))
+            serverIPList    = parseIPToken("any");
+        }
+        else if (tokens[4].equalsIgnoreCase(HOME_IP)) {
             dir = IpsRuleHeader.Direction.INBOUND;
-        else
+            serverIPList    = parseIPToken("any");
+        }
+        else {
+            dir = IpsRuleHeader.Direction.BOTH;
             serverIPList    = parseIPToken(tokens[4]);
+        }
 
         /*Parse server and client port data - this will not throw exceptions*/
         clientPortFlag  = parseNegation(tokens[2]);
@@ -100,6 +112,8 @@ public class IpsStringParser
         }
 
         /*Build and return the rule header*/
+
+
         IpsRuleHeader ruleHeader = IpsRuleHeader.getHeader (action, direction, dir, protocol,
                                                             clientIPList, clientPortRange,
                                                             serverIPList, serverPortRange,
@@ -166,6 +180,7 @@ public class IpsStringParser
                 }
             }
         }
+
         return ipList;
     }
 

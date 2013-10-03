@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPMatcher;
@@ -19,6 +21,8 @@ import com.untangle.uvm.vnet.Protocol;
 
 public class IpsRuleHeader
 {
+    private static final Logger logger = Logger.getLogger( IpsRuleHeader.class );
+
     private static final Map<IpsRuleHeader, WeakReference<IpsRuleHeader>> INSTANCES = new WeakHashMap<IpsRuleHeader, WeakReference<IpsRuleHeader>>();
 
     private final int action;
@@ -64,7 +68,7 @@ public class IpsRuleHeader
             this.serverIpSet = new HashSet<IPMatcher>();
         else
             this.serverIpSet = new HashSet<IPMatcher>(serverIPList);
-
+        
         this.clientPortRange = clientPortRange;
         this.serverPortRange = serverPortRange;
 

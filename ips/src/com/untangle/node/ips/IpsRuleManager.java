@@ -20,9 +20,6 @@ import com.untangle.uvm.node.SessionTuple;
 
 public class IpsRuleManager
 {
-    public static final boolean TO_SERVER = true;
-    public static final boolean TO_CLIENT = false;
-
     private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
     private final List<IpsRuleHeader> headers = new ArrayList<IpsRuleHeader>();
@@ -193,22 +190,22 @@ public class IpsRuleManager
         return returnList;
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean forward)
+    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean toServer)
     {
-        return matchesHeader(sess, sessInbound, forward, headers);
+        return matchesHeader(sess, sessInbound, toServer, headers);
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean forward, List<IpsRuleHeader> matchList)
+    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean toServer, List<IpsRuleHeader> matchList)
     {
         Set<IpsRuleSignature> returnSet = new HashSet<IpsRuleSignature>();
         //logger.debug("Total List size: "+matchList.size());
 
         for(IpsRuleHeader header : matchList) {
-            if(header.matches(sess, sessInbound, forward)) {
-                // logger.debug("Header matches: " + header);
+            if(header.matches(sess, sessInbound, toServer)) {
+                // logger.debug("Header " + header + " matches " + req);
                 returnSet.addAll(getSignatures(header));
             } else {
-                // logger.debug("Header doesn't match: " + header);
+                // logger.debug("Header " + header + " doesn't match " + req);
             }
         }
         //logger.debug("Signature List Size: "+returnList.size());
