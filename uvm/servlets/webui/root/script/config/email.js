@@ -1221,7 +1221,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         
         save: function (isApply) {
-            this.saveSemaphore = this.isMailLoaded() ? 3: 1;
+            this.saveSemaphore = this.isMailLoaded() ? 2: 1;
             // save mail settings
             main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
@@ -1233,26 +1233,24 @@ if (!Ung.hasResource["Ung.Email"]) {
                 quarantineSettings.allowedAddressPatterns.javaClass="java.util.LinkedList";
                 quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
                 quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
-                
                 this.getMailNode().setSmtpNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
-                    this.afterSave(exception, isApply);
-                }, this), this.getMailNodeSettings());
-                
-                // save global safelist
-                if ( this.loadedGlobalSafelist == true ) {
-                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getPageList();
-                    var globalList = [];
-                    for(var i=0; i<gridSafelistGlobalValues.length; i++) {
-                        globalList.push(gridSafelistGlobalValues[i].emailAddress);
+                    if(Ung.Util.handleException(exception)) return;
+                    // save global safelist
+                    if ( this.loadedGlobalSafelist == true) {
+                        var gridSafelistGlobalValues = this.gridSafelistGlobal.getPageList();
+                        var globalList = [];
+                        for(var i=0; i<gridSafelistGlobalValues.length; i++) {
+                            globalList.push(gridSafelistGlobalValues[i].emailAddress);
+                        }
+                        this.getSafelistAdminView().replaceSafelist(Ext.bind(function(result, exception) {
+                            this.afterSave(exception, isApply);
+                        }, this), 'GLOBAL', globalList);
+                    } else {
+                        // Decrement the save semaphore
+                        this.afterSave(null, isApply);
                     }
-                    this.getSafelistAdminView().replaceSafelist(Ext.bind(function(result, exception) {
-                        this.afterSave(exception, isApply);
-                    }, this), 'GLOBAL', globalList);
-                } else {
-                    /* Decrement the save semaphore */
-                    this.afterSave(null, isApply);
-                }
-            }            
+                }, this), this.getMailNodeSettings());
+            }
         },
         afterSave: function(exception, isApply) {
             if(Ung.Util.handleException(exception)) return;
