@@ -1092,6 +1092,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.gridInterfaces.setRowEditor( Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_interfaces',
                 title: this.i18n._('Edit Interface'),
                 inputLines: [{
                     xtype:'textfield',
@@ -2318,6 +2319,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             var settingsCmp = this;
             this.gridPortForwardRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_port_forward_rules',
                 rowEditorLabelWidth: 160,
                 populate: function(record, addMode) {
                     //reinitialize dataIndex on both editors
@@ -2603,6 +2605,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.gridNatRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_nat_rules',
                 inputLines: [{
                     xtype:'checkbox',
                     name: "Enable NAT Rule",
@@ -2750,6 +2753,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.gridBypassRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_bypass_rules',
                 inputLines:[{
                     xtype:'checkbox',
                     name: "Enable Bypass Rule",
@@ -2860,6 +2864,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 sortField: 'network',
                 columnsDefaultSortable: true,
+                rowEditorHelpSource: 'network_routes',
                 rowEditorInputLines: [{
                     xtype:'textfield',
                     name: "Description",
@@ -3796,6 +3801,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             this.gridForwardFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_filter_rules',
                 inputLines:[{
                     xtype:'checkbox',
                     name: "Enable Forward Filter Rule",
@@ -3836,6 +3842,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             }));
             this.gridInputFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
+                helpSource: 'network_filter_rules',
                 inputLines:[{
                     xtype:'checkbox',
                     name: "Enable Forward Filter Rule",

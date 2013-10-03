@@ -3943,7 +3943,19 @@ Ext.define('Ung.EditWindow', {
     extend: 'Ung.Window',
     initComponent: function() {
         if(this.bbar==null) {
-            this.bbar  = [
+            this.bbar=[];
+            if(this.helpSource) {
+                this.bbar.push('-', {
+                    name: 'Help',
+                    id: this.getId() + "_helpBtn",
+                    iconCls: 'icon-help',
+                    text: i18n._("Help"),
+                    handler: Ext.bind(function() {
+                        this.helpAction();
+                    }, this)
+                });
+            }
+            this.bbar.push(
                 '->',
                 {
                     name: "Cancel",
@@ -3961,7 +3973,7 @@ Ext.define('Ung.EditWindow', {
                     handler: Ext.bind(function() {
                         Ext.defer(this.updateAction,1, this);
                     }, this)
-            },'-'];         
+            },'-');
         }
         this.callParent(arguments);
     },
@@ -3969,7 +3981,12 @@ Ext.define('Ung.EditWindow', {
     // to override
     updateAction: function() {
         Ung.Util.todo();
+    },
+    // on click help
+    helpAction: function() {
+        main.openHelp(this.helpSource);
     }
+
 });
 
 // Manage list popup window
@@ -4492,7 +4509,8 @@ Ext.define('Ung.EditorGrid', {
                 this.rowEditor = Ext.create('Ung.RowEditorWindow', {
                     grid: this,
                     inputLines: this.rowEditorInputLines,
-                    rowEditorLabelWidth: this.rowEditorLabelWidth
+                    rowEditorLabelWidth: this.rowEditorLabelWidth,
+                    helpSource: this.rowEditorHelpSource
                 });
             } else if (this.rowEditorConfig != null) {
                 this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
