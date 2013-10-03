@@ -150,6 +150,8 @@ public interface NodeSession extends SessionTuple
     public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
 
     public final String KEY_HTTPS_SNI_HOSTNAME = "https-sni-host"; /* String */
+    public final String KEY_HTTPS_SUBJECT_DN = "https-subject-dn"; /* String */
+    public final String KEY_HTTPS_ISSUER_DN = "https-issuer-dn"; /* String */
     public final String KEY_HTTPS_CLIENT_MANAGER = "https-client-manager"; /* HttpsManager */
     public final String KEY_HTTPS_SERVER_MANAGER = "https-server-manager"; /* HttpsManager */
 
