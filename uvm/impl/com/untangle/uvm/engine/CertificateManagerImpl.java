@@ -60,6 +60,9 @@ public class CertificateManagerImpl implements CertificateManager
             if (!keyCheck.exists()) {
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CRT_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.key " + LOCAL_KEY_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CRT_FILE);
             }
         }
 
@@ -92,6 +95,14 @@ public class CertificateManagerImpl implements CertificateManager
             logger.info("Copying newer apache cert from " + LOCAL_PEM_FILE + " to " + APACHE_PEM_FILE);
             UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
             UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+
+            // in the development enviroment save these to a global location
+            // so they will survive a rake clean
+            if (UvmContextFactory.context().isDevel()) {
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CRT_FILE + " /etc/untangle/apache.crt");
+            }
         }
     }
 
