@@ -2971,7 +2971,14 @@ if (!Ung.hasResource["Ung.Network"]) {
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
                 name: 'panelAdvanced',
-                helpSource: 'network_advanced',
+                getHelpSource: Ext.bind(function() {
+                    var helpSource="network_advanced";
+                    var activeTab=this.advancedTabPanel.getActiveTab();
+                    if(activeTab!=null && activeTab.helpSource != null) {
+                        helpSource = this.advancedTabPanel.getActiveTab().helpSource;
+                    }
+                    return helpSource;
+                }, this),
                 parentId: this.getId(),
                 title: this.i18n._('Advanced'),
                 cls: 'ung-panel',
