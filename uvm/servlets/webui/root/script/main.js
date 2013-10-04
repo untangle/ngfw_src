@@ -303,8 +303,8 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
-        console.log("Open Help Topic :", topic);
-        console.log("Open Help Url   :", url);
+        //console.log("Open Help Topic :", topic);
+        //console.log("Open Help Url   :", url);
         //this.openIFrame( url, i18n._("Help") );
         window.open(url); // open a new window
     },

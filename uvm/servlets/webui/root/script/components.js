@@ -3559,7 +3559,10 @@ Ext.define("Ung.SettingsWin", {
         if(this.tabs && this.tabs.getActiveTab()!=null) {
             if( this.tabs.getActiveTab().helpSource != null ) {
                 helpSource = this.tabs.getActiveTab().helpSource;
+            } else if( Ext.isFunction(this.tabs.getActiveTab().getHelpSource)) {
+                helpSource = this.tabs.getActiveTab().getHelpSource();
             }
+
         } else {
             helpSource = this.helpSource;
         }
