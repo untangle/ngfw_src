@@ -1331,6 +1331,6 @@ Description: Platform Libraries
 
 Package: untangle-buildutil
 Architecture: all
-Depends: sun-java6-jre
+Depends: sun-java6-jre | oracle-java7-jdk
 Description: Platform Build Utils
  The Untangle Build Utils.
