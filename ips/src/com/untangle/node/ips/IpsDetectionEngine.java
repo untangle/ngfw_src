@@ -184,16 +184,19 @@ public class IpsDetectionEngine
         //Check matches
         SessionEvent pe = request.sessionEvent();
         
-        Integer clientIntf = pe.getClientIntf();
-        InterfaceSettings sourceIntf = null;
-        if (clientIntf != null)
-            sourceIntf = UvmContextFactory.context().networkManager().findInterfaceId( clientIntf );
-
         boolean incoming = true;
-        if (sourceIntf == null) {
-            logger.warn("Unable to find source interface: " + clientIntf);
-        } else {
-            incoming = sourceIntf.getIsWan();
+        Integer clientIntf = pe.getClientIntf();
+        if (clientIntf != null) { 
+            if (clientIntf == 250) { /* OpenVPN */
+                incoming = true;
+            } else {
+                InterfaceSettings sourceIntf = UvmContextFactory.context().networkManager().findInterfaceId( clientIntf );
+                if (sourceIntf == null) {
+                    logger.warn("Unable to find source interface: " + clientIntf);
+                } else {
+                    incoming = sourceIntf.getIsWan();
+                }
+            }
         }
         
         Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, true, c2sList);
@@ -253,7 +256,12 @@ public class IpsDetectionEngine
             NodeSessionStats stats = session.stats();
 
             IpsSessionInfo info = sessionInfoMap.get(session.id());
-
+            if ( info == null ) {
+                logger.warn("Missing IpsSessionInfo: " + session);
+                session.release();
+                return;
+            }
+            
             info.setEvent(event);
             info.setFlow(isFromServer);
 
@@ -267,10 +275,8 @@ public class IpsDetectionEngine
 
             if (!result) {
                 if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
-                    session.release();
-                    // Free up storage immediately in case session
-                    // stays around a long time.
                     sessionInfoMap.remove(session.id());
+                    session.release();
                 }
             }
 
