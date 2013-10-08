@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/spam-base/src/com/untangle/node/spam/ReportItem.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify

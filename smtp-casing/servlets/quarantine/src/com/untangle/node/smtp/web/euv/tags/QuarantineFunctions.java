@@ -1,20 +1,20 @@
 /**
- * $Id$
+ * $Id: QuarantineFunctions.java 35079 2013-06-19 22:15:28Z dmorris $
  */
 package com.untangle.node.smtp.web.euv.tags;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.PageContext;
 
-import com.untangle.node.smtp.quarantine.InboxRecordCursor;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+
+import com.untangle.node.smtp.quarantine.InboxRecord;
 
 public class QuarantineFunctions
 {
@@ -50,9 +50,9 @@ public class QuarantineFunctions
 
     public static int totalMessageCount( PageContext pageContext )
     {
-        InboxRecordCursor cursor = getCurrentIndex(pageContext.getRequest());
-        if ( cursor == null ) return 0;
-        return (int)cursor.inboxCount();
+        InboxRecord[] records = getCurrentIndex(pageContext.getRequest());
+        if ( records == null ) return 0;
+        return (int)records.length;
     }
     
     public static String jsonSafelist( PageContext pageContext )
@@ -92,9 +92,9 @@ public class QuarantineFunctions
         request.setAttribute(REMAPS_KEY, list);
     }
 
-    public static final void setCurrentIndex(ServletRequest request, InboxRecordCursor index) 
+    public static final void setCurrentIndex(ServletRequest request, InboxRecord[] records) 
     {
-        request.setAttribute(INBOX_CURSOR_KEY, index);
+        request.setAttribute(INBOX_CURSOR_KEY, records);
     }
     
     public static final void clearCurrentIndex( ServletRequest request )
@@ -162,13 +162,13 @@ public class QuarantineFunctions
     /**
      * Returns null if there is no index
      */
-    static InboxRecordCursor getCurrentIndex(ServletRequest request) {
-        return (InboxRecordCursor) request.getAttribute(INBOX_CURSOR_KEY);
+    static InboxRecord[] getCurrentIndex(ServletRequest request) {
+        return (InboxRecord[]) request.getAttribute(INBOX_CURSOR_KEY);
     }
 
     static boolean hasCurrentIndex(ServletRequest request) {
-        InboxRecordCursor index = getCurrentIndex(request);
-        return index != null && index.size() > 0;
+        InboxRecord[] index = getCurrentIndex(request);
+        return index != null && index.length > 0;
     }
 
     /**

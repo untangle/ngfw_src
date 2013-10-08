@@ -1,22 +1,22 @@
 /**
- * $Id$
+ * $Id: QuarantineEnduserServlet.java 34290 2013-03-17 00:00:19Z dmorris $
  */
 package com.untangle.node.smtp.web.euv;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.smtp.SmtpNode;
 import com.untangle.node.smtp.quarantine.QuarantineSettings;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
-import com.untangle.node.smtp.safelist.SafelistEndUserView;
-import com.untangle.uvm.UvmContext;
+import com.untangle.node.smtp.safelist.SafelistManipulation;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
-import org.apache.log4j.Logger;
 
 /**
  * Not really a "servlet" so much as a container used
@@ -32,7 +32,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private static QuarantineEnduserServlet s_instance;
     private SmtpNode m_mailNode;
     private QuarantineUserView m_quarantine;
-    private SafelistEndUserView m_safelist;
+    private SafelistManipulation m_safelist;
 
     public QuarantineEnduserServlet()
     {
@@ -55,7 +55,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     }
 
     /**
-     * Access the remote reference to the SafelistEndUserView.  If this
+     * Access the remote reference to the SafelistManipulation.  If this
      * method returns null, the caller should not attempt to fix
      * the situation (i.e. you're hosed).
      * <br><br>
@@ -64,7 +64,7 @@ public class QuarantineEnduserServlet extends HttpServlet
      *
      * @return the safelist.
      */
-    public SafelistEndUserView getSafelist()
+    public SafelistManipulation getSafelist()
     {
         if(m_safelist == null) {
             initRemoteRefs();
@@ -153,7 +153,7 @@ public class QuarantineEnduserServlet extends HttpServlet
             SmtpNode mt = (SmtpNode) UvmContextFactory.context().nodeManager().nodeInstances("untangle-casing-smtp").get(0);
             m_mailNode = mt;
             m_quarantine = mt.getQuarantineUserView();
-            m_safelist = mt.getSafelistEndUserView();
+            m_safelist = mt.getSafelistManipulation();
         }
         catch(Exception ex) {
             m_logger.error("Unable to create reference to Quarantine/Safelist", ex);

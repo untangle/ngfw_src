@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/sasl/PLAINObserver.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,77 +31,77 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.smtp.sasl;
+
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
-
 /**
  * Observer for the PLAIN (RFC 2595) SASL Mechanism.
  */
-class PLAINObserver
-    extends ClearObserver {
+class PLAINObserver extends ClearObserver
+{
 
-    static final String[] MECH_NAMES = new String[] {
-        "PLAIN".toLowerCase()
-    };
+    static final String[] MECH_NAMES = new String[] { "PLAIN".toLowerCase() };
 
     private String m_id;
-
 
     PLAINObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 
     @Override
-    public FeatureStatus exchangeAuthIDFound() {
-        return m_id==null?
-            FeatureStatus.UNKNOWN:FeatureStatus.YES;
+    public FeatureStatus exchangeAuthIDFound()
+    {
+        return m_id == null ? FeatureStatus.UNKNOWN : FeatureStatus.YES;
     }
 
     @Override
-    public String getAuthID() {
+    public String getAuthID()
+    {
         return m_id;
     }
 
     @Override
-    public boolean initialClientData(ByteBuffer buf) {
+    public boolean initialClientData(ByteBuffer buf)
+    {
         return clientMessage(buf);
     }
 
     @Override
-    public boolean clientData(ByteBuffer buf) {
+    public boolean clientData(ByteBuffer buf)
+    {
         return clientMessage(buf);
     }
 
-    private boolean clientMessage(ByteBuffer buf) {
+    private boolean clientMessage(ByteBuffer buf)
+    {
 
-        if(!buf.hasRemaining()) {
+        if (!buf.hasRemaining()) {
             return false;
         }
 
-        //I'm unclear from the spec if the authorization ID
-        //is blank, if there is a leading null.  If so,
-        //just strip it off
-        if(buf.get(buf.position()) == 0) {
+        // I'm unclear from the spec if the authorization ID
+        // is blank, if there is a leading null. If so,
+        // just strip it off
+        if (buf.get(buf.position()) == 0) {
             buf.get();
         }
-        if(!buf.hasRemaining()) {
+        if (!buf.hasRemaining()) {
             return false;
         }
 
-
-        //Now, there should be at least one and at-most
-        //two NULL bytes (0) in this buffer.
+        // Now, there should be at least one and at-most
+        // two NULL bytes (0) in this buffer.
         int nullPos = -1;
-        for(int i = buf.position(); i<buf.limit(); i++) {
-            if(buf.get(i) == 0) {
+        for (int i = buf.position(); i < buf.limit(); i++) {
+            if (buf.get(i) == 0) {
                 nullPos = i;
                 break;
             }
         }
 
-        if(nullPos == -1) {
+        if (nullPos == -1) {
             return false;
         }
         buf.limit(nullPos);

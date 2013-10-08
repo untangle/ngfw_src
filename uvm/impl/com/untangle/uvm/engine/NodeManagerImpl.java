@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: NodeManagerImpl.java 35238 2013-07-03 17:01:03Z dmorris $
  */
 package com.untangle.uvm.engine;
 

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: Fitting.java 35022 2013-06-14 12:51:38Z dcibu $
  */
 package com.untangle.uvm.vnet;
 

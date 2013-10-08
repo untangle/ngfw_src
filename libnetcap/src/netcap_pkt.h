@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_pkt.h 35571 2013-08-08 18:37:27Z dmorris $
  */
 #ifndef __NETCAP_PKT_
 #define __NETCAP_PKT_

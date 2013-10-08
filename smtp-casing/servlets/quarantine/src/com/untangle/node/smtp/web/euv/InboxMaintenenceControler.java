@@ -1,24 +1,21 @@
 /**
- * $Id$
+ * $Id: InboxMaintenenceControler.java 34290 2013-03-17 00:00:19Z dmorris $
  */
 package com.untangle.node.smtp.web.euv;
 
 import java.io.IOException;
-import java.security.Principal;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
 import com.untangle.node.smtp.quarantine.BadTokenException;
-import com.untangle.node.smtp.quarantine.InboxIndex;
-import com.untangle.node.smtp.quarantine.InboxRecordComparator;
-import com.untangle.node.smtp.quarantine.InboxRecordCursor;
+import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.NoSuchInboxException;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
-import com.untangle.node.smtp.safelist.SafelistEndUserView;
+import com.untangle.node.smtp.safelist.SafelistManipulation;
 import com.untangle.node.smtp.web.euv.tags.CurrentAuthTokenTag;
 import com.untangle.node.smtp.web.euv.tags.CurrentEmailAddressTag;
 import com.untangle.node.smtp.web.euv.tags.HasSafelistTag;
@@ -28,6 +25,8 @@ import com.untangle.node.smtp.web.euv.tags.MaxDaysIdleInboxTag;
 import com.untangle.node.smtp.web.euv.tags.MaxDaysToInternTag;
 import com.untangle.node.smtp.web.euv.tags.QuarantineFunctions;
 import com.untangle.node.smtp.web.euv.tags.RemappedToTag;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Controler used for inbox maintenence (purge/rescue/refresh/view).
@@ -48,7 +47,7 @@ public class InboxMaintenenceControler extends HttpServlet
 
         //Get the QuarantineUserView reference.  If we cannot,
         //the user is SOL
-        SafelistEndUserView safelist =
+        SafelistManipulation safelist =
             QuarantineEnduserServlet.instance().getSafelist();
         if(safelist == null) {
             log("[MaintenenceControlerBase] Safelist Hosed");
@@ -128,7 +127,7 @@ public class InboxMaintenenceControler extends HttpServlet
         serviceImpl(req, resp, account, quarantine, safelist);
     }
 
-    protected void serviceImpl(HttpServletRequest req, HttpServletResponse resp, String account, QuarantineUserView quarantine, SafelistEndUserView safelist)
+    protected void serviceImpl(HttpServletRequest req, HttpServletResponse resp, String account, QuarantineUserView quarantine, SafelistManipulation safelist)
         throws ServletException, IOException
     {
 
@@ -138,30 +137,15 @@ public class InboxMaintenenceControler extends HttpServlet
             //Note that refresh or simply to see the index,
             //we fall through and take the basic action (not purge and rescue)
 
-            //Defaults for the view of the user's list.
-            InboxRecordComparator.SortBy sortBy =
-                Util.stringToSortBy(req.getParameter(Constants.SORT_BY_RP),
-                                    InboxRecordComparator.SortBy.INTERN_DATE);
-            boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, false);
-            int startingAt = Util.readIntParam(req, Constants.FIRST_RECORD_RP, 0);
-            int rowsPerPage = Util.readIntParam(req, Constants.ROWS_PER_PAGE_RP, Constants.RECORDS_PER_PAGE);
-
-
             //No matter what action we take, the outcome is an Index
-            InboxIndex index = quarantine.getInboxIndex(account);
+            List<InboxRecord> inboxRecords = quarantine.getInboxRecords(account);
 
             //Set the flag for whether the user does/does not have a Safelist
             HasSafelistTag.setCurrent(req, safelist.hasOrCanHaveSafelist(account));
 
             QuarantineFunctions.setCurrentSafelist(req, safelist.getSafelistContents(account));
 
-            QuarantineFunctions.setCurrentIndex(req,
-                                                InboxRecordCursor.get(
-                                                                      index.allRecords(),
-                                                                      sortBy,
-                                                                      ascending,
-                                                                      startingAt,
-                                                                      rowsPerPage));
+            QuarantineFunctions.setCurrentIndex(req, inboxRecords.toArray(new InboxRecord[0]));
 
             req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
         } catch(NoSuchInboxException ex) {

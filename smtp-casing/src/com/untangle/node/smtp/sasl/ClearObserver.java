@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/sasl/ClearObserver.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,61 +31,67 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.smtp.sasl;
+
 import java.nio.ByteBuffer;
 
-
 /**
- * Base class for Observers of mechanisms
- * which do not support privacy/integrity protection.
- * <br><br>
- * By default, this class does not inspect the
- * protocol yet advertizes that integrity and
- * privacy cannot result from the exchange.
+ * Base class for Observers of mechanisms which do not support privacy/integrity protection. <br>
+ * <br>
+ * By default, this class does not inspect the protocol yet advertizes that integrity and privacy cannot result from the
+ * exchange.
  */
-abstract class ClearObserver
-    extends SASLObserver {
+abstract class ClearObserver extends SASLObserver
+{
 
     ClearObserver(String mechName, int maxMessageSz) {
         super(mechName, false, false, maxMessageSz);
     }
 
     @Override
-    public FeatureStatus exchangeUsingPrivacy() {
+    public FeatureStatus exchangeUsingPrivacy()
+    {
         return FeatureStatus.NO;
     }
 
     @Override
-    public FeatureStatus exchangeUsingIntegrity() {
+    public FeatureStatus exchangeUsingIntegrity()
+    {
         return FeatureStatus.NO;
     }
 
     @Override
-    public FeatureStatus exchangeAuthIDFound() {
+    public FeatureStatus exchangeAuthIDFound()
+    {
         return FeatureStatus.UNKNOWN;
     }
 
     @Override
-    public String getAuthID() {
+    public String getAuthID()
+    {
         return null;
     }
 
     @Override
-    public FeatureStatus exchangeComplete() {
+    public FeatureStatus exchangeComplete()
+    {
         return FeatureStatus.UNKNOWN;
     }
 
     @Override
-    public boolean initialClientData(ByteBuffer buf) {
+    public boolean initialClientData(ByteBuffer buf)
+    {
         return false;
     }
 
     @Override
-    public boolean clientData(ByteBuffer buf) {
+    public boolean clientData(ByteBuffer buf)
+    {
         return false;
     }
 
     @Override
-    public boolean serverData(ByteBuffer buf) {
+    public boolean serverData(ByteBuffer buf)
+    {
         return false;
     }
 

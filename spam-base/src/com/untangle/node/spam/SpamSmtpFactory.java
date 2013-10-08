@@ -10,11 +10,10 @@ import com.untangle.node.smtp.MailExportFactory;
 import com.untangle.node.smtp.SmtpNodeSettings;
 import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
-import com.untangle.node.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 public class SpamSmtpFactory implements TokenHandlerFactory
 {
@@ -37,18 +36,10 @@ public class SpamSmtpFactory implements TokenHandlerFactory
         SpamSettings spamSettings = m_spamImpl.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
-        if(!spamConfig.getScan()) {
-            m_logger.debug("Scanning disabled. Return passthrough token handler");
-            return Session.createPassthruSession(session);
-        }
-
         SmtpNodeSettings casingSettings = m_mailExport.getExportSettings();
         long timeout = casingSettings.getSmtpTimeout();
-        boolean allowTLS = casingSettings.getSmtpAllowTLS();
-        return new Session(session,
-                           new SpamSmtpHandler(session, timeout, timeout, m_spamImpl,
-                                               spamConfig, m_quarantine, m_safelist),
-                           allowTLS);
+        
+        return new SpamSmtpHandler(session, timeout, timeout, m_spamImpl, spamConfig, m_quarantine, m_safelist);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

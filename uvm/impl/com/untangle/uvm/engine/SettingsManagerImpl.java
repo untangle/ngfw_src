@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SettingsManagerImpl.java 35336 2013-07-18 23:10:32Z dmorris $
  */
 package com.untangle.uvm.engine;
 

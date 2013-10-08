@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_tcp_cli.c 35156 2013-06-26 23:00:08Z dmorris $
  */
 #include "netcap_tcp.h"
 

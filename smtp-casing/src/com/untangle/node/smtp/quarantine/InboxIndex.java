@@ -1,21 +1,17 @@
 /**
- * $Id$
+ * $Id: InboxIndex.java 35472 2013-07-30 11:46:24Z dcibu $
  */
 package com.untangle.node.smtp.quarantine;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-
-/**
- *
- */
 
 @SuppressWarnings("serial")
 public final class InboxIndex implements Serializable, Iterable<InboxRecord>
 {
-
     private String m_address;
     private long m_timestamp;
 
@@ -42,16 +38,22 @@ public final class InboxIndex implements Serializable, Iterable<InboxRecord>
     }
 
     /**
-     * Helper method which returns the timestamp of the most recently added
-     * mail, or 0 if the inbox is empty.
+     * Helper method which returns the timestamp of the most recently added mail, or 0 if the inbox is empty.
      */
     public long getNewestMailTimestamp()
     {
         if (inboxMap.size() == 0) {
             return 0;
         }
-        InboxRecord rec = Collections.max(inboxMap.values(),
-                InboxRecordComparator.getComparator(InboxRecordComparator.SortBy.INTERN_DATE, true));
+        InboxRecord rec = Collections.max(inboxMap.values(), new Comparator<InboxRecord>()
+        {
+            @Override
+            public int compare(InboxRecord o1, InboxRecord o2)
+            {
+                return o1.getInternDate() < o2.getInternDate() ? -1 : o1.getInternDate() > o2.getInternDate() ? 1 : 0;
+            }
+
+        });
         return rec == null ? 0 : rec.getInternDate();
     }
 

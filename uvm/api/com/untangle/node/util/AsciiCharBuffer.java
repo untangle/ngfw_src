@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: AsciiCharBuffer.java 35447 2013-07-29 17:24:43Z dmorris $
  */
 package com.untangle.node.util;
 

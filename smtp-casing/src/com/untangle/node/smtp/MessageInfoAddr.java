@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: MessageInfoAddr.java 34290 2013-03-17 00:00:19Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -22,10 +22,10 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     private String personal;
 
     /* constructors */
-    public MessageInfoAddr() { }
+    public MessageInfoAddr() {
+    }
 
-    public MessageInfoAddr(MessageInfo messageInfo, int position, AddressKind kind, String addr, String personal)
-    {
+    public MessageInfoAddr(MessageInfo messageInfo, int position, AddressKind kind, String addr, String personal) {
         this.messageInfo = messageInfo;
         this.position = position;
         this.messageId = messageInfo.getMessageId();
@@ -34,15 +34,13 @@ public class MessageInfoAddr extends LogEvent implements Serializable
             addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         }
         this.addr = addr;
-        if (personal != null
-            && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
             personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         }
         this.personal = personal;
     }
 
     // accessors --------------------------------------------------------------
-
 
     /**
      * The MessageId object.
@@ -59,7 +57,7 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     /**
      * The email address, in RFC822 format
-     *
+     * 
      * @return email address.
      */
     public String getAddr()
@@ -77,7 +75,7 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     /**
      * Get a personal for display purposes.
-     *
+     * 
      * @return personal.
      */
     public String getPersonal()
@@ -87,16 +85,15 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     public void setPersonal(String personal)
     {
-        if (personal != null
-            && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+            personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         }
         this.personal = personal;
     }
 
     /**
      * The kind of address (To, CC, etc).
-     *
+     * 
      * @return addressKind.
      */
     public AddressKind getKind()
@@ -109,27 +106,19 @@ public class MessageInfoAddr extends LogEvent implements Serializable
         this.kind = kind;
     }
 
-    private static String sql = "INSERT INTO reports.mail_addrs " +
-        "(time_stamp, " + 
-        "session_id, client_intf, server_intf, " + 
-        "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
-        "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
-        "policy_id,  " + 
-        "username,  " + 
-        "msg_id, subject, server_type,  " + 
-        "addr_pos, addr, addr_name, addr_kind,  " + 
-        "sender,  " + 
-        "hostname) " + 
-        " VALUES " +
-        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-    
+    private static String sql = "INSERT INTO reports.mail_addrs " + "(time_stamp, "
+            + "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
+            + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id,  " + "username,  "
+            + "msg_id, subject, server_type,  " + "addr_pos, addr, addr_name, addr_kind,  " + "sender,  "
+            + "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
         SessionEvent se = messageInfo.getSessionEvent();
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
-        int i=0;
+        int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setLong(++i, se.getSessionId());
         pstmt.setInt(++i, se.getClientIntf());
@@ -153,7 +142,7 @@ public class MessageInfoAddr extends LogEvent implements Serializable
         pstmt.setString(++i, Character.toString(kind.getKey()));
         pstmt.setString(++i, messageInfo.getSender());
         pstmt.setString(++i, (se.getHostname() == null ? "" : se.getHostname()));
-        
+
         return pstmt;
     }
 }

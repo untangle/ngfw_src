@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: MailSender.java 33664 2012-12-19 23:17:06Z dmorris $
  */
 package com.untangle.uvm;
 

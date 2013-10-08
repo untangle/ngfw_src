@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_init.c 35400 2013-07-23 16:31:40Z dmorris $
  */
 #include "netcap_init.h"
 

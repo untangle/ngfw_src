@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: jnetcap.h 35405 2013-07-23 17:55:30Z dmorris $
  */
 #ifndef __JNETCAP_H_
 #define __JNETCAP_H_

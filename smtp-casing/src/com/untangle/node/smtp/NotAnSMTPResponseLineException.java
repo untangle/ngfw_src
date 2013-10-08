@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/NotAnSMTPResponseLineException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -34,29 +34,25 @@
 package com.untangle.node.smtp;
 
 /**
- * Exception thrown whena response line
- * is illegal (not starting with "NNN"
+ * Exception thrown whena response line is illegal (not starting with "NNN"
  */
 @SuppressWarnings("serial")
-public class NotAnSMTPResponseLineException extends Exception {
+public class NotAnSMTPResponseLineException extends Exception
+{
 
-    public NotAnSMTPResponseLineException()
-    {
+    public NotAnSMTPResponseLineException() {
         super();
     }
 
-    public NotAnSMTPResponseLineException(Exception ex)
-    {
+    public NotAnSMTPResponseLineException(Exception ex) {
         super(ex);
     }
 
-    public NotAnSMTPResponseLineException(String msg)
-    {
+    public NotAnSMTPResponseLineException(String msg) {
         super(msg);
     }
 
-    public NotAnSMTPResponseLineException(String msg, Exception ex)
-    {
+    public NotAnSMTPResponseLineException(String msg, Exception ex) {
         super(msg, ex);
     }
 

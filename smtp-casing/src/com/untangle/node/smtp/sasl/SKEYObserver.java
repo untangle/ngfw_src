@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/sasl/SKEYObserver.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,16 +32,13 @@
  */
 package com.untangle.node.smtp.sasl;
 
-
 /**
  * Observer for SKEY (RFC 2222) mechanism.
  */
-class SKEYObserver
-    extends InitialIDObserver {
+class SKEYObserver extends InitialIDObserver
+{
 
-    static final String[] MECH_NAMES = new String[] {
-        "SKEY".toLowerCase()
-    };
+    static final String[] MECH_NAMES = new String[] { "SKEY".toLowerCase() };
 
     SKEYObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);

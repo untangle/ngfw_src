@@ -1,22 +1,18 @@
 /**
- * $Id$
+ * $Id: InboxSummary.java 35247 2013-07-05 12:21:44Z dcibu $
  */
 package com.untangle.node.smtp.quarantine.store;
+
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 /**
- * Information about a given Inbox, as maintained
- * outside of the Inbox itself (i.e. for
- * lookup and reporting purposes).
- * <br><br>
- * Be careful.  Changes to the size/count properties
- * should <b>only</b> be made by the StoreSummary
- * which holds it.
- *
- *
+ * Information about a given Inbox, as maintained outside of the Inbox itself (i.e. for lookup and reporting purposes). <br>
+ * <br>
+ * Be careful. Changes to the size/count properties should <b>only</b> be made by the StoreSummary which holds it.
+ * 
+ * 
  * Assumes all addresses have been lower-cased
  */
 @SuppressWarnings("serial")
@@ -26,18 +22,15 @@ public final class InboxSummary implements Serializable
     private final AtomicLong totalSz;
     private final AtomicInteger totalMails;
 
-    public InboxSummary()
-    {
+    public InboxSummary() {
         this(null, 0, 0);
     }
 
-    public InboxSummary(String inbox)
-    {
+    public InboxSummary(String inbox) {
         this(inbox, 0, 0);
     }
 
-    public InboxSummary(String inbox, long totalSz, int totalMails)
-    {
+    public InboxSummary(String inbox, long totalSz, int totalMails) {
 
         this.totalSz = new AtomicLong(totalSz);
         this.totalMails = new AtomicInteger(totalMails);
@@ -48,17 +41,17 @@ public final class InboxSummary implements Serializable
     {
         return address;
     }
-    
+
     public void setAddress(String address)
     {
         this.address = address;
     }
 
     /**
-     * Updates the total size, based on
-     * a recalculated value
-     *
-     * @param newValue the new value
+     * Updates the total size, based on a recalculated value
+     * 
+     * @param newValue
+     *            the new value
      * @return the <b>old</b> value.
      */
     public long updateTotalSz(long newValue)
@@ -73,12 +66,11 @@ public final class InboxSummary implements Serializable
 
     public void decrementTotalSz(long toSubtract)
     {
-        totalSz.addAndGet(-1*toSubtract);
+        totalSz.addAndGet(-1 * toSubtract);
     }
 
     /**
-     * Get the total size (sum of lengths of all files)
-     * for this inbox
+     * Get the total size (sum of lengths of all files) for this inbox
      */
     public long getTotalSz()
     {
@@ -92,7 +84,7 @@ public final class InboxSummary implements Serializable
     {
         return totalMails.get();
     }
-    
+
     public void setTotalSz(long newVal)
     {
         totalSz.set(newVal);
@@ -104,10 +96,10 @@ public final class InboxSummary implements Serializable
     }
 
     /**
-     * Updates the total mails, based on
-     * a recalculated value
-     *
-     * @param newValue the new value
+     * Updates the total mails, based on a recalculated value
+     * 
+     * @param newValue
+     *            the new value
      * @return the <b>old</b> value.
      */
     public int updateTotalMails(int newValue)
@@ -122,7 +114,30 @@ public final class InboxSummary implements Serializable
 
     public void decrementTotalMails(int toSubtract)
     {
-        totalMails.addAndGet(-1*toSubtract);
+        totalMails.addAndGet(-1 * toSubtract);
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Address: ").append(getAddress());
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (!(other instanceof InboxSummary)) {
+            return false;
+        }
+        return ((InboxSummary) other).getAddress().equalsIgnoreCase(getAddress());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getAddress().hashCode();
     }
 
 }

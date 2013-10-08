@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/UnparsableCommand.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,16 +32,16 @@
  */
 
 package com.untangle.node.smtp;
+
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
 /**
- * Class reprsenting an unparsable line reveived
- * when a Command was expected.
+ * Class reprsenting an unparsable line reveived when a Command was expected.
  */
-public class UnparsableCommand
-    extends Command {
+public class UnparsableCommand extends Command
+{
 
     private ByteBuffer m_unparsedLine;
 
@@ -51,12 +51,14 @@ public class UnparsableCommand
     }
 
     @Override
-    public String getArgString() {
+    public String getArgString()
+    {
         return bbToString(m_unparsedLine);
     }
 
     @Override
-    public ByteBuffer getBytes() {
+    public ByteBuffer getBytes()
+    {
         return m_unparsedLine.duplicate();
     }
 }

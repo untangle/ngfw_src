@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: LoggingManager.java 31913 2012-05-10 21:10:33Z dmorris $
  */
 package com.untangle.uvm.logging;
 

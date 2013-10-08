@@ -264,7 +264,7 @@ Ext.define('Ung.QuarantineModel', {
     fields: [ 
       {name:'recipients'},
       {name:'mailID'},
-      {name:'quarantinedDate', sortType:function(value) { return value.time;}},
+      {name:'internDate'},
       {name:'size'},
       {name:'attachmentCount'},
       {name:'truncatedSender'},
@@ -300,7 +300,16 @@ Ext.define('Ung.QuarantineStore', {
 
     refresh: function () {
         var dataFn = Ext.bind( function () {
-            return quarantine.rpc.getInboxRecords(inboxDetails.token, 0, inboxDetails.totalCount, null, false); 
+        	var mails = quarantine.rpc.getInboxRecords(inboxDetails.token); 
+        	for(var i=0; i<mails.list.length; i++) {
+                /* copy values from mailSummary to object */
+                mails.list[i].truncatedSubject = mails.list[i].mailSummary.truncatedSubject;
+                mails.list[i].subject = mails.list[i].mailSummary.subject;
+                mails.list[i].sender = mails.list[i].mailSummary.sender;
+                mails.list[i].quarantineCategory = mails.list[i].mailSummary.quarantineCategory;
+                mails.list[i].quarantineDetail = mails.list[i].mailSummary.quarantineDetail;
+            }
+            return mails;
         }, this);
         try {
             var data = dataFn();
@@ -310,7 +319,7 @@ Ext.define('Ung.QuarantineStore', {
                         recipients:'recipients'+index ,
                         sender: "sender"+(index%10)+"@test.com",
                         mailID: 'mailID'+index,
-                        quarantinedDate: {time: 10000*index},
+                        internDate: 10000*index,
                         size: 500*index,
                         attachmentCount: 1000-index,
                         quarantineDetail: parseFloat(index)/100,
@@ -388,12 +397,12 @@ Ext.define('Ung.QuarantineGrid', {
                 width: 250
             },{
                 header: i18n._( "Date" ),
-                dataIndex: 'quarantinedDate',
+                dataIndex: 'internDate',
                 menuDisabled: true,
                 width: 135,
                 renderer: function( value ) {
                     var date = new Date();
-                    date.setTime( value.time );
+                    date.setTime( value );
                     d = Ext.util.Format.date( date, 'm/d/Y' );
                     t = Ext.util.Format.date( date, 'g:i a' );
                     return d + ' ' + t;

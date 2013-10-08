@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_trie_support.h 35571 2013-08-08 18:37:27Z dmorris $
  */
 #ifndef __NETCAP_TRIE_SUPPORT_H_
 #define __NETCAP_TRIE_SUPPORT_H_

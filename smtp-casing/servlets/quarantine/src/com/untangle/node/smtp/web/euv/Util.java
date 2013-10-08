@@ -1,32 +1,29 @@
 /**
- * $Id$
+ * $Id: Util.java 34293 2013-03-17 05:22:02Z dmorris $
  */
 package com.untangle.node.smtp.web.euv;
 
-import java.util.HashMap;
 import javax.servlet.ServletRequest;
-
-import com.untangle.node.smtp.quarantine.InboxRecordComparator;
 
 /**
  * Utility methods
  */
 public class Util {
-    private static HashMap<String, InboxRecordComparator.SortBy> m_stringToSB = new HashMap<String, InboxRecordComparator.SortBy>();
-    private static HashMap<InboxRecordComparator.SortBy, String> m_sbToString = new HashMap<InboxRecordComparator.SortBy, String>();
-
-    static {
-        InboxRecordComparator.SortBy[] allSortings = InboxRecordComparator.SortBy.values();
-        for(int i = 0; i < allSortings.length; i++) {
-            String key = Integer.toString(i);
-            m_stringToSB.put(key, allSortings[i]);
-            m_sbToString.put(allSortings[i], key);
-        }
-    }
-
-    public static String sortByToString(InboxRecordComparator.SortBy sb) {
-        return m_sbToString.get(sb);
-    }
+//    private static HashMap<String, InboxRecordComparator.SortBy> m_stringToSB = new HashMap<String, InboxRecordComparator.SortBy>();
+//    private static HashMap<InboxRecordComparator.SortBy, String> m_sbToString = new HashMap<InboxRecordComparator.SortBy, String>();
+//
+//    static {
+//        InboxRecordComparator.SortBy[] allSortings = InboxRecordComparator.SortBy.values();
+//        for(int i = 0; i < allSortings.length; i++) {
+//            String key = Integer.toString(i);
+//            m_stringToSB.put(key, allSortings[i]);
+//            m_sbToString.put(allSortings[i], key);
+//        }
+//    }
+//
+//    public static String sortByToString(InboxRecordComparator.SortBy sb) {
+//        return m_sbToString.get(sb);
+//    }
 
     /**
      * I didn't want the actual Strings from the
@@ -39,16 +36,16 @@ public class Util {
      * @param def the default, should <code>s</code> not be
      *        convertable to a SortBy
      */
-    public static InboxRecordComparator.SortBy stringToSortBy(String s, InboxRecordComparator.SortBy def) {
-        if(s == null) {
-            return def;
-        }
-        s = s.trim().toLowerCase();
-
-        InboxRecordComparator.SortBy ret = m_stringToSB.get(s);
-
-        return ret == null ? def : ret;
-    }
+//    public static InboxRecordComparator.SortBy stringToSortBy(String s, InboxRecordComparator.SortBy def) {
+//        if(s == null) {
+//            return def;
+//        }
+//        s = s.trim().toLowerCase();
+//
+//        InboxRecordComparator.SortBy ret = m_stringToSB.get(s);
+//
+//        return ret == null ? def : ret;
+//    }
 
     /**
      * Read a boolean parameter

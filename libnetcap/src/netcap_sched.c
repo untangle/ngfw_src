@@ -1,4 +1,4 @@
-/* $HeadURL$ */
+/* $HeadURL: svn://chef/work/src/libnetcap/src/netcap_sched.c $ */
 
 #include <unistd.h>
 #include <sys/time.h>

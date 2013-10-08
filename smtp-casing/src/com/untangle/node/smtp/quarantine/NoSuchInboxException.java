@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/NoSuchInboxException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
  */
 
 package com.untangle.node.smtp.quarantine;
+
 import java.io.Serializable;
 
 /**
@@ -43,8 +44,7 @@ public class NoSuchInboxException extends Exception implements Serializable
 
     private final String m_accountName;
 
-    public NoSuchInboxException(String accountName)
-    {
+    public NoSuchInboxException(String accountName) {
         super("No such account \"" + accountName + "\"");
         m_accountName = accountName;
     }

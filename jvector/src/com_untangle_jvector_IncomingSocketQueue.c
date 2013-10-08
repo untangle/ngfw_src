@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: com_untangle_jvector_IncomingSocketQueue.c 35595 2013-08-12 21:44:12Z dmorris $
  */
 #include <jni.h>
 #include <stdlib.h>

@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/SASLExchangeToken.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -38,11 +38,10 @@ import java.nio.ByteBuffer;
 import com.untangle.node.token.Token;
 
 /**
- * Opaque chunk of data, used to pass SASL information
- * between casings, being ignored by Nodes.
+ * Opaque chunk of data, used to pass SASL information between casings, being ignored by Nodes.
  */
-public class SASLExchangeToken
-    implements Token {
+public class SASLExchangeToken implements Token
+{
 
     private final ByteBuffer m_buf;
 
@@ -51,11 +50,11 @@ public class SASLExchangeToken
     }
 
     /**
-     * Returns a duplicate of the internal ByteBuffer, allowing
-     * the caller to modify the returned ByteBuffer without concern
-     * for any downstream token handlers.
+     * Returns a duplicate of the internal ByteBuffer, allowing the caller to modify the returned ByteBuffer without
+     * concern for any downstream token handlers.
      */
-    public ByteBuffer getBytes() {
+    public ByteBuffer getBytes()
+    {
         return m_buf.slice();
     }
 

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: AdminSettings.java 32043 2012-05-31 21:31:47Z dmorris $
  */
 package com.untangle.uvm;
 

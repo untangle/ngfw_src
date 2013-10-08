@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/InboxRecord.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,48 +36,44 @@ package com.untangle.node.smtp.quarantine;
 import java.io.Serializable;
 
 /**
- * Representation of a mail quarantined within a given
- * {@link com.untangle.node.smtp.quarantine.InboxIndex inbox}. <br>
+ * Representation of a mail quarantined within a given {@link com.untangle.node.smtp.quarantine.InboxIndex inbox}. <br>
  * <br>
- * Users are not supposed to subclass this. Subclassing is for the internals of
- * the quarantine system (but may be visible to you because of classloader
- * issues).
+ * Users are not supposed to subclass this. Subclassing is for the internals of the quarantine system (but may be
+ * visible to you because of classloader issues).
  */
 @SuppressWarnings("serial")
 public final class InboxRecord implements Serializable
 {
 
-    private String m_mailID;
-    private long m_addedOn;
-    private MailSummary m_mailSummary;
-    private String[] m_recipients;
+    private String mailID;
+    private long addedOn;
+    private MailSummary mailSummary;
+    private String[] recipients;
 
     public InboxRecord() {
     }
 
     public InboxRecord(String mailID, long addedOn, MailSummary summary, String[] recipients) {
 
-        m_mailID = mailID;
-        m_addedOn = addedOn;
-        m_mailSummary = summary;
-        m_recipients = recipients;
+        this.mailID = mailID;
+        this.addedOn = addedOn;
+        this.mailSummary = summary;
+        this.recipients = recipients;
     }
 
     /**
-     * Get the recipients <b>for this inbox entry</b>. This does not mean all
-     * recipients of the email. This refers to the destination(s) of the mail
-     * which were re-routed to quarantine. For the cases of address remapping,
-     * there may be more than one recipient, and the owner of the inbox may not
-     * be among the recipients.
+     * Get the recipients <b>for this inbox entry</b>. This does not mean all recipients of the email. This refers to
+     * the destination(s) of the mail which were re-routed to quarantine. For the cases of address remapping, there may
+     * be more than one recipient, and the owner of the inbox may not be among the recipients.
      */
     public final String[] getRecipients()
     {
-        return m_recipients;
+        return recipients;
     }
 
     public final void setRecipients(String[] recipients)
     {
-        m_recipients = recipients;
+        this.recipients = recipients;
     }
 
     /**
@@ -87,26 +83,26 @@ public final class InboxRecord implements Serializable
      */
     public final String getMailID()
     {
-        return m_mailID;
+        return mailID;
     }
 
     public final void setMailID(String id)
     {
-        m_mailID = id;
+        this.mailID = id;
     }
 
     /**
-     * Get the date (millis since 1970, GMT) that this file was placed into the
-     * quarantine. This is <b>not</b> the DATE on the MIME message.
+     * Get the date (millis since 1970, GMT) that this file was placed into the quarantine. This is <b>not</b> the DATE
+     * on the MIME message.
      */
     public final long getInternDate()
     {
-        return m_addedOn;
+        return addedOn;
     }
 
     public final void setInternDate(long date)
     {
-        m_addedOn = date;
+        this.addedOn = date;
     }
 
     /**
@@ -114,12 +110,12 @@ public final class InboxRecord implements Serializable
      */
     public final MailSummary getMailSummary()
     {
-        return m_mailSummary;
+        return mailSummary;
     }
 
     public final void setMailSummary(MailSummary summary)
     {
-        m_mailSummary = summary;
+        this.mailSummary = summary;
     }
 
     /**
@@ -127,12 +123,12 @@ public final class InboxRecord implements Serializable
      */
     public final long getSize()
     {
-        return m_mailSummary.getQuarantineSize();
+        return mailSummary.getQuarantineSize();
     }
 
     public final void setSize(long size)
     {
-        m_mailSummary.setQuarantineSize(size);
+        this.mailSummary.setQuarantineSize(size);
     }
 
     @Override

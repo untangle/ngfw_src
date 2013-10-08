@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_session.h 35571 2013-08-08 18:37:27Z dmorris $
  */
 #ifndef __NETCAP_SESSION_H
 #define __NETCAP_SESSION_H

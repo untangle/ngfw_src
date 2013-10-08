@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: CasingAdaptor.java 34627 2013-05-03 18:30:42Z dmorris $
  */
 package com.untangle.node.token;
 

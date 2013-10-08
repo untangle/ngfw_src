@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: IncomingSocketQueue.java 35595 2013-08-12 21:44:12Z dmorris $
  */
 package com.untangle.jvector;
 

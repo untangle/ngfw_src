@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/sasl/InitialIDObserver.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,56 +31,57 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.smtp.sasl;
+
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
-
 /**
- * Abstract base class for SASL mechanisms which
- * send a clear UID as the first client message
- * (ANONYMOUS and SKEY that I know of).
+ * Abstract base class for SASL mechanisms which send a clear UID as the first client message (ANONYMOUS and SKEY that I
+ * know of).
  */
-abstract class InitialIDObserver
-    extends ClearObserver {
+abstract class InitialIDObserver extends ClearObserver
+{
 
     private String m_id;
     private boolean m_seenInitialClientData = false;
 
-    InitialIDObserver(String mechName,
-                      int maxMsgSize) {
+    InitialIDObserver(String mechName, int maxMsgSize) {
         super(mechName, maxMsgSize);
     }
 
     @Override
-    public FeatureStatus exchangeAuthIDFound() {
-        return m_seenInitialClientData?
-            (m_id==null?FeatureStatus.NO:FeatureStatus.YES):
-            FeatureStatus.UNKNOWN;
+    public FeatureStatus exchangeAuthIDFound()
+    {
+        return m_seenInitialClientData ? (m_id == null ? FeatureStatus.NO : FeatureStatus.YES) : FeatureStatus.UNKNOWN;
     }
 
     @Override
-    public String getAuthID() {
+    public String getAuthID()
+    {
         return m_id;
     }
 
     @Override
-    public boolean initialClientData(ByteBuffer buf) {
+    public boolean initialClientData(ByteBuffer buf)
+    {
         return clientMessage(buf);
     }
 
     @Override
-    public boolean clientData(ByteBuffer buf) {
+    public boolean clientData(ByteBuffer buf)
+    {
         return clientMessage(buf);
     }
 
-    private boolean clientMessage(ByteBuffer buf) {
+    private boolean clientMessage(ByteBuffer buf)
+    {
 
-        if(m_seenInitialClientData) {
+        if (m_seenInitialClientData) {
             return false;
         }
 
-        if(!buf.hasRemaining()) {
+        if (!buf.hasRemaining()) {
             return false;
         }
 

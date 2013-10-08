@@ -1,4 +1,4 @@
-/* $HeadURL$ */
+/* $HeadURL: svn://chef/work/src/libnetcap/include/libnetcap.h $ */
 #ifndef __NETCAP_H_
 #define __NETCAP_H_
 

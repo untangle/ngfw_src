@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: InboxRecordTag.java 34293 2013-03-17 05:22:02Z dmorris $
  */
 package com.untangle.node.smtp.web.euv.tags;
 
@@ -20,6 +20,10 @@ import com.untangle.node.util.JSEscape;
 public final class InboxRecordTag extends SingleValueTag
 {
     private static final String INBOX_RECORD_PS_KEY = "untangle.inbox_record";
+    
+    private static final String ELLIPSE_STR = "...";
+    private static final int SENDER_MAX_LENGTH = 32; // plus ellipse
+    private static final int SUBJECT_MAX_LENGTH = 42; // plus ellipse
 
     // constant values must be in lower case
     public static final String MAILID_PROP = "mailid";
@@ -119,6 +123,44 @@ public final class InboxRecordTag extends SingleValueTag
             return "<unknown>";
         }
     }
+    
+    private static String truncate(String source, int maxLength)
+    {
+        StringBuffer truncateSource = new StringBuffer(source);
+        if (maxLength < truncateSource.length()) {
+            truncateSource.setLength(maxLength);
+            truncateSource.append(ELLIPSE_STR);
+        }
+        return truncateSource.toString();
+    }
+    
+    public static String getTruncatedSender(String sender)
+    {
+        return truncate(sender, SENDER_MAX_LENGTH);
+    }
+
+    public String getTruncatedSubject(String subject)
+    {
+        return truncate(subject, SUBJECT_MAX_LENGTH);
+    }
+
+    public String getFormattedQuarantineDetail(String quarantineDetail)
+    {
+        // Attempts to convert to a formatted float. If this fails (i.e.
+        // it isn't a number) then just return the detail.
+        try {
+            float f = Float.parseFloat(quarantineDetail);
+            return String.format("%03.1f", f);
+        } catch (Exception ex) {
+            if (true == quarantineDetail.equals("Message determined to be a fraud attempt")) {
+                // no conversion script so catch and change for display purposes
+                // here
+                return "Identity Theft";
+            } else {
+                return quarantineDetail;
+            }
+        }
+    } 
 
     /**
      * Returns null if not found

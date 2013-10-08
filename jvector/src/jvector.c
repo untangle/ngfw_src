@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: jvector.c 35609 2013-08-13 06:19:27Z dmorris $
  */
 #include <jni.h>
 #include <stdlib.h>

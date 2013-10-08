@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/SmtpClientUnparser.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,70 +32,63 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * ...name says it all...
  */
-class SmtpClientUnparser
-    extends SmtpUnparser {
+class SmtpClientUnparser extends SmtpUnparser
+{
 
-    private final Logger m_logger =
-        Logger.getLogger(SmtpClientUnparser.class);
+    private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
 
-    SmtpClientUnparser(NodeTCPSession session,
-                       SmtpCasing parent,
-                       CasingSessionTracker tracker) {
-        super(session, parent, tracker, true);
+    SmtpClientUnparser(NodeTCPSession session, SmtpCasing parent, CasingSessionTracker tracker) {
+        super(session, true, parent, tracker);
         m_logger.debug("Created");
     }
 
-
     @Override
-    protected UnparseResult doUnparse(Token token) {
+    protected UnparseResult doUnparse(Token token)
+    {
 
-        //-----------------------------------------------------------
-        if(token instanceof SASLExchangeToken) {
+        // -----------------------------------------------------------
+        if (token instanceof SASLExchangeToken) {
             m_logger.debug("Received SASLExchangeToken token");
 
             ByteBuffer buf = token.getBytes();
 
-            if(!getSmtpCasing().isInSASLLogin()) {
+            if (!getCasing().isInSASLLogin()) {
                 m_logger.error("Received SASLExchangeToken without an open exchange");
-            }
-            else {
-                switch(getSmtpCasing().getSASLObserver().serverData(buf.duplicate())) {
-                case EXCHANGE_COMPLETE:
-                    m_logger.debug("SASL Exchange complete");
-                    getSmtpCasing().closeSASLExchange();
-                    break;
-                case IN_PROGRESS:
-                    //Nothing to do
-                    break;
-                case RECOMMEND_PASSTHRU:
-                    m_logger.debug("Entering passthru on advice of SASLObserver");
-                    declarePassthru();
+            } else {
+                switch (getCasing().getSASLObserver().serverData(buf.duplicate())) {
+                    case EXCHANGE_COMPLETE:
+                        m_logger.debug("SASL Exchange complete");
+                        getCasing().closeSASLExchange();
+                        break;
+                    case IN_PROGRESS:
+                        // Nothing to do
+                        break;
+                    case RECOMMEND_PASSTHRU:
+                        m_logger.debug("Entering passthru on advice of SASLObserver");
+                        declarePassthru();
                 }
             }
             return new UnparseResult(buf);
         }
 
-        //-----------------------------------------------------------
-        if(token instanceof MetadataToken) {
-            //Don't pass along metadata tokens
+        // -----------------------------------------------------------
+        if (token instanceof MetadataToken) {
+            // Don't pass along metadata tokens
             m_logger.debug("Pass along Metadata token as nothing");
             return UnparseResult.NONE;
         }
 
-        //-----------------------------------------------------------
-        if(token instanceof Response) {
+        // -----------------------------------------------------------
+        if (token instanceof Response) {
             Response resp = (Response) token;
             getSessionTracker().responseReceived(resp);
 
-            m_logger.debug("Passing response to client: " +
-                           resp.toDebugString());
-        }
-        else {
-            m_logger.debug("Unparse token of type " + (token==null?"null":token.getClass().getName()));
+            m_logger.debug("Passing response to client: " + resp.toDebugString());
+        } else {
+            m_logger.debug("Unparse token of type " + (token == null ? "null" : token.getClass().getName()));
         }
 
         return new UnparseResult(token.getBytes());
     }
-
 
 }

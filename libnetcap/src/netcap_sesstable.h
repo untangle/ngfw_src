@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_sesstable.h 35571 2013-08-08 18:37:27Z dmorris $
  */
 #ifndef __NETCAP_SESSTABLE_H_
 #define __NETCAP_SESSTABLE_H_

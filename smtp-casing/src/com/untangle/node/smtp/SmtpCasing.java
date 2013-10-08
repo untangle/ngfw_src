@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/SmtpCasing.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,97 +18,109 @@
 
 package com.untangle.node.smtp;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.AbstractMailCasing;
 import com.untangle.node.smtp.sasl.SASLObserver;
 import com.untangle.node.smtp.sasl.SASLObserverFactory;
+import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
+public class SmtpCasing implements Casing
+{
+    private final SmtpParser parser;
+    private final SmtpUnparser unparser;
 
-public class SmtpCasing
-    extends AbstractMailCasing {
+    private final Logger logger = Logger.getLogger(getClass());
 
-    private final Logger m_logger =
-        Logger.getLogger(SmtpCasing.class);
-
-    private final SmtpParser m_parser;
-    private final SmtpUnparser m_unparser;
-
-    private CasingSessionTracker m_tracker;
-    private SmtpSASLObserver m_saslObserver;
+    // private CasingSessionTracker m_tracker;
+    private SmtpSASLObserver saslObserver;
+    private CasingSessionTracker casingSessionTracker;
 
     // constructors -----------------------------------------------------------
 
-    public SmtpCasing(NodeTCPSession session,
-                      boolean clientSide) {
-
-        super(session, clientSide, "smtp");
-
-        m_tracker = new CasingSessionTracker();
-
-        if(clientSide) {
-            m_parser = new SmtpClientParser(session, this, m_tracker);
-            m_unparser = new SmtpClientUnparser(session, this, m_tracker);
+    public SmtpCasing(NodeTCPSession session, boolean clientSide) {
+        if (logger.isEnabledFor(Level.DEBUG)) {
+            logger.debug("Creating " + (clientSide ? "client" : "server") + " SMTP Casing.  Client: "
+                    + session.getClientAddr() + "(" + Integer.toString(session.getClientIntf()) + "), " + "Server: "
+                    + session.getServerAddr() + "(" + Integer.toString(session.getServerIntf()) + ")");
         }
-        else {
-            m_parser = new SmtpServerParser(session, this, m_tracker);
-            m_unparser = new SmtpServerUnparser(session, this, m_tracker);
-        }
+
+        casingSessionTracker = new CasingSessionTracker();
+        parser = (clientSide ? new SmtpClientParser(session, this, casingSessionTracker) : new SmtpServerParser(
+                session, this, casingSessionTracker));
+        unparser = (clientSide ? new SmtpClientUnparser(session, this, casingSessionTracker) : new SmtpServerUnparser(
+                session, this, casingSessionTracker));
+    }
+
+    // Casing methods ---------------------------------------------------------
+
+    public Unparser unparser()
+    {
+        return unparser;
+    }
+
+    public Parser parser()
+    {
+        return parser;
+    }
+
+    // package private methods ------------------------------------------------
+
+    /**
+     * Callback from either parser or unparser, indicating that we are entering passthru mode. This is required as the
+     * passthru token may only flow in one direction. The casing will ensure that both parser and unparser enter
+     * passthru.
+     */
+    public final void passthru()
+    {
+        parser.passthru();
+        unparser.passthru();
     }
 
     /**
      * Test if this session is engaged in a SASL exchange
-     *
+     * 
      * @return true if in SASL login
      */
-    boolean isInSASLLogin() {
-        return m_saslObserver != null;
+    boolean isInSASLLogin()
+    {
+        return saslObserver != null;
     }
 
     /**
-     * Open a SASL exchange observer, based on the given
-     * mechanism name.  If null is returned, a suitable
-     * SASLObserver could not be found for the named mechanism
-     * (and we should punt on this session).
+     * Open a SASL exchange observer, based on the given mechanism name. If null is returned, a suitable SASLObserver
+     * could not be found for the named mechanism (and we should punt on this session).
      */
-    boolean openSASLExchange(String mechanismName) {
-        SASLObserver observer =
-            SASLObserverFactory.createObserverForMechanism(mechanismName);
-        if(observer == null) {
-            m_logger.debug("Could not find SASLObserver for mechanism \"" +
-                           mechanismName + "\"");
+    boolean openSASLExchange(String mechanismName)
+    {
+        SASLObserver observer = SASLObserverFactory.createObserverForMechanism(mechanismName);
+        if (observer == null) {
+            logger.debug("Could not find SASLObserver for mechanism \"" + mechanismName + "\"");
             return false;
         }
-        m_saslObserver = new SmtpSASLObserver(observer);
+        saslObserver = new SmtpSASLObserver(observer);
         return true;
     }
 
     /**
-     * Get the current SASLObserver.  If this returns
-     * null yet the caller thinks there is an open
-     * SASL exchange, this is an error
-     *
+     * Get the current SASLObserver. If this returns null yet the caller thinks there is an open SASL exchange, this is
+     * an error
+     * 
      * @return the SmtpSASLObserver
      */
-    SmtpSASLObserver getSASLObserver() {
-        return m_saslObserver;
+    SmtpSASLObserver getSASLObserver()
+    {
+        return saslObserver;
     }
 
     /**
      * Close the current SASLExchange
      */
-    void closeSASLExchange() {
-        m_saslObserver = null;
-    }
-
-    public Parser parser() {
-        return m_parser;
-    }
-
-    public Unparser unparser() {
-        return m_unparser;
+    void closeSASLExchange()
+    {
+        saslObserver = null;
     }
 }

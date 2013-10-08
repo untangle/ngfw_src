@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_pkt.c 35571 2013-08-08 18:37:27Z dmorris $
  */
 #include <netinet/in.h>
 #include <netinet/ip.h>

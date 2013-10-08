@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/BadTokenException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,18 +32,17 @@
  */
 
 package com.untangle.node.smtp.quarantine;
+
 import java.io.Serializable;
 
 /**
- * Exception thrown when a Token (a sequence of characters
- * used to have obscured information passed back
- * in a URL) is of a bad format (garbage).
+ * Exception thrown when a Token (a sequence of characters used to have obscured information passed back in a URL) is of
+ * a bad format (garbage).
  */
 @SuppressWarnings("serial")
 public class BadTokenException extends Exception implements Serializable
 {
-    public BadTokenException(String token)
-    {
+    public BadTokenException(String token) {
         super("Bad Token \"" + token + "\"");
     }
 }

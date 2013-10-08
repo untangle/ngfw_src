@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: NetcapSession.java 35414 2013-07-24 07:10:18Z dmorris $
  */
 package com.untangle.jnetcap;
 

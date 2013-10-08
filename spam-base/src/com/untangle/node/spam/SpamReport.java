@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SpamReport.java 34539 2013-04-12 05:06:33Z dmorris $
  */
 package com.untangle.node.spam;
 
@@ -8,33 +8,28 @@ import static com.untangle.node.util.Ascii.CRLF;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.mime.HeaderParseException;
-import com.untangle.node.smtp.mime.LCString;
-import com.untangle.node.smtp.mime.MIMEMessage;
-import com.untangle.node.smtp.mime.MIMEMessageHeaders;
 import com.untangle.uvm.node.TemplateValues;
 
 /**
- * Class to encapsulate a SPAM report.
+ * Class to encapsulate a SPAM report. <br>
  * <br>
- * <br>
- * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}.
- * Valid key names which can be derefferenced from a SpamReport begin with
- * the literal <code>SPAMReport:</code> followed by any of the following tokens:
+ * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}. Valid key names which can be
+ * derefferenced from a SpamReport begin with the literal <code>SPAMReport:</code> followed by any of the following
+ * tokens:
  * <ul>
- *   <li>
- *     <code><b>FULL</b></code>Any Report items from the SPAM report, with
- *     each report on its own line.  Each report item is terminated by a CRLF.
- *   </li>
- *   <li>
- *     <code><b>THRESHOLD</b></code> The numerical value of the threshold
- *     above-which a score renders a SPAM judgement (e.g. "5").
- *   </li>
- *   <li>
- *     <code><b>SCORE</b></code> The numerical value of the score (e.g. "7.2").
- *   </li>
+ * <li>
+ * <code><b>FULL</b></code>Any Report items from the SPAM report, with each report on its own line. Each report item is
+ * terminated by a CRLF.</li>
+ * <li>
+ * <code><b>THRESHOLD</b></code> The numerical value of the threshold above-which a score renders a SPAM judgement (e.g.
+ * "5").</li>
+ * <li>
+ * <code><b>SCORE</b></code> The numerical value of the score (e.g. "7.2").</li>
  * </ul>
  */
 public class SpamReport implements TemplateValues
@@ -57,15 +52,13 @@ public class SpamReport implements TemplateValues
 
     // constructors -----------------------------------------------------------
 
-    public SpamReport(List<ReportItem> items, float score, float threshold)
-    {
+    public SpamReport(List<ReportItem> items, float score, float threshold) {
         this.items = new LinkedList<ReportItem>(items);
         this.score = score;
         this.threshold = threshold;
     }
 
-    public SpamReport(List<ReportItem> items, float threshold)
-    {
+    public SpamReport(List<ReportItem> items, float threshold) {
         this.items = new LinkedList<ReportItem>(items);
         this.threshold = threshold;
 
@@ -75,17 +68,18 @@ public class SpamReport implements TemplateValues
         }
         this.score = s;
     }
+
     /**
-     * For use in Templates (see JavaDoc at the top of this class
-     * for explanation of variable format).
+     * For use in Templates (see JavaDoc at the top of this class for explanation of variable format).
      */
-    public String getTemplateValue(String key) {
+    public String getTemplateValue(String key)
+    {
         key = key.trim().toLowerCase();
-        if(key.startsWith(SPAM_REPORT_PREFIX)) {
+        if (key.startsWith(SPAM_REPORT_PREFIX)) {
             key = key.substring(SPAM_REPORT_PREFIX.length());
-            if(key.equals(FULL_KEY)) {
+            if (key.equals(FULL_KEY)) {
                 StringBuilder sb = new StringBuilder();
-                for(ReportItem ri : items) {
+                for (ReportItem ri : items) {
                     sb.append('(');
                     sb.append(Float.toString(ri.getScore()));
                     sb.append(") ");
@@ -93,11 +87,9 @@ public class SpamReport implements TemplateValues
                     sb.append(CRLF);
                 }
                 return sb.toString();
-            }
-            else if(key.equals(SCORE_KEY)) {
+            } else if (key.equals(SCORE_KEY)) {
                 return Float.toString(score);
-            }
-            else if(key.equals(THRESHOLD_KEY)) {
+            } else if (key.equals(THRESHOLD_KEY)) {
                 return Float.toString(threshold);
             }
         }
@@ -108,27 +100,16 @@ public class SpamReport implements TemplateValues
      * @depricated
      */
     /*
-      public Rfc822Header rewriteHeader(Rfc822Header h)
-      {
-      if (isSpam()) {
-      logger.debug("isSpam, rewriting header");
-      String subject = h.getSubject();
-      subject = "[SPAM] " + (null == subject ? "" : subject);
-      h.setSubject(subject);
-      } else {
-      logger.debug("not spam, not rewriting");
-      }
-
-      try {
-      h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO");
-      } catch (IllegalFieldException exn) {
-      throw new IllegalStateException("should never happen");
-      }
-
-
-      return h;
-      }
-    */
+     * public Rfc822Header rewriteHeader(Rfc822Header h) { if (isSpam()) { logger.debug("isSpam, rewriting header");
+     * String subject = h.getSubject(); subject = "[SPAM] " + (null == subject ? "" : subject); h.setSubject(subject); }
+     * else { logger.debug("not spam, not rewriting"); }
+     * 
+     * try { h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO"); } catch (IllegalFieldException exn) { throw new
+     * IllegalStateException("should never happen"); }
+     * 
+     * 
+     * return h; }
+     */
 
     public boolean isSpam()
     {
@@ -140,7 +121,7 @@ public class SpamReport implements TemplateValues
         return score;
     }
 
-    public void addHeaders(MIMEMessage msg)
+    public void addHeaders(MimeMessage msg)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -167,11 +148,12 @@ public class SpamReport implements TemplateValues
             sb.append(item.getCategory());
         }
 
-        MIMEMessageHeaders mmh = msg.getMMHeaders();
-        mmh.removeHeaderFields(new LCString("X-spam-status"));
+        // MIMEMessageHeaders mmh = msg.getMMHeaders();
+
         try {
-            mmh.addHeaderField("X-spam-status", sb.toString());
-        } catch (HeaderParseException exn) {
+            msg.removeHeader("X-spam-status");
+            msg.addHeader("X-spam-status", sb.toString());
+        } catch (MessagingException exn) {
             logger.warn("could not add header: " + sb.toString(), exn);
         }
     }

@@ -18,19 +18,19 @@
 
 package com.untangle.node.phish;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.smtp.MailExport;
 import com.untangle.node.smtp.MailExportFactory;
 import com.untangle.node.smtp.SmtpNodeSettings;
 import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
-import com.untangle.node.smtp.sapi.Session;
-import com.untangle.node.spam.SpamSmtpConfig;
 import com.untangle.node.spam.SpamLoadChecker;
+import com.untangle.node.spam.SpamSmtpConfig;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 public class PhishSmtpFactory implements TokenHandlerFactory
 {
@@ -51,21 +51,10 @@ public class PhishSmtpFactory implements TokenHandlerFactory
     {
         SpamSmtpConfig spamConfig = m_phishImpl.getSettings().getSmtpConfig();
 
-        if(!spamConfig.getScan()) {
-            m_logger.debug("Scanning disabled.  Return passthrough token handler");
-            return Session.createPassthruSession(session);
-        }
-
         SmtpNodeSettings casingSettings = m_mailExport.getExportSettings();
-        return new Session(session,
-                           new PhishSmtpHandler(session,
-                                                casingSettings.getSmtpTimeout(),
-                                                casingSettings.getSmtpTimeout(),
-                                                m_phishImpl,
-                                                spamConfig,
-                                                m_quarantine,
-                                                m_safelist),
-               casingSettings.getSmtpAllowTLS());
+        
+        return new PhishSmtpHandler(session, casingSettings.getSmtpTimeout(), casingSettings.getSmtpTimeout(),
+                m_phishImpl, spamConfig, m_quarantine, m_safelist);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

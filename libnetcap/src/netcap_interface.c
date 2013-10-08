@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_interface.c 35760 2013-08-31 02:39:23Z dmorris $
  */
 #include "netcap_interface.h"
 

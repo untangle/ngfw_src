@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: NetworkManager.java 34472 2013-04-04 18:25:40Z dmorris $
  */
 package com.untangle.uvm;
 

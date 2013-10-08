@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/QuarantineUserActionFailedException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,32 +32,28 @@
  */
 
 package com.untangle.node.smtp.quarantine;
+
 import java.io.Serializable;
 
 /**
- * Generic "something went wrong" exception.  <b>Not</b>
- * the fault of the user or the data - the back-end
- * is simply hosed.
+ * Generic "something went wrong" exception. <b>Not</b> the fault of the user or the data - the back-end is simply
+ * hosed.
  */
 @SuppressWarnings("serial")
 public class QuarantineUserActionFailedException extends Exception implements Serializable
 {
-    public QuarantineUserActionFailedException()
-    {
+    public QuarantineUserActionFailedException() {
     }
 
-    public QuarantineUserActionFailedException(String msg)
-    {
+    public QuarantineUserActionFailedException(String msg) {
         super(msg);
     }
 
-    public QuarantineUserActionFailedException(Throwable cause)
-    {
+    public QuarantineUserActionFailedException(Throwable cause) {
         super(cause);
     }
 
-    public QuarantineUserActionFailedException(String msg, Throwable cause)
-    {
+    public QuarantineUserActionFailedException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

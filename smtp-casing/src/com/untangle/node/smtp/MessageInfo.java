@@ -1,15 +1,15 @@
 /**
- * $Id$
+ * $Id: MessageInfo.java 34290 2013-03-17 00:00:19Z dmorris $
  */
 package com.untangle.node.smtp;
 
+import java.io.File;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.untangle.uvm.logging.LogEvent;
@@ -25,7 +25,7 @@ public class MessageInfo extends LogEvent implements Serializable
     /* constants */
     public static final int SMTP_PORT = 25;
 
-    // How big a varchar() do we get for default String fields. 
+    // How big a varchar() do we get for default String fields.
     public static final int MAX_STRING_SIZE = 255;
 
     /* columns */
@@ -34,20 +34,21 @@ public class MessageInfo extends LogEvent implements Serializable
     private char serverType;
     private String sender;
     private Long messageId;
-    
+    private File tmpFile;
+
     /* Senders/Receivers */
     private Set<MessageInfoAddr> addresses = new HashSet<MessageInfoAddr>();
 
     /* non-persistent fields */
-    public Map<AddressKind,Integer> counts = new HashMap<AddressKind,Integer>();
+    public Map<AddressKind, Integer> counts = new HashMap<AddressKind, Integer>();
 
     private static long nextId = 0;
-    
-    /* constructors */
-    public MessageInfo() { }
 
-    public MessageInfo(SessionEvent pe, int serverPort, String subject)
-    {
+    /* constructors */
+    public MessageInfo() {
+    }
+
+    public MessageInfo(SessionEvent pe, int serverPort, String subject) {
         sessionEvent = pe;
 
         if (subject == null)
@@ -59,17 +60,19 @@ public class MessageInfo extends LogEvent implements Serializable
         this.subject = subject;
 
         switch (serverPort) {
-        case SMTP_PORT:
-            serverType = 'S';
-            break;
-        default:
-            serverType = 'U';
-            break;
+            case SMTP_PORT:
+                serverType = 'S';
+                break;
+            default:
+                serverType = 'U';
+                break;
         }
 
-        synchronized(this) {
-            if (nextId == 0) 
-                nextId = pe.getSessionId(); /* borrow the session Id as a starting point */
+        synchronized (this) {
+            if (nextId == 0)
+                nextId = pe.getSessionId(); /*
+                                             * borrow the session Id as a starting point
+                                             */
             this.messageId = nextId++;
         }
     }
@@ -94,7 +97,7 @@ public class MessageInfo extends LogEvent implements Serializable
 
     /**
      * Set of the addresses involved (to, from, etc) in the email.
-     *
+     * 
      * @return the set of the email addresses involved in the email
      */
     public Set<MessageInfoAddr> trans_getAddresses()
@@ -123,7 +126,7 @@ public class MessageInfo extends LogEvent implements Serializable
 
     /**
      * Get the SessionEvent.
-     *
+     * 
      * @return the SessionEvent.
      */
     public Long getSessionId()
@@ -131,7 +134,7 @@ public class MessageInfo extends LogEvent implements Serializable
         return sessionEvent.getSessionId();
     }
 
-    public void setSessionId( Long sessionId )
+    public void setSessionId(Long sessionId)
     {
         this.sessionEvent.setSessionId(sessionId);
     }
@@ -148,7 +151,7 @@ public class MessageInfo extends LogEvent implements Serializable
 
     /**
      * Identify RFC822 Subject.
-     *
+     * 
      * @return RFC822 Subject.
      */
     public String getSubject()
@@ -167,7 +170,7 @@ public class MessageInfo extends LogEvent implements Serializable
 
     /**
      * Identify server type (SMTP, POP3, or IMAP4).
-     *
+     * 
      * @return server type.
      */
     public char getServerType()
@@ -194,32 +197,37 @@ public class MessageInfo extends LogEvent implements Serializable
         this.sender = sender;
     }
     
-    private static String sql = "INSERT INTO reports.mail_msgs " +
-        "(time_stamp, session_id, client_intf, server_intf, " +
-        "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
-        "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
-        "policy_id, " +
-        "username, " +
-        "msg_id, subject, server_type, " + 
-        "sender, " +
-        "hostname " + ")" +
-        " VALUES " +
-        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    public File getTmpFile()
+    {
+        return tmpFile;
+    }
+    
+    public void setTmpFile(File tmpFile)
+    {
+        this.tmpFile = tmpFile;
+    }
+    
 
+    private static String sql = "INSERT INTO reports.mail_msgs "
+            + "(time_stamp, session_id, client_intf, server_intf, "
+            + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
+            + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id, " + "username, "
+            + "msg_id, subject, server_type, " + "sender, " + "hostname " + ")" + " VALUES "
+            + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
         return null;
     }
-    
+
     @Override
-    public List<java.sql.PreparedStatement> getDirectEventSqls( java.sql.Connection conn ) throws Exception
+    public List<java.sql.PreparedStatement> getDirectEventSqls(java.sql.Connection conn) throws Exception
     {
         List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
-        java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
+        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
-        int i=0;
+        int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setLong(++i, getSessionEvent().getSessionId());
         pstmt.setInt(++i, getSessionEvent().getClientIntf());
@@ -241,11 +249,11 @@ public class MessageInfo extends LogEvent implements Serializable
         pstmt.setString(++i, getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname());
 
         sqlList.add(pstmt);
-        
+
         for (MessageInfoAddr addr : this.addresses) {
-            sqlList.add( addr.getDirectEventSql( conn ) );
+            sqlList.add(addr.getDirectEventSql(conn));
         }
-        
+
         return sqlList;
     }
 }

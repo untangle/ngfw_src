@@ -1,9 +1,9 @@
 /**
- * $Id$
+ * $Id: InboxNumRecordsTag.java 34293 2013-03-17 05:22:02Z dmorris $
  */
 package com.untangle.node.smtp.web.euv.tags;
 
-import com.untangle.node.smtp.quarantine.InboxRecordCursor;
+import com.untangle.node.smtp.quarantine.InboxRecord;
 
 /**
  * Outputs the total number of records in the current index, or
@@ -15,9 +15,9 @@ public final class InboxNumRecordsTag extends SingleValueTag
 {
     @Override
     protected String getValue() {
-        InboxRecordCursor iCursor = QuarantineFunctions.getCurrentIndex(pageContext.getRequest());
+        InboxRecord[] iCursor = QuarantineFunctions.getCurrentIndex(pageContext.getRequest());
         try {
-            return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails";
+            return Long.toString(iCursor == null ? 0 : iCursor.length) + " mails";
         }
         catch(Exception ex) { return "<unknown> mails"; }
     }

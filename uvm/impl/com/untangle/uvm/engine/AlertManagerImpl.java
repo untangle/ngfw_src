@@ -77,7 +77,6 @@ public class AlertManagerImpl implements AlertManager
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
-
         /**
          * Disabled Tests
          */

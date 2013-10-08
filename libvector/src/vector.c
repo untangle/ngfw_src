@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: vector.c 35573 2013-08-08 19:43:35Z dmorris $
  */
 #include <stdlib.h>
 #include <pthread.h>

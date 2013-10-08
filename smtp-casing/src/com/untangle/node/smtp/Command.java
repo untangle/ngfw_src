@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/Command.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -44,59 +44,23 @@ import java.nio.ByteBuffer;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 
-
 /**
- * Class reprsenting an SMTP Command issued
- * by a client.
+ * Class reprsenting an SMTP Command issued by a client.
  */
-public class Command
-    implements Token {
-
-    /**
-     * Enumeration of the SMTP Commands we know about (not
-     * that we accept all of them).
-     */
-    public enum CommandType {
-        HELO,
-        EHLO,
-        MAIL,
-        RCPT,
-        DATA,
-        RSET,
-        QUIT,
-        SEND,//
-        SOML,//
-        SAML,//
-        TURN,//
-        VRFY,
-        EXPN,
-        HELP,
-        NOOP,
-        SIZE,
-        STARTTLS,
-        AUTH,
-        UNKNOWN
-    };
-
-    //==========================================
-    // Warning - if you add to the list above,
-    // you must also modify the
-    // "stringToCommandType" method
-    //==========================================
+public class Command implements Token
+{
 
     private final CommandType m_type;
     private final String m_cmdStr;
     private String m_argStr;
 
-    public Command(CommandType type, String cmdStr, String argStr) throws ParseException
-    {
+    public Command(CommandType type, String cmdStr, String argStr) throws ParseException {
         m_type = type;
         m_cmdStr = cmdStr;
         m_argStr = argStr;
     }
 
-    public Command(CommandType type)
-    {
+    public Command(CommandType type) {
         m_type = type;
         m_cmdStr = type.toString();
         m_argStr = null;
@@ -115,11 +79,8 @@ public class Command
         m_argStr = argStr;
     }
 
-
     /**
-     * Get the argument to a command.  For example,
-     * in "MAIL FROM:<>" "FROM:<>" is the argument. This may
-     * be null.
+     * Get the argument to a command. For example, in "MAIL FROM:<>" "FROM:<>" is the argument. This may be null.
      */
     public String getArgString()
     {
@@ -127,8 +88,7 @@ public class Command
     }
 
     /**
-     * Get the type of the command.  Be warned -
-     * the type may be "UNKNOWN"
+     * Get the type of the command. Be warned - the type may be "UNKNOWN"
      */
     public CommandType getType()
     {
@@ -136,16 +96,14 @@ public class Command
     }
 
     /**
-     * Convert the command back to a valid line (with
-     * terminator).
-     * This is done by appending the type with
-     * the results of {@link #getArgString getArgString()}.
+     * Convert the command back to a valid line (with terminator). This is done by appending the type with the results
+     * of {@link #getArgString getArgString()}.
      */
     public ByteBuffer getBytes()
     {
-        //Do a bit of fixup on the string
+        // Do a bit of fixup on the string
         String cmdStr = m_type.toString();
-        if(getType() == CommandType.UNKNOWN) {
+        if (getType() == CommandType.UNKNOWN) {
             cmdStr = m_cmdStr;
         }
 
@@ -154,26 +112,25 @@ public class Command
         if (argStr != null) {
             argStr = argStr.trim();
             arg = true;
-        }
-        else {
+        } else {
             argStr = "";
             arg = false;
         }
-        
+
         byte[] cmdBytes = cmdStr.getBytes();
         byte[] argBytes = argStr.getBytes();
-        
-        int size = cmdBytes.length + (arg ? argBytes.length + 1 : 0 ) + 3;
+
+        int size = cmdBytes.length + (arg ? argBytes.length + 1 : 0) + 3;
         ByteBuffer buf = ByteBuffer.allocate(size);
 
         buf.put(cmdBytes);
-        if(arg) {
-            buf.put((byte)SP);
+        if (arg) {
+            buf.put((byte) SP);
             buf.put(argBytes);
         }
-        buf.put((byte)CR);
-        buf.put((byte)LF);
-        
+        buf.put((byte) CR);
+        buf.put((byte) LF);
+
         buf.flip();
 
         return buf;
@@ -185,7 +142,7 @@ public class Command
     public String toDebugString()
     {
         ByteBuffer buf = getBytes();
-        buf.limit(buf.limit() - 2);//Remove CRLF for debugging
+        buf.limit(buf.limit() - 2);// Remove CRLF for debugging
         return bbToString(buf);
     }
 
@@ -194,83 +151,15 @@ public class Command
         return toDebugString();
     }
 
-    /**
-     * Converts the given String to a CommandType.  Note that
-     * the type may come back as "UNKNOWN".
-     */
-    public static CommandType stringToCommandType(String cmdStr)
-    {
-        //Commands, aligned with their enum type.
-
-        if(cmdStr.equalsIgnoreCase("HELO")) {
-            return CommandType.HELO;
-        }
-        if(cmdStr.equalsIgnoreCase("EHLO")) {
-            return CommandType.EHLO;
-        }
-        if(cmdStr.equalsIgnoreCase("MAIL")) {
-            return CommandType.MAIL;
-        }
-        if(cmdStr.equalsIgnoreCase("RCPT")) {
-            return CommandType.RCPT;
-        }
-        if(cmdStr.equalsIgnoreCase("DATA")) {
-            return CommandType.DATA;
-        }
-        if(cmdStr.equalsIgnoreCase("RSET")) {
-            return CommandType.RSET;
-        }
-        if(cmdStr.equalsIgnoreCase("QUIT")) {
-            return CommandType.QUIT;
-        }
-        if(cmdStr.equalsIgnoreCase("SEND")) {
-            return CommandType.SEND;
-        }
-        if(cmdStr.equalsIgnoreCase("SOML")) {
-            return CommandType.SOML;
-        }
-        if(cmdStr.equalsIgnoreCase("SAML")) {
-            return CommandType.SAML;
-        }
-        if(cmdStr.equalsIgnoreCase("TURN")) {
-            return CommandType.TURN;
-        }
-        if(cmdStr.equalsIgnoreCase("VRFY")) {
-            return CommandType.VRFY;
-        }
-        if(cmdStr.equalsIgnoreCase("EXPN")) {
-            return CommandType.EXPN;
-        }
-        if(cmdStr.equalsIgnoreCase("HELP")) {
-            return CommandType.HELP;
-        }
-        if(cmdStr.equalsIgnoreCase("NOOP")) {
-            return CommandType.NOOP;
-        }
-        if(cmdStr.equalsIgnoreCase("SIZE")) {
-            return CommandType.SIZE;
-        }
-        if(cmdStr.equalsIgnoreCase("STARTTLS")) {
-            return CommandType.STARTTLS;
-        }
-        if(cmdStr.equalsIgnoreCase("AUTH")) {
-            return CommandType.AUTH;
-        }
-        return CommandType.UNKNOWN;
-    }
-
     public int getEstimatedSize()
     {
         String cmdStr = m_type.toString();
-        if(getType() == CommandType.UNKNOWN) {
+        if (getType() == CommandType.UNKNOWN) {
             cmdStr = m_cmdStr;
         }
 
         String argStr = getArgString();
 
-
-        return cmdStr.length()
-            + (argStr == null?(0):(argStr.length() + 1))
-            + 3;
+        return cmdStr.length() + (argStr == null ? (0) : (argStr.length() + 1)) + 3;
     }
 }

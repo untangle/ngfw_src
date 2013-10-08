@@ -1,5 +1,5 @@
 # -*-ruby-*-
-# $Id$
+# $Id: package.rb 35381 2013-07-22 15:59:27Z dmorris $
 
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_udp.c 35480 2013-07-30 20:42:22Z dmorris $
  */
 #include "netcap_udp.h"
 

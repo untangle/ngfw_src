@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SpamNodeImpl.java 35674 2013-08-19 22:12:28Z dmorris $
  */
 package com.untangle.node.spam;
 

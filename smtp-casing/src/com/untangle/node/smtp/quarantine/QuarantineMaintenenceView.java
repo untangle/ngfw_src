@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/QuarantineMaintenenceView.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,70 +32,46 @@
  */
 
 package com.untangle.node.smtp.quarantine;
+
 import java.util.List;
 
+import com.untangle.node.smtp.quarantine.store.InboxSummary;
+
 /**
- * Interface for Admins to browse/manipulate
- * the Quarantine.
+ * Interface for Admins to browse/manipulate the Quarantine.
  */
-public interface QuarantineMaintenenceView
-    extends QuarantineManipulation {
+public interface QuarantineMaintenenceView extends QuarantineManipulation
+{
 
     /**
      * Total size of the entire store (in bytes)
      */
-    public long getInboxesTotalSize()
-        throws QuarantineUserActionFailedException;
+    public long getInboxesTotalSize() throws QuarantineUserActionFailedException;
 
     /**
-     * Get the inboxes
-     */
-    public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
-        throws QuarantineUserActionFailedException;
-
-    public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
-                                                 boolean isAscending )
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    public InboxRecordArray getInboxRecordArray( String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    public int getInboxTotalRecords( String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    /**
-     * Total size of the entire store
-     * (in kilobytes (inMB = false) or megabytes (inMB = true))
+     * Total size of the entire store (in kilobytes (inMB = false) or megabytes (inMB = true))
      */
     public String getFormattedInboxesTotalSize(boolean inMB);
 
     /**
      * List all inboxes maintained by this Quarantine
-     *
+     * 
      * @return the list of all inboxes
      */
-    public List<Inbox> listInboxes()
-        throws QuarantineUserActionFailedException;
+    public List<InboxSummary> listInboxes() throws QuarantineUserActionFailedException;
 
     /**
-     * Delete the given inbox, even if there are messages within.  This
-     * does <b>not</b> prevent the account from automagically
-     * being recreated next time SPAM is sent its way.
-     *
-     * @param account the email address
+     * Delete the given inbox, even if there are messages within. This does <b>not</b> prevent the account from
+     * automagically being recreated next time SPAM is sent its way.
+     * 
+     * @param account
+     *            the email address
      */
-    public void deleteInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    public void deleteInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException;
 
-    public void deleteInboxes(String[] accounts)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    public void rescueInbox(String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
-    
-    public void rescueInboxes(String[] accounts)
-        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    public void deleteInboxes(String[] accounts) throws NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public void rescueInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException;
+
+    public void rescueInboxes(String[] accounts) throws NoSuchInboxException, QuarantineUserActionFailedException;
 }

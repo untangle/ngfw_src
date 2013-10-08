@@ -1,4 +1,4 @@
-/* $HeadURL$ */
+/* $HeadURL: svn://chef/work/src/jnetcap/impl/com/untangle/jnetcap/Netcap.java $ */
 package com.untangle.jnetcap;
 
 import java.io.FileReader;

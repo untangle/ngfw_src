@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/mime/LineTooLongException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,16 +33,11 @@
 
 package com.untangle.node.smtp.mime;
 
-/**
- * ...name says it all...
- * <p>
- * XXXXXX bscott a better base class?
- */
+
 @SuppressWarnings("serial")
 public class LineTooLongException extends Exception
 {
-    public LineTooLongException(int limit)
-    {
+    public LineTooLongException(int limit) {
         super("Line exceeded " + limit + " byte limit");
     }
 }

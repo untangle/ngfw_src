@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: MasterTable.java 35396 2013-07-23 11:38:48Z dcibu $
  */
 package com.untangle.node.smtp.quarantine.store;
 
@@ -21,31 +21,29 @@ import com.untangle.node.smtp.quarantine.InboxRecord;
 // of accounts.
 
 /**
- * Manager of the master records for mapping users to folders, as well as
- * tracking overall size of the store. <br>
+ * Manager of the master records for mapping users to folders, as well as tracking overall size of the store. <br>
  * <br>
- * Assumes that caller has locked any addresses being referenced, unless
- * otherwise noted.
+ * Assumes that caller has locked any addresses being referenced, unless otherwise noted.
  */
 final class MasterTable
 {
+    private static final String DATA_DIR_NAME = "inboxes";
 
-    private final Logger m_logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
-    private String m_rootDir;
-    private StoreSummary m_summary;
-    private volatile boolean m_closing = false;
+    private String rootDir;
+    private StoreSummary summary;
 
     private MasterTable(String dir, StoreSummary initialSummary) {
-        m_rootDir = dir;
-        m_summary = initialSummary;
+        rootDir = dir;
+        summary = initialSummary;
     }
 
     /**
-     * Open the MasterTable. The InboxDirectoryTree is needed in case the system
-     * closed abnormally and the StoreSummary needs to be rebuilt.
+     * Open the MasterTable. The InboxDirectoryTree is needed in case the system closed abnormally and the StoreSummary
+     * needs to be rebuilt.
      */
-    static MasterTable open(String rootDir, InboxDirectoryTree dirTracker)
+    static MasterTable open(String rootDir)
     {
         Logger logger = Logger.getLogger(MasterTable.class);
 
@@ -54,42 +52,41 @@ final class MasterTable
         boolean needRebuild = (summary == null || summary.getTotalSz() == 0);
 
         if (needRebuild) {
-            RebuildingVisitor visitor = new RebuildingVisitor();
+            StoreSummary storeMeta = new StoreSummary();
             logger.debug("About to scan Inbox directories to rebuild summary");
-            dirTracker.visitInboxes(visitor);
+            visitInboxes(new File(rootDir), DATA_DIR_NAME, storeMeta);
             logger.debug("Done scanning Inbox directories to rebuild summary");
-            return new MasterTable(rootDir, visitor.getSummary());
+            return new MasterTable(rootDir, storeMeta);
         } else {
             // QuarantineStorageManager.openSummary(rootDir);
             return new MasterTable(rootDir, summary);
         }
     }
 
-    static MasterTable rebuild(String rootDir, InboxDirectoryTree dirTracker)
+    static MasterTable rebuild(String rootDir)
     {
         Logger logger = Logger.getLogger(MasterTable.class);
-        RebuildingVisitor visitor = new RebuildingVisitor();
+        StoreSummary storeMeta = new StoreSummary();
         logger.debug("About to scan Inbox directories to rebuild summary");
-        dirTracker.visitInboxes(visitor);
+        visitInboxes(new File(rootDir), DATA_DIR_NAME, storeMeta);
         logger.debug("Done scanning Inbox directories to rebuild summary");
-        return new MasterTable(rootDir, visitor.getSummary());
+        return new MasterTable(rootDir, storeMeta);
     }
 
     boolean inboxExists(String lcAddress)
     {
-        return m_summary.containsInbox(lcAddress);
+        return summary.containsInbox(lcAddress);
     }
 
     /**
-     * Assumes caller has already found that there is no such inbox, while
-     * holding the master lock for this account
+     * Assumes caller has already found that there is no such inbox, while holding the master lock for this account
      */
     synchronized void addInbox(String address)
     {
 
-        StoreSummary newSummary = new StoreSummary(m_summary);
+        StoreSummary newSummary = new StoreSummary(summary);
         newSummary.addInbox(address, new InboxSummary(address));
-        m_summary = newSummary;
+        summary = newSummary;
         save();
     }
 
@@ -98,9 +95,9 @@ final class MasterTable
      */
     synchronized void removeInbox(String address)
     {
-        StoreSummary newSummary = new StoreSummary(m_summary);
+        StoreSummary newSummary = new StoreSummary(summary);
         newSummary.removeInbox(address);
-        m_summary = newSummary;
+        summary = newSummary;
         save();
     }
 
@@ -111,11 +108,11 @@ final class MasterTable
      */
     synchronized boolean mailAdded(String address, long sz)
     {
-        InboxSummary meta = m_summary.getInbox(address);
+        InboxSummary meta = summary.getInbox(address);
         if (meta == null) {
             return false;
         }
-        m_summary.mailAdded(meta, sz);
+        summary.mailAdded(meta, sz);
         save();
         return true;
     }
@@ -127,11 +124,11 @@ final class MasterTable
      */
     synchronized boolean mailRemoved(String address, long sz)
     {
-        InboxSummary meta = m_summary.getInbox(address);
+        InboxSummary meta = summary.getInbox(address);
         if (meta == null) {
             return false;
         }
-        m_summary.mailRemoved(meta, sz);
+        summary.mailRemoved(meta, sz);
         save();
         return true;
     }
@@ -143,11 +140,11 @@ final class MasterTable
      */
     synchronized boolean updateMailbox(String address, long totalSz, int totalMails)
     {
-        InboxSummary meta = m_summary.getInbox(address);
+        InboxSummary meta = summary.getInbox(address);
         if (meta == null) {
             return false;
         }
-        m_summary.updateMailbox(meta, totalSz, totalMails);
+        summary.updateMailbox(meta, totalSz, totalMails);
         save();
         return true;
     }
@@ -157,7 +154,7 @@ final class MasterTable
      */
     long getTotalQuarantineSize()
     {
-        return m_summary.getTotalSz();
+        return summary.getTotalSz();
     }
 
     /**
@@ -165,7 +162,7 @@ final class MasterTable
      */
     int getTotalNumMails()
     {
-        return m_summary.getTotalMails();
+        return summary.getTotalMails();
     }
 
     /**
@@ -173,31 +170,28 @@ final class MasterTable
      */
     int getTotalInboxes()
     {
-        return m_summary.size();
+        return summary.size();
     }
 
     /**
-     * Close this table, causing data to be written out to disk. Any subsequent
-     * (stray) calls to this object will also cause an update of the on-disk
-     * representation of state.
+     * Close this table, causing data to be written out to disk. Any subsequent (stray) calls to this object will also
+     * cause an update of the on-disk representation of state.
      */
     synchronized void close()
     {
-        m_closing = true;
         save();
     }
 
     private void save()
     {
-        if (!QuarantineStorageManager.writeSummary(m_summary, m_rootDir)) {
-            m_logger.warn("Unable to save StoreSummary.  Next startup " + "will have to rebuild index");
+        if (!QuarantineStorageManager.writeSummary(summary, rootDir)) {
+            logger.warn("Unable to save StoreSummary.  Next startup " + "will have to rebuild index");
         }
     }
 
     /**
-     * // * Returns null if not found. Note that since this is not // *
-     * synchronized, one should call this while holding the // * master account
-     * lock to ensure that concurrent // * creation doesn't take place. //
+     * // * Returns null if not found. Note that since this is not // * synchronized, one should call this while holding
+     * the // * master account lock to ensure that concurrent // * creation doesn't take place. //
      */
     // RelativeFileName getInboxDir(String address) {
     // InboxSummary meta = m_summary.getInbox(address);
@@ -207,44 +201,53 @@ final class MasterTable
     // }
 
     /**
-     * Do not modify any of the returned entries, as it is a shared reference.
-     * The returned set itself is guaranteed never to be modified.
+     * Do not modify any of the returned entries, as it is a shared reference. The returned set itself is guaranteed
+     * never to be modified.
      */
     Set<Map.Entry<String, InboxSummary>> entries()
     {
-        return m_summary.entries();
+        return summary.entries();
     }
 
-    // -------------- Inner Class ---------------------
+    /**
+     * Pass a visitor through this tree's managed directory structure. <br>
+     * <br>
+     * This is a depth-first tree walk, so the visitor <b>can</b> delete files.
+     * 
+     * @param visitor
+     *            the visitor
+     */
 
-    // Class used when we have to visit
-    // all directories in the Inbox tree and
-    // rebuild our index.
-    private static class RebuildingVisitor implements InboxDirectoryTreeVisitor
+    private static void visitInboxes(File dir, String relativePathAsString, StoreSummary storeMeta)
     {
-
-        private StoreSummary m_storeMeta = new StoreSummary();
-
-        public void visit(File f)
-        {
-            String emailAddress = f.getName();
-            InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(emailAddress, f.getAbsolutePath());
-            if (inboxIndex != null) {
-                long totalSz = 0;
-                int totalMails = 0;
-                for (InboxRecord record : inboxIndex) {
-                    totalSz += record.getSize();
-                    totalMails++;
-                }
-                m_storeMeta.addInbox(inboxIndex.getOwnerAddress(), new InboxSummary(f.getName(), totalSz, totalMails));
+        File[] kids = dir.listFiles();
+        for (File kid : kids) {
+            if (kid.isDirectory()) {
+                visitInboxes(kid, relativePathAsString + File.separator + kid.getName(), storeMeta);
             }
         }
+        visit(dir, storeMeta);
+    }
 
-        StoreSummary getSummary()
-        {
-            return m_storeMeta;
+    /**
+     * Visit the given directory within the inbox directory tree and read the summary
+     * 
+     * @param f
+     *            the relative file representing a directory. Note that this may not be a terminal (inbox) directory.
+     */
+    private static void visit(File f, StoreSummary storeMeta)
+    {
+        String emailAddress = f.getName();
+        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(emailAddress, f.getAbsolutePath());
+        if (inboxIndex != null) {
+            long totalSz = 0;
+            int totalMails = 0;
+            for (InboxRecord record : inboxIndex) {
+                totalSz += record.getSize();
+                totalMails++;
+            }
+            storeMeta.addInbox(inboxIndex.getOwnerAddress(), new InboxSummary(f.getName(), totalSz, totalMails));
         }
-
     }
 
 }

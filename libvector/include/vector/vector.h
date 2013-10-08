@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: vector.h 35573 2013-08-08 19:43:35Z dmorris $
  */
 #ifndef __VECTOR_H
 #define __VECTOR_H

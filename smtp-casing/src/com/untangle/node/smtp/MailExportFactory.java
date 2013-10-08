@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: MailExportFactory.java 35448 2013-07-29 17:25:31Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Factory for the exported MailNode interface.
- *
+ * 
  */
 public class MailExportFactory
 {
@@ -17,7 +17,8 @@ public class MailExportFactory
 
     private MailExport export;
 
-    private MailExportFactory() { }
+    private MailExportFactory() {
+    }
 
     public static MailExportFactory factory()
     {
@@ -26,9 +27,11 @@ public class MailExportFactory
 
     /**
      * Allows the casing to export its interface for its policy.
-     *
-     * @param policy policy for these Exports.
-     * @param export exported interface.
+     * 
+     * @param policy
+     *            policy for these Exports.
+     * @param export
+     *            exported interface.
      */
     public void registerExport(MailExport export)
     {
@@ -43,8 +46,9 @@ public class MailExportFactory
 
     /**
      * Gets the exported interface for a given policy.
-     *
-     * @param policy the policy of the exported interface.
+     * 
+     * @param policy
+     *            the policy of the exported interface.
      * @return the exported interface.
      */
     public MailExport getExport()

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SnmpSettings.java 31993 2012-05-22 17:59:09Z dmorris $
  */
 package com.untangle.uvm;
 

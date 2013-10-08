@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_globals.h 35400 2013-07-23 16:31:40Z dmorris $
  */
 #ifndef __NETCAP_GLOBALS_
 #define __NETCAP_GLOBALS_

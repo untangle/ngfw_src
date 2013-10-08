@@ -1,26 +1,25 @@
 /**
- * $Id$
+ * $Id: JsonInterface.java 34293 2013-03-17 05:22:02Z dmorris $
  */
 package com.untangle.node.smtp.web.euv;
 
 import java.util.List;
 
-import com.untangle.uvm.node.ParseException;
-
 import com.untangle.node.smtp.quarantine.BadTokenException;
 import com.untangle.node.smtp.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.NoSuchInboxException;
 import com.untangle.node.smtp.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.smtp.safelist.NoSuchSafelistException;
 import com.untangle.node.smtp.safelist.SafelistActionFailedException;
+import com.untangle.uvm.node.ParseException;
 
 public interface JsonInterface
 {
     public boolean requestDigest( String account )
         throws ParseException, QuarantineUserActionFailedException;
 
-    public List<JsonInboxRecord> getInboxRecords( String token, int start, int limit, 
-                                                  String sortColumn, boolean isAscending )
+    public List<InboxRecord> getInboxRecords( String token )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
 
     public ActionResponse releaseMessages( String token, String messages[] )

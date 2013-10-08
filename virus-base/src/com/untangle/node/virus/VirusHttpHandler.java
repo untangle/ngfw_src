@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: VirusHttpHandler.java 35604 2013-08-13 05:47:51Z dmorris $
  */
 package com.untangle.node.virus;
 
@@ -56,7 +56,6 @@ class VirusHttpHandler extends HttpStateMachine
     private File scanfile;
     private FileChannel outFile;
     private FileChannel inFile;
-   // private File file;
 
     // constructors -----------------------------------------------------------
 
@@ -325,6 +324,7 @@ class VirusHttpHandler extends HttpStateMachine
             this.outFile = (new FileOutputStream(fileBuf)).getChannel();
             this.inFile = (new FileInputStream(fileBuf)).getChannel();
             this.scanfile = fileBuf;
+
             this.scan = true;
         } catch (IOException e) {
             logger.warn("Unable to create temporary file: " + e);

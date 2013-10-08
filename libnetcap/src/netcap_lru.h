@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_lru.h 35571 2013-08-08 18:37:27Z dmorris $
  */
 #ifndef _NETCAP_LRU_H_
 #define _NETCAP_LRU_H_

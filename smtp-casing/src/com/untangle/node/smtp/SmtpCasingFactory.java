@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/SmtpCasingFactory.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,10 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class SmtpCasingFactory implements CasingFactory
 {
-    private static final SmtpCasingFactory SMTP_CASING_FACTORY
-        = new SmtpCasingFactory();
+    private static final SmtpCasingFactory SMTP_CASING_FACTORY = new SmtpCasingFactory();
 
-    private SmtpCasingFactory() { }
+    private SmtpCasingFactory() {
+    }
 
     public static SmtpCasingFactory factory()
     {

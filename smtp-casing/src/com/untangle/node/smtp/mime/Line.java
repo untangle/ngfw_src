@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/mime/Line.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,9 +36,6 @@ package com.untangle.node.smtp.mime;
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 import static com.untangle.node.util.ASCIIUtil.isEOL;
 import static com.untangle.node.util.ASCIIUtil.isLWS;
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.HTAB;
-import static com.untangle.node.util.Ascii.LF;
 import static com.untangle.node.util.Ascii.SP;
 import static com.untangle.node.util.BufferUtil.endsWith;
 import static com.untangle.node.util.BufferUtil.startsWith;
@@ -46,36 +43,33 @@ import static com.untangle.node.util.BufferUtil.startsWith;
 import java.nio.ByteBuffer;
 
 /**
- * Class representing a raw line.  Maintains the terminator
- * character(s) from the original line.  Note that there
- * may not be any terminators on a given line (i.e. if a line
- * is the last in a stream).
+ * Class representing a raw line. Maintains the terminator character(s) from the original line. Note that there may not
+ * be any terminators on a given line (i.e. if a line is the last in a stream).
  */
-public class Line {
+public class Line
+{
 
     private final ByteBuffer m_buf;
     private final int m_termLen;
 
-
     /**
-     * PRE: Although not enforced, the ByteBuffer should
-     *      have a backing array
-     *
-     * @param buf the Buffer <b>with</b> any terminating characters within its limit
+     * PRE: Although not enforced, the ByteBuffer should have a backing array
+     * 
+     * @param buf
+     *            the Buffer <b>with</b> any terminating characters within its limit
      */
-    public Line(ByteBuffer buf,
-                int termLen) {
+    public Line(ByteBuffer buf, int termLen) {
 
         m_buf = (ByteBuffer) buf.rewind();
         m_termLen = termLen;
     }
 
     /**
-     * Returns a new Line (with shared content)
-     * which has no terminator
+     * Returns a new Line (with shared content) which has no terminator
      */
-    public Line removeTerminator() {
-        if(m_termLen == 0) {
+    public Line removeTerminator()
+    {
+        if (m_termLen == 0) {
             return this;
         }
         ByteBuffer newBuf = m_buf.slice();
@@ -84,259 +78,160 @@ public class Line {
     }
 
     /**
-     * Get a ByteBuffer representing the bytes of the line.  Callers may modify the
-     * limit and position as-per the rules of ByteBuffer.  Any changes
-     * to the contents <b>will</b> be seen by other callers of this method (i.e.
-     * there is one backing array, but new slices returned by each call).
-     *
-     * @param includeTermInView if true, any characters which terminated this
-     *        line are also returned within the limit of the buffer.
-     *
-     * @return the ByteBuffer with the line, positioned at the start
-     *         of the line bytes with the limit set including the
+     * Get a ByteBuffer representing the bytes of the line. Callers may modify the limit and position as-per the rules
+     * of ByteBuffer. Any changes to the contents <b>will</b> be seen by other callers of this method (i.e. there is one
+     * backing array, but new slices returned by each call).
+     * 
+     * @param includeTermInView
+     *            if true, any characters which terminated this line are also returned within the limit of the buffer.
+     * 
+     * @return the ByteBuffer with the line, positioned at the start of the line bytes with the limit set including the
      *         terminator character(s) if <code>includeTermInView</code>
      */
-    public ByteBuffer getBuffer(boolean includeTermInView) {
+    public ByteBuffer getBuffer(boolean includeTermInView)
+    {
         ByteBuffer ret = m_buf.slice();
-        if(!includeTermInView) {
+        if (!includeTermInView) {
             ret.limit(ret.limit() - m_termLen);
         }
         return ret;
     }
+
     /**
-     * Gets the bytes of the line as a ByteBuffer, without
-     * any line terminators within the window.  Equivilant
-     * to calling <code>getBuffer(false)</code>
-     *
-     * @return the ByteBuffer with the line, positioned at the start
-     *         of the line bytes with the limit set just before the
-     *         terminator character(s)
+     * Gets the bytes of the line as a ByteBuffer, without any line terminators within the window. Equivilant to calling
+     * <code>getBuffer(false)</code>
+     * 
+     * @return the ByteBuffer with the line, positioned at the start of the line bytes with the limit set just before
+     *         the terminator character(s)
      */
-    public ByteBuffer getBuffer() {
+    public ByteBuffer getBuffer()
+    {
         return getBuffer(false);
     }
 
     /**
-     * The length of a buffer returned
-     * from {@link #getBuffer getBuffer(false)}.
+     * The length of a buffer returned from {@link #getBuffer getBuffer(false)}.
      */
-    public int bufferLen() {
+    public int bufferLen()
+    {
         return m_buf.remaining();
     }
 
     /**
-     * Get the number of characters used in the original line
-     * for termination.  May be zero.
-     *
+     * Get the number of characters used in the original line for termination. May be zero.
+     * 
      * @return length of terminator character(s)
      */
-    public int getTermLen() {
+    public int getTermLen()
+    {
         return m_termLen;
     }
 
-    public boolean bufferStartsWith(String aStr) {
+    public boolean bufferStartsWith(String aStr)
+    {
         return startsWith(getBuffer(false), aStr);
     }
 
-    public boolean bufferEndsWith(String aStr) {
+    public boolean bufferEndsWith(String aStr)
+    {
         return endsWith(getBuffer(false), aStr);
     }
 
-    public String bufferToString() {
+    public String bufferToString()
+    {
         return bbToString(getBuffer(false));
     }
 
-
     /**
-     * If <code>unfoldLines</code> is true, then
-     * this assumes the lines are RFC822 formatted
-     * header lines.
+     * If <code>unfoldLines</code> is true, then this assumes the lines are RFC822 formatted header lines.
      */
-    public static String linesToString(Line[] lines,
-                                       int startingAt,
-                                       boolean unfoldLines) {
+    public static String linesToString(Line[] lines, int startingAt, boolean unfoldLines)
+    {
 
         LineIterator li = new LineIterator(lines, unfoldLines);
-        if(startingAt > 0) {
+        if (startingAt > 0) {
             li.skip(startingAt);
         }
         StringBuilder sb = new StringBuilder();
         int b = li.next();
-        while(b != -1) {
-            sb.append((char)(b & 0x00FF));
+        while (b != -1) {
+            sb.append((char) (b & 0x00FF));
             b = li.next();
         }
-        //    String ret = sb.toString();
-        //    System.out.println("***DEBUG*** [linesToString] returning \"" + ret + "\"");
         return sb.toString();
-
-        //    return linesToString(lines, startingAt, Integer.MAX_VALUE, unfoldLines);
-    }
-    /**
-     * Helper method (since I didn't think there was enough of a reason
-     * to create a "LineList" or something).
-     * <p>
-     * This method does assist in changing the
-     * position of the first Line.
-     * <p>
-     * <code>len</code> includes any folding for InternetHeader lines.
-     * However, they are not returned in the returned String
-     */
-    @SuppressWarnings("unused")
-    private static String linesToString(Line[] lines,
-                                        int startingAt,
-                                        int len,
-                                        boolean unfoldLines) {
-
-        //==============================================
-        // TODO bscott This (goofy) implementation
-        //      not only looks bad, but also adds
-        //      an extra space to the end of headers
-        //==============================================
-
-        StringBuilder sb = new StringBuilder();
-        int xFered = 0;
-        char c;
-
-        ByteBuffer bb;
-
-        for(int i = 0; i<lines.length; i++) {
-            bb = lines[i].getBuffer(true);
-            if(i == 0) {
-                bb.position(bb.position() + startingAt);
-            }
-            while(xFered < len && bb.hasRemaining()) {
-                c = (char) (bb.get() & 0x00FF);
-                xFered++;
-                if(unfoldLines && (c == CR || c == LF)) {
-                    xFered+=eatWhitespace(bb, len - xFered);
-                    //Nasty hack.  Replace "c" with
-                    //a SP, and let the append below pick it up
-                    c = SP;
-                    if(xFered >= len) {
-                        sb.append(SP);
-                        return sb.toString();
-                    }
-                }
-                sb.append(c);
-            }
-            if(xFered >= len) {
-                return sb.toString();
-            }
-        }
-        return sb.toString();
-
-    }
-
-    private static int eatWhitespace(ByteBuffer buf,
-                                     int maxToConsume) {
-        int count = 0;
-        while (buf.hasRemaining() && (count < maxToConsume)) {
-            byte b = buf.get();
-            if(!(
-                 b == CR ||
-                 b == LF ||
-                 b == HTAB ||
-                 b == SP)
-               ) {
-                buf.position(buf.position()-1);
-                break;
-            }
-            count++;
-        }
-        return count;
-    }
-
-    public static void main(String[] args)
-        throws Exception {
-
-        String s1 = "foo: goo\r\n";
-        String s2 = "\tdoo\r\n";
-
-        Line l1 = new Line(ByteBuffer.wrap(s1.getBytes()), 2);
-        Line l2 = new Line(ByteBuffer.wrap(s2.getBytes()), 2);
-
-        System.out.println(linesToString(new Line[] {l1, l2},
-                                         5,
-                                         true));
-
     }
 
     /**
-     * I'm feeling too lazy to write the
-     * unfold method without this helper.  It
-     * is a bit of a beating on the CPU relative
+     * I'm feeling too lazy to write the unfold method without this helper. It is a bit of a beating on the CPU relative
      * to its value.
      */
-    private static class LineIterator {
+    private static class LineIterator
+    {
         private final boolean m_unfoldLines;
         private final ByteBuffer[] m_buffers;
         private final int m_numBuffers;
         private int m_currentBuffer;
 
-        LineIterator(Line[] lines,
-                     boolean unfold) {
+        LineIterator(Line[] lines, boolean unfold) {
             m_buffers = new ByteBuffer[lines.length];
             int i = 0;
-            for(Line line : lines) {
+            for (Line line : lines) {
                 m_buffers[i++] = line.getBuffer(true);
             }
             m_numBuffers = m_buffers.length;
             m_unfoldLines = unfold;
             m_currentBuffer = 0;
         }
-        void skip(int num) {
-            while(num > 0 && m_currentBuffer < m_numBuffers) {
+
+        void skip(int num)
+        {
+            while (num > 0 && m_currentBuffer < m_numBuffers) {
                 int toSkip = m_buffers[m_currentBuffer].remaining();
-                if(toSkip <= 0) {
-                    //Nothing left in this buffer.  Go to the next
+                if (toSkip <= 0) {
+                    // Nothing left in this buffer. Go to the next
                     m_currentBuffer++;
                     continue;
                 }
-                if(toSkip > num) {
-                    //We're skipping less than the current buffer's remaining
+                if (toSkip > num) {
+                    // We're skipping less than the current buffer's remaining
                     toSkip = num;
                 }
                 m_buffers[m_currentBuffer].position(m_buffers[m_currentBuffer].position() + toSkip);
-                num-=toSkip;
+                num -= toSkip;
             }
         }
 
-        int next() {
-            while(m_currentBuffer < m_numBuffers) {
-                if(!m_buffers[m_currentBuffer].hasRemaining()) {
+        int next()
+        {
+            while (m_currentBuffer < m_numBuffers) {
+                if (!m_buffers[m_currentBuffer].hasRemaining()) {
                     m_currentBuffer++;
                     continue;
                 }
                 byte ret = m_buffers[m_currentBuffer].get();
-                if(!m_unfoldLines) {
+                if (!m_unfoldLines) {
                     return ret;
                 }
-                //We're unfolding
-                if(isEOL(ret)) {
-                    //see if next is another new line char
+                // We're unfolding
+                if (isEOL(ret)) {
+                    // see if next is another new line char
                     ByteBuffer currentBuf = getBuffer();
-                    if(currentBuf != null) {
+                    if (currentBuf != null) {
                         ret = currentBuf.get();
-                        if(isEOL(ret)) {
-                            if(eatWhitespace()) {
+                        if (isEOL(ret)) {
+                            if (eatWhitespace()) {
                                 return SP;
+                            } else {
+                                return getBuffer() == null ? -1 : getBuffer().get();
                             }
-                            else {
-                                return getBuffer() == null?
-                                    -1:
-                                    getBuffer().get();
-                            }
-                        }
-                        else {
-                            //Odd.  CRX where "X" is not
-                            //whatespace.  Just return it.
+                        } else {
+                            // Odd. CRX where "X" is not
+                            // whatespace. Just return it.
                             return ret;
                         }
-                    }
-                    else {
-                        //Ended with a CR.  Odd, but we'll declare
-                        //that the end
+                    } else {
+                        // Ended with a CR. Odd, but we'll declare
+                        // that the end
                         return -1;
                     }
                 }
@@ -345,15 +240,16 @@ public class Line {
             return -1;
         }
 
-        private boolean eatWhitespace() {
+        private boolean eatWhitespace()
+        {
             ByteBuffer buf = getBuffer();
-            if(buf == null) {
+            if (buf == null) {
                 return false;
             }
             boolean ret = false;
-            while(buf != null && buf.hasRemaining()) {
+            while (buf != null && buf.hasRemaining()) {
                 byte b = buf.get();
-                if(!isLWS(b)) {
+                if (!isLWS(b)) {
                     buf.position(buf.position() - 1);
                     return ret;
                 }
@@ -364,13 +260,13 @@ public class Line {
         }
 
         /**
-         * Returns the current buffer.  If the current
-         * buffer is empty, advances to the next buffer.  If
-         * there is no "next" buffer, null is returned.
+         * Returns the current buffer. If the current buffer is empty, advances to the next buffer. If there is no
+         * "next" buffer, null is returned.
          */
-        private ByteBuffer getBuffer() {
-            while(m_currentBuffer < m_numBuffers) {
-                if(!m_buffers[m_currentBuffer].hasRemaining()) {
+        private ByteBuffer getBuffer()
+        {
+            while (m_currentBuffer < m_numBuffers) {
+                if (!m_buffers[m_currentBuffer].hasRemaining()) {
                     m_currentBuffer++;
                     continue;
                 }
@@ -378,6 +274,21 @@ public class Line {
             }
             return null;
         }
+
+    }
+
+    /************** Tests ******************/
+
+    public static String runTest(String[] args) throws Exception
+    {
+
+        String s1 = "foo: goo\r\n";
+        String s2 = "\tdoo\r\n";
+
+        Line l1 = new Line(ByteBuffer.wrap(s1.getBytes()), 2);
+        Line l2 = new Line(ByteBuffer.wrap(s2.getBytes()), 2);
+
+        return Line.linesToString(new Line[] { l1, l2 }, 5, true);
 
     }
 }

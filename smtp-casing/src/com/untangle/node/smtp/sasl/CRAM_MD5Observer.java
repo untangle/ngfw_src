@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/sasl/CRAM_MD5Observer.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,19 +32,14 @@
  */
 package com.untangle.node.smtp.sasl;
 
-
 /**
- * Observer for CRAM-MD5 (RFC 2195) mechanism.  Does
- * not find the user's credentials, but serves as a
- * placeholder so we know that this mechanism
- * <b>cannot</b> result in an encrypted channel.
+ * Observer for CRAM-MD5 (RFC 2195) mechanism. Does not find the user's credentials, but serves as a placeholder so we
+ * know that this mechanism <b>cannot</b> result in an encrypted channel.
  */
-class CRAM_MD5Observer
-    extends ClearObserver {
+class CRAM_MD5Observer extends ClearObserver
+{
 
-    static final String[] MECH_NAMES = new String[] {
-        "CRAM-MD5".toLowerCase()
-    };
+    static final String[] MECH_NAMES = new String[] { "CRAM-MD5".toLowerCase() };
 
     CRAM_MD5Observer() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);

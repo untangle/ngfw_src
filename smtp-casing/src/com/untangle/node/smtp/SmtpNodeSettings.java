@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SmtpNodeSettings.java 34290 2013-03-17 00:00:19Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -28,13 +28,14 @@ public class SmtpNodeSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public SmtpNodeSettings() { }
+    public SmtpNodeSettings() {
+    }
 
     // accessors --------------------------------------------------------------
 
     /**
      * Enabled status of SMTP casing.
-     *
+     * 
      * @return true if SMTP casing is enabled, false otherwise.
      */
     public boolean isSmtpEnabled()
@@ -49,7 +50,7 @@ public class SmtpNodeSettings implements Serializable
 
     /**
      * Timeout for SMTP traffic.
-     *
+     * 
      * @return for SMTP in millis.
      */
     public long getSmtpTimeout()
@@ -63,9 +64,9 @@ public class SmtpNodeSettings implements Serializable
     }
 
     /**
-     * Whether or not to allow TLS.  Currently this controls both the extensions advertised
-     * by the server, and commands allowed by the client.
-     *
+     * Whether or not to allow TLS. Currently this controls both the extensions advertised by the server, and commands
+     * allowed by the client.
+     * 
      * @return true if TLS is allowed, false if not allowed
      */
     public boolean getSmtpAllowTLS()
@@ -75,29 +76,31 @@ public class SmtpNodeSettings implements Serializable
 
     public void setSmtpAllowTLS(boolean smtpAllowTLS)
     {
-         this.smtpAllowTLS = smtpAllowTLS;
+        this.smtpAllowTLS = smtpAllowTLS;
     }
 
     /**
      * Quarantine properties associated with this casing.
      */
-    public QuarantineSettings getQuarantineSettings() {
+    public QuarantineSettings getQuarantineSettings()
+    {
         return quarantineSettings;
     }
 
-    public void setQuarantineSettings(QuarantineSettings s) {
+    public void setQuarantineSettings(QuarantineSettings s)
+    {
         this.quarantineSettings = s;
     }
 
     /**
-     * (actions cascade from parent to child/children and
-     *  orphan children are deleted)
-     *
+     * (actions cascade from parent to child/children and orphan children are deleted)
+     * 
      * @return the list of Safelist settings
      */
     public List<SafelistSettings> getSafelistSettings()
     {
-        if (safelistSettings != null) safelistSettings.removeAll(java.util.Collections.singleton(null));
+        if (safelistSettings != null)
+            safelistSettings.removeAll(java.util.Collections.singleton(null));
         return safelistSettings;
     }
 

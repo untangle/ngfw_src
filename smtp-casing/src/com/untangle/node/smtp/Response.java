@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/Response.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -40,14 +40,12 @@ import java.nio.ByteBuffer;
 
 import com.untangle.node.token.Token;
 
-
 /**
- * Class to encapsulate an SMTP response.
- * The {@link #getArgs arguments} are any Strings
- * after the "NNN" on each response line.
+ * Class to encapsulate an SMTP response. The {@link #getArgs arguments} are any Strings after the "NNN" on each
+ * response line.
  */
-public class Response
-    implements Token {
+public class Response implements Token
+{
 
     private static final String[] BLANK_ARGS = new String[0];
 
@@ -57,60 +55,60 @@ public class Response
     public Response(int code) {
         this(code, "");
     }
+
     public Response(int code, String arg) {
         m_code = code;
-        if(arg == null) {
+        if (arg == null) {
             arg = "";
         }
-        m_args = new String[] {arg};
+        m_args = new String[] { arg };
     }
+
     public Response(int code, String[] args) {
         m_code = code;
-        m_args = (args==null?
-                  BLANK_ARGS:args);
+        m_args = (args == null ? BLANK_ARGS : args);
     }
 
     /**
      * Get the numerical code associated with this response
      */
-    public int getCode() {
+    public int getCode()
+    {
         return m_code;
     }
 
     /**
-     * Get the arguments for the response.  The array may
-     * be greater than 1 element if the response was multi-line.
-     *
-     * @return the argument (never null, although each element
-     *         may be null or blank).
+     * Get the arguments for the response. The array may be greater than 1 element if the response was multi-line.
+     * 
+     * @return the argument (never null, although each element may be null or blank).
      */
-    public String[] getArgs() {
+    public String[] getArgs()
+    {
         return m_args;
     }
 
-
-    public ByteBuffer getBytes() {
+    public ByteBuffer getBytes()
+    {
 
         int len = 0;
-        for(String arg : m_args) {
-            len+=3;//NNN
-            len+=1;//SP or DASH
-            len+=(arg == null?0:arg.length());
-            len+=2;//CRLF
+        for (String arg : m_args) {
+            len += 3;// NNN
+            len += 1;// SP or DASH
+            len += (arg == null ? 0 : arg.length());
+            len += 2;// CRLF
         }
         ByteBuffer ret = ByteBuffer.allocate(len);
 
-        byte[] rcBytes = Integer.toString(m_code).getBytes();//Hack
+        byte[] rcBytes = Integer.toString(m_code).getBytes();// Hack
 
-        for(int i = 0; i<m_args.length; i++) {
+        for (int i = 0; i < m_args.length; i++) {
             ret.put(rcBytes);
-            ret.put((i == m_args.length-1?(byte)SP:(byte) DASH));
-            if(m_args[i] != null) {
+            ret.put((i == m_args.length - 1 ? (byte) SP : (byte) DASH));
+            if (m_args[i] != null) {
                 ret.put(m_args[i].getBytes());
             }
             ret.put(CRLF_BA);
         }
-
 
         ret.flip();
 
@@ -120,17 +118,17 @@ public class Response
     /**
      * For debug logging.
      */
-    public String toDebugString() {
+    public String toDebugString()
+    {
         StringBuilder sb = new StringBuilder();
         sb.append(Integer.toString(m_code));
-        if(getArgs() != null) {
+        if (getArgs() != null) {
             sb.append(" (");
-            if(getArgs().length == 1) {
+            if (getArgs().length == 1) {
                 sb.append("\"");
                 sb.append(getArgs()[0]);
                 sb.append("\"");
-            }
-            else {
+            } else {
                 sb.append("multiline response");
             }
             sb.append(")");
@@ -141,11 +139,11 @@ public class Response
     public int getEstimatedSize()
     {
         int len = 0;
-        for(String arg : m_args) {
-            len+=3;//NNN
-            len+=1;//SP or DASH
-            len+=(arg == null?0:arg.length());
-            len+=2;//CRLF
+        for (String arg : m_args) {
+            len += 3;// NNN
+            len += 1;// SP or DASH
+            len += (arg == null ? 0 : arg.length());
+            len += 2;// CRLF
         }
 
         return len;

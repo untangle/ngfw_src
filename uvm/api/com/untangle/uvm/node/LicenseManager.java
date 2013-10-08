@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LicenseManager.java 30329 2011-12-03 22:54:14Z dmorris $
  */
 package com.untangle.uvm.node;
 

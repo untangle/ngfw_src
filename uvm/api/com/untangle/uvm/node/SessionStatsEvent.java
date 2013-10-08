@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SessionStatsEvent.java 32297 2012-06-25 20:54:12Z dmorris $
  */
 package com.untangle.uvm.node;
 

@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/quarantine/InboxAlreadyRemappedException.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,19 +32,20 @@
  */
 
 package com.untangle.node.smtp.quarantine;
+
 import java.io.Serializable;
 
 /**
  * ...name says it all...
  */
 @SuppressWarnings("serial")
-public class InboxAlreadyRemappedException extends Exception implements Serializable {
+public class InboxAlreadyRemappedException extends Exception implements Serializable
+{
 
     private final String m_alreadyMappedTo;
     private final String m_toRemap;
 
-    public InboxAlreadyRemappedException(String toRemap, String alreadyMappedTo)
-    {
+    public InboxAlreadyRemappedException(String toRemap, String alreadyMappedTo) {
         super(toRemap + " already remapped to " + alreadyMappedTo);
         m_toRemap = toRemap;
         m_alreadyMappedTo = alreadyMappedTo;

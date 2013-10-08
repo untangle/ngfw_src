@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SafelistSettings.java 35448 2013-07-29 17:25:31Z dmorris $
  */
 package com.untangle.node.smtp.safelist;
 
@@ -8,7 +8,7 @@ import com.untangle.node.smtp.MessageInfo;
 
 /**
  * Setting for safelist (recipient and sender pair).
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class SafelistSettings implements Serializable
@@ -18,7 +18,8 @@ public class SafelistSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public SafelistSettings() {}
+    public SafelistSettings() {
+    }
 
     // accessors --------------------------------------------------------------
 
@@ -64,8 +65,7 @@ public class SafelistSettings implements Serializable
             return false;
         }
 
-        SafelistSettings sls = (SafelistSettings)o;
-        return (true == recipient.equals(sls.recipient) &&
-                true == sender.equals(sls.sender));
+        SafelistSettings sls = (SafelistSettings) o;
+        return (true == recipient.equals(sls.recipient) && true == sender.equals(sls.sender));
     }
 }

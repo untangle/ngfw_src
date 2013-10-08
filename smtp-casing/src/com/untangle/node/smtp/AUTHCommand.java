@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/smtp-casing/src/com/untangle/node/smtp/AUTHCommand.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -35,18 +35,16 @@ package com.untangle.node.smtp;
 
 import com.untangle.node.token.ParseException;
 
-
 /**
  * Class reprsenting an SMTP "AUTH" Command (RFC 2554)
  */
-public class AUTHCommand
-    extends Command {
+public class AUTHCommand extends Command
+{
 
     private String m_mechanismName;
     private String m_initialResponse;
 
-    public AUTHCommand(String cmdStr,
-                       String argStr) throws ParseException {
+    public AUTHCommand(String cmdStr, String argStr) throws ParseException {
         super(CommandType.AUTH, cmdStr, argStr);
         parseArgStr();
     }
@@ -54,37 +52,39 @@ public class AUTHCommand
     /**
      * Get the name of the SASL mechanism.
      */
-    public String getMechanismName() {
+    public String getMechanismName()
+    {
         return m_mechanismName;
     }
 
     /**
-     * Note that the initial "response" (dumb name, but from the spec)
-     * is still base64 encoded.
+     * Note that the initial "response" (dumb name, but from the spec) is still base64 encoded.
      */
-    public String getInitialResponse() {
+    public String getInitialResponse()
+    {
         return m_initialResponse;
     }
 
     @Override
-    protected void setArgStr(String argStr) {
+    protected void setArgStr(String argStr)
+    {
         super.setArgStr(argStr);
         parseArgStr();
     }
 
-    private void parseArgStr() {
+    private void parseArgStr()
+    {
         String argStr = getArgString();
-        if(argStr == null) {
+        if (argStr == null) {
             return;
         }
         argStr = argStr.trim();
         int spaceIndex = argStr.indexOf(' ');
-        if(spaceIndex == -1) {
+        if (spaceIndex == -1) {
             m_mechanismName = argStr;
-        }
-        else {
+        } else {
             m_mechanismName = argStr.substring(0, spaceIndex);
-            m_initialResponse = argStr.substring(spaceIndex+1, argStr.length());
+            m_initialResponse = argStr.substring(spaceIndex + 1, argStr.length());
         }
     }
 }

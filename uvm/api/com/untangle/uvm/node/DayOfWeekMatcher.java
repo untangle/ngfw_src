@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: DayOfWeekMatcher.java 32073 2012-06-06 20:53:24Z dmorris $
  */
 package com.untangle.uvm.node;
 

@@ -1,16 +1,17 @@
 /**
- * $Id$
+ * $Id: QuarantineStore.java 35471 2013-07-30 11:44:19Z dcibu $
  */
 package com.untangle.node.smtp.quarantine.store;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.node.smtp.quarantine.Inbox;
 import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.MailSummary;
@@ -18,10 +19,10 @@ import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.node.util.UtLogger;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
- * Always add a file *then* update the index Always update the index *then*
- * delete the file
+ * Always add a file *then* update the index. Always update the index *then* delete the file
  */
 public class QuarantineStore
 {
@@ -34,13 +35,11 @@ public class QuarantineStore
     public enum AdditionStatus
     {
         /**
-         * The mail was added, and the passed-in copy can be discarded (it was
-         * not renamed)
+         * The mail was added, and the passed-in copy can be discarded (it was not renamed)
          */
         SUCCESS_FILE_COPIED,
         /**
-         * The mail was added, and the passed-in file was renamed (moved) to the
-         * quarantine
+         * The mail was added, and the passed-in file was renamed (moved) to the quarantine
          */
         SUCCESS_FILE_RENAMED,
         /**
@@ -50,8 +49,7 @@ public class QuarantineStore
     };
 
     /**
-     * Generic enum describing the result of operations. Used to convery the
-     * outcome of a few operations.
+     * Generic enum describing the result of operations. Used to convery the outcome of a few operations.
      */
     public enum GenericStatus
     {
@@ -69,43 +67,36 @@ public class QuarantineStore
         ERROR
     };
 
-    private final UtLogger m_logger = new UtLogger(QuarantineStore.class);
-    private File m_rootDir;
-    private AddressLock m_addressLock;
-    private MasterTable m_masterTable;
-    private InboxDirectoryTree m_dirTracker;
+    private final UtLogger logger = new UtLogger(QuarantineStore.class);
+    private File rootDir;
+    private AddressLock addressLock;
+    private MasterTable masterTable;
 
-    private QuarantineEjectionHandler m_deleter = new DeletingEjectionHandler();
+    // private InboxDirectoryTree m_dirTracker;
 
-    public QuarantineStore(File rootDir) {
-        m_rootDir = rootDir;
+    public QuarantineStore(File dir) {
+        rootDir = dir;
 
-        if (!m_rootDir.exists()) {
-            m_logger.debug("Creating Quarantine root \"", m_rootDir, "\"");
-            m_rootDir.mkdirs();
+        if (!rootDir.exists()) {
+            logger.debug("Creating Quarantine root \"", rootDir, "\"");
+            rootDir.mkdirs();
         }
 
         // Create address lock
-        m_addressLock = AddressLock.getInstance();
-
-        // Initiailze the InboxDirectoryTree
-        m_logger.debug("About to initialize InboxDirectoryTree...");
-        m_dirTracker = new InboxDirectoryTree(m_rootDir);
-        m_logger.debug("Initialized InboxDirectoryTree");
+        addressLock = AddressLock.getInstance();
 
         // Load the MasterTable
-        m_logger.debug("About to Open Master Table...");
-        m_masterTable = MasterTable.open(m_rootDir.getAbsolutePath(), m_dirTracker);
-        m_logger.debug("Opened Master Table...");
+        logger.debug("About to Open Master Table...");
+        masterTable = MasterTable.open(rootDir.getAbsolutePath());
+        logger.debug("Opened Master Table...");
     }
 
     /**
-     * Tell the quarantine that it is closing. Stray calls may still be made
-     * (thread timing), but will likely be slower.
+     * Tell the quarantine that it is closing. Stray calls may still be made (thread timing), but will likely be slower.
      */
     public void close()
     {
-        m_masterTable.close();
+        masterTable.close();
     }
 
     /**
@@ -113,7 +104,7 @@ public class QuarantineStore
      */
     public long getTotalSize()
     {
-        return m_masterTable.getTotalQuarantineSize();
+        return masterTable.getTotalQuarantineSize();
     }
 
     public final String getFormattedTotalSize(boolean inMB)
@@ -136,12 +127,12 @@ public class QuarantineStore
     /**
      * Provides a summary of all Inboxes.
      */
-    public List<Inbox> listInboxes()
+    public List<InboxSummary> listInboxes()
     {
-        Set<Map.Entry<String, InboxSummary>> allAccounts = m_masterTable.entries();
-        ArrayList<Inbox> ret = new ArrayList<Inbox>(allAccounts.size());
+        Set<Map.Entry<String, InboxSummary>> allAccounts = masterTable.entries();
+        ArrayList<InboxSummary> ret = new ArrayList<InboxSummary>(allAccounts.size());
         for (Map.Entry<String, InboxSummary> entry : allAccounts) {
-            ret.add(new Inbox(entry.getKey(), entry.getValue().getTotalSz(), entry.getValue().getTotalMails()));
+            ret.add(new InboxSummary(entry.getKey(), entry.getValue().getTotalSz(), entry.getValue().getTotalMails()));
         }
         return ret;
     }
@@ -156,7 +147,7 @@ public class QuarantineStore
      */
     public boolean inboxExists(String address)
     {
-        return m_masterTable.inboxExists(address.toLowerCase());
+        return masterTable.inboxExists(address.toLowerCase());
     }
 
     /**
@@ -171,12 +162,9 @@ public class QuarantineStore
      * @param summary
      *            a summary of the mail for quarantine
      * @param attemptRename
-     *            if true, this operation will attempt to move the file into the
-     *            quarantine (avoiding a file copy). If this flag is true and
-     *            the move is successful, then the status is
-     *            <code>SUCCESS_FILE_RENAMED</code> the caller can ignore
-     *            dealing with the file. Otherwise the caller still "owns" the
-     *            file.
+     *            if true, this operation will attempt to move the file into the quarantine (avoiding a file copy). If
+     *            this flag is true and the move is successful, then the status is <code>SUCCESS_FILE_RENAMED</code> the
+     *            caller can ignore dealing with the file. Otherwise the caller still "owns" the file.
      * 
      * @return the result
      */
@@ -186,13 +174,7 @@ public class QuarantineStore
 
         inboxAddr = inboxAddr.toLowerCase();
 
-        m_logger.debug("Call to quarantine mail from file \"", file, "\" into inbox \"", inboxAddr, "\"");
-
-        // Get/create the inbox directory
-        // RelativeFile dirRF = getInboxDir(inboxAddr, true);
-        // if(dirRF == null) {
-        // return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
-        // }
+        logger.debug("Call to quarantine mail from file \"", file, "\" into inbox \"", inboxAddr, "\"");
 
         File dir = getInboxDir(inboxAddr, true);
 
@@ -200,7 +182,7 @@ public class QuarantineStore
         // operation of addition and index update. This
         // is to prevent concurrent deletion of the directory
         // while purging old accounts.
-        m_addressLock.lock(inboxAddr);
+        addressLock.lock(inboxAddr);
 
         long size = file.length();
         summary.setQuarantineSize(size);
@@ -215,7 +197,7 @@ public class QuarantineStore
                 // Try copy
                 newFileName = copyFileToInbox(file, dir);
                 if (newFileName == null) {
-                    m_addressLock.unlock(inboxAddr);
+                    addressLock.unlock(inboxAddr);
                     return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
                 }
                 renamedFile = false;
@@ -223,7 +205,7 @@ public class QuarantineStore
         } else {
             newFileName = copyFileToInbox(file, dir);
             if (newFileName == null) {
-                m_addressLock.unlock(inboxAddr);
+                addressLock.unlock(inboxAddr);
                 return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
             }
             renamedFile = false;
@@ -232,84 +214,73 @@ public class QuarantineStore
         // Update (append) to the index
         if (!appendSummaryToIndex(dir, inboxAddr, recipients, newFileName, summary)) {
             if (renamedFile) {
-                // We're likely so hosed at this point
-                // anyway, what's the use of worrying about
-                // the return
+                // We're likely so hosed at this point anyway,
+                // what's the use of worrying about the return
                 new File(dir, newFileName).renameTo(file);
             } else {
                 new File(dir, newFileName).delete();
             }
-            m_addressLock.unlock(inboxAddr);
+            addressLock.unlock(inboxAddr);
             return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
         }
 
-        if (!m_masterTable.mailAdded(inboxAddr, size)){
-            m_masterTable = MasterTable.rebuild(m_rootDir.getAbsolutePath(), m_dirTracker);
-            m_masterTable.mailAdded(inboxAddr, size);
+        if (!masterTable.mailAdded(inboxAddr, size)) {
+            masterTable = MasterTable.rebuild(rootDir.getAbsolutePath());
+            masterTable.mailAdded(inboxAddr, size);
         }
-        m_addressLock.unlock(inboxAddr);
+        addressLock.unlock(inboxAddr);
         return new Pair<AdditionStatus, String>(renamedFile ? AdditionStatus.SUCCESS_FILE_RENAMED
                 : AdditionStatus.SUCCESS_FILE_COPIED, newFileName);
     }
 
     /**
-     * Prune the store, removing old (expired) messages as well as empty,
-     * inactive accounts. Although I believe this method could be executed
-     * concurrently (i.e. twice by two threads at the same time), that would be
-     * really goofy.
+     * Prune the store, removing old (expired) messages as well as empty, inactive accounts. Although I believe this
+     * method could be executed concurrently (i.e. twice by two threads at the same time), that would be really goofy.
      * 
      * @param relativeOldestMail
-     *            the relative age (e.g. 5 days) for mails to be considered
-     *            inactive and candidates for pruning.
+     *            the relative age (e.g. 5 days) for mails to be considered inactive and candidates for pruning.
      * @param relativeInactiveInboxTime
-     *            the relative age (e.g. 30 days) for inboxes to be considered
-     *            inactive and candidates for pruning.
-     * @param observer
-     *            the observer, to receive informative progress callbacks.
+     *            the relative age (e.g. 30 days) for inboxes to be considered inactive and candidates for pruning.
      */
-    public void prune(long relativeOldestMail, long relativeInactiveInboxTime, QuarantinePruningObserver observer)
+    public void prune(long relativeOldestMail, long relativeInactiveInboxTime)
     {
 
         long oldestValidInboxTimestamp = System.currentTimeMillis() - relativeInactiveInboxTime;
 
-        // Create the two visitors - the deleter
-        // and the selector. The selector also doubles
-        // to collect candidate inboxes for culling
+        // Create the two visitors - the deleter and the selector.
+        // The selector also doubles to collect candidate inboxes for culling
         // for inactivity.
-        PruningDeleter pruningDeleter = new PruningDeleter(observer);
         PruningSelector pruningSelector = new PruningSelector(System.currentTimeMillis() - relativeOldestMail,
                 oldestValidInboxTimestamp);
 
         // Get a copy of the entire address/dir mapping
-        for (Map.Entry<String, InboxSummary> mapping : m_masterTable.entries()) {
+        for (Map.Entry<String, InboxSummary> mapping : masterTable.entries()) {
             // Visit each one via "eject"
-            observer.preVisitInboxForOldMessages(mapping.getKey());
-            eject(mapping.getKey(), pruningDeleter, pruningSelector);
-            observer.postVisitInboxForOldMessages(mapping.getKey());
+            eject(mapping.getKey(), new QuarantineEjectionHandler()
+            {
+                @Override
+                public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
+                {
+                    if (data.delete()) {
+                        logger.debug("Pruned file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
+                    } else {
+                        logger.debug("Unable to Pruned file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
+                    }
+                }
+            }, pruningSelector);
         }
 
         // Go through the list of dead inbox candidates
         for (String account : pruningSelector.getDoomedInboxes()) {
             // Lock
-            if (!m_addressLock.tryLock(account)) {
-                continue;// Don't hang up on this. We'll get
-                // it sometime later. Besides, if it is locked
-                // it is likely getting a new mail (or the software
-                // is totaly goofed).
+            if (!addressLock.tryLock(account)) {
+                continue;
+                // Don't hang up on this. We'll get it sometime later. Besides,
+                // if it is locked
+                // it is likely getting a new mail (or the software is totaly
+                // goofed).
             }
-
-            // Get the RelativeFileName from the AddrDir map
-            // RelativeFileName dirName = m_masterTable.getInboxDir(account);
-            // if(dirName == null) {
-            // //Someone beat us too it.
-            // m_addressLock.unlock(account);
-            // continue;
-            // }
-
             // Read the index (it may not exist)
-            // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
-            // InboxIndexDriver.readIndex(
-            // new File(m_rootDir, dirName.relativePath));
             InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(account, getInboxPath(account));
 
             boolean shouldDelete = false;
@@ -317,29 +288,14 @@ public class QuarantineStore
             if (inboxIndex != null) {
                 shouldDelete = inboxIndex.getLastAccessTimestamp() < oldestValidInboxTimestamp;
             }
-            // switch(read.a) {
-            // case OK:
-            // shouldDelete =
-            // read.b.getLastAccessTimestamp() < oldestValidInboxTimestamp;
-            // break;
-            // case NO_SUCH_FILE:
-            // //Someone beat us too it
-            // shouldDelete = false;
-            // break;
-            // case FILE_CORRUPT:
-            // case EXCEPTION:
-            // m_logger.debug("Index corrupt for too-old inbox.  Nuke dir");
-            // shouldDelete = true;
-            // break;
-            // }
+
             if (shouldDelete) {
-                observer.pruningOldMailbox(account, inboxIndex == null ? 0 : inboxIndex.getLastAccessTimestamp());
-                m_dirTracker.deleteInboxDir(account);
-                // Note that this call implicitlly causes
-                // any mails accounted for to be removed
-                m_masterTable.removeInbox(account);
+                IOUtil.rmDir(new File(getInboxPath(account)));
+                // Note that this call implicitly causes any mails accounted for
+                // to be removed
+                masterTable.removeInbox(account);
             }
-            m_addressLock.unlock(account);
+            addressLock.unlock(account);
         }
     }
 
@@ -354,20 +310,19 @@ public class QuarantineStore
     public GenericStatus deleteInbox(String address)
     {
         String account = address.toLowerCase();
-        m_addressLock.lock(account);
+        addressLock.lock(account);
 
         GenericStatus ret = null;
 
-        m_dirTracker.deleteInboxDir(account);
-        m_masterTable.removeInbox(account);
+        IOUtil.rmDir(new File(getInboxPath(account)));
+        masterTable.removeInbox(account);
         ret = GenericStatus.SUCCESS;
-        m_addressLock.unlock(account);
+        addressLock.unlock(account);
         return ret;
     }
 
     /**
-     * Gets the inbox for the given address. Return "codes" are part of the
-     * generic result.
+     * Gets the inbox for the given address. Return "codes" are part of the generic result.
      * 
      * @param address
      *            the address
@@ -379,60 +334,90 @@ public class QuarantineStore
         address = address.toLowerCase();
 
         // lock the inbox
-        m_addressLock.lock(address);
+        addressLock.lock(address);
 
-        // Read the index file. Remove
-        // any mails from the in-memory
-        // index which are in our
-        // list and add them to a new list
-        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
-        // InboxIndexDriver.readIndex(dir);
+        // Read the index file.
+        // Remove any mails from the in-memory index which are in our list and
+        // add them to a new list
         InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
-        m_addressLock.unlock(address);
+        addressLock.unlock(address);
         if (inboxIndex == null) {
-            m_logger.warn("Unable to read index for " + address);
+            logger.warn("Unable to read index for " + address);
             return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
         return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
     }
 
     /**
-     * Note that if one or more of the mails no longer exist, this is not
-     * considered an error.
+     * Note that if one or more of the mails no longer exist, this is not considered an error.
      * 
-     * @return the result. If <code>SUCCESS</code>, then the index just after
-     *         the modification is returned attached to the result
+     * @return the result. If <code>SUCCESS</code>, then the index just after the modification is returned attached to
+     *         the result
      */
-    public Pair<GenericStatus, InboxIndex> rescue(String address, QuarantineEjectionHandler handler,
-            String... mailIDs)
+    public Pair<GenericStatus, InboxIndex> rescue(String address, String... mailIDs)
     {
-        m_logger.debug("Rescue requested for ", mailIDs.length, " mails for account \"", address, "\"");
-        return eject(address, handler, new ListEjectionSelector(mailIDs));
+        logger.debug("Rescue requested for ", mailIDs.length, " mails for account \"", address, "\"");
+        return eject(address, new QuarantineEjectionHandler()
+        {
+            @Override
+            public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
+            {
+                FileInputStream fIn = null;
+                try {
+                    fIn = new FileInputStream(data);
+                    BufferedInputStream bufIn = new BufferedInputStream(fIn);
+                    boolean success = UvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
+                    if (success) {
+                        logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length
+                                + " recipients from inbox \"" + inboxAddress + "\"");
+                    } else {
+                        logger.warn("Unable to release mail \"" + record.getMailID() + "\" for " + recipients.length
+                                + " recipients from inbox \"" + inboxAddress + "\"");
+                    }
+                } catch (Exception ex) {
+                    logger.warn("Exception reading mail file for rescue", ex);
+                }
+
+                IOUtil.close(fIn);
+                IOUtil.delete(data);
+
+            }
+        }, new ListEjectionSelector(mailIDs));
     }
 
     /**
-     * Note that if one or more of the mails no longer exist, this is not
-     * considered an error.
+     * Note that if one or more of the mails no longer exist, this is not considered an error.
      * 
-     * @return the result. If <code>SUCCESS</code>, then the index just after
-     *         the modification is returned attached to the result
+     * @return the result. If <code>SUCCESS</code>, then the index just after the modification is returned attached to
+     *         the result
      */
     public Pair<GenericStatus, InboxIndex> purge(String address, String... mailIDs)
     {
-        m_logger.debug("Purge requested for ", mailIDs.length, " mails for account \"", address, "\"");
-        return eject(address, m_deleter, new ListEjectionSelector(mailIDs));
+        logger.debug("Purge requested for ", mailIDs.length, " mails for account \"", address, "\"");
+        return eject(address, new QuarantineEjectionHandler()
+        {
+            @Override
+            public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
+            {
+                if (data.delete()) {
+                    logger.debug("Deleted file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
+                } else {
+                    logger.debug("Unable to delete file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
+                }
+
+            }
+        }, new ListEjectionSelector(mailIDs));
     }
 
     //
-    // Eject mails, passing them either to a handler
-    // for rescue or purge (delete). The EjectionSelector
-    // is able to view the entire InboxIndex, and select
-    // which mails are to be purged based on the context
-    // of the calling operation.
+    // Eject mails, passing them either to a handler for rescue or purge
+    // (delete).
+    // The EjectionSelector is able to view the entire InboxIndex, and select
+    // which mails are to be purged based on the context of the calling
+    // operation.
     //
     // @return the result. If <code>SUCCESS</code>, then
-    // the index just after the modification is
-    // returned attached to the result
+    // the index just after the modification is returned attached to the result
     //
     private Pair<GenericStatus, InboxIndex> eject(String address, QuarantineEjectionHandler handler,
             EjectionSelector selector)
@@ -443,66 +428,60 @@ public class QuarantineStore
         // Get/create the inbox directory
         File dirRF = getInboxDir(address, false);
         if (dirRF == null) {
-            m_logger.warn("Unable to purge mails for \"" + address + "\"  No such inbox");
+            logger.warn("Unable to purge mails for \"" + address + "\"  No such inbox");
             return new Pair<GenericStatus, InboxIndex>(GenericStatus.NO_SUCH_INBOX);
         }
 
         // lock the inbox
-        m_addressLock.lock(address);
+        addressLock.lock(address);
 
-        // Read the index file. Remove
-        // any mails from the in-memory
-        // index which are in our
-        // list and add them to a new list
-        // Pair<InboxIndexDriver.FileReadOutcome, InboxIndex> read =
-        // InboxIndexDriver.readIndex(dir);
+        // Read the index file. Remove any mails from the in-memory
+        // index which are in our list and add them to a new list
         InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
 
         if (inboxIndex == null) {
-            m_logger.warn("Unable to purge mails for " + address);
-            m_addressLock.unlock(address);
+            logger.warn("Unable to purge mails for " + address);
+            addressLock.unlock(address);
             return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
 
         List<InboxRecord> toDelete = selector.selectEjections(inboxIndex, dirRF);
 
         if (toDelete.size() == 0) {
-            // Nothing to do, and we don't want to update the
-            // index w/ a NOOP
-            m_addressLock.unlock(address);
+            // Nothing to do, and we don't want to update the index w/ a NOOP
+            addressLock.unlock(address);
             return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
         }
 
-        // Update the index. We'll defer actual ejection
-        // until after we release the lock
-        // if(!InboxIndexDriver.replaceIndex(inboxIndex, dir)) {
+        // Update the index. We'll defer actual ejection until after we release
+        // the lock
         if (!QuarantineStorageManager.writeQuarantineIndex(address, inboxIndex, getInboxPath(address))) {
-            m_logger.warn("Unable to replace index for address \"" + address + "\".  Abort purge");
-            m_addressLock.unlock(address);
+            logger.warn("Unable to replace index for address \"" + address + "\".  Abort purge");
+            addressLock.unlock(address);
             return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
         }
 
         // Unlock
-        m_addressLock.unlock(address);
+        addressLock.unlock(address);
 
         // Perform ejection
         for (InboxRecord record : toDelete) {
             File file = new File(dirRF, record.getMailID());
             if (!file.exists()) {
-                m_logger.debug("Unable to delete file \"" + file.getPath() + "\" for inbox \"" + address
+                logger.debug("Unable to delete file \"" + file.getPath() + "\" for inbox \"" + address
                         + "\".  File does not exist ?!?");
                 continue;
             }
             handler.ejectMail(record, inboxIndex.getOwnerAddress(), record.getRecipients(), file);
             if (file.exists()) {
-                m_logger.debug("Handler for file  \"" + file.getPath() + "\" in inbox \"" + address
+                logger.debug("Handler for file  \"" + file.getPath() + "\" in inbox \"" + address
                         + "\" did not delete file (?!?).  Force delete.");
                 file.delete();
             }
-            
-            if (!m_masterTable.mailRemoved(address, record.getSize())){
-                m_masterTable = MasterTable.rebuild(m_rootDir.getAbsolutePath(), m_dirTracker);
-                m_masterTable.mailRemoved(address, record.getSize());
+
+            if (!masterTable.mailRemoved(address, record.getSize())) {
+                masterTable = MasterTable.rebuild(rootDir.getAbsolutePath());
+                masterTable.mailRemoved(address, record.getSize());
             }
         }
 
@@ -516,26 +495,18 @@ public class QuarantineStore
     private boolean appendSummaryToIndex(File inboxDir, String inboxAddr, String[] recipients, String fileNameInInbox,
             MailSummary summary)
     {
-
         // Update (append) to the index
-        // return InboxIndexDriver.appendIndex(inboxAddr,
-        // inboxDir,
-        // new InboxRecordImpl(fileNameInInbox,
-        // System.currentTimeMillis(),
-        // summary,
-        // recipients));
         return QuarantineStorageManager.writeQuarantineRecord(inboxAddr,
-                new InboxRecord(fileNameInInbox, System.currentTimeMillis(), summary, recipients), getInboxPath(inboxAddr));
+                new InboxRecord(fileNameInInbox, System.currentTimeMillis(), summary, recipients),
+                getInboxPath(inboxAddr));
 
     }
 
     //
-    // This method performs no locking,
-    // and does not update the master index
+    // This method performs no locking, and does not update the master index
     //
     // @return the File within the Inbox w/ the
-    // newly added mail, or null if there
-    // was an error.
+    // newly added mail, or null if there was an error.
     //
     private String moveFileToInbox(File source, File targetDir)
     {
@@ -552,12 +523,10 @@ public class QuarantineStore
     }
 
     //
-    // This method performs no locking,
-    // and does not update the master index
+    // This method performs no locking, and does not update the master index
     //
-    // @return the File within the Inbox w/ the
-    // newly added mail, or null if there
-    // was an error.
+    // @return the File within the Inbox w/ the newly added mail, or null if
+    // there was an error.
     //
     private String copyFileToInbox(File source, File targetDir)
     {
@@ -572,7 +541,7 @@ public class QuarantineStore
             return targetFile.getName();
         } catch (IOException ex) {
             targetFile.delete();
-            m_logger.warn("Unable to copy data file", ex);
+            logger.warn("Unable to copy data file", ex);
             return null;
         }
     }
@@ -589,13 +558,14 @@ public class QuarantineStore
             // stuff which ensures no duplicates
             return File.createTempFile(DATA_FILE_PREFIX, DATA_FILE_SUFFIX, targetDir);
         } catch (IOException ex) {
-            m_logger.error("Unable to create data file", ex);
+            logger.error("Unable to create data file", ex);
             return null;
         }
     }
-    
-    private String getInboxPath(String address){
-        return m_rootDir.getAbsolutePath() + "/inboxes/" + address;
+
+    private String getInboxPath(String address)
+    {
+        return rootDir.getAbsolutePath() + "/inboxes/" + address;
     }
 
     //
@@ -611,12 +581,12 @@ public class QuarantineStore
         File baseDir = new File(getInboxPath(lcAddress));
         if (!baseDir.exists()) {
             if (!autoCreate) {
-                m_logger.debug("No inbox for \"", lcAddress, "\"");
+                logger.debug("No inbox for \"", lcAddress, "\"");
                 return null;
             }
-            m_addressLock.lock(lcAddress);
+            addressLock.lock(lcAddress);
             baseDir = getOrCreateInboxDirWL(lcAddress);
-            m_addressLock.unlock(lcAddress);
+            addressLock.unlock(lcAddress);
         }
         return baseDir;
     }
@@ -630,21 +600,18 @@ public class QuarantineStore
 
         try {
             if (!baseDir.exists()) {
-                // InboxIndexDriver.createBlankIndex(lcAddress, subDir);
                 if (!baseDir.mkdirs()) {
-                    m_logger.warn("Inbox for \"", lcAddress, "\" could not be created.");
+                    logger.warn("Inbox for \"", lcAddress, "\" could not be created.");
                     return null;
                 }
                 InboxIndex inboxIndex = new InboxIndex();
                 inboxIndex.setOwnerAddress(lcAddress);
                 QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
-                m_masterTable.addInbox(lcAddress);
+                masterTable.addInbox(lcAddress);
             } else {
-                m_logger.debug("Inbox for \"", lcAddress, "\" created by concurrent thread");
-                // subDir = new File(m_rootDir, subDirName.relativePath);
+                logger.debug("Inbox for \"", lcAddress, "\" created by concurrent thread");
             }
             return baseDir;
-            // return new RelativeFile(subDirName.relativePath, subDir);
         } catch (Exception ex) {
             // m_logger.warn("getOrCreateInboxDirWL: ", ex);
             ex.printStackTrace(System.out);
@@ -725,36 +692,4 @@ public class QuarantineStore
         }
     }
 
-    private class DeletingEjectionHandler implements QuarantineEjectionHandler
-    {
-
-        public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
-        {
-            if (data.delete()) {
-                m_logger.debug("Deleted file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
-            } else {
-                m_logger.debug("Unable to delete file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
-            }
-        }
-    }
-
-    private class PruningDeleter implements QuarantineEjectionHandler
-    {
-
-        private final QuarantinePruningObserver m_observer;
-
-        PruningDeleter(QuarantinePruningObserver observer) {
-            m_observer = observer;
-        }
-
-        public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
-        {
-            if (data.delete()) {
-                m_logger.debug("Pruned file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
-                m_observer.pruningOldMessage(inboxAddress, data, record);
-            } else {
-                m_logger.debug("Unable to Pruned file \"" + data + "\" for inbox \"" + inboxAddress + "\"");
-            }
-        }
-    }
 }

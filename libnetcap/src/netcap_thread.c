@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: netcap_thread.c 35571 2013-08-08 18:37:27Z dmorris $
  */
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>

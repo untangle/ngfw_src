@@ -837,7 +837,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     fields: [{
                         name: 'address'
                     }, {
-                        name: 'numMails'
+                        name: 'totalMails'
                     }, {
                         name: 'totalSz'
                     }],
@@ -852,7 +852,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         header: this.i18n._("message count"),
                         width: 185,
                         align: 'right',
-                        dataIndex: 'numMails'
+                        dataIndex: 'totalMails'
                     }, {
                         header: this.i18n._("data size (kB)"),
                         width: 185,
@@ -1051,7 +1051,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 dataFn: Ext.bind(function() {
                     if(this.userQuarantinesDetailsGrid != null && this.quarantinesDetailsWin.account!= null) {
                         try {
-                            var mails = this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account, 0, Ung.Util.maxRowCount, []);
+                            var mails = this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account);
                             for(var i=0; i<mails.list.length; i++) {
                                 /* copy values from mailSummary to object */
                                 mails.list[i].subject = mails.list[i].mailSummary.subject;

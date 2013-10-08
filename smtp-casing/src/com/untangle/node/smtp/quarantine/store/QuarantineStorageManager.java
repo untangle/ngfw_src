@@ -10,8 +10,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
- * Provides static methods for reading/writing quarantine info in json format
- * using SettingsManager
+ * Provides static methods for reading/writing quarantine info in json format using SettingsManager
  * 
  */
 public class QuarantineStorageManager
