@@ -4713,13 +4713,13 @@ Ext.define('Ung.EditorGrid', {
         if(validRecords > 0) {
             if(importMode=='replace' ) {
                 this.deleteAllRecords();
-                this.getStore().insert(0, records.reverse());
+                this.getStore().insert(0, records);
                 this.updateChangedDataOnImport(records, "added");
             } else {
                 if(importMode=='append') {
                     this.getStore().add(records);
                 } else if(importMode=='prepend') { //replace or prepend mode
-                    this.getStore().insert(0, records.reverse());
+                    this.getStore().insert(0, records);
                 }
                 this.updateChangedDataOnImport(records, "added");
             }

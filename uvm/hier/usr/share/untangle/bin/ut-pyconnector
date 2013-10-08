@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+h#!/usr/bin/env python
 
 import sys
 sys.path.insert(0,'@PREFIX@/usr/lib/python2.5/')
@@ -105,7 +105,7 @@ def connect():
 
      # start stunnel (python2.6 will not need this)
      write_cert_file()
-     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -O l:SO_KEEPALIVE=1 -O r:SO_KEEPALIVE=1 -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0], CERTS_FILE)
+     cmd_str = "sudo killall -9 stunnel4 >/dev/null 2>&1 ; sudo stunnel -c -O l:SO_KEEPALIVE=1 -O l:TCP_KEEPIDLE=30 -O l:TCP_KEEPINTVL=30 -O l:TCP_KEEPCNT=2 -O r:SO_KEEPALIVE=1 -O r:TCP_KEEPIDLE=30 -O r:TCP_KEEPINTVL=30 -O r:TCP_KEEPCNT=2 -d localhost:%i -r %s:%i -A %s -v 3 -D 6" % (STUNNEL_LOCAL_PORT, UNTANGLE_CMD_SERVERS[0], UNTANGLE_CMD_PORTS[0], CERTS_FILE)
      #debug(cmd_str)
      os.system(cmd_str)
    
