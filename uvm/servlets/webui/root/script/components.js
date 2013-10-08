@@ -6350,18 +6350,15 @@ Ung.RuleValidator = {
         if ( val < 0 || val > 65536 )
             return false;
         /* verify its an integer (not a float) */
-        if( ! /^\d+$/.test( val ) )
+        if( ! /^\d{1,5}$/.test( val ) )
             return false;
         return true;
     },
     isPortRangeValid: function(val) {
         var portRange = val.split('-');
-        var portRe =/^\d{1,5}$/;
-        if ( portRe.test(portRange[0]) && portRe.test(portRange[1])) {
-            return this.isSinglePortValid(portRange[0]) && this.isSinglePortValid(portRange[1]);
-        } else {
+        if ( portRange.length != 2 )
             return false;
-        }
+        return this.isSinglePortValid(portRange[0]) && this.isSinglePortValid(portRange[1]);
     },
     isPortListValid: function(val) {
         var portList = val.split(',');
