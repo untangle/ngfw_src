@@ -6346,16 +6346,19 @@ Ext.define('Ung.RuleBuilder', {
 
 Ung.RuleValidator = {
     isSinglePortValid: function(val) {
-        return 1 <= val && val <= 65536;
+        /* check for values between 0 and 65536 */
+        if ( val < 0 || val > 65536 )
+            return false;
+        /* verify its an integer (not a float) */
+        if( ! /^\d{1,5}$/.test( val ) )
+            return false;
+        return true;
     },
     isPortRangeValid: function(val) {
         var portRange = val.split('-');
-        var portRe =/^\d{1,5}$/;
-        if ( portRe.test(portRange[0]) && portRe.test(portRange[1])) {
-            return (1 <= portRange[0] && portRange[0] <= 65536) && (1 <= portRange[1] && portRange[1] <= 65536);
-        } else {
+        if ( portRange.length != 2 )
             return false;
-        }
+        return this.isSinglePortValid(portRange[0]) && this.isSinglePortValid(portRange[1]);
     },
     isPortListValid: function(val) {
         var portList = val.split(',');
