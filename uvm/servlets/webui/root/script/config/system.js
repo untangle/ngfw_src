@@ -959,8 +959,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     name: 'shield_blocked'
                 }, {
-                    name: 'shield_blocked'
-                }, {
                     name: 'client',
                     mapping: 'c_client_addr'
                 }, {
