@@ -24,9 +24,15 @@ diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
    <target name="compile.test" depends="test.init, dist, init" description="Compiles the testing classes">
 -    <javac debug="true" source="1.4" srcdir="${test.src}" destdir="${test.classes}">
 +    <javac debug="true" source="1.5" srcdir="${test.src}" destdir="${test.classes}">
+<<<<<<< HEAD
        <classpath>
        	<path refid="jarClasspath" />
          <fileset dir="${lib-test}">
+=======
+       <classpath>
+       	<path refid="jarClasspath" />
+         <fileset dir="${lib-test}">
+>>>>>>> Revert ".."
 @@ -146,6 +147,7 @@
    <target name="clean" depends="init" description="Cleans all files produced by ant">
      <delete file="${app-war}" />
@@ -130,6 +136,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
        // Invoke the method
        Object returnObj = method.invoke(itsThis, javaArgs);
  
+<<<<<<< HEAD
 @@ -677,6 +673,9 @@
          }
        }
@@ -157,6 +164,32 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
 +      for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
 +          log.error("exception cause: ", cause);
 +      }
+=======
+@@ -677,6 +673,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+       result = new JSONRPCResult(JSONRPCResult.CODE_ERR_UNMARSHALL, requestId,
+           e.getMessage());
+     }
+@@ -690,6 +688,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+       result = new JSONRPCResult(JSONRPCResult.CODE_ERR_MARSHALL, requestId, e
+           .getMessage());
+     }
+@@ -707,6 +707,8 @@
+         }
+       }
+       log.error("exception occured",e);
++      if (e.getCause() != null)
++          log.error("exception cause",e.getCause());
+>>>>>>> Revert ".."
        result = new JSONRPCResult(JSONRPCResult.CODE_REMOTE_EXCEPTION,
            requestId, exceptionTransformer.transform(e));
      }
