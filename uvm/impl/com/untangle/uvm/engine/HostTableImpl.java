@@ -468,21 +468,40 @@ public class HostTableImpl implements HostTable
                         }
 
                         /**
-                         * Don't remove host that:
-                         * Have quotas
-                         * Are penalty boxed
-                         * have known usernames
-                         */
-                        if ( entry.getQuotaSize() > 0 ) continue;
-                        if ( entry.getPenaltyBoxed() ) continue;
-                        if ( entry.getUsername() != null ) continue;
-                        
-                        /**
                          * If this host hasnt been touched recently, delete it
                          */
                         if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {
-                            logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
-                            hostTable.remove(address);
+
+                            /**
+                             * However, if it has a quota or is penalty boxed,
+                             * do not delete it entirely because that would delete
+                             * "vital" information, such as the quota values or penalty box state.
+                             * Instead, just create a new HostTableEntry that saves these values
+                             * and overwrite the old one. Effectively discarding all but the vital state
+                             * bug #11415 for details
+                             */
+                            if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() ) {
+                                HostTableEntry newEntry = createNewHostTableEntry( entry.getAddress() );
+
+                                newEntry.setQuotaSize( entry.getQuotaSize() );
+                                newEntry.setQuotaRemaining( entry.getQuotaRemaining() );
+                                newEntry.setQuotaIssueTime( entry.getQuotaIssueTime() );
+                                newEntry.setQuotaExpirationTime( entry.getQuotaExpirationTime() );
+                                
+                                newEntry.setPenaltyBoxed( entry.getPenaltyBoxed() );
+                                newEntry.setPenaltyBoxExitTime( entry.getPenaltyBoxExitTime() );
+                                newEntry.setPenaltyBoxEntryTime( entry.getPenaltyBoxEntryTime() );
+
+                                logger.debug("HostTableCleaner: Stripping non-vital info from " + address.getHostAddress());
+                                hostTable.put( entry.getAddress(), newEntry );
+                            }
+                            /**
+                             * Otherwise just delete the entire entry
+                             */
+                            else {
+                                logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
+                                hostTable.remove(address);
+                            }
                         }
                     }
                 } catch (Exception e) {
