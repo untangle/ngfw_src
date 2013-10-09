@@ -18,8 +18,26 @@ public class IpsSettings implements Serializable
     private Set<IpsRule> rules = new HashSet<IpsRule>();
     private Set<IpsVariable> variables = new HashSet<IpsVariable>();
     private Set<IpsVariable> immutables = new HashSet<IpsVariable>();
-    private int maxChunks;
 
+    /**
+     * maxChunks is the maximum number of chunks scanned in a session
+     */
+    private int maxChunks = 4;
+
+    /**
+     * sessionBypassLimit is the maximum number of sessions that will
+     * simultaneously be scanned. If sessionBypassLimit sessions are
+     * currently be scanned, then new sessions will be bypassed
+     */
+    private int sessionBypassLimit = 10;
+
+    /**
+     * loadBypassLimit is the maximum load for which new sessions will
+     * be scanned. If the 1-minute load exceeds this new sessions will
+     * be bypassed
+     */
+    private float loadBypassLimit = 2.0f;
+    
     public IpsSettings() {}
 
     public void updateStatistics(IpsStatistics argStats)
@@ -31,95 +49,31 @@ public class IpsSettings implements Serializable
         int logging = 0;
         int blocking = 0;
 
-        for( IpsRule rule : rules)
-            {
-                if(rule.isLive()) blocking++;
-                if(rule.getLog()) logging++;
-            }
+        for( IpsRule rule : rules) {
+            if(rule.isLive()) blocking++;
+            if(rule.getLog()) logging++;
+        }
 
         argStats.setTotalAvailable(null == rules ? 0 : rules.size());
         argStats.setTotalBlocking(blocking);
         argStats.setTotalLogging(logging);
     }
 
-    // maxChunks -----------------------------------------------------------------
+    public int getSessionBypassLimit() { return this.sessionBypassLimit; }
+    public void setSessionBypassLimit( int newValue ) { this.sessionBypassLimit = newValue; }
 
-    public int getMaxChunks()
-    {
-        return maxChunks;
-    }
+    public float getLoadBypassLimit() { return this.loadBypassLimit; }
+    public void setLoadBypassLimit( float newValue ) { this.loadBypassLimit = newValue; }
+    
+    public int getMaxChunks() { return maxChunks; }
+    public void setMaxChunks( int newValue ) { this.maxChunks = newValue; }
 
-    public void setMaxChunks(int maxChunks)
-    {
-        this.maxChunks = maxChunks;
-    }
+    public List<IpsRule> getRules() { return new LinkedList<IpsRule>(this.rules); }
+    public void setRules( List<IpsRule> newValue ) { this.rules = new HashSet<IpsRule>(newValue); }
 
-    // rules --------------------------------------------------------------------
+    public List<IpsVariable> getVariables()  { return new LinkedList<IpsVariable>(this.variables); }
+    public void setVariables( List<IpsVariable> variables) { this.variables = new HashSet<IpsVariable>(variables); }
 
-    public Set<IpsRule> grabRules()
-    {
-        return this.rules;
-    }
-
-    public List<IpsRule> getRules()
-    {
-        List<IpsRule> local = new LinkedList<IpsRule>(this.rules);
-        return local;
-    }
-
-    public void pokeRules(Set<IpsRule> rules)
-    {
-        this.rules = rules;
-    }
-
-    public void setRules(List<IpsRule> rules)
-    {
-        this.rules = new HashSet<IpsRule>(rules);
-    }
-
-    // variables -----------------------------------------------------------------
-
-    public Set<IpsVariable> grabVariables()
-    {
-        return this.variables;
-    }
-
-    public List<IpsVariable> getVariables()
-    {
-        List<IpsVariable> local = new LinkedList<IpsVariable>(this.variables);
-        return local;
-    }
-
-    public void pokeVariables(Set<IpsVariable> variables)
-    {
-        this.variables = variables;
-    }
-
-    public void setVariables(List<IpsVariable> variables)
-    {
-        this.variables = new HashSet<IpsVariable>(variables);
-    }
-
-    // immutables ----------------------------------------------------------------
-
-    public Set<IpsVariable> grabImmutables()
-    {
-        return this.immutables;
-    }
-
-    public List<IpsVariable> getImmutables()
-    {
-        List<IpsVariable> local = new LinkedList<IpsVariable>(this.immutables);
-        return local;
-    }
-
-    public void pokeImmutables(Set<IpsVariable> immutables)
-    {
-        this.immutables = immutables;
-    }
-
-    public void setImmutables(List<IpsVariable> immutables)
-    {
-        this.immutables = new HashSet<IpsVariable>(immutables);
-    }
+    public List<IpsVariable> getImmutables() { return new LinkedList<IpsVariable>(this.immutables); }
+    public void setImmutables(List<IpsVariable> immutables) { this.immutables = new HashSet<IpsVariable>(immutables); }
 }

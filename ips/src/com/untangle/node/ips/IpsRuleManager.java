@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,18 +49,18 @@ public class IpsRuleManager
 
     // static methods ---------------------------------------------------------
 
-    public static Set<IpsVariable> getImmutableVariables()
+    public static List<IpsVariable> getImmutableVariables()
     {
-        Set<IpsVariable> s = new HashSet<IpsVariable>();
+        List<IpsVariable> s = new LinkedList<IpsVariable>();
         s.add(new IpsVariable("$EXTERNAL_NET",IpsStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
         s.add(new IpsVariable("$HOME_NET",IpsStringParser.HOME_IP,"Magic HOME_NET token"));
 
         return s;
     }
 
-    public static Set<IpsVariable> getDefaultVariables()
+    public static List<IpsVariable> getDefaultVariables()
     {
-        Set<IpsVariable> s = new HashSet<IpsVariable>();
+        List<IpsVariable> s = new LinkedList<IpsVariable>();
         s.add(new IpsVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
         s.add(new IpsVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
         s.add(new IpsVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
@@ -230,17 +231,17 @@ public class IpsRuleManager
             IpsDetectionEngine engine = null;
             if (ips != null)
                 engine = ips.getEngine();
-            Set<IpsVariable> varSet, imVarSet;
+            List<IpsVariable> varSet, imVarSet;
             /* This is null when initializing settings, but the
              * settings are initialized with these values so using the
              * defaults is harmless */
-            if(engine == null || engine.getSettings() == null) {
-                logger.debug("engine.getSettings() is null");
+            if(ips == null || ips.getSettings() == null) {
+                logger.debug("ips.getSettings() is null");
                 imVarSet = getImmutableVariables();
                 varSet = getDefaultVariables();
             } else {
-                imVarSet = engine.getSettings().grabImmutables();
-                varSet = engine.getSettings().grabVariables();
+                imVarSet = ips.getSettings().getImmutables();
+                varSet = ips.getSettings().getVariables();
             }
             for(IpsVariable var : imVarSet) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
