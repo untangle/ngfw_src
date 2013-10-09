@@ -1,5 +1,5 @@
 /**
- * $Id: QuarantineFunctions.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp.web.euv.tags;
 
@@ -52,7 +52,7 @@ public class QuarantineFunctions
     {
         InboxRecord[] records = getCurrentIndex(pageContext.getRequest());
         if ( records == null ) return 0;
-        return (int)records.length;
+        return records.length;
     }
     
     public static String jsonSafelist( PageContext pageContext )
