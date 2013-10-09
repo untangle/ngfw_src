@@ -4,6 +4,7 @@
 package com.untangle.node.ips;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
@@ -117,15 +118,15 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         logger.info("Loading Variables...");
 
         IpsSettings settings = new IpsSettings();
-        settings.pokeVariables(IpsRuleManager.getDefaultVariables());
-        settings.pokeImmutables(IpsRuleManager.getImmutableVariables());
+        settings.setVariables(IpsRuleManager.getDefaultVariables());
+        settings.setImmutables(IpsRuleManager.getImmutableVariables());
 
         logger.info("Loading Rules...");
         IpsRuleManager manager = new IpsRuleManager(this); // A fake one for now.  XXX
         Set<IpsRule> ruleSet = FileLoader.loadAllRuleFiles(manager);
-
-        settings.setMaxChunks(engine.getMaxChunks());
-        settings.pokeRules(ruleSet);
+        List<IpsRule> ruleList = new LinkedList<IpsRule>( ruleSet );
+        
+        settings.setRules(ruleList);
 
         setSettings(settings);
         logger.info(ruleSet.size() + " rules loaded");
@@ -191,12 +192,10 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     private void reconfigure()
     {
-        engine.setSettings(settings);
         engine.onReconfigure();
-        engine.setMaxChunks(settings.getMaxChunks());
-        Set<IpsRule> rules = settings.grabRules();
+
         engine.clearRules();
-        for(IpsRule rule : rules) {
+        for(IpsRule rule : settings.getRules()) {
             engine.addRule(rule);
         }
     }

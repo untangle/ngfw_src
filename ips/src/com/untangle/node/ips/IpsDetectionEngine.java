@@ -19,6 +19,7 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.util.LoadAvg;
 
 public class IpsDetectionEngine
 {
@@ -31,17 +32,16 @@ public class IpsDetectionEngine
     // Any chunk that takes this long gets a warning
     public static final long WARN_ELAPSED = 10000;
 
-    private int maxChunks = 8;
-    private IpsSettings settings = null;
+    // We can't just attach the session info to a session, we have to
+    // attach it to the 'pipeline', since we have to access it from
+    // multiple pipes (octet & http).  So we keep the registry here.
+    private static Map<Long, IpsSessionInfo> sessionInfoMap = null;
+
+    private int maxChunks = 4;
     private Map<String,RuleClassification> classifications = null;
 
     private IpsRuleManager manager;
     private IpsNodeImpl node;
-
-    // We can't just attach the session info to a session, we have to
-    // attach it to the 'pipeline', since we have to access it from
-    // multiple pipes (octet & http).  So we keep the registry here.
-    private Map<Long, IpsSessionInfo> sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
 
     Map<Integer,List<IpsRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
     Map<Integer,List<IpsRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
@@ -51,6 +51,11 @@ public class IpsDetectionEngine
     public IpsDetectionEngine(IpsNodeImpl node)
     {
         this.node = node;
+        synchronized ( IpsDetectionEngine.class ) {
+            if ( this.sessionInfoMap == null ) {
+                this.sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
+            }
+        }
         manager = new IpsRuleManager(node);
     }
 
@@ -74,27 +79,6 @@ public class IpsDetectionEngine
     public void incrementBlockCount()
     {
         node.incrementBlockCount();
-    }
-
-    public IpsSettings getSettings()
-    {
-        return settings;
-    }
-
-    public void setSettings(IpsSettings settings)
-    {
-        this.settings = settings;
-    }
-
-    //fix this - settigns?
-    public void setMaxChunks(int max)
-    {
-        maxChunks = max;
-    }
-
-    public int getMaxChunks()
-    {
-        return maxChunks;
     }
 
     public void onReconfigure()
@@ -134,10 +118,23 @@ public class IpsDetectionEngine
 
     public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
+        node.incrementScanCount();
+
         //Get Mapped list
         List<IpsRuleHeader> c2sList = portC2SMap.get(request.getServerPort());
         List<IpsRuleHeader> s2cList = portS2CMap.get(request.getServerPort());
 
+        if ( LoadAvg.get().getOneMin() >= node.getSettings().getLoadBypassLimit() ) {
+            logger.debug("Releasing session (load bypass limit exceeded): " + request);
+            request.release();
+            return;
+        }
+        if ( sessionInfoMap.size() > node.getSettings().getSessionBypassLimit() ) {
+            logger.debug("Releasing session (session bypass limit exceeded): " + request);
+            request.release();
+            return;
+        }
+        
         if(c2sList == null) {
             c2sList = manager.matchingPortsList( request.getServerPort(), true );
             // bug1443 -- save memory by reusing value.
@@ -207,6 +204,7 @@ public class IpsDetectionEngine
 
         if (c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
             request.attach(new Object[] { c2sSignatures, s2cSignatures });
+
         } else {
             logger.debug("Releasing session (no rules to evaluate): " + request);
             request.release();
@@ -222,6 +220,12 @@ public class IpsDetectionEngine
     public void processNewSession(NodeSession session, Protocol protocol) 
     {
         Object[] sigs = (Object[]) session.attachment();
+
+        if ( sigs == null ) {
+            session.release();
+            return;
+        }
+
         Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
         Set<IpsRuleSignature> s2cSignatures = (Set<IpsRuleSignature>) sigs[1];
 
@@ -254,7 +258,7 @@ public class IpsDetectionEngine
             long startTime = System.currentTimeMillis();
 
             NodeSessionStats stats = session.stats();
-
+    
             IpsSessionInfo info = sessionInfoMap.get(session.id());
             if ( info == null ) {
                 logger.warn("Missing IpsSessionInfo: " + session);
@@ -265,8 +269,6 @@ public class IpsDetectionEngine
             info.setEvent(event);
             info.setFlow(isFromServer);
 
-            node.incrementScanCount();
-
             boolean result;
             if(isFromServer)
                 result = info.processS2CSignatures();
@@ -274,6 +276,7 @@ public class IpsDetectionEngine
                 result = info.processC2SSignatures();
 
             if (!result) {
+                int maxChunks = node.getSettings().getMaxChunks();
                 if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
                     sessionInfoMap.remove(session.id());
                     session.release();
