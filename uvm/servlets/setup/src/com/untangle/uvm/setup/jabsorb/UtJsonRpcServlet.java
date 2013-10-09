@@ -48,9 +48,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 
-    private JSONRPCBridge bridge;
-    private UtCallbackController callback;
-    
     // HttpServlet methods ----------------------------------------------------
 
     @SuppressWarnings("unchecked") //getAttribute
@@ -60,19 +57,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if (null == threadRequest) {
             logger.warn("could not get threadRequest");
         }
-
-        bridge = new JSONRPCBridge();
-        callback = new UtCallbackController( bridge );
-        bridge.setCallbackController( callback );
-        
-        try {
-            ServletUtils.getInstance().registerSerializers(bridge);
-        } catch (Exception e) {
-            logger.warn( "Unable to register serializers", e );
-        }
-
-        SetupContext sc = SetupContextImpl.makeSetupContext();
-        bridge.registerObject("SetupContext", sc, SetupContext.class);
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp)
@@ -82,16 +66,60 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             threadRequest.set(req);
         }
 
-        HttpSession s = req.getSession();
-        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
-        if ( b == null ) {
-            s.setAttribute(BRIDGE_ATTRIBUTE, bridge);
-        }
+        initSessionBridge(req);
 
         super.service(req, resp);
 
         if (null != threadRequest) {
             threadRequest.set(null);
+        }
+    }
+
+    /**
+     * Find the JSONRPCBridge from the current session.
+     * If it can't be found in the session, or there is no session,
+     * then return the global bridge.
+     *
+     * @param request The message received
+     * @return the JSONRPCBridge to use for this request
+     */
+    protected JSONRPCBridge findBridge(HttpServletRequest request)
+    {
+        // Find the JSONRPCBridge for this session or create one
+        // if it doesn't exist
+        HttpSession session = request.getSession( false );
+        JSONRPCBridge jsonBridge = null;
+        if (session != null) jsonBridge = (JSONRPCBridge) session.getAttribute( BRIDGE_ATTRIBUTE );
+
+        if ( jsonBridge == null) {
+            /* Use the global bridge if it can't find the session bridge. */
+            jsonBridge = JSONRPCBridge.getGlobalBridge();
+            if ( logger.isDebugEnabled()) logger.debug("Using global bridge.");
+        }
+        return jsonBridge;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void initSessionBridge(HttpServletRequest req)
+    {
+        HttpSession s = req.getSession();
+        JSONRPCBridge b = (JSONRPCBridge)s.getAttribute(BRIDGE_ATTRIBUTE);
+
+        if (null == b) {
+            b = new JSONRPCBridge();
+            s.setAttribute(BRIDGE_ATTRIBUTE, b);
+
+            try {
+                ServletUtils.getInstance().registerSerializers(b);
+            } catch (Exception e) {
+                logger.warn( "Unable to register serializers", e );
+            }
+
+            b.setCallbackController(new UtCallbackController(b));
+
+            SetupContext sc = SetupContextImpl.makeSetupContext();
+            b.registerObject("SetupContext", sc, SetupContext.class);
         }
     }
 

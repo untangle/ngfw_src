@@ -148,26 +148,22 @@ public class IpsStringParser
     private static List<IPMatcher> parseIPToken(String ipString)
         throws ParseException
     {
-        try {
-            List<IPMatcher> ipList = new ArrayList<IPMatcher>();
-            if (ipString.equalsIgnoreCase("any"))
-                ipList.add(IPMatcher.getAnyMatcher());
-            else if (ipString.equalsIgnoreCase(EXTERNAL_IP))
-                ipList.add(IPMatcher.getExternalMatcher());
-            else if (ipString.equalsIgnoreCase(HOME_IP))
-                ipList.add(IPMatcher.getInternalMatcher());
-            else {
-                ipString = ipString.replaceAll("\\[","");
-                ipString = ipString.replaceAll("\\]","");
+        List<IPMatcher> ipList = new ArrayList<IPMatcher>();
+        if (ipString.equalsIgnoreCase("any"))
+            ipList.add(IPMatcher.getAnyMatcher());
+        else if (ipString.equalsIgnoreCase(EXTERNAL_IP))
+            ipList.add(IPMatcher.getExternalMatcher());
+        else if (ipString.equalsIgnoreCase(HOME_IP))
+            ipList.add(IPMatcher.getInternalMatcher());
+        else {
+            ipString = ipString.replaceAll("\\[","");
+            ipString = ipString.replaceAll("\\]","");
 
-                String allAddrs[] = ipString.split(",");
-                for (int i=0; i < allAddrs.length; i++)
-                    ipList.add(new IPMatcher(validateMask(allAddrs[i])));
-            }
-            return ipList;
-        } catch (Exception e) {
-            throw new ParseException(e);
+            String allAddrs[] = ipString.split(",");
+            for (int i=0; i < allAddrs.length; i++)
+                ipList.add(new IPMatcher(validateMask(allAddrs[i])));
         }
+        return ipList;
     }
 
     private static PortRange parsePortToken(String portString)
