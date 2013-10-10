@@ -4178,6 +4178,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildNetworkCards: function() {
             this.duplexStore = [
                 ["AUTO", this.i18n._( "Auto" )], 
+                ["M10000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
+                ["M10000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
                 ["M1000_FULL_DUPLEX", this.i18n._( "1000 Mbps, Full Duplex" )],
                 ["M1000_HALF_DUPLEX", this.i18n._( "1000 Mbps, Half Duplex" )],
                 ["M100_FULL_DUPLEX", this.i18n._( "100 Mbps, Full Duplex" )],
