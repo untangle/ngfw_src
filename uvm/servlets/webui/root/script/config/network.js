@@ -1234,7 +1234,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Address",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
+                                    this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -1263,7 +1263,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4PrefixLength",
                                 setValue: function(value, record) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: /{0} - {1}"), value, record.get("v4Netmask")));
+                                    this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("/{0} - {1}", value, record.get("v4Netmask")));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -1290,7 +1290,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Gateway",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
+                                    this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -1317,7 +1317,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Dns1",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
+                                    this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
@@ -1344,7 +1344,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4Dns2",
                                 setValue: function(value) {
                                     this.dataValue=value;
-                                    this.setText(Ext.isEmpty(value)?"":Ext.String.format(settingsCmp.i18n._("Current: {0}"), value));
+                                    this.setText(Ext.isEmpty(value)?"":settingsCmp.i18n._("Current:") + " " + Ext.String.format("{0}", value));
                                 },
                                 getValue: function() {
                                     return this.dataValue;
