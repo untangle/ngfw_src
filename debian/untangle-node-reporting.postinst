@@ -2,6 +2,4 @@
 
 /usr/bin/ucli -q -t 30 register $DPKG_MAINTSCRIPT_PACKAGE 2>/dev/null || true
 
-touch /etc/untangle/monit-to-restart
-
 exit 0
