@@ -41,7 +41,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         var d=new Date();
                         result.list.push({
                             "address": "184.27.239."+(ii%10),
-                            "hostname": "p.twitter.com"+i,
+                            "hostname": i%3?("p.twitter.com"+i):null,
                             "lastAccessTime": 0,//d.getTime()+(i*86400000),
                             "lastSessionTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
@@ -54,8 +54,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "quotaRemaining": ii * 5000,
                             "quotaIssueTime": 0,
                             "quotaExpirationTime": 0,
-                            "httpUserAgent": "MOZFirefox",
-                            "httpUserAgentOs": "Win"
+                            "httpUserAgent": (ii%3)?("MOZFirefox"+i):null,
+                            "httpUserAgentOs": (ii%4)?("Win"+ii):null,
                         });
                     }
                 }
@@ -106,9 +106,11 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 fields: [{
                     name: "id"
                 },{
-                    name: "address"
+                    name: "address",
+                    type: 'string'
                 },{
-                    name: "hostname"
+                    name: "hostname",
+                    type: 'string'
                 }, {
                     name: "lastAccessTime"
                 }, {
@@ -122,11 +124,14 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     mapping: "lastSessionTime",
                     convert: dateConvertFn
                 },{
-                    name: "username"
+                    name: "username",
+                    type: 'string'
                 },{
-                    name: "usernameAdConnector"
+                    name: "usernameAdConnector",
+                    type: 'string'
                 },{
-                    name: "usernameCapture"
+                    name: "usernameCapture",
+                    type: 'string'
                 },{
                     name: "penaltyBoxed"
                 },{
@@ -158,9 +163,11 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     mapping: "quotaExpirationTime",
                     convert: dateConvertFn
                 },{
-                    name: "httpUserAgent"
+                    name: "httpUserAgent",
+                    type: 'string'
                 },{
-                    name: "httpUserAgentOs"
+                    name: "httpUserAgentOs",
+                    type: 'string'
                 }],
                 columns: [{
                     header: this.i18n._("IP"),

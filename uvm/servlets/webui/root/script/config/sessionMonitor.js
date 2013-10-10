@@ -533,9 +533,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name: "protofilter-category"
                 },{
-                    name: "protofilter-description"
+                    name: "protofilter-description",
+                    type: 'string'
                 },{
-                    name: "protofilter-matched"
+                    name: "protofilter-matched",
+                    type: 'string'
                 },{
                     name: "http-hostname"
                 },{
@@ -545,11 +547,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name: "sitefilter-best-category-description"
                 },{
-                    name: "sitefilter-best-category-flagged"
+                    name: "sitefilter-best-category-flagged",
+                    type: 'string'
                 },{
-                    name: "sitefilter-best-category-blocked"
+                    name: "sitefilter-best-category-blocked",
+                    type: 'string'
                 },{
-                    name: "sitefilter-flagged"
+                    name: "sitefilter-flagged",
+                    type: 'string'
                 },{
                     name: "classd-application"
                 },{
