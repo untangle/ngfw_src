@@ -21,11 +21,11 @@ nodeData = None
 canRelay = 0
 
 def sendTestmessage():
-    sender = 'jcoffin@untangle.com'
-    receivers = ['qa@untangle.com']
+    sender = 'test@example.com'
+    receivers = ['qa@example.com']
     
-    message = """From: Test <jcoffin@untangle.com>
-    To: Test Group <qa@untangle.com>
+    message = """From: Test <test@example.com>
+    To: Test Group <qa@example.com>
     Subject: SMTP e-mail test
     
     This is a test e-mail message.
@@ -50,7 +50,7 @@ def checkForMailSender():
         # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail():
-    results = clientControl.runCommand("python mailsender.py --from=jcoffin@untangle.com --to=\"qa@untangle.com\" ./spam-mail/ --host=test.untangle.com --reconnect --series=30:0,150,100,50,25,0,180")
+    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./spam-mail/ --host=test.untangle.com --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -106,7 +106,7 @@ class SpamTests(unittest2.TestCase):
             # print events['list'][0]
             assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
             assert(events['list'][0]['s_server_port'] == 25)
-            assert(events['list'][0]['addr'] == 'qa@untangle.com')
+            assert(events['list'][0]['addr'] == 'qa@example.com')
             assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
             assert(events['list'][0]['commtouchas_score'] >= 3.0)
             assert(events['list'][0]['hostname'] == ClientControl.hostIP)
