@@ -6,7 +6,6 @@ Ext.Loader.setConfig({enabled: true});
 Ext.Loader.setPath('Ext.ux', '/ext4/examples/ux');
 Ext.require([
     'Ext.ux.data.PagingMemoryProxy',
-    'Ext.ux.CheckColumn',
     'Ext.ux.grid.FiltersFeature'
 ]);
 
@@ -2725,7 +2724,8 @@ Ext.define("Ung.GridEventLog", {
                 }
             },
             autoLoad: false,
-            remoteSort:true
+            remoteSort:true,
+            remoteFilter: true
         });
         
         this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
@@ -3169,7 +3169,8 @@ Ext.define('Ung.MonitorGrid', {
                 direction: this.sortOrder ? this.sortOrder: "ASC"
             }: null,
             groupField: this.groupField,
-            remoteSort: this.paginated
+            remoteSort: this.paginated,
+            remoteFilter: this.paginated
         });
         this.bbar=[];
         if(this.appList!=null) {
@@ -4425,6 +4426,7 @@ Ext.define('Ung.EditorGrid', {
             }: null,
             groupField: this.groupField,
             remoteSort: this.paginated,
+            remoteFilter: this.paginated,
             listeners: {
                 "update": {
                     fn: Ext.bind(function(store, record, operation) {

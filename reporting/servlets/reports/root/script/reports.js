@@ -1379,7 +1379,8 @@ Ext.define('Ung.ReportDetails', {
                 }
             },
             autoLoad: {params: {start: 0, limit: 40}},
-            remoteSort: true
+            remoteSort: true,
+            remoteFilter: true
         });
 
         var pagingBar = Ext.create('Ext.toolbar.Paging', {

@@ -292,6 +292,7 @@ Ext.define('Ung.QuarantineStore', {
             }
         };
         config.remoteSort=true;
+        config.remoteFilter=true;
         config.data = this.refresh();
 
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
