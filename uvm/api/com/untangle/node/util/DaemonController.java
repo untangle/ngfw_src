@@ -45,7 +45,6 @@ public class DaemonController
             String output = UvmContextFactory.context().execManager().execOutput( cmd );
             try {
                 String lines[] = output.split("\\r?\\n");
-                logger.info(cmd + ": ");
                 for ( String line : lines )
                     logger.info(cmd + ": " + line);
             } catch (Exception e) {}
@@ -85,6 +84,7 @@ public class DaemonController
 
     public synchronized void setUsageCount( String daemonName, int usageCount )
     {
+        logger.info("Daemon " + daemonName + " usageCount: " + usageCount );
         usageCountMap.put( daemonName, usageCount );
     }
 }

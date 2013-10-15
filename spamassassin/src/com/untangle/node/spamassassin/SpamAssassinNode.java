@@ -87,7 +87,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     @Override
     protected void postStop()
     {
-        DaemonController.getInstance().incrementUsageCount( "spamassassin" );
+        DaemonController.getInstance().decrementUsageCount( "spamassassin" );
         super.postStop();
     }
 
