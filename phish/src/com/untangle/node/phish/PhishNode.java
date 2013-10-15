@@ -14,6 +14,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.node.clam.ClamDaemonController;
 
 public class PhishNode extends SpamNodeImpl implements Phish
 {
@@ -100,8 +101,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         initSpamDnsblList(tmpSpamSettings);
     }
 
-    // protected methods ------------------------------------------------------
-
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
@@ -117,6 +116,20 @@ public class PhishNode extends SpamNodeImpl implements Phish
         initSpamDnsblList(ps);
     }
 
+    @Override
+    protected void preStart()
+    {
+        ClamDaemonController.getInstance().incrementUsageCount();
+        super.preStart();
+    }
+
+    @Override
+    protected void postStop()
+    {
+        ClamDaemonController.getInstance().decrementUsageCount();
+        super.postStop();
+    }
+    
     @Override
     public boolean startSpamAssassinDaemon()
     {

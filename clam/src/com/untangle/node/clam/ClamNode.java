@@ -21,4 +21,19 @@ public class ClamNode extends VirusNodeImpl
     {
         return "clam";
     }
+
+    @Override
+    protected void preStart()
+    {
+        ClamDaemonController.getInstance().incrementUsageCount();
+        super.preStart();
+    }
+
+    @Override
+    protected void postStop()
+    {
+        ClamDaemonController.getInstance().decrementUsageCount();
+        super.postStop();
+    }
+    
 }
