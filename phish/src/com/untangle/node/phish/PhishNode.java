@@ -14,7 +14,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.node.clam.ClamDaemonController;
+import com.untangle.node.util.DaemonController;
 
 public class PhishNode extends SpamNodeImpl implements Phish
 {
@@ -119,14 +119,16 @@ public class PhishNode extends SpamNodeImpl implements Phish
     @Override
     protected void preStart()
     {
-        ClamDaemonController.getInstance().incrementUsageCount();
+        DaemonController.getInstance().incrementUsageCount( "clamav-daemon" );
+        DaemonController.getInstance().incrementUsageCount( "clamav-freshclam" );
         super.preStart();
     }
 
     @Override
     protected void postStop()
     {
-        ClamDaemonController.getInstance().decrementUsageCount();
+        DaemonController.getInstance().decrementUsageCount( "clamav-daemon" );
+        DaemonController.getInstance().decrementUsageCount( "clamav-freshclam" );
         super.postStop();
     }
     

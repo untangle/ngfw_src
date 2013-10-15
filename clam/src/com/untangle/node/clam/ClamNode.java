@@ -4,6 +4,7 @@
 package com.untangle.node.clam;
 
 import com.untangle.node.virus.VirusNodeImpl;
+import com.untangle.node.util.DaemonController;
 
 public class ClamNode extends VirusNodeImpl
 {
@@ -25,14 +26,16 @@ public class ClamNode extends VirusNodeImpl
     @Override
     protected void preStart()
     {
-        ClamDaemonController.getInstance().incrementUsageCount();
+        DaemonController.getInstance().incrementUsageCount( "clamav-daemon" );
+        DaemonController.getInstance().incrementUsageCount( "clamav-freshclam" );
         super.preStart();
     }
 
     @Override
     protected void postStop()
     {
-        ClamDaemonController.getInstance().decrementUsageCount();
+        DaemonController.getInstance().decrementUsageCount( "clamav-daemon" );
+        DaemonController.getInstance().decrementUsageCount( "clamav-freshclam" );
         super.postStop();
     }
     
