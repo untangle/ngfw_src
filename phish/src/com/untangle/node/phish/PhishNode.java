@@ -131,22 +131,4 @@ public class PhishNode extends SpamNodeImpl implements Phish
         DaemonController.getInstance().decrementUsageCount( "clamav-freshclam" );
         super.postStop();
     }
-    
-    @Override
-    public boolean startSpamAssassinDaemon()
-    {
-        return false; // does not apply to clamphish
-    }
-
-    @Override
-    public boolean stopSpamAssassinDaemon()
-    {
-        return false; // does not apply to clamphish
-    }
-
-    @Override
-    public boolean restartSpamAssassinDaemon()
-    {
-        return false; // does not apply to clamphish
-    }
 }

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
+import com.untangle.node.util.DaemonController;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 
@@ -74,6 +75,20 @@ public class SpamAssassinNode extends SpamNodeImpl
         readNodeSettings();
         SpamSettings ps = getSettings();
         initSpamDnsblList(ps);
+    }
+
+    @Override
+    protected void preStart()
+    {
+        DaemonController.getInstance().incrementUsageCount( "spamassassin" );
+        super.preStart();
+    }
+    
+    @Override
+    protected void postStop()
+    {
+        DaemonController.getInstance().incrementUsageCount( "spamassassin" );
+        super.postStop();
     }
 
     public String getVendor()

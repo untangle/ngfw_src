@@ -1,5 +1,5 @@
 /**
- * $Id: SpamNodeImpl.java 35674 2013-08-19 22:12:28Z dmorris $
+ * $Id$
  */
 package com.untangle.node.spam;
 
@@ -43,7 +43,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     };
 
     private final SpamScanner scanner;
-    private final SpamAssassinDaemon saDaemon;
 
     protected volatile SpamSettings spamSettings;
 
@@ -62,7 +61,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         super( nodeSettings, nodeProperties );
         
         this.scanner = scanner;
-        saDaemon = new SpamAssassinDaemon();
 
         String vendor = scanner.getVendorName();
         String vendorTag = vendor;
@@ -249,21 +247,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         SpamSettings tmpSpamSettings = new SpamSettings();
         configureSpamSettings(tmpSpamSettings);
         setSettings(tmpSpamSettings);
-    }
-
-    // convenience method for GUI
-    public boolean startSpamAssassinDaemon() {
-        return saDaemon.start();
-    }
-
-    // convenience method for GUI
-    public boolean stopSpamAssassinDaemon() {
-        return saDaemon.stop();
-    }
-
-    // convenience method for GUI
-    public boolean restartSpamAssassinDaemon() {
-        return saDaemon.restart();
     }
 
     // NodeBase methods ----------------------------------------------
