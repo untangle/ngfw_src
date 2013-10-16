@@ -89,28 +89,6 @@ Ext.define('Ung.Reports', {
         }
 
         i18n = new Ung.I18N({ "map": result.map });
-
-        // i18n strings
-        i18n._('Monday');
-        i18n._('Tuesday');
-        i18n._('Wednesday');
-        i18n._('Thursday');
-        i18n._('Friday');
-        i18n._('Saturday');
-        i18n._('Sunday');
-        i18n._('January');
-        i18n._('February');
-        i18n._('March');
-        i18n._('April');
-        i18n._('May');
-        i18n._('June');
-        i18n._('July');
-        i18n._('August');
-        i18n._('September');
-        i18n._('October');
-        i18n._('November');
-        i18n._('December');
-
         this.postinit();
     },
 
@@ -188,21 +166,21 @@ Ext.define('Ung.Reports', {
             style:{overflow:'visible'},
             bodyStyle:'overflow:visible',
             items: [{
-                    xtype:'panel',
-                    style:{overflow:'visible'},
-                    bodyStyle:'overflow:visible',
-                    title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
-                    id: 'report-details',
-                    region:'center',
-                    collapsible: false,
-                    split: false,
-                    margin: '2 2 0 2',
-                    border: 0,
-                    items: [{ html:"" }],
-                    listeners: {
-                        'render': function(){
-                        }
+                xtype:'panel',
+                style:{overflow:'visible'},
+                bodyStyle:'overflow:visible',
+                title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
+                id: 'report-details',
+                region:'center',
+                collapsible: false,
+                split: false,
+                margin: '2 2 0 2',
+                border: 0,
+                items: [{ html:"" }],
+                listeners: {
+                    'render': function(){
                     }
+                }
             }]
         });        
         //reports.changeDate(this.reportsDate.time,this.numDays);
@@ -228,7 +206,7 @@ Ext.define('Ung.Reports', {
         for (var i = 0; i < rpc.dates.list.length; i++) {
             this.reportDatesItems.push({
                 text: i18n.dateFormat(rpc.dates.list[i].date),
-                dt: rpc.dates.list[i].date,                
+                dt: rpc.dates.list[i].date,
                 numDays:rpc.dates.list[i].numDays,
                 handler: function()
                 {
@@ -326,7 +304,7 @@ Ext.define('Ung.Reports', {
                                         comp.getEl().on("click",this.showAvailableReports,this);
                                     },this)
                                 }
-                            }                            
+                            }
                         }]
                     }]
                 }]
@@ -355,8 +333,7 @@ Ext.define('Ung.Reports', {
                                 this.getSelectionModel().select(this.getRootNode().firstChild);
                             }
                         },
-                        'render': function(tp)
-                        {
+                        'render': function(tp) {
                             tp.getSelectionModel().on('selectionchange', function(tree, node) {
                                 if(node!=null && node[0] != null) {
                                     if (node[0].data.id == 'applications') {
@@ -391,33 +368,33 @@ Ext.define('Ung.Reports', {
                         }
                     }
                 }, {
-                    xtype:'panel',
+                    xtype: 'panel',
                     region: 'center',
                     title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id: 'report-details',
                     layout:"anchor",
-                    width:700,
+                    width: 700,
                     height: getWinHeight() - 30,
                     autoScroll: false,
                     collapsible: false,
                     split: true,
-                    margin:'1 1 0 3',
+                    margin: '1 1 0 3',
                     defaults: {
-                        border:false
+                        border: false
                     },
                     items: [{ html:"" }]
                 }]
             },
             {
-                xtype:'panel',
+                xtype: 'panel',
                 border: false,
-                region:'south',
-                height:3
+                region: 'south',
+                height: 3
             }]
         });
     },
     getAvailableReportsData: function () {
-        return this.reportDatesItems;            
+        return this.reportDatesItems;
     },
     showReportFor: function(value,numDays) {
         var found = -1,i ;
@@ -445,7 +422,7 @@ Ext.define('Ung.Reports', {
                 hasEdit: false,
                 hasDelete: false,
                 width: 950,
-                height: getWinHeight()-60,                
+                height: getWinHeight()-60,
                 hasAdd: false,
                 data: this.getAvailableReportsData(),
                 title: i18n._( "Report Details" ),
@@ -461,7 +438,7 @@ Ext.define('Ung.Reports', {
                     width: 70,
                     dataIndex: "text",
                     renderer: function (value){
-                        return i18n._(value);   
+                        return i18n._(value);
                     }
                 },{
                     header: i18n._( "Date Range" ),
@@ -489,11 +466,11 @@ Ext.define('Ung.Reports', {
                 },{
                     header: i18n._( "Per Host/User/Email Reports" ),
                     width: 168,
-                    dataIndex: "dt",                    
+                    dataIndex: "dt",
                     renderer: Ext.bind(function (value,meta,record){
-                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Available"): i18n._("Unavailable");                           
+                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Available"): i18n._("Unavailable");
                     },this)
-                }]               
+                }]
             });
             
             this.availableReportsWindow = Ext.create('Ext.Window',{
@@ -503,7 +480,7 @@ Ext.define('Ung.Reports', {
                 width: 960,
                 resizable: false,
                 modal: true,
-                draggable: false,                
+                draggable: false,
                 height: getWinHeight()-30,
                 closeAction:'hide',
                 plain: true,
@@ -518,18 +495,18 @@ Ext.define('Ung.Reports', {
                         this.availableReportsWindow.hide();
                     },this)
                 }]
-            });                
+            });
         }
         
-        this.availableReportsWindow.show();                        
+        this.availableReportsWindow.show();
     },
     isDynamicDataAvailable: function(selectedDate) {
          var oneDay = 24*3600*1000,
         toDateInMillisecs =selectedDate.dt.time - oneDay,
-        fromDateInMillisecs = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),        
+        fromDateInMillisecs = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),
         cutOffDateInMillisecs = this.cutOffDateInMillisecs;
-        
-        return fromDateInMillisecs  - cutOffDateInMillisecs < 0  ? false: true;                  
+
+        return fromDateInMillisecs  - cutOffDateInMillisecs < 0  ? false: true;
     },    
     getTreeNodesFromTableOfContent: function(tableOfContents) {
         var treeNodes = [];
@@ -627,9 +604,7 @@ Ext.define('Ung.Reports', {
 
         return treeNodes;
     },
-    /**
-      * Refreshes the content pane when a selected node is clicked
-      * again */
+    // Refreshes the content pane when a selected node is clicked again
     refreshContentPane: function(node,e) {
         //check if someone's clicking on the selected node
         var selModel = Ext.getCmp('tree-panel').getSelectionModel();
@@ -665,9 +640,10 @@ Ext.define('Ung.Reports', {
                 this.tableOfContents = result;
                 var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
                 Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
-                var root= Ext.getCmp('tree-panel').getRootNode();
-                root.removeAll(false);
-                root.appendChild(treeNodes);
+                Ext.getCmp('tree-panel').setRootNode({
+                    expanded: true,
+                    children: treeNodes
+                });
                 Ext.getCmp('tree-panel').getSelectionModel().select(0);
             },this), this.reportsDate, this.numDays);        
         }
@@ -750,7 +726,7 @@ Ext.define('Ung.Reports', {
                      if(reports.printView){
                          //hack but close enough , could not find a reliable event that would fire after template is displayed.
                          window.setTimeout(function(){window.print();},1000);
-                     } 
+                     }
                  }catch(e){
                      alert(e.message);
                  }
@@ -777,7 +753,7 @@ Ext.define('Ung.Reports', {
                  text: value +" "+i18n._("Reports"),
                 handler: Ext.bind(this.getDrilldownTableOfContents,this, [fnName, type, value]),
                 drilldownType: rpc.drilldownType,
-                drilldownValue: rpc.drilldownValue                                                                                          
+                drilldownValue: rpc.drilldownValue
              });
              this.reportDetails.buildReportDetails(); // XXX take to correct page
              reports.progressBar.hide();
@@ -816,7 +792,7 @@ Ext.define('Ung.Reports', {
             reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
                                        handler: Ext.bind(this[fnName],this,[app, value]),
                                       drilldownType: rpc.drilldownType,
-                                      drilldownValue: rpc.drilldownValue                                                                    
+                                      drilldownValue: rpc.drilldownValue
                                      });
             this.reportDetails.buildReportDetails(); // XXX take to correct page
             reports.progressBar.hide();
@@ -1079,7 +1055,7 @@ Ext.define('Ung.ReportDetails', {
             if(i % 2){
                 str = str.replace('highlight-2', 'highlight-2 odd');
             }
-            items.push({html:str,colspan:2});                    
+            items.push({html:str,colspan:2});
         }
         return Ext.create('Ext.panel.Panel',{
             title: i18n._('Summary'),
@@ -1142,7 +1118,7 @@ Ext.define('Ung.ReportDetails', {
             columns = [];
             items.push({html:str,colspan:2,bodyStyle:'padding:10px'});
         } else {
-        
+
             // graph
             
             items.push({html:'<img src="'+summaryItem.imageUrl+'" width="338" height="230"/>', bodyStyle:'padding:20px'});
@@ -1487,12 +1463,12 @@ Ext.define('Ung.ReportDetails', {
                         if(exception){
                             if(exception.message){
                                 message = exception.message;
-                            }                            
+                            }
                         }else if(result==null){
                             title = i18n._('Could not load Dynamic Reports data');
                             message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
                         } 
-                        Ext.MessageBox.alert(title, message);                        
+                        Ext.MessageBox.alert(title, message);
                     }
                     return;
                 }
