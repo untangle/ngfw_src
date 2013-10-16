@@ -1,7 +1,7 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.form');
 Ext.namespace('Ung.grid');
-Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/gray/tree/s.gif'; // The location of the blank pixel image
 Ext.Loader.setConfig({enabled: true});
 Ext.Loader.setPath('Ext.ux', '/ext4/examples/ux');
 Ext.require([
@@ -1155,7 +1155,7 @@ Ext.define("Ung.AppItem", {
     },
     // hack because I cant figure out how to tell extjs to apply style to progress text
     stylizeProgressText: function (str) {
-        return '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;">' + str + '</p>';
+        return '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;margin:0px;">' + str + '</p>';
     },
     // set the state of the progress bar
     setState: function(newState, options) {

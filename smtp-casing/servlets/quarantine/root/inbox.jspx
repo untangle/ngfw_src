@@ -33,7 +33,7 @@
     <uvm:inlineScript>
       <![CDATA[
         //The location of the blank pixel image
-        Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif';
+        Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/gray/tree/s.gif';
               
         if(typeof console === "undefined") {
             //Prevent console.log triggering errors on browsers without console support

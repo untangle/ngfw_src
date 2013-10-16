@@ -2,7 +2,7 @@ Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/gray/tree/s.gif'; // The location of the blank pixel image
 // the main internationalization object
 var i18n=null;
 // the main json rpc object
