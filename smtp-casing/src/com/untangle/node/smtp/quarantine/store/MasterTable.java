@@ -1,5 +1,5 @@
 /**
- * $Id: MasterTable.java 35396 2013-07-23 11:38:48Z dcibu $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine.store;
 
@@ -54,7 +54,7 @@ final class MasterTable
         if (needRebuild) {
             StoreSummary storeMeta = new StoreSummary();
             logger.debug("About to scan Inbox directories to rebuild summary");
-            visitInboxes(new File(rootDir), DATA_DIR_NAME, storeMeta);
+            visitInboxes(new File(rootDir, DATA_DIR_NAME), storeMeta);
             logger.debug("Done scanning Inbox directories to rebuild summary");
             return new MasterTable(rootDir, storeMeta);
         } else {
@@ -68,7 +68,7 @@ final class MasterTable
         Logger logger = Logger.getLogger(MasterTable.class);
         StoreSummary storeMeta = new StoreSummary();
         logger.debug("About to scan Inbox directories to rebuild summary");
-        visitInboxes(new File(rootDir), DATA_DIR_NAME, storeMeta);
+        visitInboxes(new File(rootDir, DATA_DIR_NAME), storeMeta);
         logger.debug("Done scanning Inbox directories to rebuild summary");
         return new MasterTable(rootDir, storeMeta);
     }
@@ -210,30 +210,22 @@ final class MasterTable
     }
 
     /**
-     * Pass a visitor through this tree's managed directory structure. <br>
-     * <br>
-     * This is a depth-first tree walk, so the visitor <b>can</b> delete files.
-     * 
-     * @param visitor
-     *            the visitor
+     * Visit all the inboxes
      */
 
-    private static void visitInboxes(File dir, String relativePathAsString, StoreSummary storeMeta)
+    private static void visitInboxes(File dir, StoreSummary storeMeta)
     {
         File[] kids = dir.listFiles();
         for (File kid : kids) {
             if (kid.isDirectory()) {
-                visitInboxes(kid, relativePathAsString + File.separator + kid.getName(), storeMeta);
+                visit(kid, storeMeta);
             }
         }
-        visit(dir, storeMeta);
     }
 
     /**
-     * Visit the given directory within the inbox directory tree and read the summary
+     * Visit the given directory and read the summary
      * 
-     * @param f
-     *            the relative file representing a directory. Note that this may not be a terminal (inbox) directory.
      */
     private static void visit(File f, StoreSummary storeMeta)
     {
