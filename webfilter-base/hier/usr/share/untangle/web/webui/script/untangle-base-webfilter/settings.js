@@ -19,7 +19,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         // Block Lists Panel
         buildBlockLists: function() {
             this.panelBlockLists = Ext.create('Ext.panel.Panel',{
-                name: 'Block Lists',
+                name: 'BlockLists',
                 //helpSource: 'web_filter_block_lists',
                 //helpSource: 'web_filter_lite_block_lists',
                 helpSource: this.helpSourceName + '_block_lists',
@@ -40,7 +40,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "fieldset_manage_categories",
                     items: [{
                         xtype: "button",
-                        name: "manage_categories",
+                        name: "EditCategories",
                         text: this.i18n._("Edit Categories"),
                         handler: Ext.bind(function() {
                             this.panelBlockLists.onManageCategories();
@@ -49,7 +49,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },{
                     items: [{
                         xtype: "button",
-                        name: 'manage_sites',
+                        name: 'EditSites',
                         text: this.i18n._("Edit Sites"),
                         handler: Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedUrls();
@@ -58,7 +58,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },{
                     items: [{
                         xtype: "button",
-                        name: "manage_file_types",
+                        name: "EditFileTypes",
                         text: this.i18n._("Edit File Types"),
                         handler: Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedExtensions();
@@ -67,7 +67,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },{
                     items: [{
                         xtype: "button",
-                        name: "manage_mime_types",
+                        name: "EditMIMETypes",
                         text: this.i18n._("Edit MIME Types"),
                         handler: Ext.bind(function() {
                             this.panelBlockLists.onManageBlockedMimeTypes();
@@ -718,7 +718,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildPassLists: function() {
             this.panelPassLists = Ext.create('Ext.panel.Panel',{
             // private fields
-                name: 'Pass Lists',
+                name: 'PassLists',
                 //helpSource: 'web_filter_pass_lists',
                 //helpSource: 'web_filter_lite_pass_lists',
                 helpSource: this.helpSourceName + '_pass_lists',
@@ -737,7 +737,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         xtype:'fieldset',
                         items:{
                             xtype:'button',
-                            name: 'Sites manage list',
+                            name: 'EditPassedSites',
                             text: this.i18n._("Edit Passed Sites"),
                             handler: Ext.bind(function() {
                                 this.panelPassLists.onManagePassedUrls();
@@ -748,7 +748,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         xtype:'fieldset',
                         items: {
                             xtype:'button',
-                            name: 'Client IP addresses manage list',
+                            name: 'EditPassedClientIPs',
                             text: this.i18n._("Edit Passed Client IPs"),
                             handler: Ext.bind(function() {
                                 this.panelPassLists.onManagePassedClients();

@@ -777,16 +777,27 @@ Ext.define("Ung.Main", {
             //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
             //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
             var targetTokens = this.target.split(".");
-            var firstToken=targetTokens[0].toLowerCase()
-            if(firstToken == "config" ) {
-                var configItem =this.configMap[targetTokens[1]];
-                if(configItem) {
-                    main.openConfig(configItem)
+            if(targetTokens.length >= 2) {
+                var firstToken = targetTokens[0].toLowerCase();
+                if(firstToken == "config" ) {
+                    var configItem =this.configMap[targetTokens[1]];
+                    if(configItem) {
+                        main.openConfig(configItem)
+                    }
+                } else if(firstToken == "node"){
+                    var nodeName = targetTokens[1].toLowerCase();
+                    for(var i=0; i<main.nodes.length; i++) {
+                        if(main.nodes[i].name == nodeName) {
+                            var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                            if (nodeCmp != null) {
+                                nodeCmp.onSettingsAction();
+                            }
+                            break;
+                        }
+                    }
                 }
-            } else if(firstToken == "node"){
-                
             } else {
-                main.target = null;
+                this.target = null;
             }
             // remove target in max 10 seconds to prevent using it again
             Ext.Function.defer(function() {
