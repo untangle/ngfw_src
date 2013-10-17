@@ -776,6 +776,7 @@ Ext.define("Ung.Main", {
             //target usage in the query string: 
             //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
             //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
+            //monitor.[sessions|hosts](.<tabName>)
             var targetTokens = this.target.split(".");
             if(targetTokens.length >= 2) {
                 var firstToken = targetTokens[0].toLowerCase();
