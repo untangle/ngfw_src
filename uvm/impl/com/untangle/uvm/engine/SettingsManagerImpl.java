@@ -1,5 +1,5 @@
 /**
- * $Id: SettingsManagerImpl.java 35336 2013-07-18 23:10:32Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -203,6 +203,9 @@ public class SettingsManagerImpl implements SettingsManager
             throw new SettingsException("Unable to the settings: '" + is + "'", e);
         } catch (UnmarshallException e) {
             logger.warn("UnmarshallException: ",e);
+            for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
+                logger.warn("Exception cause: ", cause);
+            }
             throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
         } finally {
             try {
@@ -272,6 +275,9 @@ public class SettingsManagerImpl implements SettingsManager
                 throw new SettingsException("Unable to save the file: '" + fileName + "'", e);
             } catch (MarshallException e) {
                 logger.warn("Failed to save settings: ", e);
+                for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
+                    logger.warn("Exception cause: ", cause);
+                }
                 throw new SettingsException("Unable to marshal json string:", e);
             } finally {
                 try {
