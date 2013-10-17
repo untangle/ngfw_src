@@ -93,7 +93,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }
             };
             this.gridCurrentHosts = Ext.create('Ung.MonitorGrid',{
-                name: "gridCurrentHosts",
+                name: "CurrentHosts",
                 helpSource: 'host_viewer_current_hosts',
                 settingsCmp: this,
                 height: 500,
@@ -327,7 +327,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
             this.gridPenaltyBox = Ext.create('Ung.EditorGrid',{
                 anchor: '100% -60',
                 helpSource: 'host_viewer_penalty_box_hosts',
-                name: "gridPenaltyBox",
+                name: "PenaltyBoxHosts",
                 settingsCmp: this,
                 parentId: this.getId(),
                 hasAdd: false,
@@ -405,7 +405,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildGridQuotaBox: function() {
             this.gridQuotaBox = Ext.create('Ung.EditorGrid',{
                 anchor: '100% -60',
-                name: "gridQuotaBox",
+                name: "CurrentQuotas",
                 helpSource: 'host_viewer_current_quotas',
                 settingsCmp: this,
                 parentId: this.getId(),
@@ -519,6 +519,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildPenaltyBoxEventLog: function() {
             this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                name: 'PenaltyBoxEventLog',
                 helpSource: 'host_viewer_penalty_box_event_log',
                 eventQueriesFn: rpc.hostTable.getPenaltyBoxEventQueries,
                 title: this.i18n._("Penalty Box Event Log"),
@@ -568,6 +569,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         buildQuotaEventLog: function() {
             this.gridQuotaEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                name: 'QuotaEventLog',
                 helpSource: 'host_viewer_quota_event_log',
                 eventQueriesFn: rpc.hostTable.getQuotaEventQueries,
                 title: this.i18n._("Quota Event Log"),

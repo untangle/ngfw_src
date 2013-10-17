@@ -784,7 +784,7 @@ Ext.define("Ung.Main", {
                     if(configItem) {
                         main.openConfig(configItem)
                     }
-                } else if(firstToken == "node"){
+                } else if(firstToken == "node") {
                     var nodeName = targetTokens[1].toLowerCase();
                     for(var i=0; i<main.nodes.length; i++) {
                         if(main.nodes[i].name == nodeName) {
@@ -794,6 +794,13 @@ Ext.define("Ung.Main", {
                             }
                             break;
                         }
+                    }
+                } else if(firstToken == "monitor") {
+                    var secondToken = targetTokens[1].toLowerCase();
+                    if(secondToken == 'sessions') {
+                        main.showSessions();
+                    } else if(secondToken == 'hosts') {
+                        main.showHosts();
                     }
                 }
             } else {
