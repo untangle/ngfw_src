@@ -44,6 +44,7 @@ Ext.define("Ung.Main", {
             };
         }
         this.firstTimeRun = Ung.Util.getQueryStringParam("firstTimeRun");
+        this.target = Ung.Util.getQueryStringParam("target");
         this.appsLastState = {};
         this.nodePreviews = {};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
@@ -759,7 +760,7 @@ Ext.define("Ung.Main", {
                                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
         }
-        if (this.nodes.length == 0) {
+        if (this.nodes.length == 0 && !this.target) {
             this.showInitialScreen();
         }
         this.updateSeparator();
@@ -769,6 +770,28 @@ Ext.define("Ung.Main", {
         }
         if(!main.disableThreads) {
             Ung.MessageManager.start(true);
+        }
+        if(this.target) {
+            //Open target if specified
+            //target usage in the query string: 
+            //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
+            //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
+            var targetTokens = this.target.split(".");
+            var firstToken=targetTokens[0].toLowerCase()
+            if(firstToken == "config" ) {
+                var configItem =this.configMap[targetTokens[1]];
+                if(configItem) {
+                    main.openConfig(configItem)
+                }
+            } else if(firstToken == "node"){
+                
+            } else {
+                main.target = null;
+            }
+            // remove target in max 10 seconds to prevent using it again
+            Ext.Function.defer(function() {
+                main.target = null;
+            }, 10000, this);
         }
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
             Ext.Function.defer(Ext.MessageBox.hide,30,Ext.MessageBox);
@@ -945,6 +968,7 @@ Ext.define("Ung.Main", {
                 "scriptFile":"systemInfo.js",
                 "handler": main.openConfig
             }];
+        this.configMap = Ung.Util.createRecordsMap(this.config, "name");
         this.buildConfig();
     },
     // build config buttons
@@ -1116,7 +1140,7 @@ Ext.define("Ung.Main", {
         
         if(nodeUI) {
             Ext.destroy(nodeUI);
-            return true;        
+            return true;
         }
         return false;
     }, 
@@ -1129,7 +1153,6 @@ Ext.define("Ung.Main", {
                 } else {
                     cp = main.nodes[i].nodeSettings.policyId;
                 }
-            
                 if ((nodeName == main.nodes[i].name)&& (nodePolicyId==cp)) {
                     return main.nodes[i];
                 }
@@ -1138,7 +1161,7 @@ Ext.define("Ung.Main", {
         return null;
     },
     removeParentNode: function (node, nodePolicyId) {
-        var cp = rpc.currentPolicy.policyId;    
+        var cp = rpc.currentPolicy.policyId;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if(nodePolicyId==null) {
@@ -1155,7 +1178,7 @@ Ext.define("Ung.Main", {
                 }
             }
         }
-        return false;        
+        return false;
     },
     isNodeRunning: function(nodeName) {
         var node = main.getNode(nodeName);
@@ -1341,18 +1364,18 @@ Ext.define("Ung.Main", {
     upgradeCheckCallback: function () {
         if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
             if(main.upgradeStatus.upgradesAvailable===true) {
-                this.openUpgradeScreen();            
+                this.openUpgradeScreen();
             } else {
                 this.openWelcomeScreen();
-            }                
+            }
         } else {
             this.openWelcomeScreen();
         }
-        this.postInitialScreen();                   
+        this.postInitialScreen();
     },
     /**
      *  cleanup and ensure the window opened is on the right size
-     */         
+     */
     postInitialScreen: function () {
         var ifr = main.getIframeWin();
         var position = [];
@@ -1361,7 +1384,7 @@ Ext.define("Ung.Main", {
         var centerPosition = Ext.getCmp('center').getPosition();
 
         ifr.initialConfig.sizeToRack = false;
-        ifr.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});        
+        ifr.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});
 
         position[0] = centerPosition[0]+Math.round(centerSize.width/20);
         position[1] = centerPosition[1]+Math.round(centerSize.height/20);
@@ -1369,8 +1392,8 @@ Ext.define("Ung.Main", {
         ifr.setPosition(position[0],position[1]);
 
         Ext.MessageBox.hide();
-        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});                  
-    }, 
+        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});
+    },
     /**
      *  Displays the appropriate screen after determining connectivity
      **/     
@@ -1385,12 +1408,12 @@ Ext.define("Ung.Main", {
                 main.checkForUpgrades(this.upgradeCheckCallback);
                 return;
             } else {
-                this.openFailureScreen();        
+                this.openFailureScreen();
             }        
         } else {
             this.openRunSetupScreen();
         }
-        this.postInitialScreen();          
+        this.postInitialScreen();
     },
     /**
      *  Hides the welcome screen

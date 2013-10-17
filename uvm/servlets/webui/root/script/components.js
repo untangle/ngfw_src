@@ -3553,7 +3553,40 @@ Ext.define("Ung.SettingsWin", {
         this.items=this.tabs;
         this.tabs.on('afterrender', function() {
             Ext.get("racks").show();
-        }, this.tabs);
+            this.openTarget();
+        }, this);
+    },
+    openTarget: function() {
+        if(main.target) {
+            var targetTokens = main.target.split(".");
+            if(targetTokens.length >= 3 && targetTokens[2] !=null ) {
+                var tabIndex = this.tabs.items.findIndex('name', targetTokens[2]);
+                console.log(targetTokens[2], tabIndex);
+                if(tabIndex != -1) {
+                    this.tabs.setActiveTab(tabIndex);
+                    if(targetTokens.length >= 4 && targetTokens[3] !=null ) {
+                        var activeTab = this.tabs.getActiveTab();
+                        var compArr = this.tabs.query('[name="'+targetTokens[3]+'"]');
+                        console.log(targetTokens[3], activeTab, compArr);
+                        if(compArr.length > 0) {
+                            var comp = compArr[0];
+                            if(comp) {
+                                console.log(comp.xtype);
+                                if(comp.xtype == "panel") {
+                                    var tabPanel = comp.up('tabpanel');
+                                    if(tabPanel) {
+                                        tabPanel.setActiveTab(comp);    
+                                    }
+                                } else if(comp.xtype == "button") {
+                                    comp.getEl().dom.click();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            main.target = null;
+        }
     },
     helpAction: function() {
         var helpSource;

@@ -189,7 +189,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }
                 this.output.setValue( text.join(""));
                 //scroll to bottom
-                var t =this.query('textarea[name="output"]')[0];
+                var t = this.query('textarea[name="output"]')[0];
                 var t1 = t.getEl().down('textarea');
                 t1.dom.scrollTop = 99999;
             }, this));
@@ -908,7 +908,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
 
             this.panelInterfaces = Ext.create('Ext.panel.Panel',{
-                name: 'panelInterfaces',
+                name: 'Interfaces',
                 helpSource: 'network_interfaces',
                 parentId: this.getId(),
                 title: this.i18n._('Interfaces'),
@@ -1853,7 +1853,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // HostName Panel
         buildHostName: function() {
             this.panelHostName = Ext.create('Ext.panel.Panel',{
-                name: 'panelHostName',
+                name: 'Hostname',
                 helpSource: 'network_hostname',
                 parentId: this.getId(),
                 title: this.i18n._('Hostname'),
@@ -1976,7 +1976,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Services Panel
         buildServices: function() {
             this.panelServices = Ext.create('Ext.panel.Panel',{
-                name: 'panelServices',
+                name: 'Services',
                 helpSource: 'network_services',
                 parentId: this.getId(),
                 title: this.i18n._('Services'),
@@ -2297,7 +2297,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP"],[ "UDP", "UDP"]];
             var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
             this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
-                name: 'panelPortForwardRules',
+                name: 'PortForwardRules',
                 helpSource: 'network_port_forward_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Port Forward Rules'),
@@ -2589,7 +2589,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             this.panelNatRules = Ext.create('Ext.panel.Panel',{
-                name: 'panelNatRules',
+                name: 'NatRules',
                 helpSource: 'network_nat_rules',
                 parentId: this.getId(),
                 title: this.i18n._('NAT Rules'),
@@ -2737,7 +2737,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             this.panelBypassRules = Ext.create('Ext.panel.Panel',{
-                name: 'panelBypassRules',
+                name: 'BypassRules',
                 helpSource: 'network_bypass_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Bypass Rules'),
@@ -2930,7 +2930,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             this.panelRoutes = Ext.create('Ext.panel.Panel',{
-                name: 'panelRoutes',
+                name: 'Routes',
                 helpSource: 'network_routes',
                 parentId: this.getId(),
                 title: this.i18n._('Routes'),
@@ -2970,7 +2970,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
-                name: 'panelAdvanced',
+                name: 'Advanced',
                 getHelpSource: Ext.bind(function() {
                     var helpSource="network_advanced";
                     var activeTab=this.advancedTabPanel.getActiveTab();
@@ -2995,7 +2995,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Options Panel
         buildOptions: function() {
             this.panelOptions = Ext.create('Ext.panel.Panel',{
-                name: 'panelOptions',
+                name: 'Options',
                 helpSource: 'network_options',
                 parentId: this.getId(),
                 title: this.i18n._('Options'),
@@ -3492,7 +3492,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
 
             this.panelQoS = Ext.create('Ext.panel.Panel',{
-                name: 'panelQoS',
+                name: 'QoS',
                 helpSource: 'network_qos',
                 parentId: this.getId(),
                 title: this.i18n._('QoS'),
@@ -3798,7 +3798,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
             
             this.panelFilter = Ext.create('Ext.panel.Panel',{
-                name: 'panelFilter',
+                name: 'FilterRules',
                 helpSource: 'network_filter_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Filter Rules'),
@@ -3968,7 +3968,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
             this.panelDnsServer = Ext.create('Ext.panel.Panel',{
-                name: 'panelDnsServer',
+                name: 'DnsServer',
                 helpSource: 'network_dns_server',
                 parentId: this.getId(),
                 title: this.i18n._('DNS Server'),
@@ -4141,7 +4141,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
 
             this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
-                name: 'panelDhcpServer',
+                name: 'DhcpServer',
                 helpSource: 'network_dhcp_server',
                 parentId: this.getId(),
                 title: this.i18n._('DHCP Server'),
@@ -4299,6 +4299,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             });
             this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
+                name: 'Troubleshooting',
                 helpSource: 'network_troubleshooting',
                 parentId: this.getId(),
                 title: this.i18n._('Troubleshooting'),
@@ -4906,7 +4907,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var activeTabIndex = this.tabs.items.findIndex('id', this.tabs.getActiveTab().id);
                     var advancedTabIndex =this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id);
                     Ung.Network.superclass.closeWindow.call(this);
-                    main.openConfig(main.config[0]);  
+                    main.openConfig(main.configMap["network"]);
                     Ext.defer(function() {
                         Ung.NetworkSettingsCmp.needRackReload=true;
                         Ung.NetworkSettingsCmp.tabs.setActiveTab(activeTabIndex);
