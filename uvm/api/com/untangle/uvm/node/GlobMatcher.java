@@ -64,8 +64,12 @@ public class GlobMatcher
             return false;
             
         case SINGLE:
-            if (str == null)
+            if (str == null) {
+                /* "" matches null */
+                if ("".equals( single ))
+                    return true;
                 return false;
+            }
             if (str.equalsIgnoreCase(this.single))
                 return true;
             if (this.singleRegex.matcher(str).matches())

@@ -510,10 +510,23 @@ class FirewallTests(unittest2.TestCase):
         entry['usernameAdConnector'] = None ;
         uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
 
-    # verify '' username matches null username
+    # verify '' username matches null username (but not all usernames)
     def test_081_blockClientUsernameBlank(self):
         nukeRules();
+
+        username = clientControl.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = username
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
         appendRule( createSingleMatcherRule( "USERNAME", '' ) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry['usernameAdConnector'] = None
+        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
 
