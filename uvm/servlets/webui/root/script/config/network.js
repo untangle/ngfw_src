@@ -3027,6 +3027,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 },{
                     xtype: "checkbox",
+                    fieldLabel: this.i18n._("Enable STP (Spanning Tree) on Bridges"),
+                    labelStyle: 'width:150px',
+                    checked: this.settings.stpEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.stpEnabled = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: "checkbox",
                     fieldLabel: this.i18n._("DHCP Authoritative"),
                     labelStyle: 'width:150px',
                     checked: this.settings.dhcpAuthoritative,

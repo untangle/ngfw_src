@@ -43,6 +43,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     private boolean enableSipNatHelper = false;
     private boolean sendIcmpRedirects = true;
+    private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
 
     private int httpPort  = 80;
@@ -115,6 +116,9 @@ public class NetworkSettings implements Serializable, JSONString
     public boolean getSendIcmpRedirects() { return this.sendIcmpRedirects; }
     public void setSendIcmpRedirects( boolean newValue ) { this.sendIcmpRedirects = newValue; }
 
+    public boolean getStpEnabled() { return this.stpEnabled; }
+    public void setStpEnabled( boolean newValue ) { this.stpEnabled = newValue; }
+    
     public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
     public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
 
