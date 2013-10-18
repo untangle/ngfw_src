@@ -783,11 +783,11 @@ Ext.define("Ung.Main", {
                 if(firstToken == "config" ) {
                     var configItem =this.configMap[targetTokens[1]];
                     if(configItem) {
-                        main.openConfig(configItem)
+                        main.openConfig(configItem);
                     }
                 } else if(firstToken == "node") {
                     var nodeName = targetTokens[1].toLowerCase();
-                    for(var i=0; i<main.nodes.length; i++) {
+                    for( i=0 ; i<main.nodes.length ; i++) {
                         if(main.nodes[i].name == nodeName) {
                             var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                             if (nodeCmp != null) {
