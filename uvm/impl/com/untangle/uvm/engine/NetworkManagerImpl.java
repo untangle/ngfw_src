@@ -702,6 +702,11 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
 
+        // Prevent users from choosing untangle.com (#7574)
+        if ( "untangle.com".equals(networkSettings.getDomainName()) ) {
+            throw new RuntimeException( "untangle.com is not an allowed domain name." );
+        }
+        
     }
 
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
