@@ -524,22 +524,6 @@ class FirewallTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 1)
 
-    # verify username matches *
-    def test_083_blockClientUsernameStar(self):
-        nukeRules();
-
-        username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
-        entry['usernameAdConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
-
-        appendRule( createSingleMatcherRule( "USERNAME", '*' ) );
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        assert (result == 1)
-
-        entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
-
     # verify rules that a rule with two matching matchers works
     def test_085_dualMatcherRule(self):
         nukeRules();
