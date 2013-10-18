@@ -72,7 +72,7 @@ public class SystemManagerImpl implements SystemManager
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
 
-        if (settings.getSnmpSettings().getEnabled() ) {
+        if (settings.getSnmpSettings().isEnabled() ) {
             restartDaemon();
         }
 
