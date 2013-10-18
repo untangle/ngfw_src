@@ -30,7 +30,6 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
-    private static final String SNMP_WRAPPER_NAME = "/usr/share/untangle/bin/snmpd-restart";
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -73,6 +72,9 @@ public class SystemManagerImpl implements SystemManager
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
 
+        if (settings.getSnmpSettings().getEnabled() ) {
+            restartDaemon();
+        }
 
         this.autoUpgradeCronJob = UvmContextFactory.context().makeCronJob(this.settings.getAutoUpgradeDays(),
                                                                           this.settings.getAutoUpgradeHour(),
@@ -316,8 +318,15 @@ public class SystemManagerImpl implements SystemManager
     {
         try {
             logger.debug("Restarting the snmpd...");
-            Integer result = UvmContextFactory.context().execManager().execResult( SNMP_WRAPPER_NAME );
-            logger.debug("Restart of SNMPD exited with " + result);
+
+            String result = UvmContextFactory.context().execManager().execOutput( "/etc/init.d/snmpd restart" );
+            try {
+                String lines[] = result.split("\\r?\\n");
+                logger.info("/etc/init.d/snmpd restart: ");
+                for ( String line : lines )
+                    logger.info("/etc/init.d/snmpd restart: " + line);
+            } catch (Exception e) {}
+
         }
         catch(Exception ex) {
             logger.error("Error restarting snmpd", ex);
