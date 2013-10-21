@@ -3387,6 +3387,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         return [];
                     }
                 },
+                initialLoad: function() {}, //Don't load automatically
                 fields: [{
                     name: 'interface_name'
                 },{
@@ -3448,7 +3449,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         return [];
                     }
                 },
-                
+                initialLoad: function() {}, //Don't load automatically
                 fields: [{
                     name: 'proto'
                 },{
