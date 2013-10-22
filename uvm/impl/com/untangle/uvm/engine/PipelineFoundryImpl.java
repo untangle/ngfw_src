@@ -1,6 +1,6 @@
 
 /**
- * $Id: PipelineFoundryImpl.java 34449 2013-04-02 00:27:33Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -119,27 +119,26 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if ( sessionTuple.getProtocol() == SessionTuple.PROTO_TCP ) {
             switch ( sessionTuple.getServerPort() ) {
             case 21:
-                fittings.add( Fitting.FTP_CTL_STREAM );
+                if ( ! fittings.contains( Fitting.FTP_CTL_STREAM ) ) fittings.add( Fitting.FTP_CTL_STREAM );
                 break;
             case 25:
-                fittings.add( Fitting.SMTP_STREAM );
+                if ( ! fittings.contains( Fitting.SMTP_STREAM ) ) fittings.add( Fitting.SMTP_STREAM );
                 break;
             case 80:
-                fittings.add( Fitting.HTTP_STREAM );
+                if ( ! fittings.contains( Fitting.HTTP_STREAM ) )  fittings.add( Fitting.HTTP_STREAM );
                 break;
             case 443:
-                fittings.add( Fitting.HTTPS_STREAM );
+                if ( ! fittings.contains( Fitting.HTTPS_STREAM ) ) fittings.add( Fitting.HTTPS_STREAM );
                 break;
             default:
-                fittings.add( Fitting.OCTET_STREAM );
                 break;
             }
         }
 
         /**
-         * All sessions have octect_stream fitting
+         * All sessions are OCTET stream, add it if it isn't already there
          */
-        fittings.add( Fitting.OCTET_STREAM );
+        if ( ! fittings.contains( Fitting.OCTET_STREAM ) ) fittings.add( Fitting.OCTET_STREAM );
 
         long ct0 = System.nanoTime();
         for ( Fitting fitting : fittings ) {
