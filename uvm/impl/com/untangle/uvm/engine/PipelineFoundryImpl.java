@@ -153,7 +153,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * We now iterate through each and remove ones that are not interested
          */
         long ft0 = System.nanoTime();
-        String nodeList = "nodes: [";
+        String nodeList = "nodes: [ ";
         for (Iterator<PipelineConnectorImpl> i = pipelineConnectorList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
             PipeSpec pipeSpec = pipelineConnector.getPipeSpec();
