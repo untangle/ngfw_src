@@ -2656,6 +2656,8 @@ Ext.define("Ung.FaceplateMetric", {
 });
 Ext.ComponentMgr.registerType('ungFaceplateMetric', Ung.FaceplateMetric);
 
+
+
 // Event Log class
 Ext.define("Ung.GridEventLog", {
     extend: "Ext.grid.Panel",
@@ -2678,6 +2680,7 @@ Ext.define("Ung.GridEventLog", {
     // for internal use
     rpc: null,
     helpSource: 'event_log',
+    enableColumnMenu: false,
     // mask to show during refresh
     // loadMask: {msg: i18n._("Refreshing...")},
     // called when the component is initialized
@@ -2785,15 +2788,17 @@ Ext.define("Ung.GridEventLog", {
         }, this.pagingToolbar];
         this.callParent(arguments);
 
-        var cmConfig = this.columns;
-        for (var i in cmConfig) {
-            var col=cmConfig[i];
-            if (col.sortable == true || col.sortable == null) {
-                col.menuDisabled= true;
-                col.sortable = true;
-                col.initialSortable = true;
-            } else {
-                col.initialSortable = false;
+        if (!this.enableColumnMenu){
+            var cmConfig = this.columns;
+            for (var i in cmConfig) {
+                var col=cmConfig[i];
+                if (col.sortable == true || col.sortable == null) {
+                    col.menuDisabled= true;
+                    col.sortable = true;
+                    col.initialSortable = true;
+                } else {
+                    col.initialSortable = false;
+                }
             }
         }
     },
@@ -2900,7 +2905,7 @@ Ext.define("Ung.GridEventLog", {
             for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
                 selOpt = (i === 0) ? "selected": "";
-                out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
+                out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
             Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
@@ -3087,6 +3092,211 @@ Ext.define("Ung.GridEventLog", {
         return false;
     }
 });
+
+
+//Grid for EventLog, with customizable columns 
+Ext.define('Ung.GridEventLogCustomizable', {
+    extend:'Ung.GridEventLog',
+    enableColumnHide: true,
+    enableColumnMove: true,
+    enableColumnMenu: true
+ });
+
+Ung.CustomEventLog = {
+        buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+            return Ext.create('Ung.GridEventLogCustomizable',{
+                name: nameParam,
+                settingsCmp: settingsCmpParam,
+                helpSource: helpSourceParam,
+                eventQueriesFn: eventQueriesFnParam,
+                title: i18n._(titleParam),
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: Ung.SortTypes.asTimestamp
+                }, {
+                    name: 'priority',
+                    mapping: 'bandwidth_priority'
+                }, {
+                    name: 'rule',
+                    mapping: 'bandwidth_rule'
+                }, {
+                    name: 'username'
+                }, {
+                    name: 'client_addr',
+                    mapping: 'c_client_addr'
+                }, {
+                    name: 'client_port',
+                    mapping: 'c_client_port'
+                }, {
+                    name: 'server_addr',
+                    mapping: 'c_server_addr'
+                }, {
+                    name: 'server_port',
+                    mapping: 's_server_port'
+                }, {
+                    name: 'application',
+                    mapping: 'classd_application',
+                    type: 'string'
+                }, {
+                    name: 'protochain',
+                    mapping: 'classd_protochain',
+                    type: 'string'
+                }, {
+                    name: 'flagged',
+                    mapping: 'classd_flagged',
+                    type: 'boolean'
+                }, {
+                    name: 'blocked',
+                    mapping: 'classd_blocked',
+                    type: 'boolean'
+                }, {
+                    name: 'confidence',
+                    mapping: 'classd_confidence'
+                }, {
+                    name: 'detail',
+                    mapping: 'classd_detail'
+                }, {
+                    name: 'protofilter_blocked',
+                    mapping: 'protofilter_blocked'
+                }, {
+                    name: 'protocol',
+                    type: 'string',
+                    mapping: 'protofilter_protocol'
+                }, {
+                    name: 'ruleid',
+                    mapping: 'classd_ruleid'
+
+                }],
+                columns: [{
+                    hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                    header: i18n._("Timestamp"),
+                    width: Ung.Util.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    hidden: visibleColumnsParam.indexOf('client_addr') < 0,
+                    header: i18n._("Client"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'client_addr'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('client_port') < 0,
+                    header: i18n._("Client port"),
+                    width: Ung.Util.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'client_port'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('username') < 0,
+                    header: i18n._("Username"),
+                    width: Ung.Util.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'username'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('server_addr') < 0,
+                    header: i18n._("Server"),
+                    width: Ung.Util.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'server_addr'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('server_port') < 0,
+                    header: i18n._("Server Port"),
+                    width: Ung.Util.portFieldWidth, 
+                    sortable: true,
+                    dataIndex: 'server_port'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('ruleid') < 0,
+                    header: i18n._("Rule ID"),
+                    width: 70,
+                    sortable: true,
+                    dataIndex: 'ruleid'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('priority') < 0,
+                    header: i18n._("Priority"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'priority',
+                    renderer: function(value) {
+                        if (Ext.isEmpty(value))
+                            return "";
+                        
+                        switch(value) {
+                          case 0: return "";
+                          case 1: return i18n._("Very High");
+                          case 2: return i18n._("High");
+                          case 3: return i18n._("Medium");
+                          case 4: return i18n._("Low");
+                          case 5: return i18n._("Limited");
+                          case 6: return i18n._("Limited More");
+                          case 7: return i18n._("Limited Severely");
+                          default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                        }
+                    }
+                }, {
+                    hidden: visibleColumnsParam.indexOf('rule') < 0,
+                    header: i18n._("Rule"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'rule',
+                    renderer: function(value) {
+                        if (Ext.isEmpty(value))
+                            return i18n._("none");
+                        return value;
+                    }
+                }, {
+                    hidden: visibleColumnsParam.indexOf('application') < 0,
+                    header: i18n._("Application"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'application'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('protochain') < 0,
+                    header: i18n._("ProtoChain"),
+                    width: 180,
+                    sortable: true,
+                    dataIndex: 'protochain'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('blocked') < 0,
+                    header: i18n._("Blocked  (Application Control)"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'blocked'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('flagged') < 0,
+                    header: i18n._("Flagged"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'flagged'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('confidence') < 0,
+                    header: i18n._("Confidence"),
+                    width: Ung.Util.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'confidence'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('detail') < 0,
+                    header: i18n._("Detail"),
+                    width: 200,
+                    sortable: true,
+                    dataIndex: 'detail'
+                },{
+                    hidden: visibleColumnsParam.indexOf('protocol') < 0,
+                    header: i18n._("Protocol"),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'protocol'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
+                    header: i18n._("Blocked (Application Control Lite)"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'protofilter_blocked'
+                }]
+            });
+        }
+};
 
 // Monitor Grid class
 Ext.define('Ung.MonitorGrid', {

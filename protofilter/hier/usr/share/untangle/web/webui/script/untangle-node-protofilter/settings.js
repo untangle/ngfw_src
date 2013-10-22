@@ -212,67 +212,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }]
             });
         },
-        // Event Log
+        
         buildEventLog: function() {
-            this.gridEventLog = Ext.create('Ung.GridEventLog',{
-                settingsCmp: this,
-                helpSource: 'application_control_lite_event_log',
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'blocked',
-                    mapping: 'protofilter_blocked'
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'username'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'protocol',
-                    type: 'string',
-                    mapping: 'protofilter_protocol'
-                }],
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'username'
-                }, {
-                    header: this.i18n._("Protocol"),
-                    width: 120,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'protocol'
-                }, {
-                    header: this.i18n._("Blocked"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'blocked'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', 'Event Log', 
+                    'application_control_lite_event_log', 
+                    ['time_stamp','protofilter_blocked','client_addr','username','server_addr','protocol'], this.getRpcNode().getEventQueries); 
         },
+        
         beforeSave: function(isApply, handler) {
             this.getSettings().patterns.list = this.gridProtocolList.getPageList();
             handler.call(this, isApply);
