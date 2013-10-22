@@ -216,6 +216,8 @@ final class MasterTable
     private static void visitInboxes(File dir, StoreSummary storeMeta)
     {
         File[] kids = dir.listFiles();
+        if (kids == null)
+            return;
         for (File kid : kids) {
             if (kid.isDirectory()) {
                 visit(kid, storeMeta);
