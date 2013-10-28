@@ -3094,9 +3094,445 @@ Ext.define("Ung.GridEventLog", {
 });
 
 
+//Event Log class
+Ext.define("Ung.GridEventLogBuffered", {
+    extend: "Ext.grid.Panel",
+    // the settings component
+    settingsCmp: null,
+    reserveScrollbar: true,
+    // refresh on activate Tab (each time the tab is clicked)
+    refreshOnActivate: true,
+    // Event manager rpc function to call
+    // default is getEventQueries() from settingsCmp
+    eventQueriesFn: null,
+    // Records per page
+    recordsPerPage: 50000,
+    // fields for the Store
+    fields: null,
+    // columns for the column model
+    columns: null,
+    enableColumnHide: false,
+    enableColumnMove: false,
+    // for internal use
+    rpc: null,
+    helpSource: 'event_log',
+    enableColumnMenu: false,
+    verticalScrollerType: 'paginggridscroller',
+    plugins: {
+        ptype: 'bufferedrenderer',
+        trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
+        leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
+    },
+    paginated: false,
+    invalidateScrollerOnRefresh: false,
+    loadMask: true,
+    
+    // called when the component is initialized
+    constructor: function(config) {
+         var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
+         Ext.define(modelName, {
+             extend: 'Ext.data.Model',
+             fields: config.fields
+         });
+         config.modelName = modelName;
+
+        this.callParent(arguments);
+    },
+    initComponent: function() {
+        this.rpc = {};
+        
+        if( this.viewConfig == null ) {
+            this.viewConfig = {};
+        }
+        this.viewConfig.enableTextSelection = true;
+        
+        if ( this.title == null ) {
+            this.title = i18n._('Event Log');
+        }
+        if ( this.name == null ) {
+            this.name = 'EventLog';
+        }
+        if ( this.hasAutoRefresh == null ) {
+            this.hasAutoRefresh = true;
+        }
+        if ( this.name == null ) {
+            this.name = "Event Log";
+        }
+        if ( this.eventQueriesFn == null ) {
+            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
+        }
+        this.rpc.repository = {};
+        this.store=Ext.create('Ext.data.Store', {
+            model: this.modelName,
+            data: [],
+            pageSize: 100,
+            buffered: true,
+            proxy: {
+                type: 'pagingmemory',
+                reader: {
+                    type: 'json',
+                    root: 'list'
+                }
+            },
+            autoLoad: false,
+            remoteSort:true,
+            remoteFilter: true
+        });
+
+        this.bbar = [{
+            xtype: 'tbtext',
+            id: "querySelector_"+this.getId(),
+            text: ''
+        }, {
+            xtype: 'tbtext',
+            id: "rackSelector_"+this.getId(),
+            text: ''
+        }, {
+            xtype: 'button',
+            id: "refresh_"+this.getId(),
+            text: i18n._('Refresh'),
+            name: "Refresh",
+            tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+            iconCls: 'icon-refresh',
+            handler: Ext.bind(this.flushHandler, this, [true])
+        }, {
+            xtype: 'button',
+            hidden: !this.hasAutoRefresh,
+            id: "auto_refresh_"+this.getId(),
+            text: i18n._('Auto Refresh'),
+            enableToggle: true,
+            pressed: false,
+            name: "Auto Refresh",
+            tooltip: i18n._('Auto Refresh every 5 seconds'),
+            iconCls: 'icon-autorefresh',
+            handler: Ext.bind(function() {
+                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                if(autoRefreshButton.pressed) {
+                    this.startAutoRefresh();
+                } else {
+                    this.stopAutoRefresh();
+                }
+            }, this)
+        }, {
+            xtype: 'button',
+            id: "export_"+this.getId(),
+            text: i18n._('Export'),
+            name: "Export",
+            tooltip: i18n._('Export Events to File'),
+            iconCls: 'icon-export',
+            handler: Ext.bind(this.exportHandler, this)
+        }, {
+            xtype: 'tbtext',
+            text: '<div style="width:30px;"></div>'
+        }];
+        this.callParent(arguments);
+
+        if (!this.enableColumnMenu){
+            var cmConfig = this.columns;
+            for (var i in cmConfig) {
+                var col=cmConfig[i];
+                if (col.sortable == true || col.sortable == null) {
+                    col.menuDisabled= true;
+                    col.sortable = true;
+                    col.initialSortable = true;
+                } else {
+                    col.initialSortable = false;
+                }
+            }
+        }
+    },
+    autoRefreshEnabled:true,
+    startAutoRefresh: function(setButton) {
+        this.autoRefreshEnabled=true;
+        var columnModel=this.columns;
+        this.getStore().sort(columnModel[0].dataIndex, "DESC");
+        for (var i in columnModel) {
+            columnModel[i].sortable = false;
+        }
+        if(setButton) {
+            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+            autoRefreshButton.toggle(true);
+        }
+        var refreshButton=Ext.getCmp("refresh_"+this.getId());
+        refreshButton.disable();
+        this.autoRefreshList();
+    },
+    stopAutoRefresh: function(setButton) {
+        this.autoRefreshEnabled=false;
+        var columnModel=this.columns;
+        for (var i in columnModel) {
+            columnModel[i].sortable = columnModel[i].initialSortable;
+        }
+        if(setButton) {
+            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+            autoRefreshButton.toggle(false);
+        }
+        var refreshButton=Ext.getCmp("refresh_"+this.getId());
+        refreshButton.enable();
+    },
+    autoRefreshCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+        var events = result;
+        if(testMode) {
+            var emptyRec={};
+            for(var i=0; i<30; i++) {
+                events.list.push(this.getTestRecord(i, this.fields));
+            }
+        }
+        
+        if (this.settingsCmp !== null) {
+            this.getStore().getProxy().data = events;
+            this.getStore().load({
+                params: {
+                    start: 0,
+                    limit: this.recordsPerPage
+                }
+            });
+        }
+        if(this!=null && this.rendered && this.autoRefreshEnabled) {
+            if(this==this.settingsCmp.tabs.getActiveTab()) {
+                Ext.Function.defer(this.autoRefreshList, 5000, this);
+            } else {
+                this.stopAutoRefresh(true);
+            }
+        }
+    },
+    autoRefreshList: function() {
+        this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+            var selQuery = this.getSelectedQuery();
+            var selPolicy = this.getSelectedPolicy();
+            if (selQuery != null && selPolicy != null) {
+                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback, this), selQuery, selPolicy, 50 );
+            }
+        }, this));
+    },
+    exportHandler: function() {
+        var selQuery = this.getSelectedQuery();
+        var selQueryName = this.getSelectedQueryName();
+        var selPolicy = this.getSelectedPolicy();
+        if (selQuery != null && selPolicy != null) {
+            Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
+            var name = ( (this.name!=null) ? this.name: i18n._("Event Log") ) + " " +selQueryName;
+            name=name.trim().replace(/ /g,"_");
+            var downloadForm = document.getElementById('downloadForm');
+            downloadForm["type"].value="eventLogExport";
+            downloadForm["arg1"].value=name;
+            downloadForm["arg2"].value=selQuery;
+            downloadForm["arg3"].value=selPolicy;
+            downloadForm["arg4"].value=this.getColumnList();
+            downloadForm.submit();
+            Ext.MessageBox.hide();
+        }
+    },
+    // called when the component is rendered
+    afterRender: function() {
+        this.callParent(arguments);
+        //TODO: extjs4 migration find an alternative
+        //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name': "Table"});
+        
+        if (this.eventQueriesFn != null) {
+            this.rpc.eventLogQueries=this.eventQueriesFn();
+            var queryList = this.rpc.eventLogQueries;
+            var displayStyle;
+            var out =[];
+            var i;
+            var selOpt;
+            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '">');
+            for (i = 0; i < queryList.length; i++) {
+                var queryDesc = queryList[i];
+                selOpt = (i === 0) ? "selected": "";
+                out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + i18n._(queryDesc.name) + '</option>');
+            }
+            out.push('</select>');
+            Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
+
+            displayStyle="";
+            if (this.settingsCmp.node != null &&
+                this.settingsCmp.node.nodeProperties != null && 
+                this.settingsCmp.node.nodeProperties.type == "SERVICE") {
+                displayStyle = "display:none;"; //hide rack selector for services
+            }
+            out = [];
+            out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '" style="'+displayStyle+'">');
+            out.push('<option value="-1">' + i18n._('All Racks') + '</option>');
+            for (i = 0; i < rpc.policies.length; i++) {
+                var policy = rpc.policies[i];
+                selOpt = ( policy == rpc.currentPolicy ) ? "selected": "";
+                out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
+            }
+            out.push('</select>');
+            Ext.getCmp('rackSelector_' + this.getId()).setText(out.join(""));
+        }
+    },
+    // get selected query value
+    getSelectedQuery: function() {
+        var selObj = document.getElementById('selectQuery_' + this.getId());
+        var result = null;
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            result = selObj.options[selObj.selectedIndex].value;
+        }
+        return result;
+    },
+    // get selected query name
+    getSelectedQueryName: function() {
+        var selObj = document.getElementById('selectQuery_' + this.getId());
+        var result = "";
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            result = selObj.options[selObj.selectedIndex].label;
+        }
+        return result;
+    },
+    // get selected policy
+    getSelectedPolicy: function() {
+        var selObj = document.getElementById('selectPolicy_' + this.getId());
+        var result = "";
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            result = selObj.options[selObj.selectedIndex].value;
+        }
+        return result;
+    },
+    // return the list of columns in the event long as a comma separated list
+    getColumnList: function() {
+        var columnList = "";
+        for (var i=0; i<this.fields.length ; i++) {
+            if (i !== 0)
+                columnList += ",";
+            if (this.fields[i].mapping != null)
+                columnList += this.fields[i].mapping;
+            else if (this.fields[i].name != null)
+                columnList += this.fields[i].name;
+        }
+        return columnList;
+    },
+    refreshHandler: function (forceFlush) {
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
+        } else {
+            if (!forceFlush) {
+                this.setLoading(i18n._('Refreshing Events...'));
+                this.refreshList();
+            } else {
+                this.setLoading(i18n._('Syncing events to Database... '));
+                this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+                    this.setLoading(i18n._('Refreshing Events...'));
+                    this.refreshList();
+                }, this));
+            }
+        }
+    },
+    //Used to get dummy records in testing
+    getTestRecord:function(index, fields) {
+        var rec= {};
+        var property;
+        for (var i=0; i<fields.length ; i++) {
+            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
+            rec[property]=
+                (property=='id')?index+1:
+                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
+                    property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
+        }
+        return rec;
+    },
+    // Refresh the events list
+    refreshCallback: function(result, exception) {
+        if (exception != null) {
+           Ung.Util.handleException(exception);
+        } else {
+            var events = result;
+            //TEST:Add sample events for test
+            if(testMode) {
+                var emptyRec={};
+                var length = Math.floor((Math.random()*150));
+                for(var i=0; i<length; i++) {
+                    events.list.push(this.getTestRecord(i, this.fields));
+                }
+            }
+            if (this.settingsCmp !== null) {
+                this.getStore().getProxy().data = events;
+                this.getStore().loadPage(1, {
+                    limit:this.recordsPerPage ? this.recordsPerPage: Ung.Util.maxRowCount
+                });
+            }
+        }
+        this.setLoading(false);
+    },
+    flushHandler: function (forceFlush) {
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
+        } else {
+            this.setLoading(i18n._('Syncing events to Database... '));
+            this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+                // refresh after complete
+                this.refreshHandler();
+            }, this));
+        }
+    },
+    refreshList: function() {
+        var selQuery = this.getSelectedQuery();
+        var selPolicy = this.getSelectedPolicy();
+        if (selQuery != null && selPolicy != null) {
+            rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, 50000);
+        } else {
+            this.setLoading(false);
+        }
+    },
+    // is reports node installed
+    isReportsAppInstalled: function(forceReload) {
+        if (forceReload || this.reportsAppInstalledAndEnabled === undefined) {
+            try {
+                var reportsNode = this.getUntangleNodeReporting();
+                if (this.untangleNodeReporting == null) {
+                    this.reportsAppInstalledAndEnabled = false;
+                }
+                else {
+                    if (reportsNode.getRunState() == "RUNNING") 
+                        this.reportsAppInstalledAndEnabled = true;
+                    else
+                        this.reportsAppInstalledAndEnabled = false;
+                }
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.reportsAppInstalledAndEnabled;
+    },
+    // get untangle node reporting
+    getUntangleNodeReporting: function(forceReload) {
+        if (forceReload || this.untangleNodeReporting === undefined) {
+            try {
+                this.untangleNodeReporting = rpc.nodeManager.node("untangle-node-reporting");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.untangleNodeReporting;
+    },
+    
+    listeners: {
+        "activate": {
+            fn: function() {
+                if( this.refreshOnActivate ) {
+                    Ext.Function.defer(this.refreshHandler,1, this, [false]);
+                }
+            }
+        },
+        "deactivate": {
+            fn: function() {
+                if(this.autoRefreshEnabled) {
+                    this.stopAutoRefresh(true);
+                }
+            }
+        }
+    },
+    isDirty: function() {
+        return false;
+    }
+});
+
+
 //Grid for EventLog, with customizable columns 
 Ext.define('Ung.GridEventLogCustomizable', {
-    extend:'Ung.GridEventLog',
+    extend:'Ung.GridEventLogBuffered',
     enableColumnHide: true,
     enableColumnMove: true,
     enableColumnMenu: true
@@ -3104,12 +3540,14 @@ Ext.define('Ung.GridEventLogCustomizable', {
 
 Ung.CustomEventLog = {
         buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-            return Ext.create('Ung.GridEventLogCustomizable',{
+//            var lineNum = Ext.create('Ext.grid.RowNumberer');
+//            lineNum.setWidth(50);
+            var grid = Ext.create('Ung.GridEventLogCustomizable',{
                 name: nameParam,
                 settingsCmp: settingsCmpParam,
                 helpSource: helpSourceParam,
                 eventQueriesFn: eventQueriesFnParam,
-                title: i18n._(titleParam),
+                title: titleParam,
                 fields: [{
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
@@ -3295,6 +3733,7 @@ Ung.CustomEventLog = {
                     dataIndex: 'protofilter_blocked'
                 }]
             });
+            return grid;
         }
 };
 
