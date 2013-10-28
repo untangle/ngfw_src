@@ -762,7 +762,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // if its an untangle netboot, point to internal package server
         if (isNetBoot()) {
             extraOptions += " -u \"package-server.\" ";
-            extraOptions += " -d \"nightly\" ";
+            extraOptions += " -d \"nightly-release100\" ";
         } else {
             extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getMajorVersion() + "\" ";
         }
