@@ -67,14 +67,21 @@ class SpamTests(unittest2.TestCase):
     def shortName():
         return "untangle"
 
+    @staticmethod
+    def nodeNameSpamCase():
+        return "untangle-casing-smtp"
+
+
     def setUp(self):
-        global node, nodeData, canRelay
+        global node, nodeData, nodeSP, nodeDataSP,canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
             nodeData = node.getSettings()
+            nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
+            nodeDataSP = nodeSP.getSmtpNodeSettings()
             canRelay = sendTestmessage()
             checkForMailSender()
             flushEvents()
@@ -104,12 +111,27 @@ class SpamTests(unittest2.TestCase):
             assert(query != None)
             events = uvmContext.getEvents(query['query'],defaultRackId,1)
             # print events['list'][0]
+            # Verify Quarantined events occurred..
             assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
             assert(events['list'][0]['s_server_port'] == 25)
             assert(events['list'][0]['addr'] == 'qa@example.com')
             assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
             assert(events['list'][0]['commtouchas_score'] >= 3.0)
             assert(events['list'][0]['hostname'] == ClientControl.hostIP)
+            
+    def test_030_adminQuarantine(self):
+            for q in node.getEventQueries():
+                if q['name'] == 'Quarantined Events': query = q;
+            print query
+            if (query == None):
+                raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
+            # Get adminstrative quarantine list of email addresses
+            addressFound = False
+            curQuarantine = nodeSP.getQuarantineMaintenenceView()
+            curQuarantineList = curQuarantine.listInboxes()
+            for checkAddress in curQuarantineList['list']:
+                if checkAddress['address'] == 'qa@example.com': addressFound = True
+            assert(addressFound)
             
 
     def test_999_finalTearDown(self):
