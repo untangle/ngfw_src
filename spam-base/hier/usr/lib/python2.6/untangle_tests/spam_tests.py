@@ -85,7 +85,13 @@ class SpamTests(unittest2.TestCase):
             canRelay = sendTestmessage()
             checkForMailSender()
             flushEvents()
-
+            # flush quarantine.
+            curQuarantine = nodeSP.getQuarantineMaintenenceView()
+            curQuarantineList = curQuarantine.listInboxes()
+            for checkAddress in curQuarantineList['list']:
+                if checkAddress['address']:
+                    curQuarantine.deleteInbox(checkAddress['address'])
+            
     # verify client is online
     def test_010_clientIsOnline(self):
         time.sleep(3)
@@ -122,7 +128,7 @@ class SpamTests(unittest2.TestCase):
     def test_030_adminQuarantine(self):
             for q in node.getEventQueries():
                 if q['name'] == 'Quarantined Events': query = q;
-            print query
+            # print query
             if (query == None):
                 raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
             # Get adminstrative quarantine list of email addresses
@@ -130,9 +136,23 @@ class SpamTests(unittest2.TestCase):
             curQuarantine = nodeSP.getQuarantineMaintenenceView()
             curQuarantineList = curQuarantine.listInboxes()
             for checkAddress in curQuarantineList['list']:
-                if checkAddress['address'] == 'qa@example.com': addressFound = True
+                print checkAddress
+                if (checkAddress['address'] == 'qa@example.com') and (checkAddress['numMails'] > 0): addressFound = True
             assert(addressFound)
             
+    def test_040_userQuarantine(self):
+            for q in node.getEventQueries():
+                if q['name'] == 'Quarantined Events': query = q;
+            # print query
+            if (query == None):
+                raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
+            # Get user quarantine list of email addresses
+            addressFound = False
+            curQuarantine = nodeSP.getQuarantineUserView()
+            redirectAddresses = curQuarantine.getMappedTo('qa@example.com')
+            # print redirectAddresses
+            assert(redirectAddresses == None)
+
 
     def test_999_finalTearDown(self):
         global node
