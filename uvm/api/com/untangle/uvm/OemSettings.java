@@ -17,7 +17,6 @@ public class OemSettings implements Serializable, JSONString
 {
     private String oemName;
     private String oemUrl;
-    private String hiddenLibitems;
 
     public OemSettings() { }
 
@@ -25,7 +24,6 @@ public class OemSettings implements Serializable, JSONString
     {
         this.oemName = oemName;
         this.oemUrl = oemUrl;
-        this.hiddenLibitems = null;
     }
 
     /**
@@ -40,12 +38,6 @@ public class OemSettings implements Serializable, JSONString
     public String getOemUrl() { return oemUrl; }
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
 
-    /**
-     * Hidden libitems "foo,bar"
-     */
-    public String getHiddenLibitems() { return hiddenLibitems; }
-    public void setHiddenLibitems( String newValue ) { this.hiddenLibitems = newValue; }
-    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

@@ -67,9 +67,6 @@ function backupToDir()
     # create a tarball of settings files
     backupSettings $outdir/files-$datestamp.tar.gz
 
-    # save the list of important packages
-    @PREFIX@/usr/share/untangle/bin/ut-apt installed | grep 'libitem-' > $outdir/packages-$datestamp
-
     # save the version of this backup
     cp @PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION $outdir/
 }

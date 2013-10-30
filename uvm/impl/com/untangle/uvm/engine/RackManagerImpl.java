@@ -111,9 +111,7 @@ public class RackManagerImpl implements RackManager
         Map<Long, NodeSettings.NodeState> runStates = nm.allNodeStates();
 
         /**
-         * Iterate through installed packages 
-         *
-         * If its a libitem, hide it from the left-hand-nav (its already downloaded)
+         * Iterate through nodes
          */
         for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
             if ( !nodeProps.getInvisible() ) {
