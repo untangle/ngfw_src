@@ -39,10 +39,10 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.node.reporting.ReportingNode;
-import com.untangle.uvm.apt.PackageDesc;
 import com.untangle.node.reporting.items.ApplicationData;
 import com.untangle.node.reporting.items.Application;
 import com.untangle.node.reporting.items.Chart;
@@ -439,14 +439,20 @@ public class ReportingManagerImpl implements ReportingManager
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 
         for (String s : appNames) {
-            PackageDesc md = UvmContextFactory.context().aptManager().packageDesc(s);
+            Node node = UvmContextFactory.context().nodeManager().node(s);
             int pos;
 
-            if (null == md) {
-                logger.warn("cannot get viewposition for: " + s);
+            if ( node == null ) {
+                logger.warn("cannot get viewPosition for (null node): " + s);
                 pos = 10000;
             } else {
-                pos = md.getViewPosition();
+                NodeProperties np = node.getNodeProperties();
+                if ( np != null ){
+                    pos = np.getViewPosition();
+                } else {
+                    logger.warn("cannot get viewPosition for (null nodeProperties): " + s);
+                    pos = 10000;
+                }
             }
 
             File f = new File(dirName + "/" + s + "/report.xml");
@@ -496,7 +502,7 @@ public class ReportingManagerImpl implements ReportingManager
         return l;
     }
 
-    private boolean generateReport(Date d, int numDays, String appName, String type, String value)
+    private boolean generateReport( Date d, int numDays, String appName, String type, String value )
     {
         String user = "";
         String host = "";

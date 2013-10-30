@@ -441,11 +441,6 @@ Ung.Util = {
             }
             var message = null;
             var gotoStartPage=false;
-            /* special text for apt error */
-            if (exception.name == "java.lang.Exception" && ( exception.message.indexOf("exited with") != -1 || exception.message.indexOf("timed out") != -1 )) {
-                message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
-                message += i18n._("Check internet connectivity and the network/DNS configuration.") + "<br/>";
-            }
             /* special text for rack error */
             if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") != -1)) {
                 message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
@@ -1061,8 +1056,7 @@ Ung.ConfigItem.template = new Ext.Template(
 
 Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
-    libItem: null,
-    node: null,
+    nodeProperties: null,
     iconSrc: null,
     iconCls: null,
     renderTo: 'appsItems',
@@ -1073,21 +1067,11 @@ Ext.define("Ung.AppItem", {
     progressBar: null,
     subCmps:null,
     download: null,
-    constructor: function(config) {
-        var name="";
+    constructor: function( nodeProperties ) {
         this.subCmps=[];
         this.isValid=true;
-        if(config.libItem!=null) {
-            name=config.libItem.displayName;
-            this.item=config.libItem;
-        } else if(config.node!=null) {
-            name=config.node.displayName;
-            this.item=config.node;
-        } else {
-            this.isValid=false;
-            return;
-        }
-        this.id = "app-item_" + name;
+        this.nodeProperties = nodeProperties;
+        this.id = "app-item_" + this.nodeProperties.displayName;
         this.callParent(arguments);
     },
     afterRender: function() {
@@ -1096,15 +1080,15 @@ Ext.define("Ung.AppItem", {
         }
         this.callParent(arguments);
 
-        if (this.name && this.getEl()) {
+        if (this.nodeProperties.name && this.getEl()) {
             this.getEl().set({
-                'name': this.name
+                'name': this.nodeProperties.name
             });
         }
         var imageHtml = null;
         if (this.iconCls == null) {
             if (this.iconSrc == null) {
-                this.iconSrc = 'chiclet?name=' + this.item.name;
+                this.iconSrc = 'chiclet?name=' + this.nodeProperties.name;
             }
             imageHtml = '<img src="' + this.iconSrc + '" style="vertical-align: middle;"/>';
         } else {
@@ -1113,7 +1097,7 @@ Ext.define("Ung.AppItem", {
         var html = Ung.AppItem.template.applyTemplate({
             id: this.getId(),
             'imageHtml': imageHtml,
-            'text': this.item.displayName
+            'text': this.nodeProperties.displayName
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
         this.getEl().addCls("app-item");
@@ -1135,11 +1119,7 @@ Ext.define("Ung.AppItem", {
 
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
-        if( this.libItem!=null && this.node==null ) { // node not installed
-            this.getEl().on("click", this.linkToStoreFn, this);
-            this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
-            this.actionEl.addCls("icon-info");
-        } else if( this.node!=null ) { // node
+        if( this.nodeProperties.name != null ) { // FIXME
             this.getEl().on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("Install"));
             this.actionEl.addCls("icon-arrow-install");
@@ -1147,7 +1127,7 @@ Ext.define("Ung.AppItem", {
             return;
             // error
         }
-        var appsLastState=main.appsLastState[this.item.displayName];
+        var appsLastState=main.appsLastState[this.nodeProperties.displayName];
         if(appsLastState!=null) {
             this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
@@ -1168,78 +1148,13 @@ Ext.define("Ung.AppItem", {
             this.displayButtonsOrProgress(true);
             this.download=null;
             break;
-          case "download":
-            this.displayButtonsOrProgress(false);
-            this.progressBar.reset();
-            progressString = this.stylizeProgressText(i18n._("Downloading..."));
-            Ung.MessageManager.setFrequency(Ung.MessageManager.highFrequency);
-            this.progressBar.updateProgress(0, progressString);
-            this.progressBar.waitDefault(progressString);
-            break;
-          case "download_summary":
-            this.displayButtonsOrProgress(false);
-            this.download={
-                summary:options,
-                completeSize:0,
-                completePackages:0
-            };
-            progressString = this.stylizeProgressText(Ext.String.format(i18n._("{0} Packages"), this.download.summary.count));
-            this.progressBar.reset();
-            this.progressBar.updateProgress(0, progressString);
-            break;
-          case "download_complete":
-            if(this.download!=null && this.download.summary!=null) {
-                this.download.completePackages++;
-                currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size: 1);
-                progressIndex = parseFloat(0.99 * currentPercentComplete);
-                progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} ", this.download.completePackages+1, this.download.summary.count) + i18n._("done"));
-                //the progress bar works better without these updates
-                //this.progressBar.reset();
-                //this.progressBar.updateProgress(progressIndex, progressString);
-            }
-            break;
-          case "download_progress":
-            this.displayButtonsOrProgress(false);
-            if(this.download!=null && this.download.summary!=null) {
-                this.download.completeSize=options.bytesDownloaded;
-                currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size: 1);
-                progressIndex = parseFloat(0.99 * currentPercentComplete);
-                progressString = this.stylizeProgressText(i18n._("DL") + Ext.String.format(" {0}/{1} @ {2} KB/s", this.download.completePackages+1, this.download.summary.count, options.speed));
-                this.progressBar.reset();
-                this.progressBar.updateProgress(progressIndex, progressString);
-            }
-            break;
-          case "apt_progress":
-            this.displayButtonsOrProgress(false);
-            if(this.download!=null && this.download.summary!=null) {
-                var action = "";
-                if (options.action.indexOf("unpack") != -1) {
-                    action = i18n._("Unpacking");
-                } 
-                currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount: 1);
-                progressIndex = parseFloat(0.99 * currentPercentComplete);
-                //progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}/{1}", options.count, options.totalCount));
-                progressString = this.stylizeProgressText(action + " " + Ext.String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;");
-                this.progressBar.reset();
-                this.progressBar.updateProgress(progressIndex, progressString);
-            }
-            break;
-          case "loadapps":
-            this.displayButtonsOrProgress(false);
-            progressString = this.stylizeProgressText(i18n._("Loading Apps..."));
-            this.progressBar.waitDefault(progressString);
-            break;
           case "loadapp":
             this.displayButtonsOrProgress(false);
             progressString = this.stylizeProgressText(i18n._("Loading App..."));
             this.progressBar.waitDefault(progressString);
             break;
-          case "activate_timeout":
-            this.displayButtonsOrProgress(false);
-            progressString = this.stylizeProgressText(i18n._("Activate timeout."));
-            this.progressBar.reset();
-            this.progressBar.updateProgress(1, progressString);
-            break;
+        default:
+            Ext.MessageBox.alert(i18n._("Warning"),"Unknown state: " + newState);
         }
         this.state = newState;
 
@@ -1267,25 +1182,13 @@ Ext.define("Ung.AppItem", {
             }
         }
     },
-    // open store page in a new frame
-    linkToStoreFn: function(e) {
-        if (e!=null) {
-            e.stopEvent();
-        }
-        if(!this.progressBar.hidden) {
-            return;
-        }
-        main.warnOnUpgrades(Ext.bind(function() {
-            main.openLibItemStore( this.libItem.name, Ext.String.format(i18n._("More Info - {0}"), this.item.displayName) );
-        }, this));
-    },
     // install node / uninstall App
     installNodeFn: function(e) {
         e.preventDefault();
         if(!this.progressBar.hidden) {
             return;
         }
-        main.installNode(this.node, this);
+        main.installNode(this.nodeProperties, this);
     }
 
 });
@@ -1303,17 +1206,6 @@ Ung.AppItem.updateState = function(displayName, state, options) {
 Ung.AppItem.getApp = function(displayName) {
     if (main.apps !== null) {
         return Ext.getCmp("app-item_" + displayName);
-    }
-    return null;
-};
-// get the app item having a libitem name
-Ung.AppItem.getAppByLibItem = function(libItemName) {
-    if(main.apps!=null) {
-        for(var i=0; i<main.apps.length; i++) {
-            if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
-                return main.apps[i];
-            }
-        }
     }
     return null;
 };
@@ -1609,10 +1501,7 @@ Ext.define("Ung.Node", {
     },
     //on Buy Now Action
     onBuyNowAction: function() {
-        main.warnOnUpgrades(Ext.bind(function() {
-            var libitem = this.name.replace("-node-","-libitem-");
-            main.openLibItemStore( libitem, Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
-        }, this));
+        main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
     },
     getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
@@ -1849,10 +1738,6 @@ Ung.MessageManager = {
     started: false,
     intervalId: null,
     cycleCompleted: true,
-    modalDownloadMode: false,
-    modalDownloadCompleteFn: null,
-    modalAptCompleteFn: null,
-    modalExceptionFn: null,
     installInProgress:0,
     downloadSummary: null,
     downloadsComplete: 0,
@@ -1869,37 +1754,12 @@ Ung.MessageManager = {
         this.setFrequency(this.normalFrequency);
         this.started = true;
     },
-    setModalDownloadMode: function( downloadCompleteFn, aptCompleteFn, exceptionFn ) {
-        this.stop();
-        this.modalDownloadMode = true;
-        if ( downloadCompleteFn )
-            this.modalDownloadCompleteFn = downloadCompleteFn;
-        if ( aptCompleteFn )
-            this.modalAptCompleteFn = aptCompleteFn;
-        if ( exceptionFn )
-            this.modalExceptionFn = exceptionFn;
-        this.setFrequency( this.highFrequency );
-        this.started = true;
-    },
     setFrequency: function(timeMs) {
         this.currentFrequency = timeMs;
         if (this.intervalId !== null) {
             window.clearInterval(this.intervalId);
         }
         this.intervalId = window.setInterval(function() {Ung.MessageManager.run();}, timeMs);
-    },
-    updateModalDownloadDialog: function( msg ) {
-        var text=Ext.String.format(i18n._("Package: {0}<br/>Progress: {1} kB/{2} kB <br/>Speed: {3}kB/sec"),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
-        if(this.downloadSummary) {
-            text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.downloadsComplete+1, this.downloadSummary.count);
-        }
-        var msgTitle=i18n._("Downloading packages... Please wait");
-        if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=msgTitle) {
-            Ext.MessageBox.progress(msgTitle, text);
-        }
-        var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size: 1);
-        var progressIndex = parseFloat(0.99 * currentPercentComplete);
-        Ext.MessageBox.updateProgress(progressIndex, "", text);
     },
     stop: function() {
         if (this.intervalId !== null) {
@@ -1914,10 +1774,6 @@ Ung.MessageManager = {
         }
         this.cycleCompleted = false;
         rpc.messageManager.getMessageQueue(Ext.bind(function(result, exception) {
-            if ( exception && this.modalDownloadMode && this.modalExceptionFn !== null ) {
-                this.modalExceptionFn();
-                return;
-            }
 
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
@@ -1952,46 +1808,6 @@ Ung.MessageManager = {
             try {
                 var messageQueue=result;
                 var i;
-                if(testMode) {
-                    //TEST: Adding test queue messages
-                    /*
-                    if(this.testPackageInstallRequest && !this.testInstallAndInstantiateComplete) {
-                        this.testInstallAndInstantiateComplete=true;
-                        messageQueue.messages.list.push({
-                            installed: false, javaClass: "com.untangle.uvm.apt.InstallAndInstantiateComplete", messageType: "com.untangle.uvm.apt.InstallAndInstantiateComplete",
-                            requestingPackage: {
-                                type: "LIB_ITEM"  
-                            },
-                            packageDesc: {
-                                autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
-                                javaClass: "com.untangle.uvm.apt.PackageDesc",longDescription: " The Web Filter Library Item.",
-                                name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
-                            },
-                            time: { javaClass: "java.util.Date",time: 1343046146132}
-                        })
-                    }
-
-                    if(!this.testPackageInstallRequest) {
-                        this.testPackageInstallRequest=true;
-                        messageQueue.messages.list.push({
-                            installed: false, javaClass: "com.untangle.uvm.apt.PackageInstallRequest", messageType: "com.untangle.uvm.apt.PackageInstallRequest",
-                            packageDesc: {
-                                autoStart: false, availableVersion: "9.3.0~svn20120706r32399main-1lenny", displayName: "Web Filter",fullVersion: null, hide: null, installedSize: 36, installedVersion: null,invisible: false,
-                                javaClass: "com.untangle.uvm.apt.PackageDesc",longDescription: " The Web Filter Library Item.",
-                                name: "untangle-libitem-sitefilter",shortDescription: "Web Filter",size: 4668,type: "LIB_ITEM",viewPosition: 10
-                            },
-                            time: { javaClass: "java.util.Date",time: 1343046146132}
-                        })
-                    }
-                    
-                    if(this.testRebootMessage) {
-                        this.testRebootMessage=false;
-                        messageQueue.messages.list.push({
-                            upgrade: true, javaClass: "com.untangle.uvm.apt.DownloadAllComplete",time: { javaClass: "java.util.Date",time: 1343046146132}
-                        })
-                    }
-                    */
-                }
                 if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                     Ung.MessageManager.messageHistory.push(messageQueue.messages.list);
                     if(Ung.MessageManager.messageHistory.length>Ung.MessageManager.historyMaxSize) {
@@ -2009,110 +1825,8 @@ Ung.MessageManager = {
                             if( node !== undefined && node != null) {
                                 node.updateRunState(msg.nodeState);
                             }
-                        } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
-                            if(!msg.installed) {
-                                appItemDisplayName = msg.packageDesc.displayName;
-                                Ung.AppItem.updateState(appItemDisplayName, "download");
-                                main.closeStore();
-                                rpc.aptManager.installAndInstantiate(Ext.bind(function(result, exception) {
-                                    if (exception)
-                                        Ung.AppItem.updateState(appItemDisplayName, null);
-                                    if(Ung.Util.handleException(exception)) return;
-                                }, this),msg.packageDesc.name, rpc.currentPolicy.policyId);
-                            }
-                        } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
-                            if(!msg.installed) {
-                                appItemDisplayName = msg.packageDesc.displayName;
-                                Ung.AppItem.updateState(appItemDisplayName, "uninstall");
-                                rpc.aptManager.unregister(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                }, this),msg.packageDesc.name);
-                                rpc.aptManager.uninstall(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    main.closeStore();
-                                }, this),msg.packageDesc.name);
-                            }
-                        } else if(msg.javaClass.indexOf("NodeInstantiatedMessage") != -1) {
-                            if( msg.policyId == null || msg.policyId == rpc.currentPolicy.policyId ) {
-                                refreshApps=true;
-                                node=main.getNode( msg.nodeProperties.name, msg.policyId );
-                                if(!node) {
-                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.nodeMetrics, msg.license,"INITIALIZED");
-                                    main.nodes.push(node);
-                                    main.addNode(node,true);
-                                    main.removeParentNode( node, msg.policyId );
-                                } else {
-                                    main.loadLicenses();
-                                }
-                            } else {
-                                Ung.AppItem.updateState(msg.nodeProperties.displayName, null);
-                            }
-                        } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
-                            refreshApps=true;
-                            this.installInProgress--;
-                            appItemDisplayName = msg.requestingPackage.displayName;
-                            Ung.MessageManager.setFrequency(Ung.MessageManager.normalFrequency);
-                            Ung.AppItem.updateState(appItemDisplayName, null);
-                        } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
-                            main.loadLicenses();
                         } else {
-                            if ( msg.upgrade ) {
-                                this.setModalDownloadMode();
-                            }
-                            
-                            if ( this.modalDownloadMode == true ) {
-                                if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Downloading packages...")) {
-                                        Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
-                                    }
-                                    this.downloadSummary = msg;
-                                } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                    this.updateModalDownloadDialog( msg );
-                                } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                                    this.downloadsComplete++;
-                                    if(!msg.success) {
-                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
-                                    }
-                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
-                                    if ( this.modalDownloadCompleteFn )
-                                        this.modalDownloadCompleteFn();
-                                } else if(msg.javaClass.indexOf("AptMessage") != -1) {
-                                    /* This state will not  be reached for upgrades because the UVM will go down */
-                                    if(msg.action.indexOf("alldone") != -1) {
-                                        refreshApps = true;
-                                        if ( this.modalAptCompleteFn !== null )
-                                            this.modalAptCompleteFn();
-                                    }
-                                } 
-                            } else { /* modeDownloadMode == false */
-                                appItemDisplayName = ( msg.requestingPackage == null ? "" : msg.requestingPackage.displayName );
-                                if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
-                                } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                    Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
-                                } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                                    if(msg.success) {
-                                       Ung.AppItem.updateState(appItemDisplayName, "download_complete");
-                                    } else {
-                                        Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error downloading package {0}: {1}"),appItemDisplayName,msg.errorMessage));
-                                        Ung.AppItem.updateState(appItemDisplayName);
-                                    }
-                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
-                                    if(msg.success) {
-                                       Ung.AppItem.updateState(appItemDisplayName, "loadapps");
-                                    } else {
-                                        Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
-                                        Ung.AppItem.updateState(appItemDisplayName);
-                                    }
-                                } else if(msg.javaClass.indexOf("AptMessage") != -1) {
-                                    if(msg.action.indexOf("alldone") != -1) {
-                                        this.installInProgress++;
-                                        Ung.AppItem.updateState(appItemDisplayName, "loadapps");
-                                    } else {
-                                        Ung.AppItem.updateState(appItemDisplayName, "apt_progress", msg);
-                                    }
-                                } 
-                            } 
+                            Ext.MessageBox.alert( i18n._("Unknown Message"), "Unknown Message: " + msg.javaClass );
                         }
                     }
                     if( refreshApps ) {

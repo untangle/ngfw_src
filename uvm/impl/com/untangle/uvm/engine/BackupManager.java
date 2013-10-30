@@ -1,5 +1,5 @@
 /**
- * $Id: BackupManager.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -94,53 +94,13 @@ public class BackupManager
         
         // just check the backup file
         logger.info("Restore Backup: check file " + restoreFile);
-        checkResult = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -c");
+        checkResult = UvmContextFactory.context().execManager().exec( RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -c" );
 
         // if the backup file is not legitimate then just return the results
         if (checkResult.getResult() != 0) {
             return checkResult;
         }
 
-        try {
-            if ( UvmContextFactory.context().aptManager().getUpgradeStatus(true).getUpgradesAvailable() ) {
-                return new ExecManagerResult( 0, i18nUtil.tr("Upgrades are available. Please upgrade before restoring."));
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to check upgrade status",e);
-        }
-        
-        // get the list of required files
-        logger.info("Restore Backup: check packages " + restoreFile);
-        result = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -f");
-
-        // if the backup file is not legitimate then just return the results
-        if (result.getResult() != 0) {
-            return result;
-        }
-
-        // install all the needed packages
-        String[] packages = result.getOutput().split("[\\r\\n]+");
-        if ( packages != null ) {
-            String pkgsStr = "";
-            for ( String pkg : packages ) {
-                // if the needed package is installed, skip it
-                if ( UvmContextFactory.context().aptManager().isInstalled( pkg ) )
-                    continue;
-                // also ignore missing packages in development environment
-                if ( UvmContextFactory.context().isDevel() )
-                    continue;
-
-                if (! "".equals(pkgsStr))
-                    pkgsStr += ",";
-
-                pkgsStr += pkg;
-            }
-
-            // if there are missing packages
-            if (! "".equals(pkgsStr))
-                return new ExecManagerResult( -1, "NEED_TO_INSTALL:" + pkgsStr);
-        }
-            
         // run same command with nohup and without -c check-only flag
         logger.info("Restore Backup: launching restore " + restoreFile);
         UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -m \"" + maintainRegex + "\" >/var/log/uvm/restore.log 2>&1 &");

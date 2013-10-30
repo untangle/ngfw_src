@@ -1,10 +1,11 @@
 /*
- * $Id: NodeManagerImpl.java 35238 2013-07-03 17:01:03Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,8 +42,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.apt.PackageDesc;
-import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.util.Pulse;
 
 /**
@@ -100,10 +99,10 @@ public class NodeManagerImpl implements NodeManager
         // sort by view position, for convenience
         Collections.sort(nodeList, new Comparator<Node>() {
             public int compare(Node tci1, Node tci2) {
-                int rpi1 = tci1.getPackageDesc().getViewPosition();
-                int rpi2 = tci2.getPackageDesc().getViewPosition();
+                int rpi1 = tci1.getNodeProperties().getViewPosition();
+                int rpi2 = tci2.getNodeProperties().getViewPosition();
                 if (rpi1 == rpi2) {
-                    return tci1.getPackageDesc().getName().compareToIgnoreCase(tci2.getPackageDesc().getName());
+                    return tci1.getNodeProperties().getName().compareToIgnoreCase(tci2.getNodeProperties().getName());
                 } else if (rpi1 < rpi2) {
                     return -1;
                 } else {
@@ -169,13 +168,13 @@ public class NodeManagerImpl implements NodeManager
         List<Node> list = new ArrayList<Node>(loadedNodes.size());
 
         for (Node node : getNodesForPolicy( policyId )) {
-            if ( !node.getPackageDesc().isInvisible() ) {
+            if ( !node.getNodeProperties().getInvisible() ) {
                 list.add( node );
             }
         }
 
         for (Node node : getNodesForPolicy( null /* services */ )) {
-            if ( !node.getPackageDesc().isInvisible() ) {
+            if ( !node.getNodeProperties().getInvisible() ) {
                 list.add( node );
             }
         }
@@ -207,13 +206,6 @@ public class NodeManagerImpl implements NodeManager
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
-        AptManagerImpl tbm = uvmContext.aptManager();
-        PackageDesc packageDesc = tbm.packageDesc(nodeName);
-
-        if ( packageDesc == null ) {
-            logger.error("Failed to locate package description for : " + nodeName);
-            return null;
-        }
 
         Node node = null;
         NodeProperties nodeProperties = null;
@@ -221,8 +213,7 @@ public class NodeManagerImpl implements NodeManager
         
         synchronized (this) {
             logger.info("initializing node: " + nodeName);
-
-            nodeProperties = initNodeProperties( packageDesc );
+            nodeProperties = initNodeProperties( nodeName );
 
             if ( nodeProperties == null ) {
                 logger.error("Missing node properties for " + nodeName);
@@ -259,24 +250,25 @@ public class NodeManagerImpl implements NodeManager
                 throw new Exception("Null nodeSettings: " + nodeName);
             if (nodeProperties == null) 
                 throw new Exception("Null nodeProperties: " + nodeName);
-            if (packageDesc == null) 
-                throw new Exception("Null packageDesc: " + nodeName);
 
-            node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
+            node = NodeBase.loadClass( nodeProperties, nodeSettings, true );
 
             if (node != null) {
-                loadedNodesMap.put(nodeSettings.getId(), node);
+                loadedNodesMap.put( nodeSettings.getId(), node );
                 saveNewNodeSettings( nodeSettings );
             } else {
-                logger.error("Failed to initialize node: " + packageDesc.getName());
+                logger.error( "Failed to initialize node: " + nodeProperties.getName() );
             }
             
         }
 
-        if ( node != null && !packageDesc.isInvisible() ) {
-            NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties, nodeSettings, node.getMetrics(), uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
-            uvmContext.messageManager().submitMessage(ne);
-        }
+        // if ( node != null && !nodeProperties.getInvisible() ) {
+        // NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties,
+        //                                                          nodeSettings,
+        //                                                          node.getMetrics(),
+        //                                                          uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
+        //     uvmContext.messageManager().submitMessage(ne);
+        // }
 
         return node;
     }
@@ -361,6 +353,43 @@ public class NodeManagerImpl implements NodeManager
         return result;
     }
 
+    public List<NodeProperties> getAllNodeProperties()
+    {
+        LinkedList<NodeProperties> nodeProps = new LinkedList<NodeProperties>();
+
+        File rootDir = new File("/usr/share/untangle/lib/");
+
+        findAllNodeProperties( nodeProps, rootDir );
+
+        return nodeProps;
+    }
+
+    private void findAllNodeProperties( List<NodeProperties> nodeProps, File searchDir )
+    {
+        if ( ! searchDir.exists() )
+            return;
+
+        File[] fileList = searchDir.listFiles();
+        if ( fileList == null )
+            return;
+
+        for ( File f : fileList ) {
+            if ( f.isDirectory() ) {
+                findAllNodeProperties( nodeProps, f );
+            } else {
+                if ( "nodeProperties.js".equals( f.getName() ) ) {
+                    try {
+                        NodeProperties np = initNodePropertiesFilename( f.getAbsolutePath() );
+                        nodeProps.add( np );
+                    } catch (Exception e) {
+                        logger.warn("Ignoring bad node properties: " + f.getAbsolutePath(), e);
+                    }
+                }
+            }
+
+        }
+    }
+    
     // Manager lifetime -------------------------------------------------------
 
     protected void init()
@@ -398,59 +427,43 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
-    protected void startAutoStart( PackageDesc extraPkg )
+    protected void startAutoStart()
     {
-        AptManagerImpl tbm = (AptManagerImpl)UvmContextFactory.context().aptManager();
+        for ( NodeProperties nodeProps : getAllNodeProperties() ) {
+            if (! nodeProps.getAutoStart() )
+                continue;
 
-        List<PackageDesc> mds = new ArrayList<PackageDesc>();
-
-        for (PackageDesc md : tbm.installed()) {
-            if (md.isAutoStart()) {
-                mds.add(md);
-            }
-        }
-
-        if (null != extraPkg && extraPkg.isAutoStart()) {
-            mds.add(extraPkg);
-        }
-        for (PackageDesc md : mds) {
-            List<Node> list = nodeInstances(md.getName());
-
-            Node node = null;
+            List<Node> list = nodeInstances( nodeProps.getName() );
 
             if ( list.size() == 0 ) {
                 try {
-                    logger.info("Auto-starting new node: " + md.getName());
-                    node = instantiate(md.getName());
+                    logger.info("Auto-starting new node: " + nodeProps.getName());
+                    instantiate( nodeProps.getName() );
                 } catch (Exception exn) {
-                    logger.warn("could not deploy: " + md.getName(), exn);
+                    logger.warn("could not deploy: " + nodeProps.getName(), exn);
                     continue;
                 }
             } else {
-                node = list.get(0);
-            }
-
-            if (node == null) {
-                logger.warn("No node context for router node: " + node);
-            } else {
-                NodeSettings.NodeState ns = node.getRunState();
-                switch (ns) {
-                case INITIALIZED:
-                    try {
-                        node.start();
-                    } catch (Exception exn) {
-                        logger.warn("could not load: " + md.getName(), exn);
-                        continue;
+                for ( Node node: list ) {
+                    switch ( node.getRunState() ) {
+                    case INITIALIZED:
+                        try {
+                            node.start();
+                        } catch (Exception exn) {
+                            logger.warn("could not load: " + nodeProps.getName(), exn);
+                            continue;
+                        }
+                        break;
+                    case RUNNING:
+                        // nothing left to do.
+                        break;
+                    default:
+                        logger.warn( nodeProps.getName() + " unexpected state: " + node.getRunState() );
+                        break;
                     }
-                    break;
-                case RUNNING:
-                    // nothing left to do.
-                    break;
-                default:
-                    logger.warn(md.getName() + " unexpected state: " + ns);
-                    break;
                 }
             }
+
         }
     }
 
@@ -492,28 +505,23 @@ public class NodeManagerImpl implements NodeManager
         long t1 = System.currentTimeMillis();
         logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
 
-        startAutoStart(null);
+        startAutoStart();
     }
 
     private static int startThreadNum = 0;
 
     private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
     {
-        AptManager tbm = UvmContextFactory.context().aptManager();
-
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (final NodeSettings nodeSettings : startQueue) {
             final String name = nodeSettings.getNodeName();
             final NodeProperties nodeProps = nodePropertiesMap.get(nodeSettings);
-            final PackageDesc packageDesc = tbm.packageDesc(name);
 
             if ( name == null ) {
                 logger.error("Unable to load node \"" + name + "\": NULL name.");
             } else if ( nodeProps == null ) {
                 logger.error("Unable to load node \"" + name + "\": NULL node properties.");
-            } else if ( packageDesc == null ) {
-                logger.error("Unable to load node \"" + name + "\": NULL package desc.");
             } else {
                 Runnable r = new Runnable()
                     {
@@ -522,7 +530,7 @@ public class NodeManagerImpl implements NodeManager
                             logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                             NodeBase node = null;
                                 try {
-                                node = (NodeBase)NodeBase.loadClass(nodeProps, nodeSettings, packageDesc, false);
+                                node = (NodeBase) NodeBase.loadClass(nodeProps, nodeSettings, false);
                                 loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
@@ -618,24 +626,17 @@ public class NodeManagerImpl implements NodeManager
 
     private Map<NodeSettings, NodeProperties> loadNodePropertiess(List<NodeSettings> unloaded)
     {
-        AptManagerImpl tbm = (AptManagerImpl)UvmContextFactory.context().aptManager();
-
         Map<NodeSettings, NodeProperties> nodePropertiesMap = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
 
         for (NodeSettings nodeSettings : unloaded) {
             String name = nodeSettings.getNodeName();
             logger.debug("Getting mackage desc for: " + name);
-            PackageDesc md = tbm.packageDesc(name);
-            if (null == md) {
-                logger.warn("could not get mackage desc for: " + name);
-                continue;
-            }
 
             nodeSettings.setNodeName(name);
 
             try {
                 logger.debug("Initializing node properties for: " + name);
-                NodeProperties nodeProperties = initNodeProperties( md );
+                NodeProperties nodeProperties = initNodeProperties( name );
                 nodePropertiesMap.put(nodeSettings, nodeProperties);
             } catch (Exception exn) {
                 logger.warn("NodeProperties could not be parsed", exn);
@@ -703,26 +704,30 @@ public class NodeManagerImpl implements NodeManager
     }
 
     /**
-     * Initialize NodeProperties
-     *
-     * @param urls urls to find node descriptor.
-     * @exception Exception the descriptor does not parse or
-     * parent cannot be loaded.
+     * Initialize NodeProperties from the node name (ie "untangle-node-firewall")
      */
-    private NodeProperties initNodeProperties( PackageDesc packageDesc ) throws Exception
+    private NodeProperties initNodeProperties( String name ) throws Exception
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String fileName = System.getProperty("uvm.lib.dir") + "/" + name + "/" + "nodeProperties.js";
+        return initNodePropertiesFilename( fileName );
+    }
+
+    /**
+     * Initialize NodeProperties from the full path file name
+     */
+    private NodeProperties initNodePropertiesFilename( String fileName ) throws Exception
+    {
         NodeProperties nodeProperties = null;
+
         try {
-            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeProperties.js";
-            nodeProperties = settingsManager.load( NodeProperties.class, fileName );
+            nodeProperties = UvmContextFactory.context().settingsManager().load( NodeProperties.class, fileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
 
         return nodeProperties;
     }
-
+    
     private NodeSettings createNewNodeSettings( Long policyId, String nodeName )
     {
         long newNodeId = settings.getNextNodeId();

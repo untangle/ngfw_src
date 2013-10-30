@@ -1,5 +1,5 @@
 /**
- * $Id: UvmContextImpl.java 35433 2013-07-25 19:45:19Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -88,7 +88,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetworkManagerImpl networkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private AptManagerImpl aptManager;
+    private RackManagerImpl rackManager;
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private CertificateManagerImpl certificateManager;
@@ -165,9 +165,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.certificateManager;
     }
     
-    public AptManagerImpl aptManager()
+    public RackManagerImpl rackManager()
     {
-        return this.aptManager;
+        return this.rackManager;
     }
 
     public NodeManager nodeManager()
@@ -531,7 +531,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "skinManager", this.skinManager());
             json.put( "nodeManager", this.nodeManager());
             json.put( "policyManager", this.nodeManager().node("untangle-node-policy"));
-            json.put( "aptManager", this.aptManager());
+            json.put( "rackManager", this.rackManager());
             json.put( "alertManager", this.alertManager());
             json.put( "adminManager", this.adminManager());
             json.put( "systemManager", this.systemManager());
@@ -569,7 +569,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("adminManager", this.adminManager());
             json.put("networkManager", this.networkManager());
             json.put("connectivityTester", this.getConnectivityTester());
-            json.put("aptManager", this.aptManager());
+            json.put("rackManager", this.rackManager());
             json.put("systemManager", this.systemManager());
             json.put("mailSender", this.mailSender());
             json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
@@ -629,7 +629,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.mailSender = MailSenderImpl.mailSender();
 
-        this.aptManager = AptManagerImpl.aptManager();
+        this.rackManager = RackManagerImpl.rackManager();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 

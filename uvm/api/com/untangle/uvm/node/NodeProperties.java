@@ -1,5 +1,5 @@
 /*
- * $Id: NodeProperties.java 35109 2013-06-20 21:05:31Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 
@@ -16,7 +16,7 @@ import com.untangle.uvm.node.NodeSettings;
  * The immutable properties of a Node
  */
 @SuppressWarnings("serial")
-public class NodeProperties implements Serializable, JSONString
+public class NodeProperties implements Serializable, JSONString, Comparable<NodeProperties>
 {
     private String name = null;
     private String displayName = null;
@@ -30,92 +30,77 @@ public class NodeProperties implements Serializable, JSONString
     }
     private Type type;
     
-    private Boolean hasPowerButton = true;
-    private Boolean autoStart = true;
+    private boolean hasPowerButton = true;
+    private boolean autoStart = true;
+    private boolean invisible = false;
 
     private List<String> parents = new LinkedList<String>();
 
-    private Integer viewPosition = null;
+    private int viewPosition = -1;
 
     public NodeProperties() {}
     
     /**
      * Internal name of the node.
-     *
-     * @return the node's name.
      */
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName( String name ) { this.name = name; }
 
     /**
      * Name of the main node Class.
-     *
-     * @return node class name.
      */
     public String getClassName() { return className; }
-    public void setClassName(String className) { this.className = className; }
+    public void setClassName( String className ) { this.className = className; }
 
     /**
      * The parent node, usually a casing.
-     *
-     * @return the parent node, null if node has no parent.
      */
     public List<String> getParents() { return parents; }
-    public void setParents(List<String> parents) { this.parents = parents; }
+    public void setParents( List<String> parents ) { this.parents = parents; }
 
     /**
      * The name of the node, for display purposes.
-     *
-     * @return display name.
      */
     public String getDisplayName() { return displayName; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public void setDisplayName( String displayName ) { this.displayName = displayName; }
     
     /**
      * The nodeBase is the name of the base node. For example
      * clam-node's nodeBase is untangle-base-virus.
-     *
-     * @return the nodeBase, null if node does not have a base.
      */
     public String getNodeBase() { return nodeBase; }
-    public void setNodeBase(String nodeBase) { this.nodeBase = nodeBase; }
+    public void setNodeBase( String nodeBase ) { this.nodeBase = nodeBase; }
 
     /**
      * The type is the type of node
-     *
-     * @return the type, null if node does not have a type.
      */
     public Type getType() { return type; }
-    public void setType(Type type) { this.type = type; }
+    public void setType( Type type ) { this.type = type; }
 
     /**
      * The view position in the rack
-     *
-     * @return the type, null if node does not have a type.
      */
-    public Integer getViewPosition() { return viewPosition; }
-    public void setViewPosition(Integer viewPosition) { this.viewPosition = viewPosition; }
+    public int getViewPosition() { return viewPosition; }
+    public void setViewPosition( int newValue ) { this.viewPosition = newValue; }
     
     /**
      * True if this node can be turned on and off.  False, otherwise.
      */
-    public Boolean getHasPowerButton() { return hasPowerButton; }
-    public void setHasPowerButton(Boolean hasPowerButton) { this.hasPowerButton = hasPowerButton; }
+    public boolean getHasPowerButton() { return hasPowerButton; }
+    public void setHasPowerButton( boolean newValue ) { this.hasPowerButton = newValue; }
 
     /**
      * True if this node should be started automatically.
      */
-    public Boolean getAutoStart() { return autoStart; }
-    public void setAutoStart(Boolean autoStart) { this.autoStart = autoStart; }
-
-    // Object methods ---------------------------------------------------------
+    public boolean getAutoStart() { return autoStart; }
+    public void setAutoStart( boolean newValue ) { this.autoStart = newValue; }
 
     /**
-     * Equality based.
-     *
-     * @param o the object to compare to.
-     * @return true if equal.
+     * True if this node should be started automatically.
      */
+    public boolean getInvisible() { return invisible; }
+    public void setInvisible( boolean newValue ) { this.invisible = newValue; }
+    
     public boolean equals(Object o)
     {
         if (!(o instanceof NodeProperties)) {
@@ -124,7 +109,7 @@ public class NodeProperties implements Serializable, JSONString
 
         NodeProperties td = (NodeProperties)o;
 
-        return getClassName().equals(td.getClassName());
+        return getName().equals( td.getName() );
     }
 
     public String toString()
@@ -137,5 +122,9 @@ public class NodeProperties implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
+
+    public int compareTo( NodeProperties a )
+    {
+        return new Integer(getViewPosition()).compareTo(a.getViewPosition());
+    }
 }

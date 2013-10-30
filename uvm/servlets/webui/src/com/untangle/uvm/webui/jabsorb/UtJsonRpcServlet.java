@@ -1,5 +1,5 @@
 /**
- * $Id: UtJsonRpcServlet.java 34990 2013-06-12 23:07:00Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.webui.jabsorb;
 
@@ -67,7 +67,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.messageManager().getClass());
             bridge.registerCallableReference(uvm.languageManager().getClass());
             bridge.registerCallableReference(uvm.certificateManager().getClass());
-            bridge.registerCallableReference(uvm.aptManager().getClass());
+            bridge.registerCallableReference(uvm.rackManager().getClass());
             bridge.registerCallableReference(uvm.nodeManager().getClass());
             bridge.registerCallableReference(uvm.loggingManager().getClass());
             bridge.registerCallableReference(uvm.mailSender().getClass());

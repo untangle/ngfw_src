@@ -94,7 +94,9 @@ public class AlertManagerImpl implements AlertManager
     private void testUpgrades(List<String> alertList)
     {
         try {
-            if (UvmContextFactory.context().aptManager().getUpgradeStatus(false).getUpgradesAvailable()) {
+            // FIXME
+            //if (UvmContextFactory.context().aptManager().getUpgradeStatus(false).getUpgradesAvailable()) {
+            if ( false ) {
                 alertList.add(i18nUtil.tr("Upgrades are available and ready to be installed."));
             }
         } catch (Exception e) {}

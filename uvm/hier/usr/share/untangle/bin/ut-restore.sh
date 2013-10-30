@@ -7,9 +7,7 @@
 
 VERBOSE="false"
 CHECK_ONLY="false"
-SHOW_NEEDED="false"
 WORKING_DIR=""
-PACKAGES_FILE=""
 TARBALL_FILE=""
 VERSION_FILE=""
 ACCEPTED_PREVIOUS_VERSION="10.0"
@@ -32,24 +30,11 @@ function doHelp() {
   echo " -m regex        (files in the current configuration to maintain - regex)"            
   echo " -h              (help)"
   echo " -c              (check file)"
-  echo " -f              (list required packages)"
   echo " -v              (verbose)"
 }
 
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
-
-function checkPackages()
-{
-    # Check that all required libitems are installed
-    while read line ; do 
-        PKG="`echo $line | awk '{print $1}'`"
-        dpkg -l $PKG 2>/dev/null | grep -q '^i' || {
-            err "Required packages are not installed: $PKG"
-            return 1
-        }
-    done < <(cat $WORKING_DIR/$PACKAGES_FILE )
-}
 
 function doRestore() 
 {
@@ -139,15 +124,10 @@ function expandFile()
     # Find the specfic files
     pushd $WORKING_DIR > /dev/null 2>&1
     TARBALL_FILE=`ls | grep files*.tar.gz`
-    PACKAGES_FILE=`ls | grep packages*`
     VERSION_FILE=`ls | grep PUBVERSION`
     popd  > /dev/null 2>&1
 
     # Verify files
-    if [ -z "$PACKAGES_FILE" ]; then
-        err "File does not seem to be a valid backup file. (missing packages list)"
-        return 1
-    fi
     if [ -z "$TARBALL_FILE" ]; then
         err "File does not seem to be a valid backup file. (missing files tarball)"
         return 1
@@ -177,7 +157,6 @@ while getopts "i:m:hvcf" opt; do
     i) RESTORE_FILE=$OPTARG;;
     m) MAINTAIN_REGEX=$OPTARG;;
     c) CHECK_ONLY="true";;
-    f) SHOW_NEEDED="true";;
     v) VERBOSE="true";;
   esac
 done
@@ -196,21 +175,6 @@ RETURN_CODE=$?
 
 # If the file doesn't check out or in check only mode exit with expandFile's return code
 if [ "$CHECK_ONLY" == "true" ] || [ $RETURN_CODE != 0 ] ; then
-    rm -rf ${WORKING_DIR}
-    exit $RETURN_CODE
-fi
-
-# If show needed option is specified, printed the needed packages and return
-if [ "$SHOW_NEEDED" == "true" ] ; then
-    cat $WORKING_DIR/$PACKAGES_FILE | awk '{print $1}'
-    rm -rf ${WORKING_DIR}
-    exit 0
-fi
-
-# Finally check that all needed packages are installed, if not return error
-checkPackages
-RETURN_CODE=$?
-if [ $RETURN_CODE != 0 ] ; then
     rm -rf ${WORKING_DIR}
     exit $RETURN_CODE
 fi

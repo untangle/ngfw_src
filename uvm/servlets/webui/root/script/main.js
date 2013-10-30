@@ -96,51 +96,6 @@ Ext.define("Ung.Main", {
     setDocumentTitle: function() {
         document.title = rpc.companyName + ((rpc.hostname!=null)?(" - " + rpc.hostname):"");
     },
-    warnOnUpgrades: function(handler) {
-        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
-            main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-        } else {
-            if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
-                main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-            } else {
-                Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
-                rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
-                    main.upgradeLastCheckTime=(new Date()).getTime();
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception, Ext.bind(function() {
-                        main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-                    }, this))) return;
-
-                    main.upgradeStatus=result;
-                    main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-                }, this,[handler],true),true);
-            }
-        }
-    },
-    warnOnUpgradesCallback: function (upgradeStatus,handler) {
-        if(upgradeStatus!=null) {
-            if(upgradeStatus.upgrading) {
-                Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
-                return;
-            } else if(upgradeStatus.upgradesAvailable) {
-                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
-                Ext.Msg.show({
-                    title:i18n._("Upgrades warning"),
-                    msg: i18n._("Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."),
-                    buttons: Ext.Msg.OKCANCEL,
-                    fn: function (btn, text) {
-                        if (btn == 'ok') {
-                            main.leftTabs.setActiveTab('leftTabConfig');
-                            Ext.getCmp("configItem_upgrade").onClick();
-                        }
-                    },
-                    icon: Ext.MessageBox.QUESTION
-                });
-                return;
-            }
-        }
-        handler.call(this);
-    },
     resetAppLastState: function(displayName) {
       main.appsLastState[displayName]=null;
     },
@@ -516,16 +471,15 @@ Ext.define("Ung.Main", {
             });
         }, this);
 
-        Ung.MessageManager.setModalDownloadMode( doneFn, doneFn, doneFn );
-
-        rpc.aptManager.upgrade(Ext.bind(function(result, exception) {
-            // if the upgrades are being applied exceptions are expected.
-            // ignore them
-            if ( this.upgradesBeingApplied )
-                return;
-            if( Ung.Util.handleException( exception ) )
-                return;
-        }, this));
+        //FIXME
+        // rpc.rackManager.upgrade(Ext.bind(function(result, exception) {
+        //     // if the upgrades are being applied exceptions are expected.
+        //     // ignore them
+        //     if ( this.upgradesBeingApplied )
+        //         return;
+        //     if( Ung.Util.handleException( exception ) )
+        //         return;
+        // }, this));
     },
 
     getNetworkManager: function(forceReload) {
@@ -646,25 +600,6 @@ Ext.define("Ung.Main", {
         return rpc.networkSettings;
     },
 
-    unactivateNode: function(packageDesc) {
-        Ung.AppItem.updateState(packageDesc.displayName,"unactivating");
-        rpc.nodeManager.nodeInstances(Ext.bind(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var tids=result;
-                if(tids.length>0) {
-                    Ung.AppItem.updateState(this.displayName);
-                    Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
-                    Ext.String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
-                    return;
-                } else {
-                    rpc.aptManager.uninstall(Ext.bind(function (result, exception) {
-                       if(Ung.Util.handleException(exception)) return;
-                       main.setAppLastState(this.displayName);
-                       main.loadApps();
-                    }, this), this.name);
-                }
-        },packageDesc), packageDesc.name);
-    },
     // load policies list
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
@@ -722,23 +657,13 @@ Ext.define("Ung.Main", {
         }
         //build Apps
         this.apps=[];
-        for(i=0;i<rpc.rackView.applications.list.length;i++) {
-            var application=rpc.rackView.applications.list[i];
+        for(i=0;i<rpc.rackView.installable.list.length;i++) {
+            var application=rpc.rackView.installable.list[i];
             var appCmp=new Ung.AppItem(application);
             if(appCmp.isValid) {
                 this.apps.push(appCmp);
             }
         }
-    },
-    findLibItemDisplayName: function(libItemName) {
-        if(main.apps!=null) {
-            for(var i=0; i<main.apps.length; i++) {
-                if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
-                  return main.apps[i].libItem.displayName;
-                }
-            }
-        }
-        return null;
     },
     buildNodes: function() {
         //build nodes
@@ -834,7 +759,7 @@ Ext.define("Ung.Main", {
             main.buildApps();
             main.buildNodes();
         }, this);
-        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadApps: function() {
         if(Ung.MessageManager.installInProgress>0) {
@@ -845,7 +770,7 @@ Ext.define("Ung.Main", {
             rpc.rackView=result;
             main.buildApps();
         }, this);
-        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadLicenses: function() {
         try {
@@ -865,7 +790,7 @@ Ext.define("Ung.Main", {
             }
         }, this);
 
-        Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     reloadLicenses: function() {
         main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
@@ -884,29 +809,29 @@ Ext.define("Ung.Main", {
                 }
             }, this);
 
-            Ung.Util.RetryHandler.retry( rpc.aptManager.getRackView, rpc.aptManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+            Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
         }, this));
     },
 
-    installNode: function(packageDesc, appItem) {
-        if(packageDesc===null) {
+    installNode: function(nodeProperties, appItem) {
+        if( nodeProperties === null ) {
             return;
         }
         /* Sanity check to see if the node is already installed. */
-        node = main.getNode(packageDesc.name);
+        node = main.getNode( nodeProperties.name );
         if (( node !== null ) && ( node.nodeSettings.policyId == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
         }
         
-        Ung.AppItem.updateState(packageDesc.displayName, "loadapp");
-        main.addNodePreview(packageDesc);
+        Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
+        main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiateAndStart(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) {
                 main.removeNodePreview(this.name);
                 return;
             }
-        },packageDesc), packageDesc.name, rpc.currentPolicy.policyId);
+        }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
@@ -1067,19 +992,20 @@ Ext.define("Ung.Main", {
     },
     checkForUpgrades: function (handler) {
         //check for upgrades
-        rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
-            main.upgradeLastCheckTime=(new Date()).getTime();
-            main.upgradeStatus=result;            
+        // FIXME
+        // rpc.rackManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
+        //     main.upgradeLastCheckTime=(new Date()).getTime();
+        //     main.upgradeStatus=result;            
                         
-            if(handler) {
-                handler.call(this);
-            }
+        //     if(handler) {
+        //         handler.call(this);
+        //     }
 
-            if(Ung.Util.handleException(exception)) return;
-            if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
-                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
-            }
-        }, this,[handler],true),true);
+        //     if(Ung.Util.handleException(exception)) return;
+        //     if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+        //         Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
+        //     }
+        // }, this,[handler],true),true);
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
@@ -1137,12 +1063,12 @@ Ext.define("Ung.Main", {
             this.policyNodeWidget = nodeWidget;
         }
     },
-    addNodePreview: function ( packageDesc ) {
-        var nodeWidget=new Ung.NodePreview( packageDesc );
-        var place = (packageDesc.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
-        var position = this.getNodePosition( place, packageDesc.viewPosition );
+    addNodePreview: function ( nodeProperties ) {
+        var nodeWidget=new Ung.NodePreview( nodeProperties );
+        var place = ( nodeProperties.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
+        var position = this.getNodePosition( place, nodeProperties.viewPosition );
         nodeWidget.render(place,position);
-        main.nodePreviews[packageDesc.name]=true;
+        main.nodePreviews[ nodeProperties.name ]=true;
     },
     removeNodePreview: function(nodeName) {
         if(main.nodePreviews[nodeName]!==undefined)
@@ -1273,13 +1199,7 @@ Ext.define("Ung.Main", {
         this.checkForAlerts();
         this.checkForIE();
 
-        if (this.firstTimeRun) {
-            this.checkForUpgrades(main.loadRackView);
-        } else {
-            main.loadRackView();
-            Ext.Function.defer(this.checkForUpgrades,900, this,[null]);
-        }
-
+        main.loadRackView();
     },
     getPolicyName: function(policyId) {
         if (policyId == null || policyId == "")
@@ -1369,28 +1289,14 @@ Ext.define("Ung.Main", {
         this.initialScreenShowed=true;
         try {
             Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
-            rpc.aptManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
-                if(Ung.Util.handleException(exception)) throw Exception("failure");
-                    this.updateInitialScreen(result);
-            }, this));
+            // FIXME
+            // rpc.rackManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
+            //     if(Ung.Util.handleException(exception)) throw Exception("failure");
+            //         this.updateInitialScreen(result);
+            // }, this));
         } catch(e) {
-             this.updateInitialScreen(false);
+             this.updateInitialScreen();
         }
-    },
-    /**
-     * Call back after the upgrade check is made
-     */         
-    upgradeCheckCallback: function () {
-        if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
-            if(main.upgradeStatus.upgradesAvailable===true) {
-                this.openUpgradeScreen();
-            } else {
-                this.openWelcomeScreen();
-            }
-        } else {
-            this.openWelcomeScreen();
-        }
-        this.postInitialScreen();
     },
     /**
      *  cleanup and ensure the window opened is on the right size
@@ -1416,19 +1322,14 @@ Ext.define("Ung.Main", {
     /**
      *  Displays the appropriate screen after determining connectivity
      **/     
-    updateInitialScreen: function(result) {
+    updateInitialScreen: function() {
         var ifr = main.getIframeWin(),
             position = [],
             size = main.viewport.getSize(),
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
         if(isWizardComplete===true) {
-            if(result===true) {
-                main.checkForUpgrades(this.upgradeCheckCallback);
-                return;
-            } else {
-                this.openFailureScreen();
-            }        
+            this.openFailureScreen();
         } else {
             this.openRunSetupScreen();
         }

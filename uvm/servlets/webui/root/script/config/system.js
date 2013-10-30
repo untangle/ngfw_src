@@ -379,41 +379,6 @@ if (!Ung.hasResource["Ung.System"]) {
                                 errorMsg = action.result.msg;
                             }
 
-                            if ( errorMsg.indexOf("NEED_TO_INSTALL:") !== -1 ) {
-                                var neededPkgs = errorMsg.replace("NEED_TO_INSTALL:","").split(",");
-                                var neededPkgsStr = neededPkgs.join("<br/>");
-                                
-                                Ext.MessageBox.confirm( cmp.i18n._("Alert"),
-                                    cmp.i18n._("Missing packages are required to restore this backup file.") + "<br/>" +
-                                    cmp.i18n._("Download required packages now?") + "<br/><br/>" +
-                                    cmp.i18n._("Packages") + ":<br/>" + neededPkgsStr,
-                                    Ext.bind(function(btn) {
-                                        if (btn == "yes") {
-                                            Ext.MessageBox.hide();
-                                            this.neededPackages = neededPkgs.length;
-                                            Ext.MessageBox.wait(i18n._("Downloading packages..."), i18n._("Please wait"));
-
-                                            for (var i = 0; i < neededPkgs.length; i++) {
-                                                var pkgName = neededPkgs[i];
-
-                                                var modalDownloadCompleteFn = Ext.bind( function() {
-                                                    this.neededPackages--;
-                                                    if ( this.neededPackages === 0 ) {
-                                                        Ext.MessageBox.alert(cmp.i18n._("Download Complete"), cmp.i18n._("To continue the restore relaunch the restore process."));
-                                                    }
-                                                }, this);
-                                                Ung.MessageManager.setModalDownloadMode( null, modalDownloadCompleteFn, null );
-
-                                                console.log("Installing: " + pkgName);
-                                                rpc.aptManager.install(Ext.bind(function(result, exception) {
-                                                    if(Ung.Util.handleException(exception)) return;
-                                                }, this), pkgName);
-                                            }
-                                       }
-                                   }, this));
-                                return;
-                            }
-                                
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
                         }
                     });

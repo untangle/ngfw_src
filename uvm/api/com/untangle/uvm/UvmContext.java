@@ -10,6 +10,7 @@ import java.io.IOException;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.TomcatManager;
+import com.untangle.uvm.RackManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
@@ -18,7 +19,6 @@ import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.ServletFileManager;
-import com.untangle.uvm.apt.AptManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
 /**
@@ -27,11 +27,11 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 public interface UvmContext
 {
     /**
-     * Get the <code>AptManager</code> singleton.
+     * Get the <code>RackManager</code> singleton.
      *
-     * @return the AptManager.
+     * @return the RackManager.
      */
-    AptManager aptManager();
+    RackManager rackManager();
 
     /**
      * Get the <code>NodeManager</code> singleton.

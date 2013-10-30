@@ -97,13 +97,6 @@ public class ChicletServlet extends HttpServlet
         }
 
         /**
-         * Look in the apt cache
-         */
-        if (result == null) {
-            result = UvmContextFactory.context().aptManager().packageDesc(name).descIcon();
-        }
-
-        /**
          * If still not found just use default generic icon
          */
         if (result == null) {

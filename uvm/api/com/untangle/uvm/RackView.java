@@ -1,7 +1,7 @@
 /**
  * $Id: RackView.java,v 1.00 2012/04/06 11:29:48 dmorris Exp $
  */
-package com.untangle.uvm.apt;
+package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -16,16 +16,16 @@ import com.untangle.uvm.node.NodeMetric;
 @SuppressWarnings("serial")
 public class RackView implements Serializable
 {
-    private List<Application> applications;
+    private List<NodeProperties> installable;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
     private Map<Long, List<NodeMetric>> nodeMetrics;
     private Map<String, License> licenseMap;
     private Map<Long, NodeSettings.NodeState> runStates;
 
-    public RackView(List<Application> applications, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
+    public RackView(List<NodeProperties> installable, List<NodeSettings> instances, List<NodeProperties> nodeProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, NodeSettings.NodeState> runStates)
     {
-        this.applications = applications;
+        this.installable = installable;
         this.instances = instances;
         this.nodeProperties = nodeProperties;
         this.nodeMetrics = nodeMetrics;
@@ -33,9 +33,9 @@ public class RackView implements Serializable
         this.runStates = runStates;
     }
 
-    public List<Application> getApplications()
+    public List<NodeProperties> getInstallable()
     {
-        return applications;
+        return installable;
     }
 
     public List<NodeSettings> getInstances()
@@ -65,7 +65,7 @@ public class RackView implements Serializable
     @Override
     public String toString()
     {
-        return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
+        return "RackView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
     }
 
 }

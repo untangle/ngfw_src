@@ -35,9 +35,6 @@ public class SystemManagerImpl implements SystemManager
 
     private SystemSettings settings;
 
-    private final UpdateTask updateTask = new UpdateTask();
-    private CronJob autoUpgradeCronJob;
-    
     protected SystemManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -76,10 +73,11 @@ public class SystemManagerImpl implements SystemManager
             restartDaemon();
         }
 
-        this.autoUpgradeCronJob = UvmContextFactory.context().makeCronJob(this.settings.getAutoUpgradeDays(),
-                                                                          this.settings.getAutoUpgradeHour(),
-                                                                          this.settings.getAutoUpgradeMinute(),
-                                                                          updateTask);
+        // FIXME!!
+        // this.autoUpgradeCronJob = UvmContextFactory.context().makeCronJob(this.settings.getAutoUpgradeDays(),
+        //                                                                   this.settings.getAutoUpgradeHour(),
+        //                                                                   this.settings.getAutoUpgradeMinute(),
+        //                                                                   updateTask);
         
         logger.info("Initialized SystemManager");
     }
@@ -162,10 +160,11 @@ public class SystemManagerImpl implements SystemManager
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
     
-        if (this.autoUpgradeCronJob != null)
-            this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),
-                                               this.settings.getAutoUpgradeHour(),
-                                               this.settings.getAutoUpgradeMinute());
+        // FIXME!!!
+        // if (this.autoUpgradeCronJob != null)
+        //     this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),
+        //                                        this.settings.getAutoUpgradeHour(),
+        //                                        this.settings.getAutoUpgradeMinute());
 
     }
 
@@ -341,27 +340,5 @@ public class SystemManagerImpl implements SystemManager
     private String qqOrNullToDefault(String str, String def)
     {
         return isNotNullOrBlank(str)? str:def;
-    }
-
-    private class UpdateTask implements Runnable
-    {
-        public void run()
-        {
-            logger.debug("doing automatic update");
-            try {
-                UvmContextImpl.context().aptManager().update();
-            } catch (Exception exn) {
-                logger.warn("could not update", exn);
-            }
-
-            if (getSettings().getAutoUpgrade()) {
-                logger.debug("doing automatic upgrade");
-                try {
-                    UvmContextImpl.context().aptManager().upgrade();
-                } catch (Exception exn) {
-                    logger.warn("could not upgrade", exn);
-                }
-            }
-        }
     }
 }

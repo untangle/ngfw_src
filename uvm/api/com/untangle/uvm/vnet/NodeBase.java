@@ -1,5 +1,5 @@
 /*
- * $Id: NodeBase.java 35643 2013-08-14 22:12:31Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 
@@ -30,7 +30,6 @@ import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.apt.PackageDesc;
 
 /**
  * A base class for node instances, both normal and casing.
@@ -53,11 +52,6 @@ public abstract class NodeBase implements Node
      */
     private NodeProperties nodeProperties;
 
-    /**
-     * The package description for this node
-     */
-    private PackageDesc packageDesc;
-    
     /**
      * This is the pipeline/traffic subscriptions for this node
      */
@@ -165,17 +159,6 @@ public abstract class NodeBase implements Node
         this.nodeProperties = nodeProperties;
     }
 
-    public PackageDesc getPackageDesc()
-    {
-        //return UvmContextFactory.context().aptManager().packageDesc(packageName);
-        return packageDesc;
-    }
-
-    public void setPackageDesc( PackageDesc packageDesc )
-    {
-        this.packageDesc = packageDesc;
-    }
-    
     public void addParent( NodeBase parent )
     {
         parents.add(parent);
@@ -273,9 +256,9 @@ public abstract class NodeBase implements Node
         UvmContextFactory.context().logEvent(evt);
     }
 
-    public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, PackageDesc packageDesc, boolean isNew ) throws Exception
+    public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, boolean isNew ) throws Exception
     {
-        if ( nodeProperties == null || nodeSettings == null || packageDesc == null )
+        if ( nodeProperties == null || nodeSettings == null )
             throw new Exception("Invalid Arguments: null");
 
         try {
@@ -299,7 +282,6 @@ public abstract class NodeBase implements Node
             //node = (NodeBase)Class.forName(className).newInstance(getNodeSettings(), getNodeProperties());
             node.setNodeProperties( nodeProperties );
             node.setNodeSettings( nodeSettings );
-            node.setPackageDesc( packageDesc );
                 
             for (Node parentNode : parentNodes) {
                 node.addParent((NodeBase)parentNode);
@@ -731,13 +713,6 @@ public abstract class NodeBase implements Node
     {
         if (null == parent) {
             return null;
-        }
-
-        PackageDesc md = UvmContextFactory.context().aptManager().packageDesc(parent);
-
-        if (null == md) {
-            staticLogger.warn("parent does not exist: " + parent);
-            throw new Exception("could not create parent: " + parent);
         }
 
         staticLogger.debug( "Starting required parent: " + parent );
