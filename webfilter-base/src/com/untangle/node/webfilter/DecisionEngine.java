@@ -76,6 +76,9 @@ public abstract class DecisionEngine
         URI uri = null;
         try {
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
+            logger.debug("XXX: before: " + requestLine.getRequestUri().normalize().toString() );
+            logger.debug("XXX: after: " + requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/") );
+            
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'", e);
         }
@@ -88,6 +91,7 @@ public abstract class DecisionEngine
             }
         }
         host = UrlMatchingUtil.normalizeHostname(host);
+        logger.debug("checkRequest( " + host + " " + uri + " ) ");
 
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings
