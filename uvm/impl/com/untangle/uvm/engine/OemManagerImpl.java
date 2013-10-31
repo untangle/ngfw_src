@@ -50,11 +50,4 @@ public class OemManagerImpl implements OemManager
     {
         return this.settings.getOemUrl();
     }
-
-    @Override
-    public String getHiddenLibitems()
-    {
-        return this.settings.getHiddenLibitems();
-    }
-    
 }
