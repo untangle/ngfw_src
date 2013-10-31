@@ -1,5 +1,5 @@
 # -*-ruby-*-
-# $Id: package.rb 35381 2013-07-22 15:59:27Z dmorris $
+# $Id$
 
 jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
@@ -81,9 +81,6 @@ BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/lib")
 
 if BuildEnv::SRC.isDevel
-  # create the package list for fake ut-apt
-  BuildEnv::SRC.installTarget.install_files("./debian/control", "#{uvm_lib.distDirectory}/var/run/", 'pkg-list-main')
-
   uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
   ## Create all-zeros UID file to signal non-production install.
   ## Done here to not include the file inside of packages.
