@@ -72,7 +72,7 @@ class ReportTests(unittest2.TestCase):
                 # raise Exception('node %s already instantiated' % self.nodeName())
                 node = uvmContext.nodeManager().node(self.nodeName())
             else:
-                node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+                node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
            
     # verify client is online
     def test_010_clientIsOnline(self):

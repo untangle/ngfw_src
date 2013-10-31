@@ -261,29 +261,13 @@ public class NodeManagerImpl implements NodeManager
             
         }
 
-        // if ( node != null && !nodeProperties.getInvisible() ) {
-        // NodeInstantiatedMessage ne = new NodeInstantiatedMessage(nodeProperties,
-        //                                                          nodeSettings,
-        //                                                          node.getMetrics(),
-        //                                                          uvmContext.licenseManager().getLicense(packageDesc.getName()), node.getNodeSettings().getPolicyId());
-        //     uvmContext.messageManager().submitMessage(ne);
-        // }
-
-        return node;
-    }
-
-    public Node instantiateAndStart( String nodeName, Long policyId ) throws Exception
-    {
-        Node node = instantiate( nodeName, policyId );
-        NodeProperties nd = node.getNodeProperties();
-        if (nd.getAutoStart()) {
-            try {
-                node.start();
-            } catch (Exception e) {
-                throw new Exception(e);
-            }
-                
+        /**
+         * If AutoStart is true, go ahead and start node
+         */
+        if ( nodeProperties != null && nodeProperties.getAutoStart() ) {
+            node.start();
         }
+        
         return node;
     }
 

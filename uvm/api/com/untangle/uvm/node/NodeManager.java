@@ -105,19 +105,6 @@ public interface NodeManager
     Node instantiate( String name ) throws Exception;
 
     /**
-     * Create a new node instance under the given policy and then start it.
-     * Note that it is an error to specify a non-null policy for a service,
-     * or a null policy for a non-service.
-     *
-     * @param name of the node.
-     * @param policy the policy this instance is applied to.
-     * @return the Node of the instance
-     * @exception Exception if the instance cannot be created.
-     * @exception NodeStartException if the instance cannot be started.
-     */
-    Node instantiateAndStart( String nodeName, Long policyId ) throws Exception;
-
-    /**
      * Destroy a node instance.
      *
      * @param nodeId of instance to be destroyed.
@@ -146,13 +133,13 @@ public interface NodeManager
      */
     boolean isInstantiated( String nodeName );
     
-    
     /**
      * Get the nodeSettings for all nodes in one call.
      *
      * @return a <code>Map</code> from node ID to NodeSettings for all nodes
      */
     Map<Long, NodeSettings> allNodeSettings();
+
     /**
      * Get the nodeProperties for all nodes in one call.
      *

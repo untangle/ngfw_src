@@ -58,7 +58,7 @@ class IpsTests(unittest2.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             node.start() # must be called since ips doesn't auto-start
             flushEvents()
 

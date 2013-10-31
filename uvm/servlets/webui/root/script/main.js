@@ -823,7 +823,7 @@ Ext.define("Ung.Main", {
         
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
-        rpc.nodeManager.instantiateAndStart(Ext.bind(function (result, exception) {
+        rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             main.removeNodePreview(nodeProperties.name);
             if(Ung.Util.handleException(exception)) return;
             var node = result;

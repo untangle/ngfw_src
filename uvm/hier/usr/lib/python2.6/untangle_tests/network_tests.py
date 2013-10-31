@@ -390,7 +390,7 @@ class NetworkTests(unittest2.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
                 print "ERROR: Node %s already installed" % self.nodeNameFW()
                 raise Exception('node %s already instantiated' % self.nodeNameFW())
-            nodeFW = uvmContext.nodeManager().instantiateAndStart(self.nodeNameFW(), defaultRackId)
+            nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
         # verify port 80 is open
         result = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
         assert (result == 0)

@@ -27,7 +27,7 @@ class SmtpTests(unittest2.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 node = uvmContext.nodeManager().node(self.nodeName())
             else:
-                node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+                node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
 
     # verify client is online
     def test_010_runTests(self):

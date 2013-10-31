@@ -78,7 +78,7 @@ class SpamTests(unittest2.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             nodeData = node.getSettings()
             nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
             nodeDataSP = nodeSP.getSmtpNodeSettings()
