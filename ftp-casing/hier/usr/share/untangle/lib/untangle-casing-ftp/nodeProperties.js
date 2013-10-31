@@ -3,6 +3,7 @@
         "className" : "com.untangle.node.ftp.FtpNodeImpl",
         "name" : "untangle-casing-ftp",
         "displayName" : "FTP Casing",
-        "type" : "SERVICE"
+        "type" : "SERVICE",
+        "invisible" : True
 }
 

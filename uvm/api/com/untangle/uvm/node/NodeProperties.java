@@ -32,6 +32,7 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     
     private boolean hasPowerButton = true;
     private boolean autoStart = true;
+    private boolean autoLoad = false;
     private boolean invisible = false;
 
     private List<String> parents = new LinkedList<String>();
@@ -90,11 +91,17 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     public void setHasPowerButton( boolean newValue ) { this.hasPowerButton = newValue; }
 
     /**
-     * True if this node should be started automatically.
+     * True if this node should be started automatically (once loaded).
      */
     public boolean getAutoStart() { return autoStart; }
     public void setAutoStart( boolean newValue ) { this.autoStart = newValue; }
 
+    /**
+     * True if this node should be loaded automatically.
+     */
+    public boolean getAutoLoad() { return autoLoad; }
+    public void setAutoLoad( boolean newValue ) { this.autoLoad = newValue; }
+    
     /**
      * True if this node should be started automatically.
      */

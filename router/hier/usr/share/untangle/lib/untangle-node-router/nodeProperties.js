@@ -4,6 +4,8 @@
         "name" : "untangle-node-router",
         "displayName" : "Router",
         "type" : "SERVICE",
+        "invisible" : True,
+        "autoLoad" : True,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

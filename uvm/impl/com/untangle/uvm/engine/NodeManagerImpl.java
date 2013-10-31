@@ -212,6 +212,9 @@ public class NodeManagerImpl implements NodeManager
         NodeSettings nodeSettings = null;
         
         synchronized (this) {
+            if (!live) 
+                throw new Exception("NodeManager is shut down");
+
             logger.info("initializing node: " + nodeName);
             nodeProperties = initNodeProperties( nodeName );
 
@@ -238,10 +241,6 @@ public class NodeManagerImpl implements NodeManager
             }
                 
             nodeSettings = createNewNodeSettings( policyId, nodeName );
-
-            
-            if (!live) 
-                throw new Exception("NodeManager is shut down");
 
             /**
              * Check all the basics
@@ -357,7 +356,7 @@ public class NodeManagerImpl implements NodeManager
     {
         LinkedList<NodeProperties> nodeProps = new LinkedList<NodeProperties>();
 
-        File rootDir = new File("/usr/share/untangle/lib/");
+        File rootDir = new File( System.getProperty( "uvm.lib.dir" ) );
 
         findAllNodeProperties( nodeProps, rootDir );
 
@@ -398,6 +397,8 @@ public class NodeManagerImpl implements NodeManager
 
         restartUnloaded();
 
+        startAutoLoad();
+        
         logger.info("Initialized NodeManager");
     }
 
@@ -427,43 +428,31 @@ public class NodeManagerImpl implements NodeManager
         }
     }
 
-    protected void startAutoStart()
+    protected void startAutoLoad()
     {
         for ( NodeProperties nodeProps : getAllNodeProperties() ) {
-            if (! nodeProps.getAutoStart() )
+            if (! nodeProps.getAutoLoad() )
                 continue;
 
             List<Node> list = nodeInstances( nodeProps.getName() );
 
+            /**
+             * If a node is "autoLoad" and is not loaded, instantiate it
+             */
             if ( list.size() == 0 ) {
                 try {
-                    logger.info("Auto-starting new node: " + nodeProps.getName());
-                    instantiate( nodeProps.getName() );
+                    logger.info("Auto-loading new node: " + nodeProps.getName());
+                    Node node = instantiate( nodeProps.getName() );
+
+                    if ( nodeProps.getAutoStart() ) {
+                        node.start();
+                    }
+
                 } catch (Exception exn) {
                     logger.warn("could not deploy: " + nodeProps.getName(), exn);
                     continue;
                 }
-            } else {
-                for ( Node node: list ) {
-                    switch ( node.getRunState() ) {
-                    case INITIALIZED:
-                        try {
-                            node.start();
-                        } catch (Exception exn) {
-                            logger.warn("could not load: " + nodeProps.getName(), exn);
-                            continue;
-                        }
-                        break;
-                    case RUNNING:
-                        // nothing left to do.
-                        break;
-                    default:
-                        logger.warn( nodeProps.getName() + " unexpected state: " + node.getRunState() );
-                        break;
-                    }
-                }
-            }
-
+            } 
         }
     }
 
@@ -505,7 +494,6 @@ public class NodeManagerImpl implements NodeManager
         long t1 = System.currentTimeMillis();
         logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
 
-        startAutoStart();
     }
 
     private static int startThreadNum = 0;

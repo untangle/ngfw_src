@@ -29,6 +29,10 @@ class NodeManager(Manager):
         nodes = []
         for nodeId in instanceIds["list"]:
             node = self.__get_node(nodeId)
+            if node == None:
+                print "Node Missing: " + str(nodeId)
+                continue
+
             nodeSettings = node.getNodeSettings()
             nodeProperties = node.getNodeProperties()
             nodeRunState = node.getRunState()

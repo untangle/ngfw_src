@@ -64,7 +64,7 @@ public class ChicletServlet extends HttpServlet
     {
         String name = request.getParameter("name");
 
-        String fileName = System.getProperty("uvm.home") + "/web/library/images/" + name + ".png";
+        String fileName = System.getProperty("uvm.home") + "/web/images/" + name + "_42x42.png";
         File iconFile = new File(fileName);
         InputStream is = null;
         byte[] result = null;

@@ -114,7 +114,7 @@ public class RackManagerImpl implements RackManager
          * Iterate through nodes
          */
         for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
-            if ( !nodeProps.getInvisible() ) {
+            if ( ! nodeProps.getInvisible() ) {
                 installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
             } 
         }
@@ -138,11 +138,11 @@ public class RackManagerImpl implements RackManager
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
          */
+        List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId );
+        if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
+            installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+        }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId );
-            if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
-                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
-            }
             License sitefilterLicense = lm.getLicense(License.SITEFILTER);
             if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
                 installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
@@ -152,11 +152,11 @@ public class RackManagerImpl implements RackManager
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
+        List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
+        if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
+            installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+        }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
-            if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
-                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
-            }
             License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
             if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
                 installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */

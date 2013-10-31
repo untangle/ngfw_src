@@ -3,6 +3,7 @@
         "className" : "com.untangle.node.smtp.SmtpNodeImpl",
         "name" : "untangle-casing-smtp",
         "displayName" : "SMTP Casing",
-        "type" : "SERVICE"
+        "type" : "SERVICE",
+        "invisible" : True
 }
 

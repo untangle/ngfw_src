@@ -1272,11 +1272,12 @@ Ext.define("Ung.Main", {
         }
         this.initialScreenShowed=true;
         try {
-            Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
             // FIXME
+            this.updateInitialScreen();
+            //Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
             // rpc.rackManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
             //     if(Ung.Util.handleException(exception)) throw Exception("failure");
-            //         this.updateInitialScreen(result);
+            //         this.updateInitialScreen();
             // }, this));
         } catch(e) {
              this.updateInitialScreen();
@@ -1313,7 +1314,9 @@ Ext.define("Ung.Main", {
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
         if(isWizardComplete===true) {
-            this.openFailureScreen();
+            //FIXME
+            // if not online
+            //this.openFailureScreen();
         } else {
             this.openRunSetupScreen();
         }
