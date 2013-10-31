@@ -992,23 +992,6 @@ Ext.define("Ung.Main", {
             
         }, this,[handler],true));
     },
-    checkForUpgrades: function (handler) {
-        //check for upgrades
-        // FIXME
-        // rpc.rackManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
-        //     main.upgradeLastCheckTime=(new Date()).getTime();
-        //     main.upgradeStatus=result;            
-                        
-        //     if(handler) {
-        //         handler.call(this);
-        //     }
-
-        //     if(Ung.Util.handleException(exception)) return;
-        //     if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
-        //         Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
-        //     }
-        // }, this,[handler],true),true);
-    },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), Ext.bind(function() {

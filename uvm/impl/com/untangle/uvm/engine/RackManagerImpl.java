@@ -92,7 +92,7 @@ public class RackManagerImpl implements RackManager
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
         /* This stores a list of installable nodes. (for this rack) */
-        List<NodeProperties> installableNodes = new LinkedList<NodeProperties>();
+        Map<String, NodeProperties> installableNodesMap =  new HashMap<String, NodeProperties>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<String, License>();
         
@@ -115,7 +115,7 @@ public class RackManagerImpl implements RackManager
          */
         for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
             if ( !nodeProps.getInvisible() ) {
-                installableNodes.add( nodeProps );
+                installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
             } 
         }
 
@@ -131,7 +131,7 @@ public class RackManagerImpl implements RackManager
             nodeMetrics.put( nodeId , visibleNode.getMetrics());
 
             if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
-                installableNodes.remove( visibleNode.getNodeProperties().getDisplayName() );
+                installableNodesMap.remove( visibleNode.getNodeProperties().getDisplayName() );
             }
         }
 
@@ -141,11 +141,11 @@ public class RackManagerImpl implements RackManager
         if ( ! UvmContextFactory.context().isDevel() ) {
             List<Node> sitefilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-sitefilter", policyId );
             if (sitefilterNodes != null && sitefilterNodes.size() > 0) {
-                installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
             License sitefilterLicense = lm.getLicense(License.SITEFILTER);
             if ( sitefilterLicense != null && sitefilterLicense.getValid() && !sitefilterLicense.getTrial() ) {
-                installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
         }
         
@@ -155,11 +155,11 @@ public class RackManagerImpl implements RackManager
         if ( ! UvmContextFactory.context().isDevel() ) {
             List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
             if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
-                installableNodes.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
             License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
             if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
-                installableNodes.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
         }
         
@@ -168,6 +168,7 @@ public class RackManagerImpl implements RackManager
          * Build the list of apps to show on the left hand nav
          */
         logger.debug("Building apps panel:");
+        List<NodeProperties> installableNodes = new ArrayList<NodeProperties>(installableNodesMap.values());
         Collections.sort( installableNodes );
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
