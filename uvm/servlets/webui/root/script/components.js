@@ -1733,12 +1733,10 @@ Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{
 // Message Manager object
 Ung.MessageManager = {
     // update interval in millisecond
-    normalFrequency: 3000,
-    highFrequency: 1000,
+    updateFrequency: 3000,
     started: false,
     intervalId: null,
     cycleCompleted: true,
-    installInProgress:0,
     downloadSummary: null,
     downloadsComplete: 0,
     historyMaxSize:100,
@@ -1751,7 +1749,7 @@ Ung.MessageManager = {
         if(now) {
             Ung.MessageManager.run();
         }
-        this.setFrequency(this.normalFrequency);
+        this.setFrequency(this.updateFrequency);
         this.started = true;
     },
     setFrequency: function(timeMs) {

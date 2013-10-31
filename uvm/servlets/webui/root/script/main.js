@@ -762,9 +762,6 @@ Ext.define("Ung.Main", {
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadApps: function() {
-        if(Ung.MessageManager.installInProgress>0) {
-            return;
-        }
         var callback = Ext.bind(function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
@@ -818,7 +815,7 @@ Ext.define("Ung.Main", {
             return;
         }
         /* Sanity check to see if the node is already installed. */
-        node = main.getNode( nodeProperties.name );
+        var node = main.getNode( nodeProperties.name );
         if (( node !== null ) && ( node.nodeSettings.policyId == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
@@ -827,10 +824,15 @@ Ext.define("Ung.Main", {
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiateAndStart(Ext.bind(function (result, exception) {
-            if(Ung.Util.handleException(exception)) {
-                main.removeNodePreview(this.name);
-                return;
-            }
+            main.removeNodePreview(nodeProperties.name);
+            if(Ung.Util.handleException(exception)) return;
+            var node = result;
+            var nodeSettings = node.getNodeSettings();
+            var nodeMetrics = node.getMetrics();
+            var runState = node.getRunState();
+            var newNode=main.createNode(nodeProperties, nodeSettings, nodeMetrics, rpc.rackView.licenseMap.map[nodeProperties.name], runState);
+            main.nodes.push(newNode);
+            main.addNode(newNode, true);
         }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
@@ -1045,7 +1047,6 @@ Ext.define("Ung.Main", {
         return position;
     },
     addNode: function (node, fadeIn) {
-        main.removeNodePreview(this.name);
         var nodeWidget=new Ung.Node(node);
         nodeWidget.fadeIn=fadeIn;
         var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
