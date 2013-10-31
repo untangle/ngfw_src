@@ -495,7 +495,7 @@ public class HostTableImpl implements HostTable
                              * and overwrite the old one. Effectively discarding all but the vital state
                              * bug #11415 for details
                              */
-                            if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() ) {
+                            if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() || entry.getUsernameCapture() != null ) {
                                 HostTableEntry newEntry = createNewHostTableEntry( entry.getAddress() );
 
                                 newEntry.setQuotaSize( entry.getQuotaSize() );
