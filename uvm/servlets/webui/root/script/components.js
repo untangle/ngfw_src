@@ -1263,7 +1263,7 @@ Ext.define("Ung.Node", {
     // is powered on,
     powerOn: null,
     // running state
-    runState: null, // RUNNING, INITIALIZED, DESTROYED
+    runState: null, // RUNNING, INITIALIZED
 
     // settings Component
     settings: null,
@@ -1431,10 +1431,6 @@ Ext.define("Ung.Node", {
                 this.setPowerOn(false);
                 this.setState("off");
                 break;
-              case "DESTROYED":
-                //update app display
-                main.loadRackView();
-                break;
             default:
                 alert("Unknown runState: " + runState);
             }
@@ -1472,8 +1468,11 @@ Ext.define("Ung.Node", {
                 if(Ung.Util.handleException(exception, Ext.bind(function(message, details) {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ung.Util.showWarningMessage(title, details);
-                   //this.updateRunState("INITIALIZED");
                 }, this),"noAlert")) return;
+                this.rpcNode.getRunState(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.updateRunState(result);
+                }, this));
             }, this));
         }, this));
     },
@@ -1485,9 +1484,12 @@ Ext.define("Ung.Node", {
             this.setPowerOn(false);
             this.setState("attention");
             this.rpcNode.stop(Ext.bind(function(result, exception) {
-                //this.updateRunState("INITIALIZED");
                 this.resetMetrics();
                 if(Ung.Util.handleException(exception)) return;
+                this.rpcNode.getRunState(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.updateRunState(result);
+                }, this));
             }, this));
         }, this));
     },
@@ -1634,9 +1636,8 @@ Ext.define("Ung.Node", {
                                 break;
                             }
                         }
-                        main.updateSeparator();
-                        main.loadRackView();
                     }
+                    main.loadRackView();
                 }, this), this.nodeId);
             }
         }, this));
@@ -1803,50 +1804,6 @@ Ung.MessageManager = {
             }, this),"noAlert")) return;
             this.firstToleratedError=null; //reset error tolerance on a good response
             this.cycleCompleted = true;
-            try {
-                var messageQueue=result;
-                var i;
-                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
-                    Ung.MessageManager.messageHistory.push(messageQueue.messages.list);
-                    if(Ung.MessageManager.messageHistory.length>Ung.MessageManager.historyMaxSize) {
-                        Ung.MessageManager.messageHistory.shift();
-                    }
-
-                    var refreshApps=false;
-                    var appItemDisplayName;
-                    var node;
-                    for(i=0;i<messageQueue.messages.list.length;i++) {
-                        var msg=messageQueue.messages.list[i];
-                        console.log("MQ:",msg.javaClass, msg);
-                        if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
-                            node=Ung.Node.getCmp(msg.nodeSettings.id);
-                            if( node !== undefined && node != null) {
-                                node.updateRunState(msg.nodeState);
-                            }
-                        } else {
-                            Ext.MessageBox.alert( i18n._("Unknown Message"), "Unknown Message: " + msg.javaClass );
-                        }
-                    }
-                    if( refreshApps ) {
-                        main.updateSeparator();
-                        main.loadApps();
-                    }
-                }
-
-                // update system stats
-                main.systemStats.update(messageQueue.systemStats);
-                // upgrade node metrics
-                for (i = 0; i < main.nodes.length; i++) {
-                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
-                    if (nodeCmp && nodeCmp.isRunning()) {
-                        nodeCmp.metrics = messageQueue.metrics.map[main.nodes[i].nodeId];
-                        nodeCmp.updateMetrics();
-                    }
-                }
-                
-            } catch (err) {
-                Ext.MessageBox.alert("Exception in MessageManager", err.message);
-            }
         }, this), rpc.messageManagerKey, rpc.currentPolicy.policyId);
     }
 };

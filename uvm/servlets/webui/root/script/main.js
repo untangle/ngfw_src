@@ -826,6 +826,9 @@ Ext.define("Ung.Main", {
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             main.removeNodePreview(nodeProperties.name);
             if(Ung.Util.handleException(exception)) return;
+            main.loadRackView();
+            //FIXME: move node load animation on node preview, or find a way to trigger it after loadRackView
+            /*
             var node = result;
             var nodeSettings = node.getNodeSettings();
             var nodeMetrics = node.getMetrics();
@@ -833,6 +836,7 @@ Ext.define("Ung.Main", {
             var newNode=main.createNode(nodeProperties, nodeSettings, nodeMetrics, rpc.rackView.licenseMap.map[nodeProperties.name], runState);
             main.nodes.push(newNode);
             main.addNode(newNode, true);
+            */
         }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
