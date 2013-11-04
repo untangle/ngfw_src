@@ -26,7 +26,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -39,30 +38,17 @@ import com.untangle.uvm.util.Pulse;
 
 public class MessageManagerImpl implements MessageManager
 {
-    private static final long CLIENT_TIMEOUT = 1800000; // 30 min
-
     private static final Pattern MEMINFO_PATTERN = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
-
     private static final Pattern VMSTAT_PATTERN = Pattern.compile("(\\w+)\\s+(\\d+)");
-
     private static final Pattern CPUINFO_PATTERN = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
-
     private static final Pattern CPU_USAGE_PATTERN = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
-
     private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
-
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
     private static final Logger logger = Logger.getLogger( MessageManagerImpl.class );
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
-
-    private final Random random = new Random();
-
-    private final Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
-
-    private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
@@ -91,6 +77,7 @@ public class MessageManagerImpl implements MessageManager
     }
 
     // MessageManager methods -------------------------------------------
+
 
     public MessageQueue getMessageQueue()
     {

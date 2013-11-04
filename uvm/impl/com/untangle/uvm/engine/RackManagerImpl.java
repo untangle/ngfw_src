@@ -42,8 +42,6 @@ import com.untangle.uvm.RackView;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManagerResultReader;
-import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Node;
@@ -52,7 +50,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.Reporting;
-import com.untangle.uvm.message.MessageManager;
 
 /**
  * Implements RackManager.
@@ -127,7 +124,6 @@ public class RackManagerImpl implements RackManager
         for (Node visibleNode : visibleNodes) {
             Long nodeId = visibleNode.getNodeSettings().getId();
             Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
-            MessageManager lmm = UvmContextFactory.context().messageManager();
             nodeMetrics.put( nodeId , visibleNode.getMetrics());
 
             if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
@@ -240,10 +236,6 @@ public class RackManagerImpl implements RackManager
                     logger.warn("could not instantiate " + node, exn);
                 } 
             }
-
-            // MessageManager mm = uvmContext.messageManager();
-            // Message m = new InstallAndInstantiateComplete(packageDesc);
-            // mm.submitMessage(m);
         }
 
         logger.info("installAndInstantiate( " + name + ") return");
