@@ -13,7 +13,6 @@ import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.RackManager;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
@@ -116,7 +115,7 @@ public interface UvmContext
      *
      * @return the MessageManager
      */
-    MessageManager messageManager();
+    MetricManager metricManager();
 
     /**
      * Get the <code>LanguageManager</code> singleton.

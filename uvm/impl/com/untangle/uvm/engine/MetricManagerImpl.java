@@ -1,5 +1,5 @@
 /**
- * $Id: MessageManagerImpl.java,v 1.00 2011/08/22 13:52:25 dmorris Exp $
+ * $Id: MetricManagerImpl.java,v 1.00 2011/08/22 13:52:25 dmorris Exp $
  */
 package com.untangle.uvm.engine;
 
@@ -21,12 +21,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NetcapManager;
+import com.untangle.uvm.MetricManager;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.Node;
@@ -36,7 +35,7 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
 
-public class MessageManagerImpl implements MessageManager
+public class MetricManagerImpl implements MetricManager
 {
     private static final Pattern MEMINFO_PATTERN = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
     private static final Pattern VMSTAT_PATTERN = Pattern.compile("(\\w+)\\s+(\\d+)");
@@ -45,7 +44,7 @@ public class MessageManagerImpl implements MessageManager
     private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
-    private static final Logger logger = Logger.getLogger( MessageManagerImpl.class );
+    private static final Logger logger = Logger.getLogger( MetricManagerImpl.class );
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
@@ -62,7 +61,7 @@ public class MessageManagerImpl implements MessageManager
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
-    public MessageManagerImpl()
+    public MetricManagerImpl()
     {
     }
 
@@ -76,10 +75,7 @@ public class MessageManagerImpl implements MessageManager
         updatePulse.stop();
     }
 
-    // MessageManager methods -------------------------------------------
-
-
-    public MessageQueue getMessageQueue()
+    public org.json.JSONObject getMetricsAndStats()
     {
         List<Long> nodeIds = new LinkedList<Long>();
 
@@ -87,33 +83,21 @@ public class MessageManagerImpl implements MessageManager
             nodeIds.add( node.getNodeSettings().getId() );
         }
 
-        Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
-        return new MessageQueue(stats, systemStats);
-    }
-
-    public MessageQueue getMessageQueue( Long policyId )
-    {
-        List<Long> nodeIds = new LinkedList<Long>();
-
-        /* Add in the nodes with the null policy */
-        NodeManager nm = UvmContextImpl.getInstance().nodeManager();
-        if ( nm == null )
-            return null;
-        
-        for ( Node node : nm.nodeInstances() ) {
-            nodeIds.add( node.getNodeSettings().getId() );
+        org.json.JSONObject json = new org.json.JSONObject();
+        try {
+            json.put("metrics", getMetrics( nodeIds ));
+            json.put("systemStats", this.systemStats);
+        } catch (Exception e) {
+            logger.error( "Error generating metrics object", e );
         }
-        
-        Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
-        return new MessageQueue(stats, systemStats);
+            
+        return json;
     }
 
     public Map<String, Object> getSystemStats()
     {
         return this.systemStats;
     }
-
-    // MessageManager methods --------------------------------------------
 
     public List<NodeMetric> getMetrics( Long nodeId )
     {
@@ -128,12 +112,12 @@ public class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<Long, List<NodeMetric>> getMetrics( List<Long> nodeIds )
+    private Map<String, List<NodeMetric>> getMetrics( List<Long> nodeIds )
     {
-        Map<Long, List<NodeMetric>> stats = new HashMap<Long, List<NodeMetric>>(nodeIds.size());
+        Map<String, List<NodeMetric>> stats = new HashMap<String, List<NodeMetric>>(nodeIds.size());
 
         for (Long nodeId : nodeIds) {
-            stats.put( nodeId, getMetrics( nodeId ) );
+            stats.put( Long.toString(nodeId), getMetrics( nodeId ) );
         }
 
         return stats;

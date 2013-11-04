@@ -440,7 +440,7 @@ Ext.define("Ung.Main", {
         });
 
         var doneFn = Ext.bind( function() {
-            Ung.MessageManager.stop();
+            Ung.MetricManager.stop();
             Ext.MessageBox.hide();
             this.upgradesBeingApplied = true; //set this so we ignore exceptions from here on
             
@@ -667,7 +667,7 @@ Ext.define("Ung.Main", {
     },
     buildNodes: function() {
         //build nodes
-        Ung.MessageManager.stop();
+        Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
 
         this.destoyNodes();
@@ -694,7 +694,7 @@ Ext.define("Ung.Main", {
             this.addNode(node);
         }
         if(!main.disableThreads) {
-            Ung.MessageManager.start(true);
+            Ung.MetricManager.start(true);
         }
         if(this.target) {
             //Open target if specified

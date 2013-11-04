@@ -1732,7 +1732,7 @@ Ext.define("Ung.NodePreview", {
 Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
 
 // Message Manager object
-Ung.MessageManager = {
+Ung.MetricManager = {
     // update interval in millisecond
     updateFrequency: 3000,
     started: false,
@@ -1748,7 +1748,7 @@ Ung.MessageManager = {
     start: function(now) {
         this.stop();
         if(now) {
-            Ung.MessageManager.run();
+            Ung.MetricManager.run();
         }
         this.setFrequency(this.updateFrequency);
         this.started = true;
@@ -1758,7 +1758,7 @@ Ung.MessageManager = {
         if (this.intervalId !== null) {
             window.clearInterval(this.intervalId);
         }
-        this.intervalId = window.setInterval(function() {Ung.MessageManager.run();}, timeMs);
+        this.intervalId = window.setInterval(function() {Ung.MetricManager.run();}, timeMs);
     },
     stop: function() {
         if (this.intervalId !== null) {
@@ -1772,7 +1772,7 @@ Ung.MessageManager = {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueue(Ext.bind(function(result, exception) {
+        rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
 
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
@@ -1811,12 +1811,12 @@ Ung.MessageManager = {
             for (i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                 if (nodeCmp && nodeCmp.isRunning()) {
-                    nodeCmp.metrics = result.metrics.map[main.nodes[i].nodeId];
+                    nodeCmp.metrics = result.metrics[main.nodes[i].nodeId];
                     nodeCmp.updateMetrics();
                 }
             }
 
-        }, this), rpc.currentPolicy.policyId);
+        }, this));
     }
 };
 Ext.define("Ung.SystemStats", {
@@ -1947,12 +1947,12 @@ Ext.define("Ung.SystemStats", {
     },
     update: function(stats) {
         var toolTipEl;
-        var sessionsText = '<font color="#55BA47">' + stats.map.uvmSessions + "</font>";
+        var sessionsText = '<font color="#55BA47">' + stats.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
         
-        this.getEl().down("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
-        var oneMinuteLoadAvg = stats.map.oneMinuteLoadAvg;
-        var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.map.numCpus;
+        this.getEl().down("div[class=cpu]").dom.innerHTML=stats.oneMinuteLoadAvg;
+        var oneMinuteLoadAvg = stats.oneMinuteLoadAvg;
+        var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus;
         var loadText = '<font color="#55BA47">' + i18n._('low') + '</font>';
         if (oneMinuteLoadAvgAdjusted > 1.0) {
             loadText = '<font color="orange">' + i18n._('medium') + '</font>';
@@ -1962,15 +1962,15 @@ Ext.define("Ung.SystemStats", {
         }
         this.getEl().down("div[class=cpu]").dom.innerHTML=loadText;
 
-        var txSpeed=(stats.map.txBps<1000000) ? { value: Math.round(stats.map.txBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.map.txBps/10000)/100, unit:"MB/s"};
-        var rxSpeed=(stats.map.rxBps<1000000) ? { value: Math.round(stats.map.rxBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.map.rxBps/10000)/100, unit:"MB/s"};
+        var txSpeed=(stats.txBps<1000000) ? { value: Math.round(stats.txBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.txBps/10000)/100, unit:"MB/s"};
+        var rxSpeed=(stats.rxBps<1000000) ? { value: Math.round(stats.rxBps/10)/100, unit:"KB/s" }: {value: Math.round(stats.rxBps/10000)/100, unit:"MB/s"};
         this.getEl().down("div[class=tx-value]").dom.innerHTML=txSpeed.value+txSpeed.unit;
         this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed.value+rxSpeed.unit;
-        var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree);
-        var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
+        var memoryFree=Ung.Util.bytesToMBs(stats.MemFree);
+        var memoryUsed=Ung.Util.bytesToMBs(stats.MemTotal-stats.MemFree);
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
         this.getEl().down("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
-        var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
+        var diskPercent=Math.round((1-stats.freeDiskSpace/stats.totalDiskSpace)*20 )*5;
         this.getEl().down("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
             toolTipEl=this.networkToolTip.getEl();
@@ -1979,16 +1979,16 @@ Ext.define("Ung.SystemStats", {
         }
         if(this.sessionsToolTip.rendered) {
             toolTipEl=this.sessionsToolTip.getEl();
-            toolTipEl.down("span[name=totalSessions]").dom.innerHTML=stats.map.uvmSessions ; 
-            toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.map.uvmTCPSessions;
-            toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.map.uvmUDPSessions;
+            toolTipEl.down("span[name=totalSessions]").dom.innerHTML=stats.uvmSessions ; 
+            toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.uvmTCPSessions;
+            toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.uvmUDPSessions;
         }
         if(this.cpuToolTip.rendered) {
             toolTipEl=this.cpuToolTip.getEl();
-            toolTipEl.down("span[name=num_cpus]").dom.innerHTML=stats.map.numCpus;
-            toolTipEl.down("span[name=cpu_model]").dom.innerHTML=stats.map.cpuModel;
-            toolTipEl.down("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
-            var uptimeAux=Math.round(stats.map.uptime);
+            toolTipEl.down("span[name=num_cpus]").dom.innerHTML=stats.numCpus;
+            toolTipEl.down("span[name=cpu_model]").dom.innerHTML=stats.cpuModel;
+            toolTipEl.down("span[name=cpu_speed]").dom.innerHTML=stats.cpuSpeed;
+            var uptimeAux=Math.round(stats.uptime);
             var uptimeSeconds = uptimeAux%60;
             uptimeAux=parseInt(uptimeAux/60, 10);
             var uptimeMinutes = uptimeAux%60;
@@ -1998,30 +1998,30 @@ Ext.define("Ung.SystemStats", {
             var uptimeDays = uptimeAux;
 
             toolTipEl.down("span[name=uptime]").dom.innerHTML=(uptimeDays>0?(uptimeDays+" "+(uptimeDays==1?i18n._("Day"):i18n._("Days"))+", "):"") + ((uptimeDays>0 || uptimeHours>0)?(uptimeHours+" "+(uptimeHours==1?i18n._("Hour"):i18n._("Hours"))+", "):"") + uptimeMinutes+" "+(uptimeMinutes==1?i18n._("Minute"):i18n._("Minutes"));
-            toolTipEl.down("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
-            toolTipEl.down("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
-            toolTipEl.down("span[name=load_average_5_min]").dom.innerHTML=stats.map.fiveMinuteLoadAvg;
-            toolTipEl.down("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
+            toolTipEl.down("span[name=tasks]").dom.innerHTML=stats.numProcs;
+            toolTipEl.down("span[name=load_average_1_min]").dom.innerHTML=stats.oneMinuteLoadAvg;
+            toolTipEl.down("span[name=load_average_5_min]").dom.innerHTML=stats.fiveMinuteLoadAvg;
+            toolTipEl.down("span[name=load_average_15_min]").dom.innerHTML=stats.fifteenMinuteLoadAvg;
         }
         if(this.memoryToolTip.rendered) {
             toolTipEl=this.memoryToolTip.getEl();
             toolTipEl.down("span[name=memory_used]").dom.innerHTML=memoryUsed;
             toolTipEl.down("span[name=memory_free]").dom.innerHTML=memoryFree;
-            toolTipEl.down("span[name=memory_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.MemTotal);
-            toolTipEl.down("span[name=memory_used_percent]").dom.innerHTML=Math.round((stats.map.MemTotal-stats.map.MemFree)/stats.map.MemTotal*100);
-            toolTipEl.down("span[name=memory_free_percent]").dom.innerHTML=Math.round(stats.map.MemFree/stats.map.MemTotal*100);
+            toolTipEl.down("span[name=memory_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.MemTotal);
+            toolTipEl.down("span[name=memory_used_percent]").dom.innerHTML=Math.round((stats.MemTotal-stats.MemFree)/stats.MemTotal*100);
+            toolTipEl.down("span[name=memory_free_percent]").dom.innerHTML=Math.round(stats.MemFree/stats.MemTotal*100);
 
-            toolTipEl.down("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal);
-            toolTipEl.down("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
+            toolTipEl.down("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.SwapTotal);
+            toolTipEl.down("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.SwapTotal-stats.SwapFree);
         }
         if(this.diskToolTip.rendered) {
             toolTipEl=this.diskToolTip.getEl();
-            toolTipEl.down("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/10000000)/100;
-            toolTipEl.down("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/10000000)/100;
-            toolTipEl.down("span[name=disk_reads]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskReads);
-            toolTipEl.down("span[name=disk_reads_per_second]").dom.innerHTML=Math.round(stats.map.diskReadsPerSecond*100)/100;
-            toolTipEl.down("span[name=disk_writes]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskWrites);
-            toolTipEl.down("span[name=disk_writes_per_second]").dom.innerHTML=Math.round(stats.map.diskWritesPerSecond*100)/100;
+            toolTipEl.down("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.totalDiskSpace/10000000)/100;
+            toolTipEl.down("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.freeDiskSpace/10000000)/100;
+            toolTipEl.down("span[name=disk_reads]").dom.innerHTML=Ung.Util.bytesToMBs(stats.diskReads);
+            toolTipEl.down("span[name=disk_reads_per_second]").dom.innerHTML=Math.round(stats.diskReadsPerSecond*100)/100;
+            toolTipEl.down("span[name=disk_writes]").dom.innerHTML=Ung.Util.bytesToMBs(stats.diskWrites);
+            toolTipEl.down("span[name=disk_writes_per_second]").dom.innerHTML=Math.round(stats.diskWritesPerSecond*100)/100;
         }
     },
     reset: function() {

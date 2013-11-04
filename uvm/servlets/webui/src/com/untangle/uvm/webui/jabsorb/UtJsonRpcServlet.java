@@ -64,7 +64,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.localDirectory().getClass());
             bridge.registerCallableReference(uvm.brandingManager().getClass());
             bridge.registerCallableReference(uvm.skinManager().getClass());
-            bridge.registerCallableReference(uvm.messageManager().getClass());
+            bridge.registerCallableReference(uvm.metricManager().getClass());
             bridge.registerCallableReference(uvm.languageManager().getClass());
             bridge.registerCallableReference(uvm.certificateManager().getClass());
             bridge.registerCallableReference(uvm.rackManager().getClass());
@@ -105,7 +105,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         if ( b == null ) {
             s.setAttribute(BRIDGE_ATTRIBUTE, bridge);
         }
-        
+
         super.service(req, resp);
 
         if (null != threadRequest) {

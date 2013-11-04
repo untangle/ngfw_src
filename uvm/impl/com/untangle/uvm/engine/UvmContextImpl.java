@@ -35,6 +35,7 @@ import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.ExecManager;
+import com.untangle.uvm.MetricManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
@@ -43,7 +44,6 @@ import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -94,7 +94,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private CertificateManagerImpl certificateManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
-    private MessageManagerImpl messageManager;
+    private MetricManagerImpl metricManager;
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
     private TomcatManagerImpl tomcatManager;
@@ -150,9 +150,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.skinManager;
     }
 
-    public MessageManager messageManager()
+    public MetricManager metricManager()
     {
-        return this.messageManager;
+        return this.metricManager;
     }
 
     public LanguageManagerImpl languageManager()
@@ -538,7 +538,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put( "hostTable", this.hostTable());
             json.put( "sessionMonitor", this.sessionMonitor());
             json.put( "networkManager", this.networkManager());
-            json.put( "messageManager", this.messageManager());
+            json.put( "metricManager", this.metricManager());
             json.put( "brandingManager", this.brandingManager());
             json.put( "execManager", this.execManager());
 
@@ -642,7 +642,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.nodeManager = new NodeManagerImpl();
 
-        this.messageManager = new MessageManagerImpl();
+        this.metricManager = new MetricManagerImpl();
 
         // Retrieve the connectivity tester
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
@@ -655,7 +655,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         NetcapManagerImpl.getInstance().run( );
 
         // Start statistic gathering
-        messageManager.start();
+        metricManager.start();
 
         state = UvmState.INITIALIZED;
     }
@@ -689,9 +689,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         state = UvmState.DESTROYED;
 
         try {
-            messageManager.stop();
+            metricManager.stop();
         } catch (Exception exn) {
-            logger.error("could not stop MessageManager", exn);
+            logger.error("could not stop MetricManager", exn);
         }
         
         // stop vectoring
