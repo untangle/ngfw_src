@@ -20,7 +20,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.message.NodeStateChangeMessage;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
@@ -555,10 +554,6 @@ public abstract class NodeBase implements Node
         if ( saveNewTargetState ) {
             UvmContextFactory.context().nodeManager().saveTargetState( this, nodeState );
 
-            MessageManager mm = UvmContextFactory.context().messageManager();
-            NodeStateChangeMessage nsc = new NodeStateChangeMessage(nodeProperties, nodeSettings, nodeState);
-            mm.submitMessage(nsc);
-            
             UvmContextFactory.context().pipelineFoundry().clearCache();
         }
 
