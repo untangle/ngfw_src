@@ -9,12 +9,5 @@ import java.util.Map;
 public interface MessageManager
 {
     MessageQueue getMessageQueue();
-    MessageQueue getMessageQueue( Integer key );
-    MessageQueue getMessageQueue( Integer key, Long policyId );
-
-    List<Message> getMessages();
-    List<Message> getMessages( Integer key );
-    Integer       getMessageKey();
-    
-    void submitMessage( Message m );
+    MessageQueue getMessageQueue( Long policyId );
 }

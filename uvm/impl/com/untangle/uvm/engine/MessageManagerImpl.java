@@ -94,11 +94,6 @@ public class MessageManagerImpl implements MessageManager
 
     public MessageQueue getMessageQueue()
     {
-        return getMessageQueue(null);
-    }
-
-    public MessageQueue getMessageQueue( Integer key )
-    {
         List<Long> nodeIds = new LinkedList<Long>();
 
         for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
@@ -106,11 +101,10 @@ public class MessageManagerImpl implements MessageManager
         }
 
         Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
-        List<Message> messages = getMessages(key);
-        return new MessageQueue(messages, stats, systemStats);
+        return new MessageQueue(stats, systemStats);
     }
 
-    public MessageQueue getMessageQueue( Integer key, Long policyId )
+    public MessageQueue getMessageQueue( Long policyId )
     {
         List<Long> nodeIds = new LinkedList<Long>();
 
@@ -124,9 +118,7 @@ public class MessageManagerImpl implements MessageManager
         }
         
         Map<Long, List<NodeMetric>> stats = getMetrics( nodeIds );
-        List<Message> messages = getMessages(key);
-
-        return new MessageQueue(messages, stats, systemStats);
+        return new MessageQueue(stats, systemStats);
     }
 
     public Map<String, Object> getSystemStats()
@@ -134,56 +126,7 @@ public class MessageManagerImpl implements MessageManager
         return this.systemStats;
     }
 
-    public Integer getMessageKey()
-    {
-        int key;
-
-        synchronized (messages) {
-            do {
-                key = random.nextInt();
-            } while (messages.keySet().contains(key));
-
-            messages.put(key, new ArrayList<Message>());
-            lastMessageAccess.put(key, System.currentTimeMillis());
-        }
-
-        return key;
-    }
-
     // MessageManager methods --------------------------------------------
-
-    public void submitMessage( Message m )
-    {
-        long now = System.currentTimeMillis();
-
-        List<Integer> removals = new ArrayList<Integer>(messages.keySet().size());
-
-        logger.info("Submit Message: " + m.getMessageType() + " : " + m.toJSONString() );
-        
-        synchronized (messages) {
-            for (Integer k : messages.keySet()) {
-                Long d = lastMessageAccess.get(k);
-                if (null == d) {
-                    removals.add(k);
-                } else if (now - d > CLIENT_TIMEOUT) {
-                    removals.add(k);
-                } else {
-                    List<Message> l = messages.get(k);
-                    if (null == l) {
-                        l = new ArrayList<Message>();
-                        messages.put(k, l);
-                    }
-
-                    l.add(m);
-                }
-            }
-
-            for (Integer k : removals) {
-                messages.remove(k);
-                lastMessageAccess.remove(k);
-            }
-        }
-    }
 
     public List<NodeMetric> getMetrics( Long nodeId )
     {
@@ -194,27 +137,6 @@ public class MessageManagerImpl implements MessageManager
             logger.warn("Node not found: " + nodeId, new Exception());
             return null;
         }
-    }
-
-    public List<Message> getMessages(Integer key)
-    {
-        List<Message> l = new ArrayList<Message>();
-
-        synchronized (messages) {
-            List<Message> m = messages.get(key);
-            if (null != m) {
-                l.addAll(m);
-                m.clear();
-                lastMessageAccess.put(key, System.currentTimeMillis());
-            }
-        }
-
-        return l;
-    }
-
-    public List<Message> getMessages()
-    {
-        return getMessages(null);
     }
 
     // private methods --------------------------------------------------------

@@ -1804,7 +1804,19 @@ Ung.MessageManager = {
             }, this),"noAlert")) return;
             this.firstToleratedError=null; //reset error tolerance on a good response
             this.cycleCompleted = true;
-        }, this), rpc.messageManagerKey, rpc.currentPolicy.policyId);
+
+            // update system stats
+            main.systemStats.update(result.systemStats);
+            // upgrade node metrics
+            for (i = 0; i < main.nodes.length; i++) {
+                var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                if (nodeCmp && nodeCmp.isRunning()) {
+                    nodeCmp.metrics = result.metrics.map[main.nodes[i].nodeId];
+                    nodeCmp.updateMetrics();
+                }
+            }
+
+        }, this), rpc.currentPolicy.policyId);
     }
 };
 Ext.define("Ung.SystemStats", {
