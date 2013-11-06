@@ -99,59 +99,59 @@ class SpamTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_smtpTest(self):
-            if (not canRelay):
-                raise unittest2.SkipTest('Unable to relay through test.untangle.com')
-            nodeData['smtpConfig']['scanWanMail'] = True
-            nodeData['smtpConfig']['strength'] = 30
-            node.setSettings(nodeData)
-            checkForMailSender()
-            # Get the IP address of test.untangle.com
-            result = clientControl.runCommand("host test.untangle.com", True)
-            match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-            ip_address_testuntangle = match.group()
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
+        nodeData['smtpConfig']['scanWanMail'] = True
+        nodeData['smtpConfig']['strength'] = 30
+        node.setSettings(nodeData)
+        checkForMailSender()
+        # Get the IP address of test.untangle.com
+        result = clientControl.runCommand("host test.untangle.com", True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_testuntangle = match.group()
 
-            sendSpamMail()
-            query = None;
-            for q in node.getEventQueries():
-                if q['name'] == 'Quarantined Events': query = q;
-            assert(query != None)
-            events = uvmContext.getEvents(query['query'],defaultRackId,1)
-            # print events['list'][0]
-            # Verify Quarantined events occurred..
-            assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
-            assert(events['list'][0]['s_server_port'] == 25)
-            assert(events['list'][0]['addr'] == 'qa@example.com')
-            assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-            assert(events['list'][0]['commtouchas_score'] >= 3.0)
-            assert(events['list'][0]['hostname'] == ClientControl.hostIP)
+        sendSpamMail()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'Quarantined Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        # print events['list'][0]
+        # Verify Quarantined events occurred..
+        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
+        assert(events['list'][0]['s_server_port'] == 25)
+        assert(events['list'][0]['addr'] == 'qa@example.com')
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['commtouchas_score'] >= 3.0)
+        assert(events['list'][0]['hostname'] == ClientControl.hostIP)
             
     def test_030_adminQuarantine(self):
-            for q in node.getEventQueries():
-                if q['name'] == 'Quarantined Events': query = q;
-            # print query
-            if (query == None):
-                raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
-            # Get adminstrative quarantine list of email addresses
-            addressFound = False
-            curQuarantine = nodeSP.getQuarantineMaintenenceView()
-            curQuarantineList = curQuarantine.listInboxes()
-            for checkAddress in curQuarantineList['list']:
-                print checkAddress
-                if (checkAddress['address'] == 'qa@example.com') and (checkAddress['numMails'] > 0): addressFound = True
-            assert(addressFound)
+        for q in node.getEventQueries():
+            if q['name'] == 'Quarantined Events': query = q;
+        # print query
+        if (query == None):
+            raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
+        # Get adminstrative quarantine list of email addresses
+        addressFound = False
+        curQuarantine = nodeSP.getQuarantineMaintenenceView()
+        curQuarantineList = curQuarantine.listInboxes()
+        for checkAddress in curQuarantineList['list']:
+            print checkAddress
+            if (checkAddress['address'] == 'qa@example.com') and (checkAddress['numMails'] > 0): addressFound = True
+        assert(addressFound)
             
     def test_040_userQuarantine(self):
-            for q in node.getEventQueries():
-                if q['name'] == 'Quarantined Events': query = q;
-            # print query
-            if (query == None):
-                raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
-            # Get user quarantine list of email addresses
-            addressFound = False
-            curQuarantine = nodeSP.getQuarantineUserView()
-            redirectAddresses = curQuarantine.getMappedTo('qa@example.com')
-            # print redirectAddresses
-            assert(redirectAddresses == None)
+        for q in node.getEventQueries():
+            if q['name'] == 'Quarantined Events': query = q;
+        # print query
+        if (query == None):
+            raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
+        # Get user quarantine list of email addresses
+        addressFound = False
+        curQuarantine = nodeSP.getQuarantineUserView()
+        redirectAddresses = curQuarantine.getMappedTo('qa@example.com')
+        # print redirectAddresses
+        assert(redirectAddresses == None)
 
 
     def test_999_finalTearDown(self):
