@@ -19,6 +19,7 @@ clientControl = ClientControl()
 node = None
 nodeData = None
 canRelay = 0
+smtpServerHost = 'test.untangle.com'
 
 def sendTestmessage():
     sender = 'test@example.com'
@@ -32,7 +33,7 @@ def sendTestmessage():
     """
     
     try:
-       smtpObj = smtplib.SMTP('test.untangle.com')
+       smtpObj = smtplib.SMTP(smtpServerHost)
        smtpObj.sendmail(sender, receivers, message)         
        print "Successfully sent email"
        return 1
@@ -50,7 +51,7 @@ def checkForMailSender():
         # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail():
-    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./spam-mail/ --host=test.untangle.com --reconnect --series=30:0,150,100,50,25,0,180")
+    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -106,7 +107,7 @@ class SpamTests(unittest2.TestCase):
         node.setSettings(nodeData)
         checkForMailSender()
         # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host test.untangle.com", True)
+        result = clientControl.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -122,7 +123,10 @@ class SpamTests(unittest2.TestCase):
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['commtouchas_score'] >= 3.0)
+        if (not 'commtouchas_score' in events['list'][0]):
+            assert(events['list'][0]['spamassassin_score'] >= 3.0)
+        else:
+            assert(events['list'][0]['commtouchas_score'] >= 3.0)
         assert(events['list'][0]['hostname'] == ClientControl.hostIP)
             
     def test_030_adminQuarantine(self):
@@ -137,9 +141,9 @@ class SpamTests(unittest2.TestCase):
         curQuarantineList = curQuarantine.listInboxes()
         for checkAddress in curQuarantineList['list']:
             print checkAddress
-            if (checkAddress['address'] == 'qa@example.com') and (checkAddress['numMails'] > 0): addressFound = True
+            if (checkAddress['address'] == 'qa@example.com') and (checkAddress['totalMails'] > 0): addressFound = True
         assert(addressFound)
-            
+             
     def test_040_userQuarantine(self):
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
@@ -149,10 +153,43 @@ class SpamTests(unittest2.TestCase):
         # Get user quarantine list of email addresses
         addressFound = False
         curQuarantine = nodeSP.getQuarantineUserView()
-        redirectAddresses = curQuarantine.getMappedTo('qa@example.com')
-        # print redirectAddresses
-        assert(redirectAddresses == None)
+        curQuarantineList = curQuarantine.getInboxRecords('qa@example.com')
+        #print curQuarantineList
+        assert(len(curQuarantineList['list']) > 0)
+            
+    def test_050_userQuarantinePurge(self):
+        for q in node.getEventQueries():
+            if q['name'] == 'Quarantined Events': query = q;
+        # print query
+        if (query == None):
+            raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
+        # Get user quarantine list of email addresses
+        addressFound = False
+        curQuarantine = nodeSP.getQuarantineUserView()
+        
+        curQuarantineList = curQuarantine.getInboxRecords('qa@example.com')
+        initialLen = len(curQuarantineList['list'])
+        mailId = curQuarantineList['list'][0]['mailID'];
+        print mailId
+        curQuarantine.purge('qa@example.com', [mailId]);
+        
+        curQuarantineListAfter = curQuarantine.getInboxRecords('qa@example.com')
+        assert(len(curQuarantineListAfter['list']) == initialLen - 1);
 
+    def test_060_adminQuarantineDeleteAccount(self):
+        for q in node.getEventQueries():
+            if q['name'] == 'Quarantined Events': query = q;
+        # print query
+        if (query == None):
+            raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
+        # Get adminstrative quarantine list of email addresses
+        addressFound = False
+        curQuarantine = nodeSP.getQuarantineMaintenenceView()
+        curQuarantine.deleteInbox('qa@example.com')
+        curQuarantineList = curQuarantine.listInboxes()
+        for checkAddress in curQuarantineList['list']:
+            if (checkAddress['address'] == 'qa@example.com') and (checkAddress['totalMails'] > 0): addressFound = True
+        assert(not addressFound)
 
     def test_999_finalTearDown(self):
         global node
