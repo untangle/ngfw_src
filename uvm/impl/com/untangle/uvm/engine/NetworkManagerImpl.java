@@ -513,7 +513,9 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                interfaceSettings.setInterfaceId( nextFreeInterfaceId( netSettings, 1 ));
+                int interfaceId = nextFreeInterfaceId( netSettings, 1 );
+                interfaceSettings.setInterfaceId( interfaceId );
+                interfaceSettings.setName( "Interface " + interfaceId );
                 interfaceSettings.setPhysicalDev( deviceName );
                 interfaceSettings.setSystemDev( deviceName );
                 interfaceSettings.setSymbolicDev( deviceName );
