@@ -74,6 +74,9 @@ public class SystemManagerImpl implements SystemManager
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
 
+        if (settingsFile.lastModified() > CRON_FILE.lastModified())
+            writeCronFile();
+        
         if (settings.getSnmpSettings().isEnabled() ) {
             restartDaemon();
         }
@@ -149,16 +152,8 @@ public class SystemManagerImpl implements SystemManager
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
-        this.reconfigure();
-    }
-
-    private void reconfigure() 
-    {
-        logger.info("reconfigure()");
-
-        /* sync SnmpSettings to disk */
+        /* sync settings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
-
         writeCronFile();
     }
 

@@ -277,9 +277,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
-        // intialize default settings
+        /* intialize schema (if necessary) */
         this.createSchemas();
 
+        /* sync settings to disk if necessary */
+        File settingsFile = new File( settingsFileName );
+        if (settingsFile.lastModified() > CRON_FILE.lastModified())
+            writeCronFile();
+        
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
 

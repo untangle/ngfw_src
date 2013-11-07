@@ -43,11 +43,11 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC };
 
     private SmtpNodeSettings settings;
-    private static Quarantine s_quarantine;
 
-    private static SafelistManager s_safelistMngr;
-    private static boolean s_deployedWebApp = false;
-    private static boolean s_unDeployedWebApp = false;
+    private static Quarantine quarantine;
+    private static SafelistManager safelistMangr;
+
+    private static boolean deployedWebApp = false;
 
     // constructors -----------------------------------------------------------
 
@@ -62,35 +62,35 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     private static synchronized void createSingletonsIfRequired()
     {
-        if (s_quarantine == null) {
-            s_quarantine = new Quarantine();
+        if ( quarantine == null) {
+            quarantine = new Quarantine();
         }
-        if (s_safelistMngr == null) {
-            s_safelistMngr = new SafelistManager(s_quarantine);
+        if (safelistMangr == null) {
+            safelistMangr = new SafelistManager( quarantine );
         }
     }
 
-    private static synchronized void deployWebAppIfRequired(Logger logger)
+    private static synchronized void deployWebAppIfRequired( Logger logger )
     {
-        if (!s_deployedWebApp) {
+        if ( ! deployedWebApp ) {
             if (null != UvmContextFactory.context().tomcatManager().loadServlet("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             } else {
                 logger.error("Unable to deploy Quarantine web app");
             }
-            s_deployedWebApp = true;
+            deployedWebApp = true;
         }
     }
 
-    private static synchronized void unDeployWebAppIfRequired(Logger logger)
+    private static synchronized void unDeployWebAppIfRequired( Logger logger )
     {
-        if (!s_unDeployedWebApp) {
+        if ( deployedWebApp ) {
             if (UvmContextFactory.context().tomcatManager().unloadServlet("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             } else {
                 logger.error("Unable to unload Quarantine web app");
             }
-            s_unDeployedWebApp = true;
+            deployedWebApp = false;
         }
     }
 
@@ -142,8 +142,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         this.settings = newSettings;
 
         reconfigure();
-        s_quarantine.setSettings(this, settings.getQuarantineSettings());
-        s_safelistMngr.setSettings(this, settings);
+        this.quarantine.setSettings(this, settings.getQuarantineSettings());
+        this.safelistMangr.setSettings(this, settings);
     }
 
     public void setSmtpNodeSettingsWithoutSafelists(final SmtpNodeSettings settings)
@@ -160,28 +160,28 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public QuarantineUserView getQuarantineUserView()
     {
-        return s_quarantine;
+        return this.quarantine;
     }
 
     public QuarantineMaintenenceView getQuarantineMaintenenceView()
     {
-        return s_quarantine;
+        return this.quarantine;
     }
 
     public SafelistManipulation getSafelistManipulation()
     {
-        return s_safelistMngr;
+        return this.safelistMangr;
     }
 
     public SafelistAdminView getSafelistAdminView()
     {
-        return s_safelistMngr;
+        return this.safelistMangr;
     }
 
     public void sendQuarantineDigests()
     {
-        if ( this.s_quarantine != null )
-            this.s_quarantine.sendQuarantineDigests();
+        if ( this.quarantine != null )
+            this.quarantine.sendQuarantineDigests();
     }
 
     public long getMinAllocatedStoreSize(boolean inGB)
@@ -203,7 +203,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public String createAuthToken(String account)
     {
-        return s_quarantine.createAuthToken(account);
+        return this.quarantine.createAuthToken(account);
     }
 
     // MailExport methods -----------------------------------------------------
@@ -215,12 +215,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public QuarantineNodeView getQuarantineNodeView()
     {
-        return s_quarantine;
+        return this.quarantine;
     }
 
     public SafelistNodeView getSafelistNodeView()
     {
-        return s_safelistMngr;
+        return this.safelistMangr;
     }
 
     private void reconfigure()
@@ -234,16 +234,18 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     protected void preDestroy()
     {
         super.preDestroy();
+
         logger.debug("preDestroy()");
+
         unDeployWebAppIfRequired(logger);
-        s_quarantine.close();
+
+        this.quarantine.close();
     }
 
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID
-                + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-smtp/settings_" + nodeID + ".js";
 
         SmtpNodeSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile);
@@ -266,8 +268,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
                 logger.info("Loaded settings from " + settingsFile);
 
                 settings = readSettings;
-                s_quarantine.setSettings(this, settings.getQuarantineSettings());
-                s_safelistMngr.setSettings(this, settings);
+                this.quarantine.setSettings(this, settings.getQuarantineSettings());
+                this.safelistMangr.setSettings(this, settings);
                 reconfigure();
             }
         } catch (Exception exn) {
@@ -278,13 +280,13 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         // or initialized to defaults so now we do all the other setup
         try {
             // create the safelist that applies to all
-            s_safelistMngr.createSafelist( GLOBAL_SAFELIST_NAME );
+            this.safelistMangr.createSafelist( GLOBAL_SAFELIST_NAME );
         } catch (Exception exn) {
             logger.error("Could not create global safelist", exn);
         }
 
         deployWebAppIfRequired(logger);
-        s_quarantine.open();
+        this.quarantine.open();
     }
 
     // NodeBase methods ---------------------------------------------------
