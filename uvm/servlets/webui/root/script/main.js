@@ -669,11 +669,12 @@ Ext.define("Ung.Main", {
         //build nodes
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
-
+        var nodePreviews = Ext.clone(main.nodePreviews);
         this.destoyNodes();
         this.nodes=[];
         var i;
         var node;
+        
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
@@ -691,7 +692,7 @@ Ext.define("Ung.Main", {
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
-            this.addNode(node);
+            this.addNode(node, nodePreviews[node.name]);
         }
         if(!main.disableThreads) {
             Ung.MetricManager.start(true);
@@ -824,19 +825,8 @@ Ext.define("Ung.Main", {
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
-            main.removeNodePreview(nodeProperties.name);
             if(Ung.Util.handleException(exception)) return;
             main.loadRackView();
-            //FIXME: move node load animation on node preview, or find a way to trigger it after loadRackView
-            /*
-            var node = result;
-            var nodeSettings = node.getNodeSettings();
-            var nodeMetrics = node.getMetrics();
-            var runState = node.getRunState();
-            var newNode=main.createNode(nodeProperties, nodeSettings, nodeMetrics, rpc.rackView.licenseMap.map[nodeProperties.name], runState);
-            main.nodes.push(newNode);
-            main.addNode(newNode, true);
-            */
         }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
