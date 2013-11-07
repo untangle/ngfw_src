@@ -3,9 +3,12 @@
  */
 package com.untangle.uvm.engine;
 
-import java.net.InetAddress;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -30,6 +33,9 @@ public class SystemManagerImpl implements SystemManager
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
 
+    private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
+    private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
+    
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private SystemSettings settings;
@@ -72,12 +78,6 @@ public class SystemManagerImpl implements SystemManager
             restartDaemon();
         }
 
-        // FIXME!!
-        // this.autoUpgradeCronJob = UvmContextFactory.context().makeCronJob(this.settings.getAutoUpgradeDays(),
-        //                                                                   this.settings.getAutoUpgradeHour(),
-        //                                                                   this.settings.getAutoUpgradeMinute(),
-        //                                                                   updateTask);
-        
         logger.info("Initialized SystemManager");
     }
 
@@ -158,13 +158,8 @@ public class SystemManagerImpl implements SystemManager
 
         /* sync SnmpSettings to disk */
         syncSnmpSettings(this.settings.getSnmpSettings());
-    
-        // FIXME!!!
-        // if (this.autoUpgradeCronJob != null)
-        //     this.autoUpgradeCronJob.reschedule(this.settings.getAutoUpgradeDays(),
-        //                                        this.settings.getAutoUpgradeHour(),
-        //                                        this.settings.getAutoUpgradeMinute());
 
+        writeCronFile();
     }
 
     private SystemSettings defaultSettings()
@@ -339,5 +334,27 @@ public class SystemManagerImpl implements SystemManager
     private String qqOrNullToDefault(String str, String def)
     {
         return isNotNullOrBlank(str)? str:def;
+    }
+
+    private void writeCronFile()
+    {
+        // write the cron file for nightly runs
+        // FIXME dayfield
+        String conf = settings.getAutoUpgradeMinute() + " " + settings.getAutoUpgradeHour() + " " + CRON_STRING;
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(conf, 0, conf.length());
+            out.write("\n");
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }
+        try {
+            out.close();
+        } catch (IOException ex) {
+            logger.error("Unable to close file", ex);
+            return;
+        }
     }
 }
