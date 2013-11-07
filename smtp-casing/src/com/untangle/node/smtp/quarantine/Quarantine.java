@@ -1,9 +1,12 @@
 /**
- * $Id: Quarantine.java 35246 2013-07-05 12:12:22Z dcibu $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +29,6 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.smtp.quarantine.store.InboxSummary;
 import com.untangle.node.smtp.quarantine.store.QuarantineStore;
 import com.untangle.node.util.Pair;
-import com.untangle.uvm.CronJob;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.util.I18nUtil;
@@ -36,31 +38,30 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView, QuarantineUserView
 {
-
     private final Logger logger = Logger.getLogger(Quarantine.class);
+
+    private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/smtp-send-quarantine-digests.py >/dev/null 2>&1";
+    private static final File CRON_FILE = new File("/etc/cron.d/untangle-smtp-quarantine-digests");
     
     private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
     private static final int DIGEST_SEND_DELAY_MILLISEC = 500;
 
-    private final Logger m_logger = Logger.getLogger(Quarantine.class);
-    private QuarantineStore m_store;
-    private DigestGenerator m_digestGenerator;
-    private AuthTokenManager m_atm;
-    private QuarantineSettings m_settings = new QuarantineSettings();
-    private CronJob m_cronJob;
-    private GlobEmailAddressList m_quarantineForList;
-    private GlobEmailAddressMapper m_addressAliases;
-    private SmtpNodeImpl m_impl;
-    private boolean m_opened = false;
+    private QuarantineStore store;
+    private DigestGenerator digestGenerator;
+    private AuthTokenManager atm;
+    private QuarantineSettings settings = new QuarantineSettings();
+    private GlobEmailAddressList quarantineForList;
+    private GlobEmailAddressMapper addressAliases;
+    private SmtpNodeImpl impl;
+    private boolean opened = false;
 
-    public Quarantine() {
-        m_store = new QuarantineStore(new File(new File(System.getProperty("uvm.conf.dir")), "quarantine"));
-        m_digestGenerator = new DigestGenerator();
-        m_atm = new AuthTokenManager();
-
-        m_quarantineForList = new GlobEmailAddressList(java.util.Arrays.asList(new String[] { "*" }));
-
-        m_addressAliases = new GlobEmailAddressMapper(new ArrayList<Pair<String, String>>());
+    public Quarantine()
+    {
+        this.store = new QuarantineStore(new File(new File(System.getProperty("uvm.conf.dir")), "quarantine"));
+        this.digestGenerator = new DigestGenerator();
+        this.atm = new AuthTokenManager();
+        this.quarantineForList = new GlobEmailAddressList(java.util.Arrays.asList(new String[] { "*" }));
+        this.addressAliases = new GlobEmailAddressMapper(new ArrayList<Pair<String, String>>());
     }
 
     /**
@@ -68,10 +69,10 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
      */
     public void setSettings(SmtpNodeImpl impl, QuarantineSettings settings)
     {
-        m_impl = impl;
-        m_settings = settings;
+        this.impl = impl;
+        this.settings = settings;
 
-        m_atm.setKey(m_settings.grabBinaryKey());
+        this.atm.setKey(this.settings.grabBinaryKey());
 
         // Handle nulls (defaults)
         if (settings.getAllowedAddressPatterns() == null || settings.getAllowedAddressPatterns().size() == 0) {
@@ -82,19 +83,32 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         }
 
         // Update address mapping
-        m_addressAliases = new GlobEmailAddressMapper(fromEmailAddressRuleListPair(settings.getAddressRemaps()));
+        this.addressAliases = new GlobEmailAddressMapper(fromEmailAddressRuleListPair(settings.getAddressRemaps()));
 
         // Update the quarantine-for stuff
-        m_quarantineForList = new GlobEmailAddressList( fromEmailAddressRule(settings.getAllowedAddressPatterns()));
+        this.quarantineForList = new GlobEmailAddressList( fromEmailAddressRule(settings.getAllowedAddressPatterns()));
 
-        if (null != m_cronJob) {
-            int h = m_settings.getDigestHourOfDay();
-            int m = m_settings.getDigestMinuteOfDay();
-            try {
-                m_cronJob.reschedule(DayOfWeekMatcher.getAnyMatcher(), h, m);
-            } catch (Exception e) {
-                logger.warn( "Exception rescheduling cronjob.", e );
-            }
+        writeCronFile();
+    }
+
+    private void writeCronFile()
+    {
+        // write the cron file for nightly runs
+        String conf = this.settings.getDigestMinuteOfDay() + " " + this.settings.getDigestHourOfDay() + " " + CRON_STRING;
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(conf, 0, conf.length());
+            out.write("\n");
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }
+        try {
+            out.close();
+        } catch (IOException ex) {
+            logger.error("Unable to close file", ex);
+            return;
         }
     }
 
@@ -103,29 +117,6 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
      */
     public void open()
     {
-        if (!m_opened) {
-            synchronized (this) {
-                if (!m_opened) {
-                    m_opened = true;
-                    int hour = 6;
-                    int minute = 0;
-                    if (m_settings != null) {
-                        hour = m_settings.getDigestHourOfDay();
-                        minute = m_settings.getDigestMinuteOfDay();
-                    }
-
-                    Runnable r = new Runnable()
-                    {
-                        public void run()
-                        {
-                            cronCallback();
-                        }
-                    };
-                    m_cronJob = UvmContextFactory.context().makeCronJob(DayOfWeekMatcher.getAnyMatcher(), hour, minute,
-                            r);
-                }
-            }
-        }
     }
 
     /**
@@ -133,27 +124,26 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
      */
     public void close()
     {
-        m_store.close();
-        if (null != m_cronJob) {
-            m_cronJob.cancel();
-        }
+        this.store.close();
     }
 
     /**
      * Callback from the Chron thread that we should send digests and purge the store.
      */
-    void cronCallback()
+    public void sendQuarantineDigests()
     {
-        m_logger.info("Quarantine management cron running...");
+        logger.info("Quarantine Digest Cron running...");
         pruneStoreNow();
 
-        if (m_settings.getSendDailyDigests())
+        if (this.settings.getSendDailyDigests()) {
+            logger.info("Sending Quarantine Digests...");
             sendDigestsNow();
+        }
     }
 
     public void pruneStoreNow()
     {
-        m_store.prune(m_settings.getMaxMailIntern(), m_settings.getMaxIdleInbox());
+        this.store.prune(this.settings.getMaxMailIntern(), this.settings.getMaxIdleInbox());
     }
 
     /**
@@ -161,24 +151,24 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
      */
     public void sendDigestsNow()
     {
-        List<InboxSummary> allInboxes = m_store.listInboxes();
+        List<InboxSummary> allInboxes = this.store.listInboxes();
         long cutoff = System.currentTimeMillis() - ONE_DAY;
 
         for (InboxSummary inbox : allInboxes) {
 
-            Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.getIndex(inbox.getAddress());
+            Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.getIndex(inbox.getAddress());
 
             if (result.a == QuarantineStore.GenericStatus.SUCCESS) {
                 if (result.b.size() > 0) {
                     if (result.b.getNewestMailTimestamp() < cutoff) {
-                        m_logger.debug("No need to send digest to \"" + inbox.getAddress()
+                        logger.debug("No need to send digest to \"" + inbox.getAddress()
                                 + "\", no new mails in last 24 hours (" + result.b.getNewestMailTimestamp()
                                 + " millis)");
                     } else {
                         if (sendDigestEmail(inbox.getAddress(), result.b)) {
-                            m_logger.info("Sent digest to \"" + inbox.getAddress() + "\"");
+                            logger.info("Sent digest to \"" + inbox.getAddress() + "\"");
                         } else {
-                            m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+                            logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
                         }
 
                         try {
@@ -187,7 +177,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
                         }
                     }
                 } else {
-                    m_logger.debug("No need to send digest to \"" + inbox.getAddress() + "\", no mails");
+                    logger.debug("No need to send digest to \"" + inbox.getAddress() + "\", no mails");
                 }
             }
         }
@@ -198,18 +188,18 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients)
     {
         // Check for out-of-space condition
-        if (m_store.getTotalSize() > m_settings.getMaxQuarantineTotalSz()) {
+        if (this.store.getTotalSize() > this.settings.getMaxQuarantineTotalSz()) {
             // TODO bscott Shouldn't we at least once take a SWAG at
             // pruning the store? It should reduce the size by ~1/14th
             // in a default configuration.
-            m_logger.warn("Quarantine size of " + m_store.getTotalSize() + " exceeds max of "
-                    + m_settings.getMaxQuarantineTotalSz());
+            logger.warn("Quarantine size of " + this.store.getTotalSize() + " exceeds max of "
+                    + this.settings.getMaxQuarantineTotalSz());
             return false;
         }
 
         // If we do not have an internal IP, then don't even bother quarantining
         if (UvmContextFactory.context().systemManager().getPublicUrl() == null) {
-            m_logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
+            logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
             return false;
         }
 
@@ -218,8 +208,8 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
             if (eAddr == null || MIMEUtil.isNullAddress(eAddr)) {
                 continue;
             }
-            if (!m_quarantineForList.contains(eAddr.getAddress())) {
-                m_logger.debug("Not permitting mail to be quarantined as address \"" + eAddr.getAddress()
+            if (!this.quarantineForList.contains(eAddr.getAddress())) {
+                logger.debug("Not permitting mail to be quarantined as address \"" + eAddr.getAddress()
                         + "\" does not conform to patterns of addresses " + "we will quarantine-for");
                 return false;
             }
@@ -244,10 +234,10 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
             }
 
             String recipientAddress = eAddr.getAddress().toLowerCase();
-            String inboxAddress = m_addressAliases.getAddressMapping(recipientAddress);
+            String inboxAddress = this.addressAliases.getAddressMapping(recipientAddress);
 
             if (inboxAddress != null) {
-                m_logger.debug("Recipient \"" + recipientAddress + "\" remaps to \"" + inboxAddress + "\"");
+                logger.debug("Recipient \"" + recipientAddress + "\" remaps to \"" + inboxAddress + "\"");
             } else {
                 inboxAddress = recipientAddress;
             }
@@ -272,7 +262,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
             String[] recipientsForThisInbox = entry.getValue().toArray(new String[entry.getValue().size()]);
 
             // Perform the insert
-            Pair<QuarantineStore.AdditionStatus, String> result = m_store.quarantineMail(file, inboxAddress,
+            Pair<QuarantineStore.AdditionStatus, String> result = this.store.quarantineMail(file, inboxAddress,
                     recipientsForThisInbox, summary, false);
             if (result.a == QuarantineStore.AdditionStatus.FAILURE) {
                 allSuccess = false;
@@ -284,9 +274,9 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
 
         // Rollback
         if (!allSuccess) {
-            m_logger.debug("Quarantine for multiple recipients had failure.  Rollback any success");
+            logger.debug("Quarantine for multiple recipients had failure.  Rollback any success");
             for (Pair<String, String> addition : outcomeList) {
-                m_store.purge(addition.a, addition.b);
+                this.store.purge(addition.a, addition.b);
             }
             return false;
         }
@@ -299,7 +289,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     public InboxIndex purge(String account, String... doomedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException
     {
-        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.purge(account, doomedMails);
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.purge(account, doomedMails);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
     }
@@ -308,7 +298,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     public InboxIndex rescue(String account, String... rescuedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException
     {
-        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.rescue(account, rescuedMails);
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.rescue(account, rescuedMails);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
     }
@@ -339,7 +329,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
 
     private InboxIndex getInboxIndex(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
-        Pair<QuarantineStore.GenericStatus, InboxIndex> result = m_store.getIndex(account);
+        Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.getIndex(account);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
     }
@@ -355,25 +345,25 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     @Override
     public long getInboxesTotalSize() throws QuarantineUserActionFailedException
     {
-        return m_store.getTotalSize();
+        return this.store.getTotalSize();
     }
 
     @Override
     public String getFormattedInboxesTotalSize(boolean inMB)
     {
-        return m_store.getFormattedTotalSize(inMB);
+        return this.store.getFormattedTotalSize(inMB);
     }
 
     @Override
     public List<InboxSummary> listInboxes() throws QuarantineUserActionFailedException
     {
-        return m_store.listInboxes();
+        return this.store.listInboxes();
     }
 
     @Override
     public void deleteInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
-        switch (m_store.deleteInbox(account)) {
+        switch (this.store.deleteInbox(account)) {
             case NO_SUCH_INBOX:
                 // Just supress this one for now
             case SUCCESS:
@@ -396,7 +386,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     @Override
     public String getAccountFromToken(String token) throws BadTokenException
     {
-        Pair<AuthTokenManager.DecryptOutcome, String> p = m_atm.decryptAuthToken(token);
+        Pair<AuthTokenManager.DecryptOutcome, String> p = this.atm.decryptAuthToken(token);
 
         if (p.a != AuthTokenManager.DecryptOutcome.OK) {
             throw new BadTokenException(token);
@@ -408,7 +398,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     @Override
     public String createAuthToken(String account)
     {
-        return m_atm.createAuthToken(account.trim());
+        return this.atm.createAuthToken(account.trim());
     }
 
     @Override
@@ -417,7 +407,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         boolean ret = sendDigestEmail(account, getInboxIndex(account));
 
         if (!ret) {
-            m_logger.warn("Unable to send digest email to account \"" + account + "\"");
+            logger.warn("Unable to send digest email to account \"" + account + "\"");
         }
 
         return true;
@@ -428,25 +418,25 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
             InboxAlreadyRemappedException
     {
         if ((from == null) || (to == null)) {
-            m_logger.warn("empty from or to string.");
+            logger.warn("empty from or to string.");
             return;
         }
 
         if ((from.length() == 0) || (to.length() == 0)) {
-            m_logger.warn("empty from or to string.");
+            logger.warn("empty from or to string.");
             return;
         }
 
         GlobEmailAddressMapper currentMapper = null;
 
         /* Remove the current map if one exists. */
-        String existingMapping = m_addressAliases.getAddressMapping(from);
+        String existingMapping = this.addressAliases.getAddressMapping(from);
         if (existingMapping != null) {
-            currentMapper = m_addressAliases.removeMapping(new Pair<String, String>(from, existingMapping));
+            currentMapper = this.addressAliases.removeMapping(new Pair<String, String>(from, existingMapping));
         }
 
         if (currentMapper == null)
-            currentMapper = m_addressAliases;
+            currentMapper = this.addressAliases;
 
         // Create a new List
         List<Pair<String, String>> mappings = currentMapper.getRawMappings();
@@ -455,26 +445,26 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         // Convert list to form which makes settings happy
         List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        SmtpNodeSettings settings = m_impl.getSmtpNodeSettings();
+        SmtpNodeSettings settings = this.impl.getSmtpNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        m_impl.setSmtpNodeSettings(settings);
+        this.impl.setSmtpNodeSettings(settings);
     }
 
     @Override
     public boolean unmapSelfService(String inboxName, String aliasToRemove) throws QuarantineUserActionFailedException
     {
         if ((inboxName == null) || (aliasToRemove == null)) {
-            m_logger.warn("empty from or to string.");
+            logger.warn("empty from or to string.");
             return false;
         }
 
         if ((inboxName.length() == 0) || (aliasToRemove.length() == 0)) {
-            m_logger.warn("empty from or to string.");
+            logger.warn("empty from or to string.");
             return false;
         }
 
-        GlobEmailAddressMapper newMapper = m_addressAliases.removeMapping(new Pair<String, String>(aliasToRemove,
+        GlobEmailAddressMapper newMapper = this.addressAliases.removeMapping(new Pair<String, String>(aliasToRemove,
                 inboxName));
 
         if (newMapper == null) {
@@ -486,10 +476,10 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         // Convert list to form which makes settings happy
         List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        SmtpNodeSettings settings = m_impl.getSmtpNodeSettings();
+        SmtpNodeSettings settings = this.impl.getSmtpNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        m_impl.setSmtpNodeSettings(settings);
+        this.impl.setSmtpNodeSettings(settings);
 
         return true;
     }
@@ -497,7 +487,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     @Override
     public String getMappedTo(String account) throws QuarantineUserActionFailedException
     {
-        return m_addressAliases.getAddressMapping(account);
+        return this.addressAliases.getAddressMapping(account);
 
     }
 
@@ -528,7 +518,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     public String[] getMappedFrom(String account) throws QuarantineUserActionFailedException
     {
 
-        return m_addressAliases.getReverseMapping(account);
+        return this.addressAliases.getReverseMapping(account);
     }
 
     /**
@@ -542,13 +532,13 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         String internalHost = UvmContextFactory.context().systemManager().getPublicUrl();
 
         if (internalHost == null) {
-            m_logger.warn("Unable to determine internal interface");
+            logger.warn("Unable to determine internal interface");
             return false;
         }
         String[] recipients = { account };
         String subject = i18nUtil.tr("Quarantine Digest");
 
-        String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm, i18nUtil);
+        String bodyHtml = this.digestGenerator.generateMsgBody(internalHost, account, this.atm, i18nUtil);
 
         // Attempt the send
         boolean ret = UvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);

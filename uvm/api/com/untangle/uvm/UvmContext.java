@@ -269,11 +269,6 @@ public interface UvmContext
     Thread newThread(Runnable runnable, String name);
 
     /**
-     * Cronjab utilities
-     */
-    CronJob makeCronJob(DayOfWeekMatcher days, int hour, int minute, Runnable r);
-
-    /**
      * The pipeline compiler.
      * Used by the apps.
      *

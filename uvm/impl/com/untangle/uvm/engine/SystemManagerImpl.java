@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.SystemSettings;

@@ -1,5 +1,5 @@
 /**
- * $Id: SmtpNodeImpl.java 35194 2013-07-01 18:58:44Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp;
 
@@ -30,6 +30,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 {
     public static final String PROTOCOL_NAME = "smtp";
+    private static final long ONE_GB = (1024L * 1024L * 1024L);
 
     // the safelist that applies to all users
     public static final String GLOBAL_SAFELIST_NAME = "GLOBAL";
@@ -37,15 +38,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final Logger logger = Logger.getLogger(SmtpNodeImpl.class);
 
-    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec(PROTOCOL_NAME, this, SmtpCasingFactory.factory(),
-            Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
+    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec(PROTOCOL_NAME, this, SmtpCasingFactory.factory(), Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC };
 
     private SmtpNodeSettings settings;
-    private static Quarantine s_quarantine;// This will never be null for
-                                           // *instances* of SmtpNodeImpl
-    private static final long ONE_GB = (1024L * 1024L * 1024L);
+    private static Quarantine s_quarantine;
 
     private static SafelistManager s_safelistMngr;
     private static boolean s_deployedWebApp = false;
@@ -53,8 +51,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     // constructors -----------------------------------------------------------
 
-    public SmtpNodeImpl(com.untangle.uvm.node.NodeSettings nodeSettings,
-            com.untangle.uvm.node.NodeProperties nodeProperties) {
+    public SmtpNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    {
         super(nodeSettings, nodeProperties);
 
         createSingletonsIfRequired();
@@ -180,6 +178,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         return s_safelistMngr;
     }
 
+    public void sendQuarantineDigests()
+    {
+        if ( this.s_quarantine != null )
+            this.s_quarantine.sendQuarantineDigests();
+    }
+
     public long getMinAllocatedStoreSize(boolean inGB)
     {
         if (false == inGB) {
@@ -274,7 +278,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         // or initialized to defaults so now we do all the other setup
         try {
             // create the safelist that applies to all
-            s_safelistMngr.createSafelist("GLOBAL");
+            s_safelistMngr.createSafelist( GLOBAL_SAFELIST_NAME );
         } catch (Exception exn) {
             logger.error("Could not create global safelist", exn);
         }

@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 
 import org.jabsorb.JSONSerializer;
 
-import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.TomcatManager;
@@ -90,7 +89,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private PipelineFoundryImpl pipelineFoundry;
     private RackManagerImpl rackManager;
     private NodeManagerImpl nodeManager;
-    private CronManager cronManager;
     private CertificateManagerImpl certificateManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -441,11 +439,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             
     }
 
-    public CronJob makeCronJob( DayOfWeekMatcher days, int hour, int minute, Runnable r )
-    {
-        return cronManager.makeCronJob( days, hour, minute, r );
-    }
-
     public Map<String, String> getTranslations( String module )
     {
         return languageManager.getTranslations(module);
@@ -612,8 +605,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.oemManager = new OemManagerImpl();
 
-        this.cronManager = new CronManager();
-
         this.loggingManager = new LoggingManagerImpl();
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
@@ -712,12 +703,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             tomcatManager.stopTomcat();
         } catch (Exception exn) {
             logger.warn("could not stop tomcat", exn);
-        }
-
-        try {
-            cronManager.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not stop CronManager", exn);
         }
 
         logger.info("UvmContext destroyed");
