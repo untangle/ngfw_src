@@ -47,11 +47,11 @@ def checkForMailSender():
         # print "file not found"
         results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
         # print "Results from getting mailpkg.tar <%s>" % results
-        results = clientControl.runCommand("tar -xvf mailpkg.tar")
+        results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
         # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail():
-    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
+    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180 >/dev/null 2>&1")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -111,6 +111,7 @@ class SpamTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
+        print "XXXXX"
         sendSpamMail()
         query = None;
         for q in node.getEventQueries():
@@ -127,8 +128,7 @@ class SpamTests(unittest2.TestCase):
             assert(events['list'][0]['spamassassin_score'] >= 3.0)
         else:
             assert(events['list'][0]['commtouchas_score'] >= 3.0)
-        print "hostname in event log <" + events['list'][0]['hostname'] + ">"
-        assert(events['list'][0]['hostname'] == ClientControl.hostIP)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
             
     def test_030_adminQuarantine(self):
         for q in node.getEventQueries():
