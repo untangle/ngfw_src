@@ -4603,9 +4603,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                             style : "margin-left: 10px",
                             width : 500,
                             value : "http://download.untangle.com/data.php",
-                            store : [['http://download.untangle.com/data.php','http://download.untangle.com/data.php'],
-                                     ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
-                                     ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip']]
+                            store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
+                                     ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
+                                     ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']]
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
