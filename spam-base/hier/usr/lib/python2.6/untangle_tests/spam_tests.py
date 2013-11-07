@@ -111,7 +111,6 @@ class SpamTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
-        print "XXXXX"
         sendSpamMail()
         query = None;
         for q in node.getEventQueries():
