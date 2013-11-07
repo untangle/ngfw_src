@@ -127,6 +127,7 @@ class SpamTests(unittest2.TestCase):
             assert(events['list'][0]['spamassassin_score'] >= 3.0)
         else:
             assert(events['list'][0]['commtouchas_score'] >= 3.0)
+        print "hostname in event log <" + events['list'][0]['hostname'] + ">"
         assert(events['list'][0]['hostname'] == ClientControl.hostIP)
             
     def test_030_adminQuarantine(self):
