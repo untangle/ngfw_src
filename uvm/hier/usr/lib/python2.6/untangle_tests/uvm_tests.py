@@ -67,7 +67,7 @@ class UvmTests(unittest2.TestCase):
 
             webUiFile = open( line )
             assert( webUiFile )
-            pat  = re.compile(r'''^.*helpSource:\s*['"]*([a-zA-Z_]*)['"\s,]*$''')
+            pat  = re.compile(r'''^.*helpSource:\s*['"]+([a-zA-Z_]*)['"]+[\s,]*$''')
             pat2 = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
             for line in webUiFile.readlines():
                 match = pat.match(line)
