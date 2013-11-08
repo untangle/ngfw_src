@@ -26,4 +26,9 @@ public interface RackManager
      *     be installed.
      */
     void instantiate(String name, Long policyId) throws Exception;
+    
+    /**
+     * Returns true if the server can resolve and reach updates.untangle.com
+     */
+    boolean isUpgradeServerAvailable();
 }
