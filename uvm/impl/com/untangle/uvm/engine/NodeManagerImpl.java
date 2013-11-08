@@ -496,12 +496,13 @@ public class NodeManagerImpl implements NodeManager
                     {
                         public void run()
                         {
-                            logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                             NodeBase node = null;
-                                try {
+                            try {
+                                logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                                 node = (NodeBase) NodeBase.loadClass(nodeProps, nodeSettings, false);
-                                loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ")");
+                                loadedNodesMap.put( nodeSettings.getId(), node );
+                                logger.info("Added     : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + name, exn);
                             } catch (LinkageError err) {
