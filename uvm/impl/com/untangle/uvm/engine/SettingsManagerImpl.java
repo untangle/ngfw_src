@@ -55,6 +55,11 @@ public class SettingsManagerImpl implements SettingsManager
     private JSONSerializer serializer = null;
 
     /**
+     * This is the locks for the various files to guarantee synchronous file access
+     */
+    private final Map<String, Object> pathLocks = new HashMap<String, Object>();
+     
+    /**
      * Documented in SettingsManager.java
      */
     public <T> T load( Class<T> clz, String fileName ) throws SettingsException
@@ -101,7 +106,10 @@ public class SettingsManagerImpl implements SettingsManager
                 is = get.getResponseBodyAsStream();
             }
 
-            return _loadInputStream(clz, is);
+            Object lock = this.getLock(urlStr);
+            synchronized(lock) {
+                return _loadInputStream(clz, is);
+            }
         }
         catch (java.net.MalformedURLException e) {
             throw new IllegalArgumentException("Invalid URL: '" + urlStr + "'", e);
@@ -164,14 +172,17 @@ public class SettingsManagerImpl implements SettingsManager
             throw new SettingsException("File not found: " + f);
         }
 
-        return _loadInputStream(clz, is);
+        Object lock = this.getLock(f.getParentFile().getAbsolutePath());
+        synchronized(lock) {
+            return _loadInputStream(clz, is);
+        }
     }
 
     /**
      * Implementation of the load using a stream
      */
     @SuppressWarnings("unchecked") //JSON
-    private synchronized <T> T _loadInputStream( Class<T> clz, InputStream is ) throws SettingsException
+    private <T> T _loadInputStream( Class<T> clz, InputStream is ) throws SettingsException
     {
         BufferedReader reader = null;
         try {
@@ -224,7 +235,13 @@ public class SettingsManagerImpl implements SettingsManager
         }
         File outputFile = new File(outputFileName);
 
-        synchronized (this) {
+        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
+
+        /*
+         * Synchronized on the name of the parent directory, so two files cannot
+         * modify the same file at the same time
+         */
+        synchronized (lock) {
             FileWriter fileWriter = null;
 
             try {
@@ -272,6 +289,26 @@ public class SettingsManagerImpl implements SettingsManager
             }
             return _loadImpl(clz, fileName);
         }
+    }
+
+    /**
+     * Retrieve a lock to use for a given path. By locking on an object you
+     * guarantee the object is unique.
+     * http://www.javalobby.org/java/forums/t96352.html
+     * 
+     * @param lockName
+     *            The name of the lock
+     * @return An object that can be used to lock on path.
+     */
+    private Object getLock(String lockName)
+    {
+        Object lock = this.pathLocks.get(lockName);
+        if (lock == null) {
+            lock = new Object();
+            this.pathLocks.put(lockName, lock);
+        }
+
+        return lock;
     }
 
     /**
