@@ -60,6 +60,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
+    private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
 
     private static EventWriterImpl eventWriter = null;
     private static EventReaderImpl eventReader = null;
@@ -273,7 +274,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
             this.settings = readSettings;
 
-            this.reconfigure();
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -284,10 +284,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
             writeCronFile();
+        if (settingsFile.lastModified() > SYSLOG_CONF_FILE.lastModified())
+            SyslogManagerImpl.reconfigure(this.settings);
         
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
-
     }
 
     protected void preStart()
@@ -336,6 +337,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /**
+         * Sync settings to disk
+         */
+        writeCronFile();
+        SyslogManagerImpl.reconfigure(this.settings);
     }
     
     private void writeCronFile()
@@ -357,14 +364,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.error("Unable to close file", ex);
             return;
         }
-    }
-
-    private void reconfigure() 
-    {
-        logger.info("Reconfigure()");
-
-        SyslogManagerImpl.reconfigure(this.settings);
-        writeCronFile();
     }
 
     private void sanityCheck( ReportingSettings settings )
