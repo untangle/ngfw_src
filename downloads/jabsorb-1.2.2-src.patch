@@ -1,6 +1,6 @@
 diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
---- jabsorb-1.2.2.orig/build.xml	2012-06-13 16:45:31.000000000 -0700
-+++ jabsorb-1.2.2/build.xml	2012-06-13 16:45:40.000000000 -0700
+--- jabsorb-1.2.2.orig/build.xml	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/build.xml	2013-11-11 13:31:01.000000000 -0800
 @@ -53,13 +53,14 @@
    </target>
  
@@ -36,8 +36,8 @@ diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
      <delete file="${webapp}/WEB-INF/web.xml.generated" />
      <delete file="${webapp}/Test.java.txt" />
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2012-06-13 16:45:31.000000000 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2012-06-13 16:46:12.000000000 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2013-11-11 13:31:01.000000000 -0800
 @@ -108,8 +108,18 @@
   * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
   * com.example.MyClass.class);</code>
@@ -140,7 +140,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_UNMARSHALL, requestId,
            e.getMessage());
      }
-@@ -690,6 +688,9 @@
+@@ -690,6 +689,9 @@
          }
        }
        log.error("exception occured",e);
@@ -150,7 +150,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
        result = new JSONRPCResult(JSONRPCResult.CODE_ERR_MARSHALL, requestId, e
            .getMessage());
      }
-@@ -707,6 +707,9 @@
+@@ -707,6 +709,9 @@
          }
        }
        log.error("exception occured",e);
@@ -161,8 +161,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
            requestId, exceptionTransformer.transform(e));
      }
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2012-06-13 16:45:31.000000000 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2012-06-13 16:45:40.000000000 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2013-11-11 13:31:01.000000000 -0800
 @@ -718,7 +718,7 @@
        try
        {
@@ -184,9 +184,28 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
        }
        catch (ClassNotFoundException e)
        {
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2013-11-11 13:53:50.000000000 -0800
+@@ -107,6 +107,15 @@
+   {
+     log.info("analyzing " + clazz.getName());
+     Method methods[] = clazz.getMethods();
++    // java7 does not return a fixed order from getMethods which leads to inconsistent behavior
++    // sort methods by signature to ensure consitent order and method resolution
++    java.util.Arrays.sort( methods, new java.util.Comparator() {
++            public int compare(Object o1, Object o2) {
++                String x1 = ((Method) o1).toGenericString();
++                String x2 = ((Method) o2).toGenericString();
++                return x1.compareTo(x2);
++            }
++        });
+     ClassData cd = new ClassData();
+     cd.clazz = clazz;
+ 
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2012-06-13 16:45:31.000000000 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2012-06-13 16:45:40.000000000 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2013-11-11 13:31:01.000000000 -0800
 @@ -97,6 +97,11 @@
      {
        returnValue = (Boolean) jso;
@@ -200,8 +219,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.j
      state.setSerialized(jso, returnValue);
      return returnValue;
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2012-06-13 16:45:31.000000000 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2012-06-13 16:45:40.000000000 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2013-11-11 13:30:51.000000000 -0800
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2013-11-11 13:31:01.000000000 -0800
 @@ -102,6 +102,10 @@
     */
    public ObjectMatch max(ObjectMatch m)
