@@ -82,16 +82,38 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
     }
 
-    public void setSettings(final ReportingSettings settings)
+    public void setSettings( final ReportingSettings newSettings )
     {
-        this.sanityCheck( settings );
+        this.sanityCheck( newSettings );
 
-        this._setSettings( settings );
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save(ReportingSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-reporting/" + "settings_"  + nodeID + ".js", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /**
+         * Sync settings to disk
+         */
+        writeCronFile();
+        SyslogManagerImpl.reconfigure(this.settings);
     }
 
     public ReportingSettings getSettings()
     {
-        return settings;
+        return this.settings;
     }
 
     public void createSchemas()
@@ -318,33 +340,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return settings;
     }
     
-    private void _setSettings( ReportingSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        try {
-            settingsManager.save(ReportingSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-reporting/" + "settings_"  + nodeID + ".js", newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        /**
-         * Sync settings to disk
-         */
-        writeCronFile();
-        SyslogManagerImpl.reconfigure(this.settings);
-    }
-    
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -376,8 +371,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 }
             }
         }
-
-
     }
 
     private class EventLogExportDownloadHandler implements DownloadHandler
