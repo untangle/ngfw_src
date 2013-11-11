@@ -336,8 +336,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
     }
     
     private void writeCronFile()

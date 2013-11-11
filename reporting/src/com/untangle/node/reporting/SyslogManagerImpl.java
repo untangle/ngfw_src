@@ -18,7 +18,7 @@ import com.untangle.uvm.logging.LogEvent;
 /**
  * Sends events to the syslog server (if enabled)
  */
-class SyslogManagerImpl
+public class SyslogManagerImpl
 {
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
 
