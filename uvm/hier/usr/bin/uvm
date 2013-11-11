@@ -376,6 +376,11 @@ while True:
         signal.signal( signal.SIGTERM , signal.SIG_DFL );
         signal.signal( signal.SIGABRT , signal.SIG_DFL );
 
+        #so = se = open("/var/log/uvm/console.log", 'w', 0)
+        #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+        #os.dup2(so.fileno(), sys.stdout.fileno())
+        #os.dup2(se.fileno(), sys.stderr.fileno())
+        
         p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
         os.dup2(p.stdin.fileno(), sys.stdout.fileno())
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
