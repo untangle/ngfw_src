@@ -421,10 +421,7 @@ public class HostTableImpl implements HostTable
     private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
-
         entry.setAddress( address );
-        entry.setCreationTime( System.currentTimeMillis() );
-        entry.setLastAccessTime( entry.getCreationTime() );
 
         return entry;
     }
@@ -507,6 +504,8 @@ public class HostTableImpl implements HostTable
                                 newEntry.setPenaltyBoxExitTime( entry.getPenaltyBoxExitTime() );
                                 newEntry.setPenaltyBoxEntryTime( entry.getPenaltyBoxEntryTime() );
 
+                                newEntry.setUsernameCapture( entry.getUsernameCapture()  );
+                                
                                 logger.debug("HostTableCleaner: Stripping non-vital info from " + address.getHostAddress());
                                 hostTable.put( entry.getAddress(), newEntry );
                             }
