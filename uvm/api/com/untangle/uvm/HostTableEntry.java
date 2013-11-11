@@ -40,6 +40,12 @@ public class HostTableEntry implements Serializable, JSONString
     private String httpUserAgent; /* the user-agent header from HTTP */
     private String httpUserAgentOs; /* the os part of the user-agent header from HTTP */
     private long   httpUserAgentSetDate; /* date the httpUserAgent was set */
+
+    public HostTableEntry()
+    {
+        creationTime = System.currentTimeMillis();
+        updateAccessTime();
+    }
     
     public InetAddress getAddress() { return this.address; }
     public void setAddress( InetAddress newValue ) { this.address = newValue; updateAccessTime(); }
