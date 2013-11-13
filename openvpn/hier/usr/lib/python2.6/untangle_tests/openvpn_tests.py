@@ -71,6 +71,26 @@ class OpenVpnTests(unittest2.TestCase):
         assert (remoteHostResult == 0)
         tunnelUp = True
         
+    def test_030_disableRemoteClientVPNTunnel(self):
+        global tunnelUp
+        if (not tunnelUp):
+            raise unittest2.SkipTest("previous test test_020_createVPNTunnel failed")
+        nodeData = node.getSettings()
+        print nodeData
+        i=0
+        found = False
+        for remoteGuest in nodeData['remoteServers']['list']:
+            if (remoteGuest['name'] == 'test'):
+                found = True 
+            if (not found):
+                i+=1
+        assert (found) # test profile not found in remoteServers list
+        nodeData['remoteServers']['list'][i]['enabled'] = False
+        node.setSettings(nodeData)
+        time.sleep(10) # wait for vpn tunnel to fall
+        remoteHostResult = subprocess.call(["ping","-c","1",qaHostLANIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        assert (remoteHostResult != 0)
+        tunnelUp = False
         
     def test_999_finalTearDown(self):
         global node
