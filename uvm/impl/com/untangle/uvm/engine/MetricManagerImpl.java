@@ -246,7 +246,7 @@ public class MetricManagerImpl implements MetricManager
                     Matcher matcher = CPUINFO_PATTERN.matcher(l);
                     if (matcher.find()) {
                         String n = matcher.group(1);
-                        if (n.equals("model name")) {
+                        if (n.equals("model name") || n.equals("Processor")) {
                             cpuModel = matcher.group(2);
                         } else if (n.equals("processor")) {
                             numCpus++;
