@@ -3923,6 +3923,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'address'
                 }],
+                columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Name"),
                     width: 200,
@@ -3961,6 +3962,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'localServer'
                 }],
+                columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Domain"),
                     width: 200,
