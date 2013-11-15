@@ -92,8 +92,8 @@ function getInterfaceStatus()
     fi
     if [ -f /sys/class/net/${t_intf}/device/uevent ] && [ ! -z "$BUS" ] ; then
         # find vendor ID
-        VENDOR_ID="`cat /sys/class/net/${t_intf}/device/uevent | awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); print tolower($0) }' | sed -e 's/:/ /'`"
-        VENDOR_ID_SHORT="`cat /sys/class/net/${t_intf}/device/uevent | awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:.*/, "" ); print tolower($0) }'`"
+        VENDOR_ID="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
+        VENDOR_ID_SHORT="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:.*/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
 
         # read from vendor definition file
         VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"

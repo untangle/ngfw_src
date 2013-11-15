@@ -135,7 +135,7 @@ public class AdminManagerImpl implements AdminManager
     public String getFullVersionAndRevision()
     {
         try {
-            String version = UvmContextImpl.context().execManager().execOutput("COLUMNS=200 dpkg -l \"untangle-vm\" | awk '/^ii/ {print $3}' | sort -u | tail -1");
+            String version = UvmContextImpl.context().execManager().execOutput("dpkg-query -f '${Version}\\n' -W untangle-vm");
 
             if (version == null)
                 return "";

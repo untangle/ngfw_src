@@ -357,7 +357,7 @@ public class AlertManagerImpl implements AlertManager
             /**
              * Lookup gateway bridge port # using brctl showmacs
              */
-            String portNo = this.execManager.execOutput( "brctl showmacs " + bridgeName + " | grep \"" + gatewayMac + "\" | awk '{print $1}'");
+            String portNo = this.execManager.execOutput( "brctl showmacs " + bridgeName + " | awk '/" + gatewayMac + "/ {print $1}'");
             if ( portNo == null) {
                 logger.warn("Unable to find port number for MAC: " + gatewayMac);
                 return;
@@ -429,7 +429,7 @@ public class AlertManagerImpl implements AlertManager
             if ( intf.getSystemDev() == null )
                 continue;
             
-            String lines = this.execManager.execOutput( "ifconfig " + intf.getPhysicalDev() + " | grep errors | awk '{print $3}'");
+            String lines = this.execManager.execOutput( "ifconfig " + intf.getPhysicalDev() + " | awk '/errors/ {print $3}'");
             String type = "RX";  //first line is RX erros
 
             for (String line : lines.split("\n")) {

@@ -15,7 +15,7 @@ echo " = IPv4 Table balance = "
 ip -4 route show table balance
 echo
 
-cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
+awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv4 Table $table = "
     ip -4 route show table $table
     echo
@@ -42,7 +42,7 @@ echo
 #ip -6 route show table balance
 #echo
 
-cat /etc/iproute2/rt_tables | grep uplink | awk '{print $2}' | while read table ; do
+awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv6 Table $table = "
     ip -6 route show table $table
     echo
