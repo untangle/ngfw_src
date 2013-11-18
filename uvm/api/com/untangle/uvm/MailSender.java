@@ -1,5 +1,5 @@
 /**
- * $Id: MailSender.java 33664 2012-12-19 23:17:06Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm;
 
@@ -113,5 +113,5 @@ public interface MailSender
      * @param recipient recipient's email address for the test message.
      * @return false if an exception occurs while sending, otherwise true.
      */
-    boolean sendTestMessage(String recipient);
+    String sendTestMessage(String recipient);
 }

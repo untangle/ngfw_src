@@ -142,8 +142,9 @@ if (!Ung.hasResource["Ung.Email"]) {
         sendTestMessage: function(emailAddress) {
             var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox for successful delivery.' ): this.i18n._('Warning!  Test failed.  Check your settings.' ));
-                var color = result === true ? 'green': 'red';
+                this.testEmailResultMessage = result; 
+                //(( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox for successful delivery.' ): this.i18n._('Warning!  Test failed.  Check your settings.' ));
+                var color = result == 'Completed' ? 'green': 'red';
                 Ext.MessageBox.hide();
                 Ext.getCmp('email-test-success').setText(this.testEmailResultMessage).setVisible(true).getEl().dom.style.color = color;
                 
