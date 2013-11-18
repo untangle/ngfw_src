@@ -255,6 +255,7 @@ public abstract class NodeBase implements Node
         UvmContextFactory.context().logEvent(evt);
     }
 
+    @SuppressWarnings("rawtypes")
     public static final Node loadClass( NodeProperties nodeProperties, NodeSettings nodeSettings, boolean isNew ) throws Exception
     {
         if ( nodeProperties == null || nodeSettings == null )
@@ -276,9 +277,9 @@ public abstract class NodeBase implements Node
             staticLogger.debug("setting node " + nodeSettingsName + " log4j repository");
 
             String className = nodeProperties.getClassName();
-            java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class[]{NodeSettings.class, NodeProperties.class});
+            java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class<?>[]{NodeSettings.class, NodeProperties.class});
             node = (NodeBase)constructor.newInstance( nodeSettings, nodeProperties );
-            //node = (NodeBase)Class.forName(className).newInstance(getNodeSettings(), getNodeProperties());
+
             node.setNodeProperties( nodeProperties );
             node.setNodeSettings( nodeSettings );
                 

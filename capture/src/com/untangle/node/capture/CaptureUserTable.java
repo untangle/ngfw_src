@@ -79,10 +79,10 @@ public class CaptureUserTable
 
     public CaptureUserEntry searchByUsername(String username, boolean ignoreCase)
     {
-        Enumeration ee = userTable.elements();
+        Enumeration<CaptureUserEntry> ee = userTable.elements();
 
         while (ee.hasMoreElements()) {
-            CaptureUserEntry item = (CaptureUserEntry) ee.nextElement();
+            CaptureUserEntry item = ee.nextElement();
 
             // if the ignoreCase flag is set we compare both as lowercase
             if (ignoreCase == true) {
@@ -108,11 +108,11 @@ public class CaptureUserTable
         int wipecount;
 
         currentTime = (System.currentTimeMillis() / 1000);
-        Enumeration ee = userTable.elements();
+        Enumeration<CaptureUserEntry> ee = userTable.elements();
         wipecount = 0;
 
         while (ee.hasMoreElements()) {
-            CaptureUserEntry item = (CaptureUserEntry) ee.nextElement();
+            CaptureUserEntry item = ee.nextElement();
             userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
 
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(item.getUserAddress());

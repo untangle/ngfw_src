@@ -190,12 +190,12 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     
     public void incrementPassCount()
     {
-        this.incrementMetric(this.STAT_PASS);
+        this.incrementMetric(OpenVpnNodeImpl.STAT_PASS);
     }
 
     public void incrementConnectCount()
     {
-        this.incrementMetric(this.STAT_CONNECT);
+        this.incrementMetric(OpenVpnNodeImpl.STAT_CONNECT);
     }
 
     public EventLogQuery[] getStatusEventsQueries()

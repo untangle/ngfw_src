@@ -181,8 +181,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         long currentTime  = System.currentTimeMillis();
 
-        if (this.eventWriter != null)
-            this.eventWriter.forceFlush();
+        if (ReportingNodeImpl.eventWriter != null)
+            ReportingNodeImpl.eventWriter.forceFlush();
     }
     
     public void initializeSettings()
@@ -208,37 +208,37 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public void logEvent( LogEvent evt )
     {
-        this.eventWriter.logEvent( evt );
+        ReportingNodeImpl.eventWriter.logEvent( evt );
     }
 
     public void forceFlush()
     {
-        this.eventWriter.forceFlush();
+        ReportingNodeImpl.eventWriter.forceFlush();
     }
 
     public double getAvgWriteTimePerEvent()
     {
-        return this.eventWriter.getAvgWriteTimePerEvent();
+        return ReportingNodeImpl.eventWriter.getAvgWriteTimePerEvent();
     }
 
     public long getWriteDelaySec()
     {
-        return this.eventWriter.getWriteDelaySec();
+        return ReportingNodeImpl.eventWriter.getWriteDelaySec();
     }
     
     public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
     {
-        return this.eventReader.getEventsResultSet( query, policyId, limit );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit );
     }
 
     public void getEventsResultSetCommit( )
     {
-        this.eventReader.getEventsResultSetCommit();
+        ReportingNodeImpl.eventReader.getEventsResultSetCommit();
     }
     
-    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
     {
-        return this.eventReader.getEvents( query, policyId, limit );
+        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit );
     }
 
     public Connection getDbConnection()
@@ -261,7 +261,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public ReportingManager getReportingManager()
     {
-        return this.reportingManager;
+        return ReportingNodeImpl.reportingManager;
     }
     
     @Override
@@ -319,12 +319,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             postInit();
         }
 
-        this.eventWriter.start();
+        ReportingNodeImpl.eventWriter.start();
     }
 
     protected void postStop()
     {
-        this.eventWriter.stop();
+        ReportingNodeImpl.eventWriter.stop();
     }
 
     @Override

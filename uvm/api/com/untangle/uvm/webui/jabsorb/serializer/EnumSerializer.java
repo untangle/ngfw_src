@@ -1,3 +1,6 @@
+/**
+ * $Id: EnumSerializer.java,v 1.00 2013/11/18 14:52:01 dmorris Exp $
+ */
 package com.untangle.uvm.webui.jabsorb.serializer;
 
 import org.jabsorb.serializer.AbstractSerializer;
@@ -6,8 +9,9 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings({"serial","unchecked"})
-public class EnumSerializer extends AbstractSerializer {
+@SuppressWarnings({"serial","unchecked","rawtypes"})
+public class EnumSerializer extends AbstractSerializer
+{
     /**
      * Classes that this can serialise to.
      */
@@ -19,7 +23,8 @@ public class EnumSerializer extends AbstractSerializer {
     private static Class[] _serializableClasses = new Class[0];
 
     @Override
-    public boolean canSerialize(Class clazz, Class jsonClazz) {
+    public boolean canSerialize(Class clazz, Class jsonClazz)
+    {
         return clazz.isEnum();
     }
 
@@ -28,7 +33,8 @@ public class EnumSerializer extends AbstractSerializer {
      * 
      * @see org.jabsorb.serializer.Serializer#getJSONClasses()
      */
-    public Class[] getJSONClasses() {
+    public Class[] getJSONClasses()
+    {
         return _JSONClasses;
     }
 
@@ -37,7 +43,8 @@ public class EnumSerializer extends AbstractSerializer {
      * 
      * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
      */
-    public Class[] getSerializableClasses() {
+    public Class[] getSerializableClasses()
+    {
         return _serializableClasses;
     }
 
@@ -48,7 +55,8 @@ public class EnumSerializer extends AbstractSerializer {
      *      java.lang.Object, java.lang.Object)
      */
     public Object marshall(SerializerState state, Object p, Object o)
-        throws MarshallException {
+        throws MarshallException
+    {
         if (o instanceof Enum) {
             return o.toString();
         }
@@ -61,8 +69,8 @@ public class EnumSerializer extends AbstractSerializer {
      * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState,
      *      java.lang.Class, java.lang.Object)
      */
-    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-                                     Object json) throws UnmarshallException {
+    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json) throws UnmarshallException
+    {
 
         //        Class classes[] = json.getClass().getClasses();
         //        for (int i = 0; i < classes.length; i++) {
@@ -83,7 +91,8 @@ public class EnumSerializer extends AbstractSerializer {
      *      java.lang.Class, java.lang.Object)
      */
     public Object unmarshall(SerializerState state, Class clazz, Object json)
-        throws UnmarshallException {
+        throws UnmarshallException
+    {
         String val = json instanceof String ? (String) json : json.toString();
         if (clazz.isEnum()) {
             return Enum.valueOf(clazz, val);

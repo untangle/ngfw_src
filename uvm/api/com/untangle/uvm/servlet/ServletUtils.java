@@ -1,5 +1,5 @@
 /**
- * $Id: ServletUtils.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.servlet;
 
@@ -83,13 +83,13 @@ public class ServletUtils
     }
       
 
-    private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>() {       
+    private static Registrator<JSONSerializer> JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>() {       
         public void registerSerializer(JSONSerializer serializer, Serializer s ) throws Exception {
             serializer.registerSerializer(s);
         }
     };
 
-    private static Registrator JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>() {        
+    private static Registrator<JSONRPCBridge> JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>() {        
         public void registerSerializer(JSONRPCBridge bridge, Serializer s ) throws Exception {
             bridge.registerSerializer(s);
         }

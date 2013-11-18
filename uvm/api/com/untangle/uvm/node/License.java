@@ -244,7 +244,7 @@ public class License implements Serializable
      */
     public Boolean getTrial()
     {
-        if (this.LICENSE_TYPE_TRIAL.equals(this.getType()))
+        if (License.LICENSE_TYPE_TRIAL.equals(this.getType()))
             return Boolean.TRUE;
         return Boolean.FALSE;
     }

@@ -9,7 +9,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings({"serial","unchecked"})
+@SuppressWarnings({"serial","unchecked","rawtypes"})
 public class GenericStringSerializer extends AbstractSerializer
 {
     private Class clazz = null;

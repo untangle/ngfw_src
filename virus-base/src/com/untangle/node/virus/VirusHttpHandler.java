@@ -1,5 +1,5 @@
 /**
- * $Id: VirusHttpHandler.java 35604 2013-08-13 05:47:51Z dmorris $
+ * $Id$
  */
 package com.untangle.node.virus;
 
@@ -419,7 +419,7 @@ class VirusHttpHandler extends HttpStateMachine
             return false;
         host = host.toLowerCase();
 
-        for ( Pattern pat : this.passlist ) {
+        for ( Pattern pat : VirusHttpHandler.passlist ) {
             if (pat.matcher( host ).matches())
                 return true;
         }

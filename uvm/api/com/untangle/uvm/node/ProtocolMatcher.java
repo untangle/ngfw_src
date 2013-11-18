@@ -1,5 +1,5 @@
 /**
- * $Id: ProtocolMatcher.java 35447 2013-07-29 17:24:43Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 
@@ -181,7 +181,7 @@ public class ProtocolMatcher
         /**
          * Check for the other matchers that never match in java
          */
-        for ( String str : this.OTHER_MARKERS ) {
+        for ( String str : OTHER_MARKERS ) {
             if ( str.equals( matcher ) ) {
                 this.type = ProtocolMatcherType.NONE;
                 return;

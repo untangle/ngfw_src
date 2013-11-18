@@ -485,22 +485,22 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public String getServerUID()
     {
-        if (this.uid == null) {
+        if (UvmContextImpl.uid == null) {
             try {
                 File keyFile = new File(UID_FILE);
                 if (keyFile.exists()) {
                     BufferedReader reader = new BufferedReader(new FileReader(keyFile));
-                    this.uid = reader.readLine();
-                    return this.uid;
+                    UvmContextImpl.uid = reader.readLine();
+                    return UvmContextImpl.uid;
                 }
             } catch (IOException x) {
                 logger.error("Unable to get pop id: ", x);
             }
         }
-        return this.uid;
+        return UvmContextImpl.uid;
     }
     
-    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
     {
         if (this.reportingNode == null)
             getReportingNode();

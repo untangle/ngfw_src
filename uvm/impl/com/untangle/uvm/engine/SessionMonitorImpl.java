@@ -104,8 +104,8 @@ public class SessionMonitorImpl implements SessionMonitor
         if (node != null)
             nodeSessions = node.liveSessions();
             
-        for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
-            SessionMonitorEntry session = (SessionMonitorEntry) i.next();
+        for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
+            SessionMonitorEntry session = i.next();
             session.setPolicy("");             
             session.setClientIntf(Integer.valueOf(-1));
             session.setServerIntf(Integer.valueOf(-1));
@@ -192,8 +192,8 @@ public class SessionMonitorImpl implements SessionMonitor
          * If a nodeId was specified remove all sessions not being touched by that nodeId
          */
         if ( nodeSessions != null ) {
-            for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
-                SessionMonitorEntry entry = (SessionMonitorEntry) i.next();
+            for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
+                SessionMonitorEntry entry = i.next();
                 Long sessionId = entry.getSessionId();
                 boolean found = false;
                 for (SessionTuple tuple : nodeSessions) {

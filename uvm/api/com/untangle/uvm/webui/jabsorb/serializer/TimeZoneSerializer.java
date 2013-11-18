@@ -9,8 +9,9 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings({"serial","unchecked"})
-public class TimeZoneSerializer extends AbstractSerializer {
+@SuppressWarnings({"serial","unchecked","rawtypes"})
+public class TimeZoneSerializer extends AbstractSerializer
+{
     /**
      * Classes that this can serialise.
      */
@@ -21,11 +22,13 @@ public class TimeZoneSerializer extends AbstractSerializer {
      */
     private static Class[] _JSONClasses = new Class[] { String.class };
 
-    public Class[] getJSONClasses() {
+    public Class[] getJSONClasses()
+    {
         return _JSONClasses;
     }
 
-    public Class[] getSerializableClasses() {
+    public Class[] getSerializableClasses()
+    {
         return _serializableClasses;
     }
     
@@ -36,8 +39,8 @@ public class TimeZoneSerializer extends AbstractSerializer {
      *      java.lang.Object, java.lang.Object)
      */
     public Object marshall(SerializerState state, Object p, Object o)
-            throws MarshallException {
-        
+            throws MarshallException
+    {
         if( o == null ) {
             return "";
         } else if (o instanceof TimeZone) {
@@ -53,8 +56,9 @@ public class TimeZoneSerializer extends AbstractSerializer {
      * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState,
      *      java.lang.Class, java.lang.Object)
      */
-    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-            Object json) throws UnmarshallException {
+    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
+        throws UnmarshallException
+    {
 
         state.setSerialized(json, ObjectMatch.OKAY);
         return ObjectMatch.OKAY;
@@ -67,7 +71,8 @@ public class TimeZoneSerializer extends AbstractSerializer {
      *      java.lang.Class, java.lang.Object)
      */
     public Object unmarshall(SerializerState state, Class clazz, Object json)
-            throws UnmarshallException {
+            throws UnmarshallException
+    {
         TimeZone returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {

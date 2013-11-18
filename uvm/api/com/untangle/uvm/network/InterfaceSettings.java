@@ -293,21 +293,21 @@ public class InterfaceSettings implements Serializable, JSONString
     {
         if (this.v4StaticPrefix == null || this.v4StaticPrefix < 0 || this.v4StaticPrefix > 32 )
             return null;
-        return this.V4_PREFIX_NETMASKS[this.v4StaticPrefix];
+        return V4_PREFIX_NETMASKS[this.v4StaticPrefix];
     }
 
     public InetAddress getV4AutoNetmaskOverride( )
     {
         if (this.v4AutoPrefixOverride == null || this.v4AutoPrefixOverride < 0 || this.v4AutoPrefixOverride > 32 )
             return null;
-        return this.V4_PREFIX_NETMASKS[this.v4AutoPrefixOverride];
+        return V4_PREFIX_NETMASKS[this.v4AutoPrefixOverride];
     }
     
     public InetAddress getDhcpNetmaskOverride()
     {
         if (this.dhcpPrefixOverride == null || this.dhcpPrefixOverride < 0 || this.dhcpPrefixOverride > 32 )
             return null;
-        return this.V4_PREFIX_NETMASKS[this.dhcpPrefixOverride];
+        return V4_PREFIX_NETMASKS[this.dhcpPrefixOverride];
     }
 
     static

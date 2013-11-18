@@ -13,7 +13,7 @@ public interface Reporting
 
     void forceFlush();
 
-    ArrayList getEvents( final String query, final Long policyId, final int limit );
+    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
 
     java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
     

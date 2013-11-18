@@ -1,5 +1,5 @@
 /**
- * $Id: NodeSessionImpl.java 35594 2013-08-12 21:43:32Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -55,7 +55,7 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected final Dispatcher dispatcher;
 
-    @SuppressWarnings("unchecked") //generics array creation not supported java6
+    @SuppressWarnings({"unchecked","rawtypes"}) //generics array creation not supported java6 || java7
     protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;

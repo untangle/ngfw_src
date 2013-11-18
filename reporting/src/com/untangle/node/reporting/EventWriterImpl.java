@@ -252,7 +252,7 @@ public class EventWriterImpl implements Runnable
          * Send it to syslog (make best attempt - ignore errors)
          */
         try {
-            SyslogManagerImpl.manager().sendSyslog(event, event.getTag());
+            SyslogManagerImpl.sendSyslog(event, event.getTag());
         } catch (Exception exn) { 
             logger.warn("failed to send syslog", exn);
         }

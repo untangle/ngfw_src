@@ -124,8 +124,8 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         logger.info("Initializing urlDatabase...");
 
-        this.urlDatabase = new HashMap<String,Integer>();
-        this.idToCategoryName = new HashMap<Integer,String>();
+        WebFilterDecisionEngine.urlDatabase = new HashMap<String,Integer>();
+        WebFilterDecisionEngine.idToCategoryName = new HashMap<Integer,String>();
         
         List<String>  fileNames = new ArrayList<String>();
         List<Integer> categoryIDs = new ArrayList<Integer>();

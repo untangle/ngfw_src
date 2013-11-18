@@ -371,8 +371,8 @@ public class HostTableImpl implements HostTable
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
 
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-            HostTableEntry entry = (HostTableEntry) i.next();
+        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
+            HostTableEntry entry = i.next();
             if (! hostInPenaltyBox( entry.getAddress() ) )
                 i.remove();
         }
@@ -384,8 +384,8 @@ public class HostTableImpl implements HostTable
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
 
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-            HostTableEntry entry = (HostTableEntry) i.next();
+        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
+            HostTableEntry entry = i.next();
             if ( entry.getQuotaSize() <= 0 )
                 i.remove();
         }

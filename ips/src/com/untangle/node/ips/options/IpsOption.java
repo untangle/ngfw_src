@@ -40,7 +40,7 @@ public abstract class IpsOption
         return true;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public static IpsOption buildOption(IpsDetectionEngine engine,
                                         IpsRuleSignatureImpl signature,
                                         IpsRule rule,

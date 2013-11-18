@@ -107,7 +107,7 @@ public class EventReaderImpl
     }
     
     @SuppressWarnings("unchecked")
-    public ArrayList getEvents( final String query, final Long policyId, final int limit )
+    public ArrayList<JSONObject> getEvents( final String query, final Long policyId, final int limit )
     {
         try {
             ResultSet resultSet = getEventsResultSet( query, policyId, limit );
@@ -117,7 +117,7 @@ public class EventReaderImpl
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
                 
-            ArrayList newList = new ArrayList();
+            ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
 
             while (resultSet.next()) {
                 try {

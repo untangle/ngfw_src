@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/UvmContextFactory.java $
+ * $HeadURL$
  */
 package com.untangle.uvm;
 
@@ -34,7 +34,7 @@ public class UvmContextFactory
      *
      * @return the <code>UvmContext</code>.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public static UvmContext context()
     {
         if (null == UVM_CONTEXT) {

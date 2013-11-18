@@ -163,7 +163,7 @@ public class StackedBarChart extends Plot
         return date;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {

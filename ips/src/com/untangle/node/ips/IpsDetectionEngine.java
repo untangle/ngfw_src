@@ -52,8 +52,8 @@ public class IpsDetectionEngine
     {
         this.node = node;
         synchronized ( IpsDetectionEngine.class ) {
-            if ( this.sessionInfoMap == null ) {
-                this.sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
+            if ( IpsDetectionEngine.sessionInfoMap == null ) {
+                IpsDetectionEngine.sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
             }
         }
         manager = new IpsRuleManager(node);

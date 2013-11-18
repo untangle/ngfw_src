@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm.webui.jabsorb.serializer;
 
 import java.net.Inet4Address;
@@ -10,24 +13,26 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings({"serial","unchecked"})
-public class InetAddressSerializer extends AbstractSerializer {
+@SuppressWarnings({"serial","unchecked","rawtypes"})
+public class InetAddressSerializer extends AbstractSerializer
+{
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] { InetAddress.class, 
-            Inet4Address.class, Inet6Address.class };
+    private static Class[] _serializableClasses = new Class[] { InetAddress.class, Inet4Address.class, Inet6Address.class };
 
     /**
      * Classes that this can serialise to.
      */
     private static Class[] _JSONClasses = new Class[] { String.class };
 
-    public Class[] getJSONClasses() {
+    public Class[] getJSONClasses()
+    {
         return _JSONClasses;
     }
 
-    public Class[] getSerializableClasses() {
+    public Class[] getSerializableClasses()
+    {
         return _serializableClasses;
     }
     
@@ -38,8 +43,8 @@ public class InetAddressSerializer extends AbstractSerializer {
      *      java.lang.Object, java.lang.Object)
      */
     public Object marshall(SerializerState state, Object p, Object o)
-        throws MarshallException {
-        
+        throws MarshallException
+    {
         if( o == null ) {
             return "";
         } else if (o instanceof InetAddress) {
@@ -55,8 +60,9 @@ public class InetAddressSerializer extends AbstractSerializer {
      * @see org.jabsorb.serializer.Serializer#tryUnmarshall(org.jabsorb.serializer.SerializerState,
      *      java.lang.Class, java.lang.Object)
      */
-    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-                                     Object json) throws UnmarshallException {
+    public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object json)
+        throws UnmarshallException
+    {
 
         state.setSerialized(json, ObjectMatch.OKAY);
         return ObjectMatch.OKAY;
@@ -69,7 +75,8 @@ public class InetAddressSerializer extends AbstractSerializer {
      *      java.lang.Class, java.lang.Object)
      */
     public Object unmarshall(SerializerState state, Class clazz, Object json)
-        throws UnmarshallException {
+        throws UnmarshallException
+    {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {

@@ -142,8 +142,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         this.settings = newSettings;
 
         reconfigure();
-        this.quarantine.setSettings(this, settings.getQuarantineSettings());
-        this.safelistMangr.setSettings(this, settings);
+        SmtpNodeImpl.quarantine.setSettings(this, settings.getQuarantineSettings());
+        SmtpNodeImpl.safelistMangr.setSettings(this, settings);
     }
 
     public void setSmtpNodeSettingsWithoutSafelists(final SmtpNodeSettings settings)
@@ -160,28 +160,28 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public QuarantineUserView getQuarantineUserView()
     {
-        return this.quarantine;
+        return SmtpNodeImpl.quarantine;
     }
 
     public QuarantineMaintenenceView getQuarantineMaintenenceView()
     {
-        return this.quarantine;
+        return SmtpNodeImpl.quarantine;
     }
 
     public SafelistManipulation getSafelistManipulation()
     {
-        return this.safelistMangr;
+        return SmtpNodeImpl.safelistMangr;
     }
 
     public SafelistAdminView getSafelistAdminView()
     {
-        return this.safelistMangr;
+        return SmtpNodeImpl.safelistMangr;
     }
 
     public void sendQuarantineDigests()
     {
-        if ( this.quarantine != null )
-            this.quarantine.sendQuarantineDigests();
+        if ( SmtpNodeImpl.quarantine != null )
+            SmtpNodeImpl.quarantine.sendQuarantineDigests();
     }
 
     public long getMinAllocatedStoreSize(boolean inGB)
@@ -203,7 +203,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public String createAuthToken(String account)
     {
-        return this.quarantine.createAuthToken(account);
+        return SmtpNodeImpl.quarantine.createAuthToken(account);
     }
 
     // MailExport methods -----------------------------------------------------
@@ -215,12 +215,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     public QuarantineNodeView getQuarantineNodeView()
     {
-        return this.quarantine;
+        return SmtpNodeImpl.quarantine;
     }
 
     public SafelistNodeView getSafelistNodeView()
     {
-        return this.safelistMangr;
+        return SmtpNodeImpl.safelistMangr;
     }
 
     private void reconfigure()
@@ -239,7 +239,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
         unDeployWebAppIfRequired(logger);
 
-        this.quarantine.close();
+        SmtpNodeImpl.quarantine.close();
     }
 
     protected void postInit()
@@ -268,8 +268,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
                 logger.info("Loaded settings from " + settingsFile);
 
                 settings = readSettings;
-                this.quarantine.setSettings(this, settings.getQuarantineSettings());
-                this.safelistMangr.setSettings(this, settings);
+                SmtpNodeImpl.quarantine.setSettings(this, settings.getQuarantineSettings());
+                SmtpNodeImpl.safelistMangr.setSettings(this, settings);
                 reconfigure();
             }
         } catch (Exception exn) {
@@ -280,13 +280,13 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         // or initialized to defaults so now we do all the other setup
         try {
             // create the safelist that applies to all
-            this.safelistMangr.createSafelist( GLOBAL_SAFELIST_NAME );
+            SmtpNodeImpl.safelistMangr.createSafelist( GLOBAL_SAFELIST_NAME );
         } catch (Exception exn) {
             logger.error("Could not create global safelist", exn);
         }
 
         deployWebAppIfRequired(logger);
-        this.quarantine.open();
+        SmtpNodeImpl.quarantine.open();
     }
 
     // NodeBase methods ---------------------------------------------------
@@ -326,7 +326,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public List<String> getTests(String path)
     {
         List<String> result = new ArrayList<String>();

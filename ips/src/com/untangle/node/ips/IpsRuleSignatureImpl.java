@@ -98,7 +98,7 @@ public class IpsRuleSignatureImpl
         return getOption(parents, callingOption);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public IpsOption getOption(String[] names, IpsOption callingOption)
     {
         Class[] optionDefinitions = new Class[names.length];
