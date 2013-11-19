@@ -391,7 +391,7 @@ end
 class JsLintTarget < Target
   JS_LINT_COMMAND = "/usr/bin/rhino /usr/share/javascript/jshint.js"
   JS_LINT_CONFIG = "-W041=false,-W069=false,-W083=false,-W061=false,-W044=false"
-  
+
   attr_reader :filename
 
   def initialize(package, deps, taskName, filename)
@@ -408,7 +408,7 @@ class JsLintTarget < Target
 
   def build()
     info "[jslint  ] #{@filename}"
-    # Kernel.system("#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}")
+    Kernel.system("#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}")
   end
 end
 
