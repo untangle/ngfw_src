@@ -171,6 +171,8 @@ public class TomcatManagerImpl implements TomcatManager
 
     synchronized void startTomcat()
     {
+        logger.info("Tomcat starting...");
+
         Connector jkConnector = new Connector("org.apache.coyote.ajp.AjpProtocol");
         jkConnector.setPort(8009);
         jkConnector.setDomain("127.0.0.1");
