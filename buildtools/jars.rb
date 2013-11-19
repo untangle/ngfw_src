@@ -50,7 +50,7 @@ class Jars
                                'jsp-api.jar',
                                'servlet-api.jar'
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47/common/lib/#{n}")
+                Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
               end)
 
     const_set(:TomcatServer, ['annotations-api.jar',
