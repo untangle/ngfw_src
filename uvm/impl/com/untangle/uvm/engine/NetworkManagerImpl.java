@@ -123,7 +123,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         logger.info( "Initialized NetworkManager" );
-        this.getInterfaceStatus(1);
     }
     
     /**
@@ -141,6 +140,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this._setSettings( newSettings );
         ExecManagerResult result;
+        boolean errorOccurred = false;
+        String errorStr = null;
         
         // stop interfaces
         result = UvmContextFactory.context().execManager().exec( "ifdown -a --exclude=lo" );
@@ -161,6 +162,11 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("sync-settings.py: " + line);
         } catch (Exception e) {}
 
+        if ( result.getResult() != 0 ) {
+            errorOccurred = true;
+            errorStr = "sync-settings.py failed: returned " + result.getResult();
+        }
+        
         // start interfaces
         result = UvmContextFactory.context().execManager().exec( "ifup -a --exclude=lo" );
         try {
@@ -170,6 +176,11 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("ifup: " + line);
         } catch (Exception e) {}
 
+        if ( result.getResult() != 0 ) {
+            errorOccurred = true;
+            errorStr = "if-up failed: returned " + result.getResult();
+        }
+        
         // notify interested parties that the settings have changed
         callNetworkListeners();
 
@@ -177,6 +188,10 @@ public class NetworkManagerImpl implements NetworkManager
         // we only do this here and not in a networking hook so that its only
         // done when new settings are saved, not everytime networking is restarted
         UvmContextFactory.context().execManager().execResult("/etc/init.d/untangle-pyconnector restart");
+
+        if ( errorOccurred ) {
+            throw new RuntimeException(errorStr);
+        }
     }
 
     /**
@@ -219,25 +234,6 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
         
-
-    /**
-     * Insert the iptables rules for capturing traffic
-     */
-    protected void insertRules( )
-    {
-        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
-        if ( retCode < 0 )
-            logger.warn("Unable to link iptables hook to update-rules script");
-        
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( this.updateRulesScript );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("insert rules: ");
-            for ( String line : lines )
-                logger.info("insert rules: " + line);
-        } catch (Exception e) {}
-    }
-    
     /**
      * Register a listener for network settings changes
      */
@@ -451,6 +447,24 @@ public class NetworkManagerImpl implements NetworkManager
         return entryList;
     }
     
+    /**
+     * Insert the iptables rules for capturing traffic
+     */
+    protected void insertRules( )
+    {
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        if ( retCode < 0 )
+            logger.warn("Unable to link iptables hook to update-rules script");
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( this.updateRulesScript );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("insert rules: ");
+            for ( String line : lines )
+                logger.info("insert rules: " + line);
+        } catch (Exception e) {}
+    }
+
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**
