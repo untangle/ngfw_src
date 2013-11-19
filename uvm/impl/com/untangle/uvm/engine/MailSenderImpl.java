@@ -489,11 +489,10 @@ public class MailSenderImpl implements MailSender
             new File( EXIM_CONF_FILE ).setLastModified( System.currentTimeMillis() );
                 
             // remove any paniclog from previous configs
-            UvmContextFactory.context().execManager().exec("rm -rf /var/log/exim4/paniclog");
-
-            // change root@localhost to blackhole
-            UvmContextFactory.context().execManager().exec( "/bin/sed -e \"s/^root:.*/root: :blackhole:/\" -i /etc/aliases" );
-
+            if ( new File("/var/log/exim4/paniclog").exists() ) {
+                UvmContextFactory.context().execManager().exec("rm -rf /var/log/exim4/paniclog");
+            }
+            
             // restart exim
             UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM + " >/dev/null 2>&1 & " );
         }
