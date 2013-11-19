@@ -1,5 +1,5 @@
 /**
- * $Id: TomcatManagerImpl.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -11,12 +11,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.Container;
+import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
@@ -25,9 +27,10 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
-import org.apache.catalina.startup.Embedded;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ResourceAttributes;
 import org.apache.log4j.Logger;
@@ -49,7 +52,7 @@ public class TomcatManagerImpl implements TomcatManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Embedded emb;
+    private final Tomcat emb;
     private final StandardHost baseHost;
     private final String webAppRoot;
 
@@ -60,30 +63,24 @@ public class TomcatManagerImpl implements TomcatManager
         this.webAppRoot = webAppRoot;
         String hostname = "localhost";
 
-        emb = new Embedded();
-        emb.setCatalinaHome(catalinaHome);
+        emb = new Tomcat();
+        emb.setBaseDir(catalinaHome);
 
         // create an Engine
-        Engine baseEngine = emb.createEngine();
+        StandardEngine baseEngine = (StandardEngine)emb.getEngine();
 
         // set Engine properties
-        baseEngine.setName("tomcat");
+        //baseEngine.setName("tomcat");
         baseEngine.setDefaultHost(hostname);
         baseEngine.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
 
         // create Host
-        baseHost = (StandardHost)emb.createHost(hostname, webAppRoot);
+        baseHost = (StandardHost)emb.getHost();
         baseHost.setUnpackWARs(true);
         baseHost.setDeployOnStartup(true);
         baseHost.setAutoDeploy(true);
         baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
 
-        // add host to Engine
-        baseEngine.addChild(baseHost);
-
-        // add new Engine to set of
-        // Engine for embedded server
-        emb.addEngine(baseEngine);
 
         loadServlet("/blockpage", "blockpage");
         ServletContext ctx = loadServlet("/webui", "webui", true );
@@ -91,7 +88,6 @@ public class TomcatManagerImpl implements TomcatManager
 
         ctx = loadServlet("/setup", "setup", true );
         ctx.setAttribute("threadRequest", threadRequest);
-            
         writeWelcomeFile();
     }
 
@@ -106,7 +102,7 @@ public class TomcatManagerImpl implements TomcatManager
     {
         return loadServlet(urlBase, rootDir, null, null, new WebAppOptions(new AdministrationValve()));
     }
-    
+
     public boolean unloadServlet(String contextRoot)
     {
         try {
@@ -139,6 +135,7 @@ public class TomcatManagerImpl implements TomcatManager
                 emb.stop();
             }
         } catch (LifecycleException exn) {
+            exn.printStackTrace();
             logger.debug(exn);
         }
     }
@@ -174,24 +171,21 @@ public class TomcatManagerImpl implements TomcatManager
 
     synchronized void startTomcat()
     {
-        Connector jkConnector;
-        try {
-            jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
-        } catch (Exception e) {
-            logger.error("Failed to create tomcat Connector",e);
-            return;
-        }
+        Connector jkConnector = new Connector("org.apache.coyote.ajp.AjpProtocol");
+        jkConnector.setPort(8009);
+        jkConnector.setDomain("127.0.0.1");
+
         jkConnector.setProperty("port", "8009");
         jkConnector.setProperty("address", "127.0.0.1");
         jkConnector.setProperty("tomcatAuthentication", "false");
         jkConnector.setMaxPostSize(TOMCAT_MAX_POST_SIZE);
-        jkConnector.setMaxSavePostSize(TOMCAT_MAX_POST_SIZE);
+        jkConnector.setMaxSavePostSize(TOMCAT_MAX_POST_SIZE); 
 
         String secret = getSecret();
         if (null != secret) {
-            jkConnector.setProperty("request.secret", secret);
+            jkConnector.setProperty("requiredSecret", secret);
         }
-        emb.addConnector(jkConnector);
+        emb.getService().addConnector(jkConnector);
 
         // start operation
         try {
@@ -307,7 +301,7 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Loading Servlet: " + urlBase);
 
         try {
-            StandardContext ctx = (StandardContext)emb.createContext(urlBase, fqRoot);
+            StandardContext ctx = (StandardContext)emb.addWebapp(urlBase,fqRoot);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
             ctx.setCrossContext(true);
@@ -315,23 +309,17 @@ public class TomcatManagerImpl implements TomcatManager
             if (null != realm) {
                 ctx.setRealm(realm);
             }
-
             StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
+            mgr.setPathname(null); // disable session persistence
             ctx.setManager(mgr);
             ctx.setResources(new StrongETagDirContext());
-
-            /* This should be the first valve */
             if (null != options.valve) ctx.addValve(options.valve);
-
             if (null != auth) {
                 Pipeline pipe = ctx.getPipeline();
                 auth.setDisableProxyCaching(false);
                 pipe.addValve(auth);
             }
-            baseHost.addChild(ctx);
-
-            return ctx.getServletContext();
+            return ctx.getServletContext(); 
         } catch(Exception ex) {
             logger.error("Unable to deploy webapp \"" + urlBase + "\" from directory \"" + fqRoot + "\"", ex);
             return null;
@@ -340,7 +328,7 @@ public class TomcatManagerImpl implements TomcatManager
 
     private boolean isAIUExn(LifecycleException exn)
     {
-        Throwable wrapped = exn.getThrowable();
+        Throwable wrapped = exn.getCause();
         String msg = exn.getMessage();
         if (wrapped != null && wrapped instanceof java.net.BindException)
             // Never happens right now. XXX
@@ -406,9 +394,8 @@ public class TomcatManagerImpl implements TomcatManager
     @SuppressWarnings("unchecked")
     private class StrongETagDirContext extends FileDirContext
     {
-    
         @Override
-        public Attributes getAttributes(String name, String[] attrIds) throws NamingException
+        public Attributes getAttributes(Name name, String[] attrIds) throws NamingException
         {
             ResourceAttributes r = (ResourceAttributes) super.getAttributes(name, attrIds);
             long cl = r.getContentLength();
@@ -416,7 +403,6 @@ public class TomcatManagerImpl implements TomcatManager
 
             String strongETag = String.format("\"%s-%s\"", cl, lm);
             r.setETag(strongETag);
-        
             return r;
         }
     }

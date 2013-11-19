@@ -1,5 +1,5 @@
 /**
- * $Id: UvmErrorReportValve.java 35466 2013-07-30 11:11:48Z vdumitrescu $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -28,7 +28,6 @@ public class UvmErrorReportValve extends ErrorReportValve
     private static final Logger logger = Logger.getLogger(UvmErrorReportValve.class);
 
     protected void report(Request request, Response response, Throwable throwable)
-        throws IOException
     {
         try {
             doReport(request, response, throwable);
@@ -42,7 +41,7 @@ public class UvmErrorReportValve extends ErrorReportValve
     {
         int statusCode = response.getStatus();
 
-        if ((statusCode < 400) || (response.getContentCount() > 0)) {
+        if ((statusCode < 400) || (response.getContentWritten() > 0)) {
             return;
         }
 

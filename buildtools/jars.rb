@@ -44,33 +44,33 @@ class Jars
     const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
                         Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
-    const_set(:TomcatCommon, [ 'commons-el.jar',
-                              'jasper-compiler.jar',
-                              'jasper-compiler-jdt.jar',
-                              'jasper-runtime.jar',
-                              'jsp-api.jar',
-                              'naming-factory.jar',
-                              'naming-resources.jar',
-                              'servlet-api.jar'
+    const_set(:TomcatCommon, [ 'jasper-el.jar',
+                               'jasper.jar',
+                               'el-api.jar',
+                               'jsp-api.jar',
+                               'servlet-api.jar'
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
+                Jars.downloadTarget("apache-tomcat-7.0.47/common/lib/#{n}")
               end)
 
-    const_set(:TomcatServer, [ 'catalina-optional.jar',
+    const_set(:TomcatServer, ['annotations-api.jar',
                               'catalina.jar',
-                              'commons-modeler-2.0.1.jar',
-                              'servlets-default.jar',
+                              'catalina-ant.jar',
+                              'ecj-4.2.2.jar',
+                              'tomcat-api.jar',
                               'tomcat-coyote.jar',
-                              'tomcat-http.jar',
+                              'tomcat-dbcp.jar',
+                              'tomcat-jdbc.jar',
                               'tomcat-util.jar',
-                              'tomcat-ajp.jar'
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
+                Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
               end)
+ 
+    const_set(:TomcatLogging,[Jars.downloadTarget("apache-tomcat-7.0.47/bin/tomcat-juli.jar")])
 
     # We use commons-logging-1.0.4 because for some reason using 1.1.1 makes tomcat output goto stdout
     # const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("apache-tomcat-5.5.26/bin/commons-logging-api-1.1.1.jar")])
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.0.4/commons-logging-1.0.4.jar")])
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.0.4/commons-logging-1.0.4.jar")] + TomcatLogging)
 
     ## XmlRpc Jars
     const_set(:XmlRpc, [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
