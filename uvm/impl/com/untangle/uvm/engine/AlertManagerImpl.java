@@ -28,6 +28,13 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.StaticRoute;
 
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.SimpleResolver;
+
 /**
  * Implements AlertManager. This class runs a series of test and creates alerts
  * for important things the administrator should know about. The UI displays these
@@ -71,6 +78,7 @@ public class AlertManagerImpl implements AlertManager
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -516,8 +524,40 @@ public class AlertManagerImpl implements AlertManager
                 }
                 /* otherwise check each DNS against spamhaus */
                 else {
-                    int result = this.execManager.execResult("host 2.0.0.127.zen.spamhaus.org " + dnsServer);
-                    if (result != 0) {
+                    Lookup lookup;
+                    Record[] records = null;
+                    InetAddress expectedResult;
+
+                    try {
+                        lookup = new Lookup("2.0.0.127.zen.spamhaus.org");
+                        expectedResult = InetAddress.getByName("127.0.0.4");
+                    } catch ( Exception e ) {
+                        logger.warn( "Invalid Lookup", e );
+                        continue;
+                    }
+                    try {
+                        lookup.setResolver( new SimpleResolver( dnsServer ) );
+                        records = lookup.run();
+                    } catch (Exception e) {
+                        logger.warn("Invalid Resolver: " + dnsServer );
+                    }
+                
+                    if ( records == null ) {
+                        records = new Record[0];
+                    }
+
+                    boolean found = false;
+                    
+                    found = false;
+                    for (Record r : records) {
+                        if (r instanceof ARecord) {
+                            InetAddress addr = ((ARecord)r).getAddress();
+                            if ( addr != null && addr.equals( expectedResult ) )
+                                found = true;
+                        }
+                    }
+
+                    if ( !found ) {
                         String alertText = "";
                         alertText += nodeName + " " + i18nUtil.tr("is installed but but a DNS server");
                         alertText += " (";
@@ -533,6 +573,73 @@ public class AlertManagerImpl implements AlertManager
         }
     }
 
+    private void testZveloDNSServers(List<String> alertList)
+    {
+        List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
+        
+        if ( sitefilterList.size() == 0 )
+            return;
+        
+        for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
+            if (!intf.getIsWan())
+                continue;
+            
+            InetAddress dnsPrimary   = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns1();
+            InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus( intf.getInterfaceId() ).getV4Dns2();
+
+            List<String> dnsServers = new LinkedList<String>();
+            if ( dnsPrimary != null ) dnsServers.add(dnsPrimary.getHostAddress());
+            if ( dnsSecondary != null ) dnsServers.add(dnsSecondary.getHostAddress());
+
+            for (String dnsServer : dnsServers) {
+
+                Lookup lookup;
+                Record[] records = null;
+
+                try {
+                    lookup = new Lookup("0.www.cnn.com.8f03.un-6f5ff89f7a498382.v3.url.zvelo.com", Type.TXT);
+                } catch ( Exception e ) {
+                    logger.warn( "Invalid Lookup", e );
+                    continue;
+                }
+                try {
+                    lookup.setResolver( new SimpleResolver( dnsServer ) );
+                    records = lookup.run();
+                } catch (Exception e) {
+                    logger.warn("Invalid Resolver: " + dnsServer );
+                }
+                
+                if ( records == null ) {
+                    records = new Record[0];
+                }
+
+                boolean found = false;
+                for (Record r : records) {
+                    if (r instanceof TXTRecord) {
+                        for (Object o : ((TXTRecord)r).getStringsAsByteArrays()) {
+                            String resultStr = new String((byte[])o);
+                            //if there is a TXT response that includes cnn.com its probably correct
+                            if (resultStr.contains("cnn.com"))
+                                found = true;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    String alertText = "";
+                    alertText += "Web Filter " + i18nUtil.tr("is installed but a DNS server");
+                    alertText += " (";
+                    alertText += intf.getName();
+                    alertText += ",";
+                    alertText += dnsServer + ")";
+                    alertText += i18nUtil.tr(" fails to resolve categorization queries.");
+
+                    alertList.add(alertText);
+                }
+            }
+        }
+    }
+    
     /**
      * This test that the event writing time on average is not "too" slow.
      */
