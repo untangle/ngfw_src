@@ -129,7 +129,10 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
         # connect openvpn from the PC to the Untangle server.
         result = os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo openvpn "+siteName+".conf &\"")
+        time.sleep(10) # wait for vpn tunnel to form
         result = subprocess.call(["ping","-c","1",ClientControl.hostIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # stop the vpn tunnel
+        result = os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo pkill openvpn\"")
         assert(result==0)
         
     def test_999_finalTearDown(self):
