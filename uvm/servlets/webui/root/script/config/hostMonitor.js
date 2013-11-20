@@ -377,28 +377,35 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     dataIndex: 'penaltyBoxExitTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
-                }, Ext.create('Ext.grid.column.Action', {
-                    width: 80,
+                }, {
+                    width: 85,
                     header: this.i18n._("Control"),
                     dataIndex: null,
-                    handler: Ext.bind(function(view, rowIndex, colIndex) {
-                        var record = view.getStore().getAt(rowIndex);
-                        Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
-                        rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridPenaltyBox.reload();
-                        }, this), record.data.address );
-                    }, this ),
                     renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                         var out= '';
                         if(record.data.internalId>=0) {
-                            //adding the x-action-col-0 class to force the processing of click event
-                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Release") + '</div>';
+                            var id = Ext.id();
+                            Ext.defer(function () {
+                                var button = Ext.widget('button', {
+                                    renderTo: id, 
+                                    text: this.i18n._("Release"), 
+                                    width: 75,
+                                    handler: Ext.bind(function () { 
+                                        Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
+                                        rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridPenaltyBox.reload();
+                                        }, this), record.data.address );
+                                    }, this)
+                                });
+                                this.subCmps.push(button);
+                            }, 50, this);
+                            out=  Ext.String.format('<div id="{0}"></div>', id);
                         }
                         return out;
                     }, this)
-                })]
+                }]
             });
 
         },
@@ -470,49 +477,63 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     dataIndex: 'quotaExpirationTime',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
-                }, Ext.create('Ext.grid.column.Action',{
-                    width: 80,
+                }, {
+                    width: 85,
                     header: this.i18n._("Refill Quota"),
                     dataIndex: null,
-                    handler: Ext.bind(function(view, rowIndex, colIndex) {
-                        var record = view.getStore().getAt(rowIndex);
-                        Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
-                        rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridQuotaBox.reload();
-                        }, this), record.data.address );
-                    }, this ),
-                    renderer: Ext.bind(function(value, metadata, record) {
+                    renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                         var out= '';
                         if(record.data.internalId>=0) {
-                            //adding the x-action-col-0 class to force the processing of click event
-                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;" >' + this.i18n._("Refill") + '</div>';
+                            var id = Ext.id();
+                            Ext.defer(function () {
+                                var button = Ext.widget('button', {
+                                    renderTo: id, 
+                                    text: this.i18n._("Refill"), 
+                                    width: 75,
+                                    handler: Ext.bind(function () { 
+                                        Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
+                                        rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridQuotaBox.reload();
+                                        }, this), record.data.address );
+                                    }, this)
+                                });
+                                this.subCmps.push(button);
+                            }, 50, this);
+                            out=  Ext.String.format('<div id="{0}"></div>', id);
                         }
                         return out;
                     }, this)
-                }), Ext.create('Ext.grid.column.Action',{
-                    width: 80,
+                }, {
+                    width: 85,
                     header: this.i18n._("Drop Quota"),
                     dataIndex: null,
-                    handler: Ext.bind(function(view, rowIndex, colIndex) {
-                        var record = view.getStore().getAt(rowIndex);
-                        Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
-                        rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridQuotaBox.reload();
-                        }, this), record.data.address );
-                    }, this ),
-                    renderer: Ext.bind(function(value, metadata, record) {
+                    renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                         var out= '';
                         if(record.data.internalId>=0) {
-                            //adding the x-action-col-0 class to force the processing of click event
-                            out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;" >' + this.i18n._("Drop") + '</div>';
+                            var id = Ext.id();
+                            Ext.defer(function () {
+                                var button = Ext.widget('button', {
+                                    renderTo: id, 
+                                    text: this.i18n._("Drop"), 
+                                    width: 75,
+                                    handler: Ext.bind(function () { 
+                                        Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
+                                        rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridQuotaBox.reload();
+                                        }, this), record.data.address );
+                                    }, this)
+                                });
+                                this.subCmps.push(button);
+                            }, 50, this);
+                            out=  Ext.String.format('<div id="{0}"></div>', id);
                         }
                         return out;
                     }, this)
-                })]
+                }]
             });
 
         },

@@ -1726,7 +1726,7 @@ Ext.define("Ung.NodePreview", {
 });
 Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
 
-// Message Manager object
+// Metric Manager object
 Ung.MetricManager = {
     // update interval in millisecond
     updateFrequency: 3000,

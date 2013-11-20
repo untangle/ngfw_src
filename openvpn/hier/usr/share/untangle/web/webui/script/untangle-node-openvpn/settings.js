@@ -419,27 +419,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
-        getDownloadColumn: function() {
-            return Ext.create('Ext.grid.column.Action', {
-                width: 110,
-                header: this.i18n._("Download"),
-                dataIndex: null,
-                i18n: this.i18n,
-                iconCls:'',
-                handler: function(view, rowIndex, colIndex) {
-                    var record = view.getStore().getAt(rowIndex);
-                    view.ownerCt.distributeWindow.populate(record);
-                },
-                renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
-                    var out= '';
-                    if(record.data.internalId>=0) {
-                        //adding the x-action-col-0 class to force the processing of click event
-                        out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Download Client") + '</div>';
-                    }
-                    return out;
-                }, this )
-            });
-        },
         getGroupsColumn: function() {
             return {
                 header: this.i18n._("Group"),
@@ -668,7 +647,30 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     },
                     this.getGroupsColumn(),
-                    this.getDownloadColumn()],
+                    {
+                        width: 120,
+                        header: this.i18n._("Download"),
+                        dataIndex: null,
+                        renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
+                            var out= '';
+                            if(record.data.internalId>=0) {
+                                var id = Ext.id();
+                                Ext.defer(function () {
+                                    var button = Ext.widget('button', {
+                                        renderTo: id, 
+                                        text: this.i18n._("Download Client"), 
+                                        width: 110,
+                                        handler: Ext.bind(function () { 
+                                            this.gridRemoteClients.distributeWindow.populate(record);
+                                        }, this)
+                                    });
+                                    this.subCmps.push(button);
+                                }, 50, this);
+                                out=  Ext.String.format('<div id="{0}"></div>', id);
+                            }
+                            return out;
+                        }, this)
+                    }],
                 columnsDefaultSortable: true
             });
             this.gridRemoteClients.setRowEditor( Ext.create('Ung.RowEditorWindow',{
