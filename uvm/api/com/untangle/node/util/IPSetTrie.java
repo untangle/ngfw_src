@@ -1,5 +1,5 @@
-/*
- * $Id: IPSetTrie.java 30204 2011-11-22 22:25:07Z dmorris $
+/**
+ * $Id$
  */
 package com.untangle.node.util;
 
