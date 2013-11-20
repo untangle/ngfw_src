@@ -26,7 +26,7 @@ public class Welcome extends HttpServlet
     {        
         String url = WEBUI_URL;
 
-        /* If the server is not activated send them to the setup page. */
+        /* If the setup wizard is not complete send them to the setup page. */
         if ( !UvmContextFactory.context().isWizardComplete() ) url = SETUP_URL;
 
         if (request.getParameter("console") != null && request.getParameter("console").equals("1")) {

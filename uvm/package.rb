@@ -93,8 +93,14 @@ if BuildEnv::SRC.isDevel
     File.open( wizardCompleteFile, "w" ) { |f| f.puts( "true" ) }
   end
 
+  isRegisteredFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/is-registered-flag"
+  file isRegisteredFile do
+    File.open( isRegisteredFile, "w" ) { |f| f.puts( "true" ) }
+  end
+
   BuildEnv::SRC.installTarget.register_dependency(uidFile)
   BuildEnv::SRC.installTarget.register_dependency(wizardCompleteFile)
+  BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
 jsFiles = FileList["./uvm/**/*.js"]

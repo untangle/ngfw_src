@@ -32,8 +32,6 @@ public class StartPageServlet extends HttpServlet
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
         String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
-        boolean isWizardComplete = UvmContextFactory.context().isWizardComplete();
-        req.setAttribute( "isWizardComplete", isWizardComplete ? "true" : "false" );
         req.setAttribute( "companyName", companyName );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
         req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );

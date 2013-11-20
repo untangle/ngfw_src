@@ -65,6 +65,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
+    private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
 
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
@@ -393,6 +394,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return keyFile.exists();
     }
 
+    public boolean isRegistered()
+    {
+        File keyFile = new File(IS_REGISTERED_FLAG_FILE);
+        return keyFile.exists();
+    }
+    
     /**
      * Returns true if this is a developer build in the development environment
      */

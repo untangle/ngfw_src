@@ -27,7 +27,7 @@ Ext.define("Ung.Main", {
     upgradeLastCheckTime: null,
     firstTimeRun: null,
     policyNodeWidget:null,
-    initialScreenShowed: false,
+    initialScreenAlreadyShown: false,
     
     // init function
     constructor: function(config) {
@@ -225,22 +225,6 @@ Ext.define("Ung.Main", {
 
         return query;
     },
-    openFailureScreen: function () {
-        var url = "/webui/offline.jsp";
-        this.openIFrame( url, i18n._("Warning") );
-    },
-    openUpgradeScreen: function() {
-        var url = "/webui/upgrade.jsp";
-        this.openIFrame( url, i18n._("Upgrades") );
-    },
-    openRunSetupScreen: function() {
-        var url = "/webui/runsetup.jsp";
-        this.openIFrame( url, i18n._("Welcome") );
-    },     
-    openSetupWizardScreen: function() {
-        var url = "/setup/";
-        this.openIFrame( url, i18n._("Setup Wizard") );
-    },     
     openLegal: function( topic ) {
         var baseUrl;
         try {
@@ -249,7 +233,9 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + this.systemInfo();
-        this.openIFrame( url, i18n._("Legal") );
+
+        console.log("Open Url   :", url);
+        window.open(url); // open a new window
     },
     openHelp: function( topic ) {
         var baseUrl;
@@ -259,9 +245,8 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
-        //console.log("Open Help Topic :", topic);
-        //console.log("Open Help Url   :", url);
-        //this.openIFrame( url, i18n._("Help") );
+
+        console.log("Open Url   :", url);
         window.open(url); // open a new window
     },
     openSupportScreen: function() {
@@ -272,7 +257,9 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + "action=support" + "&" + this.systemInfo();
-        this.openIFrame( url, i18n._("Get Support") );
+
+        console.log("Open Url   :", url);
+        window.open(url); // open a new window
     },
     openMyAccountScreen: function() {
         var baseUrl;
@@ -282,17 +269,9 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + "action=my_account" + "&" + this.systemInfo();
-        this.openIFrame( url, i18n._("Welcome") );
-    },
-    openWelcomeScreen: function () {
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "action=welcome" + "&" + this.systemInfo();
-        this.openIFrame( url, i18n._("Welcome") );
+
+        console.log("Open Url   :", url);
+        window.open(url); // open a new window
     },
     openLibItemStore: function (libItemName, title) {
         var baseUrl;
@@ -302,19 +281,11 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         var url = baseUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
-        this.openIFrame( url, title );
+
+        console.log("Open Url   :", url);
+        window.open(url); // open a new window
     },
-    openIFrame: function( url, title ) {
-        console.log("Open IFrame:", url);
-        if ( url == null ) {
-            alert("can not open window to null URL");
-        }
-        var iframeWin = main.getIframeWin();
-        iframeWin.show();
-        iframeWin.setTitle(title);
-        window.frames["iframeWin_iframe"].location.href = url;
-    },
-    closeStore: function() {
+    closeIframe: function() {
         if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
             this.iframeWin.closeWindow();
         } 
@@ -684,9 +655,14 @@ Ext.define("Ung.Main", {
                                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
         }
-        if (this.nodes.length == 0 && !this.target) {
-            this.showInitialScreen();
-        }
+        rpc.jsonrpc.UvmContext.isRegistered( Ext.bind(function(result,exception) {
+            if(Ung.Util.handleException(exception)) return;
+            if (result === false)
+                this.showInitialScreen();
+        }, this ));
+        // if (this.nodes.length == 0 && !this.target) {
+        //     this.showInitialScreen();
+        // }
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
@@ -775,14 +751,15 @@ Ext.define("Ung.Main", {
             var i=0, j=0; installableNodes=rpc.rackView.installable.list;
             var updatedApps = [];
             while(i<installableNodes.length || j<main.apps.length) {
+                var appCmp;
                 if(i==installableNodes.length) {
                     //console.log("destroy", j);
                     Ext.destroy(main.apps[j]);
-                    main.apps[j]=null
+                    main.apps[j]=null;
                     j++;
                 } else if(j == main.apps.length) {
                     //console.log("add", i);
-                    var appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                    appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
                     updatedApps.push(appCmp);
                     i++;
                 } else if(installableNodes[i].name == main.apps[j].nodeProperties.name) {
@@ -790,15 +767,15 @@ Ext.define("Ung.Main", {
                     updatedApps.push(main.apps[j]);
                     i++;
                     j++;
-                }else if(installableNodes[i].viewPosition < main.apps[j].nodeProperties.viewPosition) {
+                } else if(installableNodes[i].viewPosition < main.apps[j].nodeProperties.viewPosition) {
                     //console.log("add", i);
-                    var appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                    appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
                     updatedApps.push(appCmp);
                     i++;
                 } else if(installableNodes[i].viewPosition >= main.apps[j].nodeProperties.viewPosition){
                     //console.log("destroy", j);
                     Ext.destroy(main.apps[j]);
-                    main.apps[j]=null
+                    main.apps[j]=null;
                     j++;
                 }
             }
@@ -1293,70 +1270,71 @@ Ext.define("Ung.Main", {
         
         return i18n._("None");
     },
-
     /**
-     *  Prepares the uvm to display the welcome screen
-     */      
-    showInitialScreen: function () {
-        if(this.initialScreenShowed) {
-            return;
-        }
-        this.initialScreenShowed=true;
-        try {
-            // FIXME
-            this.updateInitialScreen();
-            //Ext.Function.defer(Ext.MessageBox.wait,40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
-            // rpc.rackManager.isUpgradeServerAvailable(Ext.bind(function (result, exception) {
-            //     if(Ung.Util.handleException(exception)) throw Exception("failure");
-            //         this.updateInitialScreen();
-            // }, this));
-        } catch(e) {
-             this.updateInitialScreen();
-        }
-    },
-    /**
-     *  cleanup and ensure the window opened is on the right size
+     * Opens a link in a iframe pop-up window in the middle of the rack
      */
-    postInitialScreen: function () {
-        var ifr = main.getIframeWin();
+    openIFrame: function( url, title ) {
+        console.log("Open IFrame:", url);
+        if ( url == null ) {
+            alert("can not open window to null URL");
+        }
+        var iframeWin = main.getIframeWin();
+
         var position = [];
         var size = main.viewport.getSize();
         var centerSize = Ext.getCmp('center').getSize();
         var centerPosition = Ext.getCmp('center').getPosition();
 
-        ifr.initialConfig.sizeToRack = false;
-        ifr.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});
-
         position[0] = centerPosition[0]+Math.round(centerSize.width/20);
         position[1] = centerPosition[1]+Math.round(centerSize.height/20);
 
-        ifr.setPosition(position[0],position[1]);
+        iframeWin.show();
 
-        Ext.MessageBox.hide();
-        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});
+        iframeWin.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});
+        iframeWin.setPosition(position[0],position[1]);
+        iframeWin.setTitle(title);
+
+        window.frames["iframeWin_iframe"].location.href = url;
+    },
+    openFailureScreen: function () {
+        var url = "/webui/offline.jsp";
+        this.openIFrame( url, i18n._("Warning") );
     },
     /**
-     *  Displays the appropriate screen after determining connectivity
-     **/     
-    updateInitialScreen: function() {
-        var ifr = main.getIframeWin(),
-            position = [],
-            size = main.viewport.getSize(),
-            centerSize = Ext.getCmp('center').getSize(),
-            centerPosition = Ext.getCmp('center').getPosition();
-        if(isWizardComplete===true) {
-            //FIXME
-            // if not online
-            //this.openFailureScreen();
-        } else {
-            this.openRunSetupScreen();
+     *  Prepares the uvm to display the welcome screen
+     */      
+    showInitialScreen: function () {
+        if(this.initialScreenAlreadShown) {
+            return;
         }
+        this.initialScreenAlreadShown = true;
+
+        // FIXME
+        // if not online
+        // this.openFailureScreen();
+
         this.postInitialScreen();
+    },
+    /**
+     *  cleanup and ensure the window opened is on the right size
+     */
+    postInitialScreen: function () {
+        Ext.MessageBox.hide();
+
+        var baseUrl;
+        try {
+            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        var url = baseUrl + "?" + "action=register" + "&" + this.systemInfo();
+
+        this.openIFrame( url, i18n._("Register"));
     },
     /**
      *  Hides the welcome screen
      */         
     hideWelcomeScreen: function() {
-        main.closeStore();
+        main.closeIframe();
     }
 });

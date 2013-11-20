@@ -284,6 +284,13 @@ public interface UvmContext
     boolean isWizardComplete();
 
     /**
+     * Returns true if this server is registered with store account
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isRegistered();
+    
+    /**
      * blocks until startup is complete
      */
     void waitForStartup();
