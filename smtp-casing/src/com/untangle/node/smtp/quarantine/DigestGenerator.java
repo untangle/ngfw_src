@@ -1,5 +1,5 @@
 /**
- * $Id: DigestGenerator.java 35047 2013-06-17 18:20:40Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: InboxIndex.java 35472 2013-07-30 11:46:24Z dcibu $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine;
 

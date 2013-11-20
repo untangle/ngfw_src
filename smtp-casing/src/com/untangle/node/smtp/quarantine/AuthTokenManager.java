@@ -1,5 +1,5 @@
 /**
- * $Id: AuthTokenManager.java 34295 2013-03-17 20:24:07Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine;
 

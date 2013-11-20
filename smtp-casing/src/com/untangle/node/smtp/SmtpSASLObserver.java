@@ -1,5 +1,5 @@
 /**
- * $Id: SmtpSASLObserver.java 34540 2013-04-12 05:14:32Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp;
 

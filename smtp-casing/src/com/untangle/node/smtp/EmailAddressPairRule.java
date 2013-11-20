@@ -1,5 +1,5 @@
 /**
- * $Id: EmailAddressPairRule.java 34290 2013-03-17 00:00:19Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp;
 

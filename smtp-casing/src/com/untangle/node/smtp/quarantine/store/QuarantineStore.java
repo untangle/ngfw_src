@@ -1,5 +1,5 @@
 /**
- * $Id: QuarantineStore.java 35471 2013-07-30 11:44:19Z dcibu $
+ * $Id$
  */
 package com.untangle.node.smtp.quarantine.store;
 

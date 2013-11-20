@@ -1,5 +1,5 @@
 /**
- * $Id: SafelistManipulation.java 34293 2013-03-17 05:22:02Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp.safelist;
 
