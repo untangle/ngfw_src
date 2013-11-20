@@ -1059,25 +1059,20 @@ Ext.define("Ung.AppItem", {
     nodeProperties: null,
     iconSrc: null,
     iconCls: null,
-    renderTo: 'appsItems',
-    operationSemaphore: false,
     autoEl: 'div',
     state: null,
     // progress bar component
     progressBar: null,
     subCmps:null,
     download: null,
-    constructor: function( nodeProperties ) {
+    constructor: function( nodeProperties, renderPosition) {
         this.subCmps=[];
-        this.isValid=true;
         this.nodeProperties = nodeProperties;
         this.id = "app-item_" + this.nodeProperties.displayName;
         this.callParent(arguments);
+        this.render('appsItems',renderPosition);
     },
     afterRender: function() {
-        if(!this.isValid) {
-            return;
-        }
         this.callParent(arguments);
 
         if (this.nodeProperties.name && this.getEl()) {
@@ -1637,7 +1632,7 @@ Ext.define("Ung.Node", {
                             }
                         }
                     }
-                    main.loadRackView();
+                    main.updateRackView();
                 }, this), this.nodeId);
             }
         }, this));

@@ -656,13 +656,11 @@ Ext.define("Ung.Main", {
             this.apps=null;
         }
         //build Apps
-        this.apps=[];
+        main.apps=[];
         for(i=0;i<rpc.rackView.installable.list.length;i++) {
             var application=rpc.rackView.installable.list[i];
             var appCmp=new Ung.AppItem(application);
-            if(appCmp.isValid) {
-                this.apps.push(appCmp);
-            }
+            main.apps.push(appCmp);
         }
     },
     buildNodes: function() {
@@ -770,6 +768,45 @@ Ext.define("Ung.Main", {
         }, this);
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
+    updateRackView: function() {
+        var callback = Ext.bind(function(result,exception) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.rackView=result;
+            var i=0, j=0; installableNodes=rpc.rackView.installable.list;
+            var updatedApps = [];
+            while(i<installableNodes.length || j<main.apps.length) {
+                if(i==installableNodes.length) {
+                    //console.log("destroy", j);
+                    Ext.destroy(main.apps[j]);
+                    main.apps[j]=null
+                    j++;
+                } else if(j == main.apps.length) {
+                    //console.log("add", i);
+                    var appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                    updatedApps.push(appCmp);
+                    i++;
+                } else if(installableNodes[i].name == main.apps[j].nodeProperties.name) {
+                    //console.log("unchanged", i, j);
+                    updatedApps.push(main.apps[j]);
+                    i++;
+                    j++;
+                }else if(installableNodes[i].viewPosition < main.apps[j].nodeProperties.viewPosition) {
+                    //console.log("add", i);
+                    var appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                    updatedApps.push(appCmp);
+                    i++;
+                } else if(installableNodes[i].viewPosition >= main.apps[j].nodeProperties.viewPosition){
+                    //console.log("destroy", j);
+                    Ext.destroy(main.apps[j]);
+                    main.apps[j]=null
+                    j++;
+                }
+            }
+            main.apps=updatedApps;
+            main.buildNodes();
+        }, this);
+        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
+    },
     loadLicenses: function() {
         try {
           //force re-sync with server
@@ -826,7 +863,7 @@ Ext.define("Ung.Main", {
         main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            main.loadRackView();
+            main.updateRackView();
         }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
