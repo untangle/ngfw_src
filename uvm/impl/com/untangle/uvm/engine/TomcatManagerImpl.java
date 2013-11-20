@@ -14,6 +14,7 @@ import java.util.Properties;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +34,7 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ResourceAttributes;
+import org.apache.naming.resources.ProxyDirContext;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -65,6 +67,9 @@ public class TomcatManagerImpl implements TomcatManager
 
         emb = new Tomcat();
         emb.setBaseDir(catalinaHome);
+        logger.info("Catalina Home:" + catalinaHome);
+        logger.info("Tomcat start/stop threads:" + Runtime.getRuntime().availableProcessors());
+        
 
         // create an Engine
         StandardEngine baseEngine = (StandardEngine)emb.getEngine();
@@ -80,6 +85,7 @@ public class TomcatManagerImpl implements TomcatManager
         baseHost.setDeployOnStartup(true);
         baseHost.setAutoDeploy(true);
         baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
+        baseHost.setStartStopThreads(Runtime.getRuntime().availableProcessors());
 
 
         loadServlet("/blockpage", "blockpage");
@@ -135,7 +141,6 @@ public class TomcatManagerImpl implements TomcatManager
                 emb.stop();
             }
         } catch (LifecycleException exn) {
-            exn.printStackTrace();
             logger.debug(exn);
         }
     }
@@ -173,7 +178,7 @@ public class TomcatManagerImpl implements TomcatManager
     {
         logger.info("Tomcat starting...");
 
-        Connector jkConnector = new Connector("org.apache.coyote.ajp.AjpProtocol");
+        Connector jkConnector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
         jkConnector.setPort(8009);
         jkConnector.setDomain("127.0.0.1");
 
@@ -314,7 +319,14 @@ public class TomcatManagerImpl implements TomcatManager
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); // disable session persistence
             ctx.setManager(mgr);
-            ctx.setResources(new StrongETagDirContext());
+            DirContext dc = ctx.getResources();
+            if ( dc == null) {
+                ctx.setResources(new StrongETagDirContext());
+            } else {
+                ctx.stop();
+                ctx.setResources(new StrongETagDirContext());
+                ctx.start();
+            }
             if (null != options.valve) ctx.addValve(options.valve);
             if (null != auth) {
                 Pipeline pipe = ctx.getPipeline();
@@ -396,16 +408,17 @@ public class TomcatManagerImpl implements TomcatManager
     @SuppressWarnings("unchecked")
     private class StrongETagDirContext extends FileDirContext
     {
-        @Override
-        public Attributes getAttributes(Name name, String[] attrIds) throws NamingException
+        protected Attributes doGetAttributes(String name, String[] attrIds) throws NamingException
         {
-            ResourceAttributes r = (ResourceAttributes) super.getAttributes(name, attrIds);
-            long cl = r.getContentLength();
-            long lm = r.getLastModified();
-
-            String strongETag = String.format("\"%s-%s\"", cl, lm);
-            r.setETag(strongETag);
+            ResourceAttributes r = (ResourceAttributes) super.doGetAttributes(name, attrIds);
+            if ( r != null) {
+                long cl = r.getContentLength();
+                long lm = r.getLastModified();
+                String strongETag = String.format("\"%s-%s\"", cl, lm);
+                r.setETag(strongETag);
+            }
             return r;
         }
+
     }
 }

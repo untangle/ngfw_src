@@ -438,7 +438,7 @@ class JavaCompilerTarget < Target
     end
 
     @javaFiles.each do |f|
-      classFile =  f.gsub(/.*com/,"#{@destination}/com").gsub(/.java$/,".class")
+      classFile =  f.gsub(/.*com\//,"#{@destination}/com/").gsub(/.java$/,".class")
       debug classFile
 
       ## Make the classfile depend on the source itself

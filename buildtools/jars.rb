@@ -65,12 +65,10 @@ class Jars
                             ].map do |n|
                 Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
               end)
- 
+
     const_set(:TomcatLogging,[Jars.downloadTarget("apache-tomcat-7.0.47/bin/tomcat-juli.jar")])
 
-    # We use commons-logging-1.0.4 because for some reason using 1.1.1 makes tomcat output goto stdout
-    # const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("apache-tomcat-5.5.26/bin/commons-logging-api-1.1.1.jar")])
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.0.4/commons-logging-1.0.4.jar")] + TomcatLogging)
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + TomcatLogging)
 
     ## XmlRpc Jars
     const_set(:XmlRpc, [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
