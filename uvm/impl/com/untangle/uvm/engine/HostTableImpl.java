@@ -78,7 +78,6 @@ public class HostTableImpl implements HostTable
         if ( entry == null && createIfNecessary ) {
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
-            adjustMaxSizeIfNecessary();
             this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
         }
 
@@ -88,7 +87,6 @@ public class HostTableImpl implements HostTable
     public void setHostTableEntry( InetAddress addr, HostTableEntry entry )
     {
         hostTable.put( addr, entry );
-        adjustMaxSizeIfNecessary();
     }
 
     public LinkedList<HostTableEntry> getHosts()
@@ -413,6 +411,11 @@ public class HostTableImpl implements HostTable
         return new EventLogQuery[] { this.quotaEventQuery };
     }
 
+    public int getCurrentSize()
+    {
+        return this.hostTable.size();
+    }
+
     public int getMaxSize()
     {
         return this.maxSize;
@@ -428,8 +431,20 @@ public class HostTableImpl implements HostTable
 
     private void adjustMaxSizeIfNecessary()
     {
-        if (this.hostTable.size() > this.maxSize)
-            this.maxSize = this.hostTable.size();
+        int realSize = 0;
+
+        /**
+         * Only count hosts with getLastSessionTime() is > 0
+         * Meaning the UVM has processed sessions for that host
+         */
+        for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
+            HostTableEntry entry = i.next();
+            if (entry.getLastSessionTime() > 0)
+                realSize++;
+        }
+        
+        if (realSize > this.maxSize)
+            this.maxSize = realSize;
     }
 
     /**
@@ -485,7 +500,7 @@ public class HostTableImpl implements HostTable
                         if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {
 
                             /**
-                             * However, if it has a quota or is penalty boxed,
+                             * However, if it has a quota or is penalty boxed or captive portal username.
                              * do not delete it entirely because that would delete
                              * "vital" information, such as the quota values or penalty box state.
                              * Instead, just create a new HostTableEntry that saves these values
@@ -518,6 +533,9 @@ public class HostTableImpl implements HostTable
                             }
                         }
                     }
+
+                    adjustMaxSizeIfNecessary();
+                    
                 } catch (Exception e) {
                     logger.warn("Exception while cleaning host table",e);
                 }
@@ -542,7 +560,6 @@ public class HostTableImpl implements HostTable
                 logger.debug("HostTableReverseHostnameLookup: Running... ");
 
                 try {
-                    Long now = System.currentTimeMillis();
                     /**
                      * Remove old entries
                      */
