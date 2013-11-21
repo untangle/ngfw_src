@@ -399,6 +399,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         File keyFile = new File(IS_REGISTERED_FLAG_FILE);
         return keyFile.exists();
     }
+
+    public void setRegistered()
+    {
+        File keyFile = new File(IS_REGISTERED_FLAG_FILE);
+        if ( ! keyFile.exists() ) {
+            try {
+                keyFile.createNewFile();
+            } catch ( Exception e ) {
+                logger.error( "Failed to create registration file", e );
+            }
+        }
+    }
     
     /**
      * Returns true if this is a developer build in the development environment

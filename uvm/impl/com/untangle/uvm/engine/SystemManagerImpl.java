@@ -68,18 +68,20 @@ public class SystemManagerImpl implements SystemManager
          * If the settings file date is newer than the system files, re-sync them
          */
         File settingsFile = new File( settingsFileName );
-        File snmpConfFile = new File(SNMP_CONF_FILE_NAME);
-        File snmpDefaultFile = new File(SNMP_DEFAULT_FILE_NAME);
+        File snmpConfFile = new File( SNMP_CONF_FILE_NAME );
+        File snmpDefaultFile = new File( SNMP_DEFAULT_FILE_NAME );
         if (settingsFile.lastModified() > snmpConfFile.lastModified() ||
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
 
+        if (! CRON_FILE.exists() )
+            writeCronFile();
+        
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
             writeCronFile();
         
-        if (settings.getSnmpSettings().isEnabled() ) {
+        if (settings.getSnmpSettings().isEnabled() ) 
             restartDaemon();
-        }
 
         logger.info("Initialized SystemManager");
     }

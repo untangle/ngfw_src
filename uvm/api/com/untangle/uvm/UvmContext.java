@@ -289,6 +289,7 @@ public interface UvmContext
      * @return a <code>boolean</code> value
      */
     boolean isRegistered();
+    void    setRegistered();
     
     /**
      * blocks until startup is complete
