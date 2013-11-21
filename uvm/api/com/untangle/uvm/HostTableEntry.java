@@ -22,7 +22,7 @@ public class HostTableEntry implements Serializable, JSONString
     private InetAddress address;
     private long        creationTime;
     private long        lastAccessTime;
-    private long        lastSessionTime; /* time of the last new session */
+    private long        lastSessionTime = 0; /* time of the last new session */
 
     private String hostname;
     private String usernameAdConnector;
