@@ -390,6 +390,7 @@ while True:
                 "-Duvm.home=@UVM_HOME@ " +
                 "-Djdbc.drivers=org.postgresql.Driver " +
                 "-Dcom.untangle.isDevel=@IS_DEVEL@ " +
+                "-Djava.security.egd=file:/dev/./urandom " +
                 java_opts + " " + uvm_args + 
                 " com.untangle.uvm.engine.Main").split();
 

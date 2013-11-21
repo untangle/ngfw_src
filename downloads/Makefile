@@ -16,7 +16,7 @@ UNZIP=unzip
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
 	apache-tomcat-7.0.47.tar.gz jfreechart-1.0.13.tar.gz \
-	logging-log4j-1.2.16.tar.gz \
+	logging-log4j-1.2.16.tar.gz commons-logging-1.1.3.tar.gz \
 	bcel-5.2.tar.gz velocity-1.4.tar.gz \
 	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
@@ -28,7 +28,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
-	jabsorb-1.2.2-src.zip commons-logging-1.0.4.zip
+	jabsorb-1.2.2-src.zip
 
 jars=gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar \
 

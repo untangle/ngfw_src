@@ -51,22 +51,15 @@ BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/s
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", "uvm/servlets/library", [])
 
-deps = %w(
-           slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
-           slf4j-1.4.3/slf4j-api-1.4.3.jar
-           Ajax/jars/jstl.jar
-           Ajax/jars/standard.jar
-         ).map { |f| Jars.downloadTarget(f) }
-deps += Jars::Jabsorb
-
-deps << taglib
+deps=[]
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", "./uvm/servlets/webui", deps)
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", "./uvm/servlets/setup", deps)
 
 # Ajax Tk
-deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
+#deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
+deps=[]
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', "./uvm/servlets/blockpage", deps, [], [])
 
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)

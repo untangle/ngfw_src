@@ -4,12 +4,15 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.JarURLConnection;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -37,6 +40,10 @@ import org.apache.naming.resources.ResourceAttributes;
 import org.apache.naming.resources.ProxyDirContext;
 import org.apache.log4j.Logger;
 
+import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.JarScannerCallback;
+import org.apache.tomcat.util.scan.StandardJarScanner; 
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.AdministrationValve;
@@ -57,6 +64,8 @@ public class TomcatManagerImpl implements TomcatManager
     private final Tomcat emb;
     private final StandardHost baseHost;
     private final String webAppRoot;
+    
+    private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","untangle-casing-smtp-servlet-quarantine.jar"};
 
     // constructors -----------------------------------------------------------
 
@@ -309,6 +318,13 @@ public class TomcatManagerImpl implements TomcatManager
 
         try {
             StandardContext ctx = (StandardContext)emb.addWebapp(urlBase,fqRoot);
+            final Logger log = logger;
+            JarScanner jarScanner = new JarScanner() {
+                public void scan(ServletContext ctx, ClassLoader cld,  JarScannerCallback jsCallback, Set<String> jarsToSkip)  {
+                    new StandardJarScanner().scan(ctx,cld, new JarScannerCallbackProxy(jsCallback,logger), jarsToSkip);
+                }
+            };
+            ctx.setJarScanner(jarScanner);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
             ctx.setCrossContext(true);
@@ -420,5 +436,48 @@ public class TomcatManagerImpl implements TomcatManager
             return r;
         }
 
+    }
+    
+    private class JarScannerCallbackProxy implements JarScannerCallback 
+    {
+
+        private JarScannerCallback wrapped;
+        private Logger logger;
+            
+        public JarScannerCallbackProxy(JarScannerCallback instance,Logger log) 
+        {
+            wrapped = instance;
+            logger = log;
+        }
+        
+        private boolean shouldScan(String name) 
+        {
+            for (String s:tldScanTargets) {
+                if ( name.contains(s)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public void scan(JarURLConnection urlConn)throws IOException 
+        {
+            String name = urlConn.getJarFile().getName();
+            if ( shouldScan(name)) {
+                //logger.info("Scanning " + name);
+                wrapped.scan(urlConn);
+                return;
+            } 
+        }
+
+        public void scan(File file) throws IOException 
+        {
+            String name = file.getName();
+            if ( shouldScan(name)) {
+                //logger.info("Scanning " + name);
+                wrapped.scan(file);
+                return;
+            } 
+        }
     }
 }

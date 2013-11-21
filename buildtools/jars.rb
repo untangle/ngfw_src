@@ -68,7 +68,7 @@ class Jars
 
     const_set(:TomcatLogging,[Jars.downloadTarget("apache-tomcat-7.0.47/bin/tomcat-juli.jar")])
 
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + TomcatLogging)
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)
 
     ## XmlRpc Jars
     const_set(:XmlRpc, [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
