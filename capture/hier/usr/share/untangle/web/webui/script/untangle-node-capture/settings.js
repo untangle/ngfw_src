@@ -947,7 +947,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         buildUserEventLog: function() {
-            this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridUserEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 title: this.i18n._( "User Event Log" ),
                 helpSource: "captive_portal_user_event_log",
                 eventQueriesFn: this.getRpcNode().getUserEventQueries,
@@ -1032,7 +1032,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         buildRuleEventLog: function() {
-            this.gridRuleEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridRuleEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 title: this.i18n._( "Rule Event Log" ),
                 helpSource: "captive_portal_rule_event_log",
                 eventQueriesFn: this.getRpcNode().getRuleEventQueries,

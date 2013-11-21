@@ -431,7 +431,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         },
         // Event Log
         buildEventLog: function() {
-            this.gridEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 helpSource: 'spam_blocker_event_log',
                 settingsCmp: this,
                 // the list of fields
@@ -539,7 +539,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         },
         // Dnsbl Event Log
         buildDnsblEventLog: function() {
-            this.gridDnsblEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridDnsblEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 settingsCmp: this,
                 name: 'Tarpit Event Log',
                 helpSource: 'spam_blocker_tarpit_event_log',

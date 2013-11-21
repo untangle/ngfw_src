@@ -439,7 +439,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Event Log
         buildWebEventLog: function() {
-            this.gridWebEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridWebEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 name: 'Web Event Log',
                 //helpSource: 'virus_blocker_web_event_log',
                 //helpSource: 'virus_blocker_lite_web_event_log',
@@ -515,7 +515,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Event Log
         buildMailEventLog: function() {
-            this.gridMailEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridMailEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 name: 'Email Event Log',
                 //helpSource: 'virus_blocker_email_event_log',
                 //helpSource: 'virus_blocker_lite_email_event_log',
@@ -593,7 +593,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
         },
         buildFtpEventLog: function() {
-            this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
+            this.gridFtpEventLog = Ext.create('Ung.GridEventLogCustomizable',{
                 name: 'Ftp Event Log',
                 //helpSource: 'virus_blocker_ftp_event_log',
                 //helpSource: 'virus_blocker_lite_ftp_event_log',

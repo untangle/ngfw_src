@@ -343,7 +343,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         // Connections Event Log
         buildConnectionEventLog: function() {
-            this.gridConnectionEventLog = Ext.create('Ung.GridEventLog', {
+            this.gridConnectionEventLog = Ext.create('Ung.GridEventLogCustomizable', {
                 settingsCmp: this,
                 helpSource: 'openvpn_event_log',
                 eventQueriesFn: this.getRpcNode().getStatusEventsQueries,
