@@ -13,4 +13,8 @@ public interface SystemManager
     void setSettings(SystemSettings settings);
 
     String getPublicUrl();
+
+    boolean downloadUpdates();
+
+    org.json.JSONObject getDownloadStatus();
 }

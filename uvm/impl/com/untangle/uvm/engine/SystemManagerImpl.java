@@ -9,6 +9,9 @@ import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +21,7 @@ import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmState;
+import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.node.util.IOUtil;
 
@@ -35,11 +39,19 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
+
+    // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
+    private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
     
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private SystemSettings settings;
 
+    private int downloadTotalFileCount;
+    private int downloadCurrentFileCount;
+    private String downloadCurrentFileProgress;
+    private String downloadCurrentFileRate;
+    
     protected SystemManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -134,7 +146,87 @@ public class SystemManagerImpl implements SystemManager
         return primaryAddressStr + ":" + httpsPortStr;
     }
 
+    public boolean downloadUpdates()
+    {
+        LinkedList<String> downloadUrls = new LinkedList<String>();
+
+        String result = UvmContextFactory.context().execManager().execOutput( "apt-get dist-upgrade --yes --print-uris | awk '/^.http/ {print $1}'" );
+        try {
+            String lines[] = result.split("\\r?\\n");
+            for ( String line : lines ) {
+                // remove first and last character (quotes)
+                String newUrl = line.substring(1, line.length()-1);
+                logger.info("To Download: " + newUrl);
+                downloadUrls.add( newUrl );
+            }
+        } catch (Exception e) {
+            logger.error( "Error parsing downloads", e );
+            return false;
+        }
+
+        this.downloadTotalFileCount = downloadUrls.size();
+        this.downloadCurrentFileCount = 0;
+        
+        // run wget to fetch each each URL and track download progress
+        for ( String url : downloadUrls ) {
+            this.downloadCurrentFileCount++;
+            
+            try {
+                logger.info( "Downloading " + url );
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( "wget -c --progress=dot -P /var/cache/apt/archives/ " + url );
+
+                // read from stdout/stderr
+                for ( String output = reader.readFromOutput() ; output != null ; output = reader.readFromOutput() ) {
+                    String lines[] = output.split("\\r?\\n");
+                    for ( String line : lines ) {
+                        logger.debug("output: " + line);
+                        Matcher match = DOWNLOAD_PATTERN.matcher(line);
+                        if (match.matches()) {
+                            int bytesDownloaded = Integer.parseInt(match.group(1)) * 1000;
+                            String progress = match.group(2);
+                            String speed = match.group(3);
+
+                            this.downloadCurrentFileProgress = progress;
+                            this.downloadCurrentFileRate = speed + "B/sec";
+
+                            logger.info("progress: " + this.downloadCurrentFileProgress);
+                            logger.info("speed: " + this.downloadCurrentFileRate);
+                        }
+                    }
+                }
+
+                Integer retCode = reader.getResult();
+                if ( retCode == null || retCode != 0 ) {
+                    logger.error( "Error downloading updates: wget returned " + retCode );
+                    return false;
+                }
+                
+                reader.destroy();
+            } catch (Exception e) {
+                logger.error( "Exception downloading updates", e );
+                return false;
+            }
+        }
+        
+        return true;
+    }
     
+    public org.json.JSONObject getDownloadStatus()
+    {
+        org.json.JSONObject json = new org.json.JSONObject();
+
+        try {
+            json.put("downloadTotalFileCount", downloadTotalFileCount);
+            json.put("downloadCurrentFileCount", downloadCurrentFileCount);
+            json.put("downloadCurrentFileProgress", downloadCurrentFileProgress);
+            json.put("downloadCurrentFileRate", downloadCurrentFileRate);
+        } catch (Exception e) {
+            logger.error( "Error generating WebUI startup object", e );
+        }
+        return json;
+    }
+    
+
     private void _setSettings( SystemSettings newSettings )
     {
         /**
