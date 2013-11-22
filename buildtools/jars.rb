@@ -53,9 +53,7 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
               end)
 
-    const_set(:TomcatServer, ['annotations-api.jar',
-                              'catalina.jar',
-                              'catalina-ant.jar',
+    const_set(:TomcatServer, ['catalina.jar',
                               'ecj-4.2.2.jar',
                               'tomcat-api.jar',
                               'tomcat-coyote.jar',

@@ -78,7 +78,14 @@ public class TomcatManagerImpl implements TomcatManager
         emb.setBaseDir(catalinaHome);
         logger.info("Catalina Home:" + catalinaHome);
         logger.info("Tomcat start/stop threads:" + Runtime.getRuntime().availableProcessors());
-        
+        //Don't need HTTP endpoint, only AJP will be used
+        Connector httpConnector = emb.getConnector();
+        try {
+            httpConnector.stop();
+            httpConnector.destroy();
+        } catch (Exception ex) {
+            logger.error("Exception while stopping http connector", ex);
+        }
 
         // create an Engine
         StandardEngine baseEngine = (StandardEngine)emb.getEngine();
