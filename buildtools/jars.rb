@@ -44,27 +44,23 @@ class Jars
     const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
                         Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
-    const_set(:TomcatCommon, [ 'jasper-el.jar',
-                               'jasper.jar',
-                               'el-api.jar',
-                               'jsp-api.jar',
-                               'servlet-api.jar'
+    const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',
+                               'tomcat-embed-core.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
+                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
               end)
 
-    const_set(:TomcatServer, ['catalina.jar',
+    const_set(:TomcatServer, ['tomcat-dbcp.jar',
                               'ecj-4.2.2.jar',
-                              'tomcat-api.jar',
-                              'tomcat-coyote.jar',
-                              'tomcat-dbcp.jar',
-                              'tomcat-jdbc.jar',
-                              'tomcat-util.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-7.0.47/lib/#{n}")
+                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
               end)
 
-    const_set(:TomcatLogging,[Jars.downloadTarget("apache-tomcat-7.0.47/bin/tomcat-juli.jar")])
+    const_set(:TomcatLogging, ['tomcat-embed-logging-juli.jar',
+                              'tomcat-embed-logging-log4j.jar',
+                         ].map do |n|
+                Jars.downloadTarget("apache-tomcat-7.0.47-embed/#{n}")
+             end)
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)
 
