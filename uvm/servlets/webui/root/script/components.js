@@ -2843,15 +2843,15 @@ Ext.define("Ung.GridEventLogBuffered", {
             data: [],
             buffered: false,
             proxy: {
-                type: 'pagingmemory',
+                type: 'memory',
                 reader: {
                     type: 'json',
                     root: 'list'
                 }
             },
             autoLoad: false,
-            remoteSort:true,
-            remoteFilter: true
+            remoteSort:false,
+            remoteFilter: false
         });
 
         this.bbar = [{
