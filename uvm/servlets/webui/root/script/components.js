@@ -3497,13 +3497,13 @@ Ung.CustomEventLog = {
                     }
                 }, {
                     hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
-                    header: i18n._("Server (S)") ,
+                    header: i18n._("Server") ,
                     width: Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable: true,
                     dataIndex: 's_server_addr'
                 }, {
                     hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
-                    header: i18n._("Server Port (S)"),
+                    header: i18n._("Server Port"),
                     width: Ung.Util.portFieldWidth + 40, // +40 for column header
                     sortable: true,
                     dataIndex: 's_server_port'
