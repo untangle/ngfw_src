@@ -1032,67 +1032,10 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         buildRuleEventLog: function() {
-            this.gridRuleEventLog = Ext.create('Ung.GridEventLogCustomizable',{
-                title: this.i18n._( "Rule Event Log" ),
-                helpSource: "captive_portal_rule_event_log",
-                eventQueriesFn: this.getRpcNode().getRuleEventQueries,
-                settingsCmp: this,
-                fields: [{
-                    name: "capture_rule_index"
-                },{
-                    name: "time_stamp",
-                    sortType: Ung.SortTypes.asTimestamp
-                },{
-                    name: "c_client_addr"
-                },{
-                    name: "c_client_port"
-                },{
-                    name: "s_server_addr"
-                },{
-                    name: "s_server_port"
-                },{
-                    name: "capture_blocked"
-                }],
-
-                columns: [{
-                    header: this.i18n._("Rule ID"),
-                    width: 80,
-                    dataIndex: 'capture_rule_index'
-                },{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth + 20,
-                    sortable: true,
-                    dataIndex: "time_stamp",
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                },{
-                    header: this.i18n._("Client Address"),
-                    width: Ung.Util.ipFieldWidth + 20,
-                    sortable: true,
-                    dataIndex: "c_client_addr"
-                },{
-                    header: this.i18n._("Client Port"),
-                    width: 100,
-                    sortable: true,
-                    dataIndex: "c_client_port"
-                },{
-                    header: this.i18n._("Server Address"),
-                    width: Ung.Util.ipFieldWidth + 20,
-                    sortable: true,
-                    dataIndex: "s_server_addr"
-                },{
-                    header: this.i18n._("Server Port"),
-                    width: 100,
-                    sortable: true,
-                    dataIndex: "s_server_port"
-                },{
-                    header: this.i18n._("Captured"),
-                    width: 100,
-                    sortable: true,
-                    dataIndex: "capture_blocked"
-                }]
-            });
+            this.gridRuleEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'RuleEventLog', i18n._('Rule Event Log'), 
+                    'captive_portal_rule_event_log', 
+                    ['time_stamp','client_addr','client_port','s_server_addr','s_server_port','capture_rule_index','capture_blocked'], 
+                    this.getRpcNode().getRuleEventQueries);
         },
         beforeSave: function(isApply, handler) {
             if ( this.gridCaptureRules.isDirty() ) {

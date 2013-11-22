@@ -314,77 +314,10 @@ if (!Ung.hasResource["Ung.Ips"]) {
         },
         // Event Log
         buildEventLog: function() {
-            this.gridEventLog = Ext.create('Ung.GridEventLog',{
-                settingsCmp: this,
-                helpSource: 'intrusion_prevention_event_log',
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'blocked',
-                    mapping: 'ips_blocked'
-                }, {
-                    name: 'name',
-                    mapping: 'ips_ruleid'
-                }, {
-                    name: 'description',
-                    mapping: 'ips_description',
-                    type: 'string'
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'username'
-                }],
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'username'
-                }, {
-                    header: this.i18n._("Blocked"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'blocked'
-                }, {
-                    id: 'ruleName',
-                    header: this.i18n._('Rule Id'),
-                    width: 60,
-                    sortable: true,
-                    dataIndex: 'name'
-                }, {
-                    id: 'ruleDescription',
-                    header: this.i18n._('Rule Description'),
-                    width: 150,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'description'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'), 
+                    'intrusion_prevention_event_log', 
+                    ['time_stamp','username','client_addr','server_addr','ips_blocked','ips_ruleid','ips_description'], 
+                    this.getRpcNode().getEventQueries);
         },
         beforeSave: function(isApply,handler) {
             this.settings.rules.list = this.gridRules.getPageList();

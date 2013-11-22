@@ -3245,7 +3245,11 @@ Ung.CustomEventLog = {
                     mapping: 'c_server_addr'
                 }, {
                     name: 'server_port',
-                    mapping: 's_server_port'
+                    mapping: 'c_server_port'
+                }, {
+                    name: 's_server_addr'
+                }, {
+                    name: 's_server_port'
                 }, {
                     name: 'application',
                     mapping: 'classd_application',
@@ -3278,6 +3282,38 @@ Ung.CustomEventLog = {
                 }, {
                     name: 'ruleid',
                     mapping: 'classd_ruleid'
+                }, {
+                    name: 'https_status',
+                    mapping: 'https_status'
+                }, {
+                    name: 'https_detail',
+                    mapping: 'https_detail'
+                }, {
+                    name: 'https_ruleid',
+                    mapping: 'https_ruleid'
+                }, {
+                    name: 'policyId',
+                    mapping: 'policy_id'
+                }, {
+                    name: 'firewall_blocked'
+                }, {
+                    name: 'firewall_flagged'
+                }, {
+                    name: 'firewall_rule_index'
+                }, {
+                    name: 'ips_blocked',
+                    mapping: 'ips_blocked'
+                }, {
+                    name: 'ips_name',
+                    mapping: 'ips_ruleid'
+                }, {
+                    name: 'ips_description',
+                    mapping: 'ips_description',
+                    type: 'string'
+                }, {
+                    name: "capture_rule_index"
+                }, {
+                    name: "capture_blocked"
                 }],
                 columns: [{
                     hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -3405,6 +3441,102 @@ Ung.CustomEventLog = {
                     width: Ung.Util.booleanFieldWidth,
                     sortable: true,
                     dataIndex: 'protofilter_blocked'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('https_ruleid') < 0,
+                    header: i18n._("Rule ID (Https)"),
+                    width: 70,
+                    sortable: true,
+                    dataIndex: 'https_ruleid'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('https_status') < 0,
+                    header: i18n._("Status (Https)"),
+                    width: 100,
+                    sortable: true,
+                    dataIndex: 'https_status'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('https_detail') < 0,
+                    header: i18n._("Detail (Https)"),
+                    width: 250,
+                    sortable: true,
+                    dataIndex: 'https_detail'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('policyId') < 0,
+                    header: i18n._('Policy Id'),
+                    width: 60,
+                    sortable: true,
+                    flex:1,
+                    dataIndex: 'policyId',
+                    renderer: function(value) {
+                        return main.getPolicyName(value);
+                    }
+                }, {
+                    hidden: visibleColumnsParam.indexOf('policyId') < 0,
+                    header: i18n._("Blocked (Firewall)"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'firewall_blocked'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('firewall_flagged') < 0,
+                    header: i18n._("Flagged (Firewall)"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'firewall_flagged'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('firewall_rule_index') < 0,
+                    header: i18n._('Rule Id (Firewall)'),
+                    width: 60,
+                    sortable: true,
+                    flex:1,
+                    dataIndex: 'firewall_rule_index',
+                    renderer: function(value) {
+                        if (value <= 0) {
+                            return i18n._("none");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
+                    header: i18n._("Server (S)") ,
+                    width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                    sortable: true,
+                    dataIndex: 's_server_addr'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
+                    header: i18n._("Server Port (S)"),
+                    width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                    sortable: true,
+                    dataIndex: 's_server_port'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('ips_blocked') < 0,
+                    header: i18n._("Blocked (IPS)"),
+                    width: Ung.Util.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'ips_blocked'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('ips_name') < 0,
+                    header: i18n._('Rule Id (IPS)'),
+                    width: 60,
+                    sortable: true,
+                    dataIndex: 'ips_name'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('ips_description') < 0,
+                    header: i18n._('Rule Description (IPS)'),
+                    width: 150,
+                    sortable: true,
+                    flex:1,
+                    dataIndex: 'ips_description'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('capture_rule_index') < 0,
+                    header: i18n._("Rule ID (Captive Portal)"),
+                    width: 80,
+                    dataIndex: 'capture_rule_index'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('capture_blocked') < 0,
+                    header: i18n._("Captured"),
+                    width: 100,
+                    sortable: true,
+                    dataIndex: "capture_blocked"
                 }]
             });
             return grid;

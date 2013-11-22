@@ -171,89 +171,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         },
         // Event Log
         buildEventLog: function() {
-            this.gridEventLog = Ext.create('Ung.GridEventLog',{
-                settingsCmp: this,
-                helpSource: "firewall_event_log",
-                fields: [{
-                    name: 'id'
-                }, {
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'firewall_blocked'
-                }, {
-                    name: 'firewall_flagged'
-                }, {
-                    name: 'firewall_rule_index'
-                }, {
-                    name: 'username'
-                }, {
-                    name: 'c_client_addr'
-                }, {
-                    name: 'c_client_port'
-                }, {
-                    name: 's_server_addr'
-                }, {
-                    name: 's_server_port'
-                }],
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'c_client_addr'
-                }, {
-                    header: this.i18n._("Client Port"),
-                    width: Ung.Util.portFieldWidth,
-                    sortable: true,
-                    dataIndex: 'c_client_port'
-                }, {
-                    header: this.i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'username'
-                }, {
-                    header: this.i18n._("Blocked"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'firewall_blocked'
-                }, {
-                    header: this.i18n._("Flagged"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'firewall_flagged'
-                }, {
-                    header: this.i18n._('Rule Id'),
-                    width: 60,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'firewall_rule_index',
-                    renderer: function(value) {
-                        if (value <= 0) {
-                            return i18n._("none");
-                        } else {
-                            return value;
-                        }
-                    }
-                }, {
-                    header: this.i18n._("Server") ,
-                    width: Ung.Util.ipFieldWidth + 40, // +40 for column header
-                    sortable: true,
-                    dataIndex: 's_server_addr'
-                }, {
-                    header: this.i18n._("Server Port"),
-                    width: Ung.Util.portFieldWidth + 40, // +40 for column header
-                    sortable: true,
-                    dataIndex: 's_server_port'
-                }]
-            });
+            this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'), 
+                    'firewall_event_log', 
+                    ['time_stamp','username','client_addr','client_port','s_server_addr','s_server_port','firewall_blocked','firewall_flagged','firewall_rule_index'], 
+                    this.getRpcNode().getEventQueries);
         },
         beforeSave: function(isApply, handler) {
             this.gridRules.getList(Ext.bind(function(saveList) {
