@@ -14,7 +14,11 @@ public interface SystemManager
 
     String getPublicUrl();
 
-    boolean downloadUpdates();
+    boolean downloadUpgrades();
 
     org.json.JSONObject getDownloadStatus();
+
+    boolean upgradesAvailable();
+
+    void upgrade();
 }

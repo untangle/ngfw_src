@@ -37,6 +37,8 @@ public class SystemManagerImpl implements SystemManager
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
 
+    private static final String UPGRADE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-upgrade.py";
+    
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
 
@@ -146,7 +148,7 @@ public class SystemManagerImpl implements SystemManager
         return primaryAddressStr + ":" + httpsPortStr;
     }
 
-    public boolean downloadUpdates()
+    public boolean downloadUpgrades()
     {
         LinkedList<String> downloadUrls = new LinkedList<String>();
 
@@ -154,10 +156,17 @@ public class SystemManagerImpl implements SystemManager
         try {
             String lines[] = result.split("\\r?\\n");
             for ( String line : lines ) {
-                // remove first and last character (quotes)
-                String newUrl = line.substring(1, line.length()-1);
-                logger.info("To Download: " + newUrl);
-                downloadUrls.add( newUrl );
+                if ( line.length() < 3 )
+                    continue;
+                try {
+                    // remove first and last character (quotes)
+                    String newUrl = line.substring(1, line.length()-1);
+                    logger.info("To Download: " + newUrl);
+                    downloadUrls.add( newUrl );
+                } catch (Exception e) {
+                    logger.error( "Error parsing downloads line: " + line, e );
+                    return false;
+                }                
             }
         } catch (Exception e) {
             logger.error( "Error parsing downloads", e );
@@ -189,8 +198,7 @@ public class SystemManagerImpl implements SystemManager
                             this.downloadCurrentFileProgress = progress;
                             this.downloadCurrentFileRate = speed + "B/sec";
 
-                            logger.info("progress: " + this.downloadCurrentFileProgress);
-                            logger.info("speed: " + this.downloadCurrentFileRate);
+                            logger.info( "Updating file download progress/speed: " + this.downloadCurrentFileProgress + " / " + this.downloadCurrentFileRate );
                         }
                     }
                 }
@@ -225,8 +233,19 @@ public class SystemManagerImpl implements SystemManager
         }
         return json;
     }
-    
 
+    public void upgrade()
+    {
+        UvmContextFactory.context().execManager().exec( UPGRADE_SCRIPT );
+        return; /* probably never returns because usually upgrade process kills this process */
+    }
+
+    public boolean upgradesAvailable()
+    {
+        int retCode = UvmContextFactory.context().execManager().execResult( "apt-get -s dist-upgrade | grep -q '^Inst'" );
+        return (retCode == 0);
+    }
+    
     private void _setSettings( SystemSettings newSettings )
     {
         /**
