@@ -2782,7 +2782,7 @@ Ext.define("Ung.GridEventLogBuffered", {
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
     // Records per page
-    recordsPerPage: 50000,
+    recordsPerPage: 60000,
     // fields for the Store
     fields: null,
     // columns for the column model
@@ -2841,8 +2841,7 @@ Ext.define("Ung.GridEventLogBuffered", {
         this.store=Ext.create('Ext.data.Store', {
             model: this.modelName,
             data: [],
-            pageSize: 100,
-            buffered: true,
+            buffered: false,
             proxy: {
                 type: 'pagingmemory',
                 reader: {
@@ -3147,7 +3146,7 @@ Ext.define("Ung.GridEventLogBuffered", {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
         if (selQuery != null && selPolicy != null) {
-            rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, 50000);
+            rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, 60000);
         } else {
             this.setLoading(false);
         }
@@ -3279,7 +3278,6 @@ Ung.CustomEventLog = {
                 }, {
                     name: 'ruleid',
                     mapping: 'classd_ruleid'
-
                 }],
                 columns: [{
                     hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
