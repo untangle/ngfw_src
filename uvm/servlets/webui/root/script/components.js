@@ -1733,10 +1733,7 @@ Ung.MetricManager = {
     started: false,
     intervalId: null,
     cycleCompleted: true,
-    downloadSummary: null,
-    downloadsComplete: 0,
     historyMaxSize:100,
-    messageHistory:[], // for debug info
     firstToleratedError: null,
     errorToleranceInterval: 300000, //5 minutes
 
@@ -1814,6 +1811,45 @@ Ung.MetricManager = {
         }, this));
     }
 };
+//Check Store Registration Loop
+Ung.CheckStoreRegistration = {
+    // update interval in millisecond
+    updateFrequency: 1000,
+    started: false,
+    intervalId: null,
+    url: null,
+    start: function(now) {
+        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
+        this.stop();
+        this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
+        this.started = true;
+    },
+    stop: function() {
+        if (this.intervalId !== null) {
+            window.clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        this.started = false;
+    },
+    run: function () {
+        Ext.Ajax.request({
+            url: Ung.CheckStoreRegistration.url,
+            success: Ext.bind(function(response){
+                var registered = response.responseText;
+                if(registered) {
+                    rpc.jsonrpc.UvmContext.setRegistered(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        Ung.CheckStoreRegistration.stop();
+                        main.closeIframe();
+                        rpc.isRegistered = true;
+                        Ung.Util.goToStartPage();
+                    }, this));
+                }
+            }, Ung.CheckStoreRegistration)
+        });
+    }
+};
+
 Ext.define("Ung.SystemStats", {
     extend: "Ext.Component",
     autoEl: 'div',

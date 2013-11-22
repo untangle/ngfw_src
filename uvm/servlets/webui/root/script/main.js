@@ -207,23 +207,26 @@ Ext.define("Ung.Main", {
         this.loadConfig();
         this.loadPolicies();
     },
-    systemInfo: function ()
-    {
-        var serverUID, fullVersion, language;
-        try {
-            serverUID = rpc.jsonrpc.UvmContext.getServerUID();
-            fullVersion = rpc.jsonrpc.UvmContext.getFullVersion();
-            language = rpc.languageManager.getLanguageSettings()['language'];
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
+    systemInfo: function (forceReload) {
+        if(forceReload || rpc.systemInfo === undefined) {
+            var serverUID, fullVersion, language;
+            try {
+                serverUID = rpc.jsonrpc.UvmContext.getServerUID();
+                fullVersion = rpc.jsonrpc.UvmContext.getFullVersion();
+                language = rpc.languageManager.getLanguageSettings()['language'];
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+            var query = "";
+            query = query + "uid=" + serverUID;
+            query = query + "&" + "version=" + fullVersion;
+            query = query + "&" + "webui=true";
+            query = query + "&" + "lang=" + language;
+            
+            rpc.systemInfo = query;
         }
-        var query = "";
-        query = query + "uid=" + serverUID;
-        query = query + "&" + "version=" + fullVersion;
-        query = query + "&" + "webui=true";
-        query = query + "&" + "lang=" + language;
-
-        return query;
+        return rpc.systemInfo;
+        
     },
     openLegal: function( topic ) {
         var baseUrl;
@@ -250,37 +253,19 @@ Ext.define("Ung.Main", {
         window.open(url); // open a new window
     },
     openSupportScreen: function() {
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "action=support" + "&" + this.systemInfo();
-
-        console.log("Open Url   :", url);
+        var url = rpc.storeUrl + "?" + "action=support" + "&" + this.systemInfo();
         window.open(url); // open a new window
     },
+    openRegisterScreen: function() {
+        var url = rpc.storeUrl + "?" + "action=register" + "&" + this.systemInfo();
+        this.openIFrame( url, i18n._("Register"));
+    },
     openMyAccountScreen: function() {
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "action=my_account" + "&" + this.systemInfo();
-
-        console.log("Open Url   :", url);
+        var url = rpc.storeUrl + "?" + "action=my_account" + "&" + this.systemInfo();
         window.open(url); // open a new window
     },
     openLibItemStore: function (libItemName, title) {
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
+        var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
 
         console.log("Open Url   :", url);
         window.open(url); // open a new window
@@ -655,14 +640,9 @@ Ext.define("Ung.Main", {
                                      rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
         }
-        rpc.jsonrpc.UvmContext.isRegistered( Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
-            if (result === false)
-                this.showInitialScreen();
-        }, this ));
-        // if (this.nodes.length == 0 && !this.target) {
-        //     this.showInitialScreen();
-        // }
+        if(!rpc.isRegistered) {
+            this.showRegisterScreen();
+        }
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
@@ -826,6 +806,10 @@ Ext.define("Ung.Main", {
     },
 
     installNode: function(nodeProperties, appItem) {
+        if(!rpc.isRegistered) {
+            main.showRegisterScreen();
+            return;
+        }
         if( nodeProperties === null ) {
             return;
         }
@@ -835,6 +819,8 @@ Ext.define("Ung.Main", {
             appItem.hide();
             return;
         }
+        //FIXME: check Apps license before instantiate.
+        //for paied Apps open not purchaesd do main.openLibItemStore
         
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
@@ -1303,33 +1289,22 @@ Ext.define("Ung.Main", {
     /**
      *  Prepares the uvm to display the welcome screen
      */      
-    showInitialScreen: function () {
-        if(this.initialScreenAlreadShown) {
+    showRegisterScreen: function () {
+        if(this.registerScreenAlreadShown) {
             return;
         }
-        this.initialScreenAlreadShown = true;
-
-        // FIXME
-        // if not online
-        // this.openFailureScreen();
-
-        this.postInitialScreen();
-    },
-    /**
-     *  cleanup and ensure the window opened is on the right size
-     */
-    postInitialScreen: function () {
-        Ext.MessageBox.hide();
-
-        var baseUrl;
-        try {
-            baseUrl = rpc.jsonrpc.UvmContext.getStoreUrl();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        var url = baseUrl + "?" + "action=register" + "&" + this.systemInfo();
-
-        this.openIFrame( url, i18n._("Register"));
+        this.registerScreenAlreadShown = true;
+        //first test if box is online
+        rpc.rackManager.isUpgradeServerAvailable(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            Ext.MessageBox.hide();
+            if(!result) {
+                main.openFailureScreen();
+            } else {
+                main.openRegisterScreen();
+                Ung.CheckStoreRegistration.start();
+            }
+        }, this));
     },
     /**
      *  Hides the welcome screen
