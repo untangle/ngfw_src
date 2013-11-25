@@ -1837,9 +1837,9 @@ Ung.CheckStoreRegistration = {
             success: function(response){
                 var registered = response.responseText;
                 if(registered) {
+                    Ung.CheckStoreRegistration.stop();
                     rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        Ung.CheckStoreRegistration.stop();
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.Util.goToStartPage();
