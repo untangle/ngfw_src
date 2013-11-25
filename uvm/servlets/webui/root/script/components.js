@@ -3576,7 +3576,178 @@ Ung.CustomEventLog = {
                 }]
             });
             return grid;
-        }
+        },
+        
+        buildHttpEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+          var grid = Ext.create('Ung.GridEventLogCustomizable',{
+              name: nameParam,
+              settingsCmp: settingsCmpParam,
+              helpSource: helpSourceParam,
+              eventQueriesFn: eventQueriesFnParam,
+              title: titleParam,
+              fields: [{
+                  name: 'time_stamp',
+                  sortType: Ung.SortTypes.asTimestamp
+              }, {
+                  name: 'webfilter_blocked',
+                  mapping: 'webfilter_blocked',
+                  type: 'boolean'
+              }, {
+                  name: 'sitefilter_blocked',
+                  mapping: 'sitefilter_blocked',
+                  type: 'boolean'
+              }, {
+                  name: 'webfilter_flagged',
+                  mapping: 'webfilter_flagged',
+                  type: 'boolean'
+              }, {
+                  name: 'sitefilter_flagged',
+                  mapping: 'sitefilter_flagged',
+                  type: 'boolean'
+              }, {
+                  name: 'webfilter_category',
+                  mapping: 'webfilter_category',
+                  type: 'string'
+              }, {
+                  name: 'sitefilter_category',
+                  mapping: 'sitefilter_category',
+                  type: 'string'
+              }, {
+                  name: 'client',
+                  mapping: 'c_client_addr'
+              }, {
+                  name: 'username'
+              }, {
+                  name: 'server',
+                  mapping: 'c_server_addr'
+              }, {
+                  name: 'server_port',
+                  mapping: 's_server_port'
+              }, {
+                  name: 'host',
+                  mapping: 'host'
+              }, {
+                  name: 'uri',
+                  mapping: 'uri'
+              }, {
+                  name: 'webfilter_reason',
+                  mapping: 'webfilter_reason',
+                  type: 'string',
+                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value)}, this)
+              }, {
+                  name: 'sitefilter_reason',
+                  mapping: 'sitefilterr_reason',
+                  type: 'string',
+                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value)}, this)
+              }],
+              columns: [{
+                  hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                  header: i18n._("Timestamp"),
+                  width: Ung.Util.timestampFieldWidth,
+                  sortable: true,
+                  dataIndex: 'time_stamp',
+                  renderer: function(value) {
+                      return i18n.timestampFormat(value);
+                  }
+              }, {
+                  hidden: visibleColumnsParam.indexOf('client') < 0,
+                  header: i18n._("Client"),
+                  width: Ung.Util.ipFieldWidth,
+                  dataIndex: 'client'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('username') < 0,
+                  header: i18n._("Username"),
+                  width: Ung.Util.usernameFieldWidth,
+                  dataIndex: 'username'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('host') < 0,
+                  header: i18n._("Host"),
+                  width: Ung.Util.hostnameFieldWidth,
+                  dataIndex: 'host'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('uri') < 0,
+                  header: i18n._("Uri"),
+                  flex:1,
+                  width: Ung.Util.uriFieldWidth,
+                  dataIndex: 'uri'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
+                  header: i18n._("Blocked (Webfilter Lite)"),
+                  width: Ung.Util.booleanFieldWidth,
+                  dataIndex: 'webfilter_blocked'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('webfilter_flagged') < 0,
+                  header: i18n._("Flagged (Webfilter Lite)"),
+                  width: Ung.Util.booleanFieldWidth,
+                  dataIndex: 'webfilter_flagged'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('webfilter_reason') < 0,
+                  header: i18n._("Reason For Action (Webfilter Lite)"),
+                  width: 150,
+                  dataIndex: 'webfilter_reason'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
+                  header: i18n._("Category (Webfilter Lite)"),
+                  width: 120,
+                  dataIndex: 'webfilter_category'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
+                  header: i18n._("Blocked  (Webfilter)"),
+                  width: Ung.Util.booleanFieldWidth,
+                  dataIndex: 'sitefilter_blocked'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('sitefilter_flagged') < 0,
+                  header: i18n._("Flagged (Webfilter)"),
+                  width: Ung.Util.booleanFieldWidth,
+                  dataIndex: 'sitefilter_flagged'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('sitefilter_reason') < 0,
+                  header: i18n._("Reason For Action (Webfilter)"),
+                  width: 150,
+                  dataIndex: 'sitefilter_reason'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
+                  header: i18n._("Category (Webfilter)"),
+                  width: 120,
+                  dataIndex: 'sitefilter_category'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('server') < 0,
+                  header: i18n._("Server"),
+                  width: Ung.Util.ipFieldWidth,
+                  dataIndex: 'server'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('server_port') < 0,
+                  header: i18n._("Server Port"),
+                  width: Ung.Util.portFieldWidth,
+                  dataIndex: 'server_port'
+              }]
+          });
+          return grid;
+      },
+      httpEventConvertReason: function(value) {
+          switch (value) {
+              case 'D':
+                  return i18n._("in Categories Block list");
+              case 'U':
+                  return i18n._("in URLs Block list");
+              case 'E':
+                  return i18n._("in File Extensions Block list");
+              case 'M':
+                  return i18n._("in MIME Types Block list");
+              case 'H':
+                  return i18n._("Hostname is an IP address");
+              case 'I':
+                  return i18n._("in URLs Pass list");
+              case 'C':
+                  return i18n._("in Clients Pass list");
+              case 'B':
+                  return i18n._("Client Bypass");
+              default:
+              case 'DEFAULT':
+                  return i18n._("no rule applied");
+          }
+          return null;
+      }
 };
 
 // Monitor Grid class
