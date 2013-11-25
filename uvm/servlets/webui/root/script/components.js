@@ -1814,7 +1814,7 @@ Ung.MetricManager = {
 //Check Store Registration Loop
 Ung.CheckStoreRegistration = {
     // update interval in millisecond
-    updateFrequency: 1000,
+    updateFrequency: 2000,
     started: false,
     intervalId: null,
     url: null,
@@ -1832,20 +1832,20 @@ Ung.CheckStoreRegistration = {
         this.started = false;
     },
     run: function () {
-        Ext.Ajax.request({
+        Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
-            success: Ext.bind(function(response){
+            success: function(response){
                 var registered = response.responseText;
                 if(registered) {
-                    rpc.jsonrpc.UvmContext.setRegistered(Ext.bind(function(result, exception) {
+                    rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         Ung.CheckStoreRegistration.stop();
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.Util.goToStartPage();
-                    }, this));
+                    });
                 }
-            }, Ung.CheckStoreRegistration)
+            }
         });
     }
 };

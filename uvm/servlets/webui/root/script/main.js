@@ -813,21 +813,31 @@ Ext.define("Ung.Main", {
         if( nodeProperties === null ) {
             return;
         }
-        /* Sanity check to see if the node is already installed. */
+        // Sanity check to see if the node is already installed.
         var node = main.getNode( nodeProperties.name );
         if (( node !== null ) && ( node.nodeSettings.policyId == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
         }
-        //FIXME: check Apps license before instantiate.
-        //for paied Apps open not purchaesd do main.openLibItemStore
-        
-        Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
-        main.addNodePreview( nodeProperties );
-        rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
+        //check Apps license before instantiate.
+        main.getLicenseManager().isLicenseValid(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            main.updateRackView();
-        }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
+            if(result) { //instantiate if valid licens
+                Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
+                main.addNodePreview( nodeProperties );
+                rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    main.updateRackView();
+                }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
+            } else { //for premium not purchaesd Apps do open store
+                //FIXME: do we still use "libitem" in 10.1 ?
+                //FIXME: how do we check the node was purchased in UI?
+                var libitem = nodeProperties.name.replace("-node-","-libitem-");
+                main.openLibItemStore(libitem, Ext.String.format(i18n._("More Info - {0}"), nodeProperties.displayName));
+            }
+        }, this), nodeProperties.name);
+        
+        
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
