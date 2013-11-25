@@ -1292,8 +1292,10 @@ Ext.define("Ung.Main", {
             return;
         }
         this.registerScreenAlreadShown = true;
-        //first test if box is online
-        rpc.rackManager.isUpgradeServerAvailable(Ext.bind(function(result, exception) {
+        
+        //Test if box is online (store is available)
+        Ext.MessageBox.wait(i18n._("Determining Connectivity..."), i18n._("Please wait"));
+        rpc.jsonrpc.UvmContext.isStoreAvailable(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             Ext.MessageBox.hide();
             if(!result) {

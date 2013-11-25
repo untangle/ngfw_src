@@ -309,8 +309,13 @@ public interface UvmContext
     String getLegalUrl();
 
     /**
+     * Check if store is available
+     */
+    boolean isStoreAvailable();
+    /**
      * Convenience method, log an event to the database
      */
+    
     void logEvent(LogEvent evt);
 
     org.json.JSONObject getWebuiStartupInfo();

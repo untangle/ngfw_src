@@ -7,6 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
@@ -474,6 +478,25 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (url == null)
             url = DEFAULT_STORE_URL;
         return url;
+    }
+    public boolean isStoreAvailable()
+    {
+        for ( int tries = 0 ; tries < 3 ; tries++ ) {
+            try {
+            	URL storeUrl = new URL(getStoreUrl());
+                String host = storeUrl.getHost();
+                InetAddress addr = InetAddress.getByName( host );
+                InetSocketAddress remoteAddress = new InetSocketAddress(addr, 80);
+                Socket sock = new Socket();
+                sock.connect( remoteAddress, 5000 );
+                sock.close();
+                return true;
+            }
+            catch ( Exception e) {
+                logger.warn("Failed to connect to store: " + e);
+            }
+        }
+        return false;
     }
 
     public String getHelpUrl()

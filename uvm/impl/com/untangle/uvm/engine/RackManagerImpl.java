@@ -179,25 +179,6 @@ public class RackManagerImpl implements RackManager
         return new RackView(installableNodes, nodeSettings, nodeProperties, nodeMetrics, licenseMap, runStates);
     }
 
-    public boolean isUpgradeServerAvailable()
-    {
-        for ( int tries = 0 ; tries < 3 ; tries++ ) {
-            try {
-                String host = "updates.untangle.com";
-                InetAddress addr = InetAddress.getByName( host );
-                InetSocketAddress remoteAddress = new InetSocketAddress(addr, 80);
-                Socket sock = new Socket();
-                sock.connect( remoteAddress, 5000 );
-                sock.close();
-                return true;
-            }
-            catch ( Exception e) {
-                logger.warn("Failed to connect to updates.untangle.com: " + e);
-            }
-        }
-        return false;
-    }
-    
     public void instantiate(final String name, final Long policyId) throws Exception
     {
         logger.info("instantiate( " + name + ")");
@@ -239,10 +220,5 @@ public class RackManagerImpl implements RackManager
         }
 
         logger.info("installAndInstantiate( " + name + ") return");
-    }
-
-    public void upgrade() throws Exception
-    {
-        /* FIXME */
     }
 }
