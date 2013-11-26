@@ -18,6 +18,7 @@ from untangle_tests import ClientControl
 
 node = None
 nodeFW = None
+radiusServer = "10.111.56.71"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -334,8 +335,8 @@ class NetworkTests(unittest2.TestCase):
 
     # test a port forward from outside if possibel
     def test_030_portForwardInbound(self):
-        # We will use 10.5.6.71 for this test. Test to see if we can reach it.
-        externalClientResult = subprocess.call(["ping","-c","1","10.5.6.71"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # We will use radiusServer for this test. Test to see if we can reach it.
+        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -351,7 +352,7 @@ class NetworkTests(unittest2.TestCase):
 
         # try connecting to netcat on client from "outside" box
         tmp_hostIP = ClientControl.hostIP
-        ClientControl.hostIP = "10.5.6.71"
+        ClientControl.hostIP = radiusServer
         result = clientControl.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
         ClientControl.hostIP = tmp_hostIP
         assert (result == 0)
