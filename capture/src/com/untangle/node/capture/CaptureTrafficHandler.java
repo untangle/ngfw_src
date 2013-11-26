@@ -13,6 +13,7 @@ import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
@@ -37,7 +38,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
-        IPNewSessionRequest sessreq = event.sessionRequest();
+        TCPNewSessionRequest sessreq = event.sessionRequest();
 
         // first we look for and ignore all traffic on port 80 since
         // the http-casing handler will take care of all that
@@ -98,7 +99,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK, 1);
-        sessreq.rejectSilently();
+        sessreq.rejectReturnRst();
     }
 
     // UDP stuff --------------------------------------------------
