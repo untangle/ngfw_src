@@ -21,8 +21,8 @@ nodeData = None
 node = None
 nodeDataAD = None
 nodeAD = None
-adHost = "10.5.6.48"
-radiusHost = "10.5.6.71"
+adHost = "10.111.56.48"
+radiusHost = "10.111.56.71"
 
 # pdb.set_trace()
 
