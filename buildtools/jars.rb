@@ -85,8 +85,7 @@ class Jars
                          Jars.downloadTarget('jradius-1.1.0-client/lib/commons-pool-1.5.4.jar'),
                          Jars.downloadTarget('jradius-1.1.0-client/lib/gnu-crypto-2.0.1.jar'),
                          Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-core-1.1.0.jar'),
-                         Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar'), 
-                         Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ])
+                         Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')])
 
     ## Jars required to run/compile unit tests
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ])
@@ -107,9 +106,6 @@ class Jars
                                    HttpClient, XmlRpc,
                                    Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
                                    JFreeChart, Ant))
-
-    # A jar used to build one of the buildutil classes
-    const_set(:Bcel, [ Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ])
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ])
   end
