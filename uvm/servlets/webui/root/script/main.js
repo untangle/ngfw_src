@@ -23,8 +23,6 @@ Ext.define("Ung.Main", {
     version: null,
     iframeWin: null,
     IEWin: null,
-    upgradeStatus:null,
-    upgradeLastCheckTime: null,
     firstTimeRun: null,
     policyNodeWidget:null,
     initialScreenAlreadyShown: false,
@@ -427,15 +425,14 @@ Ext.define("Ung.Main", {
             });
         }, this);
 
-        //FIXME
-        // rpc.rackManager.upgrade(Ext.bind(function(result, exception) {
-        //     // if the upgrades are being applied exceptions are expected.
-        //     // ignore them
-        //     if ( this.upgradesBeingApplied )
-        //         return;
-        //     if( Ung.Util.handleException( exception ) )
-        //         return;
-        // }, this));
+        rpc.systemManager.upgrade(Ext.bind(function(result, exception) {
+             // if the upgrades are being applied exceptions are expected.
+             // ignore them
+            if ( this.upgradesBeingApplied )
+                return;
+            if( Ung.Util.handleException( exception ) )
+                return;
+        }, this));
     },
 
     getNetworkManager: function(forceReload) {

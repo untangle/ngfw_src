@@ -14,16 +14,25 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             }, {
                 title: i18n._('Upgrade')
             }];
-            this.buildUpgrade();
             this.buildSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUpgrades, this.panelSettings]);
+            this.buildTabPanel([this.panelSettings]);
             this.callParent(arguments);
         },
         afterRender: function() {
             this.callParent(arguments);
-            this.loadGridUpgrade();
             Ung.Util.clearDirty(this.panelSettings);
+            rpc.systemManager.upgradesAvailable(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                var statusDescription = result? '<i><font color="red">' + i18n._("Upgrades are available.") + '</font></i>' :
+                    '<font color="green">' + i18n._("No upgrades available.") + '</font>';
+                var statusCmp = this.panelSettings.query('[name="statusMessage"]')[0];
+                statusCmp.setText(statusDescription, false);
+                if(result) {
+                    var upgradeButton = this.panelSettings.query('[name="upgradeButton"]')[0];
+                    upgradeButton.show();
+                }
+            }, this))
         },
         getSystemSettings: function(forceReload) {
             if (forceReload || this.rpc.systemSettings === undefined) {
@@ -35,161 +44,53 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             }
             return this.rpc.systemSettings;
         },
-        loadGridUpgrade: function() {
-            Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
-            rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception) {
+        getDownloadStatus: function() {
+            if(!this.checkDownloadStatus) {
+                return;
+            }
+            rpc.systemManager.getDownloadStatus(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                var upgradeStatus=result;
-                if(upgradeStatus.upgrading) {
-                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Upgrade in progress."));
-                } else {
-                    rpc.aptManager.getUpgradeStatus(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        rpc.aptManager.upgradable(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            Ext.MessageBox.hide();
-                            if(!this.isVisible()) return;
-                            var upgradeList = result;
-                            var upgradeData = [];
-                            if (upgradeList.length > 0) {
-                                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
-                                Ext.getCmp("config_start_upgrade_button").enable();
-                                var somethingVisibleAdded = false;
-                                var totalSize=0;
-                                for (var i = 0; i < upgradeList.length; i++) {
-                                    var md = upgradeList[i];
-                                    var displayName = md.displayNane;
-                                    totalSize+=md.size;
-                                    if (displayName == null) {
-                                    if (md.shortDescription != null)
-                                        displayName = md.shortDescription;
-                                    else
-                                        displayName = md.name;
-                                    } 
-                                    if (displayName != null) {
-                                        var oemName;
-                                        try {
-                                            oemName = main.getOemManager().getOemName();
-                                        } catch (e) {
-                                            Ung.Util.rpcExHandler(e);
-                                        }
-                                        displayName = displayName.replace("Untangle", oemName);
-                                    }
-                                    somethingVisibleAdded = true;
-                                        upgradeData.push({
-                                        image: "chiclet?name=" + md.name,
-                                        name: md.name,
-                                        displayName: displayName,
-                                        availableVersion: md.availableVersion,
-                                        size: Math.round(md.size / 1000)
-                                    });
-                                }
-                                if (!somethingVisibleAdded) {
-                                    upgradeData.push({
-                                        image: "chiclet?name=unknown",
-                                        name: "unknown",
-                                        displayName: this.i18n._("Various Updates"),
-                                        availableVersion: this.i18n._("N/A"),
-                                        size: Math.round(totalSize / 1000)
-                                    });
-                                }
-                                this.gridUpgrades.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=Ext.String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
-                            } else {
-                                Ext.getCmp("config_start_upgrade_button").disable();
-                                this.gridUpgrades.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=i18n._("No upgrades available.");
-                            }
-                            this.gridUpgrades.getStore().proxy.data = upgradeData;
-                            this.gridUpgrades.getStore().load();
-                        }, this));
-                    }, this),true);
+                if(!this.checkDownloadStatus) {
+                    return;
                 }
-            }, this), false);
-
+                //console.log("rpc.systemManager.getDownloadStatus", result);
+                var text=Ext.String.format(i18n._("Package: {0} of {1}<br/>Progress: {2} <br/>Speed: {3}"),result.downloadCurrentFileCount, result.downloadTotalFileCount, result.downloadCurrentFileProgress, result.downloadCurrentFileRate);
+                if(this.downloadSummary) {
+                    text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.downloadsComplete+1, this.downloadSummary.count);
+                }
+                if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=this.msgTitle) {
+                    Ext.MessageBox.progress(this.msgTitle, text);
+                }
+                var currentPercentComplete = parseFloat(result.downloadCurrentFileCount) / parseFloat(result.downloadTotalFileCount != 0 ? result.downloadTotalFileCount: 1);
+                //TODO: add current file progress to this.
+                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                Ext.MessageBox.updateProgress(progressIndex, "", text);
+                window.setTimeout( Ext.bind(this.getDownloadStatus, this), 500 );
+            }, this))
         },
-        buildUpgrade: function() {
-            this.gridUpgrades = Ext.create('Ext.grid.Panel',{
-                // private fields
-                name: 'Upgrades',
-                helpSource: 'upgrade_upgrades',
-                parentId: this.getId(),
-                title: this.i18n._('Upgrades'),
-                enableColumnHide: false,
-                enableColumnMove: false,
-                disableSelection: true, //TODO: find extjs4 solution
-                tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
-                isDirty: function() { return false;},
-                store: Ext.create('Ext.data.Store', {
-                    data:[],
-                    proxy: {
-                        type: 'memory',
-                        reader: {
-                            type: 'json',
-                            root: ''
-                        }
-                    },
-                    fields: [{
-                            name: 'image'
-                        }, {
-                            name: 'name'
-                        }, {
-                            name: 'displayName'
-                        }, {
-                            name: 'availableVersion'
-                        }, {
-                            name: 'size'
-                    }]
-                }),
-                columns: [{
-                    header: "",
-                    width: 70,
-                    menuDisabled: true,
-                    sortable: true,
-                    dataIndex: 'image',
-                    renderer: function(value) {
-                        return "<img src='" + value + "' height='17'/>";
-                    }
-                }, {
-                    header: this.i18n._("name"),
-                    width: 190,
-                    sortable: true,
-                    menuDisabled: true,
-                    flex: 1,
-                    dataIndex: 'displayName'
-
-                }, {
-                    header: this.i18n._("new version"),
-                    width: 230,
-                    sortable: true,
-                    menuDisabled: true,
-                    dataIndex: 'availableVersion'
-
-                }, {
-                    header: this.i18n._("size (kb)"),
-                    width: 110,
-                    menuDisabled: true,
-                    sortable: true,
-                    align: 'right', 
-                    dataIndex: 'size'
-                }],
-                buttonAlign: 'center',
-                buttons: [{
-                    id: 'config_start_upgrade_button',
-                    text: i18n._('Upgrade'),
-                    name: "Upgrade",
-                    iconCls: 'icon-upgrade',
-                    disabled: true,
-                    handler: function() {
-                        main.upgrade();
-                    }
-                }]
-            });
-
+        downloadUpgrades: function() {
+            this.checkDownloadStatus=true;
+            this.msgTitle=i18n._("Downloading packages... Please wait");
+            Ext.MessageBox.progress(this.msgTitle, ".");
+            rpc.systemManager.downloadUpgrades(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.checkDownloadStatus=false;
+                //console.log("rpc.systemManager.downloadUpgrades", result);
+                Ext.MessageBox.hide();
+                if(result) {
+                    main.upgrade();
+                } else {
+                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("Downloading upgrades failed."));
+                }
+            }, this))
+            this.getDownloadStatus();
         },
         buildSettings: function() {
             var upgradeTime=new Date();
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
             upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
+            var upgradesAvailable = rpc.systemManager.upgradesAvailable();
             this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Upgrade Settings',
@@ -202,6 +103,27 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     xtype: 'fieldset'
                 },
                 items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Status'),
+                    items: [{
+                        xtype: 'label',
+                        name: "statusMessage",
+                        html: "<i>" + i18n._("Checking for upgrades...") + "</i>",
+                        cls: 'description',
+                        margin: '0 25 0 0',
+                        border: false
+                    }, {
+                        xtype: "button",
+                        name: 'upgradeButton',
+                        hidden: true,
+                        text: this.i18n._("Upgrade"),
+                        iconCls: "action-icon",
+                        handler: Ext.bind(function() {
+                            this.downloadUpgrades();
+                        }, this)
+                    }]
+                }, {
                     title: this.i18n._('Automatic Upgrade'),
                     items: [{
                         xtype: 'radio',
