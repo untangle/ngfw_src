@@ -1873,6 +1873,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             emptyText: "untangle",
                             name: 'HostName',
                             value: this.settings.hostName,
+                            maskRe: /[a-zA-Z0-9\-]/,
                             listeners: {
                                 "change": {
                                     fn: Ext.bind(function(elem, newValue) {

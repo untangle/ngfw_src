@@ -3633,12 +3633,12 @@ Ung.CustomEventLog = {
                   name: 'webfilter_reason',
                   mapping: 'webfilter_reason',
                   type: 'string',
-                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value)}, this)
+                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
               }, {
                   name: 'sitefilter_reason',
                   mapping: 'sitefilterr_reason',
                   type: 'string',
-                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value)}, this)
+                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
               }],
               columns: [{
                   hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
