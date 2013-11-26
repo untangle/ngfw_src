@@ -3636,9 +3636,26 @@ Ung.CustomEventLog = {
                   convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
               }, {
                   name: 'sitefilter_reason',
-                  mapping: 'sitefilterr_reason',
+                  mapping: 'sitefilter_reason',
                   type: 'string',
                   convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
+              }, {
+                  name: 'adblocker_action',
+                  mapping: 'adblocker_action',
+                  type: 'string',
+                  convert: Ext.bind(function(value) {
+                      if (value == 'B') {
+                          return i18n._("block");
+                      } else {
+                          return i18n._("pass");
+                      }
+                  }, this)
+              }, {
+                  name: 'adblocker_cookie_ident'
+              }, {
+                  name: 'commtouchav_name'
+              }, {
+                  name: 'clam_name'
               }],
               columns: [{
                   hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -3653,27 +3670,32 @@ Ung.CustomEventLog = {
                   hidden: visibleColumnsParam.indexOf('client') < 0,
                   header: i18n._("Client"),
                   width: Ung.Util.ipFieldWidth,
+                  sortable: true,
                   dataIndex: 'client'
               }, {
                   hidden: visibleColumnsParam.indexOf('username') < 0,
                   header: i18n._("Username"),
                   width: Ung.Util.usernameFieldWidth,
+                  sortable: true,
                   dataIndex: 'username'
               }, {
                   hidden: visibleColumnsParam.indexOf('host') < 0,
                   header: i18n._("Host"),
                   width: Ung.Util.hostnameFieldWidth,
+                  sortable: true,
                   dataIndex: 'host'
               }, {
                   hidden: visibleColumnsParam.indexOf('uri') < 0,
                   header: i18n._("Uri"),
                   flex:1,
                   width: Ung.Util.uriFieldWidth,
+                  sortable: true,
                   dataIndex: 'uri'
               }, {
                   hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
                   header: i18n._("Blocked (Webfilter Lite)"),
                   width: Ung.Util.booleanFieldWidth,
+                  sortable: true,
                   dataIndex: 'webfilter_blocked'
               }, {
                   hidden: visibleColumnsParam.indexOf('webfilter_flagged') < 0,
@@ -3684,42 +3706,235 @@ Ung.CustomEventLog = {
                   hidden: visibleColumnsParam.indexOf('webfilter_reason') < 0,
                   header: i18n._("Reason For Action (Webfilter Lite)"),
                   width: 150,
+                  sortable: true,
                   dataIndex: 'webfilter_reason'
               }, {
                   hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
                   header: i18n._("Category (Webfilter Lite)"),
                   width: 120,
+                  sortable: true,
                   dataIndex: 'webfilter_category'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
                   header: i18n._("Blocked  (Webfilter)"),
                   width: Ung.Util.booleanFieldWidth,
+                  sortable: true,
                   dataIndex: 'sitefilter_blocked'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_flagged') < 0,
                   header: i18n._("Flagged (Webfilter)"),
                   width: Ung.Util.booleanFieldWidth,
+                  sortable: true,
                   dataIndex: 'sitefilter_flagged'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_reason') < 0,
                   header: i18n._("Reason For Action (Webfilter)"),
                   width: 150,
+                  sortable: true,
                   dataIndex: 'sitefilter_reason'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
                   header: i18n._("Category (Webfilter)"),
                   width: 120,
+                  sortable: true,
                   dataIndex: 'sitefilter_category'
               }, {
                   hidden: visibleColumnsParam.indexOf('server') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
+                  sortable: true,
                   dataIndex: 'server'
               }, {
                   hidden: visibleColumnsParam.indexOf('server_port') < 0,
                   header: i18n._("Server Port"),
                   width: Ung.Util.portFieldWidth,
+                  sortable: true,
                   dataIndex: 'server_port'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('adblocker_action') < 0,
+                  header: i18n._("Action (Ad Blocker)"),
+                  width: 120,
+                  sortable: true,
+                  dataIndex: 'adblocker_action'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('adblocker_cookie_ident') < 0,
+                  header: i18n._("Cookie"),
+                  width: 100,
+                  sortable: true,
+                  dataIndex: 'adblocker_cookie_ident'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                  header: i18n._("Virus Name (Clam)"),
+                  width: 140,
+                  sortable: true,
+                  dataIndex: 'clam_name'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                  header: i18n._("Virus Name (Commtouchav)"),
+                  width: 140,
+                  sortable: true,
+                  dataIndex: 'commtouchav_name'
+              }]
+          });
+          return grid;
+      },
+      
+      buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+          var grid = Ext.create('Ung.GridEventLogCustomizable',{
+              name: nameParam,
+              settingsCmp: settingsCmpParam,
+              helpSource: helpSourceParam,
+              eventQueriesFn: eventQueriesFnParam,
+              title: titleParam,
+              fields: [{
+                  name: 'time_stamp',
+                  sortType: Ung.SortTypes.asTimestamp
+              }, {
+                  name: 'client',
+                  mapping: 'c_client_addr'
+              }, {
+                  name: 'username'
+              }, {
+                  name: 'server',
+                  mapping: 'c_server_addr'
+              }, {
+                  name: 's_server',
+                  mapping: 's_server_addr'
+              }, {
+                  name: 'commtouchav_name'
+              }, {
+                  name: 'clam_name'
+              }, {
+                  name: 'subject',
+                  type: 'string'
+              }, {
+                  name: 'addr',
+                  type: 'string'
+              }, {
+                  name: 'sender',
+                  type: 'string'
+              }, {
+                  name: 'vendor',
+                  mapping: 'vendor'
+              }, {
+                  name: 'spamassassin_action',
+                  mapping:  'spamassassin_action',
+                  type: 'string',
+                  convert: Ext.bind( function(value, rec ) {
+                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                  }, this)
+              }, {
+                  name: 'spamassassin_score',
+                  mapping: 'spamassassin_score'
+              }, {
+                  name: 'commtouchas_action',
+                  mapping:  'commtouchas_action',
+                  type: 'string',
+                  convert: Ext.bind( function(value, rec ) {
+                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                  }, this)
+              }, {
+                  name: 'commtouchas_score',
+                  mapping: 'commtouchas_score'
+              }, {
+                  name: 'phish_action',
+                  mapping:  'phish_action',
+                  type: 'string',
+                  convert: Ext.bind( function(value, rec ) {
+                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                  }, this)
+              }, {
+                  name: 'phish_score',
+                  mapping: 'phish_score'
+              }],
+              columns: [{
+                  hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                  header: i18n._("Timestamp"),
+                  width: Ung.Util.timestampFieldWidth,
+                  sortable: true,
+                  dataIndex: 'time_stamp',
+                  renderer: function(value) {
+                      return i18n.timestampFormat(value);
+                  }
+              }, {
+                  hidden: visibleColumnsParam.indexOf('client') < 0,
+                  header: i18n._("Client"),
+                  width: Ung.Util.ipFieldWidth,
+                  sortable: true,
+                  dataIndex: 'client'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('server') < 0,
+                  header: i18n._("Server"),
+                  width: Ung.Util.ipFieldWidth,
+                  sortable: true,
+                  dataIndex: 'server'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('s_server') < 0,
+                  header: i18n._("Server"),
+                  width: Ung.Util.ipFieldWidth,
+                  sortable: true,
+                  dataIndex: 's_server'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                  header: i18n._("Virus Name (Clam)"),
+                  width: 140,
+                  sortable: true,
+                  dataIndex: 'clam_name'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                  header: i18n._("Virus Name (Commtouchav)"),
+                  width: 140,
+                  sortable: true,
+                  dataIndex: 'commtouchav_name'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('addr') < 0,
+                  header: i18n._("Receiver"),
+                  width: Ung.Util.emailFieldWidth,
+                  sortable: true,
+                  dataIndex: 'addr'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('sender') < 0,
+                  header: i18n._("Sender"),
+                  width: Ung.Util.emailFieldWidth,
+                  sortable: true,
+                  dataIndex: 'sender'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('subject') < 0,
+                  header: i18n._("Subject"),
+                  flex:1,
+                  width: 150,
+                  sortable: true,
+                  dataIndex: 'subject'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
+                  header: i18n._("Action (Spamassassin)"),
+                  width: 125,
+                  sortable: true,
+                  dataIndex: 'spamassassin_action'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
+                  header: i18n._("Spam score (Spamassassin)"),
+                  width: 70,
+                  sortable: true,
+                  dataIndex: 'spamassassin_score'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('commtouchas_action') < 0,
+                  header: i18n._("Action (Commtouchas)"),
+                  width: 125,
+                  sortable: true,
+                  dataIndex: 'commtouchas_action'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
+                  header: i18n._("Spam score (Commtouchas)"),
+                  width: 70,
+                  sortable: true,
+                  dataIndex: 'commtouchas_score'
+              }, {
+                  hidden: visibleColumnsParam.indexOf('phish_action') < 0,
+                  header: i18n._("Action (Phish)"),
+                  width: 125,
+                  sortable: true,
+                  dataIndex: 'phish_action'
               }]
           });
           return grid;
@@ -3747,6 +3962,28 @@ Ung.CustomEventLog = {
                   return i18n._("no rule applied");
           }
           return null;
+      },
+      mailEventConvertAction: function(value, rec ) { 
+          if (value == 'P') { // PASSED
+              return i18n._("pass message");
+          } else if (value == 'M') { // MARKED
+              return i18n._("mark message");
+          } else if (value == 'D') { // DROP
+              return i18n._("drop message");
+          } else if (value == 'B') { // DROP
+              return i18n._("block message");
+          } else if (value == 'Q') { // QUARANTINED
+              return i18n._("quarantine message");
+          } else if (value == 'S') { // SAFELISTED
+              return i18n._("pass safelist message");
+          } else if (value == 'Z') { // OVERSIZE
+              return i18n._("pass oversize message");
+          } else if (value == 'O') { // OUTBOUND
+              return i18n._("pass outbound message");
+          } else {
+              return i18n._("unknown action");
+          }
+          return "";
       }
 };
 

@@ -439,158 +439,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Event Log
         buildWebEventLog: function() {
-            this.gridWebEventLog = Ext.create('Ung.GridEventLogCustomizable',{
-                name: 'Web Event Log',
-                //helpSource: 'virus_blocker_web_event_log',
-                //helpSource: 'virus_blocker_lite_web_event_log',
-                helpSource: this.helpSourceName + '_web_event_log',
-                settingsCmp: this,
-                title: this.i18n._("Web Event Log"),
-                eventQueriesFn: this.getRpcNode().getWebEventQueries,
-
-                // the list of fields
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'username'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'host',
-                    mapping: 'host'
-                }, {
-                    name: 'uri',
-                    mapping: 'uri'
-                }, {
-                    name: 'location'
-                }, {
-                    name: 'reason',
-                    mapping: this.nodeName + '_name'
-                }],
-                // the list of columns
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'username'
-                }, {
-                    header: this.i18n._("Host"),
-                    width: Ung.Util.hostnameFieldWidth,
-                    dataIndex: 'host'
-                }, {
-                    header: this.i18n._("Uri"),
-                    flex:1,
-                    width: Ung.Util.uriFieldWidth,
-                    dataIndex: 'uri'
-                }, {
-                    header: this.i18n._("Virus Name"),
-                    width: 140,
-                    sortable: true,
-                    dataIndex: 'reason'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridWebEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'WebEventLog', i18n._('Web Event Log'), 
+                    this.helpSourceName + '_web_event_log', 
+                    ['time_stamp','client','username','server','host','uri',this.nodeName + '_name'], 
+                    this.getRpcNode().getWebEventQueries);
         },
         // Event Log
         buildMailEventLog: function() {
-            this.gridMailEventLog = Ext.create('Ung.GridEventLogCustomizable',{
-                name: 'Email Event Log',
-                //helpSource: 'virus_blocker_email_event_log',
-                //helpSource: 'virus_blocker_lite_email_event_log',
-                helpSource: this.helpSourceName + '_email_event_log',
-                settingsCmp: this,
-                title: this.i18n._("Email Event Log"),
-                eventQueriesFn: this.getRpcNode().getMailEventQueries,
-
-                // the list of fields
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'username'
-                }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
-                }, {
-                    name: 'subject',
-                    type: 'string'
-                }, {
-                    name: 'addr',
-                    type: 'string'
-                }, {
-                    name: 'sender',
-                    type: 'string'
-                }, {
-                    name: 'reason',
-                    mapping: this.nodeName + '_name'
-                }],
-                // the list of columns
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Receiver"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'addr'
-                }, {
-                    header: this.i18n._("Sender"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'sender'
-                }, {
-                    header: this.i18n._("Subject"),
-                    flex:1,
-                    width: 150,
-                    sortable: true,
-                    dataIndex: 'subject'
-                }, {
-                    header: this.i18n._("Virus name"),
-                    width: 140,
-                    sortable: true,
-                    dataIndex: 'reason'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridMailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EmailEventLog', i18n._('Email Event Log'), 
+                    this.helpSourceName + '_email_event_log', 
+                    ['time_stamp','client','username','server','subject','addr','sender',this.nodeName + '_name'], 
+                    this.getRpcNode().getMailEventQueries);
         },
         buildFtpEventLog: function() {
             this.gridFtpEventLog = Ext.create('Ung.GridEventLogCustomizable',{

@@ -92,102 +92,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Email Event Log
         buildEmailEventLog: function() {
-            this.gridEmailEventLog = Ext.create('Ung.GridEventLog',{
-                name: 'Event Log',
-                helpSource: 'phish_blocker_event_log',
-                settingsCmp: this,
-                title: this.i18n._("Event Log"),
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'vendor',
-                    mapping: 'vendor'
-                }, {
-                    name: 'displayAction',
-                    mapping: 'phish_action',
-                    type: 'string',
-                    convert: Ext.bind(function(value, rec ) {
-                            if (value == 'P') { // PASSED
-                                return this.i18n._("pass message");
-                            } else if (value == 'M') { // MARKED
-                                return this.i18n._("mark message");
-                            } else if (value == 'B') { // DROP
-                                return this.i18n._("drop message");
-                            } else if (value == 'Q') { // QUARANTINED
-                                return this.i18n._("quarantine message");
-                            } else if (value == 'S') { // SAFELISTED
-                                return this.i18n._("pass safelist message");
-                            } else if (value == 'Z') { // OVERSIZE
-                                return this.i18n._("pass oversize message");
-                            } else if (value == 'O') { // OUTBOUND
-                                return this.i18n._("pass outbound message");
-                            } else {
-                                return this.i18n._("unknown action");
-                            }
-                        return "";
-                    }, this)
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'server',
-                    mapping: 's_server_addr'
-                }, {
-                    name: 'subject',
-                    type: 'string'
-                }, {
-                    name: 'addrName',
-                    type: 'string'
-                }, {
-                    name: 'addr',
-                    type: 'string'
-                }, {
-                    name: 'sender',
-                    type: 'string'
-                }],
-                // the list of columns
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Receiver"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'addr'
-                }, {
-                    header: this.i18n._("Sender"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'sender'
-                }, {
-                    header: this.i18n._("Subject"),
-                    flex:1,
-                    width: 150,
-                    sortable: true,
-                    dataIndex: 'subject'
-                }, {
-                    header: this.i18n._("Action"),
-                    width: 125,
-                    sortable: true,
-                    dataIndex: 'displayAction'
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridEmailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'), 
+                    'phish_blocker_event_log', 
+                    ['time_stamp','client','s_server','subject','addr','sender','phish_action'], 
+                    this.getRpcNode().getEventQueries);
         },
         
         afterSave: function()  {

@@ -431,111 +431,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         },
         // Event Log
         buildEventLog: function() {
-            this.gridEventLog = Ext.create('Ung.GridEventLogCustomizable',{
-                helpSource: 'spam_blocker_event_log',
-                settingsCmp: this,
-                // the list of fields
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'vendor',
-                    mapping: 'vendor'
-                }, {
-                    name: 'displayAction',
-                    mapping:  this.getRpcNode().getVendor() + '_action',
-                    type: 'string',
-                    convert: Ext.bind( function(value, rec ) { 
-                            if (value == 'P') { // PASSED
-                                return this.i18n._("pass message");
-                            } else if (value == 'M') { // MARKED
-                                return this.i18n._("mark message");
-                            } else if (value == 'D') { // DROP
-                                return this.i18n._("drop message");
-                            } else if (value == 'B') { // DROP
-                                return this.i18n._("block message");
-                            } else if (value == 'Q') { // QUARANTINED
-                                return this.i18n._("quarantine message");
-                            } else if (value == 'S') { // SAFELISTED
-                                return this.i18n._("pass safelist message");
-                            } else if (value == 'Z') { // OVERSIZE
-                                return this.i18n._("pass oversize message");
-                            } else if (value == 'O') { // OUTBOUND
-                                return this.i18n._("pass outbound message");
-                            } else {
-                                return this.i18n._("unknown action");
-                            }
-                        return "";
-                    }, this)
-                }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
-                }, {
-                    name: 'server',
-                    mapping: 's_server_addr'
-                }, {
-                    name: 'subject',
-                    type: 'string'
-                }, {
-                    name: 'addr_name',
-                    type: 'string'
-                }, {
-                    name: 'addr',
-                    type: 'string'
-                }, {
-                    name: 'sender',
-                    type: 'string'
-                }, {
-                    name: 'score',
-                    mapping: this.getRpcNode().getVendor() + '_score'
-                }],
-                // the list of columns
-                columns: [{
-                    header: this.i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: this.i18n._("Receiver"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'addr'
-                }, {
-                    header: this.i18n._("Sender"),
-                    width: Ung.Util.emailFieldWidth,
-                    sortable: true,
-                    dataIndex: 'sender'
-                }, {
-                    header: this.i18n._("Subject"),
-                    width: 150,
-                    flex:1,
-                    sortable: true,
-                    dataIndex: 'subject'
-                }, {
-                    header: this.i18n._("Action"),
-                    width: 125,
-                    sortable: true,
-                    dataIndex: 'displayAction'
-                }, {
-                    header: this.i18n._("Spam score"),
-                    width: 70,
-                    sortable: true,
-                    dataIndex: 'score'
-                }, {
-                    header: this.i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'client'
-                }, {
-                    header: this.i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'server'
-                }]
-            });
+            this.gridEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'), 
+                    'spam_blocker_event_log', 
+                    ['time_stamp','client','s_server','subject','addr','sender',this.getRpcNode().getVendor() + '_score',
+                     this.getRpcNode().getVendor() + '_action'], 
+                    this.getRpcNode().getEventQueries);
         },
         // Dnsbl Event Log
         buildDnsblEventLog: function() {
