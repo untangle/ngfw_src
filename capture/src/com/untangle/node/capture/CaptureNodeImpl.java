@@ -54,6 +54,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-remove";
     private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-permissions";
+    private final String APACHE_RELOAD_SCRIPT = "/usr/sbin/apache2ctl graceful";
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
@@ -393,14 +394,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void preStart()
     {
-
         // run a script to add www-data to the uvmlogin group
-        UvmContextFactory.context().execManager().execOutput(CAPTURE_PERMISSIONS_SCRIPT);
+        UvmContextFactory.context().execManager().exec(CAPTURE_PERMISSIONS_SCRIPT);
 
         // run a script to create the directory for the custom captive page
-        UvmContextFactory.context().execManager().execOutput(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
-
-        createApacheHook();
+        UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
     }
 
     @Override
@@ -410,11 +408,19 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         captureTimer = new CaptureTimer(this);
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+
+        logger.debug("Creating Apache VirtualHost file");
+        createApacheHook();
+        UvmContextFactory.context().execManager().exec(APACHE_RELOAD_SCRIPT);
     }
 
     @Override
     protected void preStop()
     {
+        logger.debug("Removing Apache VirtualHost file");
+        removeApacheHook();
+        UvmContextFactory.context().execManager().exec(APACHE_RELOAD_SCRIPT);
+
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
@@ -429,7 +435,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void postStop()
     {
-        removeApacheHook();
     }
 
     @Override
@@ -457,7 +462,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         super.uninstall();
 
         // run a script to remove the directory for the custom captive page
-        UvmContextFactory.context().execManager().execOutput(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+        UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
     }
 
     protected Token[] generateResponse(CaptureBlockDetails block, NodeTCPSession session)
