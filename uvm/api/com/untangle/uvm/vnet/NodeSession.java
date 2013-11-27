@@ -1,5 +1,5 @@
 /*
- * $Id: NodeSession.java 35575 2013-08-08 20:44:28Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 
@@ -154,6 +154,8 @@ public interface NodeSession extends SessionTuple
     public final String KEY_HTTPS_ISSUER_DN = "https-issuer-dn"; /* String */
     public final String KEY_HTTPS_CLIENT_MANAGER = "https-client-manager"; /* HttpsManager */
     public final String KEY_HTTPS_SERVER_MANAGER = "https-server-manager"; /* HttpsManager */
+
+    public final String KEY_CAPTURE_REDIRECT = "capture-redirect-client"; /* InetAddress */
 
     /**
      * Returns the protocol for the session.</p>

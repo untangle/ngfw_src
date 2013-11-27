@@ -84,7 +84,10 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
         if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
-            target = str("http://" + host + uri)
+            if (nonce == 'a1b2c3d4e5f6'):
+                target = str("https://" + host + uri)
+            else:
+                target = str("http://" + host + uri)
         util.redirect(req, target)
         return
 
@@ -138,7 +141,10 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
         if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
-            target = str("http://" + host + uri)
+            if (nonce == 'a1b2c3d4e5f6'):
+                target = str("https://" + host + uri)
+            else:
+                target = str("http://" + host + uri)
         util.redirect(req, target)
         return
 
@@ -377,7 +383,8 @@ def load_capture_settings(req,appid=None):
     # add some headers to prevent caching any of our stuff
     req.headers_out.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
     req.headers_out.add("Pragma", "no-cache")
-    req.headers_out.add("Expires", "Sat, 1 Jan 2000 00:00:00 GMT");
+    req.headers_out.add("Expires", "Mon, 10 Jan 2000 00:00:00 GMT")
+    req.headers_out.add("Connection", "close")
 
     return(captureSettings)
 

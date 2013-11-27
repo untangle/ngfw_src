@@ -13,6 +13,7 @@ import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
@@ -37,11 +38,11 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
-        IPNewSessionRequest sessreq = event.sessionRequest();
+        TCPNewSessionRequest sessreq = event.sessionRequest();
 
         // first we look for and ignore all traffic on port 80 since
-        // the http-casing handler will take care of all that
-        if (sessreq.getNatToPort() == 80) {
+        // the http handler will take care of all that
+        if (sessreq.getServerPort() == 80) {
             sessreq.release();
             return;
         }
@@ -94,11 +95,20 @@ public class CaptureTrafficHandler extends AbstractEventHandler
             return;
         }
 
+        // the traffic needs to be blocked but we have detected HTTPS traffic
+        // so we add a special global attachment that the https handler uses
+        // to detect sessions that need https-->http redirection
+        if (sessreq.getServerPort() == 443) {
+            sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, sessreq.getClientAddr());
+            sessreq.release();
+            return;
+        }
+
         // not yet allowed and we found a block rule so shut it down
         CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK, 1);
-        sessreq.rejectSilently();
+        sessreq.rejectReturnRst();
     }
 
     // UDP stuff --------------------------------------------------

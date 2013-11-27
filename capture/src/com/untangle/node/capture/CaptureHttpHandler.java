@@ -23,7 +23,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-class CaptureHttpHandler extends HttpStateMachine
+public class CaptureHttpHandler extends HttpStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptureNodeImpl node;
