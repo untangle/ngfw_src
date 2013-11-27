@@ -26,7 +26,7 @@ tunnelUp = False
 #pdb.set_trace()
 
 def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-ipsec")
+    reports = uvmContext.nodeManager().node("untangle-node-openvpn")
     if (reports != None):
         reports.flushEvents()
 
@@ -80,7 +80,11 @@ class OpenVpnTests(unittest2.TestCase):
         # print nodeData
         time.sleep(10) # wait for vpn tunnel to form
         remoteHostResult = subprocess.call(["ping","-c","1",qaHostVPNLanIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        listOfServers = node.getRemoteServersStatus()
+        # print listOfServers
         assert (remoteHostResult == 0)
+        assert(listOfServers['list'][0]['connected'])
+        
         tunnelUp = True
         
     def test_030_disableRemoteClientVPNTunnel(self):
@@ -116,26 +120,27 @@ class OpenVpnTests(unittest2.TestCase):
         nodeData['remoteClients']['list'].append(setUpClient())
         node.setSettings(nodeData)
         clientLink = node.getClientDistributionDownloadLink("atsclient","zip")
-        print clientLink
+        # print clientLink
+
         # download client config file
         result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
         assert (result == 0)
-        # copy the config file to the remote PC
+        # copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
         os.system("scp -i /usr/lib/python2.6/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
-        # unzip the config file on the remote PC
         os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
-        # remove any existing openvpn config files
         os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
-        # move the config files to the openvpn directory
         os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
         # connect openvpn from the PC to the Untangle server.
         os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
         time.sleep(10) # wait for vpn tunnel to form 
         # ping the test host behind the Untangle from the remote testbox
         result = os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ clientControl.hostIP +" >/dev/null 2>&1\"")
+        listOfClients = node.getActiveClients()
+        # print "address " + listOfClients['list'][0]['address']
         # stop the vpn tunnel on remote box
         os.system("ssh -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo pkill openvpn\"")
         assert(result==0)
+        assert(listOfClients['list'][0]['address'] == qaClientVPN)
         
     def test_999_finalTearDown(self):
         global node
