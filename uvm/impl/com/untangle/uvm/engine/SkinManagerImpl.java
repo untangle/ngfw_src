@@ -17,11 +17,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.Iterator;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import com.thoughtworks.xstream.XStream;
+import org.w3c.dom.Document;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SkinManager;
@@ -204,20 +210,31 @@ public class SkinManagerImpl implements SkinManager
 
     public SkinInfo getSkinInfo( File skinXML  )
     {
-        XStream xstream = new XStream();
-        xstream.alias("skin", SkinInfo.class);
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
         SkinInfo skinInfo;
         try {
-            skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinXML));
+            builder = builderFactory.newDocumentBuilder();
+            Document doc = builder.parse(new FileInputStream(skinXML));
+            XPath xPath =  XPathFactory.newInstance().newXPath();
+            String name = xPath.compile("/skin/name").evaluate(doc);
+            String displayName = xPath.compile("/skin/displayName").evaluate(doc);
+            String adminSkin = xPath.compile("/skin/adminSkin").evaluate(doc);
+            String skinVersion = xPath.compile("/skin/adminSkinVersion").evaluate(doc);
+            skinInfo = new SkinInfo(name,displayName,(adminSkin != null && adminSkin.equals("true")), Integer.valueOf(skinVersion),false,0);
             if(!skinInfo.isAdminSkinOutOfDate()) {
                 return skinInfo;
-            } 
-        } catch (FileNotFoundException e) {
+            }
+        }
+        catch (FileNotFoundException e) {
             logger.error("Error reading skin info from skin foder \"" + skinXML.getName() + "\"");
+        }
+        catch (Exception ex) {
+            logger.error("Error while processing skin:", ex);
         }
         return null;
     }
-    
+
     // private methods --------------------------------------------------------
 
     private void _setSettings( SkinSettings newSettings )

@@ -8,7 +8,7 @@ import java.text.CharacterIterator;
 
 import org.apache.log4j.Logger;
 
-import org.apache.xerces.impl.xpath.regex.BMPattern;
+import com.untangle.node.ips.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;

@@ -40,7 +40,6 @@ class Jars
     const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')])
     const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')])
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
-    const_set(:Xerces, [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/jdk1.3/xercesImpl-2.8.1.jar') ])
     const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
                         Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
@@ -78,8 +77,6 @@ class Jars
     const_set(:Postgres, [ Jars.downloadTarget('postgresql-9.1-902.jdbc4/postgresql-9.1-902.jdbc4.jar')])
     const_set(:Velocity, [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar'),
                            Jars.downloadTarget('velocity-1.4/velocity-dep-1.4.jar')])
-    const_set(:XStream, [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
-                         Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')])
 
     const_set(:JRadius, [ Jars.downloadTarget('jradius-1.1.0-client/lib/commons-configuration-1.5.jar'),
                          Jars.downloadTarget('jradius-1.1.0-client/lib/commons-pool-1.5.4.jar'),
@@ -101,10 +98,10 @@ class Jars
     ## Groups used for compiling
     # This is available to everything?
     const_set(:Base, Jars.makeGroup(Log4j, Postgres,
-                                   JavaMailApi, Xerces,
+                                   JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, XmlRpc,
-                                   Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
+                                   Jstl, Json, Jabsorb, Slf4j, DnsJava,
                                    JFreeChart, Ant))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ])
