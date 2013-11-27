@@ -2851,10 +2851,24 @@ Ext.define("Ung.GridEventLogBuffered", {
              fields: config.fields
          });
          config.modelName = modelName;
-
+         
         this.callParent(arguments);
     },
     initComponent: function() {
+        
+        for (i=0; i<this.columns.length; i++){
+            var column = this.columns[i];
+            var filter = column["filter"];
+            var defaultFiltering = column["defaultFiltering"];
+            if (typeof(filter) == 'undefined' && 
+                    (typeof(defaultFiltering) == 'undefined' || defaultFiltering == true)){
+                filter = {
+                    type: 'string'
+                }
+                column["filter"] = filter;
+            }
+        }
+        
         this.rpc = {};
         
         if( this.viewConfig == null ) {
@@ -2960,7 +2974,7 @@ Ext.define("Ung.GridEventLogBuffered", {
                     col.initialSortable = false;
                 }
             }
-        }
+        }        
     },
     autoRefreshEnabled:true,
     startAutoRefresh: function(setButton) {
@@ -3369,16 +3383,14 @@ Ung.CustomEventLog = {
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
                         return i18n.timestampFormat(value);
-                    }
+                    },
+                    defaultFiltering: false
                 }, {
                     hidden: visibleColumnsParam.indexOf('client_addr') < 0,
                     header: i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_addr',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'client_addr'
                 }, {
                     hidden: visibleColumnsParam.indexOf('client_port') < 0,
                     header: i18n._("Client port"),
@@ -3393,19 +3405,13 @@ Ung.CustomEventLog = {
                     header: i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
-                    dataIndex: 'username',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'username'
                 }, {
                     hidden: visibleColumnsParam.indexOf('server_addr') < 0,
                     header: i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'server_addr',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'server_addr'
                 }, {
                     hidden: visibleColumnsParam.indexOf('server_port') < 0,
                     header: i18n._("Server Port"),
@@ -3445,9 +3451,6 @@ Ung.CustomEventLog = {
                           case 7: return i18n._("Limited Severely");
                           default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
                         }
-                    },
-                    filter: {
-                        type: 'string'
                     }
                 }, {
                     hidden: visibleColumnsParam.indexOf('rule') < 0,
@@ -3459,28 +3462,19 @@ Ung.CustomEventLog = {
                         if (Ext.isEmpty(value))
                             return i18n._("none");
                         return value;
-                    },
-                    filter: {
-                        type: 'string'
                     }
                 }, {
                     hidden: visibleColumnsParam.indexOf('application') < 0,
                     header: i18n._("Application"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'application',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'application'
                 }, {
                     hidden: visibleColumnsParam.indexOf('protochain') < 0,
                     header: i18n._("ProtoChain"),
                     width: 180,
                     sortable: true,
-                    dataIndex: 'protochain',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'protochain'
                 }, {
                     hidden: visibleColumnsParam.indexOf('blocked') < 0,
                     header: i18n._("Blocked (Application Control)"),
@@ -3517,19 +3511,13 @@ Ung.CustomEventLog = {
                     header: i18n._("Detail"),
                     width: 200,
                     sortable: true,
-                    dataIndex: 'detail',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'detail'
                 },{
                     hidden: visibleColumnsParam.indexOf('protocol') < 0,
                     header: i18n._("Protocol"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'protocol',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'protocol'
                 }, {
                     hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
                     header: i18n._("Blocked (Application Control Lite)"),
@@ -3555,19 +3543,13 @@ Ung.CustomEventLog = {
                     header: i18n._("Status (Https)"),
                     width: 100,
                     sortable: true,
-                    dataIndex: 'https_status',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'https_status'
                 }, {
                     hidden: visibleColumnsParam.indexOf('https_detail') < 0,
                     header: i18n._("Detail (Https)"),
                     width: 250,
                     sortable: true,
-                    dataIndex: 'https_detail',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'https_detail'
                 }, {
                     hidden: visibleColumnsParam.indexOf('policyId') < 0,
                     header: i18n._('Policy Id'),
@@ -3577,9 +3559,6 @@ Ung.CustomEventLog = {
                     dataIndex: 'policyId',
                     renderer: function(value) {
                         return main.getPolicyName(value);
-                    },
-                    filter: {
-                        type: 'string'
                     }
                 }, {
                     hidden: visibleColumnsParam.indexOf('firewall_blocked') < 0,
@@ -3616,19 +3595,13 @@ Ung.CustomEventLog = {
                         } else {
                             return value;
                         }
-                    },
-                    filter: {
-                        type: 'string'
                     }
                 }, {
                     hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
                     header: i18n._("Server") ,
                     width: Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable: true,
-                    dataIndex: 's_server_addr',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 's_server_addr'
                 }, {
                     hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
                     header: i18n._("Server Port"),
@@ -3654,28 +3627,19 @@ Ung.CustomEventLog = {
                     header: i18n._('Rule Id (IPS)'),
                     width: 60,
                     sortable: true,
-                    dataIndex: 'ips_name',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'ips_name'
                 }, {
                     hidden: visibleColumnsParam.indexOf('ips_description') < 0,
                     header: i18n._('Rule Description (IPS)'),
                     width: 150,
                     sortable: true,
                     flex:1,
-                    dataIndex: 'ips_description',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'ips_description'
                 }, {
                     hidden: visibleColumnsParam.indexOf('capture_rule_index') < 0,
                     header: i18n._("Rule ID (Captive Portal)"),
                     width: 80,
-                    dataIndex: 'capture_rule_index',
-                    filter: {
-                        type: 'string'
-                    }
+                    dataIndex: 'capture_rule_index'
                 }, {
                     hidden: visibleColumnsParam.indexOf('capture_blocked') < 0,
                     header: i18n._("Captured"),
@@ -3779,44 +3743,33 @@ Ung.CustomEventLog = {
                   dataIndex: 'time_stamp',
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
-                  }
+                  },
+                  defaultFiltering: false
               }, {
                   hidden: visibleColumnsParam.indexOf('client') < 0,
                   header: i18n._("Client"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'client',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'client'
               }, {
                   hidden: visibleColumnsParam.indexOf('username') < 0,
                   header: i18n._("Username"),
                   width: Ung.Util.usernameFieldWidth,
                   sortable: true,
-                  dataIndex: 'username',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'username'
               }, {
                   hidden: visibleColumnsParam.indexOf('host') < 0,
                   header: i18n._("Host"),
                   width: Ung.Util.hostnameFieldWidth,
                   sortable: true,
-                  dataIndex: 'host',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'host'
               }, {
                   hidden: visibleColumnsParam.indexOf('uri') < 0,
                   header: i18n._("Uri"),
                   flex:1,
                   width: Ung.Util.uriFieldWidth,
                   sortable: true,
-                  dataIndex: 'uri',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'uri'
               }, {
                   hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
                   header: i18n._("Blocked (Webfilter Lite)"),
@@ -3843,19 +3796,13 @@ Ung.CustomEventLog = {
                   header: i18n._("Reason For Action (Webfilter Lite)"),
                   width: 150,
                   sortable: true,
-                  dataIndex: 'webfilter_reason',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'webfilter_reason'
               }, {
                   hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
                   header: i18n._("Category (Webfilter Lite)"),
                   width: 120,
                   sortable: true,
-                  dataIndex: 'webfilter_category',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'webfilter_category'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
                   header: i18n._("Blocked  (Webfilter)"),
@@ -3883,28 +3830,19 @@ Ung.CustomEventLog = {
                   header: i18n._("Reason For Action (Webfilter)"),
                   width: 150,
                   sortable: true,
-                  dataIndex: 'sitefilter_reason',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'sitefilter_reason'
               }, {
                   hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
                   header: i18n._("Category (Webfilter)"),
                   width: 120,
                   sortable: true,
-                  dataIndex: 'sitefilter_category',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'sitefilter_category'
               }, {
                   hidden: visibleColumnsParam.indexOf('server') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'server',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'server'
               }, {
                   hidden: visibleColumnsParam.indexOf('server_port') < 0,
                   header: i18n._("Server Port"),
@@ -3919,37 +3857,25 @@ Ung.CustomEventLog = {
                   header: i18n._("Action (Ad Blocker)"),
                   width: 120,
                   sortable: true,
-                  dataIndex: 'adblocker_action',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'adblocker_action'
               }, {
                   hidden: visibleColumnsParam.indexOf('adblocker_cookie_ident') < 0,
                   header: i18n._("Cookie"),
                   width: 100,
                   sortable: true,
-                  dataIndex: 'adblocker_cookie_ident',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'adblocker_cookie_ident'
               }, {
                   hidden: visibleColumnsParam.indexOf('clam_name') < 0,
                   header: i18n._("Virus Name (Clam)"),
                   width: 140,
                   sortable: true,
-                  dataIndex: 'clam_name',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'clam_name'
               }, {
                   hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
                   header: i18n._("Virus Name (Commtouchav)"),
                   width: 140,
                   sortable: true,
-                  dataIndex: 'commtouchav_name',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'commtouchav_name'
               }]
           });
           return grid;
@@ -4032,91 +3958,62 @@ Ung.CustomEventLog = {
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
                   },
-                  filter: {
-                      type: 'string'
-                  }
+                  defaultFiltering: false
               }, {
                   hidden: visibleColumnsParam.indexOf('client') < 0,
                   header: i18n._("Client"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'client',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'client'
               }, {
                   hidden: visibleColumnsParam.indexOf('server') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'server',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'server'
               }, {
                   hidden: visibleColumnsParam.indexOf('s_server') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 's_server',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 's_server'
               }, {
                   hidden: visibleColumnsParam.indexOf('clam_name') < 0,
                   header: i18n._("Virus Name (Clam)"),
                   width: 140,
                   sortable: true,
-                  dataIndex: 'clam_name',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'clam_name'
               }, {
                   hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
                   header: i18n._("Virus Name (Commtouchav)"),
                   width: 140,
                   sortable: true,
-                  dataIndex: 'commtouchav_name',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'commtouchav_name'
               }, {
                   hidden: visibleColumnsParam.indexOf('addr') < 0,
                   header: i18n._("Receiver"),
                   width: Ung.Util.emailFieldWidth,
                   sortable: true,
-                  dataIndex: 'addr',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'addr'
               }, {
                   hidden: visibleColumnsParam.indexOf('sender') < 0,
                   header: i18n._("Sender"),
                   width: Ung.Util.emailFieldWidth,
                   sortable: true,
-                  dataIndex: 'sender',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'sender'
               }, {
                   hidden: visibleColumnsParam.indexOf('subject') < 0,
                   header: i18n._("Subject"),
                   flex:1,
                   width: 150,
                   sortable: true,
-                  dataIndex: 'subject',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'subject'
               }, {
                   hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
                   header: i18n._("Action (Spamassassin)"),
                   width: 125,
                   sortable: true,
-                  dataIndex: 'spamassassin_action',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'spamassassin_action'
               }, {
                   hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
                   header: i18n._("Spam score (Spamassassin)"),
@@ -4131,10 +4028,7 @@ Ung.CustomEventLog = {
                   header: i18n._("Action (Commtouchas)"),
                   width: 125,
                   sortable: true,
-                  dataIndex: 'commtouchas_action',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'commtouchas_action'
               }, {
                   hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
                   header: i18n._("Spam score (Commtouchas)"),
@@ -4149,10 +4043,7 @@ Ung.CustomEventLog = {
                   header: i18n._("Action (Phish)"),
                   width: 125,
                   sortable: true,
-                  dataIndex: 'phish_action',
-                  filter: {
-                      type: 'string'
-                  }
+                  dataIndex: 'phish_action'
               }]
           });
           return grid;

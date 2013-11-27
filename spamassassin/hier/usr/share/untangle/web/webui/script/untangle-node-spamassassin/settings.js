@@ -473,6 +473,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
                         return i18n.timestampFormat(value);
+                    },
+                    filter: {
+                        type: 'numeric'
                     }
                 }, {
                     header: this.i18n._("Action"),
