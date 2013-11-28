@@ -78,11 +78,10 @@ class Jars
     const_set(:Velocity, [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar'),
                            Jars.downloadTarget('velocity-1.4/velocity-dep-1.4.jar')])
 
-    const_set(:JRadius, [ Jars.downloadTarget('jradius-1.1.0-client/lib/commons-configuration-1.5.jar'),
-                         Jars.downloadTarget('jradius-1.1.0-client/lib/commons-pool-1.5.4.jar'),
-                         Jars.downloadTarget('jradius-1.1.0-client/lib/gnu-crypto-2.0.1.jar'),
-                         Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-core-1.1.0.jar'),
-                         Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')])
+    const_set(:JRadius, [Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/commons-pool-1.5.4.jar'),
+                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/gnu-crypto-2.0.1.jar'),
+                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-core-1.1.4.jar'),
+                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-dictionary-1.1.4.jar')])
 
     ## Jars required to run/compile unit tests
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
