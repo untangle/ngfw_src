@@ -22,15 +22,14 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz \
 	xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
-	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz \
-	jradius-1.1.0-client.tar.gz
+	python-jsonrpc-r19.tar.gz jradius-1.1.0-client.tar.gz
 
 tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip \
 	jabsorb-1.2.2-src.zip
 
-jars=gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar \
+jars=gettext-commons-0.9.1.jar postgresql-9.1-902.jdbc4.jar dnsjava-2.1.6.jar\
 
 ###############################################################################
 ###############################################################################

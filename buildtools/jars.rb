@@ -85,7 +85,7 @@ class Jars
                          Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')])
 
     ## Jars required to run/compile unit tests
-    const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ])
+    const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
 
     const_set(:HttpClient, [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
                             Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
