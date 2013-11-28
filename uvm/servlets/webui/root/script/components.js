@@ -2704,7 +2704,7 @@ Ext.define("Ung.GridEventLog", {
             property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
             rec[property]=
                 (property=='id')?index+1:
-                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
+                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(index*10000)).getTime()}:
                     property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
         }
         return rec;
@@ -2807,7 +2807,7 @@ Ext.define("Ung.GridEventLog", {
 
 
 //Event Log class
-Ext.define("Ung.GridEventLogBuffered", {
+Ext.define("Ung.GridEventLogCustomizable", {
     extend: "Ext.grid.Panel",
     // the settings component
     settingsCmp: null,
@@ -2823,12 +2823,12 @@ Ext.define("Ung.GridEventLogBuffered", {
     fields: null,
     // columns for the column model
     columns: null,
-    enableColumnHide: false,
-    enableColumnMove: false,
     // for internal use
     rpc: null,
     helpSource: 'event_log',
-    enableColumnMenu: false,
+    enableColumnHide: true,
+    enableColumnMove: true,
+    enableColumnMenu: true,
     verticalScrollerType: 'paginggridscroller',
     plugins: {
         ptype: 'bufferedrenderer',
@@ -2957,21 +2957,15 @@ Ext.define("Ung.GridEventLogBuffered", {
         }];
         this.callParent(arguments);
 
-        if (!this.enableColumnMenu){
-            var cmConfig = this.columns;
-            for (var i in cmConfig) {
-                var col=cmConfig[i];
-                if (col.sortable == true || col.sortable == null) {
-                    col.menuDisabled= true;
-                    col.sortable = true;
-                    col.initialSortable = true;
-                } else {
-                    col.initialSortable = false;
-                }
+        for (var i in this.columns) {
+            var col=this.columns[i];
+            if (col.sortable === undefined) {
+                col.sortable = true;
             }
-        }        
+            col.initialSortable = col.sortable;
+        }
     },
-    autoRefreshEnabled:true,
+    autoRefreshEnabled: true,
     startAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=true;
         var columnModel=this.columns;
@@ -3158,7 +3152,7 @@ Ext.define("Ung.GridEventLogBuffered", {
             property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
             rec[property]=
                 (property=='id')?index+1:
-                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
+                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
                     property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
         }
         return rec;
@@ -3172,7 +3166,7 @@ Ext.define("Ung.GridEventLogBuffered", {
             //TEST:Add sample events for test
             if(testMode) {
                 var emptyRec={};
-                var length = Math.floor((Math.random()*150));
+                var length = Math.floor((Math.random()*5000));
                 for(var i=0; i<length; i++) {
                     events.list.push(this.getTestRecord(i, this.fields));
                 }
@@ -3258,15 +3252,6 @@ Ext.define("Ung.GridEventLogBuffered", {
         return false;
     }
 });
-
-
-//Grid for EventLog, with customizable columns 
-Ext.define('Ung.GridEventLogCustomizable', {
-    extend:'Ung.GridEventLogBuffered',
-    enableColumnHide: true,
-    enableColumnMove: true,
-    enableColumnMenu: true
- });
 
 Ung.CustomEventLog = {
         buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {

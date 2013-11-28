@@ -956,7 +956,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Passed IP Addresses
         buildPassedClients: function() {
-
             this.gridPassedClients = Ext.create('Ung.EditorGrid',{
                 name: 'Client IP addresses',
                 settingsCmp: this,

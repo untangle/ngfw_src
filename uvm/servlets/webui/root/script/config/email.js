@@ -688,6 +688,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 title: this.i18n._('Quarantine'),
                 cls: 'ung-panel',
                 autoScroll: true,
+                reserveScrollbar: true,
                 layout: { type: 'vbox', pack: 'start', align: 'stretch' },
                 items: [{
                     xtype: 'fieldset',
