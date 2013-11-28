@@ -2857,7 +2857,7 @@ Ext.define("Ung.GridEventLogBuffered", {
     initComponent: function() {
         for (i=0; i<this.columns.length; i++){
             var column = this.columns[i];
-            if (column["filter"] === undefined && column.dataIndex != 'time_stamp',) {
+            if (column["filter"] === undefined && column.dataIndex != 'time_stamp') {
                 column["filter"] = {
                     type: 'string'
                 }
