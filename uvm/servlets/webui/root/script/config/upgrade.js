@@ -3,7 +3,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
      Ext.define('Ung.Upgrade', {
         extend: 'Ung.ConfigWin',
-        gridUpgrades: null,
         panelSettings: null,
         initComponent: function() {
             this.breadcrumbs = [{
@@ -204,7 +203,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 if (!isApply) {
                     this.closeWindow();
                 } else {
-                    this.loadGridUpgrade();
                     this.clearDirty();
                 }
             }, this), this.getSystemSettings());
