@@ -2855,17 +2855,12 @@ Ext.define("Ung.GridEventLogBuffered", {
         this.callParent(arguments);
     },
     initComponent: function() {
-        
         for (i=0; i<this.columns.length; i++){
             var column = this.columns[i];
-            var filter = column["filter"];
-            var defaultFiltering = column["defaultFiltering"];
-            if (typeof(filter) == 'undefined' && 
-                    (typeof(defaultFiltering) == 'undefined' || defaultFiltering == true)){
-                filter = {
+            if (column["filter"] === undefined && column.dataIndex != 'time_stamp',) {
+                column["filter"] = {
                     type: 'string'
                 }
-                column["filter"] = filter;
             }
         }
         
@@ -3383,8 +3378,7 @@ Ung.CustomEventLog = {
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
                         return i18n.timestampFormat(value);
-                    },
-                    defaultFiltering: false
+                    }
                 }, {
                     hidden: visibleColumnsParam.indexOf('client_addr') < 0,
                     header: i18n._("Client"),
@@ -3743,8 +3737,7 @@ Ung.CustomEventLog = {
                   dataIndex: 'time_stamp',
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
-                  },
-                  defaultFiltering: false
+                  }
               }, {
                   hidden: visibleColumnsParam.indexOf('client') < 0,
                   header: i18n._("Client"),
@@ -3957,8 +3950,7 @@ Ung.CustomEventLog = {
                   dataIndex: 'time_stamp',
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
-                  },
-                  defaultFiltering: false
+                  }
               }, {
                   hidden: visibleColumnsParam.indexOf('client') < 0,
                   header: i18n._("Client"),

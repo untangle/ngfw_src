@@ -972,8 +972,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     dataIndex: "time_stamp",
                     renderer: function(value) {
                         return i18n.timestampFormat(value);
-                    },
-                    defaultFiltering: false
+                    }
                 },{
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,

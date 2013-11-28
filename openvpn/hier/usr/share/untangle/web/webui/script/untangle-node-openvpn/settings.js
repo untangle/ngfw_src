@@ -384,7 +384,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     renderer: Ext.bind(function(value) {
                         return i18n.timestampFormat(value);
                     }, this ),
-                    defaultFiltering: false
+                    filter: null
                 }, {
                     header: this.i18n._("End Time"),
                     width: Ung.Util.timestampFieldWidth,
@@ -393,7 +393,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     renderer: Ext.bind(function(value) {
                         return i18n.timestampFormat(value);
                     }, this ),
-                    defaultFiltering: false
+                    filter: null
                 }, {
                     header: this.i18n._("Client Name"),
                     sortable: true,

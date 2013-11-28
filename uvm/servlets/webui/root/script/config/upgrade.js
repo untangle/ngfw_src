@@ -32,7 +32,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     var upgradeButton = this.panelSettings.query('[name="upgradeButton"]')[0];
                     upgradeButton.show();
                 }
-            }, this))
+            }, this));
         },
         getSystemSettings: function(forceReload) {
             if (forceReload || this.rpc.systemSettings === undefined) {
@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
                 Ext.MessageBox.updateProgress(progressIndex, "", text);
                 window.setTimeout( Ext.bind(this.getDownloadStatus, this), 500 );
-            }, this))
+            }, this));
         },
         downloadUpgrades: function() {
             this.checkDownloadStatus=true;
@@ -82,7 +82,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 } else {
                     Ext.MessageBox.alert(i18n._("Warning"), i18n._("Downloading upgrades failed."));
                 }
-            }, this))
+            }, this));
             this.getDownloadStatus();
         },
         buildSettings: function() {
