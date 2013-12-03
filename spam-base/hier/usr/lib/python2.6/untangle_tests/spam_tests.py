@@ -18,7 +18,7 @@ defaultRackId = 1
 clientControl = ClientControl()
 node = None
 nodeData = None
-canRelay = 0
+canRelay = True
 smtpServerHost = 'test.untangle.com'
 
 def sendTestmessage():
@@ -37,7 +37,7 @@ def sendTestmessage():
        smtpObj.sendmail(sender, receivers, message)         
        print "Successfully sent email"
        return 1
-    except SMTPException:
+    except smtplib.SMTPException:
        print "Error: unable to send email"
        return 0
        
@@ -74,7 +74,7 @@ class SpamTests(unittest2.TestCase):
 
 
     def setUp(self):
-        global node, nodeData, nodeSP, nodeDataSP,canRelay
+        global node, nodeData, nodeSP, nodeDataSP, canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
@@ -83,7 +83,10 @@ class SpamTests(unittest2.TestCase):
             nodeData = node.getSettings()
             nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
             nodeDataSP = nodeSP.getSmtpNodeSettings()
-            canRelay = sendTestmessage()
+            try:
+                canRelay = sendTestmessage()
+            except Exception,e:
+                canRelay = False
             checkForMailSender()
             flushEvents()
             # flush quarantine.
@@ -130,6 +133,8 @@ class SpamTests(unittest2.TestCase):
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
             
     def test_030_adminQuarantine(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
         # print query
@@ -145,6 +150,8 @@ class SpamTests(unittest2.TestCase):
         assert(addressFound)
              
     def test_040_userQuarantine(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
         # print query
@@ -158,6 +165,8 @@ class SpamTests(unittest2.TestCase):
         assert(len(curQuarantineList['list']) > 0)
             
     def test_050_userQuarantinePurge(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
         # print query
