@@ -2984,9 +2984,7 @@ Ext.define("Ung.GridEventLogCustomizable", {
             col.initialSortable = col.sortable;
             
             if (col.filter === undefined && col.dataIndex != 'time_stamp') {
-                col.filter = {
-                    type: 'string'
-                }
+                col.filter = { type: 'string' };
             }
         }
 
