@@ -3,7 +3,8 @@
 
 arch = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
 
-jvm = (arch == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
+#jvm = (arch == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
+jvm = (arch == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "j2sdk1.7-oracle"
 ENV["JAVA_HOME"] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
