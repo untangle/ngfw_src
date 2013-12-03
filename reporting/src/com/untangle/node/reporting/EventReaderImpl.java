@@ -138,15 +138,6 @@ public class EventReaderImpl
                     logger.warn("Failed to process row - skipping.",e);
                 }
             }
-            
-            if (newList.size() > 0) {
-                ArrayList<JSONObject> newList2 = new ArrayList<JSONObject>();
-                newList2.addAll(newList);
-                for (int i = 0; i < limit; i++)
-                    newList2.add(newList.get(0));
-                return newList2;
-            }
-            
             return newList;
         } catch (SQLException e) {
             closeDbConnection();
