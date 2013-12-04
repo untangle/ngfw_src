@@ -2522,8 +2522,48 @@ Ext.define("Ung.GridEventLog", {
             }
             col.initialSortable = col.sortable;
             
-            if (col.filter === undefined && col.dataIndex != 'time_stamp') {
-                col.filter = { type: 'string' };
+            if (col.filter === undefined){
+                if (col.dataIndex != 'time_stamp')
+                    col.filter = { type: 'string' };
+                else 
+                    col.filter = { type: 'datetime',
+                            dataIndex: 'time_stamp',
+                            date: {
+                                format: 'Y-m-d',
+                            },
+                            time: {
+                                format: 'H:i:s A',
+                                increment: 1
+                            },
+                            validateRecord : function (record) {
+                                var me = this, 
+                                key,
+                                pickerValue,
+                                val1 = record.get(me.dataIndex);
+                                
+                                var val = new Date(val1.time);
+                                if(!Ext.isDate(val)){
+                                    return false;
+                                }
+                                val = val.getTime();
+
+                                for (key in me.fields) {
+                                    if (me.fields[key].checked) {
+                                        pickerValue = me.getFieldValue(key).getTime();
+                                        if (key == 'before' && pickerValue <= val) {
+                                            return false;
+                                        }
+                                        if (key == 'after' && pickerValue >= val) {
+                                            return false;
+                                        }
+                                        if (key == 'on' && pickerValue != val) {
+                                            return false;
+                                        }
+                                    }
+                                }
+                                return true;
+                            }
+                    };
             }
         }
         this.filterFeature=Ext.create('Ext.ux.grid.FiltersFeature', {
