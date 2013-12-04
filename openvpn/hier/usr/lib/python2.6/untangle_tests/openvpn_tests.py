@@ -16,6 +16,7 @@ defaultRackId = 1
 clientControl = ClientControl()
 nodeData = None
 node = None
+vpnClientName = "atsclient"
 qaHostVPN = "10.111.56.57"
 qaHostVPNLanIP = "192.168.234.57"
 # special box with testshell in the sudoer group
@@ -26,7 +27,7 @@ tunnelUp = False
 #pdb.set_trace()
 
 def flushEvents():
-    reports = uvmContext.nodeManager().node("untangle-node-openvpn")
+    reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
         reports.flushEvents()
 
@@ -37,7 +38,7 @@ def setUpClient():
             "exportNetwork": "127.0.0.1", 
             "groupId": 1, 
             "javaClass": "com.untangle.node.openvpn.OpenVpnRemoteClient", 
-            "name": "atsclient"
+            "name": vpnClientName
     }
 
 class OpenVpnTests(unittest2.TestCase):
@@ -51,16 +52,17 @@ class OpenVpnTests(unittest2.TestCase):
         return "Untangle"
         
     def setUp(self):
-        global node, nodeData, vpnHostResult, vpnClientResult
+        global node, nodeData, vpnHostResult, vpnClientResult, vpnServerResult
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             node.start()
-            # node.initializeSettings()
             vpnHostResult = subprocess.call(["ping","-c","1",qaHostVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             vpnClientResult = subprocess.call(["ping","-c","1",qaClientVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            serverVPNIP = uvmContext.networkManager().getFirstWanAddress()
+            vpnServerResult = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 1 " + serverVPNIP + " >/dev/null 2>&1\"")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -92,7 +94,7 @@ class OpenVpnTests(unittest2.TestCase):
         if (not tunnelUp):
             raise unittest2.SkipTest("previous test test_020_createVPNTunnel failed")
         nodeData = node.getSettings()
-        print nodeData
+        # print nodeData
         i=0
         found = False
         for remoteGuest in nodeData['remoteServers']['list']:
@@ -110,7 +112,7 @@ class OpenVpnTests(unittest2.TestCase):
         
     def test_040_createClientVPNTunnel(self):
         global nodeData
-        if (vpnClientResult != 0):
+        if (vpnClientResult != 0 and vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
         # deleted any existing atsclient keys 
         os.system("rm -f @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-clients/client-atsclient.*")
@@ -119,7 +121,7 @@ class OpenVpnTests(unittest2.TestCase):
         siteName = nodeData['siteName']  
         nodeData['remoteClients']['list'].append(setUpClient())
         node.setSettings(nodeData)
-        clientLink = node.getClientDistributionDownloadLink("atsclient","zip")
+        clientLink = node.getClientDistributionDownloadLink(vpnClientName,"zip")
         # print clientLink
 
         # download client config file
@@ -137,10 +139,25 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ clientControl.hostIP +" >/dev/null 2>&1\"")
         listOfClients = node.getActiveClients()
         # print "address " + listOfClients['list'][0]['address']
+
         # stop the vpn tunnel on remote box
         os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo pkill openvpn\"")
         assert(result==0)
         assert(listOfClients['list'][0]['address'] == qaClientVPN)
+
+        # check event log
+        flushEvents()
+        query = None;
+        for q in node.getStatusEventsQueries():
+            if q['name'] == 'Connections': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        print events['list']
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['remote_address'] == qaClientVPN)
+        assert(events['list'][0]['client_name'] == vpnClientName)
         
     def test_999_finalTearDown(self):
         global node
