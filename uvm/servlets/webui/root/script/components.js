@@ -2367,7 +2367,76 @@ Ext.define("Ung.FaceplateMetric", {
     }
 });
 Ext.ComponentMgr.registerType('ungFaceplateMetric', Ung.FaceplateMetric);
+Ext.define("Ung.GlobalFiltersFeature", {
+    extend: "Ext.ux.grid.FiltersFeature",
+    encode: false,
+    local: true,
+    init: function (grid) {
+        Ext.applyIf(this,{
+            globalFilter: {
+                value: "",
+                caseSensitive: false,
+            },
+        })
+        this.callParent(arguments);
+    },
+    getRecordFilter: function() {
+        var me = this;
+        var globalFilterFn = this.globalFilterFn;
+        var parentFn = Ext.ux.grid.FiltersFeature.prototype.getRecordFilter.call(this);
+        return function(record) {
+            return parentFn.call(me, record) && globalFilterFn.call(me, record);
+        };
+    },
+    updateGlobalFilter: function(value, caseSensitive) {
+        if(caseSensitive !== null) {
+            this.globalFilter.caseSensitive=caseSensitive;
+        }
+        if(!this.globalFilter.caseSensitive) {
+            value=value.toLowerCase();
+        }
+        this.globalFilter.value = value;
+        this.reload();
+    },
+    globalFilterFn: function(record) {
+        //TODO: 1) support regular exppressions
+        //2) provide option to search in displayed columns only
+        var inputValue = this.globalFilter.value,
+            caseSensitive = this.globalFilter.caseSensitive;
+        if(inputValue.length === 0) {
+            return true;
+        }
+        var fields = record.fields.items,
+            fLen   = record.fields.length,
+            f, val;
 
+        for (f = 0; f < fLen; f++) {
+            val = record.get(fields[f].name);
+            if(val == null) {
+                continue;
+            }
+            if(typeof val == 'boolean' || typeof val == 'number') {
+                val=val.toString();
+            } else if(typeof val == 'object') {
+                if(val.javaClass =="java.util.Date") {
+                    val = i18n.timestampFormat(val);
+                }
+            }
+            if(typeof val == 'string') {
+                if(caseSensitive) {
+                    if(val.indexOf(inputValue) > -1) {
+                        return true;
+                    }
+                } else {
+                    if(val.toLowerCase().indexOf(inputValue) > -1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+});
 //Event Log class
 Ext.define("Ung.GridEventLog", {
     extend: "Ext.grid.Panel",
@@ -2379,12 +2448,6 @@ Ext.define("Ung.GridEventLog", {
     // Event manager rpc function to call
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
-    // Records per page
-    recordsPerPage: 60000,
-    // fields for the Store
-    fields: null,
-    // columns for the column model
-    columns: null,
     // for internal use
     rpc: null,
     helpSource: 'event_log',
@@ -2397,8 +2460,6 @@ Ext.define("Ung.GridEventLog", {
         trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
         leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
     },
-    paginated: false,
-    invalidateScrollerOnRefresh: false,
     loadMask: true,
     // called when the component is initialized
     constructor: function(config) {
@@ -2412,7 +2473,6 @@ Ext.define("Ung.GridEventLog", {
         this.callParent(arguments);
     },
     initComponent: function() {
-        var me = this;
         this.rpc = {
             repository: {}
         };
@@ -2420,10 +2480,12 @@ Ext.define("Ung.GridEventLog", {
             title: i18n._('Event Log'),
             name: 'EventLog',
             hasAutoRefresh: true,
-            eventQueriesFn: this.settingsCmp.node.rpcNode.getEventQueries,
             features:[],
             viewConfig: {}
-        })
+        });
+        if(this.eventQueriesFn == null && this.settingsCmp.node !== null && this.settingsCmp.node.rpcNode !== null && this.settingsCmp.node.rpcNode.getEventQueries !== null) {
+            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
+        }
         this.viewConfig.enableTextSelection = true;
         this.store=Ext.create('Ext.data.Store', {
             model: this.modelName,
@@ -2566,60 +2628,7 @@ Ext.define("Ung.GridEventLog", {
                     };
             }
         }
-        this.filterFeature=Ext.create('Ext.ux.grid.FiltersFeature', {
-            encode: false,
-            local: true,
-            getRecordFilter: function() {
-                var me = this;
-                var globalFilterFn = this.globalFilterFn;
-                var parentFn = Ext.ux.grid.FiltersFeature.prototype.getRecordFilter.call(this);
-                return function(record) {
-                    return parentFn.call(me, record) && globalFilterFn.call(me, record);
-                }
-            },
-            globalFilter: {
-                value: "",
-                caseSensitive: false,
-            },
-            updateGlobalFilter: function(value, caseSensitive) {
-                if(caseSensitive !== null) {
-                    this.globalFilter.caseSensitive=caseSensitive;
-                }
-                if(!this.globalFilter.caseSensitive) {
-                    value=value.toLowerCase();
-                }
-                this.globalFilter.value = value;
-                this.reload();
-            },
-            globalFilterFn: function(record) {
-                var inputValue = this.globalFilter.value,
-                    caseSensitive = this.globalFilter.caseSensitive;
-                if(inputValue.length === 0) {
-                    return true;
-                }
-                var fields = record.fields.items,
-                    fLen   = record.fields.length,
-                    f, val;
-
-                for (f = 0; f < fLen; f++) {
-                    val = record.get(fields[f].name);
-                    if(val == null) {
-                        continue;
-                    }
-                    if(typeof val == 'boolean' || typeof val == 'number') {
-                        val=val.toString();
-                    } else if(typeof val == 'object') {
-                        if(val.javaClass =="java.util.Date") {
-                            val = i18n.timestampFormat(val);
-                        }
-                    }
-                    if(typeof val == 'string' && caseSensitive?(val.indexOf(inputValue) > -1):(val.toLowerCase().indexOf(inputValue) > -1)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+        this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
         this.features.push(this.filterFeature);
         this.callParent(arguments);
         
@@ -2669,8 +2678,7 @@ Ext.define("Ung.GridEventLog", {
             this.getStore().getProxy().data = events;
             this.getStore().load({
                 params: {
-                    start: 0,
-                    limit: this.recordsPerPage
+                    start: 0
                 }
             });
         }
@@ -2832,9 +2840,7 @@ Ext.define("Ung.GridEventLog", {
             }
             if (this.settingsCmp !== null) {
                 this.getStore().getProxy().data = events;
-                this.getStore().loadPage(1, {
-                    limit:this.recordsPerPage ? this.recordsPerPage: Ung.Util.maxRowCount
-                });
+                this.getStore().loadPage(1);
             }
         }
         this.setLoading(false);
@@ -3740,8 +3746,6 @@ Ext.define('Ung.MonitorGrid', {
     recordsPerPage: 500,
     // settings component
     settingsCmp: null,
-    // the list of fields used to by the Store
-    fields: null,
     // the default sort field
     sortField: null,
     // the default sort order
@@ -3751,13 +3755,19 @@ Ext.define('Ung.MonitorGrid', {
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable: true,
     // paginate the grid by default
-    paginated: true,
+    paginated: false,
     async: true,
     //an applicaiton selector
     appList: null,
     // the total number of records
     totalRecords: null,
-    autoRefreshEnabled: false,        
+    autoRefreshEnabled: false,
+    verticalScrollerType: 'paginggridscroller',
+    plugins: {
+        ptype: 'bufferedrenderer',
+        trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
+        leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
+    },
     features: [{
         ftype: 'filters',
         encode: false,
@@ -3790,7 +3800,6 @@ Ext.define('Ung.MonitorGrid', {
                 col.sortable = this.columnsDefaultSortable;
             }
         }    
-        
         if(this.dataFn) {
             if(this.dataRoot === undefined) {
                 this.dataRoot="list";
@@ -3799,15 +3808,14 @@ Ext.define('Ung.MonitorGrid', {
             this.async=false;
         }
         
-        this.totalRecords = this.data.length;
-        this.store=Ext.create('Ext.data.Store',{
+        this.store=Ext.create('Ext.data.Store', {
             data: [],
             fields: this.fields,
-            pageSize: this.paginated?this.recordsPerPage:null,
+            buffered: false,
             proxy: {
-                type: this.paginated?'pagingmemory':'memory',
+                type: 'memory',
                 reader: {
-                    type: 'json' 
+                    type: 'json'
                 }
             },
             autoLoad: false,
@@ -3816,8 +3824,8 @@ Ext.define('Ung.MonitorGrid', {
                 direction: this.sortOrder ? this.sortOrder: "ASC"
             }: null,
             groupField: this.groupField,
-            remoteSort: this.paginated,
-            remoteFilter: this.paginated
+            remoteSort:false,
+            remoteFilter: false
         });
         this.bbar=[];
         if(this.appList!=null) {
@@ -3854,7 +3862,30 @@ Ext.define('Ung.MonitorGrid', {
                     this.stopAutoRefresh();
                 }
             }, this)
-        },'-',{
+        }, '-', i18n._('Filter:'), {
+            xtype: 'textfield',
+            name: 'searchField',
+            hideLabel: true,
+            width: 130,
+            listeners: {
+                change: {
+                    fn: function() {
+                        this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                    },
+                    scope: this,
+                    buffer: 600
+                }
+            }
+        }, {
+            xtype: 'checkbox',
+            name: 'caseSensitive',
+            hideLabel: true,
+            margin: '0 0 0 4px',
+            handler: function() {
+                this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
+            },
+            scope: this
+        }, i18n._('Case sensitive'), '-', {
             text: i18n._('Clear Filters'),
             tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
             handler: Ext.bind(function () {
@@ -3867,19 +3898,13 @@ Ext.define('Ung.MonitorGrid', {
                 this.getStore().clearGrouping();
             }, this) 
         });
-        if(this.paginated) {
-            this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
-                hidden: true,
-                disabled: true,
-                store: this.getStore(),
-                style: "border:0; top:1px;",
-                displayInfo: true,
-                displayMsg: i18n._('{0} - {1} of {2}'),
-                emptyMsg: i18n._("No topics to display")
-            });
-            this.bbar.push('-',this.pagingToolbar);
-        }
+        
+        this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
+        this.features.push(this.filterFeature);
         this.callParent(arguments);
+        
+        this.searchField=this.down('textfield[name=searchField]');
+        this.caseSensitive = this.down('checkbox[name=caseSensitive]');
     },
     afterRender: function() {
         this.callParent(arguments);
@@ -3925,7 +3950,6 @@ Ext.define('Ung.MonitorGrid', {
         this.getData({list:[]}); //Inital load with empty data
         this.afterDataBuild(Ext.bind(function() {
             this.getStore().loadPage(1, {
-                limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                 callback: function() {
                     this.getView().setLoading(false);
                 },
@@ -3975,14 +3999,9 @@ Ext.define('Ung.MonitorGrid', {
     },
     afterDataBuild: function(handler) {
         this.getStore().getProxy().data = this.data;
-        this.setTotalRecords(this.data.length);
         if(handler) {
             handler();
         }
-    },
-    // is grid paginated
-    isPaginated: function() {
-        return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.recordsPerPage);
     },
     beforeDestroy: function() {
         Ext.each(this.subCmps, Ext.destroy);
@@ -3992,8 +4011,7 @@ Ext.define('Ung.MonitorGrid', {
         this.getView().setLoading(true);
         Ext.defer(function(){
             this.buildData(Ext.bind(function() {
-                this.getStore().loadPage(this.getStore().currentPage, {
-                    limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
+                this.getStore().loadPage(1, {
                     callback: function() {
                         this.getView().setLoading(false);
                     },
@@ -4001,26 +4019,6 @@ Ext.define('Ung.MonitorGrid', {
                 });
             }, this));
         },10, this);
-    },
-    // Set the total number of records
-    setTotalRecords: function(totalRecords) {
-        this.totalRecords = totalRecords;
-        if(this.paginated) {
-            var isPaginated=this.isPaginated();
-            this.getStore().pageSize=isPaginated?this.recordsPerPage:Ung.Util.maxRowCount;
-            if(!isPaginated) {
-                //Needs to set currentPage to 1 when not using pagination toolbar.
-                this.getStore().currentPage=1;
-            }
-            var bbar=this.getDockedItems('toolbar[dock="bottom"]')[0];
-            if (isPaginated) {
-                this.pagingToolbar.show();
-                this.pagingToolbar.enable();
-            } else {
-                this.pagingToolbar.hide();
-                this.pagingToolbar.disable();
-            }
-        }
     },
     startAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=true;

@@ -1044,8 +1044,9 @@ Ext.define("Ung.Main", {
         main.nodePreviews[ nodeProperties.name ]=true;
     },
     removeNodePreview: function(nodeName) {
-        if(main.nodePreviews[nodeName]!==undefined)
-        delete main.nodePreviews[nodeName];
+        if(main.nodePreviews[nodeName] !== undefined) {
+            delete main.nodePreviews[nodeName];
+        }
         var nodePreview=Ext.getCmp("node_preview_"+nodeName);
         if(nodePreview) {
             Ext.destroy(nodePreview);
