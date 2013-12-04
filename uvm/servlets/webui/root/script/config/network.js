@@ -1912,7 +1912,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     xtype: 'fieldset',
                     cls: 'description',
-                    title: this.i18n._('Dynmaic DNS Service Configuration'),
+                    title: this.i18n._('Dynamic DNS Service Configuration'),
                     items: [{
                         xtype: "checkbox",
                         fieldLabel: this.i18n._("Enabled"),
