@@ -2375,9 +2375,9 @@ Ext.define("Ung.GlobalFiltersFeature", {
         Ext.applyIf(this,{
             globalFilter: {
                 value: "",
-                caseSensitive: false,
-            },
-        })
+                caseSensitive: false
+            }
+        });
         this.callParent(arguments);
     },
     getRecordFilter: function() {
