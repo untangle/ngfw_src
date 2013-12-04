@@ -439,7 +439,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         },
         // Dnsbl Event Log
         buildDnsblEventLog: function() {
-            this.gridDnsblEventLog = Ext.create('Ung.GridEventLogCustomizable',{
+            this.gridDnsblEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
                 name: 'Tarpit Event Log',
                 helpSource: 'spam_blocker_tarpit_event_log',

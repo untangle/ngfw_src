@@ -947,7 +947,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         buildUserEventLog: function() {
-            this.gridUserEventLog = Ext.create('Ung.GridEventLogCustomizable',{
+            this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
                 title: this.i18n._( "User Event Log" ),
                 helpSource: "captive_portal_user_event_log",
                 eventQueriesFn: this.getRpcNode().getUserEventQueries,

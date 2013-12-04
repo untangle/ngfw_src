@@ -452,7 +452,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     this.getRpcNode().getMailEventQueries);
         },
         buildFtpEventLog: function() {
-            this.gridFtpEventLog = Ext.create('Ung.GridEventLogCustomizable',{
+            this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
                 name: 'Ftp Event Log',
                 //helpSource: 'virus_blocker_ftp_event_log',
                 //helpSource: 'virus_blocker_lite_ftp_event_log',
