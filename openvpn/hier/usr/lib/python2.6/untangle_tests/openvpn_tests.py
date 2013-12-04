@@ -17,6 +17,9 @@ clientControl = ClientControl()
 nodeData = None
 node = None
 vpnClientName = "atsclient"
+vpnHostResult = 0
+vpnClientResult = 0 
+vpnServerResult = 0
 qaHostVPN = "10.111.56.57"
 qaHostVPNLanIP = "192.168.234.57"
 # special box with testshell in the sudoer group
@@ -111,8 +114,8 @@ class OpenVpnTests(unittest2.TestCase):
         tunnelUp = False
         
     def test_040_createClientVPNTunnel(self):
-        global nodeData
-        if (vpnClientResult != 0 and vpnServerResult != 0):
+        global nodeData, vpnServerResult, vpnClientResult
+        if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
         # deleted any existing atsclient keys 
         os.system("rm -f @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-clients/client-atsclient.*")
@@ -152,7 +155,7 @@ class OpenVpnTests(unittest2.TestCase):
             if q['name'] == 'Connections': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        print events['list']
+        # print events['list']
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
