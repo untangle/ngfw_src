@@ -2837,13 +2837,6 @@ Ext.define("Ung.GridEventLogCustomizable", {
     paginated: false,
     invalidateScrollerOnRefresh: false,
     loadMask: true,
-    features: [{
-        ftype: 'filters',
-        encode: false,
-        local: true
-    }],
-    
-    
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
@@ -2857,30 +2850,18 @@ Ext.define("Ung.GridEventLogCustomizable", {
     },
     initComponent: function() {
         var me = this;
-
-        this.rpc = {};
-        
-        if( this.viewConfig == null ) {
-            this.viewConfig = {};
-        }
+        this.rpc = {
+            repository: {}
+        };
+        Ext.applyIf(this, {
+            title: i18n._('Event Log'),
+            name: 'EventLog',
+            hasAutoRefresh: true,
+            eventQueriesFn: this.settingsCmp.node.rpcNode.getEventQueries,
+            features:[],
+            viewConfig: {}
+        })
         this.viewConfig.enableTextSelection = true;
-        
-        if ( this.title == null ) {
-            this.title = i18n._('Event Log');
-        }
-        if ( this.name == null ) {
-            this.name = 'EventLog';
-        }
-        if ( this.hasAutoRefresh == null ) {
-            this.hasAutoRefresh = true;
-        }
-        if ( this.name == null ) {
-            this.name = "Event Log";
-        }
-        if ( this.eventQueriesFn == null ) {
-            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
-        }
-        this.rpc.repository = {};
         this.store=Ext.create('Ext.data.Store', {
             model: this.modelName,
             data: [],
@@ -2947,24 +2928,19 @@ Ext.define("Ung.GridEventLogCustomizable", {
             listeners: {
                 change: {
                     fn: function() {
-                        this.store.filter();
+                        this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
                     },
                     scope: this,
                     buffer: 600
                 }
             }
-        },/*{
-            xtype: 'checkbox',
-            name: 'regularExpression',
-            hideLabel: true,
-            margin: '0 0 0 4px'
-        }, i18n._('Regular expression'), */{
+        }, {
             xtype: 'checkbox',
             name: 'caseSensitive',
             hideLabel: true,
             margin: '0 0 0 4px',
             handler: function() {
-                this.store.filter();
+                this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
             },
             scope: this
         }, i18n._('Case sensitive'), '-', {
@@ -2987,22 +2963,36 @@ Ext.define("Ung.GridEventLogCustomizable", {
                 col.filter = { type: 'string' };
             }
         }
-
-        this.callParent(arguments);
-        
-        this.searchField=this.down('textfield[name=searchField]');
-        this.caseSensitive = this.down('checkbox[name=caseSensitive]');
-        this.recordFilter=new Ext.util.Filter({
-            filterFn: function(record) {
-                var inputValue = me.searchField.getValue();
-                
+        this.filterFeature=Ext.create('Ext.ux.grid.FiltersFeature', {
+            encode: false,
+            local: true,
+            getRecordFilter: function() {
+                var me = this;
+                var globalFilterFn = this.globalFilterFn;
+                var parentFn = Ext.ux.grid.FiltersFeature.prototype.getRecordFilter.call(this);
+                return function(record) {
+                    return parentFn.call(me, record) && globalFilterFn.call(me, record);
+                }
+            },
+            globalFilter: {
+                value: "",
+                caseSensitive: false,
+            },
+            updateGlobalFilter: function(value, caseSensitive) {
+                if(caseSensitive !== null) {
+                    this.globalFilter.caseSensitive=caseSensitive;
+                }
+                if(!this.globalFilter.caseSensitive) {
+                    value=value.toLowerCase();
+                }
+                this.globalFilter.value = value;
+                this.reload();
+            },
+            globalFilterFn: function(record) {
+                var inputValue = this.globalFilter.value,
+                    caseSensitive = this.globalFilter.caseSensitive;
                 if(inputValue.length === 0) {
                     return true;
-                }
-                var caseSensitive = me.caseSensitive.getValue();
-                //var regularExpression = me.regularExpression.getValue();
-                if(!caseSensitive) {
-                    inputValue=inputValue.toLowerCase();
                 }
                 var fields = record.fields.items,
                     fLen   = record.fields.length,
@@ -3021,15 +3011,17 @@ Ext.define("Ung.GridEventLogCustomizable", {
                         }
                     }
                     if(typeof val == 'string' && caseSensitive?(val.indexOf(inputValue) > -1):(val.toLowerCase().indexOf(inputValue) > -1)) {
-                        //console.log(fields[f].name, val);
                         return true;
                     }
                 }
                 return false;
-             }
+            }
         });
-        this.store.addFilter(this.recordFilter);
-
+        this.features.push(this.filterFeature);
+        this.callParent(arguments);
+        
+        this.searchField=this.down('textfield[name=searchField]');
+        this.caseSensitive = this.down('checkbox[name=caseSensitive]');
     },
     autoRefreshEnabled: true,
     startAutoRefresh: function(setButton) {
