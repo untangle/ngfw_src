@@ -106,7 +106,9 @@ public class OpenVpnManager
         /* log to /var/log/openvpn.log */
         "log-append /var/log/openvpn.log",
         /* persist pool address assignments */
-        "ifconfig-pool-persist /etc/openvpn/address-pool-assignments.txt"
+        "ifconfig-pool-persist /etc/openvpn/address-pool-assignments.txt",
+        /* push register-dns to reset DNS on windows machines */
+        "push \"register-dns\""
     };
 
     /**
@@ -245,13 +247,6 @@ public class OpenVpnManager
     {
         sb.append( "# Exports\n" );
 
-        /**
-         * Write the address pool
-         * This is necessary because the block page is displayed on these addresses (ie 172.16.0.1)
-         * XXX: After testing this does not seem necessary. -dmorris
-         */
-        //writePushRoute( sb, settings.getAddressSpace().getMaskedAddress(), settings.getAddressSpace().getNetmask() );
-        
         /**
          * Write the exports
          */
