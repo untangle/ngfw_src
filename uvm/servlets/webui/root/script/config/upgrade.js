@@ -29,7 +29,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 statusCmp.setText(statusDescription, false);
                 if(result) {
                     var upgradeButton = this.panelSettings.query('[name="upgradeButton"]')[0];
-                    upgradeButton.show();
+                    upgradeButton.enable();
                 }
             }, this));
         },
@@ -115,7 +115,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     }, {
                         xtype: "button",
                         name: 'upgradeButton',
-                        hidden: true,
+                        disabled: true,
                         text: this.i18n._("Upgrade"),
                         iconCls: "action-icon",
                         handler: Ext.bind(function() {
