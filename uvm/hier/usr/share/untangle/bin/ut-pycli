@@ -85,29 +85,18 @@ def printUsage():
     -v (increase verbosity)
     -q (quiet, fails silently)
   COMMANDS:
-    ucli install <package-name> - installs the given package
-    ucli uninstall <package-name> - uninstall the given package
-    ucli update - updates the package list
+    ucli instances - list all nodes 
     ucli upgrade - initiates an upgrade (if available)
-    ucli requestInstall <package-name> - ask the UI to initiate an install
-    ucli instantiate <package-name> [ args ] - instantiates a node in the rack
+    ucli instantiate <node-name> [ args ] - instantiates a node in the rack
     ucli start <node_id> - starts a node
     ucli stop <node_id> - stops a node
     ucli destroy <node_id> - destroys a node
-    ucli resetLogs - refresh & reconfigure log4j 
-    ucli logError - log an error to uvm.log
-    ucli register <package-name - register a new package 
-    ucli unregister <package-name> - unregister a package
-  DEBUGGING:
-    ucli version - show the untangle-vm version
-    ucli instances - list all nodes 
     ucli sessions <node_id> - list all sessions for a given node
-    ucli available - shows available packages
-    ucli installed - shows installed packages
-    ucli uninstalled - shows uninstalled packages
-    ucli get_message_queue - show the message queue (to UI)
+    ucli resetLogs - refresh & reconfigure log4j config 
+    ucli logError <string> - log an error to uvm.log
+    ucli reloadLicenses - reload licenses
+    ucli version - show the untangle-vm version
 """ % sys.argv[0] )
-
 
 
 if __name__ == "__main__":
