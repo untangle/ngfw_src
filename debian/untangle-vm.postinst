@@ -49,4 +49,7 @@ fi
 
 touch /etc/untangle/monit-to-restart
 
+# 10.1
+perl -i -pe 's/premium/non-free' /etc/apt/sources.list
+
 exit 0
