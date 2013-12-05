@@ -61,7 +61,7 @@ public class TomcatManagerImpl implements TomcatManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Tomcat emb;
+    private final Tomcat tomcat;
     private final StandardHost baseHost;
     private final String webAppRoot;
     
@@ -74,12 +74,12 @@ public class TomcatManagerImpl implements TomcatManager
         this.webAppRoot = webAppRoot;
         String hostname = "localhost";
 
-        emb = new Tomcat();
-        emb.setBaseDir(catalinaHome);
+        tomcat = new Tomcat();
+        tomcat.setBaseDir(catalinaHome);
         logger.info("Catalina Home:" + catalinaHome);
         logger.info("Tomcat start/stop threads:" + Runtime.getRuntime().availableProcessors());
         //Don't need HTTP endpoint, only AJP will be used
-        Connector httpConnector = emb.getConnector();
+        Connector httpConnector = tomcat.getConnector();
         try {
             httpConnector.stop();
             httpConnector.destroy();
@@ -88,7 +88,7 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         // create an Engine
-        StandardEngine baseEngine = (StandardEngine)emb.getEngine();
+        StandardEngine baseEngine = (StandardEngine)tomcat.getEngine();
 
         // set Engine properties
         //baseEngine.setName("tomcat");
@@ -96,7 +96,7 @@ public class TomcatManagerImpl implements TomcatManager
         baseEngine.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
 
         // create Host
-        baseHost = (StandardHost)emb.getHost();
+        baseHost = (StandardHost)tomcat.getHost();
         baseHost.setUnpackWARs(true);
         baseHost.setDeployOnStartup(true);
         baseHost.setAutoDeploy(true);
@@ -153,8 +153,8 @@ public class TomcatManagerImpl implements TomcatManager
     public void stopTomcat()
     {
         try {
-            if (null != emb) {
-                emb.stop();
+            if (null != tomcat) {
+                tomcat.stop();
             }
         } catch (LifecycleException exn) {
             logger.debug(exn);
@@ -208,16 +208,17 @@ public class TomcatManagerImpl implements TomcatManager
         if (null != secret) {
             jkConnector.setProperty("requiredSecret", secret);
         }
-        emb.getService().addConnector(jkConnector);
+        tomcat.getService().addConnector(jkConnector);
 
         // start operation
         try {
-            emb.start();
+            tomcat.start();
             logger.info("jkConnector started (maxPostSize = " + TOMCAT_MAX_POST_SIZE + " bytes)");
-        } catch (LifecycleException exn) {
+        } catch ( Exception exn ) {
             // Note -- right now wrapped is always null!  Thus the
             // following horror:
-            boolean isAddressInUse = isAIUExn(exn);
+            logger.warn( "Exception starting tomcat:", exn );
+            boolean isAddressInUse = isAlreadyInUseException(exn);
             if (isAddressInUse) {
                 Runnable tryAgain = new Runnable() {
                         public void run() {
@@ -227,29 +228,26 @@ public class TomcatManagerImpl implements TomcatManager
                                     logger.error("could not start Tomcat (address in use), sleeping 20 and trying again");
                                     Thread.sleep(TOMCAT_SLEEP_TIME);
                                     try {
-                                        emb.stop();
+                                        tomcat.stop();
                                     } catch (LifecycleException exn) {
                                         logger.error("Lifecycle Exception: ", exn);
                                     }
-                                    emb.start();
+                                    tomcat.start();
                                     logger.info("Tomcat successfully started");
                                     break;
-                                } catch (InterruptedException x) {
-                                    logger.error( "Interrupted while trying to start tomcat, returning.", x);
+                                } catch ( InterruptedException x ) {
+                                    UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", x);
                                     return;
-                                } catch (LifecycleException x) {
-                                    boolean isAddressInUse = isAIUExn(x);
+                                } catch ( Exception x ) {
+                                    boolean isAddressInUse = isAlreadyInUseException(x);
                                     if (!isAddressInUse) {
-                                        UvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
+                                        UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", x);
                                         return;
                                     }
                                 }
                             }
                             if (i == TOMCAT_NUM_RETRIES)
-                                UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
-                                                                        TOMCAT_NUM_RETRIES
-                                                                        + " tries, giving up",
-                                                                        null);
+                                UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " + TOMCAT_NUM_RETRIES + " tries, giving up", null);
                         }
                     };
                 new Thread(tryAgain, "Tomcat starter").start();
@@ -324,7 +322,7 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Loading Servlet: " + urlBase);
 
         try {
-            StandardContext ctx = (StandardContext)emb.addWebapp(urlBase,fqRoot);
+            StandardContext ctx = (StandardContext)tomcat.addWebapp(urlBase,fqRoot);
             final Logger log = logger;
             JarScanner jarScanner = new JarScanner() {
                 public void scan(ServletContext ctx, ClassLoader cld,  JarScannerCallback jsCallback, Set<String> jarsToSkip)  {
@@ -363,15 +361,19 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
-    private boolean isAIUExn(LifecycleException exn)
+    private boolean isAlreadyInUseException( Exception exn )
     {
-        Throwable wrapped = exn.getCause();
-        String msg = exn.getMessage();
-        if (wrapped != null && wrapped instanceof java.net.BindException)
-            // Never happens right now. XXX
+        if ( exn instanceof java.net.BindException )
             return true;
+
+        Throwable wrapped = exn.getCause();
+        if (wrapped != null && wrapped instanceof java.net.BindException)
+            return true;
+
+        String msg = exn.getMessage();
         if (msg.contains("address already in use"))
             return true;
+
         return false;
     }
 
