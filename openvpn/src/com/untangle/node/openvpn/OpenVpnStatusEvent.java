@@ -16,6 +16,7 @@ import com.untangle.uvm.logging.LogEvent;
 public class OpenVpnStatusEvent extends LogEvent implements Serializable
 {
     private InetAddress address;
+    private InetAddress poolAddress;
     private int port;
     private String clientName;
     private Timestamp start; /* Start of the session */
@@ -27,17 +28,19 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
 
     public OpenVpnStatusEvent() {}
 
-    public OpenVpnStatusEvent( Timestamp start, InetAddress address, int port, String clientName )
+    public OpenVpnStatusEvent( Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName )
     {
-        this.start      = start;
-        this.address    = address;
-        this.clientName = clientName;
-        this.port       = port;
+        this.start       = start;
+        this.address     = address;
+        this.poolAddress = poolAddress;
+        this.clientName  = clientName;
+        this.port        = port;
     }
 
     public OpenVpnStatusEvent( OpenVpnStatusEvent oldEvent )
     {
         this.address = oldEvent.address;
+        this.poolAddress = oldEvent.poolAddress;
         this.port = oldEvent.port;
         this.clientName = oldEvent.clientName;
         this.start = oldEvent.start;
@@ -52,7 +55,7 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
      * Address where the client connected from.
      */
     public InetAddress getAddress() { return this.address; }
-    public void setAddress( InetAddress address ) { this.address = address; }
+    public void setAddress( InetAddress newValue ) { this.address = newValue; }
 
     /**
      * Port used to connect
@@ -61,47 +64,53 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
     public void setPort( int port ) { this.port = port; }
 
     /**
+     * Address where the client connected from.
+     */
+    public InetAddress getPoolAddress() { return this.poolAddress; }
+    public void setPoolAddress( InetAddress newValue ) { this.poolAddress = newValue; }
+    
+    /**
      * Name of the client that was connected.
      */
     public String getClientName() { return this.clientName; }
-    public void setClientName( String clientName ) { this.clientName = clientName; }
+    public void setClientName( String newValue ) { this.clientName = newValue; }
 
     /**
      * Time the session started.
      */
     public Timestamp getStart() { return this.start; }
-    public void setStart( Timestamp start ) { this.start = start; }
+    public void setStart( Timestamp newValue ) { this.start = newValue; }
 
     /**
      * Time the session ended. <b>Note that this
      * may be null if the session is still open</b>
      */
     public Timestamp getEnd() { return this.end; }
-    public void setEnd( Timestamp end ) { this.end = end; }
+    public void setEnd( Timestamp newValue ) { this.end = newValue; }
 
     /**
      * Total bytes received during this session.
      */
     public long getBytesRxTotal() { return this.bytesRxTotal; }
-    public void setBytesRxTotal( long bytesRxTotal ) { this.bytesRxTotal = bytesRxTotal; }
+    public void setBytesRxTotal( long newValue ) { this.bytesRxTotal = newValue; }
 
     /**
      * Total transmitted received during this session.
      */
     public long getBytesTxTotal() { return this.bytesTxTotal; }
-    public void setBytesTxTotal( long bytesTxTotal ) { this.bytesTxTotal = bytesTxTotal; }
+    public void setBytesTxTotal( long newValue ) { this.bytesTxTotal = newValue; }
 
     /**
      * Delta bytes received since last event
      */
     public long getBytesRxDelta() { return this.bytesRxDelta; }
-    public void setBytesRxDelta( long bytesRxDelta ) { this.bytesRxDelta = bytesRxDelta; }
+    public void setBytesRxDelta( long newValue ) { this.bytesRxDelta = newValue; }
 
     /**
      * Delta bytes transmitted since last event
      */
     public long getBytesTxDelta() { return this.bytesTxDelta; }
-    public void setBytesTxDelta( long bytesTxDelta ) { this.bytesTxDelta = bytesTxDelta; }
+    public void setBytesTxDelta( long newValue ) { this.bytesTxDelta = newValue; }
     
     private static String sql = "INSERT INTO reports.openvpn_stats " +
         "(time_stamp, start_time, end_time, rx_bytes, tx_bytes, remote_address, remote_port, client_name) " +

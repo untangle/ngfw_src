@@ -1,5 +1,5 @@
 /**
- * $Id: OpenVpnMonitor.java 35345 2013-07-19 04:32:15Z dmorris $
+ * $Id$
  */
 package com.untangle.node.openvpn;
 
@@ -53,12 +53,13 @@ class OpenVpnMonitor implements Runnable
     private static final int TYPE_INDEX    = 0;
     private static final int NAME_INDEX    = 1;
     private static final int ADDRESS_INDEX = 2;
+    private static final int ADDRESS_POOL_INDEX = 3;
     private static final int RX_INDEX      = 4;
     private static final int TX_INDEX      = 5;
     private static final int START_INDEX   = 7;
     private static final int TOTAL_INDEX   = 8;
 
-    private final Logger logger = Logger.getLogger( this.getClass());
+    protected static final Logger logger = Logger.getLogger( OpenVpnMonitor.class );
 
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
     private Map<String,Stats> activeMap = new HashMap<String,Stats>();
@@ -162,9 +163,9 @@ class OpenVpnMonitor implements Runnable
     {
         Date now = new Date();
         List<OpenVpnStatusEvent> ret = new ArrayList<OpenVpnStatusEvent>();
-        for(Stats s : activeMap.values()) {
-            if(s.isActive) {
-                OpenVpnStatusEvent copy = s.getCurrentStatusEventCopy(now);
+        for(Stats stats : activeMap.values()) {
+            if(stats.isActive) {
+                OpenVpnStatusEvent copy = stats.getCurrentStatusEventCopy(now);
                 copy.setEnd(null);
                 ret.add(copy);
             }
@@ -281,7 +282,7 @@ class OpenVpnMonitor implements Runnable
 
         for ( Stats stats : activeMap.values() ) {
             stats.fillEvent( now );
-            node.logEvent( stats.sessionEvent );
+            node.logEvent( stats.statusEvent );
         }
 
         activeMap.clear();
@@ -294,7 +295,7 @@ class OpenVpnMonitor implements Runnable
         for ( Stats stats : statusMap.values()) {
             stats.fillEvent( now );
             if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
-            node.logEvent( stats.sessionEvent );
+            node.logEvent( stats.statusEvent );
         }
     }
 
@@ -353,8 +354,10 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
+        String poolAddressStr = valueArray[ADDRESS_POOL_INDEX];
 
         InetAddress address = null;
+        InetAddress poolAddress = null;
         int port = 0;
         long bytesRx = 0;
         long bytesTx = 0;
@@ -363,6 +366,7 @@ class OpenVpnMonitor implements Runnable
         try {
             address = InetAddress.getByName( addressAndPort[0] );
             port    = Integer.parseInt( addressAndPort[1] );
+            poolAddress = InetAddress.getByName( poolAddressStr );
             bytesRx = Long.parseLong( valueArray[RX_INDEX] );
             bytesTx = Long.parseLong( valueArray[TX_INDEX] );
             start   = new Date( Long.parseLong( valueArray[START_INDEX] ) * 1000 );
@@ -371,7 +375,7 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
-        Key key = new Key( name, address, port, start );
+        Key key = new Key( name, address, port, poolAddress, start );
         Stats stats = statusMap.get( key );
 
         if ( stats == null ) {
@@ -524,14 +528,16 @@ class Key
 {
     final String name;
     final InetAddress address;
+    final InetAddress poolAddress;
     final int port;
     final Date start;
     final int hashCode;
 
-    protected Key( String name, InetAddress address, int port, Date start )
+    protected Key( String name, InetAddress address, int port, InetAddress poolAddress, Date start )
     {
         this.name     = name;
         this.address  = address;
+        this.poolAddress  = poolAddress;
         this.port     = port;
         this.start    = start;
         this.hashCode = calculateHashCode();
@@ -548,8 +554,10 @@ class Key
 
         Key k = (Key)o;
 
-        if (( k.port == this.port ) && k.start.equals( this.start ) &&
-            k.address.equals( this.address ) && k.name.equals( this.name )) {
+        if (( k.port == this.port ) &&
+            k.start.equals( this.start ) &&
+            k.address.equals( this.address ) &&
+            k.name.equals( this.name )) {
             return true;
         }
 
@@ -578,7 +586,7 @@ class Stats
 {
     final Key key;
 
-    final OpenVpnStatusEvent sessionEvent;
+    final OpenVpnStatusEvent statusEvent;
 
     /* Total bytes received since the last event */
     long bytesRxDelta;
@@ -607,12 +615,12 @@ class Stats
         this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
         this.isActive     = true;
-        this.sessionEvent = new OpenVpnStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.name );
+        this.statusEvent = new OpenVpnStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.poolAddress, this.key.name );
     }
 
     void fillEvent( Timestamp now )
     {
-        this.fillEvent( this.sessionEvent, now );
+        this.fillEvent( this.statusEvent, now );
     }
 
     void fillEvent( OpenVpnStatusEvent event, Timestamp now )
@@ -626,7 +634,7 @@ class Stats
     
     OpenVpnStatusEvent getCurrentStatusEventCopy(Date now)
     {
-        return new OpenVpnStatusEvent( this.sessionEvent );
+        return new OpenVpnStatusEvent( this.statusEvent );
     }
 
     void update( long newBytesRxTotal, long newBytesTxTotal )

@@ -1,5 +1,5 @@
 /**
- * $Id: OpenVpnManager.java 35728 2013-08-26 06:41:01Z dmorris $
+ * $Id$
  */
 package com.untangle.node.openvpn;
 
@@ -104,7 +104,9 @@ public class OpenVpnManager
         /* Allow management from localhost */
         "management 127.0.0.1 " + MANAGEMENT_PORT,
         /* log to /var/log/openvpn.log */
-        "log-append /var/log/openvpn.log"
+        "log-append /var/log/openvpn.log",
+        /* persist pool address assignments */
+        "ifconfig-pool-persist /etc/openvpn/address-pool-assignments.txt"
     };
 
     /**

@@ -204,6 +204,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: "clientName"
                 }, {
+                    name: "poolAddress"
+                }, {
                     name: "start"
                 }, {
                     name: "bytesRxTotal"
@@ -220,6 +222,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Client"),
                     dataIndex:'clientName',
                     width: 200
+                }, {
+                    header: this.i18n._("Pool Address"),
+                    dataIndex:'poolAddress',
+                    width: 150
                 }, {
                     header: this.i18n._("Start Time"),
                     dataIndex:'start',
