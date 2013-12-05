@@ -170,12 +170,6 @@ public abstract class NodeBase implements Node
      */
     public void initializeSettings() { }
 
-    /**
-     * Called when the node is new, initial settings should be
-     * created and saved in this method.
-     */
-    public void destroySettings() { }
-
     public void resumeState( NodeState nodeState ) 
     {
         switch ( nodeState ) {
@@ -207,26 +201,23 @@ public abstract class NodeBase implements Node
         destroy(true);
     }
 
-    /**
-     * Unloads the node for UVM shutdown, does not change
-     * node's target state.
-     */
-    public void unload()
+    public void stopIfRunning()
     {
+        UvmContextFactory.context().loggingManager().setLoggingNode(nodeSettings.getId());
+
         switch ( currentState ) {
         case RUNNING:
-                stop(false);
-                try {destroy(false); } catch(Exception e) {}
-                break;
+            stop(false);
+            break;
         case LOADED:
-                try {destroy(false); } catch(Exception e) {}
-                break;
+            break;
         case INITIALIZED:
-                try {destroy(false); } catch(Exception e) {}
-                break;
+            break;
         default:
-                break;
+            break;
         }
+
+        UvmContextFactory.context().loggingManager().setLoggingUvm();
     }
 
     public void enable()
@@ -318,19 +309,8 @@ public abstract class NodeBase implements Node
                 this.stop();
             }
             this.destroy();
-            this.destroySettings();
         } catch (Exception exn) {
             throw new Exception(exn);
-        } finally {
-            UvmContextFactory.context().loggingManager().setLoggingUvm();
-        }
-    }
-
-    public final void unloadClass()
-    {
-        try {
-            UvmContextFactory.context().loggingManager().setLoggingNode(nodeSettings.getId());
-            this.unload();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }

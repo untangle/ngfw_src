@@ -349,19 +349,14 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-
-        deployWebAppIfRequired(logger);
     }
 
-    @Override
-    protected void postDestroy()
-    {
-        unDeployWebAppIfRequired(logger);
-    }
 
     @Override
     protected void preStart()
     {
+        deployWebAppIfRequired(logger);
+
         getDecisionEngine().removeAllUnblockedSites();
         unblockedSitesMonitor.start();
     }
@@ -371,6 +366,8 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     {
         unblockedSitesMonitor.stop();
         getDecisionEngine().removeAllUnblockedSites();
+
+        unDeployWebAppIfRequired(logger);
     }
 
     protected String generateNonce( WebFilterBlockDetails details )
@@ -385,22 +382,22 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected static synchronized void deployWebAppIfRequired( Logger logger )
     {
-        deployCount = deployCount + 1;
-        if (deployCount != 1) {
-            return;
+        if ( deployCount == 0 ) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/webfilter", "webfilter")) {
+                logger.debug("Deployed WebFilter WebApp");
+            } else {
+                logger.error("Unable to deploy WebFilter WebApp");
+            }
         }
 
-        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/webfilter", "webfilter")) {
-            logger.debug("Deployed WebFilter WebApp");
-        } else {
-            logger.error("Unable to deploy WebFilter WebApp");
-        }
+        deployCount++;
+    
     }
 
     protected static synchronized void unDeployWebAppIfRequired( Logger logger )
     {
-        deployCount = deployCount - 1;
-        if (deployCount != 0) {
+        deployCount--;
+        if (deployCount > 0) {
             return;
         }
 

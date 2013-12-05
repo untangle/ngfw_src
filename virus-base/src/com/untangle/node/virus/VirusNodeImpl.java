@@ -410,11 +410,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
          * This is so it blocks viruses immediately, by forcing existing connections to be closed
          */
         killMatchingSessionsGlobal(VIRUS_SESSION_MATCHER);
-    }
 
-    @Override
-    protected void postDestroy()
-    {
         unDeployWebAppIfRequired(logger);
     }
 
@@ -474,19 +470,21 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger)
     {
-        if (0 != deployCount++) {
-            return;
+        if (deployCount == 0 ) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/virus", "virus")) {
+                logger.debug("Deployed Virus WebApp");
+            } else {
+                logger.error("Unable to deploy Virus WebApp");
+            }
         }
 
-        if (null != UvmContextFactory.context().tomcatManager().loadServlet("/virus", "virus")) {
-            logger.debug("Deployed Virus WebApp");
-        } else {
-            logger.error("Unable to deploy Virus WebApp");
-        }
+        deployCount++;
     }
 
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (0 != --deployCount) {
+    private static synchronized void unDeployWebAppIfRequired(Logger logger)
+    {
+        deployCount--;
+        if ( deployCount > 0 ) {
             return;
         }
 

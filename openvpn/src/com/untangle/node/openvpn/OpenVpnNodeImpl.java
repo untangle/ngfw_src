@@ -104,8 +104,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-
-        deployWebApp();
     }
 
     @Override
@@ -113,6 +111,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     {
         super.preStart();
 
+        deployWebApp();
+        
         try {
             this.openVpnManager.configure( settings );
             this.openVpnManager.restart();
@@ -148,14 +148,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         }
     }
 
-    @Override
-    protected void postDestroy()
-    {
-        super.postDestroy();
-
-        unDeployWebApp();
-    }
-    
     @Override
     public void initializeSettings()
     {

@@ -389,7 +389,9 @@ public class NodeManagerImpl implements NodeManager
             live = false;
 
             for ( Node node : loadedNodesMap.values() ) {
-                unload( node );
+                logger.info("Stopping: " + node.getNodeProperties().getName());
+                ((NodeBase)node).stopIfRunning( );
+                loadedNodesMap.remove( node.getNodeSettings().getId() );
             }
 
             if ( loadedNodesMap.size() > 0 ) {
@@ -398,15 +400,6 @@ public class NodeManagerImpl implements NodeManager
         }
 
         logger.info("NodeManager destroyed");
-    }
-
-    protected void unload( Node node )
-    {
-        synchronized (this) {
-            logger.info("Unloading: " + node.getNodeProperties().getName());
-            ((NodeBase)node).unloadClass();
-            loadedNodesMap.remove( node.getNodeSettings().getId() );
-        }
     }
 
     protected void startAutoLoad()
