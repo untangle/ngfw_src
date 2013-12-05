@@ -149,6 +149,25 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     }
 
     @Override
+    protected void postDestroy()
+    {
+        // purge all settings files (but not the actual settings json file)
+        UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/address-pool-assignments.txt" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/keys/*" );
+        UvmContextFactory.context().execManager().exec( "rm -rf " + "/etc/openvpn/untangle-vpn" );
+        UvmContextFactory.context().execManager().exec( "rm -rf " + "/etc/openvpn/data/*" );
+        UvmContextFactory.context().execManager().exec( "rm -rf " + "/etc/openvpn/ccd/*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/server.conf" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-clients/*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.key" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.pem" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.crt" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/index*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/serial*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/server*" );
+        UvmContextFactory.context().execManager().exec( "rm -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/*" );
+    }
+    
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
