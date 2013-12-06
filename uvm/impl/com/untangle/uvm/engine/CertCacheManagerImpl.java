@@ -13,39 +13,55 @@ import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.net.SocketException;
 import java.net.URL;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.CertCacheManager;
 
+/*
+ * The Certificate Cache Manager is used to fetch and cache SSL certificates
+ * from external servers.  This allows us to do rule processing and make
+ * other decisions based on the cert contents.  It was orignally written
+ * for use in the HTTPS Inspector to allow cert based ignore rules, but later
+ * moved into the uvm for use by sitefilter and possibly other nodes.  We need
+ * this because an SSL connection doesn't see the server certificate until
+ * after the handshake has started, at which point it is too late to cleanly
+ * release the session.  To solve the problem we open a separate connection
+ * to the server to fetch the certificate.  The certs are then cached by
+ * server IP address so the extra connection and fetch overhead only happens
+ * the first time we connect to the server. Since many browsers do the
+ * pipelining thing, it's possible that multiple connections will be
+ * initiated at nearly the same time, and they could all race to do the
+ * initial prefetch.  To work around this the fetch logic synchronizes on
+ * the certLocker to ensure that only the first thread does the actual fetch
+ * allowing others to simply wait until the fetch is complete.  
+ */
+
 public class CertCacheManagerImpl implements CertCacheManager
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final int prefetchTimeout = 1000;
 
-    private static Hashtable<String, X509Certificate> certTable = new Hashtable<String, X509Certificate>();
+    private static ConcurrentHashMap<String, X509Certificate> certTable = new ConcurrentHashMap<String, X509Certificate>();
     private static HashSet<String> certLocker = new HashSet<String>();
-
-    public X509Certificate searchServerCertificate(String serverAddress)
-    {
-        logger.debug("CertCache Searching " + serverAddress);
-
-        X509Certificate cert = certTable.get(serverAddress);
-
-        if (cert != null) {
-            logger.debug("CertCache Found " + serverAddress + " SubjectDN(" + cert.getSubjectDN().toString() + ") IssuerDN(" + cert.getIssuerDN().toString() + ")");
-        }
-
-        return (cert);
-    }
 
     public X509Certificate fetchServerCertificate(String serverAddress)
     {
         X509Certificate serverCertificate = null;
         boolean certWaiter = false;
         int certTimer = 0;
+
+        logger.debug("CertCache Search " + serverAddress);
+
+        // first lets see if the certificate already exists
+        serverCertificate = certTable.get(serverAddress);
+
+        if (serverCertificate != null) {
+            logger.debug("CertCache Found " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
+            return (serverCertificate);
+        }
 
         // we do a synchronized check on the certLocker to see if some other
         // thread is already prefetching the cert for the argumented server
@@ -61,7 +77,7 @@ public class CertCacheManagerImpl implements CertCacheManager
 
         // if certWaiter is true some other thread is prefetching the
         // certificate so we just sit here and wait for it to show up
-        // but we give up once we've exceeded the prek timeout
+        // but we give up once we've exceeded the prefetch timeout
         while (certWaiter == true) {
             if (certTable.containsKey(serverAddress) == false) {
 
@@ -130,9 +146,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         }
 
         // We were the first thread to prefetch this certificate so we have
-        // to remember to remove the address from the certlocker.  Subsequent
-        // threads will find the cert in the certTable so prefetch shouldn't
-        // ever be called again for the server we just prefetched 
+        // to remember to remove the address from the certlocker.
         synchronized (certLocker) {
             certLocker.remove(serverAddress);
             logger.debug("CertLocker cleanup " + serverAddress);
@@ -141,10 +155,11 @@ public class CertCacheManagerImpl implements CertCacheManager
         return (serverCertificate);
     }
 
-    public void storeServerCertificate(String serverAddress, X509Certificate serverCertificate)
+    public void updateServerCertificate(String serverAddress, X509Certificate serverCertificate)
     {
+        // put the argumented certificate in the table
         certTable.put(serverAddress, serverCertificate);
-        logger.debug("CertCache Store " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
+        logger.debug("CertCache Update " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
     }
 
     private TrustManager trust_all_certificates = new X509TrustManager()
