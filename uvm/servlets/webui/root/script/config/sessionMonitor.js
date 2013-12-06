@@ -130,7 +130,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 header: this.i18n._("Bypassed"),
                 dataIndex: "bypassed",
-                width: 60,
+                width: Ung.Util.booleanFieldWidth,
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
@@ -179,7 +179,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             },{
                 header: this.i18n._("Client (Pre-NAT)"),
                 dataIndex: "preNatClient",
-                width: 75,
+                width: Ung.Util.ipFieldWidth,
                 filter: {
                     type: 'string'
                 }
@@ -187,14 +187,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("Server (Pre-NAT)"),
                 dataIndex: "preNatServer",
-                width: 75,
+                width: Ung.Util.ipFieldWidth,
                 filter: {
                     type: 'string'
                 }
             },{
                 header: this.i18n._("Client Port (Pre-NAT)"),
                 dataIndex: "preNatClientPort",
-                width: 70,
+                width: Ung.Util.portFieldWidth,
                 filter: {
                     type: 'numeric'
                 }
@@ -202,7 +202,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("Server Port (Pre-NAT)"),
                 dataIndex: "preNatServerPort",
-                width: 70,
+                width: Ung.Util.portFieldWidth,
                 filter: {
                     type: 'numeric'
                 }
@@ -210,14 +210,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("Client (Post-NAT)"),
                 dataIndex: "postNatClient",
-                width: 75,
+                width: Ung.Util.ipFieldWidth,
                 filter: {
                     type: 'string'
                 }
             },{
                 header: this.i18n._("Server (Post-NAT)"),
                 dataIndex: "postNatServer",
-                width: 75,
+                width: Ung.Util.ipFieldWidth,
                 filter: {
                     type: 'string'
                 }
@@ -225,14 +225,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("Client Port (Post-NAT)"),
                 dataIndex: "postNatClientPort",
-                width: 70,
+                width: Ung.Util.portFieldWidth,
                 filter: {
                     type: 'numeric'
                 }
             },{
                 header: this.i18n._("Server Port (Post-NAT)"),
                 dataIndex: "postNatServerPort",
-                width: 70,
+                width: Ung.Util.portFieldWidth,
                 filter: {
                     type: 'numeric'
                 }
@@ -240,7 +240,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("NATd"),
                 dataIndex: "natted",
-                width: 50,
+                width: Ung.Util.booleanFieldWidth,
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
@@ -250,7 +250,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 hidden: true,
                 header: this.i18n._("Port Forwarded"),
                 dataIndex: "portForwarded",
-                width: 50,
+                width: Ung.Util.booleanFieldWidth,
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
