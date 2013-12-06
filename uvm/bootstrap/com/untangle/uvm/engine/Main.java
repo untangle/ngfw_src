@@ -1,5 +1,5 @@
 /*
- * $Id: Main.java 34617 2013-05-03 00:40:13Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -178,7 +178,22 @@ public class Main
 
     private void setProperties() throws Exception
     {
-        String uvmHome = System.getProperty("uvm.home");
+        String prefix = System.getProperty("prefix");
+        if (prefix == null) {
+            System.out.println("Prefix property not set");
+            System.exit(1);
+        }
+
+        // Set this property so that Tomcat throws an error so we can exit if it fails to start
+        System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE","true");
+        // Set this property so tomcat uses urandom to generate session ID ( faster )
+        System.setProperty("java.security.egd","file:" + "/dev/./urandom");
+        // Set the postgres jdbc driver
+        System.setProperty("jdbc.drivers","org.postgresql.Driver");
+        // Set log4j config file location
+        System.setProperty("log4j.configuration","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
+
+        String uvmHome = System.getProperty("prefix") + "/usr/share/untangle";
 
         String uvmLib = uvmHome + "/lib";
         System.setProperty("uvm.lib.dir", uvmLib);
@@ -204,6 +219,8 @@ public class Main
         logger.info("uvm.conf.dir     " + uvmConf);
         logger.info("uvm.settings.dir " + uvmSettings);
         logger.info("uvm.skins.dir    " + uvmSkins);
+
+        
     }
 
     private void startUvm() throws Exception

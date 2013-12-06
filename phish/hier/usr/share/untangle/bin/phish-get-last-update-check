@@ -1,6 +1,6 @@
 #!/bin/dash
 
 ## Ignore errors
-@UVM_HOME@/bin/ut-get-last-update /var/log/clamav/freshclam.log
+@PREFIX@/usr/share/untangle/bin/ut-get-last-update /var/log/clamav/freshclam.log
 
 exit 0

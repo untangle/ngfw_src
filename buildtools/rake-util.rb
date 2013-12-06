@@ -146,14 +146,7 @@ class BuildEnv
   def filterset
     {
       /@PREFIX@/ => @prefix,
-      /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
-      /@UVM_CONF@/ => "#{@prefix}/usr/share/untangle/conf",
-      /@UVM_LOG@/ => "/var/log/uvm",
-      /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
-      /@THIRDPARTY_UVM_LIB@/ => "#{@prefix}/usr/share/java/uvm",
-      /@SRC_LIB@/ => "#{@prefix}/usr/lib/uvm",
       /@BUILD_STAMP@/ => Time.now.to_i.to_s,
-      /@IS_DEVEL@/ => "#{@isDevel}"
     }
   end
 end

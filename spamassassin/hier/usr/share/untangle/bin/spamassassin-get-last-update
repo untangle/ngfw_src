@@ -1,5 +1,5 @@
 #!/bin/dash
 
-@UVM_HOME@/bin/ut-get-last-update /var/lib/spamassassin/
+@PREFIX@/usr/share/untangle/bin/ut-get-last-update /var/lib/spamassassin/
 
 exit 0

@@ -120,10 +120,10 @@ def prepareSystem():
     
     # build classpath
     os.environ['CLASSPATH'] = ""
-    os.environ['CLASSPATH'] += "@UVM_HOME@/conf:@UVM_HOME@/lib/untangle-libuvm-bootstrap/:"
+    os.environ['CLASSPATH'] += "@PREFIX@/usr/share/untangle/conf:@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/:"
 
     # build the classpath
-    for jarfile in glob.glob( os.path.join('@THIRDPARTY_UVM_LIB@', '*.jar') ):
+    for jarfile in glob.glob( os.path.join('@PREFIX@/usr/share/java/uvm', '*.jar') ):
         #debug("Adding jarfile: %s"%jarfile)
         os.environ['CLASSPATH'] += jarfile + ":"
 
@@ -386,12 +386,6 @@ while True:
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
         args = ("/usr/bin/java " + 
-                "-Djava.library.path=@SRC_LIB@ " +
-                "-Duvm.home=@UVM_HOME@ " +
-                "-Djdbc.drivers=org.postgresql.Driver " +
-                "-Dcom.untangle.isDevel=@IS_DEVEL@ " +
-                "-Djava.security.egd=file:/dev/./urandom " +
-                "-Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true " +
                 java_opts + " " + uvm_args + 
                 " com.untangle.uvm.engine.Main").split();
 

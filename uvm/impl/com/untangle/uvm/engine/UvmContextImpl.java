@@ -74,7 +74,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
 
-    private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store/open.php";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
@@ -430,7 +429,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     public boolean isDevel()
     {
-        return Boolean.getBoolean(PROPERTY_IS_DEVEL);
+        String val = System.getProperty( "com.untangle.isDevel" );
+        if (val == null)
+            return false;
+        return "true".equals( val.trim().toLowerCase() );
     }
 
     /**
