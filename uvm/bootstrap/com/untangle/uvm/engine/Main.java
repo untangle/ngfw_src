@@ -194,6 +194,7 @@ public class Main
         System.setProperty("log4j.configuration","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
 
         String uvmHome = System.getProperty("prefix") + "/usr/share/untangle";
+        System.setProperty("uvm.home", uvmHome);
 
         String uvmLib = uvmHome + "/lib";
         System.setProperty("uvm.lib.dir", uvmLib);
