@@ -394,12 +394,12 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-
-        deployWebAppIfRequired(logger);
     }
 
     protected void preStart()
     {
+        deployWebAppIfRequired(logger);
+
         reconfigure();
     }
 
@@ -410,10 +410,13 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
          * This is so it blocks viruses immediately, by forcing existing connections to be closed
          */
         killMatchingSessionsGlobal(VIRUS_SESSION_MATCHER);
-
-        unDeployWebAppIfRequired(logger);
     }
 
+    protected void postStop()
+    {
+        unDeployWebAppIfRequired(logger);
+    }
+    
     // package protected methods ----------------------------------------------
 
     VirusScanner getScanner()
