@@ -186,7 +186,7 @@ class CaptureTests(unittest2.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        print events['list'][0]
+        # print events['list'][0]
         # assert(events['list'][0]['c_server_addr'] == ip_address_google)
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['capture_blocked'] == True)
