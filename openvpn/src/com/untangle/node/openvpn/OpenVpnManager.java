@@ -263,10 +263,15 @@ public class OpenVpnManager
             if ( !client.getEnabled() || !client.getExport() || client.getExportNetwork() == null )
                 continue;
 
-            IPMaskedAddress maskedAddr = client.getExportNetwork();
-            
-            writeRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask() );
-            writePushRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask() );
+            for ( String net : client.getExportNetwork().split(",") ) {
+                try {
+                    IPMaskedAddress maskedAddr = new IPMaskedAddress( net );
+                    writeRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask() );
+                    writePushRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask() );
+                } catch (Exception e) {
+                    logger.warn( "Error processing network: " + net, e );
+                }
+            }
         }
 
         sb.append("\n");
@@ -368,7 +373,14 @@ public class OpenVpnManager
             }
 
             if ( client.getExport() && client.getExportNetwork() != null ) {
-                writeRemoteClientRoute( sb, client.getExportNetwork().getMaskedAddress(), client.getExportNetwork().getNetmask());
+                for ( String net : client.getExportNetwork().split(",") ) {
+                    try {
+                        IPMaskedAddress maskedAddr = new IPMaskedAddress( net );
+                        writeRemoteClientRoute( sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask());
+                    } catch (Exception e) {
+                        logger.warn( "Error processing network: " + net, e );
+                    }
+                }
             }
             
             writeFile( OPENVPN_CCD_DIR + "/" + name, sb );

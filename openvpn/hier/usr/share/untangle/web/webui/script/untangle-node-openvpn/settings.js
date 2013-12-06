@@ -742,11 +742,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }, {
                     xtype: "textfield",
-                    name: "Remote Network",
+                    name: "Remote Networks",
                     dataIndex: "exportNetwork",
-                    fieldLabel: this.i18n._("Remote Network"),
+                    fieldLabel: this.i18n._("Remote Networks"),
                     allowBlank: false,
-                    vtype: 'cidrBlock',
+                    vtype: 'cidrBlockList',
                     width: 300
                 }],
                 syncComponents: function () {

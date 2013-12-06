@@ -32,8 +32,9 @@ public class OpenVpnRemoteClient implements java.io.Serializable
 
     /**
      * The network that should be exported to other clients
+     * Comma seperated list of CIDR networks
      */
-    private IPMaskedAddress exportNetwork;
+    private String exportNetwork;
     
     public OpenVpnRemoteClient() {}
 
@@ -49,6 +50,6 @@ public class OpenVpnRemoteClient implements java.io.Serializable
     public boolean getExport() { return export; }
     public void setExport( boolean newValue ) { this.export = newValue; }
 
-    public IPMaskedAddress getExportNetwork() { return exportNetwork; }
-    public void setExportNetwork( IPMaskedAddress newValue ) { this.exportNetwork = newValue; }
+    public String getExportNetwork() { return exportNetwork; }
+    public void setExportNetwork( String newValue ) { this.exportNetwork = newValue; }
 }

@@ -346,6 +346,16 @@ Ext.define("Ung.Main", {
                 return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
             },
             cidrBlockText: i18n._('Must be a network in CIDR format.') + ' ' + '(192.168.123.0/24)',
+
+            cidrBlockList:  function(v) {
+                var blocks = v.split(",");
+                for ( var i = 0 ; i < blocks.length ; i++ ) {
+                    if ( ! (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(blocks[i])) )
+                        return false;
+                }
+                return true;
+            },
+            cidrBlockListText: i18n._('Must be a comma seperated list of networks in CIDR format.') + ' ' + '(192.168.123.0/24,1.2.3.4/24)',
             
             portMatcher: function(val) {
                 switch(val) {
