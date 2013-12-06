@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.CertCacheManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.LocalDirectory;
@@ -103,6 +104,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private TomcatManagerImpl tomcatManager;
     private ServletFileManagerImpl servletFileManager;
     private SettingsManagerImpl settingsManager;
+    private CertCacheManagerImpl certCacheManager;
     private OemManagerImpl oemManager;
     private AlertManagerImpl alertManager;
     private SessionMonitorImpl sessionMonitor;
@@ -231,6 +233,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public SettingsManager settingsManager()
     {
         return this.settingsManager;
+    }
+    
+    public CertCacheManager certCacheManager()
+    {
+        return this.certCacheManager;
     }
 
     public OemManager oemManager()
@@ -626,7 +633,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.execManager = new ExecManagerImpl();
 
         this.settingsManager = new SettingsManagerImpl();
-        
+
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
@@ -636,7 +643,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         createUID();
-        
+
+        this.certCacheManager = new CertCacheManagerImpl();
+
         this.sessionMonitor = new SessionMonitorImpl();
 
         this.hostTableImpl = new HostTableImpl();
@@ -865,6 +874,4 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             }
         }
     }
-
-
 }

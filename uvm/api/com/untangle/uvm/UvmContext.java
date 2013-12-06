@@ -139,6 +139,13 @@ public interface UvmContext
     SettingsManager settingsManager();
 
     /**
+     * The certificate cache manager.
+     * 
+     * @return the CertCacheManager
+     */
+    CertCacheManager certCacheManager();
+
+    /**
      * The session monitor
      * This can be used for getting information about current sessions
      *

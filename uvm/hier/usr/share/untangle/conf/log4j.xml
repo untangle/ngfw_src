@@ -102,6 +102,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.engine.CertCacheManagerImpl">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.networking">
     <priority value="INFO"/>
   </category>
