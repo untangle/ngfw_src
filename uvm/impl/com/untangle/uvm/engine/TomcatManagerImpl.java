@@ -53,8 +53,6 @@ import com.untangle.uvm.util.AdministrationValve;
  */
 public class TomcatManagerImpl implements TomcatManager
 {
-    private static final int  TOMCAT_NUM_RETRIES = 15; //  5 minutes total
-    private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
     private static final int  TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
     private static final String WELCOME_URI = "/setup/welcome.do";
     private static final String WELCOME_FILE = System.getProperty("uvm.conf.dir") + "/apache2/conf.d/homepage.conf";
@@ -215,47 +213,10 @@ public class TomcatManagerImpl implements TomcatManager
             tomcat.start();
             logger.info("jkConnector started (maxPostSize = " + TOMCAT_MAX_POST_SIZE + " bytes)");
         } catch ( Exception exn ) {
-            // Note -- right now wrapped is always null!  Thus the
-            // following horror:
             logger.warn( "Exception starting tomcat:", exn );
-            boolean isAddressInUse = isAlreadyInUseException(exn);
-            if (isAddressInUse) {
-                Runnable tryAgain = new Runnable() {
-                        public void run() {
-                            int i;
-                            for (i = 0; i < TOMCAT_NUM_RETRIES; i++) {
-                                try {
-                                    logger.error("could not start Tomcat (address in use), sleeping 20 and trying again");
-                                    Thread.sleep(TOMCAT_SLEEP_TIME);
-                                    try {
-                                        tomcat.stop();
-                                    } catch (LifecycleException exn) {
-                                        logger.error("Lifecycle Exception: ", exn);
-                                    }
-                                    tomcat.start();
-                                    logger.info("Tomcat successfully started");
-                                    break;
-                                } catch ( InterruptedException x ) {
-                                    UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", x);
-                                    return;
-                                } catch ( Exception x ) {
-                                    boolean isAddressInUse = isAlreadyInUseException(x);
-                                    if (!isAddressInUse) {
-                                        UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", x);
-                                        return;
-                                    }
-                                }
-                            }
-                            if (i == TOMCAT_NUM_RETRIES)
-                                UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " + TOMCAT_NUM_RETRIES + " tries, giving up", null);
-                        }
-                    };
-                new Thread(tryAgain, "Tomcat starter").start();
-            } else {
-                logger.error("Exception starting Tomcat",exn);
-            }
+            UvmContextImpl.getInstance().fatalError("Failed to start Tomcat", exn);
+            return;
         }
-
         logger.info("Tomcat started");
     }
 
@@ -359,22 +320,6 @@ public class TomcatManagerImpl implements TomcatManager
             logger.error("Unable to deploy webapp \"" + urlBase + "\" from directory \"" + fqRoot + "\"", ex);
             return null;
         }
-    }
-
-    private boolean isAlreadyInUseException( Exception exn )
-    {
-        if ( exn instanceof java.net.BindException )
-            return true;
-
-        Throwable wrapped = exn.getCause();
-        if (wrapped != null && wrapped instanceof java.net.BindException)
-            return true;
-
-        String msg = exn.getMessage();
-        if (msg.contains("address already in use"))
-            return true;
-
-        return false;
     }
 
     private void writeIncludes()
