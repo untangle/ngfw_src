@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.io.IOException;
 
 import com.untangle.uvm.UvmContext;
@@ -307,6 +308,12 @@ public interface UvmContext
      * Query events in the reports database
      */
     ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
+    
+    /**
+     * Query events in the reports database, within a given date range
+     */
+    ArrayList<org.json.JSONObject> getEventsForDateRange(final String query, final Long policyId, final int limit,
+            final Date startDate, final Date endDate);
 
     /**
      * Get URLs

@@ -2461,6 +2461,10 @@ Ext.define("Ung.GridEventLog", {
         leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
     },
     loadMask: true,
+    startDate: null,
+    endDate: null,
+    forDateRange: false,
+    resultLimit: 60000,
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
@@ -2501,6 +2505,18 @@ Ext.define("Ung.GridEventLog", {
             autoLoad: false,
             remoteSort:false,
             remoteFilter: false
+        });
+        
+        var _this = this;
+        var startDateMenu = Ext.create('Ext.menu.DatePicker', {
+            handler: function (dp, date) {
+                _this.startDate = date;
+            }
+        });
+        var endDateMenu = Ext.create('Ext.menu.DatePicker', {
+            handler: function (dp, date) {
+                _this.endDate = date;
+            }
         });
 
         this.bbar = [{
@@ -2569,6 +2585,35 @@ Ext.define("Ung.GridEventLog", {
             },
             scope: this
         }, i18n._('Case sensitive'), '-', {
+            xtype: 'menu',
+            floating: false,
+            width: 100,
+            height: 30,
+            items: [{
+                text: i18n._('From:'),
+                menu: startDateMenu,
+                tooltip: i18n._('Select start date')
+            }]
+        },{
+            xtype: 'menu',
+            floating: false,
+            width: 100,
+            height: 30,
+            items: [{
+                text: i18n._('To:'),
+                menu: endDateMenu,
+                tooltip: i18n._('Select end date')
+            }]
+        }, {
+            xtype: 'button',
+            text: i18n._('Get events'),
+            name: "Get events",
+            tooltip: i18n._('Get events for date range'),
+            handler: Ext.bind(function () {
+                this.forDateRange = true;
+                this.refreshHandler(false);
+            }, this) 
+        }, '-', {
             text: i18n._('Clear Filters'),
             tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
             handler: Ext.bind(function () {
@@ -2695,7 +2740,11 @@ Ext.define("Ung.GridEventLog", {
             var selQuery = this.getSelectedQuery();
             var selPolicy = this.getSelectedPolicy();
             if (selQuery != null && selPolicy != null) {
-                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback, this), selQuery, selPolicy, 50 );
+                if (!this.forDateRange)
+                    rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback, this), selQuery, selPolicy, this.resultLimit);
+                else 
+                    rpc.jsonrpc.UvmContext.getEventsForDateRange(Ext.bind(this.refreshCallback, this), 
+                            selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
             }
         }, this));
     },
@@ -2846,13 +2895,14 @@ Ext.define("Ung.GridEventLog", {
         this.setLoading(false);
     },
     flushHandler: function (forceFlush) {
+        this.forDateRange = false;
         if (!this.isReportsAppInstalled()) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             this.setLoading(i18n._('Syncing events to Database... '));
             this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
                 // refresh after complete
-                this.refreshHandler();
+                this.refreshHandler(false);
             }, this));
         }
     },
@@ -2860,7 +2910,11 @@ Ext.define("Ung.GridEventLog", {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
         if (selQuery != null && selPolicy != null) {
-            rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, 60000);
+            if (!this.forDateRange)
+                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, this.resultLimit);
+            else 
+                rpc.jsonrpc.UvmContext.getEventsForDateRange(Ext.bind(this.refreshCallback, this), 
+                        selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
         } else {
             this.setLoading(false);
         }

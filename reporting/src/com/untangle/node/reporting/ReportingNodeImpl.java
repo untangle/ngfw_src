@@ -3,53 +3,38 @@
  */
 package com.untangle.node.reporting;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.Reporting;
-import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.servlet.DownloadHandler;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
@@ -228,7 +213,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     
     public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
     {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, null, null );
     }
 
     public void getEventsResultSetCommit( )
@@ -236,9 +221,15 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         ReportingNodeImpl.eventReader.getEventsResultSetCommit();
     }
     
-    public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
+    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit)
     {
-        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit );
+        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, null, null );
+    }
+    
+    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit,
+            Date startDate, Date endDate)
+    {
+        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, startDate, endDate );
     }
 
     public Connection getDbConnection()

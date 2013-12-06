@@ -3,23 +3,19 @@
  */
 package com.untangle.node.reporting;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.json.JSONException;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Utility the reads events from the database
@@ -47,9 +43,10 @@ public class EventReaderImpl
      * getEventsResultSetCommit will call commit() on the SQL transaction
      * If you forget to call it, it will maintain an open transaction on that table
      * which will stop other queries (and vacuuming) from taking place
+     * @param endDate 
+     * @param startDate 
      */
-    @SuppressWarnings("unchecked")
-    public ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
+    public ResultSet getEventsResultSet( final String query, final Long policyId, final int limit, Date startDate, Date endDate )
     {
         if ( dbConnection == null ) {
             try {
@@ -71,6 +68,17 @@ public class EventReaderImpl
                 queryStr = queryStr.replace("=:policyId","is not null");
             } else {
                 queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
+            }
+            if (startDate != null && endDate != null){
+                queryStr = queryStr.toLowerCase();
+                int i = queryStr.indexOf("order by");
+                DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
+                if (i > 0) {
+                    queryStr = queryStr.substring(0, i) + " and time_stamp <= '" + df.format(endDate) + "' and time_stamp >= '" + 
+                            df.format(startDate) + "' " + queryStr.substring(i);
+                } else {
+                    queryStr += " and time_stamp <= " + endDate + " and time_stamp >= " + startDate;
+                }
             }
             if (limit > 0)
                 queryStr += " LIMIT " + limit + " ";
@@ -106,11 +114,11 @@ public class EventReaderImpl
             try {dbConnection.commit();} catch(Exception exn) {}
     }
     
-    @SuppressWarnings("unchecked")
-    public ArrayList<JSONObject> getEvents( final String query, final Long policyId, final int limit )
+    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate,
+            Date endDate)
     {
         try {
-            ResultSet resultSet = getEventsResultSet( query, policyId, limit );
+            ResultSet resultSet = getEventsResultSet( query, policyId, limit, startDate, endDate );
             if (resultSet == null)
                 return null;
         

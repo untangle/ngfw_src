@@ -4,6 +4,7 @@
 package com.untangle.uvm.node;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.untangle.uvm.logging.LogEvent;
 
@@ -13,7 +14,8 @@ public interface Reporting
 
     void forceFlush();
 
-    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
+    ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate,
+            Date endDate);
 
     java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
     

@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 import org.jabsorb.JSONSerializer;
+import org.json.JSONObject;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.CertCacheManager;
@@ -556,7 +558,19 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (this.reportingNode == null)
             return null;
 
-        return this.reportingNode.getEvents( query, policyId, limit );
+        return getEventsForDateRange( query, policyId, limit, null, null );
+    }
+    
+    @Override
+    public ArrayList<JSONObject> getEventsForDateRange(String query, Long policyId, int limit, Date startDate,
+            Date endDate)
+    {
+        if (this.reportingNode == null)
+            getReportingNode();
+        if (this.reportingNode == null)
+            return null;
+
+        return this.reportingNode.getEvents( query, policyId, limit, startDate, endDate );
     }
 
     /**
