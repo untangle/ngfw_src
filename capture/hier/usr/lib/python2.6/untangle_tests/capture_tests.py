@@ -26,6 +26,11 @@ radiusHost = "10.111.56.71"
 
 # pdb.set_trace()
 
+def flushEvents():
+    reports = uvmContext.nodeManager().node("untangle-node-reporting")
+    if (reports != None):
+        reports.flushEvents()
+
 def createCaptureInternalNicRule():
     return {
         "capture": True,
@@ -165,6 +170,27 @@ class CaptureTests(unittest2.TestCase):
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
+
+        # Get the IP address of test.untangle.com
+        result = clientControl.runCommand("host www.google.com", True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_google = match.group()
+
+        # check event log
+        flushEvents()
+        query = None;
+        for q in node.getRuleEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        print events['list'][0]
+        # assert(events['list'][0]['c_server_addr'] == ip_address_google)
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['capture_blocked'] == True)
+        # assert(events['list'][0]['capture_rule_index'] == 5002)
 
     def test_030_captureADLogin(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
