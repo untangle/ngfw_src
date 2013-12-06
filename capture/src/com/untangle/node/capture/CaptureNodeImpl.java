@@ -315,6 +315,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private void saveNodeSettings(CaptureSettings argSettings)
     {
+        // set a unique id for each capture rule
+        int idx = (this.nodeInstanceNum * 1000);
+        for (CaptureRule rule : argSettings.getCaptureRules())
+            rule.setId(++idx);
+
         try {
             settingsManager.save(CaptureSettings.class, settingsFile, argSettings);
         } catch (Exception e) {
@@ -330,11 +335,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // this function is called when settings are loaded or initialized
         // it gives us a single place to do stuff when applying a new
         // settings object to the node.
-
-        // set a unique id for each capture rule
-        int idx = (this.nodeInstanceNum * 1000);
-        for (CaptureRule rule : argSettings.getCaptureRules())
-            rule.setId(++idx);
 
         this.captureSettings = argSettings;
     }
