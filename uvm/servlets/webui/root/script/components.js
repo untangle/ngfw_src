@@ -1819,7 +1819,8 @@ Ung.CheckStoreRegistration = {
     intervalId: null,
     url: null,
     start: function(now) {
-        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
+        this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
+        //this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
         this.stop();
         this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
         this.started = true;
@@ -1834,9 +1835,15 @@ Ung.CheckStoreRegistration = {
     run: function () {
         Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
-            success: function(response){
+            crossDomain: true,
+            type: 'GET',
+            dataType: 'json', //FIXME
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function(response, opts) {
                 var registered = response.responseText;
-                if(registered) {
+                if( registered ) {
                     Ung.CheckStoreRegistration.stop();
                     rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
@@ -1845,6 +1852,9 @@ Ung.CheckStoreRegistration = {
                         Ung.Util.goToStartPage();
                     });
                 }
+            },
+            failure: function(response, opts) {
+                console.log("Failed to get registered status: " + response);
             }
         });
     }

@@ -648,7 +648,7 @@ Ext.define("Ung.Main", {
             this.nodes.push(node);
         }
         if(!rpc.isRegistered) {
-            this.showRegisterScreen();
+            this.showWelcomeScreen();
         }
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
@@ -814,7 +814,7 @@ Ext.define("Ung.Main", {
 
     installNode: function(nodeProperties, appItem) {
         if(!rpc.isRegistered) {
-            main.showRegisterScreen();
+            main.openRegisterScreen();
             return;
         }
         if( nodeProperties === null ) {
@@ -1295,17 +1295,20 @@ Ext.define("Ung.Main", {
     /**
      *  Prepares the uvm to display the welcome screen
      */      
-    showRegisterScreen: function () {
-        if(this.registerScreenAlreadShown) {
+    showWelcomeScreen: function () {
+        if(this.welcomeScreenAlreadShown) {
             return;
         }
-        this.registerScreenAlreadShown = true;
+        this.welcomeScreenAlreadShown = true;
         
         //Test if box is online (store is available)
         Ext.MessageBox.wait(i18n._("Determining Connectivity..."), i18n._("Please wait"));
+
         rpc.jsonrpc.UvmContext.isStoreAvailable(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             Ext.MessageBox.hide();
+            // If box is not online - show error message.
+            // Otherwise show registration screen
             if(!result) {
                 main.openFailureScreen();
             } else {
