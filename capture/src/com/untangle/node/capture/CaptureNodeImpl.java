@@ -735,6 +735,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         try {
             FileWriter hook = new FileWriter(filename, false);
+            hook.write("<ifModule mod_headers.c>\n");
+            hook.write("<ifModule mod_rewrite.c>\n");
             hook.write("NameVirtualHost *:" + myport + "\n");
             hook.write("Listen " + myport + "\n");
             hook.write("\n");
@@ -749,6 +751,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             hook.write("    RewriteEngine On\n");
             hook.write("    RewriteRule (.*) http://%{SERVER_ADDR}/capture/handler.py/index?nonce=a1b2c3d4e5f6&method=%{REQUEST_METHOD}&appid=" + nodeid + "&host=%{HTTP_HOST}&URI=$1 [R=307,L,NE]\n");
             hook.write("</VirtualHost>\n");
+            hook.write("\n");
+            hook.write("</ifModule>\n");
+            hook.write("</ifModule>\n");
             hook.close();
         }
 
