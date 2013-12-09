@@ -1819,8 +1819,8 @@ Ung.CheckStoreRegistration = {
     intervalId: null,
     url: null,
     start: function(now) {
-        this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
-        //this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
+        //this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
+        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
         this.stop();
         this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
         this.started = true;
