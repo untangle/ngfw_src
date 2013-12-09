@@ -23,8 +23,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             Ung.Util.clearDirty(this.panelSettings);
             rpc.systemManager.upgradesAvailable(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                var statusDescription = result? '<i><font color="red">' + i18n._("Upgrades are available.") + '</font></i>' :
-                    '<font color="green">' + i18n._("No upgrades available.") + '</font>';
+                var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + '</font></i>' :
+                    '<font color="grey">' + i18n._("No upgrades available.") + '</font>';
                 var statusCmp = this.panelSettings.query('[name="statusMessage"]')[0];
                 statusCmp.setText(statusDescription, false);
                 if(result) {
