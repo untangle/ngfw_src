@@ -1833,6 +1833,25 @@ Ung.CheckStoreRegistration = {
         this.started = false;
     },
     run: function () {
+        /*
+        // If we go with CORS implementation on server side
+        Ext.Ajax.request({
+            url: Ung.CheckStoreRegistration.url,
+            method: 'GET',
+            success: function(response){
+                var registered = Ext.decode(resp.responseText).registered
+                if( registered ) {
+                    Ung.CheckStoreRegistration.stop();
+                    rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        main.closeIframe();
+                        rpc.isRegistered = true;
+                        Ung.Util.goToStartPage();
+                    });
+                }
+            }
+        });
+        */
         Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
             crossDomain: true,
@@ -1842,7 +1861,7 @@ Ung.CheckStoreRegistration = {
                 'Accept': 'application/json'
             },
             success: function(response, opts) {
-                var registered = response.responseText;
+                var registered = response.registered;
                 if( registered ) {
                     Ung.CheckStoreRegistration.stop();
                     rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
