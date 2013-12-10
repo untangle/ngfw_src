@@ -3006,7 +3006,7 @@ Ung.CustomEventLog = {
                 }, {
                     name: 'c_client_port'
                 }, {
-                    name:: 'c_server_addr'
+                    name: 'c_server_addr'
                 }, {
                     name: 'c_server_port'
                 }, {
