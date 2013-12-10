@@ -94,7 +94,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         buildEmailEventLog: function() {
             this.gridEmailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'), 
                     'phish_blocker_event_log', 
-                    ['time_stamp','client','s_server','subject','addr','sender','phish_action'], 
+                    ['time_stamp','c_client_addr','s_server_addr','subject','addr','sender','phish_action'], 
                     this.getRpcNode().getEventQueries);
         },
         

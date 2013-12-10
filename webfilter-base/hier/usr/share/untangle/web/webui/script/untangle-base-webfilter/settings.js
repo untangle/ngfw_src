@@ -1025,7 +1025,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildEventLog: function() {
             this.gridEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'EventLog', i18n._('Event Log'), 
                     this.helpSourceName + '_event_log', 
-                    ['time_stamp','username','client','server','server_port','host','uri',this.getRpcNode().getName() + '_blocked',
+                    ['time_stamp','username','c_client_addr','c_server_addr','s_server_port','host','uri',this.getRpcNode().getName() + '_blocked',
                      this.getRpcNode().getName() + '_flagged',this.getRpcNode().getName() + '_category',this.getRpcNode().getName() + '_reason'], 
                     this.getRpcNode().getEventQueries);
         },

@@ -173,7 +173,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         buildEventLog: function() {
             this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'), 
                     'firewall_event_log', 
-                    ['time_stamp','username','client_addr','client_port','s_server_addr','s_server_port','firewall_blocked','firewall_flagged','firewall_rule_index'], 
+                    ['time_stamp','username','c_client_addr','c_client_port','s_server_addr','s_server_port','firewall_blocked','firewall_flagged','firewall_rule_index'], 
                     this.getRpcNode().getEventQueries);
         },
         beforeSave: function(isApply, handler) {

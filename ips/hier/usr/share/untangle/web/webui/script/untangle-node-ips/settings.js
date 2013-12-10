@@ -316,7 +316,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildEventLog: function() {
             this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'), 
                     'intrusion_prevention_event_log', 
-                    ['time_stamp','username','client_addr','server_addr','ips_blocked','ips_ruleid','ips_description'], 
+                    ['time_stamp','username','c_client_addr','s_server_addr','ips_blocked','ips_ruleid','ips_description'], 
                     this.getRpcNode().getEventQueries);
         },
         beforeSave: function(isApply,handler) {

@@ -216,7 +216,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         buildEventLog: function() {
             this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'), 
                     'application_control_lite_event_log', 
-                    ['time_stamp','protofilter_blocked','client_addr','username','server_addr','protocol'], this.getRpcNode().getEventQueries); 
+                    ['time_stamp','protofilter_blocked','c_client_addr','username','c_server_addr','protofilter_protocol'], this.getRpcNode().getEventQueries); 
         },
         
         beforeSave: function(isApply, handler) {
