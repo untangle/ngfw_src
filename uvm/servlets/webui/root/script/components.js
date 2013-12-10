@@ -2996,73 +2996,54 @@ Ung.CustomEventLog = {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'priority',
-                    mapping: 'bandwidth_priority'
+                    name: 'bandwidth_priority'
                 }, {
-                    name: 'rule',
-                    mapping: 'bandwidth_rule'
+                    name: 'bandwidth_rule'
                 }, {
                     name: 'username'
                 }, {
-                    name: 'client_addr',
-                    mapping: 'c_client_addr'
+                    name: 'c_client_addr'
                 }, {
-                    name: 'client_port',
-                    mapping: 'c_client_port'
+                    name: 'c_client_port'
                 }, {
-                    name: 'server_addr',
-                    mapping: 'c_server_addr'
+                    name:: 'c_server_addr'
                 }, {
-                    name: 'server_port',
-                    mapping: 'c_server_port'
+                    name: 'c_server_port'
                 }, {
                     name: 's_server_addr'
                 }, {
                     name: 's_server_port'
                 }, {
-                    name: 'application',
-                    mapping: 'classd_application',
+                    name: 'classd_application',
                     type: 'string'
                 }, {
-                    name: 'protochain',
-                    mapping: 'classd_protochain',
+                    name: 'classd_protochain',
                     type: 'string'
                 }, {
-                    name: 'flagged',
-                    mapping: 'classd_flagged',
+                    name: 'classd_flagged',
                     type: 'boolean'
                 }, {
-                    name: 'blocked',
-                    mapping: 'classd_blocked',
+                    name: 'classd_blocked',
                     type: 'boolean'
                 }, {
-                    name: 'confidence',
-                    mapping: 'classd_confidence'
+                    name: 'classd_confidence'
                 }, {
-                    name: 'detail',
-                    mapping: 'classd_detail'
+                    name: 'classd_detail'
                 }, {
-                    name: 'protofilter_blocked',
-                    mapping: 'protofilter_blocked'
+                    name: 'protofilter_blocked'
                 }, {
-                    name: 'protocol',
+                    name: 'protofilter_protocol',
                     type: 'string',
-                    mapping: 'protofilter_protocol'
                 }, {
-                    name: 'ruleid',
-                    mapping: 'classd_ruleid'
+                    name: 'classd_ruleid'
                 }, {
-                    name: 'https_status',
-                    mapping: 'https_status'
+                    name: 'https_status'
                 }, {
-                    name: 'https_detail',
-                    mapping: 'https_detail'
+                    name: 'https_detail'
                 }, {
-                    name: 'https_ruleid',
-                    mapping: 'https_ruleid'
+                    name: 'https_ruleid'
                 }, {
-                    name: 'policyId',
-                    mapping: 'policy_id'
+                    name: 'policy_id'
                 }, {
                     name: 'firewall_blocked'
                 }, {
@@ -3070,14 +3051,11 @@ Ung.CustomEventLog = {
                 }, {
                     name: 'firewall_rule_index'
                 }, {
-                    name: 'ips_blocked',
-                    mapping: 'ips_blocked'
+                    name: 'ips_blocked'
                 }, {
-                    name: 'ips_name',
-                    mapping: 'ips_ruleid'
+                    name: 'ips_ruleid'
                 }, {
                     name: 'ips_description',
-                    mapping: 'ips_description',
                     type: 'string'
                 }, {
                     name: "capture_rule_index"
@@ -3094,17 +3072,17 @@ Ung.CustomEventLog = {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('client_addr') < 0,
+                    hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
                     header: i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_addr'
+                    dataIndex: 'c_client_addr'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('client_port') < 0,
+                    hidden: visibleColumnsParam.indexOf('c_client_port') < 0,
                     header: i18n._("Client port"),
                     width: Ung.Util.portFieldWidth,
                     sortable: true,
-                    dataIndex: 'client_port',
+                    dataIndex: 'c_client_port',
                     filter: {
                         type: 'numeric'
                     }
@@ -3115,35 +3093,35 @@ Ung.CustomEventLog = {
                     sortable: true,
                     dataIndex: 'username'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('server_addr') < 0,
+                    hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
                     header: i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'server_addr'
+                    dataIndex: 'c_server_addr'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('server_port') < 0,
+                    hidden: visibleColumnsParam.indexOf('c_server_port') < 0,
                     header: i18n._("Server Port"),
                     width: Ung.Util.portFieldWidth, 
                     sortable: true,
-                    dataIndex: 'server_port',
+                    dataIndex: 'c_server_port',
                     filter: {
                         type: 'numeric'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('ruleid') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_ruleid') < 0,
                     header: i18n._("Rule ID"),
                     width: 70,
                     sortable: true,
-                    dataIndex: 'ruleid',
+                    dataIndex: 'classd_ruleid',
                     filter: {
                         type: 'numeric'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('priority') < 0,
+                    hidden: visibleColumnsParam.indexOf('bandwidth_priority') < 0,
                     header: i18n._("Priority"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'priority',
+                    dataIndex: 'bandwidth_priority',
                     renderer: function(value) {
                         if (Ext.isEmpty(value))
                             return "";
@@ -3161,71 +3139,71 @@ Ung.CustomEventLog = {
                         }
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('rule') < 0,
+                    hidden: visibleColumnsParam.indexOf('bandwidth_rule') < 0,
                     header: i18n._("Rule"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'rule',
+                    dataIndex: 'bandwidth_rule',
                     renderer: function(value) {
                         if (Ext.isEmpty(value))
                             return i18n._("none");
                         return value;
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('application') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_application') < 0,
                     header: i18n._("Application"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'application'
+                    dataIndex: 'classd_application'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('protochain') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_protochain') < 0,
                     header: i18n._("ProtoChain"),
                     width: 180,
                     sortable: true,
-                    dataIndex: 'protochain'
+                    dataIndex: 'classd_protochain'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('blocked') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_blocked') < 0,
                     header: i18n._("Blocked (Application Control)"),
                     width: Ung.Util.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'blocked',
+                    dataIndex: 'classd_blocked',
                     filter: {
                         type: 'boolean',
                         yesText: 'true',
                         noText: 'false'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('flagged') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_flagged') < 0,
                     header: i18n._("Flagged (Application Control)"),
                     width: Ung.Util.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'flagged',
+                    dataIndex: 'classd_flagged',
                     filter: {
                         type: 'boolean',
                         yesText: 'true',
                         noText: 'false'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('confidence') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_confidence') < 0,
                     header: i18n._("Confidence"),
                     width: Ung.Util.portFieldWidth,
                     sortable: true,
-                    dataIndex: 'confidence',
+                    dataIndex: 'classd_confidence',
                     filter: {
                         type: 'numeric'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('detail') < 0,
+                    hidden: visibleColumnsParam.indexOf('classd_detail') < 0,
                     header: i18n._("Detail"),
                     width: 200,
                     sortable: true,
-                    dataIndex: 'detail'
+                    dataIndex: 'classd_detail'
                 },{
-                    hidden: visibleColumnsParam.indexOf('protocol') < 0,
+                    hidden: visibleColumnsParam.indexOf('protofilter_protocol') < 0,
                     header: i18n._("Protocol"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'protocol'
+                    dataIndex: 'protofilter_protocol'
                 }, {
                     hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
                     header: i18n._("Blocked (Application Control Lite)"),
@@ -3259,12 +3237,12 @@ Ung.CustomEventLog = {
                     sortable: true,
                     dataIndex: 'https_detail'
                 }, {
-                    hidden: visibleColumnsParam.indexOf('policyId') < 0,
+                    hidden: visibleColumnsParam.indexOf('policy_id') < 0,
                     header: i18n._('Policy Id'),
                     width: 60,
                     sortable: true,
                     flex:1,
-                    dataIndex: 'policyId',
+                    dataIndex: 'policy_id',
                     renderer: function(value) {
                         return main.getPolicyName(value);
                     }
@@ -3331,11 +3309,11 @@ Ung.CustomEventLog = {
                         noText: 'false'
                     }
                 }, {
-                    hidden: visibleColumnsParam.indexOf('ips_name') < 0,
+                    hidden: visibleColumnsParam.indexOf('ips_ruleid') < 0,
                     header: i18n._('Rule Id (IPS)'),
                     width: 60,
                     sortable: true,
-                    dataIndex: 'ips_name'
+                    dataIndex: 'ips_ruleid'
                 }, {
                     hidden: visibleColumnsParam.indexOf('ips_description') < 0,
                     header: i18n._('Rule Description (IPS)'),
@@ -3376,58 +3354,44 @@ Ung.CustomEventLog = {
                   sortType: Ung.SortTypes.asTimestamp
               }, {
                   name: 'webfilter_blocked',
-                  mapping: 'webfilter_blocked',
                   type: 'boolean'
               }, {
                   name: 'sitefilter_blocked',
-                  mapping: 'sitefilter_blocked',
                   type: 'boolean'
               }, {
                   name: 'webfilter_flagged',
-                  mapping: 'webfilter_flagged',
                   type: 'boolean'
               }, {
                   name: 'sitefilter_flagged',
-                  mapping: 'sitefilter_flagged',
                   type: 'boolean'
               }, {
                   name: 'webfilter_category',
-                  mapping: 'webfilter_category',
                   type: 'string'
               }, {
                   name: 'sitefilter_category',
-                  mapping: 'sitefilter_category',
                   type: 'string'
               }, {
-                  name: 'client',
-                  mapping: 'c_client_addr'
+                  name: 'c_client_addr'
               }, {
                   name: 'username'
               }, {
-                  name: 'server',
-                  mapping: 'c_server_addr'
+                  name: 'c_server_addr'
               }, {
-                  name: 'server_port',
-                  mapping: 's_server_port'
+                  name: 's_server_port'
               }, {
-                  name: 'host',
-                  mapping: 'host'
+                  name: 'host'
               }, {
-                  name: 'uri',
-                  mapping: 'uri'
+                  name: 'uri'
               }, {
                   name: 'webfilter_reason',
-                  mapping: 'webfilter_reason',
                   type: 'string',
                   convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
               }, {
                   name: 'sitefilter_reason',
-                  mapping: 'sitefilter_reason',
                   type: 'string',
                   convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
               }, {
                   name: 'adblocker_action',
-                  mapping: 'adblocker_action',
                   type: 'string',
                   convert: Ext.bind(function(value) {
                       if (value == 'B') {
@@ -3453,11 +3417,11 @@ Ung.CustomEventLog = {
                       return i18n.timestampFormat(value);
                   }
               }, {
-                  hidden: visibleColumnsParam.indexOf('client') < 0,
+                  hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
                   header: i18n._("Client"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'client'
+                  dataIndex: 'c_client_addr'
               }, {
                   hidden: visibleColumnsParam.indexOf('username') < 0,
                   header: i18n._("Username"),
@@ -3545,17 +3509,17 @@ Ung.CustomEventLog = {
                   sortable: true,
                   dataIndex: 'sitefilter_category'
               }, {
-                  hidden: visibleColumnsParam.indexOf('server') < 0,
+                  hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'server'
+                  dataIndex: 'c_server_addr'
               }, {
-                  hidden: visibleColumnsParam.indexOf('server_port') < 0,
+                  hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
                   header: i18n._("Server Port"),
                   width: Ung.Util.portFieldWidth,
                   sortable: true,
-                  dataIndex: 'server_port',
+                  dataIndex: 's_server_port',
                   filter: {
                       type: 'numeric'
                   }
@@ -3599,16 +3563,13 @@ Ung.CustomEventLog = {
                   name: 'time_stamp',
                   sortType: Ung.SortTypes.asTimestamp
               }, {
-                  name: 'client',
-                  mapping: 'c_client_addr'
+                  name: 'c_client_addr'
               }, {
                   name: 'username'
               }, {
-                  name: 'server',
-                  mapping: 'c_server_addr'
+                  name: 'c_server_addr'
               }, {
-                  name: 's_server',
-                  mapping: 's_server_addr'
+                  name: 's_server_addr'
               }, {
                   name: 'commtouchav_name'
               }, {
@@ -3623,38 +3584,31 @@ Ung.CustomEventLog = {
                   name: 'sender',
                   type: 'string'
               }, {
-                  name: 'vendor',
-                  mapping: 'vendor'
+                  name: 'vendor'
               }, {
-                  name: 'spamassassin_action',
-                  mapping:  'spamassassin_action',
+                  name:  'spamassassin_action',
                   type: 'string',
                   convert: Ext.bind( function(value, rec ) {
                       return Ung.CustomEventLog.mailEventConvertAction(value, rec);
                   }, this)
               }, {
-                  name: 'spamassassin_score',
-                  mapping: 'spamassassin_score'
+                  name: 'spamassassin_score'
               }, {
-                  name: 'commtouchas_action',
-                  mapping:  'commtouchas_action',
+                  name:  'commtouchas_action',
                   type: 'string',
                   convert: Ext.bind( function(value, rec ) {
                       return Ung.CustomEventLog.mailEventConvertAction(value, rec);
                   }, this)
               }, {
-                  name: 'commtouchas_score',
-                  mapping: 'commtouchas_score'
+                  name: 'commtouchas_score'
               }, {
-                  name: 'phish_action',
-                  mapping:  'phish_action',
+                  name:  'phish_action',
                   type: 'string',
                   convert: Ext.bind( function(value, rec ) {
                       return Ung.CustomEventLog.mailEventConvertAction(value, rec);
                   }, this)
               }, {
-                  name: 'phish_score',
-                  mapping: 'phish_score'
+                  name: 'phish_score'
               }],
               columns: [{
                   hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -3666,23 +3620,23 @@ Ung.CustomEventLog = {
                       return i18n.timestampFormat(value);
                   }
               }, {
-                  hidden: visibleColumnsParam.indexOf('client') < 0,
+                  hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
                   header: i18n._("Client"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'client'
+                  dataIndex: 'c_client_addr'
               }, {
-                  hidden: visibleColumnsParam.indexOf('server') < 0,
+                  hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 'server'
+                  dataIndex: 'c_server_addr'
               }, {
-                  hidden: visibleColumnsParam.indexOf('s_server') < 0,
+                  hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
                   header: i18n._("Server"),
                   width: Ung.Util.ipFieldWidth,
                   sortable: true,
-                  dataIndex: 's_server'
+                  dataIndex: 's_server_addr'
               }, {
                   hidden: visibleColumnsParam.indexOf('clam_name') < 0,
                   header: i18n._("Virus Name (Clam)"),
