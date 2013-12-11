@@ -15,6 +15,8 @@ from uvm.settings_reader import get_uvm_settings_item
 
 # set noninteractive mode for all apt-get calls
 os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
+# set the path (in case its run from cron)
+os.environ['PATH'] = '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:' + os.environ['PATH']
 
 # apt-get options for various commands
 UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
