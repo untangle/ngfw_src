@@ -398,21 +398,31 @@ Ext.define("Ung.Main", {
     },
 
     upgrade: function () {
-        Ext.MessageBox.show({
-            title: i18n._("Downloading packages"),
-            msg: i18n._("Please wait...")
+        Ung.MetricManager.stop();
+
+        console.log("Applying Upgrades...");
+
+        Ext.MessageBox.wait({
+            title: i18n._("Applying Upgrades..."),
+            msg: i18n._("Please wait.")
         });
 
         var doneFn = Ext.bind( function() {
-            Ung.MetricManager.stop();
-            Ext.MessageBox.hide();
-            this.upgradesBeingApplied = true; //set this so we ignore exceptions from here on
+        }, this);
+
+        rpc.systemManager.upgrade(Ext.bind(function(result, exception) {
+            // the upgrade will shut down the untangle-vm so often this returns an exception
+            // either way show a wait dialog...
             
-            console.log("Applying Upgrades...");
+            Ext.MessageBox.hide();
+            
             var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
                 minProgressWidth: 360
             });
-            applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
+
+            // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
+            // then refresh browser.
+            applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait..."), {
                 interval: 500,
                 increment: 120,
                 duration: 45000,
@@ -433,15 +443,6 @@ Ext.define("Ung.Main", {
                         Ung.Util.goToStartPage);
                 }
             });
-        }, this);
-
-        rpc.systemManager.upgrade(Ext.bind(function(result, exception) {
-             // if the upgrades are being applied exceptions are expected.
-             // ignore them
-            if ( this.upgradesBeingApplied )
-                return;
-            if( Ung.Util.handleException( exception ) )
-                return;
         }, this));
     },
 
