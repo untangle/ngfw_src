@@ -51,8 +51,8 @@ public class SystemManagerImpl implements SystemManager
 
     private int downloadTotalFileCount;
     private int downloadCurrentFileCount;
-    private String downloadCurrentFileProgress;
-    private String downloadCurrentFileRate;
+    private String downloadCurrentFileProgress = "";
+    private String downloadCurrentFileRate = "";
     
     protected SystemManagerImpl()
     {
@@ -182,13 +182,16 @@ public class SystemManagerImpl implements SystemManager
             
             try {
                 logger.info( "Downloading " + url );
-                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( "wget -c --progress=dot -P /var/cache/apt/archives/ " + url );
 
+                // String[] strs = {"/bin/sh", "-c", "wget -c --progress=dot -P /var/cache/apt/archives/ " + url};
+                // ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( strs );
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( "wget -c --progress=dot -P /var/cache/apt/archives/ " + url );
+                
                 // read from stdout/stderr
-                for ( String output = reader.readFromOutput() ; output != null ; output = reader.readFromOutput() ) {
+                for ( String output = reader.readLineStderr() ; output != null ; output = reader.readFromOutput() ) {
                     String lines[] = output.split("\\r?\\n");
                     for ( String line : lines ) {
-                        logger.debug("output: " + line);
+                        logger.info("output: \"" + line + "\"");
                         Matcher match = DOWNLOAD_PATTERN.matcher(line);
                         if (match.matches()) {
                             int bytesDownloaded = Integer.parseInt(match.group(1)) * 1000;

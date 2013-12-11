@@ -53,7 +53,15 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     return;
                 }
                 //console.log("rpc.systemManager.getDownloadStatus", result);
-                var text=Ext.String.format(i18n._("Package: {0} of {1}<br/>Progress: {2} <br/>Speed: {3}"),result.downloadCurrentFileCount, result.downloadTotalFileCount, result.downloadCurrentFileProgress, result.downloadCurrentFileRate);
+                // var text=Ext.String.format(i18n._("Package: {0} of {1}<br/>Package Progress: {2} <br/>Speed: {3}"),
+                //                            result.downloadCurrentFileCount,
+                //                            result.downloadTotalFileCount,
+                //                            result.downloadCurrentFileProgress,
+                //                            result.downloadCurrentFileRate);
+                var text=Ext.String.format(i18n._("Package: {0} of {1}<br/>Speed: {2}"),
+                                           result.downloadCurrentFileCount,
+                                           result.downloadTotalFileCount,
+                                           result.downloadCurrentFileRate);
                 if(this.downloadSummary) {
                     text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.downloadsComplete+1, this.downloadSummary.count);
                 }

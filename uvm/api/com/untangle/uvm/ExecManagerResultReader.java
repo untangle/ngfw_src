@@ -96,7 +96,7 @@ public class ExecManagerResultReader
             logger.warn("Failed to read stderr", ex);
         }
 
-        if(result.length()==0 && isFinished()) {
+        if( result.length()==0 && isFinished() ) {
             return null;
         }
         return result.toString();
