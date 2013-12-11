@@ -89,8 +89,13 @@ public class InterfaceSettings implements Serializable, JSONString
     
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
     
-    private Integer downloadBandwidthKbps;
-    private Integer uploadBandwidthKbps;
+    private Integer downloadBandwidthKbps; /* Download Bandwidth available on this WAN interface (for QoS) */
+    private Integer uploadBandwidthKbps; /* Upload Bandwidth available on this WAN interface (for QoS) */
+
+    private Boolean vrrpEnabled; /* Is VRRP enabled */
+    private Integer vrrpId; /* VRRP ID 1-255 */
+    private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
+    private InetAddress vrrpAddress; /* VRRP virtual IPv4 address */
     
     public InterfaceSettings() { }
 
@@ -246,6 +251,18 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public Integer getUploadBandwidthKbps() { return this.uploadBandwidthKbps; }
     public void setUploadBandwidthKbps( Integer newValue ) { this.uploadBandwidthKbps = newValue; }
+
+    public Boolean getVrrpEnabled() { return this.vrrpEnabled; }
+    public void setVrrpEnabled( Boolean newValue ) { this.vrrpEnabled = newValue; }
+
+    public Integer getVrrpId() { return this.vrrpId; }
+    public void setVrrpId( Integer newValue ) { this.vrrpId = newValue; }
+
+    public Integer getVrrpPriority() { return this.vrrpPriority; }
+    public void setVrrpPriority( Integer newValue ) { this.vrrpPriority = newValue; }
+
+    public InetAddress getVrrpAddress() { return this.vrrpAddress; }
+    public void setVrrpAddress( InetAddress newValue ) { this.vrrpAddress = newValue; }
     
     public static class InterfaceAlias
     {

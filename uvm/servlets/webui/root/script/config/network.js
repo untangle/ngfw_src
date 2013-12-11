@@ -421,6 +421,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'uploadBandwidthKbps'
                 }, {
+                    name: 'vrrpEnabled'
+                }, {
+                    name: 'vrrpId'
+                }, {
+                    name: 'vrrpPriority'
+                }, {
+                    name: 'vrrpAddress'
+                }, {
                     name: 'javaClass'
                 }, 
                 {
@@ -1572,6 +1580,46 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }]
                     }]
                 }, {
+                    xtype: 'fieldset',
+                    name: 'vrrp',
+                    border: true,
+                    title: this.i18n._("Redundancy (VRRP) Configuration"),
+                    collapsible: true,
+                    collapsed: true,
+                    defaults: {
+                        labelWidth: 150
+                    },
+                    items: [{
+                        xtype:'checkbox',
+                        dataIndex: "vrrpEnabled",
+                        boxLabel: this.i18n._("Enable VRRP")
+                    }, {
+                        xtype: "numberfield",
+                        dataIndex: "vrrpId",
+                        fieldLabel: this.i18n._("VRRP ID"),
+                        minValue: 1,
+                        maxValue: 255,
+                        allowBlank: false,
+                        blankText: this.i18n._("VRRP ID must be a valid integer between 1 and 255."),
+                        width: 250
+                    }, {
+                        xtype: "numberfield",
+                        dataIndex: "vrrpPriority",
+                        fieldLabel: this.i18n._("VRRP Priority"),
+                        minValue: 1,
+                        maxValue: 255,
+                        allowBlank: false,
+                        blankText: this.i18n._("VRRP Priority must be a valid integer between 1 and 255."),
+                        width: 250
+                    }, {
+                        xtype:'textfield',
+                        dataIndex: "vrrpAddress",
+                        fieldLabel: this.i18n._("VRRP Virtual Address"),
+                        noHide: true,
+                        vtype: "ip4Address",
+                        width: 350
+                    }]
+                }, {
                     xtype: "combo",
                     allowBlank: false,
                     dataIndex: "bridgedTo",
@@ -1638,6 +1686,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dhcpRangeEnd: this.query('textfield[dataIndex="dhcpRangeEnd"]')[0],
                             dhcpGatewayOverride: this.query('textfield[dataIndex="dhcpGatewayOverride"]')[0],
                             dhcpDnsOverride: this.query('textfield[dataIndex="dhcpDnsOverride"]')[0],
+
+                            vrrp: this.query('fieldset[name="dhcp"]')[0],
+                            vrrpId: this.query('textfield[dataIndex="vrrpId"]')[0],
+                            vrrpPriority: this.query('textfield[dataIndex="vrrpPriority"]')[0],
+                            vrrpAddress: this.query('textfield[dataIndex="vrrpAddress"]')[0],
+
                             bridgedTo: this.query('combo[dataIndex="bridgedTo"]')[0]
                             
                         };
@@ -1693,6 +1747,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.dhcpRangeEnd.status = true;
                             this.cmps.dhcpGatewayOverride.status = true;
                             this.cmps.dhcpDnsOverride.status = true;
+
+                            this.cmps.vrrp.status = true; // show VRRP options on non-WANs
+                            this.cmps.vrrpId.status = true;
+                            this.cmps.vrrpPriority.status = true;
+                            this.cmps.vrrpAddress.status = true;
                         }
                         
                         // if static show static fields
