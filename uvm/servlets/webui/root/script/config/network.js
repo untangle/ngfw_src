@@ -1687,9 +1687,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dhcpGatewayOverride: this.query('textfield[dataIndex="dhcpGatewayOverride"]')[0],
                             dhcpDnsOverride: this.query('textfield[dataIndex="dhcpDnsOverride"]')[0],
 
-                            vrrp: this.query('fieldset[name="dhcp"]')[0],
-                            vrrpId: this.query('textfield[dataIndex="vrrpId"]')[0],
-                            vrrpPriority: this.query('textfield[dataIndex="vrrpPriority"]')[0],
+                            vrrp: this.query('fieldset[name="vrrp"]')[0],
+                            vrrpId: this.query('numberfield[dataIndex="vrrpId"]')[0],
+                            vrrpPriority: this.query('numberfield[dataIndex="vrrpPriority"]')[0],
                             vrrpAddress: this.query('textfield[dataIndex="vrrpAddress"]')[0],
 
                             bridgedTo: this.query('combo[dataIndex="bridgedTo"]')[0]
@@ -1747,11 +1747,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.dhcpRangeEnd.status = true;
                             this.cmps.dhcpGatewayOverride.status = true;
                             this.cmps.dhcpDnsOverride.status = true;
-
-                            this.cmps.vrrp.status = true; // show VRRP options on non-WANs
-                            this.cmps.vrrpId.status = true;
-                            this.cmps.vrrpPriority.status = true;
-                            this.cmps.vrrpAddress.status = true;
                         }
                         
                         // if static show static fields
@@ -1765,6 +1760,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 this.cmps.v4StaticDns1.status = true;
                                 this.cmps.v4StaticDns2.status = true;
                             }
+
+                            // if its a STATIC interface (whether WAN or non-WAN, show vrrp)
+                            this.cmps.vrrp.status = true;
+                            this.cmps.vrrpId.status = true;
+                            this.cmps.vrrpPriority.status = true;
+                            this.cmps.vrrpAddress.status = true;
+
                         } else if ( this.cmps.v4ConfigType.getValue() == "AUTO" ) {
                             this.cmps.v4AutoAddressOverrideContainer.status = true;
                             this.cmps.v4AutoPrefixOverrideContainer.status = true;
