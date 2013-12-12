@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.io.File;
+import java.lang.reflect.Method;
 
 import org.apache.log4j.Logger;
 
@@ -78,7 +79,7 @@ public class AlertManagerImpl implements AlertManager
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        //try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); } //FIXME needs current DIA key
+        try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -579,7 +580,25 @@ public class AlertManagerImpl implements AlertManager
         
         if ( sitefilterList.size() == 0 )
             return;
-        
+
+        String query = null;
+        try {
+            Method method;
+            Node sitefilter = sitefilterList.get(0);
+
+            Class[] args = { String.class, String.class };
+            method = sitefilter.getClass().getMethod( "encodeDnsQuery", args );
+            query = (String) method.invoke( sitefilter, "cnn.com", "/" );
+        } catch (Exception e) {
+            logger.warn("Exception generating Web Filter DNS query: ",e);
+            return;
+        }
+
+        if ( query == null ) {
+            logger.warn("Invalid zvelo query: " + query);
+            return;
+        }
+
         for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!intf.getIsWan())
                 continue;
@@ -597,7 +616,7 @@ public class AlertManagerImpl implements AlertManager
                 Record[] records = null;
 
                 try {
-                    lookup = new Lookup("0.www.cnn.com.8f03.un-6f5ff89f7a498382.v3.url.zvelo.com", Type.TXT);
+                    lookup = new Lookup( query, Type.TXT );
                 } catch ( Exception e ) {
                     logger.warn( "Invalid Lookup", e );
                     continue;
