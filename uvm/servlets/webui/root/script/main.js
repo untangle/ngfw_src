@@ -403,8 +403,8 @@ Ext.define("Ung.Main", {
         console.log("Applying Upgrades...");
 
         Ext.MessageBox.wait({
-            title: i18n._("Applying Upgrades..."),
-            msg: i18n._("Please wait.")
+            title: i18n._("Please wait"),
+            msg: i18n._("Applying Upgrades...")
         });
 
         var doneFn = Ext.bind( function() {
@@ -422,7 +422,7 @@ Ext.define("Ung.Main", {
 
             // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
             // then refresh browser.
-            applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait..."), {
+            applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                 interval: 500,
                 increment: 120,
                 duration: 45000,
