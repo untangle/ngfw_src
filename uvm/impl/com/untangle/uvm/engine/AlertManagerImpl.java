@@ -78,7 +78,7 @@ public class AlertManagerImpl implements AlertManager
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        //try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); } //FIXME needs current DIA key
         try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
