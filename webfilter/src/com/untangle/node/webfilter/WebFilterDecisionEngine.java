@@ -27,18 +27,14 @@ import com.untangle.node.util.UrlMatchingUtil;
  */
 class WebFilterDecisionEngine extends DecisionEngine
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger( WebFilterDecisionEngine.class );
 
-    private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
-
-    private static HashMap<String, Integer> urlDatabase = null;
-    private static HashMap<Integer, String> idToCategoryName = null;
+    private static final HashMap<String, Integer> urlDatabase; //unsynchronized because never modified
+    private static final HashMap<Integer, String> idToCategoryName; //unsynchronized because never modified
         
     public WebFilterDecisionEngine( WebFilterBase node )
     {
         super(node);
-
-        initializeDB();
     }
 
     // protected methods ------------------------------------------------------
@@ -115,17 +111,12 @@ class WebFilterDecisionEngine extends DecisionEngine
         return results;
     }
 
-    private synchronized void initializeDB()
+    static
     {
-        if (urlDatabase != null)
-            return;
-        if (idToCategoryName != null)
-            return;
-
         logger.info("Initializing urlDatabase...");
 
-        WebFilterDecisionEngine.urlDatabase = new HashMap<String,Integer>();
-        WebFilterDecisionEngine.idToCategoryName = new HashMap<Integer,String>();
+        HashMap<String, Integer> urlDatabaseTmp = new HashMap<String,Integer>();
+        HashMap<Integer, String> idToCategoryNameTmp = new HashMap<Integer,String>();
         
         List<String>  fileNames = new ArrayList<String>();
         List<Integer> categoryIDs = new ArrayList<Integer>();
@@ -160,20 +151,20 @@ class WebFilterDecisionEngine extends DecisionEngine
         categoryIDs.add(13);
         categoryIDs.add(14);
 
-        idToCategoryName.put(1,"aggression");
-        idToCategoryName.put(2,"dating");
-        idToCategoryName.put(3,"drugs");
-        idToCategoryName.put(4,"ecommerce");
-        idToCategoryName.put(5,"gambling");
-        idToCategoryName.put(6,"hacking");
-        idToCategoryName.put(7,"jobsearch");
-        idToCategoryName.put(8,"mail");
-        idToCategoryName.put(9,"porn");
-        idToCategoryName.put(10,"proxy");
-        idToCategoryName.put(11,"socialnetworking");
-        idToCategoryName.put(12,"sports");
-        idToCategoryName.put(13,"vacation");
-        idToCategoryName.put(14,"violence");
+        idToCategoryNameTmp.put(1,"aggression");
+        idToCategoryNameTmp.put(2,"dating");
+        idToCategoryNameTmp.put(3,"drugs");
+        idToCategoryNameTmp.put(4,"ecommerce");
+        idToCategoryNameTmp.put(5,"gambling");
+        idToCategoryNameTmp.put(6,"hacking");
+        idToCategoryNameTmp.put(7,"jobsearch");
+        idToCategoryNameTmp.put(8,"mail");
+        idToCategoryNameTmp.put(9,"porn");
+        idToCategoryNameTmp.put(10,"proxy");
+        idToCategoryNameTmp.put(11,"socialnetworking");
+        idToCategoryNameTmp.put(12,"sports");
+        idToCategoryNameTmp.put(13,"vacation");
+        idToCategoryNameTmp.put(14,"violence");
         
         Integer categoryId;
         String fileName;
@@ -181,7 +172,7 @@ class WebFilterDecisionEngine extends DecisionEngine
         for ( int i = 0 ; i < categoryIDs.size() ; i++ ) {
             categoryId = categoryIDs.get(i);
             fileName = fileNames.get(i);
-            String categoryName = idToCategoryName.get(categoryId);
+            String categoryName = idToCategoryNameTmp.get(categoryId);
             
             int urlCount = 0;
             int stringLength = 0;
@@ -192,13 +183,13 @@ class WebFilterDecisionEngine extends DecisionEngine
                 while ((url = in.readLine()) != null) {
                     urlCount++;
                     stringLength += url.length();
-                    Integer currentCategorization = urlDatabase.get(url);
+                    Integer currentCategorization = urlDatabaseTmp.get(url);
 
                     if (currentCategorization != null) {
-                        logger.debug( "Ignoring categorization for " + url + " -> " + categoryName + "(" + categoryId + ")" + " already categorized: " + idToCategoryName.get(currentCategorization) + "(" + currentCategorization + ")" );
+                        logger.debug( "Ignoring categorization for " + url + " -> " + categoryName + "(" + categoryId + ")" + " already categorized: " + idToCategoryNameTmp.get(currentCategorization) + "(" + currentCategorization + ")" );
                     } else {
                         logger.debug( "Adding   categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
-                        urlDatabase.put(url, categoryId); 
+                        urlDatabaseTmp.put(url, categoryId); 
                     }
                 }
                 in.close();
@@ -210,6 +201,9 @@ class WebFilterDecisionEngine extends DecisionEngine
             }
         }
 
+        urlDatabase = urlDatabaseTmp;
+        idToCategoryName = idToCategoryNameTmp;
+        
         logger.info("Initializing urlDatabase... done.");
     }
 }

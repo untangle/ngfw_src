@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,8 +61,8 @@ class OpenVpnMonitor implements Runnable
 
     protected static final Logger logger = Logger.getLogger( OpenVpnMonitor.class );
 
-    private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
-    private Map<String,Stats> activeMap = new HashMap<String,Stats>();
+    private Map<Key,Stats> statusMap    = new ConcurrentHashMap<Key,Stats>();
+    private Map<String,Stats> activeMap = new ConcurrentHashMap<String,Stats>();
 
     /* This is a list that contains the contents of the command "status 2" from openvpn */
     private final List<String> clientStatus = new LinkedList<String>();
@@ -88,8 +88,8 @@ class OpenVpnMonitor implements Runnable
         logger.debug( "Starting" );
 
         /* Flush both of these maps */
-        statusMap = new HashMap<Key,Stats>();
-        activeMap = new HashMap<String,Stats>();
+        statusMap = new ConcurrentHashMap<Key,Stats>();
+        activeMap = new ConcurrentHashMap<String,Stats>();
 
         Date nextUpdate = new Date(( new Date()).getTime() + LOG_TIME_MSEC );
 

@@ -56,11 +56,14 @@ class EventHandler extends AbstractEventHandler
         }
 
         InetAddress clientAddr = request.getClientAddr();
-
-        HostStats stats = hostStatsTable.get( clientAddr );
-        if ( stats == null ) {
-            stats = new HostStats();
-            hostStatsTable.put( clientAddr, stats );
+        HostStats stats;
+        
+        synchronized ( this.node ) {
+            stats = hostStatsTable.get( clientAddr );
+            if ( stats == null ) {
+                stats = new HostStats();
+                hostStatsTable.put( clientAddr, stats );
+            }
         }
 
         LinkedList<ShieldRule> rules = node.getSettings().getRules();
