@@ -245,7 +245,7 @@ public class SystemManagerImpl implements SystemManager
 
     public boolean upgradesAvailable()
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "apt-get -s dist-upgrade | grep -q '^Inst'" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "apt-get update ; apt-get -s dist-upgrade | grep -q '^Inst'" );
         return (retCode == 0);
     }
     
