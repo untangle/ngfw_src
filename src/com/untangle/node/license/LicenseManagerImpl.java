@@ -10,7 +10,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      * This is where the fully evaluated license are stored
      * This map stores the evaluated (validated) licenses
      */
-    private Map<String, License> licenseMap = new HashMap<String, License>();
+    private Map<String, License> licenseMap = new ConcurrentHashMap<String, License>();
 
     /**
      * A list of all known licenses
@@ -449,7 +449,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     private synchronized void _mapLicenses()
     {
         /* Create a new map of all of the valid licenses */
-        Map<String, License> newMap = new HashMap<String, License>();
+        Map<String, License> newMap = new ConcurrentHashMap<String, License>();
         LinkedList<License> newList = new LinkedList<License>();
 
         if (this.settings != null) {
