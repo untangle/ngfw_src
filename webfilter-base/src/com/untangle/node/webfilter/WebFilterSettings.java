@@ -28,6 +28,7 @@ public class WebFilterSettings implements Serializable
     private Integer version = new Integer(1);
 
     private Boolean enableHttpsSni = true;
+    private Boolean enableHttpsSniCertFallback = true;
     private Boolean enableHttpsSniIpFallback = false;
     private Boolean unblockPasswordEnabled = false;
     private Boolean unblockPasswordAdmin = false;
@@ -82,11 +83,15 @@ public class WebFilterSettings implements Serializable
     /**
      * If true, enables checking of HTTPS traffic.
      */
-    public Boolean getEnableHttpsSniIpFallback() { return enableHttpsSniIpFallback; }
-    public void setEnableHttpsSniIpFallback( Boolean newValue ) { this.enableHttpsSniIpFallback = newValue; }
 
     public Boolean getEnableHttpsSni() { return enableHttpsSni; }
     public void setEnableHttpsSni( Boolean enableHttpsSni ) { this.enableHttpsSni = enableHttpsSni; }
+
+    public Boolean getEnableHttpsSniCertFallback() { return enableHttpsSniCertFallback; }
+    public void setEnableHttpsSniCertFallback( Boolean newValue ) { this.enableHttpsSniCertFallback = newValue; }
+
+    public Boolean getEnableHttpsSniIpFallback() { return enableHttpsSniIpFallback; }
+    public void setEnableHttpsSniIpFallback( Boolean newValue ) { this.enableHttpsSniIpFallback = newValue; }
     
     /**
      * If true, enforces safe search on popular search engines.

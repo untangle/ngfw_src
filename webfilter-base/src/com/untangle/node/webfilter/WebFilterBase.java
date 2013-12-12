@@ -109,14 +109,19 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return settings.getUnblockMode();
     }
 
-    public boolean isHttpsEnabledSniIpFallback()
-    {
-        return settings.getEnableHttpsSniIpFallback();
-    }
-
     public boolean isHttpsEnabledSni()
     {
         return settings.getEnableHttpsSni();
+    }
+
+    public boolean isHttpsEnabledSniCertFallback()
+    {
+        return settings.getEnableHttpsSniCertFallback();
+    }
+
+    public boolean isHttpsEnabledSniIpFallback()
+    {
+        return settings.getEnableHttpsSniIpFallback();
     }
 
     public WebFilterBlockDetails getDetails( String nonce )
@@ -633,5 +638,4 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
         return fileExtensions;
     }
-    
 }
