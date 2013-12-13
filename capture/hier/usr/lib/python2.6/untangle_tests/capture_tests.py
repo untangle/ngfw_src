@@ -50,18 +50,23 @@ def createCaptureInternalNicRule():
         "ruleId": 1
     };
 
+def createLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': [{
+            'username': 'test20', 
+            'firstName': '[firstName]', 
+            'lastName': '[lastName]', 
+            'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
+            'expirationTime': 0, 
+            'password': 'passwd', 
+            'email': 'test20@example.com'
+            },]
+    }
 
-def createCaptureLoginADSettings():
-    return {
-    "authenticationType": "ACTIVE_DIRECTORY",
-    "basicLoginFooter": "If you have any questions, please contact your network administrator.",
-    "basicLoginMessageText": "Please enter your username and password to connect to the internet.",
-    "basicLoginPageTitle": "Captive Portal",
-    "basicLoginPageWelcome": "Welcome to the Untangle Captive Portal",
-    "basicLoginPassword": "Password:",
-    "basicLoginUsername": "Username:",
-    "pageType": "BASIC_LOGIN",
-    };
+def removeLocalDirectoryUser():
+    return {'javaClass': 'java.util.LinkedList', 
+        'list': []
+    }
 
 def createADSettings():
     # Need to send Radius setting even though it's not used in this case.
@@ -140,6 +145,9 @@ class CaptureTests(unittest2.TestCase):
         clientControl.runCommand("rm -f /tmp/capture_test_010.log /tmp/capture_test_010.out \
                                   /tmp/capture_test_020.log /tmp/capture_test_020.out \
                                   /tmp/capture_test_021.log /tmp/capture_test_021.out \
+                                  /tmp/capture_test_025.log /tmp/capture_test_025.out \
+                                  /tmp/capture_test_025a.log /tmp/capture_test_025a.out \
+                                  /tmp/capture_test_025b.log /tmp/capture_test_025b.out \
                                   /tmp/capture_test_030.log /tmp/capture_test_030.out \
                                   /tmp/capture_test_030a.log /tmp/capture_test_030a.out \
                                   /tmp/capture_test_030b.log /tmp/capture_test_030b.out \
@@ -191,6 +199,40 @@ class CaptureTests(unittest2.TestCase):
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['capture_blocked'] == True)
         # assert(events['list'][0]['capture_rule_index'] == 5002)
+
+    def test_025_captureLocalDirLogin(self):
+        global node, nodeData
+        # Create local directory user 'test20'
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        # results = uvmContext.localDirectory().getUsers()
+        # print results
+
+        # Create Internal NIC capture rule with basic AD login page
+        nodeData['authenticationType']="LOCAL_DIRECTORY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_025.log -O /tmp/capture_test_025.out http://www.google.com/")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_025.out")
+        assert (search == 0)
+
+        # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = clientControl.runCommand("wget -a /tmp/capture_test_025a.log -O /tmp/capture_test_025a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_025a.out")
+        assert (search == 0)
+        
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_025b.log -O /tmp/capture_test_025b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_025b.out")
+        assert (search == 0)
+
 
     def test_030_captureADLogin(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
@@ -283,6 +325,7 @@ class CaptureTests(unittest2.TestCase):
 
     def test_999_finalTearDown(self):
         global node, nodeAD
+        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
         node = None
