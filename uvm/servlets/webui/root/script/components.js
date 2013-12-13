@@ -2466,17 +2466,16 @@ Ext.define("Ung.GlobalFiltersFeature", {
         return false;
     }
 });
+
 //Event Log class
-Ext.define("Ung.GridEventLog", {
+Ext.define("Ung.GridEventLogBase", {
     extend: "Ext.grid.Panel",
-    // the settings component
-    settingsCmp: null,
+    
+    hasTimestampFilter: true,
     reserveScrollbar: true,
     // refresh on activate Tab (each time the tab is clicked)
     refreshOnActivate: true,
-    // Event manager rpc function to call
-    // default is getEventQueries() from settingsCmp
-    eventQueriesFn: null,
+    
     // for internal use
     rpc: null,
     helpSource: 'event_log',
@@ -2516,9 +2515,7 @@ Ext.define("Ung.GridEventLog", {
             features:[],
             viewConfig: {}
         });
-        if(this.eventQueriesFn == null && this.settingsCmp.node !== null && this.settingsCmp.node.rpcNode !== null && this.settingsCmp.node.rpcNode.getEventQueries !== null) {
-            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
-        }
+        
         this.viewConfig.enableTextSelection = true;
         this.store=Ext.create('Ext.data.Store', {
             model: this.modelName,
@@ -2616,6 +2613,7 @@ Ext.define("Ung.GridEventLog", {
         }, i18n._('Case sensitive'), '-', {
             xtype: 'menu',
             floating: false,
+            hidden: !this.hasTimestampFilter,
             width: 100,
             height: 30,
             items: [{
@@ -2626,6 +2624,7 @@ Ext.define("Ung.GridEventLog", {
         },{
             xtype: 'menu',
             floating: false,
+            hidden: !this.hasTimestampFilter,
             width: 100,
             height: 30,
             items: [{
@@ -2635,6 +2634,7 @@ Ext.define("Ung.GridEventLog", {
             }]
         }, {
             xtype: 'button',
+            hidden: !this.hasTimestampFilter,
             text: i18n._('Get events'),
             name: "Get events",
             tooltip: i18n._('Get events for date range'),
@@ -2737,6 +2737,120 @@ Ext.define("Ung.GridEventLog", {
         }
         var refreshButton=Ext.getCmp("refresh_"+this.getId());
         refreshButton.enable();
+    },
+    // return the list of columns in the event long as a comma separated list
+    getColumnList: function() {
+        var columnList = "";
+        for (var i=0; i<this.fields.length ; i++) {
+            if (i !== 0)
+                columnList += ",";
+            if (this.fields[i].mapping != null)
+                columnList += this.fields[i].mapping;
+            else if (this.fields[i].name != null)
+                columnList += this.fields[i].name;
+        }
+        return columnList;
+    },
+    
+    //Used to get dummy records in testing
+    getTestRecord:function(index, fields) {
+        var rec= {};
+        var property;
+        for (var i=0; i<fields.length ; i++) {
+            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
+            rec[property]=
+                (property=='id')?index+1:
+                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
+                    property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
+        }
+        return rec;
+    },
+    // Refresh the events list
+    refreshCallback: function(result, exception) {
+        if (exception != null) {
+           Ung.Util.handleException(exception);
+        } else {
+            var events = result;
+            //TEST:Add sample events for test
+            if(testMode) {
+                var emptyRec={};
+                var length = Math.floor((Math.random()*5000));
+                for(var i=0; i<length; i++) {
+                    events.list.push(this.getTestRecord(i, this.fields));
+                }
+            }
+            if (this.settingsCmp !== null) {
+                this.getStore().getProxy().data = events;
+                this.getStore().loadPage(1);
+            }
+        }
+        this.setLoading(false);
+    },    
+    listeners: {
+        "activate": {
+            fn: function() {
+                if( this.refreshOnActivate ) {
+                    Ext.Function.defer(this.refreshHandler,1, this, [false]);
+                }
+            }
+        },
+        "deactivate": {
+            fn: function() {
+                if(this.autoRefreshEnabled) {
+                    this.stopAutoRefresh(true);
+                }
+            }
+        }
+    },
+    isDirty: function() {
+        return false;
+    }
+});
+
+
+Ext.define("Ung.GridEventLog", {
+    extend: "Ung.GridEventLogBase",
+    // the settings component
+    settingsCmp: null,    
+    // default is getEventQueries() from settingsCmp
+    eventQueriesFn: null,
+    // called when the component is initialized
+    constructor: function(config) {         
+        this.callParent(arguments);
+    },
+    initComponent: function() {
+        if(this.eventQueriesFn == null && this.settingsCmp.node !== null && this.settingsCmp.node.rpcNode !== null && this.settingsCmp.node.rpcNode.getEventQueries !== null) {
+            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
+        }
+        this.callParent(arguments);
+    },
+    refreshHandler: function (forceFlush) {
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
+        } else {
+            if (!forceFlush) {
+                this.setLoading(i18n._('Refreshing Events...'));
+                this.refreshList();
+            } else {
+                this.setLoading(i18n._('Syncing events to Database... '));
+                this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+                    this.setLoading(i18n._('Refreshing Events...'));
+                    this.refreshList();
+                }, this));
+            }
+        }
+    },
+    flushHandler: function (forceFlush) {
+        this.forDateRange = false;
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
+        } else {
+            this.setLoading(i18n._('Syncing events to Database... '));
+            this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+                // refresh after complete
+                this.refreshHandler(false);
+            }, this));
+        }
     },
     autoRefreshCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
@@ -2860,81 +2974,6 @@ Ext.define("Ung.GridEventLog", {
         }
         return result;
     },
-    // return the list of columns in the event long as a comma separated list
-    getColumnList: function() {
-        var columnList = "";
-        for (var i=0; i<this.fields.length ; i++) {
-            if (i !== 0)
-                columnList += ",";
-            if (this.fields[i].mapping != null)
-                columnList += this.fields[i].mapping;
-            else if (this.fields[i].name != null)
-                columnList += this.fields[i].name;
-        }
-        return columnList;
-    },
-    refreshHandler: function (forceFlush) {
-        if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
-        } else {
-            if (!forceFlush) {
-                this.setLoading(i18n._('Refreshing Events...'));
-                this.refreshList();
-            } else {
-                this.setLoading(i18n._('Syncing events to Database... '));
-                this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-                    this.setLoading(i18n._('Refreshing Events...'));
-                    this.refreshList();
-                }, this));
-            }
-        }
-    },
-    //Used to get dummy records in testing
-    getTestRecord:function(index, fields) {
-        var rec= {};
-        var property;
-        for (var i=0; i<fields.length ; i++) {
-            property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
-            rec[property]=
-                (property=='id')?index+1:
-                (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
-                    property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
-        }
-        return rec;
-    },
-    // Refresh the events list
-    refreshCallback: function(result, exception) {
-        if (exception != null) {
-           Ung.Util.handleException(exception);
-        } else {
-            var events = result;
-            //TEST:Add sample events for test
-            if(testMode) {
-                var emptyRec={};
-                var length = Math.floor((Math.random()*5000));
-                for(var i=0; i<length; i++) {
-                    events.list.push(this.getTestRecord(i, this.fields));
-                }
-            }
-            if (this.settingsCmp !== null) {
-                this.getStore().getProxy().data = events;
-                this.getStore().loadPage(1);
-            }
-        }
-        this.setLoading(false);
-    },
-    flushHandler: function (forceFlush) {
-        this.forDateRange = false;
-        if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
-        } else {
-            this.setLoading(i18n._('Syncing events to Database... '));
-            this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-                // refresh after complete
-                this.refreshHandler(false);
-            }, this));
-        }
-    },
     refreshList: function() {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
@@ -2947,6 +2986,17 @@ Ext.define("Ung.GridEventLog", {
         } else {
             this.setLoading(false);
         }
+    },
+    // get untangle node reporting
+    getUntangleNodeReporting: function(forceReload) {
+        if (forceReload || this.untangleNodeReporting === undefined) {
+            try {
+                this.untangleNodeReporting = rpc.nodeManager.node("untangle-node-reporting");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.untangleNodeReporting;
     },
     // is reports node installed
     isReportsAppInstalled: function(forceReload) {
@@ -2967,37 +3017,6 @@ Ext.define("Ung.GridEventLog", {
             }
         }
         return this.reportsAppInstalledAndEnabled;
-    },
-    // get untangle node reporting
-    getUntangleNodeReporting: function(forceReload) {
-        if (forceReload || this.untangleNodeReporting === undefined) {
-            try {
-                this.untangleNodeReporting = rpc.nodeManager.node("untangle-node-reporting");
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.untangleNodeReporting;
-    },
-    
-    listeners: {
-        "activate": {
-            fn: function() {
-                if( this.refreshOnActivate ) {
-                    Ext.Function.defer(this.refreshHandler,1, this, [false]);
-                }
-            }
-        },
-        "deactivate": {
-            fn: function() {
-                if(this.autoRefreshEnabled) {
-                    this.stopAutoRefresh(true);
-                }
-            }
-        }
-    },
-    isDirty: function() {
-        return false;
     }
 });
 
@@ -3360,7 +3379,6 @@ Ung.CustomEventLog = {
             });
             return grid;
         },
-        
         buildHttpEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
           var grid = Ext.create('Ung.GridEventLog',{
               name: nameParam,
@@ -3570,7 +3588,6 @@ Ung.CustomEventLog = {
           });
           return grid;
       },
-      
       buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
           var grid = Ext.create('Ung.GridEventLog',{
               name: nameParam,
