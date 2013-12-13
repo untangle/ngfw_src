@@ -19,6 +19,8 @@ from untangle_tests import ClientControl
 node = None
 nodeFW = None
 radiusServer = "10.111.56.71"
+ftp_server = "test.untangle.com"
+ftp_file_name = "test.zip"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -194,37 +196,6 @@ def nukeDynDNS():
     netsettings['dynamicDnsServiceEnabled'] = False
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-# def isBridgeMode(clientIPAdress):
-#     netsettings = uvmContext.networkManager().getNetworkSettings()
-#     for interface in netsettings['interfaces']['list']:
-#         if interface['isWan']:
-#             if interface['v4StaticGateway']:
-#                 wanIP = interface['v4StaticGateway']
-#                 wanNetmask = interface['v4StaticNetmask']
-#                 systemProperties = system_props.SystemProperties()
-#                 wanNetSize = systemProperties.get_net_size(wanNetmask)
-#                 wanRange = wanIP + '/' + wanNetSize
-#                 wanNet = ipaddr.IPNetwork(wanRange)
-#                 wanAddr = ipaddr.IPAddress(clientIPAdress)
-#             elif (interface['v4ConfigType'] in ['AUTO','PPPOE']):
-#                 # is this a dynamic IP w/o PPPOE
-#                 nicDevice = str(interface['symbolicDev'])
-#                 systemProperties = system_props.SystemProperties()
-#                 wanIP = systemProperties.get_ip_address(nicDevice)
-#                 wanNetmask =  systemProperties.get_netmask(nicDevice)
-#                 wanRange = wanIP + '/' + systemProperties.get_net_size(wanNetmask)
-#                 wanNet = ipaddr.IPNetwork(wanRange)
-#                 wanAddr = ipaddr.IPAddress(clientIPAdress)
-#             else:
-#                 raise unittest2.SkipTest("Unable to determine WAN IP")
-#             if wanAddr in wanNet:
-#                 return True
-#             else:
-#                 pass
-#         else:
-#             pass
-#     return False
-
 def getDownloadSpeed():
     # Download file and record the average speed in which the file was download
     clientControl.runCommand("rm /tmp/test.txt >/dev/null 2>&1")
@@ -333,7 +304,7 @@ class NetworkTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
-    # test a port forward from outside if possibel
+    # test a port forward from outside if possible
     def test_030_portForwardInbound(self):
         # We will use radiusServer for this test. Test to see if we can reach it.
         externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -385,13 +356,13 @@ class NetworkTests(unittest2.TestCase):
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
-        nukeBypassRules()
         global nodeFW
         if nodeFW == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
                 print "ERROR: Node %s already installed" % self.nodeNameFW()
                 raise Exception('node %s already instantiated' % self.nodeNameFW())
             nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
+        nukeBypassRules()
         # verify port 80 is open
         result = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
         assert (result == 0)
@@ -405,6 +376,31 @@ class NetworkTests(unittest2.TestCase):
         assert (result == 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+
+    # Test FTP in active and passive modes
+    def test_065_ftpModes(self):
+        nukeBypassRules()
+        clientControl.runCommand("rm /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file >/dev/null 2>&1")
+        # passive
+        result = clientControl.runCommand("wget -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        assert (result == 0)
+        # active
+        result = clientControl.runCommand("wget --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        assert (result == 0)
+
+    # Test FTP in active and passive modes with bypass
+    def test_066_bypassFtpModes(self):
+        nukeBypassRules()
+        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
+        # --no-passive-ftp
+        clientControl.runCommand("rm /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file >/dev/null 2>&1")
+        # passive
+        result = clientControl.runCommand("wget -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        assert (result == 0)
+        # active
+        result = clientControl.runCommand("wget --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        assert (result == 0)
+        nukeBypassRules()
 
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_070_routes(self):        
