@@ -125,6 +125,11 @@ public interface HostTable
      * Get the event log query for quota events
      */
     EventLogQuery[] getQuotaEventQueries();
+
+    /**
+     * Clear the entire table (used by tests)
+     */
+    void clearTable();
     
     /**
      * A penalty box listener is a hook called when hosts enter or exit the penalty box

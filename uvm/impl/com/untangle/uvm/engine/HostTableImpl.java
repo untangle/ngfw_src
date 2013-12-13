@@ -420,6 +420,11 @@ public class HostTableImpl implements HostTable
     {
         return this.maxSize;
     }
+
+    public void clearTable()
+    {
+        this.hostTable.clear();
+    }
     
     private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
