@@ -207,7 +207,7 @@ class CaptureTests(unittest2.TestCase):
         # results = uvmContext.localDirectory().getUsers()
         # print results
 
-        # Create Internal NIC capture rule with basic AD login page
+        # Create Internal NIC capture rule with basic login page
         nodeData['authenticationType']="LOCAL_DIRECTORY"
         nodeData['pageType'] = "BASIC_LOGIN"
         node.setSettings(nodeData)
