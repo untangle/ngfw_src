@@ -91,18 +91,18 @@ public class SystemManagerImpl implements SystemManager
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
          */
-        if ( readSettings.getAutoUpgrade() && !CRON_FILE.exists() )
+        if ( settings.getAutoUpgrade() && !CRON_FILE.exists() )
             writeCronFile();
-        if ( readSettings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified() )
+        if ( settings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified() )
             writeCronFile();
 
         /**
          * If auto-upgrade is disabled and cron file exists, delete it
          */
-        if ( !readSettings.getAutoUpgrade() && CRON_FILE.exists() )
+        if ( !settings.getAutoUpgrade() && CRON_FILE.exists() )
             UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         
-        if (settings.getSnmpSettings().isEnabled() ) 
+        if ( settings.getSnmpSettings().isEnabled() ) 
             restartDaemon();
 
         logger.info("Initialized SystemManager");
