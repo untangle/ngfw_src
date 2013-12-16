@@ -1845,8 +1845,9 @@ Ung.CheckStoreRegistration = {
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.CheckStoreRegistration.stop();
-                        // Ext.MessageBox.alert(i18n._("Box registered"),
-                        //                      i18n._("Box succesfully registered!") + "<br/>" + i18n._("Press OK to return to the login page."), Ung.Util.goToStartPage);
+                        Ext.MessageBox.alert(i18n._("Registeration complete."),
+                                             i18n._("Thank you for using Untangle!") + "<br/>" +
+                                             i18n._("You may now install applications into the rack."));
                     });
                 }
             },
