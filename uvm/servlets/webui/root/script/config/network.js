@@ -2021,7 +2021,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype: "combo",
                         fieldLabel: this.i18n._("Service"),
                         value: this.settings.dynamicDnsServiceName,
-                        store: [['easydns','EasyDNS'], ['zoneedit','ZoneEdit'], ['dyndns','DynDNS'],['namecheap','Namecheap'],['dslreports','DSL-Reports'],['dnspark','DNSPark']],
+                        store: [['easydns','EasyDNS'],
+                                ['zoneedit','ZoneEdit'],
+                                ['dyndns','DynDNS'],
+                                ['namecheap','Namecheap'],
+                                ['dslreports','DSL-Reports'],
+                                ['dnspark','DNSPark'],
+                                ['no-ip','No-IP'],
+                                ['dnsomatic','DNS-O-Matic']],
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
