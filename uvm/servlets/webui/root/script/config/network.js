@@ -189,7 +189,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }
                 this.output.setValue( text.join(""));
                 //scroll to bottom
-                var t = this.query('textarea[name="output"]')[0];
+                var t = this.down('textarea[name="output"]');
                 var t1 = t.getEl().down('textarea');
                 t1.dom.scrollTop = 99999;
             }, this));
@@ -1044,6 +1044,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 paginated: false,
                 hasEdit: false,
                 dataIndex: 'dhcpOptions',
+                disableOnly: true,
                 recordJavaClass: "com.untangle.uvm.network.DhcpOption",
                 columnsDefaultSortable: false,
                 data: [],
@@ -1157,7 +1158,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.gridInterfaces.rowEditor.syncComponents();
                                 if ( newValue ) {
-                                    var v4NatEgressTraffic = this.gridInterfaces.rowEditor.query('checkbox[dataIndex="v4NatEgressTraffic"]')[0];
+                                    var v4NatEgressTraffic = this.gridInterfaces.rowEditor.down('checkbox[dataIndex="v4NatEgressTraffic"]');
                                     // auto-enable egress NAT when checking isWan
                                     v4NatEgressTraffic.setValue( true );
                                 } 
@@ -1512,29 +1513,42 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "dhcpEnabled",
-                        boxLabel: this.i18n._("Enable DHCP Serving")
+                        boxLabel: this.i18n._("Enable DHCP Serving"),
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.gridInterfaces.rowEditor.syncComponents();
+                                }, this)
+                            }
+                        }
                     }, {
                         xtype: 'textfield',
                         dataIndex: "dhcpRangeStart",
                         fieldLabel: this.i18n._("Range Start"),
                         vtype: "ip4Address",
-                        noHide: true,
+                        allowBlank: false,
+                        disableOnly: true,
                         width: 350
                     }, {
                         xtype:'textfield',
                         dataIndex: "dhcpRangeEnd",
                         fieldLabel: this.i18n._("Range End"),
                         vtype: "ip4Address",
-                        noHide: true,
+                        allowBlank: false,
+                        disableOnly: true,
                         width: 350
                     }, {
                         xtype: 'container',
                         layout: 'column',
                         margin: '0 0 5 0',
                         items: [{
-                            xtype: 'textfield',
+                            xtype: 'numberfield',
                             dataIndex: "dhcpLeaseDuration",
                             fieldLabel: this.i18n._("Lease Duration"),
+                            allowDecimals: false,
+                            //minValue: 0,
+                            allowBlank: false,
+                            disableOnly: true,
                             labelWidth: 150,
                             width: 350
                         }, {
@@ -1556,7 +1570,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dataIndex: "dhcpGatewayOverride",
                             fieldLabel: this.i18n._("Gateway Override"),
                             vtype: "ip4Address",
-                            noHide: true,
+                            disableOnly: true,
                             width: 350
                         }, {
                             xtype: "combo",
@@ -1565,13 +1579,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             store: Ung.Util.getV4NetmaskList( true ),
                             queryMode: 'local',
                             editable: false,
+                            disableOnly: true,
                             width: 350
                         }, {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            noHide: true,
                             vtype: "ip4Address",
+                            disableOnly: true,
                             width: 350
                         }, {
                             xtype: 'fieldset',
@@ -1635,70 +1650,74 @@ if (!Ung.hasResource["Ung.Network"]) {
                     
                     if(!this.cmps) {
                         this.cmps = {
-                            isVlanInterface: this.query('checkbox[dataIndex="isVlanInterface"]')[0],
-                            vlanParent: this.query('combo[dataIndex="vlanParent"]')[0],
-                            vlanTag: this.query('numberfield[dataIndex="vlanTag"]')[0],
-                            isWan: this.query('checkbox[dataIndex="isWan"]')[0],
+                            isVlanInterface: this.down('checkbox[dataIndex="isVlanInterface"]'),
+                            vlanParent: this.down('combo[dataIndex="vlanParent"]'),
+                            vlanTag: this.down('numberfield[dataIndex="vlanTag"]'),
+                            isWan: this.down('checkbox[dataIndex="isWan"]'),
                             
-                            v4Config: this.query('fieldset[name="v4Config"]')[0],
-                            v4ConfigType: this.query('combo[dataIndex="v4ConfigType"]')[0],
-                            v4StaticAddress: this.query('textfield[dataIndex="v4StaticAddress"]')[0],
-                            v4StaticPrefix: this.query('combo[dataIndex="v4StaticPrefix"]')[0],
-                            v4StaticGateway: this.query('textfield[dataIndex="v4StaticGateway"]')[0],
-                            v4StaticDns1: this.query('textfield[dataIndex="v4StaticDns1"]')[0],
-                            v4StaticDns2: this.query('textfield[dataIndex="v4StaticDns2"]')[0],
+                            v4Config: this.down('fieldset[name="v4Config"]'),
+                            v4ConfigType: this.down('combo[dataIndex="v4ConfigType"]'),
+                            v4StaticAddress: this.down('textfield[dataIndex="v4StaticAddress"]'),
+                            v4StaticPrefix: this.down('combo[dataIndex="v4StaticPrefix"]'),
+                            v4StaticGateway: this.down('textfield[dataIndex="v4StaticGateway"]'),
+                            v4StaticDns1: this.down('textfield[dataIndex="v4StaticDns1"]'),
+                            v4StaticDns2: this.down('textfield[dataIndex="v4StaticDns2"]'),
                             
-                            v4AutoAddressOverride: this.query('textfield[dataIndex="v4AutoAddressOverride"]')[0],
-                            v4AutoGatewayOverride: this.query('textfield[dataIndex="v4AutoGatewayOverride"]')[0],
-                            v4AutoDns1Override: this.query('textfield[dataIndex="v4AutoDns1Override"]')[0],
-                            v4AutoDns2Override: this.query('textfield[dataIndex="v4AutoDns2Override"]')[0],
+                            v4AutoAddressOverride: this.down('textfield[dataIndex="v4AutoAddressOverride"]'),
+                            v4AutoGatewayOverride: this.down('textfield[dataIndex="v4AutoGatewayOverride"]'),
+                            v4AutoDns1Override: this.down('textfield[dataIndex="v4AutoDns1Override"]'),
+                            v4AutoDns2Override: this.down('textfield[dataIndex="v4AutoDns2Override"]'),
                             
-                            v4AutoAddressOverrideContainer: this.query('container[name="v4AutoAddressOverrideContainer"]')[0],
-                            v4AutoPrefixOverrideContainer: this.query('container[name="v4AutoPrefixOverrideContainer"]')[0],
-                            v4AutoGatewayOverrideContainer: this.query('container[name="v4AutoGatewayOverrideContainer"]')[0],
-                            v4AutoDns1OverrideContainer: this.query('container[name="v4AutoDns1OverrideContainer"]')[0],
-                            v4AutoDns2OverrideContainer: this.query('container[name="v4AutoDns2OverrideContainer"]')[0],
-                            v4AutoRenewDhcpLeaseButton: this.query('button[name="v4AutoRenewDhcpLease"]')[0],
+                            v4AutoAddressOverrideContainer: this.down('container[name="v4AutoAddressOverrideContainer"]'),
+                            v4AutoPrefixOverrideContainer: this.down('container[name="v4AutoPrefixOverrideContainer"]'),
+                            v4AutoGatewayOverrideContainer: this.down('container[name="v4AutoGatewayOverrideContainer"]'),
+                            v4AutoDns1OverrideContainer: this.down('container[name="v4AutoDns1OverrideContainer"]'),
+                            v4AutoDns2OverrideContainer: this.down('container[name="v4AutoDns2OverrideContainer"]'),
+                            v4AutoRenewDhcpLeaseButton: this.down('button[name="v4AutoRenewDhcpLease"]'),
                             
-                            v4PPPoEUsername: this.query('textfield[dataIndex="v4PPPoEUsername"]')[0],
-                            v4PPPoEPassword: this.query('textfield[dataIndex="v4PPPoEPassword"]')[0],
-                            v4PPPoEUsePeerDns: this.query('checkbox[dataIndex="v4PPPoEUsePeerDns"]')[0],
-                            v4PPPoEDns1: this.query('textfield[dataIndex="v4PPPoEDns1"]')[0],
-                            v4PPPoEDns2: this.query('textfield[dataIndex="v4PPPoEDns2"]')[0],
+                            v4PPPoEUsername: this.down('textfield[dataIndex="v4PPPoEUsername"]'),
+                            v4PPPoEPassword: this.down('textfield[dataIndex="v4PPPoEPassword"]'),
+                            v4PPPoEUsePeerDns: this.down('checkbox[dataIndex="v4PPPoEUsePeerDns"]'),
+                            v4PPPoEDns1: this.down('textfield[dataIndex="v4PPPoEDns1"]'),
+                            v4PPPoEDns2: this.down('textfield[dataIndex="v4PPPoEDns2"]'),
     
-                            v4NatEgressTraffic: this.query('checkbox[dataIndex="v4NatEgressTraffic"]')[0],
-                            v4NatIngressTraffic: this.query('checkbox[dataIndex="v4NatIngressTraffic"]')[0],
+                            v4NatEgressTraffic: this.down('checkbox[dataIndex="v4NatEgressTraffic"]'),
+                            v4NatIngressTraffic: this.down('checkbox[dataIndex="v4NatIngressTraffic"]'),
 
-                            v6Config: this.query('fieldset[name="v6Config"]')[0],
-                            v6ConfigType: this.query('combo[dataIndex="v6ConfigType"]')[0],
-                            v6StaticAddress: this.query('textfield[dataIndex="v6StaticAddress"]')[0],
-                            v6StaticPrefixLength: this.query('textfield[dataIndex="v6StaticPrefixLength"]')[0],
-                            v6StaticGateway: this.query('textfield[dataIndex="v6StaticGateway"]')[0],
-                            v6StaticDns1: this.query('textfield[dataIndex="v6StaticDns1"]')[0],
-                            v6StaticDns2: this.query('textfield[dataIndex="v6StaticDns2"]')[0],
-                            v6AliasesContainer: this.query('container[name="v6AliasesContainer"]')[0],
-                            v6OptionsContainer: this.query('container[name="v6OptionsContainer"]')[0],
-                            v6SendRouterAdvertisements: this.query('checkbox[dataIndex="raEnabled"]')[0],
-                            v6SendRouterAdvertisementsWarning: this.query('label[name="v6RouterAdvertisementWarning"]')[0],                              
+                            v6Config: this.down('fieldset[name="v6Config"]'),
+                            v6ConfigType: this.down('combo[dataIndex="v6ConfigType"]'),
+                            v6StaticAddress: this.down('textfield[dataIndex="v6StaticAddress"]'),
+                            v6StaticPrefixLength: this.down('textfield[dataIndex="v6StaticPrefixLength"]'),
+                            v6StaticGateway: this.down('textfield[dataIndex="v6StaticGateway"]'),
+                            v6StaticDns1: this.down('textfield[dataIndex="v6StaticDns1"]'),
+                            v6StaticDns2: this.down('textfield[dataIndex="v6StaticDns2"]'),
+                            v6AliasesContainer: this.down('container[name="v6AliasesContainer"]'),
+                            v6OptionsContainer: this.down('container[name="v6OptionsContainer"]'),
+                            v6SendRouterAdvertisements: this.down('checkbox[dataIndex="raEnabled"]'),
+                            v6SendRouterAdvertisementsWarning: this.down('label[name="v6RouterAdvertisementWarning"]'),                              
 
-                            dhcp: this.query('fieldset[name="dhcp"]')[0],
-                            dhcpRangeStart: this.query('textfield[dataIndex="dhcpRangeStart"]')[0],
-                            dhcpRangeEnd: this.query('textfield[dataIndex="dhcpRangeEnd"]')[0],
-                            dhcpGatewayOverride: this.query('textfield[dataIndex="dhcpGatewayOverride"]')[0],
-                            dhcpDnsOverride: this.query('textfield[dataIndex="dhcpDnsOverride"]')[0],
+                            dhcp: this.down('fieldset[name="dhcp"]'),
+                            dhcpEnabled: this.down('checkbox[dataIndex="dhcpEnabled"]'),
+                            dhcpRangeStart: this.down('textfield[dataIndex="dhcpRangeStart"]'),
+                            dhcpRangeEnd: this.down('textfield[dataIndex="dhcpRangeEnd"]'),
+                            dhcpLeaseDuration: this.down('numberfield[dataIndex="dhcpLeaseDuration"]'),
+                            dhcpPrefixOverride: this.down('combo[dataIndex="dhcpPrefixOverride"]'),
+                            dhcpGatewayOverride: this.down('textfield[dataIndex="dhcpGatewayOverride"]'),
+                            dhcpDnsOverride: this.down('textfield[dataIndex="dhcpDnsOverride"]'),
+                            dhcpOptions: this.down('[dataIndex="dhcpOptions"]'),
 
-                            vrrp: this.query('fieldset[name="vrrp"]')[0],
-                            vrrpId: this.query('numberfield[dataIndex="vrrpId"]')[0],
-                            vrrpPriority: this.query('numberfield[dataIndex="vrrpPriority"]')[0],
-                            vrrpAddress: this.query('textfield[dataIndex="vrrpAddress"]')[0],
+                            vrrp: this.down('fieldset[name="vrrp"]'),
+                            vrrpId: this.down('numberfield[dataIndex="vrrpId"]'),
+                            vrrpPriority: this.down('numberfield[dataIndex="vrrpPriority"]'),
+                            vrrpAddress: this.down('textfield[dataIndex="vrrpAddress"]'),
 
-                            bridgedTo: this.query('combo[dataIndex="bridgedTo"]')[0]
+                            bridgedTo: this.down('combo[dataIndex="bridgedTo"]')
                             
                         };
-                        this.configType=this.query('combo[dataIndex="configType"]')[0];
+                        this.configType=this.down('combo[dataIndex="configType"]');
                         for( property in this.cmps ) {
                             cmp = this.cmps[property]; 
-                            if(!cmp.noHide) {
+                            if(!cmp.noHide || !cmp.disableOnly) {
                                 cmp.setVisible(false);
                             }
                         }
@@ -1743,10 +1762,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v4NatIngressTraffic.status = true; // show NAT ingress options on non-WANs
                             
                             this.cmps.dhcp.status = true; // show DHCP options on non-WANs
-                            this.cmps.dhcpRangeStart.status = true;
-                            this.cmps.dhcpRangeEnd.status = true;
-                            this.cmps.dhcpGatewayOverride.status = true;
-                            this.cmps.dhcpDnsOverride.status = true;
+                            this.cmps.dhcpEnabled.status = true;
+                            if ( this.cmps.dhcpEnabled.getValue() ) {
+                                this.cmps.dhcpRangeStart.status = true;
+                                this.cmps.dhcpRangeEnd.status = true;
+                                this.cmps.dhcpLeaseDuration.status = true;
+                                this.cmps.dhcpGatewayOverride.status = true;
+                                this.cmps.dhcpPrefixOverride.status = true;
+                                this.cmps.dhcpDnsOverride.status = true;
+                                this.cmps.dhcpOptions.status = true;
+                            }
+
                         }
                         
                         // if static show static fields
@@ -1814,8 +1840,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                     for( property in this.cmps ) {
                         cmp = this.cmps[property];
-                        if(!cmp.noHide && cmp.isHidden() === cmp.status) {
+                        if(!cmp.disableOnly && !cmp.noHide && cmp.isHidden() === cmp.status) {
                             cmp.setVisible(cmp.status);
+                        }
+                        if(cmp.disableOnly) {
+                            cmp.setVisible(true);
+                            if(!cmp.status) {
+                                cmp.disable();    
+                            }
                         }
                         if(cmp.status && cmp.isDisabled()) {
                             cmp.enable();
@@ -1837,9 +1869,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         } 
                     }
                     // refresh interface selector stores
-                    var bridgedTo = this.query('combo[dataIndex="bridgedTo"]')[0];
+                    var bridgedTo = this.down('combo[dataIndex="bridgedTo"]');
                     bridgedTo.getStore().loadData( bridgedToInterfaces );
-                    var vlanParent = this.query('combo[dataIndex="vlanParent"]')[0];
+                    var vlanParent = this.down('combo[dataIndex="vlanParent"]');
                     vlanParent.getStore().loadData( vlanParentInterfaces );
                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 },
@@ -1897,11 +1929,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     this.grid.getStore().resumeEvents();
                                     Ext.apply(intf, interfaceStatus); // apply to settings
                                     //apply in the current rowEditor
-                                    this.query('label[dataIndex="v4Address"]')[0].setValue(this.record.get("v4Address"),this.record);
-                                    this.query('label[dataIndex="v4Gateway"]')[0].setValue(this.record.get("v4Gateway"),this.record);
-                                    this.query('label[dataIndex="v4Dns1"]')[0].setValue(this.record.get("v4Dns1"),this.record);
-                                    this.query('label[dataIndex="v4Dns2"]')[0].setValue(this.record.get("v4Dns2"),this.record);
-                                    this.query('label[dataIndex="v4PrefixLength"]')[0].setValue(this.record.get("v4PrefixLength"),this.record);
+                                    this.down('label[dataIndex="v4Address"]').setValue(this.record.get("v4Address"),this.record);
+                                    this.down('label[dataIndex="v4Gateway"]').setValue(this.record.get("v4Gateway"),this.record);
+                                    this.down('label[dataIndex="v4Dns1"]').setValue(this.record.get("v4Dns1"),this.record);
+                                    this.down('label[dataIndex="v4Dns2"]').setValue(this.record.get("v4Dns2"),this.record);
+                                    this.down('label[dataIndex="v4PrefixLength"]').setValue(this.record.get("v4PrefixLength"),this.record);
                                     break;
                                 }
                             }
@@ -2314,7 +2346,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                         break;
                                     }
                                 }
-                                var connectTestButton = this.query('button[name="connect_test_button"]')[0];
+                                var connectTestButton = this.down('button[name="connect_test_button"]');
                                 if(hasTcpProtocol) {
                                     connectTestButton.enable();
                                 } else {
@@ -2385,15 +2417,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                 rowEditorLabelWidth: 160,
                 populate: function(record, addMode) {
                     //reinitialize dataIndex on both editors
-                    this.query('fieldset[name="simple_portforward_editor"]')[0].dataIndex="matchers";
-                    this.query('rulebuilder')[0].dataIndex="matchers";
+                    this.down('fieldset[name="simple_portforward_editor"]').dataIndex="matchers";
+                    this.down('rulebuilder').dataIndex="matchers";
                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 },
                 syncComponents: function () {
-                    var isSimple = this.query('checkbox[dataIndex="simple"]')[0].getValue();
-                    var simpleEditor=this.query('fieldset[name="simple_portforward_editor"]')[0];
-                    var advancedEditor=this.query('[name="advanced_portforward_editor"]')[0];
-                    var rulebuilder=advancedEditor.query('rulebuilder')[0];
+                    var isSimple = this.down('checkbox[dataIndex="simple"]').getValue();
+                    var simpleEditor=this.down('fieldset[name="simple_portforward_editor"]');
+                    var advancedEditor=this.down('[name="advanced_portforward_editor"]');
+                    var rulebuilder=advancedEditor.down('rulebuilder');
                     simpleEditor.setVisible(isSimple);
                     advancedEditor.setVisible(!isSimple);
                     if(isSimple) {
@@ -2403,11 +2435,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                         simpleEditor.dataIndex="";
                         rulebuilder.dataIndex="matchers";
                     }
-                    this.query('[name="switch_advanced_btn"]')[0].setVisible(isSimple);
-                    this.query('[name="new_port_container"]')[0].setVisible(!isSimple);
+                    this.down('[name="switch_advanced_btn"]').setVisible(isSimple);
+                    this.down('[name="new_port_container"]').setVisible(!isSimple);
                     
                     Ext.defer( function(){
-                        this.query('fieldset[name="fwd_description"]')[0].setTitle( isSimple ?
+                        this.down('fieldset[name="fwd_description"]').setTitle( isSimple ?
                             settingsCmp.i18n._('Traffic matching the above description destined to any Untangle IP will be forwarded to the new location:') :
                             settingsCmp.i18n._('Forward to the following location:'));
                     },1, this);
@@ -2434,12 +2466,12 @@ if (!Ung.hasResource["Ung.Network"]) {
                         if(record.get("simple")) {
                             var matchersMap=Ung.Util.createRecordsMap(record.get("matchers").list, "matcherType");
                             var protocol = matchersMap["PROTOCOL"]?matchersMap["PROTOCOL"].value:"TCP";
-                            this.query('combo[name="simple_protocol"]')[0].setValue(protocol);
+                            this.down('combo[name="simple_protocol"]').setValue(protocol);
 
                             var dstPort = matchersMap["DST_PORT"]?matchersMap["DST_PORT"].value:"";
-                            var dstPortOther=this.query('numberfield[name="simple_destination_port"]')[0];
+                            var dstPortOther=this.down('numberfield[name="simple_destination_port"]');
                             dstPortOther.setValue(dstPort);
-                            var dstPortCombo=this.query('combo[name="simple_basic_port"]')[0];
+                            var dstPortCombo=this.down('combo[name="simple_basic_port"]');
                             var isOtherPort=true;
                             for(var i=0;i<portStore.length;i++) {
                                 if(dstPort==portStore[i][0]) {
@@ -2455,10 +2487,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }
                     },
                     getValue: function() {
-                        var isSimple = settingsCmp.gridPortForwardRules.rowEditor.query('checkbox[dataIndex="simple"]')[0].getValue();
+                        var isSimple = settingsCmp.gridPortForwardRules.rowEditor.down('checkbox[dataIndex="simple"]').getValue();
                         if(isSimple) {
-                            var protocol = this.query('combo[name="simple_protocol"]')[0].getValue();
-                            var port = ""+this.query('[name="simple_destination_port"]')[0].getValue();
+                            var protocol = this.down('combo[name="simple_protocol"]').getValue();
+                            var port = ""+this.down('[name="simple_destination_port"]').getValue();
                             return {
                                 javaClass: "java.util.LinkedList", 
                                 list:[{
@@ -2504,7 +2536,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 fn: Ext.bind(function(combo, records, eOpts) {
                                     var value = combo.getValue();
                                     var isVisible = (value == "-1");
-                                    var port = this.gridPortForwardRules.rowEditor.query('[name="simple_destination_port"]')[0];
+                                    var port = this.gridPortForwardRules.rowEditor.down('[name="simple_destination_port"]');
                                     port.setVisible( isVisible );
                                     if ( !isVisible ) {
                                         port.setValue( value );
@@ -2519,7 +2551,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(field, value) {
-                                    this.gridPortForwardRules.rowEditor.query('numberfield[dataIndex="newPort"]')[0].setValue(value);
+                                    this.gridPortForwardRules.rowEditor.down('numberfield[dataIndex="newPort"]').setValue(value);
                                 }, this)
                             }
                         },
@@ -2577,9 +2609,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     text: this.i18n._( "Switch to Advanced" ),
                     handler: function() {
                         var rowEditor = this.gridPortForwardRules.rowEditor;
-                        var matchers = rowEditor.query('fieldset[name="simple_portforward_editor"]')[0].getValue();
-                        rowEditor.query('checkbox[dataIndex="simple"]')[0].setValue(false);
-                        rowEditor.query('rulebuilder')[0].setValue(matchers);
+                        var matchers = rowEditor.down('fieldset[name="simple_portforward_editor"]').getValue();
+                        rowEditor.down('checkbox[dataIndex="simple"]').setValue(false);
+                        rowEditor.down('rulebuilder').setValue(matchers);
                         rowEditor.syncComponents();
                     },
                     scope: this
@@ -2718,8 +2750,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }]
                 }],
                 syncComponents: function () {
-                    var natType  = this.query('combo[dataIndex="auto"]')[0];
-                    var newSource = this.query('textfield[dataIndex="newSource"]')[0];
+                    var natType  = this.down('combo[dataIndex="auto"]');
+                    var newSource = this.down('textfield[dataIndex="newSource"]');
                     if (natType.value) { //Auto
                         newSource.disable();
                         newSource.hide();
@@ -3240,7 +3272,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     var u_Mbit = u/1000;
 
                     var message = Ext.String.format( this.i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit );
-                    var bandwidthLabel = this.panelQoS.query('label[name="bandwidthLabel"]')[0];
+                    var bandwidthLabel = this.panelQoS.down('label[name="bandwidthLabel"]');
                     bandwidthLabel.setText(Ext.String.format(this.i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>', false);
                 }, this)
             });
