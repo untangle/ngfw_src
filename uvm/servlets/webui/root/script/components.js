@@ -1820,6 +1820,7 @@ Ung.CheckStoreRegistration = {
     url: null,
     start: function(now) {
         //this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
+        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + main.systemInfo();
         this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
         this.stop();
         this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
@@ -1833,47 +1834,24 @@ Ung.CheckStoreRegistration = {
         this.started = false;
     },
     run: function () {
-        /*
-        // If we go with CORS implementation on server side
-        Ext.Ajax.request({
-            url: Ung.CheckStoreRegistration.url,
-            method: 'GET',
-            success: function(response){
-                var registered = Ext.decode(resp.responseText).registered
-                if( registered ) {
-                    Ung.CheckStoreRegistration.stop();
-                    rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        main.closeIframe();
-                        rpc.isRegistered = true;
-                        Ung.Util.goToStartPage();
-                    });
-                }
-            }
-        });
-        */
         Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
-            crossDomain: true,
             type: 'GET',
-            dataType: 'json', //FIXME
-            headers: {
-                'Accept': 'application/json'
-            },
             success: function(response, opts) {
-                var registered = response.registered;
-                if( registered ) {
+                if( response!=null && response.registered) {
                     Ung.CheckStoreRegistration.stop();
                     rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         main.closeIframe();
                         rpc.isRegistered = true;
-                        Ung.Util.goToStartPage();
+                        Ung.CheckStoreRegistration.stop();
+                        Ext.MessageBox.alert(i18n._("Box registered"),
+                            i18n._("Box succesfully registered!") + "<br/>" + i18n._("Press OK to return to the login page."), Ung.Util.goToStartPage);
                     });
                 }
             },
             failure: function(response, opts) {
-                console.log("Failed to get registered status: " + response);
+                console.log("Failed to get registered status: ", response, Ung.CheckStoreRegistration.url);
             }
         });
     }

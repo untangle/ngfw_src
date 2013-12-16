@@ -59,7 +59,6 @@ Ext.define("Ung.Main", {
             Ung.Util.rpcExHandler(e);
         }
         Ext.applyIf(rpc, startupInfo);
-        
         //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
         try {
             rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
