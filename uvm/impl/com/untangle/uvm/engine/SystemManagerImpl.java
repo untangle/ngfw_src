@@ -88,11 +88,19 @@ public class SystemManagerImpl implements SystemManager
             settingsFile.lastModified() > snmpDefaultFile.lastModified())
             syncSnmpSettings(this.settings.getSnmpSettings());
 
-        if (! CRON_FILE.exists() )
+        /**
+         * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
+         */
+        if ( readSettings.getAutoUpgrade() && !CRON_FILE.exists() )
             writeCronFile();
-        
-        if (settingsFile.lastModified() > CRON_FILE.lastModified())
+        if ( readSettings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified() )
             writeCronFile();
+
+        /**
+         * If auto-upgrade is disabled and cron file exists, delete it
+         */
+        if ( !readSettings.getAutoUpgrade() && CRON_FILE.exists() )
+            UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         
         if (settings.getSnmpSettings().isEnabled() ) 
             restartDaemon();
@@ -105,9 +113,35 @@ public class SystemManagerImpl implements SystemManager
         return this.settings;
     }
 
-    public void setSettings(final SystemSettings settings)
+    public void setSettings(final SystemSettings newSettings)
     {
-        this._setSettings( settings );
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(SystemSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /* sync settings to disk */
+        syncSnmpSettings(this.settings.getSnmpSettings());
+
+        /**
+         * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
+         */
+        if ( settings.getAutoUpgrade() && !CRON_FILE.exists() )
+            writeCronFile();
+        if ( !settings.getAutoUpgrade() && CRON_FILE.exists() )
+            UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
     }
 
     /**
@@ -249,30 +283,6 @@ public class SystemManagerImpl implements SystemManager
         return (retCode == 0);
     }
     
-    private void _setSettings( SystemSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        try {
-            settingsManager.save(SystemSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        /* sync settings to disk */
-        syncSnmpSettings(this.settings.getSnmpSettings());
-        writeCronFile();
-    }
-
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();

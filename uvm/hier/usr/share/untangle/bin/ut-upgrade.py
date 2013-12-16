@@ -71,13 +71,13 @@ def update():
     p.wait()
     return 0
 
-def auto_upgrade():
+def upgrade():
     log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
 
-    autoUpgradeEnabled = get_uvm_settings_item('system', 'autoUpgrade')
-    if not autoUpgradeEnabled:
-        log("auto-upgrade not enabled.")
-        return 0
+    # autoUpgradeEnabled = get_uvm_settings_item('system', 'autoUpgrade')
+    # if not autoUpgradeEnabled:
+    #     log("auto-upgrade not enabled.")
+    #     return 0
 
     r = cmd_to_stderr("apt-get dist-upgrade %s" % UPGRADE_OPTS)
     return 0
@@ -88,7 +88,7 @@ log("")
 update()
 log("")
 
-auto_upgrade()
+upgrade()
 log("")
 
 log_date( os.path.basename( sys.argv[0]) + " done." )
