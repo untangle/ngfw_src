@@ -696,12 +696,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype: 'textfield',
                         labelWidth: 230,
                         labelAlign: 'left',
-                        name: 'Maximum Holding Time (days) (max 99)',
-                        fieldLabel: this.i18n._('Maximum Holding Time (days) (max 99)'),
+                        name: 'Maximum Holding Time (days)',
+                        fieldLabel: this.i18n._('Maximum Holding Time (days)'),
                         allowBlank: false,
                         value: this.getMailNodeSettings().quarantineSettings.maxMailIntern/(1440*60*1000),
                         regex: /^([0-9]|[0-9][0-9])$/,
-                        regexText: this.i18n._('Maximum Holding Time must be a number in range 0-36'),
+                        regexText: this.i18n._('Maximum Holding Time must be a number in range 0-99'),
                         width: 270,
                         listeners: {
                             "change": {
