@@ -1607,7 +1607,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                     items: [{
                         xtype:'checkbox',
                         dataIndex: "vrrpEnabled",
-                        boxLabel: this.i18n._("Enable VRRP")
+                        boxLabel: this.i18n._("Enable VRRP"),
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.gridInterfaces.rowEditor.syncComponents();
+                                }, this)
+                            }
+                        }
                     }, {
                         xtype: "numberfield",
                         dataIndex: "vrrpId",
@@ -1616,6 +1623,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         maxValue: 255,
                         allowBlank: false,
                         blankText: this.i18n._("VRRP ID must be a valid integer between 1 and 255."),
+                        disableOnly: true,
                         width: 250
                     }, {
                         xtype: "numberfield",
@@ -1625,6 +1633,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         maxValue: 255,
                         allowBlank: false,
                         blankText: this.i18n._("VRRP Priority must be a valid integer between 1 and 255."),
+                        disableOnly: true,
                         width: 250
                     }, {
                         xtype:'textfield',
@@ -1632,6 +1641,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         fieldLabel: this.i18n._("VRRP Virtual Address"),
                         noHide: true,
                         vtype: "ip4Address",
+                        disableOnly: true,
                         width: 350
                     }]
                 }, {
@@ -1707,6 +1717,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             dhcpOptions: this.down('[dataIndex="dhcpOptions"]'),
 
                             vrrp: this.down('fieldset[name="vrrp"]'),
+                            vrrpEnabled: this.down('checkbox[dataIndex="vrrpEnabled"]'),
                             vrrpId: this.down('numberfield[dataIndex="vrrpId"]'),
                             vrrpPriority: this.down('numberfield[dataIndex="vrrpPriority"]'),
                             vrrpAddress: this.down('textfield[dataIndex="vrrpAddress"]'),
@@ -1789,9 +1800,12 @@ if (!Ung.hasResource["Ung.Network"]) {
 
                             // if its a STATIC interface (whether WAN or non-WAN, show vrrp)
                             this.cmps.vrrp.status = true;
-                            this.cmps.vrrpId.status = true;
-                            this.cmps.vrrpPriority.status = true;
-                            this.cmps.vrrpAddress.status = true;
+                            this.cmps.vrrpEnabled.status = true;
+                            if ( this.cmps.vrrpEnabled.getValue() ) {
+                                this.cmps.vrrpId.status = true;
+                                this.cmps.vrrpPriority.status = true;
+                                this.cmps.vrrpAddress.status = true;
+                            }
 
                         } else if ( this.cmps.v4ConfigType.getValue() == "AUTO" ) {
                             this.cmps.v4AutoAddressOverrideContainer.status = true;
