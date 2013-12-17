@@ -1558,6 +1558,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         }]
                     }, {
                         xtype:'fieldset',
+                        name: "dhcpAdvanced",
                         border: true,
                         title: this.i18n._("DHCP Advanced"),
                         collapsible: true,
@@ -1887,6 +1888,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                     bridgedTo.getStore().loadData( bridgedToInterfaces );
                     var vlanParent = this.down('combo[dataIndex="vlanParent"]');
                     vlanParent.getStore().loadData( vlanParentInterfaces );
+                    if(this.down('checkbox[dataIndex="dhcpEnabled"]').getValue()) {
+                        this.down('fieldset[name="dhcp"]').expand();
+                    }
+                    
+                    var vrrp= this.down('fieldset[name="vrrp"]');
+                    var vrrpEnabled = this.down('checkbox[dataIndex="vrrpEnabled"]');
+                    if(vrrpEnabled.getValue()) {
+                        vrrp.expand();
+                    } else {
+                        vrrp.collapse();
+                    }
                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 },
                 updateAction: function() {
