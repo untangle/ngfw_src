@@ -4,6 +4,7 @@ import sys
 import pdb
 import os
 import re
+import socket
 import subprocess
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -124,7 +125,7 @@ class CaptureTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult
+        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, adResult, radiusResult, test_untangle_com_ip
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
@@ -140,21 +141,11 @@ class CaptureTests(unittest2.TestCase):
             nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # Get the IP address of test.untangle.com
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")   
 
         # remove previous temp files
-        clientControl.runCommand("rm -f /tmp/capture_test_010.log /tmp/capture_test_010.out \
-                                  /tmp/capture_test_020.log /tmp/capture_test_020.out \
-                                  /tmp/capture_test_021.log /tmp/capture_test_021.out \
-                                  /tmp/capture_test_025.log /tmp/capture_test_025.out \
-                                  /tmp/capture_test_025a.log /tmp/capture_test_025a.out \
-                                  /tmp/capture_test_025b.log /tmp/capture_test_025b.out \
-                                  /tmp/capture_test_030.log /tmp/capture_test_030.out \
-                                  /tmp/capture_test_030a.log /tmp/capture_test_030a.out \
-                                  /tmp/capture_test_030b.log /tmp/capture_test_030b.out \
-                                  /tmp/capture_test_040.log /tmp/capture_test_040.out \
-                                  /tmp/capture_test_040a.log /tmp/capture_test_040a.out \
-                                  /tmp/capture_test_040b.log /tmp/capture_test_040b.out \
-                                  ")
+        clientControl.runCommand("rm -f /tmp/capture_test_* >/dev/null 2>&1")
 
     def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
@@ -179,11 +170,6 @@ class CaptureTests(unittest2.TestCase):
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
 
-        # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host www.google.com", True)
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_google = match.group()
-
         # check event log
         flushEvents()
         query = None;
@@ -195,10 +181,67 @@ class CaptureTests(unittest2.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         # print events['list'][0]
-        # assert(events['list'][0]['c_server_addr'] == ip_address_google)
+        assert(events['list'][0]['c_server_addr'] == test_untangle_com_ip)
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['capture_blocked'] == True)
         # assert(events['list'][0]['capture_rule_index'] == 5002)
+
+    def test_023_captureAnonymousLogin(self):
+        global node, nodeData
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['authenticationType']="NONE"
+        nodeData['pageType'] = "BASIC_MESSAGE"
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_023.log -O /tmp/capture_test_023.out http://www.google.com/")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_023.out")
+        assert (search == 0)
+
+        # Verify anonymous works
+        appid = str(node.getNodeSettings()["id"])
+        print 'appid is %s' % appid  # debug line
+        result = clientControl.runCommand("wget -a /tmp/capture_test_023a.log -O /tmp/capture_test_023a.out  \'http://" + captureIP + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_023a.out")
+        assert (search == 0)
+        
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_023b.log -O /tmp/capture_test_023b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_023b.out")
+        assert (search == 0)
+
+    def test_024_captureAnonymousLoginTimeout(self):
+        global node, nodeData
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['authenticationType']="NONE"
+        nodeData['pageType'] = "BASIC_MESSAGE"
+        nodeData['userTimeout'] = 120
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024.log -O /tmp/capture_test_024.out http://www.google.com/")
+        assert (result == 0)
+
+        # Verify anonymous works
+        appid = str(node.getNodeSettings()["id"])
+        print 'appid is %s' % appid  # debug line
+        result = clientControl.runCommand("wget -a /tmp/capture_test_024a.log -O /tmp/capture_test_024a.out  \'http://" + captureIP + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_024a.out")
+        assert (search == 0)
+        
+        # Wait for captive timeout
+        time.sleep(180)
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024b.log -O /tmp/capture_test_024b.out http://www.google.com/")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_024b.out")
+        assert (search == 0)
 
     def test_025_captureLocalDirLogin(self):
         global node, nodeData
