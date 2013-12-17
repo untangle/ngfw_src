@@ -694,7 +694,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                                     this.settings.basicLoginFooter = newValue;
                                 }, this)
                             }
-                        },{
+                        },
+                        {
                             xtype: "textfield",
                             allowBlank: false,
                             name: "basicMessagePageTitle",
@@ -848,6 +849,17 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             }
                             window.open("/capture/handler.py/index?appid=" + this.node.nodeId , "_blank");
                         }, this)
+                    },{
+                            xtype: "checkbox",
+                            boxLabel: this.i18n._("Check SSL certificate"),
+                            tooltip: this.i18n._("This will check on the client machine if the server's SSL certificate is installed."),
+                            hideLabel: true,
+                            checked: this.settings.checkServerCertificate,
+                            listeners: {
+                                "change": Ext.bind(function(elem, checked) {
+                                    this.settings.checkServerCertificate = checked;
+                                }, this)
+                            }
                     }]
                 },{
                     xtype: "fieldset",

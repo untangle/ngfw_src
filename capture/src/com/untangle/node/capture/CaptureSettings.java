@@ -46,6 +46,7 @@ public class CaptureSettings implements Serializable
     private boolean basicMessageAgreeBox = false;
     private String basicMessageAgreeText = "";
     private String basicMessageFooter = "";
+    private boolean checkServerCertificate = false;
 
     public CaptureSettings()
     {
@@ -214,6 +215,11 @@ public class CaptureSettings implements Serializable
     {
         return this.basicMessageFooter;
     }
+    
+    public boolean getCheckServerCertificate() 
+    {
+        return this.checkServerCertificate;
+    }
 
     public void setBasicLoginPageTitle(String newValue)
     {
@@ -273,5 +279,10 @@ public class CaptureSettings implements Serializable
     public void setBasicMessageFooter(String newValue)
     {
         this.basicMessageFooter = newValue;
+    }
+    
+    public void setCheckServerCertificate(boolean newValue) 
+    {
+        this.checkServerCertificate = newValue;
     }
 }
