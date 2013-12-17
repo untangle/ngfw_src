@@ -145,9 +145,14 @@ public class ReportXmlHandler extends DefaultHandler
             if (null == currentDetailSection) {
                 logger.warn("no currentDetailSection for column");
             } else {
+                Boolean hidden = true;
+                String hiddenStr = attrs.getValue("hidden");
+                if (hiddenStr != null)
+                    hidden = new Boolean(hiddenStr);
                 ColumnDesc c = new ColumnDesc(attrs.getValue("name"),
                                               attrs.getValue("title"),
-                                              attrs.getValue("type"));
+                                              attrs.getValue("type"),
+                                              hidden);
                 currentDetailSection.addColumn(c);
             }
         } else if (qName.equals("color")) {

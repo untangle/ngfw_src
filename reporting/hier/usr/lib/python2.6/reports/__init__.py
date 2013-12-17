@@ -309,6 +309,86 @@ class DetailSection(Section):
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         pass
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        pass
+    
+    def get_session_columns(self, host=None, user=None, email=None):
+        columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+                   ColumnDesc('bandwidth_priority', _('Priority'), 'Numeric'),
+                   ColumnDesc('bandwidth_rule', _('Rule')),
+                   ColumnDesc('username', _('Username')),
+                   ColumnDesc('c_client_addr', _('Client')),
+                   ColumnDesc('c_client_port', _('Client port'), 'Numeric'),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('c_server_port', _('Server Port'), 'Numeric'),
+                   ColumnDesc('s_server_addr', _('Server')),
+                   ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
+                   ColumnDesc('classd_application', _('Application')),
+                   ColumnDesc('classd_protochain', _('ProtoChain')),
+                   ColumnDesc('classd_flagged', _('Flagged (Application Control)'), 'Boolean'),
+                   ColumnDesc('classd_blocked', _('Blocked (Application Control)'), 'Boolean'),
+                   ColumnDesc('classd_confidence', _('Confidence'), 'Numeric'),
+                   ColumnDesc('classd_detail', _('Detail')),
+                   ColumnDesc('protofilter_blocked', _('Blocked (Application Control Lite)'), 'Boolean'),
+                   ColumnDesc('protofilter_protocol', _('Protocol')),
+                   ColumnDesc('classd_ruleid', _('Rule ID')),
+                   ColumnDesc('https_status', _('Status (Https)')),
+                   ColumnDesc('https_detail', _('Detail (Https)')),
+                   ColumnDesc('https_ruleid', _('Rule ID (Https)'), 'Numeric'),
+                   ColumnDesc('policy_id', _('Policy Id')),
+                   ColumnDesc('firewall_blocked', _('Blocked (Firewall)'), 'Boolean'),
+                   ColumnDesc('firewall_flagged', _('Flagged (Firewall)'), 'Boolean'),
+                   ColumnDesc('firewall_rule_index', _('Rule Id (Firewall)')),
+                   ColumnDesc('ips_blocked', _('Blocked (IPS)'), 'Boolean'),
+                   ColumnDesc('ips_ruleid', _('Rule Id (IPS)')),
+                   ColumnDesc('ips_description', _('Rule Description (IPS)')),
+                   ColumnDesc('capture_rule_index', _('Rule ID (Captive Portal)')),
+                   ColumnDesc('capture_blocked', _('Captured'), 'Boolean')]
+        return columns
+    
+    def get_http_columns(self, host=None, user=None, email=None):
+        columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+                   ColumnDesc('c_client_addr', _('Client')),
+                   ColumnDesc('username', _('Username')),
+                   ColumnDesc('host', _('Host')),
+                   ColumnDesc('hostname', _('Hostname')),
+                   ColumnDesc('uri', _('Uri')),
+                   ColumnDesc('url', _('Url')),
+                   ColumnDesc('webfilter_blocked', _('Blocked (Webfilter Lite)'), 'Boolean'),
+                   ColumnDesc('webfilter_flagged', _('Flagged (Webfilter Lite)'), 'Boolean'),
+                   ColumnDesc('webfilter_reason', _('Reason For Action (Webfilter Lite)')),
+                   ColumnDesc('webfilter_category', _('Category (Webfilter Lite)')),
+                   ColumnDesc('sitefilter_blocked', _('Blocked  (Webfilter)'), 'Boolean'),
+                   ColumnDesc('sitefilter_flagged', _('Flagged (Webfilter)'), 'Boolean'),
+                   ColumnDesc('sitefilter_reason', _('Reason For Action (Webfilter)')),
+                   ColumnDesc('sitefilter_category', _('Category (Webfilter)')),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
+                   ColumnDesc('adblocker_action', _('Action (Ad Blocker)')),
+                   ColumnDesc('adblocker_cookie_ident', _('Cookie')),
+                   ColumnDesc('clam_name', _('Virus Name (Clam)')),
+                   ColumnDesc('commtouchav_name', _('Virus Name (Commtouchav)'))
+                   ]
+        return columns
+    
+    def get_email_columns(self, host=None, user=None, email=None):
+        columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+                   ColumnDesc('c_client_addr', _('Client')),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('s_server_addr', _('Server')),
+                   ColumnDesc('clam_name', _('Virus Name (Clam)')),
+                   ColumnDesc('commtouchav_name', _('Virus Name (Commtouchav)')),
+                   ColumnDesc('addr', _('Receiver')),
+                   ColumnDesc('sender', _('Sender')),
+                   ColumnDesc('subject', _('Subject')),
+                   ColumnDesc('spamassassin_action', _('Action (Spamassassin)')),
+                   ColumnDesc('spamassassin_score', _('Spam score (Spamassassin)'),'Numeric'),
+                   ColumnDesc('commtouchas_action', _('Action (Commtouchas)')),
+                   ColumnDesc('commtouchas_score', _('Spam score (Commtouchas)'),'Numeric'),
+                   ColumnDesc('phish_action', _('Action (Phish)'))
+                   ]
+        return columns
 
     def generate(self, report_base, node_base, end_date, report_days=1,
                  host=None, user=None, email=None):
@@ -329,10 +409,18 @@ class DetailSection(Section):
 
         columns = self.get_columns(host, user, email)
         if not columns:
-            logger.warn('no columns for DetailSection: %s' % self.name)
+            logger.warn('no visible columns for DetailSection: %s' % self.name)
             columns = []
+        allColumns = self.get_all_columns(host, user, email)
+        if not allColumns:
+            logger.warn('no columns for DetailSection: %s' % self.name)
+            allColumns = []
 
-        for c in columns:
+        for c in allColumns:
+            for cc in columns:
+                if (c.name == cc.name):
+                    c.setHidden(False)
+                    c.setTitle(cc.title)
             element.append(c.get_dom())
 
         return element
@@ -377,7 +465,7 @@ class DetailSection(Section):
             conn.commit()
 
 class ColumnDesc():
-    def __init__(self, name, title, type=None):
+    def __init__(self, name, title, type=None, hidden=True):
         self.__name = name
 
         self.__title = title
@@ -385,10 +473,25 @@ class ColumnDesc():
             self.__title = self.__title.decode('utf-8')
 
         self.__type = type
+        self.__hidden = hidden
 
     @property
     def title(self):
         return self.__title
+    
+    def setTitle(self, title):
+        self.__title = title
+    
+    @property
+    def name(self):
+        return self.__name
+    
+    @property
+    def hidden(self):
+        return self.__hidden
+    
+    def setHidden(self, hidden):
+        self.__hidden = hidden
 
     def get_dom(self):
         element = Element('column')
@@ -396,6 +499,8 @@ class ColumnDesc():
         element.set('title', self.__title or '')
         if self.__type:
             element.set('type', self.__type)
+        if (self.__hidden == False):
+            element.set('hidden', 'False')
 
         return element
 

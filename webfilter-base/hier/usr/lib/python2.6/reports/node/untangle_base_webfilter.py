@@ -994,21 +994,21 @@ class WebFilterDetail(DetailSection):
                ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_http_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
         sql = """\
-SELECT time_stamp, hostname, username, %s_category,
-       %s_flagged, %s_blocked,
-       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
-       host(s_server_addr), c_client_addr::text
+SELECT *,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri AS url
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND (%s_flagged OR %s_blocked)
-""" % (self.__short_name, self.__short_name, self.__short_name,
-       DateFromMx(start_date), DateFromMx(end_date),
+""" % (DateFromMx(start_date), DateFromMx(end_date),
        self.__short_name, self.__short_name)
 
         if host:
@@ -1045,15 +1045,17 @@ class WebFilterDetailUnblock(DetailSection):
                ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_http_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
         sql = """\
-SELECT time_stamp, hostname, username,
-       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
-       host(s_server_addr), c_client_addr::text
+SELECT *,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri AS url
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND %s_category = 'unblocked'
@@ -1093,24 +1095,23 @@ class WebFilterDetailAll(DetailSection):
                ColumnDesc('%s_flagged' % self.__short_name, _('Flagged')),
                ColumnDesc('%s_blocked' % self.__short_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server Ip')),
+               ColumnDesc('c_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
 
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_http_columns(host, user, email)
+    
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
         sql = """\
-SELECT time_stamp, hostname, username, %s_category,
-       %s_flagged, %s_blocked,
-       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
-       host(s_server_addr), c_client_addr::text
+SELECT *,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri AS url
 FROM reports.http_events
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (self.__short_name,
-                                                 self.__short_name,
-                                                 self.__short_name,
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (
                                                  DateFromMx(start_date),
                                                  DateFromMx(end_date))
 
@@ -1131,19 +1132,22 @@ class WebFilterDetailDomains(DetailSection):
         if email:
             return None
 
-        rv = [ColumnDesc('domain', _('Site')),
+        rv = [ColumnDesc('host', _('Site')),
               ColumnDesc('hits', _('Hits')),
               ColumnDesc('size', _('Size (MB)'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
         sql = """\
-SELECT host AS domain,
-       count(*) AS count, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)::float
+SELECT host,
+       count(*) AS hits, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)::float as size
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 """  % (DateFromMx(start_date),
@@ -1154,9 +1158,9 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
         if user:
             sql += " AND username = %s" % QuotedString(user)
 
-        sql += " GROUP BY domain"
+        sql += " GROUP BY host"
 
-        return sql + " ORDER BY count DESC"
+        return sql + " ORDER BY hits DESC"
 
 # Unused reports --------------------------------------------------------------
 

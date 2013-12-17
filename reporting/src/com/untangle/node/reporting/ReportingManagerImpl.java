@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -30,6 +31,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -244,41 +247,41 @@ public class ReportingManagerImpl implements ReportingManager
         return readXml(d, numDays, appName, "email", emailAddr);
     }
 
-    public List<List<Object>> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
+    public ArrayList<JSONObject> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
     {
         return doGetDetailData(d, numDays, appName, detailName, type, value, true);
     }
 
-    public List<List<Object>> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
+    public ArrayList<JSONObject> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
     {
         return doGetDetailData(d, numDays, appName, detailName, type, value, false);
+    }
+    
+    public ResultSet getAllDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value)
+    {
+        return getDetailDataResultSet(d, numDays, appName, detailName, type, value, false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private List<List<Object>> doGetDetailData(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
-    {
-        logger.warn("doGetDetailData for '" + appName +
-                    "' (detail='" + detailName + "', " +
-                    "type='" + type + "', " +
-                    "value='" + value + "', " +
-                    "limitResultSet='" + limitResultSet + "')");
+    private ResultSet getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type,
+            String value, boolean limitResultSet){
+        logger.warn("doGetDetailData for '" + appName + "' (detail='" + detailName + "', " + "type='" + type + "', "
+                + "value='" + value + "', " + "limitResultSet='" + limitResultSet + "')");
 
         if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
             logger.warn("Date " + getDaysBefore(d, numDays) + " is before " + getReportsCutoff());
             return null;
         }
-
-        List<List<Object>> rv = new ArrayList<List<Object>>();
-
+        ResultSet rs = null;
         ApplicationData ad = readXml(d, numDays, appName, type, value);
         if (null == ad) {
-            return rv;
+            return null;
         }
 
         for (Section section : ad.getSections()) {
             if (section instanceof DetailSection) {
-                DetailSection sds = (DetailSection)section;
+                DetailSection sds = (DetailSection) section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
                     logger.info("** sql='" + sql + "'");
@@ -287,34 +290,68 @@ public class ReportingManagerImpl implements ReportingManager
                         conn = node.getDbConnection();
                         Statement stmt = conn.createStatement();
                         if (limitResultSet) {
-                            stmt.setMaxRows(1000);
+                            stmt.setMaxRows(10000);
                         }
-                        ResultSet rs = stmt.executeQuery(sql);
-                        int columnCount = rs.getMetaData().getColumnCount();
-                        logger.info("** got " + columnCount + " columns.");
-                        while (rs.next()) {
-                            List<Object> l = new ArrayList<Object>(columnCount);
-                            for (int i = 1; i <= columnCount; i++) {
-                                l.add(rs.getObject(i));
-                            }
-                            rv.add(l);
-                        }
+                        rs = stmt.executeQuery(sql);
                     } catch (SQLException exn) {
-                        logger.warn("could not get DetailData for: " + sql,
-                                    exn);
-                    } finally {
+                        logger.warn("could not get DetailData for: " + sql, exn);
                         if (conn != null) {
-                            try {
-                                conn.close();
-                            } catch (Exception x) { }
+                            try { conn.close(); } catch (Exception x) {}
                             conn = null;
                         }
-                    }
+                    } finally {}
                 }
             }
         }
+        return rs;
+    }
+    
+    private ArrayList<JSONObject> doGetDetailData(Date d, int numDays, String appName, String detailName, String type,
+            String value, boolean limitResultSet)
+    {
+        logger.warn("doGetDetailData for '" + appName + "' (detail='" + detailName + "', " + "type='" + type + "', "
+                + "value='" + value + "', " + "limitResultSet='" + limitResultSet + "')");
 
-        return rv;
+        if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
+            logger.warn("Date " + getDaysBefore(d, numDays) + " is before " + getReportsCutoff());
+            return null;
+        }
+        ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
+        ApplicationData ad = readXml(d, numDays, appName, type, value);
+        if (null == ad) {
+            return newList;
+        }
+
+        try {
+            ResultSet rs = getDetailDataResultSet(d, numDays, appName, detailName, type, value, limitResultSet);
+            ResultSetMetaData metadata = rs.getMetaData();
+            int columnCount = metadata.getColumnCount();
+
+            logger.info("** got " + columnCount + " columns.");
+            while (rs.next()) {
+                JSONObject row = new JSONObject();
+                for (int i = 1; i < columnCount + 1; i++) {
+                    Object o = rs.getObject(i);
+                    // if its a special Postgres type - change it to string
+                    if (o instanceof org.postgresql.util.PGobject) {
+                        o = o.toString();
+                    }
+                    row.put(metadata.getColumnName(i), o);
+                }
+                newList.add(row);
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get DetailData for: " + appName, exn);
+        } catch (JSONException e) {
+            logger.warn("could not get DetailData for: " + appName, e);
+        } finally {
+            Connection conn = node.getDbConnection();
+            if (conn != null) {
+                try { conn.close(); } catch (Exception x) {}
+                conn = null;
+            }
+        }
+        return newList;
     }
 
     private ApplicationData readXml(Date d, int numDays, String appName, String type, String value)

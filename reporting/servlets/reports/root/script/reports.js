@@ -822,6 +822,89 @@ Ext.define('Ung.Reports', {
     }
 });
 
+Ext.define("Ung.GridEventLogReports", {
+    extend: "Ung.GridEventLogBase",
+    // default is getEventQueries() from settingsCmp
+//    eventQueriesFn: null,
+    // called when the component is initialized
+    
+    reportsDate: null,
+    selectedApplication: null,
+    sectionName: null,
+    drilldownType: null,
+    drilldownValue: null,
+    reportingManager: null,
+    numDays: null,
+    enableColumnHide: true,
+    enableColumnMove: true,
+    enableColumnMenu: true,
+    eventQuery: null,
+    constructor: function(config) {         
+        this.callParent(arguments);
+    },
+    initComponent: function() {
+        this.callParent(arguments);
+    },
+    autoRefreshCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+        var events = result;
+        if(testMode) {
+            var emptyRec={};
+            for(var i=0; i<30; i++) {
+                events.list.push(this.getTestRecord(i, this.fields));
+            }
+        }
+    },
+    autoRefreshList: function() {
+        this.reportingManager.getDetailData(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
+                this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
+    },
+    exportHandler: function() {
+            
+        Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm["type"].value="reportsEventLogExport";
+        
+        downloadForm["app"].value=this.selectedApplication;
+        downloadForm["section"].value=this.sectionName;
+        downloadForm["numDays"].value=this.numDays;
+        downloadForm["date"].value=this.reportsDate.time;
+        downloadForm["type"].value= this.drilldownType;
+        downloadForm["value"].value= this.drilldownValue;
+        downloadForm["colList"].value=this.getColumnList();
+        
+        
+        downloadForm.submit();
+        Ext.MessageBox.hide();
+    },
+    getColumnList: function() {
+        var columnList = "";
+        for (var i=0; i<this.columns.length ; i++) {
+            if (!this.columns[i].hidden){
+                if (i !== 0)
+                    columnList += ",";
+                columnList += this.columns[i].dataIndex;
+            }
+        }
+        return columnList;
+    },
+    refreshHandler: function (forceFlush) {
+        this.refreshList();
+    },
+    flushHandler: function (forceFlush) {
+        this.refreshList();
+    },
+    // called when the component is rendered
+    afterRender: function() {
+        this.callParent(arguments);
+        
+    },
+    refreshList: function() {
+        this.reportingManager.getDetailData(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
+                this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
+    }
+});
+
 // Right section object class
 Ext.define('Ung.ReportDetails', {
     reportType: null,
@@ -1268,17 +1351,15 @@ Ext.define('Ung.ReportDetails', {
 
     buildDetailSection: function (appName, section) {
         var columns = [];
-        var fields = [];
         var c = null;
-
+        var fields = [];
+        
         for (var i = 0; i < section.columns.list.length; i++) {
             c = section.columns.list[i];
-            //TODO this case should not occur
-            if (c == null || c == undefined) { break; }
+            if (c === null || c === undefined) { break; }
             var col = {
                 header:this.i18n._(c.title), 
-                dataIndex:c.name,
-                menuDisabled: true
+                dataIndex:c.name
             };
 
             if (c.type == "Date") {
@@ -1343,152 +1424,43 @@ Ext.define('Ung.ReportDetails', {
                     }
                 };
             }
+            if (c.type == "Boolean"){
+                col.filter = {
+                    type: 'boolean'
+                };
+            } else if (c.type == "Numeric") {
+                col.filter = {
+                    type: 'numeric'
+                };
+            }
+            col.hidden = c.hidden;
             columns.push(col);
             fields.push({ name: c.name });
         }
-        var store = Ext.create('Ext.data.Store', {
-            fields: fields,
-            proxy: {
-                type: 'pagingmemory',
-                reader: {
-                    type: 'array'
-                }
-            },
-            autoLoad: {params: {start: 0, limit: 40}},
-            remoteSort: true,
-            remoteFilter: true
-        });
-
-        var pagingBar = Ext.create('Ext.toolbar.Paging', {
-            pageSize: 40,
-            store: store,
-            displayInfo: true,
-            displayMsg: 'To view more than 1000 events download the CSV data file &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Displaying  items {0} - {1} of {2}',
-            emptyMsg: "No items to display",
-            items:['-']
-        });
-        var detailSection=Ext.create('Ext.grid.Panel',{
-            style:{overflow:'visible'},
-            bodyStyle:'overflow:visible',
-            title: section.title,
-            enableColumnMove: false,
-            store: store,
-            columns: columns,
-            tbar: [{
-                tooltip:this.i18n._('Download Data'),
-                iconCls:'export-excel',
-                text: this.i18n._('Download Data'),
-                handler: function() {
-                    var rd = new Date(reports.reportsDate.time);
-                    var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
-                    var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name + '&numDays=' + reports.numDays;
-                    var t = store.initialData.drilldownType;
-                    if (t) {
-                        u += '&type=' + t;
-                    }
-                    var v = store.initialData.drilldownValue;
-                    if (v) {
-                        u += "&value=" + v;
-                    }
-                    window.open(u);
-                }
-            }],
-            bbar: pagingBar,
-            listeners: {
-                'activate': Ext.bind(function (panel){
-                    if(panel.store.initialData.loaded ==false){
-                        reports.progressBar.wait(i18n._("Please Wait"));
-                        var store = panel.store;
-                        rpc.reportingManager.getDetailData(Ext.bind(function(result, exception) {
-                            if (exception || result == null) {
-                                if (!handleTimeout(exception) || result == null) {
-                                    var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.'),
-                                        title = i18n._('Failed');
-                                    if(exception){
-                                        if(exception.message){
-                                            message = exception.message;
-                                        }
-                                    }else if(result==null){
-                                        title = i18n._('Could not load Dynamic Reports data');
-                                        message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
-                                    } 
-                                    Ext.MessageBox.alert(title, message);
-                                }
-                                return;
-                            }
-                            //For Test only
-                            if(testMode && result.list.length==0) {
-                                var getTestRecord=function(index, fields) {
-                                    var rec= [];
-                                    var property;
-                                    for (var i=0; i<fields.length ; i++) {
-                                        property = (fields[i].mapping != null)?fields[i].mapping:fields[i].name;
-                                        rec.push(
-                                            (property=='id')?index+1:
-                                            (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
-                                                property+"_"+(i*index)+"_"+Math.floor((Math.random()*10)));
-                                    }
-                                    return rec;
-                                };
-
-                                var emptyRec={};
-                                var length = Math.floor((Math.random()*120));
-                                for(var i=0; i<length; i++) {
-                                    result.list.push({list:getTestRecord(i, fields)});
-                                }
-                            }
-
-                            var data = [];
-
-                            for (var i = 0; i < result.list.length; i++) {
-                                data.push(result.list[i].list);
-                            }
-                            store.proxy.data = data;
-                            store.load({params:{start:0, limit:40}});
-                            store.initialData.loaded = true;
-                            reports.progressBar.hide();
-                        },this), store.initialData.reportsDate, reports.numDays, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
-                    }
-                },this)
-            }
-        });
-        store.initialData = {};
-        if(section.name=='Summary Report'){
-            store.initialData.loaded = true;
-            rpc.reportingManager.getDetailData(Ext.bind(function(result, exception) {
-                if (exception || result == null) {
-                    if (!handleTimeout(exception) || result == null) {
-                        var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.'),
-                            title = i18n._('Failed');
-                        if(exception){
-                            if(exception.message){
-                                message = exception.message;
-                            }
-                        }else if(result==null){
-                            title = i18n._('Could not load Dynamic Reports data');
-                            message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
-                        } 
-                        Ext.MessageBox.alert(title, message);
-                    }
-                    return;
-                }
-
-                var data = [];
-
-                for (var i = 0; i < result.list.length; i++) {
-                    data.push(result.list[i].list);
-                }
-
-                store.loadData(data);
-            },this), reports.reportsDate, reports.numDays, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
-        } else {
-            store.initialData.loaded = false;
-            store.initialData.reportsDate = reports.reportsDate;
-            store.initialData.selectedApplication = reports.selectedApplication;
-            store.initialData.name = section.name;
-            store.initialData.drilldownType = rpc.drilldownType;
-            store.initialData.drilldownValue = rpc.drilldownValue;
-        }
+        
+        
+        var detailSection = null;
+            detailSection = Ext.create('Ung.GridEventLogReports',{
+                name: section.title,
+                settingsCmp: this,
+                title: section.title,
+                reportsDate: reports.reportsDate,
+                selectedApplication: reports.selectedApplication,
+                sectionName: section.name,
+                drilldownType: rpc.drilldownType,
+                drilldownValue: rpc.drilldownValue,
+                reportingManager: rpc.reportingManager,
+                eventQuery: section.sql,
+                numDays: reports.numDays,
+                columns: columns,
+                hasTimestampFilter: false,
+                hasAutoRefresh: false,
+                fields: fields
+            });
+                
+//                Ung.CustomEventLog.buildHttpEventLogImpl (this, 'EventLog', section.title, 
+//                this.helpSourceName + '_event_log', columns, null, 'Ung.GridEventLogReports', false, false);
+ 
         return detailSection;
     }
 });

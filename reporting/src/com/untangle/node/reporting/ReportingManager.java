@@ -3,8 +3,11 @@
  */
 package com.untangle.node.reporting;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import com.untangle.node.reporting.items.DateItem;
 import com.untangle.node.reporting.items.TableOfContents;
@@ -40,9 +43,9 @@ public interface ReportingManager
 
     ApplicationData getApplicationDataForHost(Date d, int numDays, String appName, String hostname);
 
-    List<List<Object>> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
+    ArrayList<JSONObject> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
-    List<List<Object>> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
+    ArrayList<JSONObject> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
     /**
      * Tests if reporting is enabled, that is if reports will be

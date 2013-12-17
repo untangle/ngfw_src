@@ -99,9 +99,21 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
             reports = new Ung.Reports({<%= args %>});
         });        
     </script>
- </head>
+    
+</head>
 <body>
-<div id="base"></div>
+<div id="base">
+<form name="downloadForm" id="downloadForm" method="post" action="csv" style="display:none;">
+<input type="hidden" name="app" value=""/>
+<input type="hidden" name="section" value=""/>
+<input type="hidden" name="numDays" value=""/>
+<input type="hidden" name="date" value=""/>
+<input type="hidden" name="type" value=""/>
+<input type="hidden" name="value" value=""/>
+<input type="hidden" name="colList" value=""/>
+        
+</form>
+</div>
 <div id="window-container"></div>
 </body>
 </html>

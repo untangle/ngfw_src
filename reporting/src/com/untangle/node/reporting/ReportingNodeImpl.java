@@ -38,6 +38,8 @@ import com.untangle.uvm.vnet.PipeSpec;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
+    public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
+    
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
     private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
@@ -65,6 +67,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             reportingManager = new ReportingManagerImpl( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
     }
 
     public void setSettings( final ReportingSettings newSettings )
@@ -363,6 +366,44 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             }
         }
     }
+    
+    private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler{
+                
+        @Override
+        public String getName()
+        {
+            return REPORTS_EVENT_LOG_DOWNLOAD_HANDLER;
+        }
+        
+        @Override
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
+        {
+            String appName = req.getParameter("app");
+            String detailName = req.getParameter("section");
+            String type = req.getParameter("type");
+            String value = req.getParameter("value");
+            String dateArg = req.getParameter("date");
+            String columnListStr = req.getParameter("colList");
+            int numDays = 0;
+            Date d;
+            
+            try {
+                numDays = Integer.parseInt(req.getParameter("numDays"));
+                long timestamp = Long.parseLong(dateArg);
+                d = new Date(timestamp);
+            } catch (Exception e) {
+                logger.warn("Invalid parameters: " + numDays);
+                return;
+            }
+            
+            logger.info("Export CSV( name:" + appName + " detailName: " + detailName + " date: " + d + ")");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
+            String name = sdf.format(d) + "-" + appName + "-" + detailName;
+            ResultSet resultSet = reportingManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
+            
+            toCsv(resultSet, resp, columnListStr, name);
+        }
+    }
 
     private class EventLogExportDownloadHandler implements DownloadHandler
     {
@@ -374,30 +415,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             return "eventLogExport";
         }
         
-        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
-        {
-            String name = req.getParameter("arg1");
-            String query = req.getParameter("arg2");
-            String policyIdStr = req.getParameter("arg3");
-            String columnListStr = req.getParameter("arg4");
-
-            if (name == null || query == null || policyIdStr == null || columnListStr == null) {
-                logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
-                return;
-            }
-
-            Long policyId = Long.parseLong(policyIdStr);
-            logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
-
-            ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-            if (reporting == null) {
-                logger.warn("reporting node not found");
-                return;
-            }
-
-            try {
-                ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
-        
+        protected void toCsv(ResultSet resultSet, HttpServletResponse resp, String columnListStr, String name){
+            try {        
                 // Write content type and also length (determined via byte array).
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","text/csv");
@@ -439,9 +458,38 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             } catch (Exception e) {
                 logger.warn("Failed to export CSV.",e);
             } finally {
+                ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                if (reporting == null) {
+                    logger.warn("reporting node not found");
+                    return;
+                }
                 reporting.getEventsResultSetCommit( );
             }
+        }
         
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
+        {
+            String name = req.getParameter("arg1");
+            String query = req.getParameter("arg2");
+            String policyIdStr = req.getParameter("arg3");
+            String columnListStr = req.getParameter("arg4");
+
+            if (name == null || query == null || policyIdStr == null || columnListStr == null) {
+                logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
+                return;
+            }
+
+            Long policyId = Long.parseLong(policyIdStr);
+            logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
+
+            ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+            if (reporting == null) {
+                logger.warn("reporting node not found");
+                return;
+            }
+
+            ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
+            toCsv(resultSet, resp, columnListStr, name);
         }
     }
     
