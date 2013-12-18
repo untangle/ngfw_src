@@ -7,6 +7,7 @@ package com.untangle.node.capture;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TimerTask;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-custom-remove";
     private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/capture-permissions";
-    private final String APACHE_RELOAD_SCRIPT = "/usr/sbin/apache2ctl graceful";
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
@@ -411,7 +411,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         logger.debug("Creating Apache VirtualHost file");
         createApacheHook();
-        UvmContextFactory.context().execManager().exec(APACHE_RELOAD_SCRIPT);
+        ApacheRestart restart = new ApacheRestart(5);
     }
 
     @Override
@@ -419,7 +419,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     {
         logger.debug("Removing Apache VirtualHost file");
         removeApacheHook();
-        UvmContextFactory.context().execManager().exec(APACHE_RELOAD_SCRIPT);
+        ApacheRestart restart = new ApacheRestart(5);
 
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
@@ -774,6 +774,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         catch (Exception exn) {
             logger.error("Exception removing Apache hook file", exn);
+        }
+    }
+
+    private class ApacheRestart
+    {
+        Timer timer;
+
+        public ApacheRestart(int seconds)
+        {
+            timer = new Timer();
+            timer.schedule(new ApacheTask(), seconds * 1000);
+        }
+
+        class ApacheTask extends TimerTask
+        {
+            public void run()
+            {
+                UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+                timer.cancel();
+            }
         }
     }
 }
