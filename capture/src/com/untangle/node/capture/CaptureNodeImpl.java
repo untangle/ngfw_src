@@ -11,8 +11,6 @@ import java.util.TimerTask;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
-import java.io.File;
-import java.io.FileWriter;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 
@@ -408,19 +406,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         captureTimer = new CaptureTimer(this);
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
-
-        logger.debug("Creating Apache VirtualHost file");
-        createApacheHook();
-        ApacheRestart restart = new ApacheRestart(5);
     }
 
     @Override
     protected void preStop()
     {
-        logger.debug("Removing Apache VirtualHost file");
-        removeApacheHook();
-        ApacheRestart restart = new ApacheRestart(5);
-
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
@@ -711,89 +701,5 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         return (null);
-    }
-
-    private void createApacheHook()
-    {
-        /*
-         * To allow captive portal to hook https requests and show the login
-         * page, we setup a special virtual host for each instance. In the https
-         * handler we simple change the target ip and port in the session
-         * request to match those of our virtual host, letting Apache take care
-         * of doing the HTTPS to HTTP rewrite. Our rewrite rule here is pretty
-         * much identical to the one crafted by the replacement generator for
-         * normal HTTP requests. I didn't want to add another post field to the
-         * login form as that would break all existing custom captive portal
-         * pages, so I used the nonce field to store a goofy custom value that
-         * handler.py uses to know when to do https vs http after
-         * authentication. I only feel a little dirty after all this and it
-         * actually works pretty well!
-         */
-        String nodeid = getNodeSettings().getId().toString();
-        String filename = "/etc/apache2/conf.d/capture_" + nodeid + ".conf";
-        long myport = (8500 + getNodeSettings().getId());
-
-        try {
-            FileWriter hook = new FileWriter(filename, false);
-            hook.write("<ifModule mod_headers.c>\n");
-            hook.write("<ifModule mod_rewrite.c>\n");
-            hook.write("NameVirtualHost *:" + myport + "\n");
-            hook.write("Listen " + myport + "\n");
-            hook.write("\n");
-            hook.write("<VirtualHost *:" + myport + ">\n");
-            hook.write("    SSLEngine on\n");
-            hook.write("    SSLCertificateFile /etc/apache2/ssl/apache.pem\n");
-            hook.write("    DocumentRoot /tmp\n");
-            hook.write("    Header always set Cache-Control \"no-store, no-cache, must-revalidate, post-check=0, pre-check=0\"\n");
-            hook.write("    Header always set Expires \"Mon, 10 Jan 2000 00:00:00 GMT\"\n");
-            hook.write("    Header always set Pragma \"no-cache\"\n");
-            hook.write("    Header always set Connection \"close\"\n");
-            hook.write("    RewriteEngine On\n");
-            hook.write("    RewriteRule (.*) http://%{SERVER_ADDR}/capture/handler.py/index?nonce=a1b2c3d4e5f6&method=%{REQUEST_METHOD}&appid=" + nodeid + "&host=%{HTTP_HOST}&URI=$1 [R=307,L,NE]\n");
-            hook.write("</VirtualHost>\n");
-            hook.write("\n");
-            hook.write("</ifModule>\n");
-            hook.write("</ifModule>\n");
-            hook.close();
-        }
-
-        catch (Exception exn) {
-            logger.error("Exception creating Apache hook file", exn);
-        }
-    }
-
-    private void removeApacheHook()
-    {
-        String nodeid = getNodeSettings().getId().toString();
-        String filename = "/etc/apache2/conf.d/capture_" + nodeid + ".conf";
-
-        try {
-            File hook = new File(filename);
-            hook.delete();
-        }
-
-        catch (Exception exn) {
-            logger.error("Exception removing Apache hook file", exn);
-        }
-    }
-
-    private class ApacheRestart
-    {
-        Timer timer;
-
-        public ApacheRestart(int seconds)
-        {
-            timer = new Timer();
-            timer.schedule(new ApacheTask(), seconds * 1000);
-        }
-
-        class ApacheTask extends TimerTask
-        {
-            public void run()
-            {
-                UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
-                timer.cancel();
-            }
-        }
     }
 }

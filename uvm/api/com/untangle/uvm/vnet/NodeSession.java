@@ -156,6 +156,8 @@ public interface NodeSession extends SessionTuple
     public final String KEY_HTTPS_SERVER_MANAGER = "https-server-manager"; /* HttpsManager */
 
     public final String KEY_CAPTURE_REDIRECT = "capture-redirect-client"; /* InetAddress */
+    public final String KEY_SITEFILTER_SSL_ENGINE = "sitefilter-ssl-engine"; /* SiteFilterSSLEngine */
+    public final String KEY_CAPTURE_SSL_ENGINE = "capture-ssl-engine"; /* CaptureSSLEngine */
 
     /**
      * Returns the protocol for the session.</p>

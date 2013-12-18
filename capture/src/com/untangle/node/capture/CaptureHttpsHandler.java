@@ -7,6 +7,8 @@ package com.untangle.node.capture;
 import java.net.InetAddress;
 
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
@@ -42,23 +44,14 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         // first we remove the attachment
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, null);
 
-        // since we found the attachment we're dealing with an HTTPS session
-        // that needs to be captured.  To make this happen we tweak the
-        // destination server and port so the client instead goes to our
-        // internal Apache on a special port which uses mod_rewrite to
-        // redirect the original request to the captive page
+        CaptureSSLEngine engine = new CaptureSSLEngine(node.getNodeSettings().getId().toString());
+        sessreq.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, engine);
+    }
 
-        try {
-            InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(sessreq.getClientIntf());
-            long myport = (8500 + node.getNodeSettings().getId());
-
-            sessreq.setServerAddr(addr);
-            sessreq.setServerPort((int) myport);
-            return;
-        }
-
-        catch (Exception exn) {
-            logger.warn("Exception creating HTTPS redirect", exn);
-        }
+    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
+    {
+        // get the SSL engine attached to the session
+        CaptureSSLEngine engine = (CaptureSSLEngine) event.session().globalAttachment(NodeSession.KEY_CAPTURE_SSL_ENGINE);
+        return (engine.handleClientData(event.session(), event.data()));
     }
 }
