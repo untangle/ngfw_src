@@ -1,5 +1,5 @@
 /*
- * $Id: CertificateManagerImpl.java 36027 2013-10-03 20:36:58Z dmorris $
+ * $Id$
  */
 
 package com.untangle.uvm.engine;
@@ -35,6 +35,7 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String LOCAL_CRT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.crt";
     private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
+    private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -51,6 +52,7 @@ public class CertificateManagerImpl implements CertificateManager
         File localKey = new File(LOCAL_KEY_FILE);
         File localCrt = new File(LOCAL_CRT_FILE);
         File localPem = new File(LOCAL_PEM_FILE);
+        File localPfx = new File(LOCAL_PFX_FILE);
 
         // in the development environment check to load files from the backup
         // area so we avoid recreating CA/cert/pem after every rake clean
@@ -86,6 +88,9 @@ public class CertificateManagerImpl implements CertificateManager
             logger.info("Creating default locally signed apache certificate for " + hostName);
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
         }
+
+        // always make sure the local pkcs file exists and is up to date
+        UvmContextFactory.context().execManager().exec("openssl pkcs12 -passout pass:password -export -out " + LOCAL_PFX_FILE + " -inkey " + LOCAL_KEY_FILE + " -in " + LOCAL_CRT_FILE);
 
         File apachePem = new File(APACHE_PEM_FILE);
 
