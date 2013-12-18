@@ -146,15 +146,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
     public void initializeSettings()
     {
         ProtoFilterSettings settings = new ProtoFilterSettings();
-        logger.info("INIT: Importing patterns...");
-        TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        // Turn on the Instant Messenger ones so it does something by default:
-        HashSet<ProtoFilterPattern> pats = new HashSet<ProtoFilterPattern>(factoryPatterns.values());
-        for (ProtoFilterPattern pfp : pats) {
-            if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
-                pfp.setLog(true);
-        }
-        settings.setPatterns(new LinkedList<ProtoFilterPattern>(pats));
+        settings.setPatterns(new LinkedList<ProtoFilterPattern>());
         setSettings(settings);
     }
 

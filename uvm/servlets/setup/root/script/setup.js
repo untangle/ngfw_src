@@ -1257,7 +1257,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     validateInternalNetwork: function() {
         var rv = true;
         var nic = false;
-        var bridgeOrRouterRadio = this.panel.query('radio[name="bridgeOrRouter"]')
+        var bridgeOrRouterRadio = this.panel.query('radio[name="bridgeOrRouter"]');
         for(var i=0;i<bridgeOrRouterRadio.length;i++){
             if(bridgeOrRouterRadio[i].getValue()){
                 nic = bridgeOrRouterRadio[i].inputValue;

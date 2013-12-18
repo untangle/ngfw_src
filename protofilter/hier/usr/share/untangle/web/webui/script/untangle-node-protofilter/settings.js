@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 items: [{
                     title: this.i18n._('Status'),
                     cls: 'description',
-                    html: Ext.String.format(this.i18n._("Application Control Lite uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
+                    html: Ext.String.format(this.i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
                 }, {
                     title: this.i18n._(' '),
                     labelWidth: 230,
@@ -58,7 +58,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }, {
                     title: this.i18n._('Note'),
                     cls: 'description',
-                    html: Ext.String.format(this.i18n._("Caution and discretion is advised using block at the the risk of false positives and intelligent applications shifting protocol usage to avoid blocking."))
+                    html: Ext.String.format(this.i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
                 }]
             });
         },
