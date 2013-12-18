@@ -459,6 +459,12 @@ public class SystemManagerImpl implements SystemManager
 
     private void writeCronFile()
     {
+        // do not write cron job in dev env 
+        if ( UvmContextFactory.context().isDevel() ) {
+            UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
+            return;
+        }
+
         // write the cron file for nightly runs
         // FIXME dayfield
         String conf = settings.getAutoUpgradeMinute() + " " + settings.getAutoUpgradeHour() + " " + CRON_STRING;
