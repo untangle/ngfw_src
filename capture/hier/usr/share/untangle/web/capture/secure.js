@@ -4,8 +4,7 @@ function getServer() {
     return document.URL.substring(start,end);
 }
 
-function imgLoadFailure(e) {
-    console.log("imgLoadFailure",e);
+function imgLoadFailure() {
     var cont = document.getElementById('submit');
     var newParagraph = document.createElement('p');
     var text = document.createTextNode("HTTPS certificate not installed !");
