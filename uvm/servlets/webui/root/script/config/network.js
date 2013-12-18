@@ -1234,7 +1234,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 xtype:'textfield',
                                 dataIndex: "v4AutoAddressOverride",
                                 fieldLabel: this.i18n._("Address Override"),
-                                noHide: true,
                                 vtype: "ip4Address",
                                 labelWidth: 150,
                                 width: 350
@@ -1291,7 +1290,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoGatewayOverride",
                                 fieldLabel: this.i18n._("Gateway Override"),
                                 vtype: "ip4Address",
-                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1318,7 +1316,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoDns1Override",
                                 fieldLabel: this.i18n._("Primary DNS Override"),
                                 vtype: "ip4Address",
-                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1345,7 +1342,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 dataIndex: "v4AutoDns2Override",
                                 fieldLabel: this.i18n._("Secondary DNS Override"),
                                 vtype: "ip4Address",
-                                noHide: true,
                                 labelWidth: 150,
                                 width: 350
                             }, {
@@ -1640,7 +1636,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                         xtype:'textfield',
                         dataIndex: "vrrpAddress",
                         fieldLabel: this.i18n._("VRRP Virtual Address"),
-                        noHide: true,
                         vtype: "ip4Address",
                         disableOnly: true,
                         width: 350
@@ -1673,11 +1668,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             v4StaticGateway: this.down('textfield[dataIndex="v4StaticGateway"]'),
                             v4StaticDns1: this.down('textfield[dataIndex="v4StaticDns1"]'),
                             v4StaticDns2: this.down('textfield[dataIndex="v4StaticDns2"]'),
-                            
-                            v4AutoAddressOverride: this.down('textfield[dataIndex="v4AutoAddressOverride"]'),
-                            v4AutoGatewayOverride: this.down('textfield[dataIndex="v4AutoGatewayOverride"]'),
-                            v4AutoDns1Override: this.down('textfield[dataIndex="v4AutoDns1Override"]'),
-                            v4AutoDns2Override: this.down('textfield[dataIndex="v4AutoDns2Override"]'),
                             
                             v4AutoAddressOverrideContainer: this.down('container[name="v4AutoAddressOverrideContainer"]'),
                             v4AutoPrefixOverrideContainer: this.down('container[name="v4AutoPrefixOverrideContainer"]'),
@@ -1729,7 +1719,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         this.configType=this.down('combo[dataIndex="configType"]');
                         for( property in this.cmps ) {
                             cmp = this.cmps[property]; 
-                            if(!cmp.noHide || !cmp.disableOnly) {
+                            if(!cmp.disableOnly) {
                                 cmp.setVisible(false);
                             }
                         }
@@ -1786,7 +1776,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             }
 
                         }
-                        
                         // if static show static fields
                         // if auto show override fields (auto is only allowed on WANs)
                         // if pppoe show pppoe fields (pppoe is only allowed on WANs)
@@ -1798,7 +1787,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 this.cmps.v4StaticDns1.status = true;
                                 this.cmps.v4StaticDns2.status = true;
                             }
-
                             // if its a STATIC interface (whether WAN or non-WAN, show vrrp)
                             this.cmps.vrrp.status = true;
                             this.cmps.vrrpEnabled.status = true;
@@ -1807,7 +1795,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 this.cmps.vrrpPriority.status = true;
                                 this.cmps.vrrpAddress.status = true;
                             }
-
                         } else if ( this.cmps.v4ConfigType.getValue() == "AUTO" ) {
                             this.cmps.v4AutoAddressOverrideContainer.status = true;
                             this.cmps.v4AutoPrefixOverrideContainer.status = true;
@@ -1815,11 +1802,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.cmps.v4AutoDns1OverrideContainer.status = true;
                             this.cmps.v4AutoDns2OverrideContainer.status = true;
                             this.cmps.v4AutoRenewDhcpLeaseButton.status = true;
-                            
-                            this.cmps.v4AutoAddressOverride.status = true;
-                            this.cmps.v4AutoGatewayOverride.status = true;
-                            this.cmps.v4AutoDns1Override.status = true;
-                            this.cmps.v4AutoDns2Override.status = true;
                         } else if ( this.cmps.v4ConfigType.getValue() == "PPPOE" ) {
                             this.cmps.v4PPPoEUsername.status = true;
                             this.cmps.v4PPPoEPassword.status = true;
@@ -1829,7 +1811,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 this.cmps.v4PPPoEDns2.status = true;
                             }
                         }
-
                         // if static show static fields
                         // if auto show override fields
                         if ( this.cmps.v6ConfigType.getValue() == "STATIC" ) {
@@ -1855,14 +1836,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                     for( property in this.cmps ) {
                         cmp = this.cmps[property];
-                        if(!cmp.disableOnly && !cmp.noHide && cmp.isHidden() === cmp.status) {
+                        if(!cmp.disableOnly && cmp.isHidden() === cmp.status) {
                             cmp.setVisible(cmp.status);
                         }
-                        if(cmp.disableOnly) {
-                            cmp.setVisible(true);
-                            if(!cmp.status) {
-                                cmp.disable();    
-                            }
+                        if(cmp.disableOnly && !cmp.status && !cmp.isDisabled()) {
+                            cmp.disable();
                         }
                         if(cmp.status && cmp.isDisabled()) {
                             cmp.enable();
@@ -1888,6 +1866,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     bridgedTo.getStore().loadData( bridgedToInterfaces );
                     var vlanParent = this.down('combo[dataIndex="vlanParent"]');
                     vlanParent.getStore().loadData( vlanParentInterfaces );
+
+                    Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
+                    
                     if(this.down('checkbox[dataIndex="dhcpEnabled"]').getValue()) {
                         this.down('fieldset[name="dhcp"]').expand();
                     }
@@ -1899,7 +1880,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                     } else {
                         vrrp.collapse();
                     }
-                    Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
                 },
                 updateAction: function() {
                     //many fields must be set empty when not displayed
