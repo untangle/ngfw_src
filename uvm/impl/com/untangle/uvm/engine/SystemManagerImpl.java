@@ -39,7 +39,7 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String UPGRADE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-upgrade.py";
     
-    private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
+    private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
@@ -138,10 +138,10 @@ public class SystemManagerImpl implements SystemManager
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
          */
-        if ( settings.getAutoUpgrade() && !CRON_FILE.exists() )
-            writeCronFile();
         if ( !settings.getAutoUpgrade() && CRON_FILE.exists() )
             UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
+        else
+            writeCronFile();
     }
 
     /**
@@ -461,13 +461,24 @@ public class SystemManagerImpl implements SystemManager
     {
         // do not write cron job in dev env 
         if ( UvmContextFactory.context().isDevel() ) {
-            UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
+            if ( CRON_FILE.exists() )
+                UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
             return;
         }
 
+        String daysOfWeek;
+        if ( settings.getAutoUpgradeDays() == null || settings.getAutoUpgradeDays().getCronString() == null ) {
+            logger.error("Invalid dayOfWeek matcher: " + settings.getAutoUpgradeDays());
+            /* assume all days */
+            daysOfWeek = "*";
+        } else {
+            daysOfWeek = settings.getAutoUpgradeDays().getCronString();
+        }
+            
+        
         // write the cron file for nightly runs
         // FIXME dayfield
-        String conf = settings.getAutoUpgradeMinute() + " " + settings.getAutoUpgradeHour() + " " + CRON_STRING;
+        String conf = settings.getAutoUpgradeMinute() + " " + settings.getAutoUpgradeHour() + " * * " + daysOfWeek + CRON_STRING;
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));

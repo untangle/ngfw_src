@@ -1,5 +1,5 @@
 /**
- * $Id: DayOfWeekMatcher.java 32073 2012-06-06 20:53:24Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 
@@ -62,7 +62,7 @@ public class DayOfWeekMatcher
     private String single;
     
     /**
-     * if this port matcher is a list of port matchers, this list stores the children
+     * if this dayOfWeek matcher is a list of dayOfWeek matchers, this list stores the children
      */
     private LinkedList<DayOfWeekMatcher> children = null;
     
@@ -103,7 +103,7 @@ public class DayOfWeekMatcher
             return false;
 
         default:
-            logger.warn("Unknown port matcher type: " + this.type);
+            logger.warn("Unknown dayOfWeek matcher type: " + this.type);
             return false;
         }
     }
@@ -132,7 +132,7 @@ public class DayOfWeekMatcher
             return false;
 
         default:
-            logger.warn("Unknown port matcher type: " + this.type);
+            logger.warn("Unknown dayOfWeek matcher type: " + this.type);
             return false;
         }
     }
@@ -146,7 +146,53 @@ public class DayOfWeekMatcher
     {
         return ANY_MATCHER;
     }
-    
+
+    /**
+     * Returns the cron representation of this matcher
+     */
+    public String getCronString()
+    {
+       switch (this.type) {
+
+        case ANY:
+            return "*";
+
+        case NONE:
+            return null; /* XXX, there is no cron syntax for no day of week */
+
+        case SINGLE:
+            if (this.single.equals(MARKER_SUNDAY) || this.single.equals(MARKER_SUNDAY2))
+                return "0";
+            if (this.single.equals(MARKER_MONDAY) || this.single.equals(MARKER_MONDAY2))
+                return "1";
+            if (this.single.equals(MARKER_TUESDAY) || this.single.equals(MARKER_TUESDAY2))
+                return "2";
+            if (this.single.equals(MARKER_WEDNESDAY) || this.single.equals(MARKER_WEDNESDAY2))
+                return "3";
+            if (this.single.equals(MARKER_THURSDAY) || this.single.equals(MARKER_THURSDAY2))
+                return "4";
+            if (this.single.equals(MARKER_FRIDAY) || this.single.equals(MARKER_FRIDAY2))
+                return "5";
+            if (this.single.equals(MARKER_SATURDAY) || this.single.equals(MARKER_SATURDAY2))
+                return "6";
+            logger.warn("Invalid dayOfWeek matcher: " + this.single);
+            return null; /* should not happen */
+            
+        case LIST:
+            String comma = "";
+            String buildStr = "";
+            for (DayOfWeekMatcher child : this.children) {
+                buildStr += comma + child.getCronString();
+                comma = ",";
+            }
+            return buildStr;
+
+        default:
+            logger.warn("Unknown dayOfWeek matcher type: " + this.type);
+            return null;
+        }
+    }
+
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
