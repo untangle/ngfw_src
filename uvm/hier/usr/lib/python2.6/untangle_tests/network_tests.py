@@ -7,7 +7,6 @@ sys.setdefaultencoding("utf-8")
 import re
 import subprocess
 import ipaddr
-import system_props
 import time
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -468,6 +467,58 @@ class NetworkTests(unittest2.TestCase):
         print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
         nukeDynDNS()
         # assert(outsideIP == dynIP)
+
+    # Test VRRP is active
+    def test_100_VRRP(self):
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        # Find a static interface
+        i=0
+        for interface in netsettings['interfaces']['list']:
+            if interface['v4ConfigType'] == "STATIC":
+                break
+            i += 1
+        # Verify interface is found
+        if (netsettings['interfaces']['list'][i]['v4ConfigType'] != "STATIC"):
+            raise unittest2.SkipTest("No static interface found")
+        interfaceIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
+        interfacePrefix = netsettings['interfaces']['list'][i]['v4StaticPrefix']
+        interfaceNet = interfaceIP + "/" + str(interfacePrefix)
+        # get next IP not used
+        ipStep = 1
+        loopCounter = 10
+        vrrpIP = None
+        while vrrpIP == None and loopCounter:
+            # get next IP and test that it is unused
+            ip = ipaddr.IPAddress(interfaceIP)
+            newip = ip + ipStep
+            # check to see if the IP is in network range
+            if newip in ipaddr.IPv4Network(interfaceNet):
+                pingResult = clientControl.runCommand("ping -c 1 %s >/dev/null 2>&1" % str(newip))
+                if pingResult:
+                    # new IP found
+                    vrrpIP = newip
+            else:
+                # The IP is beyond the range of the network, go backward through the IPs
+                ipStep = -1 
+            loopCounter -= 1
+            ip = newip
+        if (vrrpIP == None):
+            raise unittest2.SkipTest("No IP found for VRRP")
+        # Set VRRP values
+        netsettings['interfaces']['list'][i]['vrrpAddress'] = str(vrrpIP)
+        netsettings['interfaces']['list'][i]['vrrpEnabled'] = True
+        netsettings['interfaces']['list'][i]['vrrpId'] = 2
+        netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        time.sleep(60)
+        # Test that the VRRP is pingable
+        pingResult = clientControl.runCommand("ping -c 1 %s >/dev/null 2>&1" % str(vrrpIP))
+        # check if still online
+        onlineResults = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        # Return to default network state
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert (pingResult == 0)
+        assert (onlineResults == 0)
         
     def test_999_finalTearDown(self):
         global node,nodeFW
