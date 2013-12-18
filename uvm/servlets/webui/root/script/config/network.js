@@ -1113,7 +1113,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'checkbox',
                     dataIndex: "isVlanInterface",
                     fieldLabel: this.i18n._("Is VLAN (802.1q) Interface"),
-                    disabled: true,
+                    //disabled: true,
+                    readOnly: true,
                     width: 300
                 }, {
                     xtype: "combo",
@@ -1637,6 +1638,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         dataIndex: "vrrpAddress",
                         fieldLabel: this.i18n._("VRRP Virtual Address"),
                         vtype: "ip4Address",
+                        allowBlank: false,
                         disableOnly: true,
                         width: 350
                     }]
