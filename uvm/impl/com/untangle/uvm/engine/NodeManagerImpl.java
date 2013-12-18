@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -200,6 +204,8 @@ public class NodeManagerImpl implements NodeManager
 
     public Node instantiate( String nodeName, Long policyId ) throws Exception
     {
+        requestTrialLicenseIfNecessary( nodeName );
+
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
@@ -842,4 +848,48 @@ public class NodeManagerImpl implements NodeManager
     {
         return ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) );
     }
+
+    private void requestTrialLicenseIfNecessary( String nodeName )
+    {
+        //if already have a valid license, just return
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) )
+            return;
+
+        /**
+         * the API specifies libitem, however libitems no longer exist
+         * specify the node, but also hit the old API with the old libitem name
+         */
+        String urlStr = "https://license.untangle.com/license.php?action=startTrial&uid=" +
+            UvmContextFactory.context().getServerUID() + "&node=" + nodeName;
+        String oldName = nodeName.replace("node","libitem").replace("casing","libitem");
+        String urlStr2 = "https://license.untangle.com/license.php?action=startTrial&uid=" +
+            UvmContextFactory.context().getServerUID() + "&libitem=" + oldName;
+
+        URL url;
+        HttpClient hc;
+        HttpMethod get;
+        
+        try {
+            logger.info("Requesting Trial: " + urlStr);
+            url = new URL(urlStr);
+            hc = new HttpClient();
+            get = new GetMethod(url.toString());
+            hc.executeMethod(get);
+        } catch ( Exception e ) {
+            logger.warn("Exception requesting trial:", e);
+        }
+         
+        try {
+            logger.info("Requesting Trial: " + urlStr2);
+            url = new URL(urlStr2);
+            hc = new HttpClient();
+            get = new GetMethod(url.toString());
+            hc.executeMethod(get);
+        } catch ( Exception e ) {
+            logger.warn("Exception requesting trial:", e);
+        }
+        
+        UvmContextFactory.context().licenseManager().reloadLicenses();
+    }
+
 }
