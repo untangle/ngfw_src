@@ -265,12 +265,15 @@ class OpenVpnDetail(DetailSection):
         rv = rv + [ColumnDesc('remote_port', _('Port'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if host or user or email:
             return None
 
-        sql = "SELECT distinct(time_stamp), client_name, host(remote_address), remote_port"
+        sql = "SELECT distinct(time_stamp), client_name, host(remote_address) as remote_address, remote_port"
 
         sql = sql + ("""
 FROM reports.openvpn_connect_totals

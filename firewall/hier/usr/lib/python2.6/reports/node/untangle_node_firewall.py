@@ -577,19 +577,16 @@ class FirewallDetail(DetailSection):
 
         return rv
 
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_session_columns(host, user, email)
+    
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
-        sql = "SELECT time_stamp,"
+        sql = "SELECT * "
 
-        if not host:
-            sql = sql + "hostname, "
-        if not user:
-            sql = sql + "username, "
-
-        sql = sql + ("""firewall_rule_index, firewall_blocked::text, firewall_flagged::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
-FROM reports.sessions
+        sql = sql + ("""FROM reports.sessions
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
                                          DateFromMx(end_date)))

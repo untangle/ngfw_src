@@ -502,20 +502,23 @@ class SpamDetail(DetailSection):
         rv.append(ColumnDesc('hostname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
-               ColumnDesc('m2.addr', _('Msg Sender')),
+               ColumnDesc('from_addrs', _('Msg Sender')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Destination Ip')),
-               ColumnDesc('case', _('Action')),
-               ColumnDesc('addr', _('Msg Receiver'), 'EmailLink')]
+               ColumnDesc('action', _('Action')),
+               ColumnDesc('to_addrs', _('Msg Receiver'), 'EmailLink')]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if host or user:
             return None
 
         sql = """\
-SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subject, host(m1.s_server_addr) as s_server_addr,
        CASE m1.%s_action WHEN 'P' THEN '%s'
                       WHEN 'D' THEN '%s'
                       WHEN 'B' THEN '%s'
@@ -523,8 +526,8 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_s
                       WHEN 'Q' THEN '%s'
                       WHEN 'S' THEN '%s'
                       WHEN 'Z' THEN '%s'
-                      END,
-       m1.addr
+                      END AS action,
+       m1.addr AS to_addrs
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
@@ -565,20 +568,23 @@ class SpamDetailAll(DetailSection):
         rv.append(ColumnDesc('hostname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
-               ColumnDesc('m2.addr', _('Msg Sender')),
+               ColumnDesc('from_addrs', _('Msg Sender')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Destination Ip')),
-               ColumnDesc('case', _('Action')),
-               ColumnDesc('addr', _('Msg Receiver'), 'EmailLink')]
+               ColumnDesc('action', _('Action')),
+               ColumnDesc('to_addrs', _('Msg Receiver'), 'EmailLink')]
 
         return rv
 
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
+    
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if host or user:
             return None
 
         sql = """\
-SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subject, host(m1.s_server_addr) AS s_server_addr,
        CASE m1.%s_action WHEN 'P' THEN '%s'
                       WHEN 'D' THEN '%s'
                       WHEN 'B' THEN '%s'
@@ -586,8 +592,8 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr, m1.subject, host(m1.s_s
                       WHEN 'Q' THEN '%s'
                       WHEN 'S' THEN '%s'
                       WHEN 'Z' THEN '%s'
-                      END,
-       m1.addr
+                      END AS action,
+       m1.addr AS to_addrs
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s

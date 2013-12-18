@@ -556,13 +556,16 @@ class AdministrativeLoginsDetail(DetailSection):
                ColumnDesc('succeeded', _('Success'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email:
             return None
 
         sql = """\
-SELECT time_stamp, host(client_addr), login, succeeded::text
+SELECT time_stamp, host(client_addr) as client_addr, login, succeeded::text
 FROM reports.admin_logins
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))

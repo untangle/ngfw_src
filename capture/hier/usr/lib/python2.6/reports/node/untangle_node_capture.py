@@ -419,6 +419,9 @@ class UserDetail(DetailSection):
 
         return rv
 
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
+    
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email or host or user:
             return None
@@ -430,7 +433,7 @@ CASE WHEN event_info = 'LOGIN' THEN '%s'
      WHEN event_info = 'TIMEOUT' THEN '%s'
      WHEN event_info = 'INACTIVE' THEN '%s'
      WHEN event_info = 'USER_LOGOUT' THEN '%s'
-     WHEN event_info = 'ADMIN_LOGOUT' THEN '%s' END
+     WHEN event_info = 'ADMIN_LOGOUT' THEN '%s' END AS event_info 
 FROM reports.capture_user_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
@@ -457,14 +460,16 @@ class RuleDetail(DetailSection):
               ColumnDesc('capture_blocked', _('Blocked'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_session_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         if email or host or user:
             return None
 
         sql = """
-SELECT time_stamp, host(c_client_addr), c_client_port,
-       host(c_server_addr), c_server_port, capture_rule_index, capture_blocked::text
+SELECT * 
 FROM reports.sessions
 WHERE capture_blocked = TRUE OR capture_blocked = FALSE
 AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone

@@ -648,15 +648,17 @@ class VirusWebDetail(DetailSection):
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_http_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
-SELECT time_stamp, hostname, username, %s_name as virus_ident, 'http://' || host || uri as url,
-       host(s_server_addr), s_server_port
+SELECT *, 'http://' || host || uri as url 
 FROM reports.http_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT %s_clean
-""" % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
+""" % (DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 
         if host:
@@ -690,11 +692,14 @@ class VirusFtpDetail(DetailSection):
                ColumnDesc('s_server_addr', _('Server Ip'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
-SELECT time_stamp, hostname, username, %s_name as virus_ident, uri as uri,
-       host(s_server_addr)
+SELECT time_stamp, hostname, username, %s_name, uri as uri,
+       host(s_server_addr) as s_server_addr 
 FROM reports.ftp_events
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT %s_clean
@@ -735,11 +740,14 @@ class VirusMailDetail(DetailSection):
                ColumnDesc('c_client_port', _('Client Port'))]
 
         return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
 SELECT time_stamp, hostname, username, %s_name, subject, addr,
-       host(c_client_addr), c_client_port
+       host(c_client_addr) as c_client_addr, c_client_port
 FROM reports.mail_addrs
 WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND addr_kind = 'T'
 AND NOT %s_clean
