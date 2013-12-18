@@ -380,8 +380,8 @@ Ung.Util = {
                         text: i18n._("Show details"),
                         hidden: details==null,
                         handler: function() {
-                            var detailsComp = wnd.query('fieldset[name="details"]')[0];
-                            var detailsButton = wnd.query('button[name="details_button"]')[0];
+                            var detailsComp = wnd.down('fieldset[name="details"]');
+                            var detailsButton = wnd.down('button[name="details_button"]');
                             if(detailsComp.isHidden()) {
                                 wnd.initialHeight = wnd.getHeight();
                                 wnd.initialWidth = wnd.getWidth();

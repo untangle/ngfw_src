@@ -25,10 +25,10 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 if(Ung.Util.handleException(exception)) return;
                 var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + '</font></i>' :
                     '<font color="grey">' + i18n._("No upgrades available.") + '</font>';
-                var statusCmp = this.panelSettings.query('[name="statusMessage"]')[0];
+                var statusCmp = this.panelSettings.down('[name="statusMessage"]');
                 statusCmp.setText(statusDescription, false);
                 if(result) {
-                    var upgradeButton = this.panelSettings.query('[name="upgradeButton"]')[0];
+                    var upgradeButton = this.panelSettings.down('[name="upgradeButton"]');
                     upgradeButton.enable();
                 }
             }, this));

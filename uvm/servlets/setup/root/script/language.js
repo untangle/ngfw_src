@@ -63,7 +63,7 @@ Ext.define('Ung.SetupWizard.Language', {
     },
 
     saveSettings: function( handler ) {
-        var language = this.panel.query('combo[name="language"]')[0].getValue();
+        var language = this.panel.down('combo[name="language"]').getValue();
         rpc.setup.setLanguage( Ext.bind(this.complete,this, [ handler ], true ), language );
     },
 

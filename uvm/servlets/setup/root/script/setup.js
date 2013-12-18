@@ -43,13 +43,13 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
 
     savePassword: function() {
         // New Password
-        this.password = this.panel.query('textfield[name="password"]')[0].getValue();
+        this.password = this.panel.down('textfield[name="password"]').getValue();
         rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password );
     },
 
     saveTimeZone: function( result, exception ) {
         if(Ung.Util.handleException(exception, "Unable to save the admin password")) return;
-        var timezone = this.panel.query('textfield[name="timezone"]')[0].getValue();
+        var timezone = this.panel.down('textfield[name="timezone"]').getValue();
         rpc.setup.setTimeZone( Ext.bind(this.authenticate,this ), timezone );
     },
 
@@ -860,11 +860,11 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         wanSettings.v4ConfigType = "STATIC";
         wanSettings.v4NatEgressTraffic = true;
-        wanSettings.v4StaticAddress = this.staticPanel.query('textfield[name="ip"]')[0].getValue();
-        wanSettings.v4StaticPrefix = this.staticPanel.query('textfield[name="prefix"]')[0].getValue();
-        wanSettings.v4StaticGateway = this.staticPanel.query('textfield[name="gateway"]')[0].getValue();
-        wanSettings.v4StaticDns1 = this.staticPanel.query('textfield[name="dns1"]')[0].getValue();
-        wanSettings.v4StaticDns2 = this.staticPanel.query('textfield[name="dns2"]')[0].getValue();
+        wanSettings.v4StaticAddress = this.staticPanel.down('textfield[name="ip"]').getValue();
+        wanSettings.v4StaticPrefix = this.staticPanel.down('textfield[name="prefix"]').getValue();
+        wanSettings.v4StaticGateway = this.staticPanel.down('textfield[name="gateway"]').getValue();
+        wanSettings.v4StaticDns1 = this.staticPanel.down('textfield[name="dns1"]').getValue();
+        wanSettings.v4StaticDns2 = this.staticPanel.down('textfield[name="dns2"]').getValue();
         if ( wanSettings.v4StaticDns2.length <= 0 ) wanSettings.v4StaticDns2 = null; //ignore empty box
 
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
@@ -883,8 +883,8 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         wanSettings.v4ConfigType = "PPPOE";
         wanSettings.v4NatEgressTraffic = true;
-        wanSettings.v4PPPoEUsername = this.pppoePanel.query('textfield[name="username"]')[0].getValue();
-        wanSettings.v4PPPoEPassword = this.pppoePanel.query('textfield[name="password"]')[0].getValue();
+        wanSettings.v4PPPoEUsername = this.pppoePanel.down('textfield[name="username"]').getValue();
+        wanSettings.v4PPPoEPassword = this.pppoePanel.down('textfield[name="password"]').getValue();
 
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
         
@@ -1060,25 +1060,25 @@ Ext.define('Ung.SetupWizard.Internet', {
                 if (this.v4ConfigTypes[c][0] == firstWan.v4ConfigType)
                     this.cardPanel.layout.setActiveItem( c );
             }
-            this.updateValue( this.card.panel.query('combo[name="v4ConfigType"]')[0], firstWan.v4ConfigType);
+            this.updateValue( this.card.panel.down('combo[name="v4ConfigType"]'), firstWan.v4ConfigType);
             
             for ( c = 0; c < this.cards.length ; c++ ) {
                 card = this.cards[c];
-                this.updateValue( card.query('textfield[name="ip"]')[0], firstWanStatus.v4Address );
-                this.updateValue( card.query('textfield[name="prefix"]')[0], firstWanStatus.v4PrefixLength );
-                this.updateValue( card.query('textfield[name="netmask"]')[0], firstWanStatus.v4Netmask );
-                this.updateValue( card.query('textfield[name="gateway"]')[0], firstWanStatus.v4Gateway );
-                this.updateValue( card.query('textfield[name="dns1"]')[0], firstWanStatus.v4Dns1 );
-                this.updateValue( card.query('textfield[name="dns2"]')[0], firstWanStatus.v4Dns2 );
+                this.updateValue( card.down('textfield[name="ip"]'), firstWanStatus.v4Address );
+                this.updateValue( card.down('textfield[name="prefix"]'), firstWanStatus.v4PrefixLength );
+                this.updateValue( card.down('textfield[name="netmask"]'), firstWanStatus.v4Netmask );
+                this.updateValue( card.down('textfield[name="gateway"]'), firstWanStatus.v4Gateway );
+                this.updateValue( card.down('textfield[name="dns1"]'), firstWanStatus.v4Dns1 );
+                this.updateValue( card.down('textfield[name="dns2"]'), firstWanStatus.v4Dns2 );
             }
         } else { // not configured
             for ( c = 0; c < this.cards.length ; c++ ) {
                 card = this.cards[c];
-                this.updateValue( card.query('textfield[name="ip"]')[0], "" );
-                this.updateValue( card.query('textfield[name="prefix"]')[0], "" );
-                this.updateValue( card.query('textfield[name="gateway"]')[0], "" );
-                this.updateValue( card.query('textfield[name="dns1"]')[0], "" );
-                this.updateValue( card.query('textfield[name="dns2"]')[0], "" );
+                this.updateValue( card.down('textfield[name="ip"]'), "" );
+                this.updateValue( card.down('textfield[name="prefix"]'), "" );
+                this.updateValue( card.down('textfield[name="gateway"]'), "" );
+                this.updateValue( card.down('textfield[name="dns1"]'), "" );
+                this.updateValue( card.down('textfield[name="dns2"]'), "" );
             }
         }
     },
@@ -1210,18 +1210,19 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 if ( intfs[c]['isWan'] != null && intfs[c]['isWan'] )
                     continue;
                 
+                var bridgeOrRouterRadio=this.panel.query('radio[name="bridgeOrRouter"]');
                 if ( intfs[c].configType == "BRIDGED" ) {
-                    this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(false);
-                    this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(true);
+                    bridgeOrRouterRadio[0].setValue(false);
+                    bridgeOrRouterRadio[1].setValue(true);
                 }
                 else { /* ADDRESSED or DISABLED */
-                    this.panel.query('radio[name="bridgeOrRouter"]')[0].setValue(true);
-                    this.panel.query('radio[name="bridgeOrRouter"]')[1].setValue(false);
+                    bridgeOrRouterRadio[0].setValue(true);
+                    bridgeOrRouterRadio[1].setValue(false);
                 }
 
                 if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticPrefix'] != null ) {
-                    this.panel.query('textfield[name="network"]')[0].setValue( intfs[c]['v4StaticAddress'] );
-                    this.panel.query('combo[name="prefix"]')[0].setValue( intfs[c]['v4StaticPrefix'] );
+                    this.panel.down('textfield[name="network"]').setValue( intfs[c]['v4StaticAddress'] );
+                    this.panel.down('combo[name="prefix"]').setValue( intfs[c]['v4StaticPrefix'] );
                 } 
 
                 break;
@@ -1231,7 +1232,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         complete();
     },
     onSetRouter: function(isSet) {
-        var ar = [this.panel.query('textfield[name="network"]')[0],this.panel.query('combo[name="prefix"]')[0],this.panel.query('checkbox[name="enableDhcpServer"]')[0]];
+        var ar = [this.panel.down('textfield[name="network"]'),this.panel.down('combo[name="prefix"]'),this.panel.down('checkbox[name="enableDhcpServer"]')];
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet);
         }
@@ -1256,9 +1257,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     validateInternalNetwork: function() {
         var rv = true;
         var nic = false;
-        for(var i=0;i<this.panel.query('radio[name="bridgeOrRouter"]').length;i++){
-            if(this.panel.query('radio[name="bridgeOrRouter"]')[i].getValue()){
-                nic = this.panel.query('radio[name="bridgeOrRouter"]')[i].inputValue;
+        var bridgeOrRouterRadio = this.panel.query('radio[name="bridgeOrRouter"]')
+        for(var i=0;i<bridgeOrRouterRadio.length;i++){
+            if(bridgeOrRouterRadio[i].getValue()){
+                nic = bridgeOrRouterRadio[i].inputValue;
                 break;
             }
         }
@@ -1269,7 +1271,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     },
 
     saveInternalNetwork: function( handler ) {
-        var value = this.panel.query('radio[name="bridgeOrRouter"]')[0].getGroupValue();
+        var value = this.panel.down('radio[name="bridgeOrRouter"]').getGroupValue();
 
         if ( value == null ) {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose bridge or router." ));
@@ -1286,9 +1288,9 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
             rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
         } else {
-            var network = this.panel.query('textfield[name="network"]')[0].getValue();
-            var prefix = this.panel.query('combo[name="prefix"]')[0].getValue();
-            var enableDhcpServer = this.panel.query('checkbox[name="enableDhcpServer"]')[0].getValue();
+            var network = this.panel.down('textfield[name="network"]').getValue();
+            var prefix = this.panel.down('combo[name="prefix"]').getValue();
+            var enableDhcpServer = this.panel.down('checkbox[name="enableDhcpServer"]').getValue();
             firstNonWan['configType'] = 'ADDRESSED';
             firstNonWan['v4ConfigType'] = 'STATIC';
             firstNonWan['v4StaticAddress'] = network;
@@ -1375,8 +1377,9 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         rpc.systemManager.getSettings(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             if (!result.autoUpgrade) {
-                this.panel.query('radio[name="autoUpgradesRadio"]')[0].setValue(false);
-                this.panel.query('radio[name="autoUpgradesRadio"]')[1].setValue(true);
+                var autoUpgradesRadio=this.panel.query('radio[name="autoUpgradesRadio"]');
+                autoUpgradesRadio[0].setValue(false);
+                autoUpgradesRadio[1].setValue(true);
             } 
             complete();
         }, this));
@@ -1385,7 +1388,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         return true;
     },
     saveAutoUpgrades: function( handler ) {
-        var value = this.panel.query('radio[name="autoUpgradesRadio"]')[0].getGroupValue();
+        var value = this.panel.down('radio[name="autoUpgradesRadio"]').getGroupValue();
         if ( value == null ) {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose Yes or No." ));
             return;

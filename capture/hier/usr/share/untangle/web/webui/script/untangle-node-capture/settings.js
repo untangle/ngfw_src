@@ -565,7 +565,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
             var onRenderRadioButton = Ext.bind(function( elem )
             {
-                this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
+                this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
             }, this);
 
             this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
@@ -579,7 +579,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 cls: "ung-panel",
                 listeners: {
                     "afterrender": Ext.bind(function () {
-                        this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
+                        this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
                         this.captivePageHideComponents(this.settings.pageType );
                         Ung.Util.clearDirty(this.panelCaptivePage);
                     }, this)
@@ -1063,8 +1063,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
         validate: function() {
             // Iterate all of the fields checking if they are valid
-            if ( !this.query('numberfield[name="idleTimeout"]')[0].isValid() ||
-                 !this.query('numberfield[name="userTimeout"]')[0].isValid()) {
+            if ( !this.down('numberfield[name="idleTimeout"]').isValid() ||
+                 !this.down('numberfield[name="userTimeout"]').isValid()) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
                                      this.i18n._("Please correct any highlighted fields."),
                                      Ext.bind(function () {

@@ -377,7 +377,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                         var rowEditor = this.gridCategories.rowEditor;
                                         if (checked) {
-                                            rowEditor.query('checkbox[name="Flag"]')[0].setValue(true);
+                                            rowEditor.down('checkbox[name="Flag"]').setValue(true);
                                         }
                                     }, this)
                                 }

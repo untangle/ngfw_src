@@ -63,15 +63,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.show();
 
             if(!this.downloadWindowsInstallerEl) {
-                this.downloadWindowsInstallerEl = this.items.get(0).query('[name="downloadWindowsInstaller"]')[0].getEl();
+                this.downloadWindowsInstallerEl = this.items.get(0).down('[name="downloadWindowsInstaller"]').getEl();
             }
             this.downloadWindowsInstallerEl.dom.innerHTML = this.i18n._('Loading...');
             if(!this.downloadGenericConfigurationFileEl) {
-                this.downloadGenericConfigurationFileEl = this.items.get(0).query('[name="downloadGenericConfigurationFile"]')[0].getEl();
+                this.downloadGenericConfigurationFileEl = this.items.get(0).down('[name="downloadGenericConfigurationFile"]').getEl();
             }
             this.downloadGenericConfigurationFileEl.dom.innerHTML = this.i18n._('Loading...');
             if(!this.downloadUntangleConfigurationFileEl) {
-                this.downloadUntangleConfigurationFileEl = this.items.get(0).query('[name="downloadUntangleConfigurationFile"]')[0].getEl();
+                this.downloadUntangleConfigurationFileEl = this.items.get(0).down('[name="downloadUntangleConfigurationFile"]').getEl();
             }
             this.downloadUntangleConfigurationFileEl.dom.innerHTML = this.i18n._('Loading...');
             
@@ -552,7 +552,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             text: i18n._('Submit'),
                             name: "Submit",
                             handler: Ext.bind(function() {
-                                var filename = this.submitForm.query('textfield[name="uploadConfigFileName"]')[0].getValue();
+                                var filename = this.submitForm.down('textfield[name="uploadConfigFileName"]').getValue();
                                 if ( filename == null || filename.length == 0 ) {
                                     Ext.MessageBox.alert(this.i18n._( "Select File" ), this.i18n._( "Please choose a file to upload." ));
                                     return;
@@ -750,8 +750,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width: 300
                 }],
                 syncComponents: function () {
-                    var type = this.query('combo[dataIndex="export"]')[0];
-                    var exportNetwork  = this.query('textfield[dataIndex="exportNetwork"]')[0];
+                    var type = this.down('combo[dataIndex="export"]');
+                    var exportNetwork  = this.down('textfield[dataIndex="exportNetwork"]');
                     if (type.value) {
                         exportNetwork.enable();
                     } else {

@@ -188,21 +188,21 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     dataIndex:'expirationTime',
                     setValue:function(value) {
                         if ( value == 0) {
-                            this.query("[name='expirationTime']")[0].setVisible(false);
-                            this.query("[name='neverExpire']")[0].setValue(true);
-                            this.query("[name='expirationTime']")[0].setValue(new Date(0));
+                            this.down("[name='expirationTime']").setVisible(false);
+                            this.down("[name='neverExpire']").setValue(true);
+                            this.down("[name='expirationTime']").setValue(new Date(0));
                         } else {
-                            this.query("[name='neverExpire']")[0].setValue(false);
-                            this.query("[name='expirationTime']")[0].setVisible(true);
-                            this.query("[name='expirationTime']")[0].setValue(value);
+                            this.down("[name='neverExpire']").setValue(false);
+                            this.down("[name='expirationTime']").setVisible(true);
+                            this.down("[name='expirationTime']").setValue(value);
                         }
                     },
                     getValue: function() {
-                        var neverExpired =this.query("[name='neverExpire']")[0].getValue();
+                        var neverExpired =this.down("[name='neverExpire']").getValue();
                         if ( neverExpired) {
                             return 0;
                         }
-                        return this.query("[name='expirationTime']")[0].getValue();
+                        return this.down("[name='expirationTime']").getValue();
                     },
                     items:[{
                         xtype:'checkbox',
@@ -211,7 +211,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         boxLabel:this.i18n._('Never'),
                         listeners: {
                             "change": Ext.bind(function (elem,checked) { 
-                                var expirationCtl = this.gridUsers.rowEditor.query("[name='expirationTime']")[0];
+                                var expirationCtl = this.gridUsers.rowEditor.down("[name='expirationTime']");
                                 expirationCtl.setVisible(!checked);
                                 if ( checked) {
                                     expirationCtl.setValue(new Date(0));

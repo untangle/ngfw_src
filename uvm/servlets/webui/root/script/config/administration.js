@@ -293,8 +293,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }],
                 validate: Ext.bind(function(items) {
                     //validate password match
-                    var pwd = this.gridAdminAccounts.rowEditorChangePass.query('textfield[name="password"]')[0];
-                    var confirmPwd = this.gridAdminAccounts.rowEditorChangePass.query('textfield[name="confirmPassword"]')[0];
+                    var pwd = this.gridAdminAccounts.rowEditorChangePass.down('textfield[name="password"]');
+                    var confirmPwd = this.gridAdminAccounts.rowEditorChangePass.down('textfield[name="confirmPassword"]');
                     if(pwd.getValue() != confirmPwd.getValue()) {
                         pwd.markInvalid();
                         return this.i18n._('Passwords do not match');
@@ -367,8 +367,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "external";
-                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
-                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
+                                        this.panelPublicAddress.down('textfield[name="publicUrlAddress"]').disable();
+                                        this.panelPublicAddress.down('numberfield[name="publicUrlPort"]').disable();
                                     }
                                 }, this)
                             }
@@ -389,8 +389,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "hostname";
-                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
-                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
+                                        this.panelPublicAddress.down('textfield[name="publicUrlAddress"]').disable();
+                                        this.panelPublicAddress.down('numberfield[name="publicUrlPort"]').disable();
                                     }
                                 }, this)
                             }
@@ -416,11 +416,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "afterrender": {
                                 fn: Ext.bind(function(elem) {
                                     if(elem.getValue()) {
-                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].enable();
-                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].enable();
+                                        this.panelPublicAddress.down('textfield[name="publicUrlAddress"]').enable();
+                                        this.panelPublicAddress.down('numberfield[name="publicUrlPort"]').enable();
                                     } else {
-                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].disable();
-                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].disable();
+                                        this.panelPublicAddress.down('textfield[name="publicUrlAddress"]').disable();
+                                        this.panelPublicAddress.down('numberfield[name="publicUrlPort"]').disable();
                                     }
                                 }, this)
                             },
@@ -428,8 +428,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn: Ext.bind(function(elem, checked) {
                                     if (checked) {
                                         this.getSystemSettings().publicUrlMethod = "address_and_port";
-                                        this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0].enable();
-                                        this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0].enable();
+                                        this.panelPublicAddress.down('textfield[name="publicUrlAddress"]').enable();
+                                        this.panelPublicAddress.down('numberfield[name="publicUrlPort"]').enable();
                                     }
                                 }, this)
                             }
@@ -809,13 +809,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         certGeneratorWorker: function(certMode)
         {
-            var form_C = this.certGeneratorWindow.query('[name="Country"]')[0];
-            var form_ST = this.certGeneratorWindow.query('[name="State"]')[0];
-            var form_L = this.certGeneratorWindow.query('[name="Locality"]')[0];
-            var form_O = this.certGeneratorWindow.query('[name="Organization"]')[0];
-            var form_OU = this.certGeneratorWindow.query('[name="OrganizationalUnit"]')[0];
-            var form_CN = this.certGeneratorWindow.query('[name="CommonName"]')[0];
-            var form_SAN = this.certGeneratorWindow.query('[name="AltNames"]')[0];
+            var form_C = this.certGeneratorWindow.down('[name="Country"]');
+            var form_ST = this.certGeneratorWindow.down('[name="State"]');
+            var form_L = this.certGeneratorWindow.down('[name="Locality"]');
+            var form_O = this.certGeneratorWindow.down('[name="Organization"]');
+            var form_OU = this.certGeneratorWindow.down('[name="OrganizationalUnit"]');
+            var form_CN = this.certGeneratorWindow.down('[name="CommonName"]');
+            var form_SAN = this.certGeneratorWindow.down('[name="AltNames"]');
 
             if (form_C.getValue() == null)  { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The Country field must not be empty')); return; }
             if (form_ST.getValue().length == 0) { Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('The State field must not be empty')); return; }
@@ -1285,7 +1285,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         //validate Public Address
         validatePublicAddress: function() {
             if (this.getSystemSettings().publicUrlMethod == "address_and_port") {
-                var publicUrlAddressCmp = this.panelPublicAddress.query('textfield[name="publicUrlAddress"]')[0];
+                var publicUrlAddressCmp = this.panelPublicAddress.down('textfield[name="publicUrlAddress"]');
                 if (!publicUrlAddressCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address or hostname."),
                         Ext.bind(function () {
@@ -1295,7 +1295,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     );
                     return false;
                 }
-                var publicUrlPortCmp = this.panelPublicAddress.query('numberfield[name="publicUrlPort"]')[0];
+                var publicUrlPortCmp = this.panelPublicAddress.down('numberfield[name="publicUrlPort"]');
                 if (!publicUrlPortCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                         Ext.bind(function () {

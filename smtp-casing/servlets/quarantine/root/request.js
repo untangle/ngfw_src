@@ -46,7 +46,7 @@ Ung.QuarantineRequest.prototype = {
                 text : i18n._( "Request" ),
                 cls:'quarantine-left-indented-2',
                 handler : function() {
-                    var field = this.requestForm.query('textfield[name="email_address"]')[0];
+                    var field = this.requestForm.down('textfield[name="email_address"]');
                     var email = field.getValue();
                     field.disable();
                     this.rpc.requestDigest( Ext.bind(this.requestEmail,this ), email );
@@ -82,7 +82,7 @@ Ung.QuarantineRequest.prototype = {
             return;
         }
 
-        var field = this.requestForm.query('textfield[name="email_address"]')[0];
+        var field = this.requestForm.down('textfield[name="email_address"]');
 
         if ( result == true ) {
             message = Ext.String.format( i18n._( "Successfully sent digest to '{0}'" ),  field.getValue());
