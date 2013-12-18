@@ -4,7 +4,8 @@ function getServer() {
     return document.URL.substring(start,end);
 }
 
-function imgLoadFailure() {
+function imgLoadFailure(e) {
+    console.log("imgLoadFailure",e);
     var cont = document.getElementById('submit');
     var newParagraph = document.createElement('p');
     var text = document.createTextNode("HTTPS certificate not installed !");
@@ -14,11 +15,12 @@ function imgLoadFailure() {
     var newLink = document.createElement('a');
     var linkText = document.createTextNode("Click here to download the HTTPS certificate");
     newLink.appendChild(linkText);
-    newLink.href = 'https://' + getServer() + '/cert';
+    newLink.href = '/cert';
     newLink.title ="Download HTTPS cert"
     newParagraph.appendChild(newLink);
     cont.parentElement.appendChild(newParagraph);
 }
+
 
 function checkSecureEndpoint() {
     var img = new Image();
