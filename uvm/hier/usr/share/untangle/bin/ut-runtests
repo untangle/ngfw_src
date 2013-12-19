@@ -21,7 +21,7 @@ class ArgumentParser(object):
         self.hostIP = None
         self.hostUsername = None
         self.hostKeyFile = None
-        self.verbosity = 0
+        self.verbosity = 2 # changed to default 2 because jcoffin
         self.logfile = '/tmp/unittest.log'
         self.fastfail = False
         self.repeat = False
