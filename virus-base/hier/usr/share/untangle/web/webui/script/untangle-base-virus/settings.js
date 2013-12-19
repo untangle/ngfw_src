@@ -466,21 +466,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
+                    name: 'c_client_addr'
                 }, {
                     name: 'username'
                 }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
+                    name: 'c_server_addr'
                 }, {
                     name: 'uri',
                     mapping: 'uri'
                 }, {
                     name: 'location'
                 }, {
-                    name: 'reason',
-                    mapping: this.nodeName + '_name'
+                    name: this.nodeName + '_name'
                 }],
                 // the list of columns
                 columns: [{
@@ -498,7 +495,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client'
+                    dataIndex: 'c_client_addr'
                 }, {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
@@ -513,12 +510,12 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header: this.i18n._("Virus Name"),
                     width: 140,
                     sortable: true,
-                    dataIndex: 'reason'
+                    dataIndex: this.nodeName + '_name'
                 }, {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'server'
+                    dataIndex: 'c_server_addr'
                 }]
             });
         }

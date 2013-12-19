@@ -356,28 +356,22 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: "Event Log",
                 title: i18n._('Event Log'),
                 fields: [{
-                    name: 'start',
-                    mapping: 'start_time',
+                    name: 'start_time',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'end',
-                    mapping: 'end_time',
+                    name: 'end_time',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'name',
-                    mapping: 'client_name'
+                    name: 'client_name'
                 }, {
-                    name: 'address',
-                    mapping: 'remote_address'
+                    name: 'remote_address'
                 }, {
-                    name: 'bytesTxTotal',
-                    mapping: 'tx_bytes',
+                    name: 'tx_bytes',
                     convert: function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }, {
-                    name: 'bytesRxTotal',
-                    mapping: 'rx_bytes',
+                    name: 'rx_bytes',
                     convert: function(val) {
                         return parseFloat(val) / 1024;
                     }
@@ -386,7 +380,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Start Time"),
                     width: Ung.Util.timestampFieldWidth,
                     sortable: true,
-                    dataIndex: 'start',
+                    dataIndex: 'start_time',
                     renderer: Ext.bind(function(value) {
                         return i18n.timestampFormat(value);
                     }, this ),
@@ -395,7 +389,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("End Time"),
                     width: Ung.Util.timestampFieldWidth,
                     sortable: true,
-                    dataIndex: 'end',
+                    dataIndex: 'end_time',
                     renderer: Ext.bind(function(value) {
                         return i18n.timestampFormat(value);
                     }, this ),
@@ -403,16 +397,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     header: this.i18n._("Client Name"),
                     sortable: true,
-                    dataIndex: 'name'
+                    dataIndex: 'client_name'
                 }, {
                     header: this.i18n._("Client Address"),
                     sortable: true,
-                    dataIndex: 'address'
+                    dataIndex: 'remote_address'
                 }, {
                     header: this.i18n._("KB Sent"),
                     width: 80,
                     sortable: true,
-                    dataIndex: 'bytesTxTotal',
+                    dataIndex: 'tx_bytes',
                     renderer: Ext.bind(function( value ) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     }, this ),
@@ -423,7 +417,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("KB Received"),
                     width: 80,
                     sortable: true,
-                    dataIndex: 'bytesRxTotal',
+                    dataIndex: 'rx_bytes',
                     renderer: Ext.bind(function( value ) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     }, this ),

@@ -924,17 +924,13 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     name: 'shield_blocked'
                 }, {
-                    name: 'client',
-                    mapping: 'c_client_addr'
+                    name: 'c_client_addr'
                 }, {
-                    name: 'clientPort',
-                    mapping: 'c_client_port'
+                    name: 'c_client_port'
                 }, {
-                    name: 'server',
-                    mapping: 'c_server_addr'
+                    name: 'c_server_addr'
                 }, {
-                    name: 'serverPort',
-                    mapping: 's_server_port'
+                    name: 's_server_port'
                 }],
                 columns: [{
                     header: this.i18n._("Timestamp"),
@@ -948,12 +944,12 @@ if (!Ung.hasResource["Ung.System"]) {
                     header: this.i18n._("Client"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'client'
+                    dataIndex: 'c_client_addr'
                 }, {
                     header: this.i18n._("Client port"),
                     width: Ung.Util.portFieldWidth,
                     sortable: true,
-                    dataIndex: 'clientPort'
+                    dataIndex: 'c_client_port'
                 }, {
                     header: this.i18n._("Username"),
                     width: Ung.Util.usernameFieldWidth,
@@ -963,12 +959,12 @@ if (!Ung.hasResource["Ung.System"]) {
                     header: this.i18n._("Server"),
                     width: Ung.Util.ipFieldWidth,
                     sortable: true,
-                    dataIndex: 'server'
+                    dataIndex: 'c_server_addr'
                 }, {
                     header: this.i18n._("Server Port"),
                     width: Ung.Util.portFieldWidth, 
                     sortable: true,
-                    dataIndex: 'serverPort'
+                    dataIndex: 's_server_port'
                 }, {
                     header: this.i18n._("Action"),
                     width: 150, 

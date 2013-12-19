@@ -450,15 +450,13 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'action',
-                    mapping: 'skipped',
+                    name: 'skipped',
                     type: 'string',
                     convert: Ext.bind(function(value) {
                         return value ? this.i18n._("skipped"): this.i18n._("blocked");
                     }, this)
                 }, {
-                    name: 'sender',
-                    mapping: 'ipaddr',
+                    name: 'ipaddr',
                     convert: function(value) {
                         return value == null ? "": value;
                     }
@@ -481,12 +479,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header: this.i18n._("Action"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'action'
+                    dataIndex: 'skipped'
                 }, {
                     header: this.i18n._("Sender"),
                     width: 120,
                     sortable: true,
-                    dataIndex: 'sender'
+                    dataIndex: 'ipaddr'
                 }, {
                     header: this.i18n._("DNSBL Server"),
                     width: 120,
