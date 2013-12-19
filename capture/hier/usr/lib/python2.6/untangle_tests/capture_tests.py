@@ -152,14 +152,14 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_defaultTrafficCheck(self):
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_020.log -O /tmp/capture_test_020.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_020.log -O /tmp/capture_test_020.out http://test.untangle.com/")
         assert (result == 0)
 
     def test_021_captureTrafficCheck(self):
         global node, nodeData, captureIP
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
         node.setSettings(nodeData)
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log -O /tmp/capture_test_021.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log -O /tmp/capture_test_021.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_021.out")
         assert (search == 0)
@@ -176,15 +176,16 @@ class CaptureTests(unittest2.TestCase):
         for q in node.getRuleEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,100)
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        # print events['list'][0]
-        assert(events['list'][0]['c_server_addr'] == test_untangle_com_ip)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['capture_blocked'] == True)
-        # assert(events['list'][0]['capture_rule_index'] == 5002)
+        for event in events['list']:
+            if event['c_server_addr'] == test_untangle_com_ip:
+                assert(event['c_client_addr'] == ClientControl.hostIP)
+                assert(event['capture_blocked'] == True)
+                return
+        assert(False) # event not found
 
     def test_023_captureAnonymousLogin(self):
         global node, nodeData
@@ -195,7 +196,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_023.log -O /tmp/capture_test_023.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_023.log -O /tmp/capture_test_023.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_023.out")
         assert (search == 0)
@@ -225,7 +226,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024.log -O /tmp/capture_test_024.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024.log -O /tmp/capture_test_024.out http://test.untangle.com/")
         assert (result == 0)
 
         # Verify anonymous works
@@ -238,7 +239,7 @@ class CaptureTests(unittest2.TestCase):
         
         # Wait for captive timeout
         time.sleep(180)
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024b.log -O /tmp/capture_test_024b.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_024b.log -O /tmp/capture_test_024b.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Captive Portal' /tmp/capture_test_024b.out")
         assert (search == 0)
@@ -256,7 +257,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_025.log -O /tmp/capture_test_025.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_025.log -O /tmp/capture_test_025.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_025.out")
         assert (search == 0)
@@ -292,7 +293,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
@@ -346,7 +347,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040.log -O /tmp/capture_test_040.out http://www.google.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040.log -O /tmp/capture_test_040.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_040.out")
         assert (search == 0)
