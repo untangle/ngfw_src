@@ -60,6 +60,8 @@ class TestEnvironmentTests(unittest2.TestCase):
         assert (result == 0)
         result = clientControl.runCommand("which mime-construct >/dev/null")
         assert (result == 0)
+        result = clientControl.runCommand("which pidof >/dev/null")
+        assert (result == 0)
 
     # verify client is online
     def test_14_clientIsOnline(self):
@@ -67,6 +69,11 @@ class TestEnvironmentTests(unittest2.TestCase):
         assert (result == 0)
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://google.com/")
         assert (result == 0)
+
+    # verify client is online
+    def test_15_clientNotRunningOpenvpn(self):
+        result = clientControl.runCommand("pidof openvpn >/dev/null")
+        assert (result != 0)
 
 
 
