@@ -1240,8 +1240,24 @@ public class NetworkManagerImpl implements NetworkManager
         ruleIaxMatchers.add(ruleIaxMatcher1);
         filterRuleIax.setMatchers( ruleIaxMatchers );
 
+        BypassRule filterRulePptp = new BypassRule();
+        filterRulePptp.setEnabled( true );
+        filterRulePptp.setDescription( "Bypass PPTP Sessions" );
+        filterRulePptp.setBypass( true );
+        List<BypassRuleMatcher> rulePptpMatchers = new LinkedList<BypassRuleMatcher>();
+        BypassRuleMatcher rulePptpMatcher1 = new BypassRuleMatcher();
+        rulePptpMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        rulePptpMatcher1.setValue("1723");
+        rulePptpMatchers.add(rulePptpMatcher1);
+        BypassRuleMatcher rulePptpMatcher2 = new BypassRuleMatcher();
+        rulePptpMatcher2.setMatcherType(BypassRuleMatcher.MatcherType.PROTOCOL);
+        rulePptpMatcher2.setValue("TCP");
+        rulePptpMatchers.add(rulePptpMatcher2);
+        filterRulePptp.setMatchers( rulePptpMatchers );
+        
         rules.add( filterRuleSip );
         rules.add( filterRuleIax );
+        rules.add( filterRulePptp );
 
         return rules;
     }
