@@ -505,29 +505,10 @@ public class HostTableImpl implements HostTable
                         if ( now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME) ) {
 
                             /**
-                             * However, if it has a quota or is penalty boxed or captive portal username.
-                             * do not delete it entirely because that would delete
-                             * "vital" information, such as the quota values or penalty box state.
-                             * Instead, just create a new HostTableEntry that saves these values
-                             * and overwrite the old one. Effectively discarding all but the vital state
-                             * bug #11415 for details
+                             * If this host table entry is storing vital information, don't delete it
                              */
                             if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() || entry.getUsernameCapture() != null ) {
-                                HostTableEntry newEntry = createNewHostTableEntry( entry.getAddress() );
-
-                                newEntry.setQuotaSize( entry.getQuotaSize() );
-                                newEntry.setQuotaRemaining( entry.getQuotaRemaining() );
-                                newEntry.setQuotaIssueTime( entry.getQuotaIssueTime() );
-                                newEntry.setQuotaExpirationTime( entry.getQuotaExpirationTime() );
-                                
-                                newEntry.setPenaltyBoxed( entry.getPenaltyBoxed() );
-                                newEntry.setPenaltyBoxExitTime( entry.getPenaltyBoxExitTime() );
-                                newEntry.setPenaltyBoxEntryTime( entry.getPenaltyBoxEntryTime() );
-
-                                newEntry.setUsernameCapture( entry.getUsernameCapture()  );
-                                
-                                logger.debug("HostTableCleaner: Stripping non-vital info from " + address.getHostAddress());
-                                hostTable.put( entry.getAddress(), newEntry );
+                                continue;
                             }
                             /**
                              * Otherwise just delete the entire entry
