@@ -137,11 +137,13 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     dataIndex:'sessionCreation',
                     width: 180,
                     renderer: function(value) { return i18n.timestampFormat(value); }
-                },{
-                    header: this.i18n._("Last Activity"),
-                    dataIndex:'sessionActivity',
-                    width: 180,
-                    renderer: function(value) { return i18n.timestampFormat(value); }
+                    // hidden because last activity is not used for timeout (the host table lastSessionTime is)
+                    // so this is confusing users
+                    // },{ 
+                    //     header: this.i18n._("Last Activity"),
+                    //     dataIndex:'sessionActivity',
+                    //     width: 180,
+                    //     renderer: function(value) { return i18n.timestampFormat(value); }
                 },{
                     header: this.i18n._("Session Count"),
                     dataIndex:'sessionCounter',
