@@ -381,10 +381,10 @@ class NetworkTests(unittest2.TestCase):
         nukeBypassRules()
         clientControl.runCommand("rm /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file >/dev/null 2>&1")
         # passive
-        result = clientControl.runCommand("wget -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         # active
-        result = clientControl.runCommand("wget --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = clientControl.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
 
     # Test FTP in active and passive modes with bypass
@@ -394,10 +394,10 @@ class NetworkTests(unittest2.TestCase):
         # --no-passive-ftp
         clientControl.runCommand("rm /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file >/dev/null 2>&1")
         # passive
-        result = clientControl.runCommand("wget -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         # active
-        result = clientControl.runCommand("wget --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = clientControl.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         nukeBypassRules()
 
