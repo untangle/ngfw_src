@@ -520,6 +520,40 @@ class NetworkTests(unittest2.TestCase):
         assert (pingResult == 0)
         assert (onlineResults == 0)
         
+    # Test MTU settings
+    def test_110_MTU(self):
+        mtuSetValue = '1460'
+        targetDevice = 'eth0'
+        mtuAutoValue = '1500'
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        # Set eth0 to 1480
+        for i in range(len(netsettings['devices']['list'])):
+            if netsettings['devices']['list'][i]['deviceName'] == targetDevice:
+                netsettings['devices']['list'][i]['mtu'] = mtuSetValue
+                break
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        # Verify the MTU is set
+        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
+        print ifconfigResults
+        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        mtuValue = None
+        if reValue:
+             mtuValue = reValue.group(1)
+        # print "mtuValue " + mtuValue          
+        # Set MTU back to auto
+        del netsettings['devices']['list'][i]['mtu']
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
+        print ifconfigResults
+        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        mtu2Value = None
+        if reValue:
+             mtu2Value = reValue.group(1)
+        # print "mtu2Value " + mtu2Value          
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert (mtuValue == mtuSetValue)
+        assert (mtu2Value == mtuAutoValue)
+        
     def test_999_finalTearDown(self):
         global node,nodeFW
         # Restore original settings to return to initial settings
