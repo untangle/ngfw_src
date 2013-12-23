@@ -708,13 +708,55 @@ public class NetworkManagerImpl implements NetworkManager
                 if ( intf1.getInterfaceId() == intf2.getInterfaceId() )
                     continue;
                 
-                IPMaskedAddress intf1ma = new IPMaskedAddress( intf1.getV4StaticAddress(), intf1.getV4StaticPrefix() );
-                IPMaskedAddress intf2ma = new IPMaskedAddress( intf2.getV4StaticAddress(), intf2.getV4StaticPrefix() );
-
+                /**
+                 * check intf1 against intf2 static address and all aliases
+                 */
+                IPMaskedAddress intf1ma;
+                IPMaskedAddress intf2ma;
+                
+                intf1ma = new IPMaskedAddress( intf1.getV4StaticAddress(), intf1.getV4StaticPrefix() );
+                intf2ma = new IPMaskedAddress( intf2.getV4StaticAddress(), intf2.getV4StaticPrefix() );
                 if ( intf1ma.getMaskedAddress().equals( intf2ma.getMaskedAddress() ) ) {
                     throw new RuntimeException( intf1.getName() + " & " + intf2.getName() + " address conflict. " +
                                                 intf1ma.getMaskedAddress().getHostAddress() + " = " + intf2ma.getMaskedAddress().getHostAddress() ); 
                 }
+                for ( InterfaceSettings.InterfaceAlias alias : intf2.getV4Aliases() ) {
+                    intf1ma = new IPMaskedAddress( intf1.getV4StaticAddress(), intf1.getV4StaticPrefix() );
+                    intf2ma = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                    if ( intf1ma.getMaskedAddress().equals( intf2ma.getMaskedAddress() ) ) {
+                        throw new RuntimeException( intf1.getName() + " & " + intf2.getName() + " address conflict. " +
+                                                    intf1ma.getMaskedAddress().getHostAddress() + " = " + intf2ma.getMaskedAddress().getHostAddress() ); 
+                    }
+                }
+            }
+        }
+
+        /**
+         * Check that no IP is configured twice anywhere
+         */
+        List<InetAddress> addrs = new LinkedList<InetAddress>();
+        for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
+            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                continue;
+            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                continue;
+            if ( intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                continue;
+            if ( intf1.getV4StaticAddress() == null || intf1.getV4StaticPrefix() == null )
+                continue;
+
+            /**
+             * Check v4 address and aliases for global uniqueness
+             */
+            if (addrs.contains( intf1.getV4StaticAddress() )) {
+                throw new RuntimeException( intf1.getName() + " address conflict. " + intf1.getV4StaticAddress().getHostAddress() + " is configured multiple times.");
+            }
+            addrs.add( intf1.getV4StaticAddress() );
+            for ( InterfaceSettings.InterfaceAlias alias : intf1.getV4Aliases() ) {
+                if (addrs.contains( alias.getStaticAddress() )) {
+                    throw new RuntimeException( intf1.getName() + " address conflict. " + alias.getStaticAddress().getHostAddress() + " is configured multiple times.");
+                }
+                addrs.add( alias.getStaticAddress() );
             }
         }
 
