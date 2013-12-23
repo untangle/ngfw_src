@@ -524,7 +524,15 @@ class NetworkTests(unittest2.TestCase):
     def test_110_MTU(self):
         mtuSetValue = '1460'
         targetDevice = 'eth0'
-        mtuAutoValue = '1500'
+        mtuAutoValue = None
+        # Get current MTU value due to bug 11599
+        ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
+        # print ifconfigResults
+        reValue = re.search(r'MTU:(\S+)', ifconfigResults)
+        mtuValue = None
+        if reValue:
+             mtuAutoValue = reValue.group(1)
+        # print "mtuValue " + mtuValue          
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Set eth0 to 1480
         for i in range(len(netsettings['devices']['list'])):
@@ -534,17 +542,20 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         # Verify the MTU is set
         ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
-        print ifconfigResults
+        # print ifconfigResults
         reValue = re.search(r'MTU:(\S+)', ifconfigResults)
         mtuValue = None
         if reValue:
              mtuValue = reValue.group(1)
-        # print "mtuValue " + mtuValue          
+        # print "mtuValue " + mtuValue
+        # manually set MTU back to original value due to bug 11599
+        netsettings['devices']['list'][i]['mtu'] = mtuAutoValue
+        uvmContext.networkManager().setNetworkSettings(netsettings)
         # Set MTU back to auto
         del netsettings['devices']['list'][i]['mtu']
         uvmContext.networkManager().setNetworkSettings(netsettings)
         ifconfigResults = subprocess.Popen(["ifconfig", targetDevice], stdout=subprocess.PIPE).communicate()[0]
-        print ifconfigResults
+        # print ifconfigResults
         reValue = re.search(r'MTU:(\S+)', ifconfigResults)
         mtu2Value = None
         if reValue:
