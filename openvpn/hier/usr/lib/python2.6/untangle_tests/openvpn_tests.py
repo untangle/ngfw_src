@@ -117,8 +117,6 @@ class OpenVpnTests(unittest2.TestCase):
         global nodeData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        # deleted any existing atsclient keys 
-        os.system("rm -f @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-clients/client-atsclient.*")
         nodeData = node.getSettings()
         nodeData["serverEnabled"]=True
         siteName = nodeData['siteName']  
