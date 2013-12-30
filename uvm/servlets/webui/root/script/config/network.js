@@ -1995,6 +1995,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype: "textfield",
                             fieldLabel: this.i18n._("Domain Name"),
                             emptyText: "example.com",
+                            allowBlank: false,
                             name: 'DomainName',
                             value: this.settings.domainName,
                             listeners: {
