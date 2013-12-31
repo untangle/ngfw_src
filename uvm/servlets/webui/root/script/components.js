@@ -1845,7 +1845,7 @@ Ung.CheckStoreRegistration = {
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.CheckStoreRegistration.stop();
-                        Ext.MessageBox.alert(i18n._("Registeration complete."),
+                        Ext.MessageBox.alert(i18n._("Registration complete."),
                                              i18n._("Thank you for using Untangle!") + "<br/>" +
                                              i18n._("You may now install applications into the rack."));
                     });
