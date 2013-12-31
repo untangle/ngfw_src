@@ -2471,7 +2471,7 @@ Ext.define("Ung.GridEventLogBase", {
     startDate: null,
     endDate: null,
     forDateRange: false,
-    resultLimit: 60000,
+    resultLimit: 1000,
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
