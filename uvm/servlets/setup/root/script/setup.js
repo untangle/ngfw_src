@@ -1420,7 +1420,7 @@ Ext.define('Ung.SetupWizard.Complete', {
                 html: '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             }, {
                 xtype: 'container',
-                html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
+                html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.' ),oemName),
                 cls: 'noborder'
             }]
         });
