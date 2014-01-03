@@ -89,7 +89,7 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + hostName);
         }
 
-        // always make sure the local pkcs file exists and is up to date
+        // always make sure the local PFX file exists and is up to date
         UvmContextFactory.context().execManager().exec("openssl pkcs12 -passout pass:password -export -out " + LOCAL_PFX_FILE + " -inkey " + LOCAL_KEY_FILE + " -in " + LOCAL_CRT_FILE);
 
         File apachePem = new File(APACHE_PEM_FILE);
@@ -144,6 +144,10 @@ public class CertificateManagerImpl implements CertificateManager
             // next we create the local PEM file from the local KEY and CRT
             // files
             UvmContextFactory.context().execManager().exec("cat " + LOCAL_KEY_FILE + " " + LOCAL_CRT_FILE + " > " + LOCAL_PEM_FILE);
+
+            // we also want to create the local PFX file for apps that use
+            // SSLEngine like sitefilter and captive portal
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -passout pass:password -export -out " + LOCAL_PFX_FILE + " -inkey " + LOCAL_KEY_FILE + " -in " + LOCAL_CRT_FILE);
 
             // now copy the local PEM file to the apache directory and restart
             UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
@@ -313,11 +317,15 @@ public class CertificateManagerImpl implements CertificateManager
         logger.info("Creating new locally signed apache certificate: " + certSubject);
 
         String argList[] = new String[3];
-        argList[0] = "APACHE"; // puts cert file in settings directory
+        argList[0] = "APACHE"; // puts cert file and key in settings directory
         argList[1] = certSubject;
         argList[2] = altNames;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+
+        // we use the cert and key to create the local PFX file for apps that
+        // use SSLEngine like sitefilter and captive portal
+        UvmContextFactory.context().execManager().exec("openssl pkcs12 -passout pass:password -export -out " + LOCAL_PFX_FILE + " -inkey " + LOCAL_KEY_FILE + " -in " + LOCAL_CRT_FILE);
 
         // now copy the pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_PEM_FILE + " " + APACHE_PEM_FILE);
