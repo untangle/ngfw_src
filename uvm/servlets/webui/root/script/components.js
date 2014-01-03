@@ -2471,7 +2471,6 @@ Ext.define("Ung.GridEventLogBase", {
     startDate: null,
     endDate: null,
     forDateRange: false,
-    resultLimit: 10000,
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
@@ -2531,6 +2530,10 @@ Ext.define("Ung.GridEventLogBase", {
         }, {
             xtype: 'tbtext',
             id: "rackSelector_"+this.getId(),
+            text: ''
+        }, {
+            xtype: 'tbtext',
+            id: "limitSelector_"+this.getId(),
             text: ''
         }, {
             xtype: 'button',
@@ -2751,17 +2754,12 @@ Ext.define("Ung.GridEventLogBase", {
 
         /**
          * If we got results append them to the current events list
+         * And make another call for more
          */
         if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
             this.events.push.apply( this.events, newEvents.list );
-
-            /**
-             * If we still have room for more events, make another call
-             */
-            if ( this.events.length < this.resultLimit ) {
-                this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
-                return;
-            }
+            this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
+            return;
         }
 
         /**
@@ -2867,17 +2865,12 @@ Ext.define("Ung.GridEventLog", {
 
         /**
          * If we got results append them to the current events list
+         * And make another call for more
          */
         if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
             this.events.push.apply( this.events, newEvents.list );
-
-            /**
-             * If we still have room for more events, make another call
-             */
-            if ( this.events.length < this.resultLimit ) {
-                this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
-                return;
-            }
+            this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
+            return;
         }
 
         /**
@@ -2921,13 +2914,14 @@ Ext.define("Ung.GridEventLog", {
         this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
             var selQuery = this.getSelectedQuery();
             var selPolicy = this.getSelectedPolicy();
+            var selLimit = this.getSelectedLimit();
             if (selQuery != null && selPolicy != null) {
                 if (!this.forDateRange)
                     rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
-                                                              selQuery, selPolicy, this.resultLimit);
+                                                              selQuery, selPolicy, selLimit);
                 else 
                     rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this), 
-                                                                          selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
+                                                                          selQuery, selPolicy, selLimit, this.startDate, this.endDate);
             }
         }, this));
     },
@@ -2985,6 +2979,15 @@ Ext.define("Ung.GridEventLog", {
             }
             out.push('</select>');
             Ext.getCmp('rackSelector_' + this.getId()).setText(out.join(""));
+
+            out = [];
+            out.push('<select name="Event Limit" id="selectLimit_' + this.getId() + '" width="100px">');
+            out.push('<option value="' + 1000 + '" selected>' + '1000 ' + i18n._('Events') + '</option>');
+            out.push('<option value="' + 10000 + '">' + '10000 ' + i18n._('Events') + '</option>');
+            out.push('<option value="' + 50000 + '">' + '50000 ' + i18n._('Events') + '</option>');
+            out.push('</select>');
+            Ext.getCmp('limitSelector_' + this.getId()).setText(out.join(""));
+
         }
     },
     // get selected query value
@@ -3014,16 +3017,26 @@ Ext.define("Ung.GridEventLog", {
         }
         return result;
     },
+    // get selected limit
+    getSelectedLimit: function() {
+        var selObj = document.getElementById('selectLimit_' + this.getId());
+        var result = "";
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            result = selObj.options[selObj.selectedIndex].value;
+        }
+        return result;
+    },
     refreshList: function() {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
+        var selLimit = this.getSelectedLimit();
         if (selQuery != null && selPolicy != null) {
             if (!this.forDateRange)
                 rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
-                                                          selQuery, selPolicy, this.resultLimit);
+                                                          selQuery, selPolicy, selLimit);
             else 
                 rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this), 
-                                                             selQueryName, selPolicy, this.resultLimit, this.startDate, this.endDate);
+                                                             selQueryName, selPolicy, selLimit, this.startDate, this.endDate);
         } else {
             this.setLoading(false);
         }
