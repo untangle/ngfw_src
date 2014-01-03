@@ -14,10 +14,11 @@ public interface Reporting
 
     void forceFlush();
 
-    ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate,
-            Date endDate);
+    ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate, Date endDate);
 
-    java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
+    Object getEventsResultSet(final String query, final Long policyId, final int limit, Date startDate, Date endDate);
+    
+    // java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
     
     void createSchemas();
 

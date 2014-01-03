@@ -257,15 +257,15 @@ public class ReportingManagerImpl implements ReportingManager
         return doGetDetailData(d, numDays, appName, detailName, type, value, false);
     }
     
-    public ResultSet getAllDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value)
+    public ResultSetReader getAllDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value)
     {
         return getDetailDataResultSet(d, numDays, appName, detailName, type, value, false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private ResultSet getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type,
-            String value, boolean limitResultSet){
+    private ResultSetReader getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
+    {
         logger.warn("doGetDetailData for '" + appName + "' (detail='" + detailName + "', " + "type='" + type + "', "
                 + "value='" + value + "', " + "limitResultSet='" + limitResultSet + "')");
 
@@ -279,13 +279,13 @@ public class ReportingManagerImpl implements ReportingManager
             return null;
         }
 
+        Connection conn = null;
         for (Section section : ad.getSections()) {
             if (section instanceof DetailSection) {
                 DetailSection sds = (DetailSection) section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
                     logger.info("** sql='" + sql + "'");
-                    Connection conn = null;
                     try {
                         conn = node.getDbConnection();
                         Statement stmt = conn.createStatement();
@@ -303,11 +303,10 @@ public class ReportingManagerImpl implements ReportingManager
                 }
             }
         }
-        return rs;
+        return new ResultSetReader( rs, conn );
     }
     
-    private ArrayList<JSONObject> doGetDetailData(Date d, int numDays, String appName, String detailName, String type,
-            String value, boolean limitResultSet)
+    private ArrayList<JSONObject> doGetDetailData(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
     {
         logger.warn("doGetDetailData for '" + appName + "' (detail='" + detailName + "', " + "type='" + type + "', "
                 + "value='" + value + "', " + "limitResultSet='" + limitResultSet + "')");
@@ -323,7 +322,8 @@ public class ReportingManagerImpl implements ReportingManager
         }
 
         try {
-            ResultSet rs = getDetailDataResultSet(d, numDays, appName, detailName, type, value, limitResultSet);
+            ResultSetReader rsr = getDetailDataResultSet(d, numDays, appName, detailName, type, value, limitResultSet);
+            ResultSet rs = rsr.getResultSet();
             ResultSetMetaData metadata = rs.getMetaData();
             int columnCount = metadata.getColumnCount();
 
@@ -392,12 +392,14 @@ public class ReportingManagerImpl implements ReportingManager
         return h.getReport();
     }
 
-    private List<String> readPlainFile(Date d, int numDays, String category) {
+    private List<String> readPlainFile(Date d, int numDays, String category)
+    {
         List<String> values = getAppNames(getDateDir(d, numDays), "/" + category + ".txt");
         return values;
     }
 
-    private List<Host> getHosts(Date d, int numDays) {
+    private List<Host> getHosts(Date d, int numDays)
+    {
         List<Host> l = new ArrayList<Host>();
         for (String e : readPlainFile(d, numDays, "hosts")) {
             l.add(new Host(e));
@@ -405,7 +407,8 @@ public class ReportingManagerImpl implements ReportingManager
         return l;
     }
 
-    private List<User> getUsers(Date d, int numDays) {
+    private List<User> getUsers(Date d, int numDays)
+    {
         List<User> l = new ArrayList<User>();
         for (String e : readPlainFile(d, numDays, "users")) {
             l.add(new User(e));
@@ -413,7 +416,8 @@ public class ReportingManagerImpl implements ReportingManager
         return l;
     }
 
-    private List<Email> getEmails(Date d, int numDays) {
+    private List<Email> getEmails(Date d, int numDays)
+    {
         List<Email> l = new ArrayList<Email>();
         for (String e : readPlainFile(d, numDays, "emails")) {
             l.add(new Email(e));

@@ -2471,7 +2471,7 @@ Ext.define("Ung.GridEventLogBase", {
     startDate: null,
     endDate: null,
     forDateRange: false,
-    resultLimit: 1000,
+    resultLimit: 10000,
     // called when the component is initialized
     constructor: function(config) {
          var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
@@ -2644,7 +2644,7 @@ Ext.define("Ung.GridEventLogBase", {
                     col.filter = { type: 'datetime',
                             dataIndex: 'time_stamp',
                             date: {
-                                format: 'Y-m-d',
+                                format: 'Y-m-d'
                             },
                             time: {
                                 format: 'H:i:s A',
@@ -2744,26 +2744,55 @@ Ext.define("Ung.GridEventLogBase", {
         }
         return rec;
     },
-    // Refresh the events list
-    refreshCallback: function(result, exception) {
-        if (exception != null) {
-           Ung.Util.handleException(exception);
-        } else {
-            var events = result;
-            //TEST:Add sample events for test
-            if(testMode) {
-                var emptyRec={};
-                var length = Math.floor((Math.random()*5000));
-                for(var i=0; i<length; i++) {
-                    events.list.push(this.getTestRecord(i, this.fields));
-                }
-            }
-            if (this.settingsCmp !== null) {
-                this.getStore().getProxy().data = events;
-                this.getStore().loadPage(1);
+    refreshNextChunkCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+
+        var newEvents = result;
+
+        /**
+         * If we got results append them to the current events list
+         */
+        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
+            this.events.push.apply( this.events, newEvents.list );
+
+            /**
+             * If we still have room for more events, make another call
+             */
+            if ( this.events.length < this.resultLimit ) {
+                this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
+                return;
             }
         }
+
+        /**
+         * If we got here, then we either reached the end of the resultSet or ran out of room
+         * Display the results
+         */
+        if (this.settingsCmp !== null) {
+            this.getStore().getProxy().data = this.events;
+            this.getStore().loadPage(1);
+        }
         this.setLoading(false);
+    },
+    // Refresh the events list
+    refreshCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+
+        this.events = [];
+
+        if( testMode ) {
+            var emptyRec={};
+            var length = Math.floor((Math.random()*5000));
+            for(var i=0; i<length; i++) {
+                this.events.list.push(this.getTestRecord(i, this.fields));
+            }
+            this.refreshNextChunkCallback(null);
+        }
+
+        this.reader = result;
+        this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
+
+
     },    
     listeners: {
         "activate": {
@@ -2831,18 +2860,32 @@ Ext.define("Ung.GridEventLog", {
             }, this));
         }
     },
-    autoRefreshCallback: function(result, exception) {
+    autoRefreshNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
-        var events = result;
-        if(testMode) {
-            var emptyRec={};
-            for(var i=0; i<30; i++) {
-                events.list.push(this.getTestRecord(i, this.fields));
+
+        var newEvents = result;
+
+        /**
+         * If we got results append them to the current events list
+         */
+        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
+            this.events.push.apply( this.events, newEvents.list );
+
+            /**
+             * If we still have room for more events, make another call
+             */
+            if ( this.events.length < this.resultLimit ) {
+                this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
+                return;
             }
         }
-        
+
+        /**
+         * If we got here, then we either reached the end of the resultSet or ran out of room
+         * Display the results
+         */
         if (this.settingsCmp !== null) {
-            this.getStore().getProxy().data = events;
+            this.getStore().getProxy().data = this.events;
             this.getStore().load({
                 params: {
                     start: 0
@@ -2857,16 +2900,34 @@ Ext.define("Ung.GridEventLog", {
             }
         }
     },
+    autoRefreshCallback: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+
+        this.events = [];
+
+        if( testMode ) {
+            var emptyRec={};
+            for(var j=0; j<30; j++) {
+                events.list.push(this.getTestRecord(j, this.fields));
+            }
+            this.autoRefreshNextChunkCallback(null);
+        }
+
+        this.reader = result;
+        this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
+
+    },
     autoRefreshList: function() {
         this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
             var selQuery = this.getSelectedQuery();
             var selPolicy = this.getSelectedPolicy();
             if (selQuery != null && selPolicy != null) {
                 if (!this.forDateRange)
-                    rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.autoRefreshCallback, this), selQuery, selPolicy, this.resultLimit);
+                    rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
+                                                              selQuery, selPolicy, this.resultLimit);
                 else 
-                    rpc.jsonrpc.UvmContext.getEventsForDateRange(Ext.bind(this.refreshCallback, this), 
-                            selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
+                    rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this), 
+                                                                          selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
             }
         }, this));
     },
@@ -2958,10 +3019,11 @@ Ext.define("Ung.GridEventLog", {
         var selPolicy = this.getSelectedPolicy();
         if (selQuery != null && selPolicy != null) {
             if (!this.forDateRange)
-                rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback, this), selQuery, selPolicy, this.resultLimit);
+                rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
+                                                          selQuery, selPolicy, this.resultLimit);
             else 
-                rpc.jsonrpc.UvmContext.getEventsForDateRange(Ext.bind(this.refreshCallback, this), 
-                        selQuery, selPolicy, this.resultLimit, this.startDate, this.endDate);
+                rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this), 
+                                                             selQueryName, selPolicy, this.resultLimit, this.startDate, this.endDate);
         } else {
             this.setLoading(false);
         }

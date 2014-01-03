@@ -553,28 +553,36 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return UvmContextImpl.uid;
     }
     
-    public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
-    {
-        if (this.reportingNode == null)
-            getReportingNode();
-        if (this.reportingNode == null)
-            return null;
+    // public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
+    // {
+    //     return getEventsForDateRange( query, policyId, limit, null, null );
+    // }
+    
+    // public ArrayList<JSONObject> getEventsForDateRange(String query, Long policyId, int limit, Date startDate, Date endDate)
+    // {
+    //     if (this.reportingNode == null)
+    //         getReportingNode();
+    //     if (this.reportingNode == null)
+    //         return null;
 
-        return getEventsForDateRange( query, policyId, limit, null, null );
+    //     return this.reportingNode.getEvents( query, policyId, limit, startDate, endDate );
+    // }
+
+    public Object getEventsResultSet( final String query, final Long policyId, final int limit )
+    {
+        return getEventsForDateRangeResultSet( query, policyId, limit, null, null );
     }
     
-    @Override
-    public ArrayList<JSONObject> getEventsForDateRange(String query, Long policyId, int limit, Date startDate,
-            Date endDate)
+    public Object getEventsForDateRangeResultSet(String query, Long policyId, int limit, Date startDate, Date endDate)
     {
         if (this.reportingNode == null)
             getReportingNode();
         if (this.reportingNode == null)
             return null;
 
-        return this.reportingNode.getEvents( query, policyId, limit, startDate, endDate );
+        return this.reportingNode.getEventsResultSet( query, policyId, limit, startDate, endDate );
     }
-
+    
     /**
      * This call returns one big JSONObject with references to all the important information
      * This is used to avoid lots of separate synchornous calls via the Web UI.

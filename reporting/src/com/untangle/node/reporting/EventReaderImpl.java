@@ -6,7 +6,6 @@ package com.untangle.node.reporting;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,36 +25,34 @@ public class EventReaderImpl
 
     private ReportingNodeImpl node;
 
-    private Connection dbConnection = null;
-
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
     
     public EventReaderImpl( ReportingNodeImpl node )
     {
         this.node = node;
-        this.dbConnection = null;
         this.columnTypeMap.put("inet",String.class);
     }
 
     /**
      * WARNING
-     * You must call getEventsResultSetCommit ALWAYS after calling this function
-     * getEventsResultSetCommit will call commit() on the SQL transaction
+     * You must call closeConnection on the ResultSetReader ALWAYS after calling this function
+     * closeConnection will call commit() on the SQL transaction
      * If you forget to call it, it will maintain an open transaction on that table
      * which will stop other queries (and vacuuming) from taking place
      * @param endDate 
      * @param startDate 
      */
-    public ResultSet getEventsResultSet( final String query, final Long policyId, final int limit, Date startDate, Date endDate )
+    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final int limit, Date startDate, Date endDate )
     {
-        if ( dbConnection == null ) {
-            try {
-                dbConnection = this.node.getDbConnection();
-                dbConnection.setAutoCommit(false);
-            } catch (Exception e) {
-                logger.warn("Unable to create connection to DB",e);
-            }
+        Connection dbConnection = null;
+
+        try {
+            dbConnection = this.node.getDbConnection();
+            dbConnection.setAutoCommit(false);
+        } catch (Exception e) {
+            logger.warn("Unable to create connection to DB",e);
         }
+
         if ( dbConnection == null) {
             logger.warn("Unable to connect to DB.");
             throw new RuntimeException("Unable to connect to DB.");
@@ -98,74 +95,18 @@ public class EventReaderImpl
             }
             
             ResultSet resultSet = statement.executeQuery( queryStr );
-            return resultSet;
+            return new ResultSetReader( resultSet, dbConnection );
             
-        } catch (SQLException e) {
-            closeDbConnection();
+        } catch ( Exception e ) {
+            try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database", e );
             throw new RuntimeException( "Failed to query database.", e );
-        } finally {
-        }
+        } 
     }
 
-    public void getEventsResultSetCommit( )
+    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
     {
-        if (dbConnection != null)
-            try {dbConnection.commit();} catch(Exception exn) {}
-    }
-    
-    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate,
-            Date endDate)
-    {
-        try {
-            ResultSet resultSet = getEventsResultSet( query, policyId, limit, startDate, endDate );
-            if (resultSet == null)
-                return null;
-        
-            ResultSetMetaData metadata = resultSet.getMetaData();
-            int numColumns = metadata.getColumnCount();
-                
-            ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
-
-            while (resultSet.next()) {
-                try {
-                    JSONObject row = new JSONObject();
-                    for ( int i = 1 ; i < numColumns+1 ; i++ ) {
-                        Object o = resultSet.getObject( i );
-
-                        // if its a special Postgres type - change it to string
-                        if (o instanceof org.postgresql.util.PGobject) {
-                            o = o.toString();
-                        }
-                        //logger.info( "getEvents( " + queryStr + " ) column[ " + metadata.getColumnName(i) + " ] = " + o);
-
-                        row.put( metadata.getColumnName(i), o );
-                    }
-                    newList.add(row);
-                } catch (Exception e) {
-                    logger.warn("Failed to process row - skipping.",e);
-                }
-            }
-            return newList;
-        } catch (SQLException e) {
-            closeDbConnection();
-            logger.warn("Failed to query database", e );
-            throw new RuntimeException( "Failed to query database.", e );
-        } finally {
-            getEventsResultSetCommit();
-        }
-    }
-
-    private void closeDbConnection()
-    {
-        try {
-            if (dbConnection != null) {
-                try{dbConnection.commit();} catch(Exception e) {}
-                dbConnection.close();
-            }
-        } catch(Exception exn) {
-            logger.warn("Failed to close connection",exn);
-        }
-        dbConnection = null;
+        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, limit, startDate, endDate);
+        return resultSetReader.getAllEvents();
     }
 }

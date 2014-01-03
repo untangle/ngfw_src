@@ -214,27 +214,26 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.eventWriter.getWriteDelaySec();
     }
     
-    public java.sql.ResultSet getEventsResultSet( final String query, final Long policyId, final int limit )
-    {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, null, null );
-    }
-
-    public void getEventsResultSetCommit( )
-    {
-        ReportingNodeImpl.eventReader.getEventsResultSetCommit();
-    }
-    
     public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit)
     {
         return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, null, null );
     }
     
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit,
-            Date startDate, Date endDate)
+    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
     {
         return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, startDate, endDate );
     }
 
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit)
+    {
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, null, null );
+    }
+    
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
+    {
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, startDate, endDate );
+    }
+    
     public Connection getDbConnection()
     {
         try {
@@ -244,6 +243,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             props.setProperty( "user", settings.getDbUser() );
             props.setProperty( "password", settings.getDbPassword() );
             props.setProperty( "charset", "unicode" );
+            //props.setProperty( "logUnclosedConnections", "true" );
 
             return DriverManager.getConnection(url,props);
         }
@@ -367,8 +367,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         }
     }
     
-    private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler{
-                
+    private class ReportsEventLogExportDownloadHandler extends EventLogExportDownloadHandler
+    {
         @Override
         public String getName()
         {
@@ -399,9 +399,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.info("Export CSV( name:" + appName + " detailName: " + detailName + " date: " + d + ")");
             SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");
             String name = sdf.format(d) + "-" + appName + "-" + detailName;
-            ResultSet resultSet = reportingManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
+            ResultSetReader resultSetReader = reportingManager.getAllDetailDataResultSet(d, numDays, appName, detailName, type, value);
             
-            toCsv(resultSet, resp, columnListStr, name);
+            toCsv(resultSetReader, resp, columnListStr, name);
         }
     }
 
@@ -415,7 +415,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             return "eventLogExport";
         }
         
-        protected void toCsv(ResultSet resultSet, HttpServletResponse resp, String columnListStr, String name){
+        protected void toCsv( ResultSetReader resultSetReader, HttpServletResponse resp, String columnListStr, String name )
+        {
+            if (resultSetReader == null)
+                return;
+
             try {        
                 // Write content type and also length (determined via byte array).
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
@@ -425,6 +429,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 resp.getWriter().write(columnListStr + "\n");
                 resp.getWriter().flush();
 
+                ResultSet resultSet = resultSetReader.getResultSet();
                 if (resultSet == null)
                     return;
 
@@ -458,12 +463,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             } catch (Exception e) {
                 logger.warn("Failed to export CSV.",e);
             } finally {
-                ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-                if (reporting == null) {
-                    logger.warn("reporting node not found");
-                    return;
-                }
-                reporting.getEventsResultSetCommit( );
+                resultSetReader.closeConnection();
             }
         }
         
@@ -482,14 +482,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             Long policyId = Long.parseLong(policyIdStr);
             logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnListStr + ")");
 
-            ReportingNode reporting = (ReportingNode) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+            ReportingNodeImpl reporting = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
             if (reporting == null) {
                 logger.warn("reporting node not found");
                 return;
             }
 
-            ResultSet resultSet = reporting.getEventsResultSet( query, policyId, -1 );
-            toCsv(resultSet, resp, columnListStr, name);
+            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, -1 );
+            toCsv( resultSetReader, resp, columnListStr, name );
         }
     }
     

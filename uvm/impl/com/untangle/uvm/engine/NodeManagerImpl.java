@@ -43,7 +43,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.util.Pulse;
 
 /**
  * Implements NodeManager.
