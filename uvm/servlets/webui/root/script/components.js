@@ -2787,10 +2787,9 @@ Ext.define("Ung.GridEventLogBase", {
             this.refreshNextChunkCallback(null);
         }
 
+        this.setLoading(i18n._('Fetching Events...'));
         this.reader = result;
         this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
-
-
     },    
     listeners: {
         "activate": {
@@ -2835,12 +2834,10 @@ Ext.define("Ung.GridEventLog", {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             if (!forceFlush) {
-                this.setLoading(i18n._('Refreshing Events...'));
                 this.refreshList();
             } else {
                 this.setLoading(i18n._('Syncing events to Database... '));
                 this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-                    this.setLoading(i18n._('Refreshing Events...'));
                     this.refreshList();
                 }, this));
             }
@@ -2915,7 +2912,7 @@ Ext.define("Ung.GridEventLog", {
             var selQuery = this.getSelectedQuery();
             var selPolicy = this.getSelectedPolicy();
             var selLimit = this.getSelectedLimit();
-            if (selQuery != null && selPolicy != null) {
+            if ( selQuery != null && selPolicy != null && selLimit != null ) {
                 if (!this.forDateRange)
                     rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
                                                               selQuery, selPolicy, selLimit);
@@ -3027,10 +3024,11 @@ Ext.define("Ung.GridEventLog", {
         return result;
     },
     refreshList: function() {
+        this.setLoading(i18n._('Querying Database...'));
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
         var selLimit = this.getSelectedLimit();
-        if (selQuery != null && selPolicy != null) {
+        if ( selQuery != null && selPolicy != null && selLimit != null ) {
             if (!this.forDateRange)
                 rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
                                                           selQuery, selPolicy, selLimit);
