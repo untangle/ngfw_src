@@ -304,16 +304,11 @@ public interface UvmContext
      */
     void waitForStartup();
 
-    // /**
-    //  * Query events in the reports database
-    //  */
-    // ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
+    /**
+     * Query events in the reports database
+     */
+    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
     
-    // /**
-    //  * Query events in the reports database, within a given date range
-    //  */
-    // ArrayList<org.json.JSONObject> getEventsForDateRange( final String query, final Long policyId, final int limit, final Date startDate, final Date endDate );
-
     /**
      * Query events in the reports database
      */

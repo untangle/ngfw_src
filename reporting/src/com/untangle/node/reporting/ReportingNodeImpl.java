@@ -219,17 +219,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, null, null );
     }
     
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
-    {
-        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, startDate, endDate );
-    }
-
     public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit)
     {
         return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, null, null );
     }
     
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit, final Date startDate, final Date endDate)
     {
         return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, startDate, endDate );
     }

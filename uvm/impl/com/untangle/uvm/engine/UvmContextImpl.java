@@ -553,21 +553,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return UvmContextImpl.uid;
     }
     
-    // public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
-    // {
-    //     return getEventsForDateRange( query, policyId, limit, null, null );
-    // }
+    public ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit )
+    {
+        return this.reportingNode.getEvents( query, policyId, 1000 );
+    }
     
-    // public ArrayList<JSONObject> getEventsForDateRange(String query, Long policyId, int limit, Date startDate, Date endDate)
-    // {
-    //     if (this.reportingNode == null)
-    //         getReportingNode();
-    //     if (this.reportingNode == null)
-    //         return null;
-
-    //     return this.reportingNode.getEvents( query, policyId, limit, startDate, endDate );
-    // }
-
     public Object getEventsResultSet( final String query, final Long policyId, final int limit )
     {
         return getEventsForDateRangeResultSet( query, policyId, limit, null, null );
