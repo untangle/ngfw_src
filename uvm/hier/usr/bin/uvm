@@ -203,9 +203,6 @@ def monitor_uvm(pid):
             debug("untangle-vm not found (pid: %i), monitoring stopped" % pid);
             return;
 
-        if productionEnv:
-            update_monit();
-
         if needToRestart(pid):
             debug("*** Killing untangle-vm(%i)." % pid);
             os.system("kill %i" % pid);
@@ -272,39 +269,6 @@ def needToRestart(pid):
             return True;
 
     return False;
-
-#
-# Starts monit if necessary
-# First checks if it should not be monitoring
-# Then if checks if monit is running, bun not currently monitoring something
-# If so, it tells monit to monitor all services
-#
-def update_monit():
-    # If we aren't supposed to restart monit do nothing
-    p = os.popen("find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null");
-    output = p.readline()
-    if not output == "":
-        debug("Monit forced unmmonitor less than 10 minutes ago (not monitoring for now).")
-        return 0;
-
-    # check if monit isn't monitoring something
-    result = os.system("monit -c /etc/untangle/monit.conf status 2>/dev/null | grep -q 'monitoring status[ ]*not monitored'");
-    if result == 0:
-        # Print the process that isn't being monitor
-        p = os.popen("monit -c /etc/untangle/monit.conf status 2>/dev/null | grep -B3 'monitoring status[ ]*not monitored' | grep 'Process'");
-        output = p.readline().rstrip()
-        debug("%s not currenting being monitored by monit." % output);
-
-        # If we aren't supposed to restart monit do nothing
-        p = os.popen("find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null");
-        output = p.readline()
-        if not output == "":
-            debug("Monit forced unmmonitor less than 10 minutes ago (not monitoring for now).");
-            return 0;
-        else:
-            # otherwise tell monit to monitor everything
-            debug("Telling monit to monitor all services.");
-            os.system("monit -c /etc/untangle/monit.conf monitor all");
 
 #
 # SIGINT handler 
@@ -444,9 +408,6 @@ while True:
     os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_gc_log, uvm_gc_log));
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_gc_log, uvm_gc_log));
     os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_gc_log, uvm_gc_log));
-    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_monit_log, uvm_monit_log));
-    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_monit_log, uvm_monit_log));
-    os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_monit_log, uvm_monit_log));
     os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
     os.system("dpkg -l 'untangle*' >| %s.crash" % (uvm_packages_log));
