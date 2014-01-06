@@ -440,17 +440,20 @@ class SmtpClientParser extends SmtpParser
         String[] toRcpts = headers.getHeader(HeaderNames.TO);
         String[] ccRcpts = headers.getHeader(HeaderNames.CC);
         try {
-            // Address[] allRcpts;
-            if (toRcpts != null)
+            if (toRcpts != null) {
                 for (String addr : toRcpts) {
-                    InternetAddress ia = new InternetAddress(addr);
-                    ret.addAddress(AddressKind.TO, ia.getAddress(), ia.getPersonal());
+                    InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
+                    for (InternetAddress ia : iaList)
+                        ret.addAddress(AddressKind.TO, ia.getAddress(), ia.getPersonal());
                 }
-            if (ccRcpts != null)
+            }
+            if (ccRcpts != null) {
                 for (String addr : ccRcpts) {
-                    InternetAddress ia = new InternetAddress(addr);
-                    ret.addAddress(AddressKind.CC, ia.getAddress(), ia.getPersonal());
+                    InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
+                    for (InternetAddress ia : iaList)
+                        ret.addAddress(AddressKind.CC, ia.getAddress(), ia.getPersonal());
                 }
+            }
 
             // Drain FROM
             InternetAddress ia = new InternetAddress(headers.getHeader(HeaderNames.FROM, ""));
