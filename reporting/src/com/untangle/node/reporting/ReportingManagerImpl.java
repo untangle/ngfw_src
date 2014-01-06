@@ -257,14 +257,18 @@ public class ReportingManagerImpl implements ReportingManager
         return doGetDetailData(d, numDays, appName, detailName, type, value, false);
     }
     
+    public ResultSetReader getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value){
+        return getDetailDataResultSetImpl(d, numDays, appName, detailName, type, value, true);
+    }
+    
     public ResultSetReader getAllDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value)
     {
-        return getDetailDataResultSet(d, numDays, appName, detailName, type, value, false);
+        return getDetailDataResultSetImpl(d, numDays, appName, detailName, type, value, false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private ResultSetReader getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
+    public ResultSetReader getDetailDataResultSetImpl(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
     {
         logger.warn("doGetDetailData for '" + appName + "' (detail='" + detailName + "', " + "type='" + type + "', "
                 + "value='" + value + "', " + "limitResultSet='" + limitResultSet + "')");
@@ -320,9 +324,9 @@ public class ReportingManagerImpl implements ReportingManager
         if (null == ad) {
             return newList;
         }
-
+        ResultSetReader rsr = null;
         try {
-            ResultSetReader rsr = getDetailDataResultSet(d, numDays, appName, detailName, type, value, limitResultSet);
+            rsr = getDetailDataResultSetImpl(d, numDays, appName, detailName, type, value, limitResultSet);
             ResultSet rs = rsr.getResultSet();
             ResultSetMetaData metadata = rs.getMetaData();
             int columnCount = metadata.getColumnCount();
@@ -345,11 +349,7 @@ public class ReportingManagerImpl implements ReportingManager
         } catch (JSONException e) {
             logger.warn("could not get DetailData for: " + appName, e);
         } finally {
-            Connection conn = node.getDbConnection();
-            if (conn != null) {
-                try { conn.close(); } catch (Exception x) {}
-                conn = null;
-            }
+            if (rsr!=null)try { rsr.closeConnection(); } catch (Exception x) {}
         }
         return newList;
     }

@@ -856,7 +856,7 @@ Ext.define("Ung.GridEventLogReports", {
         }
     },
     autoRefreshList: function() {
-        this.reportingManager.getDetailData(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
+        this.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
                 this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
     },
     exportHandler: function() {
@@ -900,7 +900,7 @@ Ext.define("Ung.GridEventLogReports", {
         
     },
     refreshList: function() {
-        this.reportingManager.getDetailData(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
+        this.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
                 this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
     }
 });

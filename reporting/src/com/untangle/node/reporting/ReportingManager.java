@@ -46,6 +46,8 @@ public interface ReportingManager
     ArrayList<JSONObject> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
     ArrayList<JSONObject> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
+    
+    Object getDetailDataResultSet(Date d, int numDays, String appName, String detailName, String type, String value);
 
     /**
      * Tests if reporting is enabled, that is if reports will be
