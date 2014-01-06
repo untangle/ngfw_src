@@ -4883,6 +4883,28 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.packetTest.show();
         },        
         validate: function() {
+            var domainNameCmp =this.panelHostName.down('textfield[name="DomainName"]');
+            if (!domainNameCmp.isValid()) {
+                this.tabs.setActiveTab(this.panelHostName);
+                domainNameCmp.focus(true);
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A Domain Name must be specified.'));
+                return false;
+            }
+            var httpsPortCmp =this.panelServices.down('numberfield[name="httpsPort"]');
+            if (!httpsPortCmp.isValid()) {
+                this.tabs.setActiveTab(this.panelServices);
+                httpsPortCmp.focus(true);
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A HTTPS port must be specified.'));
+                return false;
+            }
+
+            var httpPortCmp =this.panelServices.down('numberfield[name="httpPort"]');
+            if (!httpPortCmp.isValid()) {
+                this.tabs.setActiveTab(this.panelServices);
+                httpPortCmp.focus(true);
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('A HTTP port must be specified.'));
+                return false;
+            }
             if(this.settings.qosSettings.qosEnabled) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
                 for(var i=0; i<qosBandwidthList.length; i++) {
