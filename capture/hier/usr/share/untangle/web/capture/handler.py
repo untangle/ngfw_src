@@ -271,11 +271,14 @@ def generate_page(req,captureSettings,args,extra=''):
     file = open(name, "r")
     page = file.read();
     file.close()
-    
-    if captureSettings['checkServerCertificate'] == True :
-        page = replace_marker(page,'$.SecureEndpointCheck','checkSecureEndpoint();')
+
+    if (not 'checkServerCertificate' in captureSettings):
+        captureSettings['checkServerCertificate'] = False
+
+    if captureSettings['checkServerCertificate'] == True:
+        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint();')
     else:
-        page = replace_marker(page,'$.SecureEndpointCheck','')
+        page = replace_marker(page,'$.SecureEndpointCheck.$','')
 
     if (captureSettings['pageType'] == 'BASIC_LOGIN'):
         page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
