@@ -2483,6 +2483,7 @@ Ext.define("Ung.GridEventLogBase", {
         this.callParent(arguments);
     },
     initComponent: function() {
+        var me = this;
         this.rpc = {
             repository: {}
         };
@@ -2511,128 +2512,135 @@ Ext.define("Ung.GridEventLogBase", {
             remoteFilter: false
         });
         
-        var _this = this;
         var startDateMenu = Ext.create('Ext.menu.DatePicker', {
             handler: function (dp, date) {
-                _this.startDate = date;
+                me.startDate = date;
             }
         });
         var endDateMenu = Ext.create('Ext.menu.DatePicker', {
             handler: function (dp, date) {
-                _this.endDate = date;
+                me.endDate = date;
             }
         });
 
-        this.bbar = [{
-            xtype: 'tbtext',
-            id: "querySelector_"+this.getId(),
-            text: ''
-        }, {
-            xtype: 'tbtext',
-            id: "rackSelector_"+this.getId(),
-            text: ''
-        }, {
-            xtype: 'tbtext',
-            id: "limitSelector_"+this.getId(),
-            text: ''
-        }, {
-            xtype: 'button',
-            id: "refresh_"+this.getId(),
-            text: i18n._('Refresh'),
-            name: "Refresh",
-            tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-            iconCls: 'icon-refresh',
-            handler: Ext.bind(this.flushHandler, this, [true])
-        }, {
-            xtype: 'button',
-            hidden: !this.hasAutoRefresh,
-            id: "auto_refresh_"+this.getId(),
-            text: i18n._('Auto Refresh'),
-            enableToggle: true,
-            pressed: false,
-            name: "Auto Refresh",
-            tooltip: i18n._('Auto Refresh every 5 seconds'),
-            iconCls: 'icon-autorefresh',
-            handler: Ext.bind(function() {
-                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                if(autoRefreshButton.pressed) {
-                    this.startAutoRefresh();
-                } else {
-                    this.stopAutoRefresh();
-                }
-            }, this)
-        }, {
-            xtype: 'button',
-            id: "export_"+this.getId(),
-            text: i18n._('Export'),
-            name: "Export",
-            tooltip: i18n._('Export Events to File'),
-            iconCls: 'icon-export',
-            handler: Ext.bind(this.exportHandler, this)
-        }, '-', i18n._('Filter:'), {
-            xtype: 'textfield',
-            name: 'searchField',
-            hideLabel: true,
-            width: 130,
-            listeners: {
-                change: {
-                    fn: function() {
-                        this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
-                    },
-                    scope: this,
-                    buffer: 600
-                }
-            }
-        }, {
-            xtype: 'checkbox',
-            name: 'caseSensitive',
-            hideLabel: true,
-            margin: '0 0 0 4px',
-            handler: function() {
-                this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
-            },
-            scope: this
-        }, i18n._('Case sensitive'), '-', {
-            xtype: 'menu',
-            floating: false,
-            hidden: !this.hasTimestampFilter,
-            width: 100,
-            height: 30,
+        this.dockedItems = [{
+            xtype: 'toolbar',
+            dock: 'bottom',
             items: [{
-                text: i18n._('From:'),
-                menu: startDateMenu,
-                tooltip: i18n._('Select start date')
-            }]
-        },{
-            xtype: 'menu',
-            floating: false,
-            hidden: !this.hasTimestampFilter,
-            width: 100,
-            height: 30,
-            items: [{
-                text: i18n._('To:'),
-                menu: endDateMenu,
-                tooltip: i18n._('Select end date')
+                xtype: 'tbtext',
+                id: "querySelector_"+this.getId(),
+                text: ''
+            }, {
+                xtype: 'tbtext',
+                id: "rackSelector_"+this.getId(),
+                text: ''
+            }, {
+                xtype: 'tbtext',
+                id: "limitSelector_"+this.getId(),
+                text: ''
+            }, {
+                xtype: 'button',
+                id: "refresh_"+this.getId(),
+                text: i18n._('Refresh'),
+                name: "Refresh",
+                tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                iconCls: 'icon-refresh',
+                handler: Ext.bind(this.flushHandler, this, [true])
+            }, {
+                xtype: 'button',
+                hidden: !this.hasAutoRefresh,
+                id: "auto_refresh_"+this.getId(),
+                text: i18n._('Auto Refresh'),
+                enableToggle: true,
+                pressed: false,
+                name: "Auto Refresh",
+                tooltip: i18n._('Auto Refresh every 5 seconds'),
+                iconCls: 'icon-autorefresh',
+                handler: Ext.bind(function(button) {
+                    if(button.pressed) {
+                        this.startAutoRefresh();
+                    } else {
+                        this.stopAutoRefresh();
+                    }
+                }, this)
+            }, {
+                xtype: 'button',
+                id: "export_"+this.getId(),
+                text: i18n._('Export'),
+                name: "Export",
+                tooltip: i18n._('Export Events to File'),
+                iconCls: 'icon-export',
+                handler: Ext.bind(this.exportHandler, this)
             }]
         }, {
-            xtype: 'button',
-            hidden: !this.hasTimestampFilter,
-            text: i18n._('Get events'),
-            name: "Get events",
-            tooltip: i18n._('Get events for date range'),
-            handler: Ext.bind(function () {
-                this.forDateRange = true;
-                this.refreshHandler(false);
-            }, this) 
-        }, '-', {
-            text: i18n._('Clear Filters'),
-            tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
-            handler: Ext.bind(function () {
-                this.searchField.setValue("");
-                this.filters.clearFilters();
-            }, this) 
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [i18n._('Filter:'), {
+                xtype: 'textfield',
+                name: 'searchField',
+                hideLabel: true,
+                width: 130,
+                listeners: {
+                    change: {
+                        fn: function() {
+                            this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                        },
+                        scope: this,
+                        buffer: 600
+                    }
+                }
+            }, {
+                xtype: 'checkbox',
+                name: 'caseSensitive',
+                hideLabel: true,
+                margin: '0 4px 0 4px',
+                boxLabel: i18n._('Case sensitive'),
+                handler: function() {
+                    this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
+                },
+                scope: this
+            }, '-', {
+                xtype: 'menu',
+                floating: false,
+                hidden: !this.hasTimestampFilter,
+                width: 100,
+                height: 30,
+                items: [{
+                    text: i18n._('From:'),
+                    menu: startDateMenu,
+                    tooltip: i18n._('Select start date')
+                }]
+            },{
+                xtype: 'menu',
+                floating: false,
+                hidden: !this.hasTimestampFilter,
+                width: 100,
+                height: 30,
+                items: [{
+                    text: i18n._('To:'),
+                    menu: endDateMenu,
+                    tooltip: i18n._('Select end date')
+                }]
+            }, {
+                xtype: 'button',
+                hidden: !this.hasTimestampFilter,
+                text: i18n._('Get events'),
+                name: "Get events",
+                tooltip: i18n._('Get events for date range'),
+                handler: Ext.bind(function () {
+                    this.forDateRange = true;
+                    this.refreshHandler(false);
+                }, this) 
+            }, '-', {
+                text: i18n._('Clear Filters'),
+                tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                handler: Ext.bind(function () {
+                    this.searchField.setValue("");
+                    this.filters.clearFilters();
+                }, this) 
+            }]
         }];
-        
+
         for (var i in this.columns) {
             var col=this.columns[i];
             if (col.sortable === undefined) {
@@ -2782,7 +2790,7 @@ Ext.define("Ung.GridEventLogBase", {
             var emptyRec={};
             var length = Math.floor((Math.random()*5000));
             for(var i=0; i<length; i++) {
-                this.events.list.push(this.getTestRecord(i, this.fields));
+                this.events.push(this.getTestRecord(i, this.fields));
             }
             this.refreshNextChunkCallback(null);
         }
@@ -3029,12 +3037,13 @@ Ext.define("Ung.GridEventLog", {
         var selPolicy = this.getSelectedPolicy();
         var selLimit = this.getSelectedLimit();
         if ( selQuery != null && selPolicy != null && selLimit != null ) {
-            if (!this.forDateRange)
+            if (!this.forDateRange) {
                 rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
                                                           selQuery, selPolicy, selLimit);
-            else 
+            } else { 
                 rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this), 
-                                                             selQueryName, selPolicy, selLimit, this.startDate, this.endDate);
+                                                             selQuery, selPolicy, selLimit, this.startDate, this.endDate);
+            }
         } else {
             this.setLoading(false);
         }
@@ -3986,12 +3995,13 @@ Ext.define('Ung.MonitorGrid', {
             xtype: 'checkbox',
             name: 'caseSensitive',
             hideLabel: true,
-            margin: '0 0 0 4px',
+            boxLabel: i18n._('Case sensitive'),
+            margin: '0 4px 0 4px',
             handler: function() {
                 this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
             },
             scope: this
-        }, i18n._('Case sensitive'), '-', {
+        }, '-', {
             text: i18n._('Clear Filters'),
             tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
             handler: Ext.bind(function () {
