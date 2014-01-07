@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_udp.c 35480 2013-07-30 20:42:22Z dmorris $
+ * $Id$
  */
 #include "netcap_udp.h"
 
@@ -469,8 +469,16 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
            unet_next_inet_ntoa(pkt->dst.host.s_addr),pkt->dst.port,
            data_len, pkt->ttl, pkt->tos, nfmark);
 
-    
-    if (( ret = sendmsg( sock, &msg, flags )) < 0 ) {
+    if ( ( ret = sendmsg( sock, &msg, flags ) ) < 0 ) {
+        /**
+         * An error has occured.
+         * Use the data length to fake that the packet was written.
+         * This way the packet is just dropped.
+         * This is to prevent spinning while retrying to write the packet (Bug #11624.)
+         * Something really bad has happened so just give up and drop the packet.
+         */
+        ret = data_len;
+
         switch ( errno ) {
         case EPERM:
             /* Fallthrough */
@@ -480,8 +488,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             /* Fallthrough */
             errlog( ERR_WARNING, "UDP: unable to send packet(%s), innocuous response code\n",
                     strerror(errno));
-            /* Use the data length to fake that the packet was written. This way the packet is consumed */
-            ret = data_len;
             break;
 
         case EINVAL: 
@@ -490,11 +496,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
                     unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                     unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
                     data_len, pkt->ttl, pkt->tos, nfmark );
-            
-            /* Use the data length to fake that the packet was written. This way the packet is consumed */
-            /* XXX This should not be here, the packets should be dropped before reaching the MVVM, 
-               see bug(827) for more information */
-            ret = data_len;
             break;
 
         default:
