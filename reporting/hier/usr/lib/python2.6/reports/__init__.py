@@ -428,12 +428,10 @@ class DetailSection(Section):
     def get_flowables(self, report_base, date_base, end_date):
         return []
 
-    def write_csv(self, filename, start_date, end_date, host=None, user=None,
-                  email=None):
+    def write_csv(self, filename, start_date, end_date, host=None, user=None, email=None):
         logger.debug('Generating CSV for %s' % (self.name,))
 
-        sql = self.get_sql(start_date, end_date, host=None, user=None,
-                           email=None)
+        sql = self.get_sql(start_date, end_date, host=None, user=None, email=None)
         f = codecs.open(filename, 'w', 'utf-8')
         w = UnicodeWriter(f)
         conn = sql_helper.get_connection()
