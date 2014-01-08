@@ -1167,7 +1167,7 @@ Ext.define('Ung.ReportDetails', {
                             '<strong>' + hvm[key] + '</strong>');
         }
         url = imagePath + summaryItem.name + imageSuffix;
-        return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+')">'+stringTemplate+'</p></div>';
+        return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+');margin-top:0px;margin-bottom:0px;">'+stringTemplate+'</p></div>';        
     },
 
     buildSummarySection: function (appName, section) {
