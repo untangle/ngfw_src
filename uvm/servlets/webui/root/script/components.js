@@ -2766,6 +2766,7 @@ Ext.define("Ung.GridEventLogBase", {
          */
         if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
             this.events.push.apply( this.events, newEvents.list );
+            this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')');
             this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
             return;
         }
@@ -2874,6 +2875,7 @@ Ext.define("Ung.GridEventLog", {
          */
         if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
             this.events.push.apply( this.events, newEvents.list );
+            this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')');
             this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
             return;
         }
