@@ -2517,9 +2517,48 @@ Ext.define("Ung.GridEventLogBase", {
                 me.startDate = date;
             }
         });
+        
+        var startTime = Ext.create('Ext.form.field.Time', {
+            width: 90,
+            increment:15,
+            minValue:'00:00 AM',
+            maxValue:'11:45 PM',
+            value:Ext.Date.parse('12:00 AM','h:i A'),
+            listeners: {
+                select: {
+                    fn: function(combo,records,opts) {
+                        if ( me.startDate) {
+                            me.startDate.setHours( records[0].data.date.getHours());
+                            me.startDate.setMinutes( records[0].data.date.getMinutes());
+                        }
+                    },
+                    scope: this
+                }
+            }
+        });
+
         var endDateMenu = Ext.create('Ext.menu.DatePicker', {
             handler: function (dp, date) {
                 me.endDate = date;
+            }
+        });
+        
+        var endTime = Ext.create('Ext.form.field.Time', {
+            width: 90,
+            increment:15,
+            minValue:'00:00 AM',
+            maxValue:'11:45 PM',
+            value:Ext.Date.parse('12:00 AM','h:i A'),
+            listeners: {
+                select: {
+                    fn: function(combo,records,opts) {
+                        if ( me.endDate) {
+                            me.endDate.setHours(records[0].data.date.getHours());
+                            me.endDate.setMinutes(records[0].data.date.getMinutes());
+                        }
+                    },
+                    scope: this
+                }
             }
         });
 
@@ -2610,7 +2649,10 @@ Ext.define("Ung.GridEventLogBase", {
                     menu: startDateMenu,
                     tooltip: i18n._('Select start date')
                 }]
-            },{
+            }, 
+            '-',startTime,'-'
+            ,
+            {
                 xtype: 'menu',
                 floating: false,
                 hidden: !this.hasTimestampFilter,
@@ -2621,7 +2663,10 @@ Ext.define("Ung.GridEventLogBase", {
                     menu: endDateMenu,
                     tooltip: i18n._('Select end date')
                 }]
-            }, {
+            },
+            '-', endTime,'-',
+            ,
+            {
                 xtype: 'button',
                 hidden: !this.hasTimestampFilter,
                 text: i18n._('Get events'),
