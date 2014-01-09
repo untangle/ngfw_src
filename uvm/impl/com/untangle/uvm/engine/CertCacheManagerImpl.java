@@ -15,6 +15,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
+import java.net.SocketTimeoutException;
 import java.net.SocketException;
 import java.net.URL;
 import org.apache.log4j.Logger;
@@ -135,14 +136,22 @@ public class CertCacheManagerImpl implements CertCacheManager
             logger.info("CertCache Fetch " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
         }
 
-        // we log and ignore all socket exceptions
+        // we log and ignore all socket timeout exceptions 
+        catch (SocketTimeoutException tex) {
+            logger.warn("Socket timeout fetching server certificate from " + serverAddress);
+        }
+
+        // we log and ignore all other socket exceptions
         catch (SocketException soc) {
-            logger.warn("Socket exception fetching server certificate", soc);
+            logger.warn("Socket exception fetching server certificate from " + serverAddress);
         }
 
         // we log and ignore all other exceptions
         catch (Exception exn) {
-            logger.warn("Exception fetching server certificate", exn);
+            String exmess = exn.getMessage();
+            if (exmess == null)
+                exmess = "unknown";
+            logger.warn("Exception fetching server certificate: " + exn.getMessage());
         }
 
         // We were the first thread to prefetch this certificate so we have
