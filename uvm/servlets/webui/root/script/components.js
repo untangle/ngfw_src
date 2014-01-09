@@ -3155,6 +3155,8 @@ Ung.CustomEventLog = {
                 }, {
                     name: 'username'
                 }, {
+                    name: 'hostname'
+                }, {
                     name: 'c_client_addr'
                 }, {
                     name: 'c_client_port'
@@ -3186,7 +3188,7 @@ Ung.CustomEventLog = {
                     name: 'protofilter_blocked'
                 }, {
                     name: 'protofilter_protocol',
-                    type: 'string',
+                    type: 'string'
                 }, {
                     name: 'classd_ruleid'
                 }, {
@@ -3245,6 +3247,12 @@ Ung.CustomEventLog = {
                     width: Ung.Util.usernameFieldWidth,
                     sortable: true,
                     dataIndex: 'username'
+                }, {
+                    hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                    header: i18n._("Hostname"),
+                    width: Ung.Util.hostnameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'hostname'
                 }, {
                     hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
                     header: i18n._("Server"),
@@ -3527,6 +3535,8 @@ Ung.CustomEventLog = {
               }, {
                   name: 'username'
               }, {
+                  name: 'hostname'
+              }, {
                   name: 'c_server_addr'
               }, {
                   name: 's_server_port'
@@ -3568,6 +3578,12 @@ Ung.CustomEventLog = {
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
                   }
+              }, {
+                  hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                  header: i18n._("Hostname"),
+                  width: Ung.Util.hostnameFieldWidth,
+                  sortable: true,
+                  dataIndex: 'hostname'
               }, {
                   hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
                   header: i18n._("Client"),
@@ -3714,6 +3730,8 @@ Ung.CustomEventLog = {
                   name: 'time_stamp',
                   sortType: Ung.SortTypes.asTimestamp
               }, {
+                  name: 'hostname'
+              }, {
                   name: 'c_client_addr'
               }, {
                   name: 'username'
@@ -3770,6 +3788,12 @@ Ung.CustomEventLog = {
                   renderer: function(value) {
                       return i18n.timestampFormat(value);
                   }
+              }, {
+                  hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                  header: i18n._("Hostname"),
+                  width: Ung.Util.hostnameFieldWidth,
+                  sortable: true,
+                  dataIndex: 'hostname'
               }, {
                   hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
                   header: i18n._("Client"),
