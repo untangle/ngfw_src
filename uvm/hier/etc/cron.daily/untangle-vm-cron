@@ -2,13 +2,7 @@
 
 exec > /dev/null 2>&1
 
-if [ -f "@PREFIX@/usr/share/untangle/conf/uid" ]; then
-
-    # remove old temp files older than 7 days (safety mechanism)
-    /usr/bin/find /tmp -mtime +7 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
-
-    # remove old "velocity" files? something to do with the mail quarantine XXX
-    /usr/bin/find @PREFIX@/usr/share/untangle/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
-fi
+# remove old temp files older than 7 days (safety mechanism)
+/usr/bin/find /tmp -mtime +7 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
 
 exit 0
