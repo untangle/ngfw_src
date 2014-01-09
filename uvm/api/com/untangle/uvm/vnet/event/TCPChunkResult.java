@@ -1,5 +1,5 @@
 /**
- * $Id: TCPChunkResult.java 35447 2013-07-29 17:24:43Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet.event;
 
@@ -14,6 +14,19 @@ public class TCPChunkResult extends IPDataResult
     private static final byte TYPE_READ_MORE_NO_WRITE = 2;
 
     public static final TCPChunkResult READ_MORE_NO_WRITE = new TCPChunkResult(TYPE_READ_MORE_NO_WRITE);
+
+    /**
+     * The SessionControl stuff was added to give the https-casing a way
+     * to indicate that a session should be released or destroyed.  The
+     * CasingCoupler uses checkSessionControl() after calling parse
+     * or unparse to see if it needs to release or destroy the session.
+     */
+    public enum SessionControl
+    {
+        NOOP, RELEASE, DESTROY
+    }
+
+    private SessionControl sessionControl = SessionControl.NOOP;
 
     private TCPChunkResult( byte code )
     {
@@ -32,6 +45,12 @@ public class TCPChunkResult extends IPDataResult
      * @param chunksToServer a <code>ByteBuffer[]</code> containing the buffers to be gathered and written to the server, with each data chunk starting at its buffer's position, extending to its buffer's limit  Null means write nothing to the server.
      * @param readBuffer a <code>ByteBuffer</code> giving the buffer to be used for further reading from the source.  new bytes are read beginning at position, extending to at most the limit.  Null means the system will throw away the read-buffer and returns the session to a bufferless, lowest-wastage state.
      */
+    public TCPChunkResult( SessionControl sessionControl, ByteBuffer[] chunksToClient, ByteBuffer[] chunksToServer, ByteBuffer readBuffer)
+    {
+        super(chunksToClient, chunksToServer, readBuffer);
+        this.sessionControl = sessionControl;
+    }
+
     public TCPChunkResult( ByteBuffer[] chunksToClient, ByteBuffer[] chunksToServer, ByteBuffer readBuffer)
     {
         super(chunksToClient, chunksToServer, readBuffer);
@@ -45,5 +64,10 @@ public class TCPChunkResult extends IPDataResult
     public ByteBuffer[] chunksToServer()
     {
         return bufsToServer();
+    }
+
+    public SessionControl checkSessionControl()
+    {
+        return sessionControl;
     }
 }

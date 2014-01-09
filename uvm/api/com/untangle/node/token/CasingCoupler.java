@@ -25,7 +25,7 @@ public class CasingCoupler extends CasingBase
 {
     public CasingCoupler(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
     {
-        super(node,casingFactory,clientSide,releaseParseExceptions);
+        super(node, casingFactory, clientSide, releaseParseExceptions);
     }
 
     // SessionEventListener methods -------------------------------------------
@@ -35,14 +35,14 @@ public class CasingCoupler extends CasingBase
     {
         NodeTCPSession session = e.session();
 
-        Casing casing = casingFactory.casing( session, clientSide );
-        Pipeline pipeline = pipeFoundry.getPipeline( session.id() );
+        Casing casing = casingFactory.casing(session, clientSide);
+        Pipeline pipeline = pipeFoundry.getPipeline(session.id());
 
         if (logger.isDebugEnabled()) {
             logger.debug("new session setting: " + pipeline + " for: " + session.id());
         }
 
-        addCasing( session, casing, pipeline );
+        addCasing(session, casing, pipeline);
     }
 
     @Override
@@ -52,10 +52,10 @@ public class CasingCoupler extends CasingBase
             logger.debug("handling client chunk, session: " + e.session().id());
         }
 
-        Casing casing = casingFactory.casing( e.session(), clientSide );
-
-        if (clientSide) return streamParse(casing, e, false);
-        else return streamUnparse(casing, e, false);
+        if (clientSide)
+            return streamParse(e, false);
+        else
+            return streamUnparse(e, false);
     }
 
     @Override
@@ -65,10 +65,10 @@ public class CasingCoupler extends CasingBase
             logger.debug("handling server chunk, session: " + e.session().id());
         }
 
-        Casing casing = casingFactory.casing( e.session(), clientSide );
-
-        if (clientSide) return streamUnparse(casing, e, true);
-        else return streamParse(casing, e, true);
+        if (clientSide)
+            return streamUnparse(e, true);
+        else
+            return streamParse(e, true);
     }
 
     @Override
@@ -78,10 +78,10 @@ public class CasingCoupler extends CasingBase
             logger.debug("handling client chunk, session: " + e.session().id());
         }
 
-        Casing casing = casingFactory.casing( e.session(), clientSide );
-
-        if (clientSide) return streamParse(casing, e, false);
-        else return streamUnparse(casing, e, false);
+        if (clientSide)
+            return streamParse(e, false);
+        else
+            return streamUnparse(e, false);
     }
 
     @Override
@@ -91,10 +91,10 @@ public class CasingCoupler extends CasingBase
             logger.debug("handling server chunk, session: " + e.session().id());
         }
 
-        Casing casing = casingFactory.casing( e.session(), clientSide );
-
-        if (clientSide) return streamUnparse(casing, e, true);
-        else return streamParse(casing, e, true);
+        if (clientSide)
+            return streamUnparse(e, true);
+        else
+            return streamParse(e, true);
     }
 
     @Override
@@ -104,15 +104,21 @@ public class CasingCoupler extends CasingBase
             logger.debug("finalizing " + e.session().id());
         }
         Casing c = getCasing(e.ipsession());
-        c.parser().handleFinalized();
-        c.unparser().handleFinalized();
+
+        // the casing may have already been shutdown so we only need to
+        // call the finalized stuff if it still exists 
+        if (c != null) {
+            c.parser().handleFinalized();
+            c.unparser().handleFinalized();
+        }
+
         removeCasingDesc(e.session());
     }
 
     @Override
     public void handleTimer(IPSessionEvent e)
     {
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
+        NodeTCPSession s = (NodeTCPSession) e.ipsession();
 
         Parser p = getCasing(s).parser();
         p.handleTimer();
@@ -121,41 +127,66 @@ public class CasingCoupler extends CasingBase
 
     // private methods --------------------------------------------------------
 
-    private IPDataResult streamParse(Casing casing, TCPChunkEvent e, boolean s2c)
+    private IPDataResult streamParse(TCPChunkEvent e, boolean s2c)
     {
+        NodeTCPSession session = e.session();
+        Casing casing = getCasing(session);
         Parser parser = casing.parser();
         TCPChunkResult result = null;
-        
-        try
-        {
+
+        try {
             result = parser.parse(e);
         }
 
-        catch (Exception exn)
-        {
+        catch (Exception exn) {
             logger.warn("Error during streamParse()", exn);
             return null;
         }
 
-        return(result);
+        // if the session control flag is anything other than NOOP then we
+        // must cleanup and release or destroy the session as instructed  
+        if (result.checkSessionControl() != TCPChunkResult.SessionControl.NOOP) {
+            Casing c = getCasing(e.session());
+            c.parser().handleFinalized();
+            c.unparser().handleFinalized();
+            removeCasingDesc(session);
+            if (result.checkSessionControl() == TCPChunkResult.SessionControl.RELEASE)
+                session.release();
+            if (result.checkSessionControl() == TCPChunkResult.SessionControl.DESTROY)
+                session.killSession();
+        }
+
+        return (result);
     }
 
-    private IPDataResult streamUnparse(Casing casing, TCPChunkEvent e, boolean s2c)
+    private IPDataResult streamUnparse(TCPChunkEvent e, boolean s2c)
     {
+        NodeTCPSession session = e.session();
+        Casing casing = getCasing(session);
         Unparser unparser = casing.unparser();
         TCPChunkResult result = null;
 
-        try
-        {
+        try {
             result = unparser.unparse(e);
         }
 
-        catch (Exception exn)
-        {
+        catch (Exception exn) {
             logger.warn("Error during streamUnparse()", exn);
             return null;
         }
 
-        return(result);
+        // if the session control flag is anything other than NOOP then we
+        // must cleanup and release or destroy the session as instructed  
+        if (result.checkSessionControl() != TCPChunkResult.SessionControl.NOOP) {
+            casing.parser().handleFinalized();
+            casing.unparser().handleFinalized();
+            removeCasingDesc(session);
+            if (result.checkSessionControl() == TCPChunkResult.SessionControl.RELEASE)
+                session.release();
+            if (result.checkSessionControl() == TCPChunkResult.SessionControl.DESTROY)
+                session.killSession();
+        }
+
+        return (result);
     }
 }

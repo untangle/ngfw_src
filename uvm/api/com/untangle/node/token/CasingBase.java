@@ -78,6 +78,7 @@ public class CasingBase extends AbstractEventHandler
     protected Casing getCasing(NodeSession session)
     {
         CasingDesc casingDesc = casings.get(session);
+        if (casingDesc == null) return(null);
         return casingDesc.casing;
     }
 
