@@ -1,5 +1,5 @@
 /*
- * $Id: SpamSmtpHandler.java 35601 2013-08-13 04:26:59Z dmorris $
+ * $Id$
  */
 package com.untangle.node.spam;
 
@@ -368,7 +368,6 @@ public class SpamSmtpHandler extends SmtpStateMachine
         if (config.getAddSpamHeaders()) {
             try {
                 msg.setHeader(config.getHeaderName(), (report.isSpam() ? "YES" : "NO"));
-                msg.saveChanges();
             } catch (MessagingException shouldNotHappen) {
                 logger.error(shouldNotHappen);
             }
