@@ -2518,12 +2518,14 @@ Ext.define("Ung.GridEventLogBase", {
             }
         });
         
+        var dayStart = Ext.Date.parse('12:00 AM','h:i A');
+        
         var startTime = Ext.create('Ext.form.field.Time', {
             width: 90,
             increment:15,
             minValue:'00:00 AM',
             maxValue:'11:45 PM',
-            value:Ext.Date.parse('12:00 AM','h:i A'),
+            value:dayStart,
             listeners: {
                 select: {
                     fn: function(combo,records,opts) {
@@ -2536,6 +2538,7 @@ Ext.define("Ung.GridEventLogBase", {
                 }
             }
         });
+        me.startTime = startTime;
 
         var endDateMenu = Ext.create('Ext.menu.DatePicker', {
             handler: function (dp, date) {
@@ -2548,7 +2551,7 @@ Ext.define("Ung.GridEventLogBase", {
             increment:15,
             minValue:'00:00 AM',
             maxValue:'11:45 PM',
-            value:Ext.Date.parse('12:00 AM','h:i A'),
+            value: dayStart,
             listeners: {
                 select: {
                     fn: function(combo,records,opts) {
@@ -2561,6 +2564,7 @@ Ext.define("Ung.GridEventLogBase", {
                 }
             }
         });
+        me.endTime = endTime;
 
         this.dockedItems = [{
             xtype: 'toolbar',
@@ -2595,6 +2599,8 @@ Ext.define("Ung.GridEventLogBase", {
                 text: i18n._('Clear Filters'),
                 tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
                 handler: Ext.bind(function () {
+                    this.startTime.setValue(dayStart);
+                    this.endTime.setValue(dayStart);                
                     this.searchField.setValue("");
                     this.filters.clearFilters();
                 }, this) 
