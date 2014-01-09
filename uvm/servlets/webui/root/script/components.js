@@ -2564,56 +2564,7 @@ Ext.define("Ung.GridEventLogBase", {
 
         this.dockedItems = [{
             xtype: 'toolbar',
-            dock: 'bottom',
-            items: [{
-                xtype: 'tbtext',
-                id: "querySelector_"+this.getId(),
-                text: ''
-            }, {
-                xtype: 'tbtext',
-                id: "rackSelector_"+this.getId(),
-                text: ''
-            }, {
-                xtype: 'tbtext',
-                id: "limitSelector_"+this.getId(),
-                text: ''
-            }, {
-                xtype: 'button',
-                id: "refresh_"+this.getId(),
-                text: i18n._('Refresh'),
-                name: "Refresh",
-                tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-                iconCls: 'icon-refresh',
-                handler: Ext.bind(this.flushHandler, this, [true])
-            }, {
-                xtype: 'button',
-                hidden: !this.hasAutoRefresh,
-                id: "auto_refresh_"+this.getId(),
-                text: i18n._('Auto Refresh'),
-                enableToggle: true,
-                pressed: false,
-                name: "Auto Refresh",
-                tooltip: i18n._('Auto Refresh every 5 seconds'),
-                iconCls: 'icon-autorefresh',
-                handler: Ext.bind(function(button) {
-                    if(button.pressed) {
-                        this.startAutoRefresh();
-                    } else {
-                        this.stopAutoRefresh();
-                    }
-                }, this)
-            }, {
-                xtype: 'button',
-                id: "export_"+this.getId(),
-                text: i18n._('Export'),
-                name: "Export",
-                tooltip: i18n._('Export Events to File'),
-                iconCls: 'icon-export',
-                handler: Ext.bind(this.exportHandler, this)
-            }]
-        }, {
-            xtype: 'toolbar',
-            dock: 'bottom',
+            dock: 'top',
             items: [i18n._('Filter:'), {
                 xtype: 'textfield',
                 name: 'searchField',
@@ -2638,7 +2589,42 @@ Ext.define("Ung.GridEventLogBase", {
                     this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
                 },
                 scope: this
-            }, '-', {
+            }, {
+                xtype: 'button',
+                iconCls: 'icon-clear-filter',
+                text: i18n._('Clear Filters'),
+                tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                handler: Ext.bind(function () {
+                    this.searchField.setValue("");
+                    this.filters.clearFilters();
+                }, this) 
+            }, '->',{
+                xtype: 'button',
+                id: "export_"+this.getId(),
+                text: i18n._('Export'),
+                name: "Export",
+                tooltip: i18n._('Export Events to File'),
+                iconCls: 'icon-export',
+                handler: Ext.bind(this.exportHandler, this)
+            }]
+        }, {
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [{
+                xtype: 'tbtext',
+                id: "querySelector_"+this.getId(),
+                text: ''
+            }, {
+                xtype: 'tbtext',
+                id: "rackSelector_"+this.getId(),
+                text: ''
+            }, {
+                xtype: 'tbtext',
+                id: "limitSelector_"+this.getId(),
+                text: ''
+            }, 
+            //FIXME: use a simpler aproach with date time clearable values
+            {
                 xtype: 'menu',
                 floating: false,
                 hidden: !this.hasTimestampFilter,
@@ -2649,10 +2635,7 @@ Ext.define("Ung.GridEventLogBase", {
                     menu: startDateMenu,
                     tooltip: i18n._('Select start date')
                 }]
-            }, 
-            '-',startTime,'-'
-            ,
-            {
+            }, startTime,'-' , {
                 xtype: 'menu',
                 floating: false,
                 hidden: !this.hasTimestampFilter,
@@ -2663,10 +2646,9 @@ Ext.define("Ung.GridEventLogBase", {
                     menu: endDateMenu,
                     tooltip: i18n._('Select end date')
                 }]
-            },
-            '-', endTime,'-',
-            ,
-            {
+            }, endTime,'-', 
+          //FIXME: get rid of this by integrating the forDateRange feature in Refresh function when start or end dates are selected.
+            /*{
                 xtype: 'button',
                 hidden: !this.hasTimestampFilter,
                 text: i18n._('Get events'),
@@ -2676,13 +2658,32 @@ Ext.define("Ung.GridEventLogBase", {
                     this.forDateRange = true;
                     this.refreshHandler(false);
                 }, this) 
-            }, '-', {
-                text: i18n._('Clear Filters'),
-                tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
-                handler: Ext.bind(function () {
-                    this.searchField.setValue("");
-                    this.filters.clearFilters();
-                }, this) 
+            },*/
+            {
+                xtype: 'button',
+                id: "refresh_"+this.getId(),
+                text: i18n._('Refresh'),
+                name: "Refresh",
+                tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                iconCls: 'icon-refresh',
+                handler: Ext.bind(this.flushHandler, this, [true])
+            }, {
+                xtype: 'button',
+                hidden: !this.hasAutoRefresh,
+                id: "auto_refresh_"+this.getId(),
+                text: i18n._('Auto Refresh'),
+                enableToggle: true,
+                pressed: false,
+                name: "Auto Refresh",
+                tooltip: i18n._('Auto Refresh every 5 seconds'),
+                iconCls: 'icon-autorefresh',
+                handler: Ext.bind(function(button) {
+                    if(button.pressed) {
+                        this.startAutoRefresh();
+                    } else {
+                        this.stopAutoRefresh();
+                    }
+                }, this)
             }]
         }];
 
@@ -2953,7 +2954,7 @@ Ext.define("Ung.GridEventLog", {
         if( testMode ) {
             var emptyRec={};
             for(var j=0; j<30; j++) {
-                events.list.push(this.getTestRecord(j, this.fields));
+                events.push(this.getTestRecord(j, this.fields));
             }
             this.autoRefreshNextChunkCallback(null);
         }
