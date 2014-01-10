@@ -903,7 +903,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 if (result)
                 {
                     Ext.MessageBox.alert(this.i18n._("Success"), this.i18n._("Certificate generation successfully completed"));
-                    this.updateCertificateDisplay();
+                    if (window.location.protocol == "https:") {
+                        // if we are connected over https we're going to lose the session.
+                        // Show this alert, otherwise the user will see disconnect-related errors.
+                        Ext.MessageBox.alert( i18n._("New Certificate Generated."), i18n._("Please refresh the browser.") + "<br/>");
+
+                        // goToStartPage doesn't seem to actually refresh the browser, so it still shows an error
+                        // Ext.MessageBox.alert( i18n._("New Certificate Generated."), i18n._("Please refresh the browser.") + "<br/>", Ung.Util.goToStartPage);
+                    } else {
+                        this.updateCertificateDisplay();
+                    }
                 }
                 else
                 {
