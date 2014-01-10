@@ -2468,7 +2468,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
                     date.setHours(timeValue.getHours());
                     date.setMinutes(timeValue.getMinutes());
                 }
-                this.setDate(date)
+                this.setDate(date);
             },
             scope: this
         }, {
@@ -2487,7 +2487,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
                         if ( this.date && newValue!=null) {
                             this.date.setHours(newValue.getHours());
                             this.date.setMinutes(newValue.getMinutes());
-                            this.setDate(this.date)
+                            this.setDate(this.date);
                         }
                     },
                     scope: this
@@ -2508,7 +2508,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
                 this.hide();
             },
             scope: this
-        }]
+        }];
         this.callParent(arguments);
     },
     setDate: function(date) {
