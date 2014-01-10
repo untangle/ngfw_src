@@ -2445,7 +2445,86 @@ Ext.define("Ung.GlobalFiltersFeature", {
         return false;
     }
 });
-
+Ext.define("Ung.SelectDateTimeWindow", {
+    extend: "Ext.window.Window",
+    date: null,
+    buttonObj: null,
+    modal:true,
+    closeAction: 'hide',
+    initComponent: function() {
+        this.items = [{
+            xtype: 'textfield',
+            name: 'dateAndTime',
+            readOnly: true,
+            hideLabel: true,
+            width: 180,
+            emptyText: this.dateTimeEmptyText
+        }, {
+            xtype: 'datepicker',
+            name: 'date',
+            handler: function(picker, date) {
+                var timeValue = this.down("timefield[name=time]").getValue();
+                if(timeValue != null) {
+                    date.setHours(timeValue.getHours());
+                    date.setMinutes(timeValue.getMinutes());
+                }
+                this.setDate(date)
+            },
+            scope: this
+        }, {
+            xtype: 'timefield',
+            name: 'time',
+            hideLabel: true,
+            margin: '5px 0 0 0',
+            increment: 30,
+            width: 180,
+            emptyText: i18n._('Time'),
+            dayStart: Ext.Date.parse('12:00 AM','h:i A'),
+            value: Ext.Date.parse('12:00 AM','h:i A'),
+            listeners: {
+                change: {
+                    fn: function(combo, newValue, oldValue, opts) {
+                        if ( this.date && newValue!=null) {
+                            this.date.setHours(newValue.getHours());
+                            this.date.setMinutes(newValue.getMinutes());
+                            this.setDate(this.date)
+                        }
+                    },
+                    scope: this
+                }
+            }
+        }];
+        this.buttons = [{
+            text: i18n._("Done"),
+            handler: function() {
+                this.hide();
+            },
+            scope: this
+        }, '->', {
+            name: 'Clear',
+            text: i18n._("Clear Value"),
+            handler: function() {
+                this.setDate(null);
+                this.hide();
+            },
+            scope: this
+        }]
+        this.callParent(arguments);
+    },
+    setDate: function(date) {
+        this.date = date;
+        var dateStr ="";
+        if(this.date) {
+            dateStr = i18n.timestampFormat({time: this.date.getTime()});
+            this.buttonObj.setText(i18n.timestampFormat({time: this.date.getTime()}));    
+        } else {
+            this.buttonObj.setText(this.buttonObj.initialLabel);
+            var timefield = this.down("timefield[name=time]");
+            timefield.setValue(timefield.dayStart);
+        }
+        this.down("textfield[name=dateAndTime]").setValue(dateStr);
+    }
+});
 //Event Log class
 Ext.define("Ung.GridEventLogBase", {
     extend: "Ext.grid.Panel",
@@ -2470,16 +2549,20 @@ Ext.define("Ung.GridEventLogBase", {
     loadMask: true,
     startDate: null,
     endDate: null,
-    forDateRange: false,
     // called when the component is initialized
     constructor: function(config) {
-         var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
-         Ext.define(modelName, {
-             extend: 'Ext.data.Model',
-             fields: config.fields
-         });
-         config.modelName = modelName;
+        this.subCmps = [];
+        var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
+        Ext.define(modelName, {
+            extend: 'Ext.data.Model',
+            fields: config.fields
+        });
+        config.modelName = modelName;
          
+        this.callParent(arguments);
+    },
+    beforeDestroy: function() {
+        Ext.each(this.subCmps, Ext.destroy);
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -2512,60 +2595,18 @@ Ext.define("Ung.GridEventLogBase", {
             remoteFilter: false
         });
         
-        var startDateMenu = Ext.create('Ext.menu.DatePicker', {
-            handler: function (dp, date) {
-                me.startDate = date;
-            }
-        });
-        
-        var dayStart = Ext.Date.parse('12:00 AM','h:i A');
-        
-        var startTime = Ext.create('Ext.form.field.Time', {
-            width: 90,
-            increment:15,
-            minValue:'00:00 AM',
-            maxValue:'11:45 PM',
-            value:dayStart,
-            listeners: {
-                select: {
-                    fn: function(combo,records,opts) {
-                        if ( me.startDate) {
-                            me.startDate.setHours( records[0].data.date.getHours());
-                            me.startDate.setMinutes( records[0].data.date.getMinutes());
-                        }
-                    },
-                    scope: this
-                }
-            }
-        });
-        me.startTime = startTime;
-
-        var endDateMenu = Ext.create('Ext.menu.DatePicker', {
-            handler: function (dp, date) {
-                me.endDate = date;
-            }
-        });
-        
-        var endTime = Ext.create('Ext.form.field.Time', {
-            width: 90,
-            increment:15,
-            minValue:'00:00 AM',
-            maxValue:'11:45 PM',
-            value: dayStart,
-            listeners: {
-                select: {
-                    fn: function(combo,records,opts) {
-                        if ( me.endDate) {
-                            me.endDate.setHours(records[0].data.date.getHours());
-                            me.endDate.setMinutes(records[0].data.date.getMinutes());
-                        }
-                    },
-                    scope: this
-                }
-            }
-        });
-        me.endTime = endTime;
-
+        if(this.hasTimestampFilter) {
+            this.startDateWindow = Ext.create('Ung.SelectDateTimeWindow', {
+                title: i18n._('Start date and time'),
+                dateTimeEmptyText: i18n._('start date and time')
+            });
+            this.endDateWindow = Ext.create('Ung.SelectDateTimeWindow', {
+                title: i18n._('End date and time'),
+                dateTimeEmptyText: i18n._('end date and time')
+            });
+            this.subCmps.push(this.startDateWindow);
+            this.subCmps.push(this.endDateWindow);
+        }
         this.dockedItems = [{
             xtype: 'toolbar',
             dock: 'top',
@@ -2629,42 +2670,35 @@ Ext.define("Ung.GridEventLogBase", {
                 id: "limitSelector_"+this.getId(),
                 text: ''
             }, 
-            //FIXME: use a simpler aproach with date time clearable values
             {
-                xtype: 'menu',
-                floating: false,
-                hidden: !this.hasTimestampFilter,
-                width: 100,
-                height: 30,
-                items: [{
-                    text: i18n._('From:'),
-                    menu: startDateMenu,
-                    tooltip: i18n._('Select start date')
-                }]
-            }, startTime,'-' , {
-                xtype: 'menu',
-                floating: false,
-                hidden: !this.hasTimestampFilter,
-                width: 100,
-                height: 30,
-                items: [{
-                    text: i18n._('To:'),
-                    menu: endDateMenu,
-                    tooltip: i18n._('Select end date')
-                }]
-            }, endTime,'-', 
-          //FIXME: get rid of this by integrating the forDateRange feature in Refresh function when start or end dates are selected.
-            /*{
                 xtype: 'button',
+                text: i18n._('From'),
+                initialLabel:  i18n._('From'),
                 hidden: !this.hasTimestampFilter,
-                text: i18n._('Get events'),
-                name: "Get events",
-                tooltip: i18n._('Get events for date range'),
-                handler: Ext.bind(function () {
-                    this.forDateRange = true;
-                    this.refreshHandler(false);
-                }, this) 
-            },*/
+                width: 132,
+                tooltip: i18n._('Select Start date and time'),
+                handler: function(button) {
+                    me.startDateWindow.buttonObj=button;
+                    me.startDateWindow.show();
+                },
+                scope: this
+            },{
+                xtype: 'tbtext',
+                hidden: !this.hasTimestampFilter,
+                text: '-'
+            }, {
+                xtype: 'button',
+                text: i18n._('To'),
+                initialLabel:  i18n._('To'),
+                hidden: !this.hasTimestampFilter,
+                width: 132,
+                tooltip: i18n._('Select End date and time'),
+                handler: function(button) {
+                    me.endDateWindow.buttonObj=button;
+                    me.endDateWindow.show();
+                },
+                scope: this
+            },
             {
                 xtype: 'button',
                 id: "refresh_"+this.getId(),
@@ -2672,7 +2706,10 @@ Ext.define("Ung.GridEventLogBase", {
                 name: "Refresh",
                 tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
                 iconCls: 'icon-refresh',
-                handler: Ext.bind(this.flushHandler, this, [true])
+                handler:function () {
+                    this.refreshHandler(true);
+                },
+                scope: this
             }, {
                 xtype: 'button',
                 hidden: !this.hasAutoRefresh,
@@ -2904,18 +2941,6 @@ Ext.define("Ung.GridEventLog", {
             }
         }
     },
-    flushHandler: function (forceFlush) {
-        this.forDateRange = false;
-        if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
-        } else {
-            this.setLoading(i18n._('Syncing events to Database... '));
-            this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-                // refresh after complete
-                this.refreshHandler(false);
-            }, this));
-        }
-    },
     autoRefreshNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
 
@@ -2960,7 +2985,7 @@ Ext.define("Ung.GridEventLog", {
         if( testMode ) {
             var emptyRec={};
             for(var j=0; j<30; j++) {
-                events.push(this.getTestRecord(j, this.fields));
+                this.events.push(this.getTestRecord(j, this.fields));
             }
             this.autoRefreshNextChunkCallback(null);
         }
@@ -2975,12 +3000,13 @@ Ext.define("Ung.GridEventLog", {
             var selPolicy = this.getSelectedPolicy();
             var selLimit = this.getSelectedLimit();
             if ( selQuery != null && selPolicy != null && selLimit != null ) {
-                if (!this.forDateRange)
+                if (!this.hasTimestampFilter) {
                     rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
                                                               selQuery, selPolicy, selLimit);
-                else 
+                } else { 
                     rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this), 
-                                                                          selQuery, selPolicy, selLimit, this.startDate, this.endDate);
+                                                                          selQuery, selPolicy, selLimit, this.startDateWindow.date, this.endDateWindow.date);
+                }
             }
         }, this));
     },
@@ -3091,12 +3117,12 @@ Ext.define("Ung.GridEventLog", {
         var selPolicy = this.getSelectedPolicy();
         var selLimit = this.getSelectedLimit();
         if ( selQuery != null && selPolicy != null && selLimit != null ) {
-            if (!this.forDateRange) {
+            if (!this.hasTimestampFilter) {
                 rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
                                                           selQuery, selPolicy, selLimit);
             } else { 
                 rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this), 
-                                                             selQuery, selPolicy, selLimit, this.startDate, this.endDate);
+                                                             selQuery, selPolicy, selLimit, this.startDateWindow.date, this.endDateWindow.date);
             }
         } else {
             this.setLoading(false);
