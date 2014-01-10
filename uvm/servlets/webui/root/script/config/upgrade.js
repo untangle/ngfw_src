@@ -91,7 +91,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
             upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
-            var upgradesAvailable = rpc.systemManager.upgradesAvailable();
             this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name: 'Upgrade Settings',
