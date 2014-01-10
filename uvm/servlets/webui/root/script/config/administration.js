@@ -598,6 +598,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         anchor:'100%',
                         height: 40
                     },{
+                        xtype: 'textarea',
+                        fieldLabel: this.i18n._('Alternative Names'),
+                        labelStyle: 'font-weight:bold',
+                        id: 'server_status_SAN',
+                        value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames,
+                        disabled: true,
+                        anchor:'100%',
+                        height: 40
+                    },{
                         xtype: 'fieldset',
                         layout: 'column',
                         items: [{
@@ -680,7 +689,26 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     anchor: 'bottom'
                 });
             };
-            
+
+            try {
+                netSettings = main.getNetworkManager().getNetworkSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+
+            addressCount = 0;
+            addressList = "";
+
+            for( x = 0 ; x < netSettings.interfaces.list.length ; x++)
+            {
+                var intfSettings = netSettings.interfaces.list[x];
+                if (intfSettings.v4StaticAddress === null) { continue; }
+                if (intfSettings.v4StaticPrefix === null) { continue; }
+                if (addressCount != 0) addressList += ",";
+                addressList += intfSettings.v4StaticAddress;
+                addressCount++;
+            }
+
             this.certGeneratorWindow = new Ext.Window({
                 title: titleText,
                 layout: 'fit',
@@ -761,7 +789,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel: this.i18n._('Common Name') + " (CN)",
                         labelWidth: 150,
                         name: "CommonName",
-                        helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name for the website you will be using the certificate for (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
+                        helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: false,
@@ -774,10 +802,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel: this.i18n._('Subject Alternative Names'),
                         labelWidth: 150,
                         name: "AltNames",
-                        helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website you will be using the certificate for."),
+                        helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: true,
+                        value: (certMode === "SERVER" ? addressList : ""),
                         hidden: (certMode === "ROOT" ? true : false),
                         listeners: {
                             render: helptipRenderer
@@ -834,13 +863,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if ((form_SAN.getValue()) && (form_SAN.getValue().length > 0)) {
                 altNames = form_SAN.getValue();
                 var hostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
-                //parse subject alt name list. for ips prefix with "IP:", for hostnames prefix with "DNS:", otherwise is left unchanged
+                // Parse subject alt name list. For IP's prefix with both DNS: and IP:, for hostnames prefix with DNS:, otherwise is left unchanged
                 var altNameTokens = altNames.split(',');
                 var altNamesArray=[];
                 for(var i=0; i<altNameTokens.length; i++) {
                     var altName = altNameTokens[i].trim();
                     if(Ext.form.VTypes.ipAddress(altName)) {
-                        altName="IP:"+altName;
+                        altName="IP:"+altName+",DNS:"+altName;
                     } else if(hostnameRegex.test(altName)) {
                         altName="DNS:"+altName;
                     }

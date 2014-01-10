@@ -7,6 +7,10 @@ package com.untangle.uvm.engine;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,6 +44,18 @@ public class CertificateManagerImpl implements CertificateManager
 
     private final Logger logger = Logger.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+
+    // This is the list of subject alternative name types we extract from
+    // the server certificate and use when generating our fake certificate
+    private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
+
+    static {
+        validAlternateList.put(0x01, "email");
+        validAlternateList.put(0x02, "DNS");
+        validAlternateList.put(0x06, "URI");
+        validAlternateList.put(0x07, "IP");
+        validAlternateList.put(0x08, "RID");
+    }
 
     protected CertificateManagerImpl()
     {
@@ -282,6 +298,32 @@ public class CertificateManagerImpl implements CertificateManager
             certInfo.setServerDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
             certInfo.setServerSubject(certObject.getSubjectDN().toString());
             certInfo.setServerIssuer(certObject.getIssuerDN().toString());
+
+            // The SAN list is stored as a collection of List's where the
+            // first entry is an Integer indicating the type of name and the
+            // second entry is the String holding the actual name
+            Collection<List<?>> altNames = certObject.getSubjectAlternativeNames();
+            StringBuilder nameList = new StringBuilder(1024);
+
+            if (altNames != null) {
+                Iterator<List<?>> iterator = altNames.iterator();
+
+                while (iterator.hasNext()) {
+                    List<?> entry = iterator.next();
+                    int value = ((Integer) entry.get(0)).intValue();
+
+                    // check the entry type against the list we understand
+                    if (validAlternateList.containsKey(value) == false)
+                        continue;
+
+                    // use the name string from our hashmap along with the
+                    // value from the certificate to build our SAN list
+                    if (nameList.length() != 0)
+                        nameList.append(",");
+                    nameList.append(validAlternateList.get(value) + ":" + entry.get(1).toString());
+                }
+                certInfo.setServerNames(nameList.toString());
+            }
         }
 
         catch (Exception exn) {

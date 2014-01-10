@@ -20,6 +20,7 @@ public class CertificateInformation implements JSONString, Serializable
     private Date serverDateExpires;
     private String serverSubject;
     private String serverIssuer;
+    private String serverNames;
 
     public void setRootcaDateValid(Date argValue)
     {
@@ -56,6 +57,11 @@ public class CertificateInformation implements JSONString, Serializable
         serverIssuer = argValue;
     }
 
+    public void setServerNames(String argValue)
+    {
+        serverNames = argValue;
+    }
+
     public Date getRootcaDateValid()
     {
         return rootcaDateValid;
@@ -89,6 +95,11 @@ public class CertificateInformation implements JSONString, Serializable
     public String getServerIssuer()
     {
         return serverIssuer;
+    }
+
+    public String getServerNames()
+    {
+        return serverNames;
     }
 
     public String toJSONString()
