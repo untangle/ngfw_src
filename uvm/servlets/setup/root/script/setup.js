@@ -1126,7 +1126,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 }, {
                     xtype: 'container',
                     style:'font-weight:normal',
-                    html: "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
+                    html: "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT and DHCP.') + "</div>"
                 }, {
                     name: 'network',
                     xtype: 'textfield',
