@@ -69,7 +69,7 @@ public class EventReaderImpl
             if (startDate != null && endDate != null){
                 queryStr = queryStr.toLowerCase();
                 int i = queryStr.indexOf("order by");
-                DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
+                DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm");
                 if (i > 0) {
                     queryStr = queryStr.substring(0, i) + " and time_stamp <= '" + df.format(endDate) + "' and time_stamp >= '" + 
                             df.format(startDate) + "' " + queryStr.substring(i);
