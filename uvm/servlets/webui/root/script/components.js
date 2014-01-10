@@ -2640,8 +2640,6 @@ Ext.define("Ung.GridEventLogBase", {
                 text: i18n._('Clear Filters'),
                 tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
                 handler: Ext.bind(function () {
-                    this.startTime.setValue(dayStart);
-                    this.endTime.setValue(dayStart);                
                     this.searchField.setValue("");
                     this.filters.clearFilters();
                 }, this) 
