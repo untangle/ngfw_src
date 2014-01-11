@@ -220,12 +220,19 @@ public class SystemManagerImpl implements SystemManager
                 // String[] strs = {"/bin/sh", "-c", "wget -c --progress=dot -P /var/cache/apt/archives/ " + url};
                 // ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( strs );
                 ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( "wget -c --progress=dot -P /var/cache/apt/archives/ " + url );
-                
+
+                String bufferedOutput = "";
                 // read from stdout/stderr
                 for ( String output = reader.readLineStderr() ; output != null ; output = reader.readFromOutput() ) {
-                    String lines[] = output.split("\\r?\\n");
+                    bufferedOutput = bufferedOutput + output;
+                    if ( ! bufferedOutput.contains("\n") ) {
+                        Thread.sleep(10);
+                        continue; // wait for at least one line of full output
+                    }
+                    
+                    String lines[] = bufferedOutput.split("\\r?\\n");
                     for ( String line : lines ) {
-                        logger.info("output: \"" + line + "\"");
+                        logger.debug("output: \"" + line + "\"");
                         Matcher match = DOWNLOAD_PATTERN.matcher(line);
                         if (match.matches()) {
                             int bytesDownloaded = Integer.parseInt(match.group(1)) * 1000;
@@ -237,6 +244,7 @@ public class SystemManagerImpl implements SystemManager
 
                             logger.info( "Updating file download progress/speed: " + this.downloadCurrentFileProgress + " / " + this.downloadCurrentFileRate );
                         }
+                        bufferedOutput = line; // the last line should set this
                     }
                 }
 

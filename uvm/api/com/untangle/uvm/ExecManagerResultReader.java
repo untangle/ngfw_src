@@ -73,24 +73,16 @@ public class ExecManagerResultReader
         StringBuffer result = new StringBuffer();
         try {
             while (this.stdoutBufferedReader.ready()) {
-                String s = this.stdoutBufferedReader.readLine();
-                if (s != null) {
-                    result.append(s).append(System.getProperty("line.separator"));
-                } else {
-                    break;
-                }
+                char c = (char) this.stdoutBufferedReader.read();
+                result.append(c);
             }
         } catch (IOException ex) {
             logger.warn("Failed to read stdout", ex);
         }
         try {
             while (this.stderrBufferedReader.ready()) {
-                String s = this.stderrBufferedReader.readLine();
-                if (s != null) {
-                    result.append(s).append(System.getProperty("line.separator"));
-                } else {
-                    break;
-                }
+                char c = (char) this.stderrBufferedReader.read();
+                result.append(c);
             }
         } catch (IOException ex) {
             logger.warn("Failed to read stderr", ex);
