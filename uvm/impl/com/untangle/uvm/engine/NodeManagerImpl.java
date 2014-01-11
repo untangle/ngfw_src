@@ -875,7 +875,7 @@ public class NodeManagerImpl implements NodeManager
             get = new GetMethod(url.toString());
             hc.executeMethod(get);
         } catch ( Exception e ) {
-            logger.warn("Exception requesting trial:", e);
+            logger.warn("Exception requesting trial license:" + e.toString());
         }
          
         try {
@@ -885,10 +885,10 @@ public class NodeManagerImpl implements NodeManager
             get = new GetMethod(url.toString());
             hc.executeMethod(get);
         } catch ( Exception e ) {
-            logger.warn("Exception requesting trial:", e);
+            logger.warn("Exception requesting trial license:" + e.toString());
         }
         
-        UvmContextFactory.context().licenseManager().reloadLicenses();
+        try { UvmContextFactory.context().licenseManager().reloadLicenses(); } catch ( Exception e ) {}
     }
 
 }
