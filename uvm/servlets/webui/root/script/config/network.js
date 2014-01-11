@@ -4729,7 +4729,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             editable : true,
                             style : "margin-left: 10px",
                             width : 500,
-                            value : "http://download.untangle.com/data.php",
+                            value : "http://cachefly.cachefly.net/5mb.test",
                             store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
                                      ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
                                      ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']]
@@ -4738,8 +4738,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     getCommand: function() {
                         var url = this.url.getValue();
-                        var script = ['wget --output-document=/dev/null ' + ' ' + url + ' ;',
-                          'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
+                        var script = ['wget --output-document=/dev/null ' + ' ' + url + ' ;'];
                         return ["/bin/sh","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
