@@ -227,6 +227,8 @@ public class SmtpSessionHandler extends SmtpStateMachine
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
         }
+        if (f == null)
+            return null;
 
         // Call VirusScanner
         try {
@@ -238,8 +240,8 @@ public class SmtpSessionHandler extends SmtpStateMachine
             f.delete();
             return result;
         } catch (Exception ex) {
-            this.logger.error("Exception scanning MIME part in file \"" + f.getAbsolutePath() + "\"", ex);
             try {
+                this.logger.error("Exception scanning MIME part in file \"" + f.getAbsolutePath() + "\"", ex);
                 f.delete();
             } catch (Exception e) {
             }
