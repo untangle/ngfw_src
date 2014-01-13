@@ -891,28 +891,38 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return;
             }
 
+            // set certFunction to invoke the correct cert manager function depending on the type of cert being created
             if (certMode === "ROOT") certFunction = main.getCertificateManager().generateCertificateAuthority;
             if (certMode === "SERVER") certFunction = main.getCertificateManager().generateServerCertificate;
 
-            certFunction(Ext.bind(function(result, exception)
+            certFunction(Ext.bind(function(result)
             {
                 this.certGeneratorWindow.close();
 
-                if(Ung.Util.handleException(exception)) return;
-
                 if (result)
                 {
-                    Ext.MessageBox.alert(this.i18n._("Success"), this.i18n._("Certificate generation successfully completed"));
-                    if (window.location.protocol == "https:") {
-                        // if we are connected over https we're going to lose the session.
-                        // Show this alert, otherwise the user will see disconnect-related errors.
-                        Ext.MessageBox.alert( i18n._("New Certificate Generated."), i18n._("Please refresh the browser.") + "<br/>");
+                // stop the metric manager so we don't get a session timeout error
+                Ung.MetricManager.stop();
 
-                        // goToStartPage doesn't seem to actually refresh the browser, so it still shows an error
-                        // Ext.MessageBox.alert( i18n._("New Certificate Generated."), i18n._("Please refresh the browser.") + "<br/>", Ung.Util.goToStartPage);
-                    } else {
-                        this.updateCertificateDisplay();
+                var restartWindow=Ext.create('Ext.window.MessageBox', {
+                minProgressWidth: 360
+                });
+
+                // the cert manager will reload apache to activate the new cert
+                // so we show a please wait message and then click to continue
+                restartWindow.wait(i18n._("Generating server certificate and restarting web server..."), i18n._("Please Wait"),
+                {
+                interval: 1000,
+                increment: 15,
+                duration: 15000,
+                scope: this,
+                fn: function()
+                {
+                    restartWindow.hide();
+                    Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate generation successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
                     }
+                });
+
                 }
                 else
                 {
