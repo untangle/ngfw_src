@@ -413,6 +413,8 @@ public class SpamSmtpHandler extends SmtpStateMachine
         FileOutputStream fOut = null;
         try {
             ret = File.createTempFile("SpamSmtpHandler-", null);
+            if (ret != null)
+                getSession().attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);

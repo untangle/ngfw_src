@@ -1,9 +1,12 @@
 /**
- * $Id: NodeTCPSessionImpl.java 34454 2013-04-02 03:00:15Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
@@ -11,10 +14,7 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
@@ -23,7 +23,6 @@ import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.uvm.node.SessionTuple;
 
 /**
  * This is the primary implementation class for TCP live sessions.
@@ -33,6 +32,8 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
+    
+    private static final String TEMP_FILE_KEY = "temp_file_attachemnt_key";
 
     private final String logPrefix;
 
@@ -624,5 +625,49 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readBuf[CLIENT] = null;
         readBuf[SERVER] = null;
         super.closeFinal();
+    }
+    
+    @Override
+    public void killSession()
+    {
+        cleanupTempFiles();
+        super.killSession();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void cleanupTempFiles()
+    {
+        try {
+            Object attachment = globalAttachment(TEMP_FILE_KEY);
+            if (attachment != null) {
+                for (Object path : (List<String>) attachment) {
+                    try {
+                        File f = new File((String) path);
+                        if (f.exists())
+                            f.delete();
+                    } catch (Exception e) {
+                        logger.error("Could not delete temp file on session finalized!", e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Could not delete temp files on session finalized!", e);
+        }
+        globalAttach(TEMP_FILE_KEY, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void attachTempFile(String filePath)
+    {
+        try {
+            List<String> attachment = (List<String>) (globalAttachment(TEMP_FILE_KEY));
+            if (attachment == null) {
+                attachment = new ArrayList<String>();
+                globalAttach(TEMP_FILE_KEY, attachment);
+            }
+            attachment.add(filePath);
+        } catch (Exception e) {
+            logger.error("Could not attach temp file to session!", e);
+        }
     }
 }

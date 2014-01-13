@@ -244,12 +244,19 @@ class VirusFtpHandler extends FtpStateMachine
             return null;
         }
     }
+    
+    @Override
+    public void handleFinalized(){
+        getSession().cleanupTempFiles();
+    }
 
     private void createFile() throws TokenException
     {
         try {
             file = File.createTempFile("VirusFtpHandler-", null);
-
+            if (file != null)
+                getSession().attachTempFile(file.getAbsolutePath());
+            
             FileInputStream fis = new FileInputStream(file);
             inChannel = fis.getChannel();
 

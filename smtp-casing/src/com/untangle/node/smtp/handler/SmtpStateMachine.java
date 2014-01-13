@@ -614,6 +614,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         if (smtpTransactionHandler != null && !shutingDownMode) {
             smtpTransactionHandler.handleFinalized();
         }
+        getSession().cleanupTempFiles();
     }
 
     public void sendResponseToClient(Response resp, TokenResultBuilder ts)

@@ -314,7 +314,8 @@ class VirusHttpHandler extends HttpStateMachine
 
         try {
             fileBuf = File.createTempFile("VirusHttpHandler-", null);
-
+            if (fileBuf != null)
+                getSession().attachTempFile(fileBuf.getAbsolutePath());
             this.scanfile = fileBuf;
 
             if (logger.isDebugEnabled()) {
@@ -331,6 +332,11 @@ class VirusHttpHandler extends HttpStateMachine
             this.scan = false;
             releaseResponse();
         } 
+    }
+    
+    @Override
+    public void handleFinalized(){
+        getSession().cleanupTempFiles();
     }
 
     private Chunk bufferOrTrickle(Chunk chunk) throws TokenException

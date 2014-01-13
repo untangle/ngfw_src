@@ -227,9 +227,6 @@ public class SmtpSessionHandler extends SmtpStateMachine
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
         }
-        if (f == null)
-            return null;
-
         // Call VirusScanner
         try {
             VirusScannerResult result = this.virusImpl.getScanner().scanFile(f);
@@ -255,6 +252,8 @@ public class SmtpSessionHandler extends SmtpStateMachine
         FileOutputStream fOut = null;
         try {
             ret = File.createTempFile("MimePart-", null);
+            if (ret != null)
+                getSession().attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
@@ -266,6 +265,7 @@ public class SmtpSessionHandler extends SmtpStateMachine
             bOut.flush();
             fOut.flush();
             fOut.close();
+            
             return ret;
         } catch (Exception ex) {
             try {

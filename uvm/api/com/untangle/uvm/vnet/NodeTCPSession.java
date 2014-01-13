@@ -1,5 +1,5 @@
 /**
- * $Id: NodeTCPSession.java 34439 2013-04-01 21:11:16Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 
@@ -151,5 +151,18 @@ public interface NodeTCPSession extends NodeSession
      * @param streamer a <code>TCPStreamer</code> value
      */
     void beginServerStream(TCPStreamer streamer);
+    
+    /**
+     * Delete temp files previously attached to this session, that might have 
+     * been left over.
+     */
+    public void cleanupTempFiles();
+    
+    /**
+     * Attach a temp file to this session in order to ensure cleanup on finalize 
+     * or upon exception.
+     * @param filePath
+     */
+    public void attachTempFile(String filePath);
 
 }

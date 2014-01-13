@@ -416,7 +416,7 @@ class SmtpClientParser extends SmtpParser
     private boolean openSAC()
     {
         try {
-            m_sac = new ScannerAndAccumulator(new MIMEAccumulator(getPipeline()));
+            m_sac = new ScannerAndAccumulator(new MIMEAccumulator(getPipeline(), getSession()));
             return true;
         } catch (IOException ex) {
             m_logger.error("Exception creating MIME Accumulator", ex);
