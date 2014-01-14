@@ -439,26 +439,37 @@ class SmtpClientParser extends SmtpParser
         // Drain all TO and CC
         String[] toRcpts = headers.getHeader(HeaderNames.TO);
         String[] ccRcpts = headers.getHeader(HeaderNames.CC);
-        try {
-            if (toRcpts != null) {
+        
+        if (toRcpts != null) {
+            try {
                 for (String addr : toRcpts) {
                     InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
                     for (InternetAddress ia : iaList)
                         ret.addAddress(AddressKind.TO, ia.getAddress(), ia.getPersonal());
                 }
+            } catch (AddressException e) {
+                ret.addAddress(AddressKind.TO, "Illegal_address", "");
+                m_logger.error(e);
             }
-            if (ccRcpts != null) {
+        }
+        if (ccRcpts != null) {
+            try {
                 for (String addr : ccRcpts) {
                     InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
                     for (InternetAddress ia : iaList)
                         ret.addAddress(AddressKind.CC, ia.getAddress(), ia.getPersonal());
                 }
+            } catch (AddressException e) {
+                ret.addAddress(AddressKind.CC, "Illegal_address", "");
+                m_logger.error(e);
             }
-
+        }
+        try {
             // Drain FROM
             InternetAddress ia = new InternetAddress(headers.getHeader(HeaderNames.FROM, ""));
             ret.addAddress(AddressKind.FROM, ia.getAddress(), ia.getPersonal());
         } catch (AddressException e) {
+            ret.addAddress(AddressKind.FROM, "Illegal_address", "");
             m_logger.error(e);
         }
         UvmContextFactory.context().logEvent(ret);
