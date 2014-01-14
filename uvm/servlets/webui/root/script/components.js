@@ -3011,6 +3011,8 @@ Ext.define("Ung.GridEventLog", {
         var selQuery = this.getSelectedQuery();
         var selQueryName = this.getSelectedQueryName();
         var selPolicy = this.getSelectedPolicy();
+        var startDate = this.startDateWindow.date;
+        var endDate = this.endDateWindow.date;
         if (selQuery != null && selPolicy != null) {
             Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
             var name = ( (this.name!=null) ? this.name: i18n._("Event Log") ) + " " +selQueryName;
@@ -3021,6 +3023,8 @@ Ext.define("Ung.GridEventLog", {
             downloadForm["arg2"].value=selQuery;
             downloadForm["arg3"].value=selPolicy;
             downloadForm["arg4"].value=this.getColumnList();
+            downloadForm["arg5"].value=startDate?startDate.getTime():-1;
+            downloadForm["arg6"].value=endDate?endDate.getTime():-1;
             downloadForm.submit();
             Ext.MessageBox.hide();
         }

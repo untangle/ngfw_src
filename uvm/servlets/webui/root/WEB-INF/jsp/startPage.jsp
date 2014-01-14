@@ -56,6 +56,8 @@
 <input type="hidden" name="arg2" value=""/>
 <input type="hidden" name="arg3" value=""/>
 <input type="hidden" name="arg4" value=""/>
+<input type="hidden" name="arg5" value=""/>
+<input type="hidden" name="arg6" value=""/>
 </form>
 </div>
 <div id="extra-div-1" style="display:none;"><span></span></div>

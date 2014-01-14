@@ -462,12 +462,24 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             }
         }
         
+        private Date getDate(String ts) {
+            try {
+                long l = Long.parseLong(ts);
+                if ( l != -1) {
+                    return new Date(l);
+                }
+            } catch (NumberFormatException ex) {}
+            return null;
+        }
+        
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             String name = req.getParameter("arg1");
             String query = req.getParameter("arg2");
             String policyIdStr = req.getParameter("arg3");
             String columnListStr = req.getParameter("arg4");
+            Date startDate = getDate(req.getParameter("arg5"));
+            Date endDate = getDate(req.getParameter("arg6"));
 
             if (name == null || query == null || policyIdStr == null || columnListStr == null) {
                 logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
@@ -482,8 +494,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 logger.warn("reporting node not found");
                 return;
             }
-
-            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, -1 );
+            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, -1, startDate, endDate);
             toCsv( resultSetReader, resp, columnListStr, name );
         }
     }
