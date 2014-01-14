@@ -72,9 +72,6 @@ class TestUDPHook implements NetcapCallback {
 
                 serverTraffic.lock();
                 
-                /* If the sessions are merged together, get rid of this one */
-                if ( !session.merge( serverTraffic )) break;
-                
                 LinkedList<Relay> relayList = new LinkedList<Relay>();
                 
                 /* Change the server side of things a little bit */

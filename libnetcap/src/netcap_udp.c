@@ -241,7 +241,13 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     // First check to see if the session already exists.
     session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
                                              pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                             pkt->src.port,pkt->dst.port, 0);
+                                             pkt->src.port, pkt->dst.port, 0);
+    // Then check reverse if forward entry not found
+    if ( !session ) {
+        session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
+                                                 pkt->dst.host.s_addr, pkt->src.host.s_addr,
+                                                 pkt->dst.port, pkt->src.port, 0);
+    }
     
     // If it doesn't, intialize the session.
     if ( !session ) {
@@ -289,12 +295,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         }
         
         SESSTABLE_UNLOCK();
-
-        // XXX Right here if a packet comes through that matches the reverse
-        // rule than this will be create a disconnected session which would be
-        // invalid 
-        // SOL Use a merge operation that merges two sessions
-        // together if one comes in on the reverse
 
         // Call the UDP hooks
         debug(10,"Calling UDP hook(s)\n");

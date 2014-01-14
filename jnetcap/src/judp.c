@@ -1,5 +1,5 @@
 /**
- * $Id: judp.c 33931 2013-02-13 22:31:42Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 
@@ -368,34 +368,6 @@ JNIEXPORT jint JNICALL JF_UDPSession( send )
         return errlog( ERR_CRITICAL, "netcap_udp_send\n" );
     }
 
-    return 0;
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapUDPSession
- * Method:    merge
- * Signature: (JJJII)I
- */
-JNIEXPORT jint JNICALL JF_UDPSession( merge )
-  ( JNIEnv *env, jclass _class, jlong pointer, jlong src_addr, jint src_port, 
-    jlong dst_addr, jint dst_port, jint intf )
-{
-    int ret;
-    in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
-    in_addr_t dst = (in_addr_t)JLONG_TO_UINT( dst_addr );
-
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( pointer );
-
-    if ( session == NULL ) return errlogargs();
-
-    ret = netcap_sesstable_merge_udp_tuple( session, src, dst, src_port, dst_port, intf );
-
-    if ( ret < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_sesstable_merge_udp\n" );
-    } else if ( ret > 0 ) {
-        return JN_UDPSession( MERGED_DEAD );
-    }
-    
     return 0;
 }
 

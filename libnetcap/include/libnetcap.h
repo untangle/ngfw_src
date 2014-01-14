@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/libnetcap/include/libnetcap.h $ */
+/* $HeadURL$ */
 #ifndef __NETCAP_H_
 #define __NETCAP_H_
 
@@ -387,26 +387,6 @@ list_t*           netcap_sesstable_get_all_sessions ( void );
  * Call the function kill_all_function on all of the sessions in the session table
  */
 int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions) );
-/**
- * merge two UDP or ICMP sessions into one
- * This function checks if there are two sessions in the session table for
- * the same session.  This can happen if a packet comes from both directions with the
- * exact opposite signature.
- * packet A: source-10.0.0.1:6000,dest-10.0.0.2:7000
- * packet B: source-10.0.0.2:7000,dest-10.0.0.1:6000
- * If A and B come in at the same time, then a session could be created for each packet, even
- * though the traffic should be tracked in the same session.
- * At some point in one of the sessions, the user calls merge which flags the other session
- * to die, and merges(packets/sessiontable) it into the calling session.
- */
-
-int               netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, 
-                                                     in_addr_t src, in_addr_t dst,
-                                                     u_short sport, u_short dport, netcap_intf_t intf );
-
-int               netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, 
-                                                      in_addr_t src, in_addr_t dst, netcap_intf_t intf,
-                                                      int icmp_pid );
 
 int  netcap_endpoints_copy          ( netcap_endpoints_t* dst, netcap_endpoints_t* src );
 int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
