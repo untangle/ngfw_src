@@ -178,6 +178,13 @@ class FirewallTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify a block udp rule
+    def test_028_blockUdpPort53(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","53"));
+        result = clientControl.runCommand("host test.untangle.com 4.2.2.1 >/dev/null 2>&1")
+        assert (result != 0)
+
     # verify src addr rule with any works
     def test_030_blockSrcAddrAny(self):
         nukeRules();
