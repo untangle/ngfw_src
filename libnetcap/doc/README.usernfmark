@@ -1,64 +1,11 @@
 This file documents userland access to access netfilter
 marks (see man iptables). There are three basic access methods:
 
-1) Receiving the nfmark via UDP ancillary data.
-
 2) Receiving the nfmark via a TCP getsockopt call.
 
 3) Sending syn-ack with an arbitrary nfmark using setsockopt.
 
 EXAMPLE USER CODE
-
-1) Receiving the nfmark via UDP ancillary data:
-
-#define IP_RECVNFMARK  22
-#define IP_SENDNFMARK  23
-#define IP_FIRSTNFMARK 24
-
-
-    int const           one = 1, zero = 0;
-    /*
-     * Enable ancilliary data for nfmark
-     */
-    if (setsockopt(sFd, SOL_IP, IP_RECVNFMARK,
-              &one, sizeof(one)) < 0) {
-        exit(1);
-    }
-  
-    for (;;) {
-    	msgh.msg_name = NULL;
-    	msgh.msg_namelen = 0;
-    	msgh.msg_iov = &iovec;
-    	msgh.msg_iovlen = 1;
-    	msgh.msg_control = msg_control;
-    	msgh.msg_controllen = CONTROLLEN;
-    	msgh.msg_flags = 0;
-
-        if (nRead = recvmsg (sFd, &msgh, 0) < 0) {
-            perror ("recvmsg");
-            close (sFd);
-            return (ERROR);
-        }
-              /* Receive auxiliary data in msgh */
-        for (cmsg = CMSG_FIRSTHDR(&msgh);
-               cmsg != NULL;
-               cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
-            if (cmsg->cmsg_level == SOL_IP
-                        && cmsg->cmsg_type == IP_RECVNFMARK) {
-                nfmarkptr = (unsigned int *) CMSG_DATA(cmsg);
-                received_nfmark = *nfmarkptr;
-                break;
-            }
-        }
-        if (cmsg == NULL) {
-                      /*
-                       * Error: IP_NFMARK not enabled or small buffer
-                       * or I/O error.
-                       */
-             printf("cmsg error\n");
-        }
-        printf("mark: %08x\n", received_nfmark);
-    }
 
 2) Receiving the nfmark via a TCP getsockopt call:
   

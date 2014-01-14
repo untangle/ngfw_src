@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_server.c 35606 2013-08-13 06:16:32Z dmorris $
+ * $Id$
  */
 #include "netcap_server.h"
 
@@ -50,7 +50,6 @@
 typedef enum {
     POLL_MESSAGE = 1,      /* poll type for message queue */
     POLL_TCP_INCOMING,     /* poll type for accepting new tcp connections */
-    POLL_UDP_INCOMING,     /* poll type for accepting udp packets */
     POLL_NFQUEUE_INCOMING /* poll type for accepting netfilter queued packets */
 } poll_type_t;
     
@@ -77,7 +76,6 @@ typedef struct epoll_info {
 
 static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int sock );
 static int  _handle_message (epoll_info_t* info, int revents);
-static int  _handle_udp (epoll_info_t* info, int revents, int sock );
 static int  _handle_nfqueue (epoll_info_t* info, int revents);
 
 /* static int  _start_open_connection (struct in_addr* destaddr,u_short destport); */
@@ -232,9 +230,6 @@ int  netcap_server (void)
             case POLL_TCP_INCOMING:
                 _handle_tcp_incoming(info, events[i].events, events[i].data.fd );
                 break;
-            case POLL_UDP_INCOMING:
-                _handle_udp(info, events[i].events, events[i].data.fd );
-                break;
             case POLL_NFQUEUE_INCOMING:
                 _handle_nfqueue(info, events[i].events);
             }
@@ -372,66 +367,6 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
     return 0;
 }
 
-static int  _handle_udp (epoll_info_t* info, int revents, int sock )
-{
-    netcap_pkt_t* pkt;
-    int              len;
-    u_char*            buf;
-
-    /**
-     * Sanity checks
-     */
-    if ( !info ) {
-        _server_unlock();
-        return errlogargs();
-    }
-    
-    if (!(revents & EPOLLIN)) {
-        _epoll_print_stat(revents);
-        _server_unlock();
-        return -1;
-    }
-
-    buf = malloc(UDP_MAX_MESG_SIZE);   
-    if (!buf) {
-        _server_unlock();
-        return errlogmalloc();
-    }
-    pkt = netcap_pkt_create();
-    if (!pkt) {
-        free(buf);
-        _server_unlock();
-        return errlogmalloc();
-    }
-
-    /**
-     * read the packet 
-     */
-    len = netcap_udp_recvfrom( sock, buf, UDP_MAX_MESG_SIZE, 0, pkt );
-
-    if (len <= 0) {
-        if ( len < 0 ) errlog( ERR_CRITICAL, "netcap_udp_recvfrom\n" );
-
-        free(buf);
-        free(pkt);
-        _server_unlock();
-        return -1;
-    }
-    
-    pkt->data = buf;
-    pkt->data_len = len;
-
-    debug(10,"Got UDP Packet from: %s:%i\n",inet_ntoa(pkt->src.host),pkt->src.port);
-    
-    /**
-     * unlock the server
-     */
-    _server_unlock();
-
-    // Check to see if the session already exists
-    return netcap_udp_call_hooks( pkt, NULL );
-}
-
 static int  _handle_nfqueue (epoll_info_t* info, int revents)
 {
     netcap_pkt_t* pkt = NULL;
@@ -460,7 +395,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
         }
         
         if ( revents & EPOLLHUP ) {
-            /* XXXxxxXXX not really sure what to do here */
+            /* fatal */
             errlog( ERR_CRITICAL, "HUP on queue socket\n" );
         }
 
@@ -490,6 +425,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
         return errlog( ERR_CRITICAL, "_critical_section\n" );
     }
     
+    /* Actually call the handle */
     switch ( pkt->proto ) {
     case IPPROTO_TCP:
         return global_tcp_syn_hook( pkt );
@@ -501,11 +437,6 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
         netcap_pkt_action_raze( pkt, NF_DROP );
         return errlog(ERR_CRITICAL,"Unknown protocol  %d from QUEUE\n", pkt->proto );        
     }
-
-    /* Actually call the handle */
-    errlog( ERR_CRITICAL, "potentially leaking another packet\n" );
-    
-    return ret;
 }
 
 static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess)
@@ -571,16 +502,3 @@ static int  _epoll_info_del (epoll_info_t* info)
     return 0;
 }
 
-/* static int  _start_open_connection (struct in_addr* destaddr, u_short destport) */
-/* { */
-/*     int newsocket = unet_open(&destaddr->s_addr,destport); */
-/*     int flags; */
-    
-/*     if (newsocket<0) return perrlog("unet_open"); */
-
-/*     if ((flags = fcntl(newsocket,F_GETFL)) < 0) return  perrlog("fcntl"); */
-
-/*     if (fcntl(newsocket, F_SETFL, flags | O_NDELAY) < 0) return perrlog("fcntl");  */
-
-/*     return newsocket; */
-/* } */
