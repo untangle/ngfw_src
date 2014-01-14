@@ -108,8 +108,8 @@ public class NetcapUDPHook implements NetcapCallback
 
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "UDP: Completing session:" );
-                    logger.debug( "Client: " + session.getClientAddr() + ":" + session.getClientPort());
-                    logger.debug( "Server: " + session.getServerAddr() + ":" + session.getServerPort());
+                    logger.debug( "Client: " + session.getClientAddr().getAddress() + ":" + session.getClientPort());
+                    logger.debug( "Server: " + session.getServerAddr().getAddress() + ":" + session.getServerPort());
                 }
 
                 serverTraffic = new IPTraffic( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());

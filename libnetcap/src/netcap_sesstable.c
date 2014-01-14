@@ -194,7 +194,7 @@ int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess 
 
     _verify_initialized();
 
-    debug(5, "SESSTAB: Inserting session id: %10u\n", netcap_sess->session_id);
+    debug(5, "SESSTAB: Inserting session id %10u = 0x%08x\n", netcap_sess->session_id, netcap_sess);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
