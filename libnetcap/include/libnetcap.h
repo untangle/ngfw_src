@@ -284,15 +284,6 @@ typedef struct netcap_session {
     int                server_sock;
 
     /**
-     * For ICMP echo session, this is the message id for the client side and server side.
-     * These values are in host byte order
-     */
-    struct {
-        u_short client_id;
-        u_short server_id;
-    } icmp;
-
-    /**
      * the callback to change the state of client and server connections
      * in the case of SRV_UNFINI or CLI_UNFINI this can be used to complete the
      * connection

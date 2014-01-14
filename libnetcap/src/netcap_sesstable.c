@@ -309,37 +309,19 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
         /* Remove the forward tuple */
         endpoints = &netcap_sess->cli;
         
-        /* XXX Special casing ICMP, 
-         * 5907: better because it actually uses the protocol. */
-        if ( netcap_sess->protocol == IPPROTO_ICMP ) {
-            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
-                                            endpoints->srv.host.s_addr,
-                                            endpoints->cli.port, endpoints->srv.port, 
-                                            netcap_sess->icmp.client_id );
-        } else {
-            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
-                                            endpoints->srv.host.s_addr,
-                                            endpoints->cli.port, endpoints->srv.port, 0 );
-        }
+        _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
+                                        endpoints->srv.host.s_addr,
+                                        endpoints->cli.port, endpoints->srv.port, 0 );
         
-        /* Only remove the reverse if this is a UDP or ICMP session. */
-        if (( netcap_sess->protocol == IPPROTO_UDP || netcap_sess->protocol == IPPROTO_ICMP ) && 
-            ( netcap_sess->remove_tuples == NETCAP_SESSION_REMOVE_SERVER_TUPLE )) {
+        /* Only remove the reverse if this is a UDP session. */
+        if ( netcap_sess->protocol == IPPROTO_UDP && netcap_sess->remove_tuples == NETCAP_SESSION_REMOVE_SERVER_TUPLE ) {
+
             /* Remove the reverse endpoints */
             endpoints = &netcap_sess->srv;
             
-            /* XXX Special casing ICMP.
-             * 5907: Better because it uses the protocol. */
-            if ( netcap_sess->protocol == IPPROTO_ICMP ) {
-                _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
-                                                endpoints->cli.host.s_addr,
-                                                endpoints->srv.port, endpoints->cli.port,
-                                                netcap_sess->icmp.server_id );
-            } else {
-                _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
-                                                endpoints->cli.host.s_addr,
-                                                endpoints->srv.port, endpoints->cli.port, 0 );
-            }
+            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
+                                            endpoints->cli.host.s_addr,
+                                            endpoints->srv.port, endpoints->cli.port, 0 );
         }
     }
         
