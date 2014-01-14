@@ -21,15 +21,22 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         afterRender: function() {
             this.callParent(arguments);
             Ung.Util.clearDirty(this.panelSettings);
+            var checkUpgradesProgressbar = this.panelSettings.down('[name="checkUpgradesProgressbar"]');
+            checkUpgradesProgressbar.wait({
+                text: i18n._("Checking for upgrades...")
+            });
             rpc.systemManager.upgradesAvailable(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + '</font></i>' :
-                    '<font color="grey">' + i18n._("No upgrades available.") + '</font>';
+                checkUpgradesProgressbar.reset();
+                checkUpgradesProgressbar.hide();
+                var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + ' </font></i>' :
+                    '<font color="grey">' + i18n._("No upgrades available.") + ' </font>';
                 var statusCmp = this.panelSettings.down('[name="statusMessage"]');
                 statusCmp.setText(statusDescription, false);
+                statusCmp.show();
                 if(result) {
                     var upgradeButton = this.panelSettings.down('[name="upgradeButton"]');
-                    upgradeButton.enable();
+                    upgradeButton.show();
                 }
             }, this));
         },
@@ -56,14 +63,22 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                            result.downloadCurrentFileCount,
                                            result.downloadTotalFileCount,
                                            result.downloadCurrentFileRate);
-                if(this.downloadSummary) {
-                    text+=Ext.String.format(i18n._("<br/>Package {0}/{1}"), this.downloadsComplete+1, this.downloadSummary.count);
-                }
                 if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=this.msgTitle) {
                     Ext.MessageBox.progress(this.msgTitle, text);
                 }
-                var currentPercentComplete = parseFloat(result.downloadCurrentFileCount) / parseFloat(result.downloadTotalFileCount != 0 ? result.downloadTotalFileCount: 1);
-                //TODO: add current file progress to this.
+                var downloadCurrentFileProgress = 0;
+                if(result.downloadCurrentFileProgress!=null && result.downloadCurrentFileProgress.length>0) {
+                    try {
+                        downloadCurrentFileProgress = parseFloat(result.downloadCurrentFileProgress.replace("%",""))/100;
+                    } catch (e) {
+                    }
+                }
+                var downloadCurrentFileIndex = parseFloat(result.downloadCurrentFileCount);
+                if(downloadCurrentFileIndex > 0) {
+                    downloadCurrentFileIndex = downloadCurrentFileIndex - 1;
+                }
+                var currentPercentComplete = (downloadCurrentFileIndex + downloadCurrentFileProgress) / parseFloat(result.downloadTotalFileCount != 0 ? result.downloadTotalFileCount: 1);
+                //console.log("downloadCurrentFileProgress:", downloadCurrentFileProgress,"currentPercentComplete",currentPercentComplete,"downloadCurrentFileCount",result.downloadCurrentFileCount);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
                 Ext.MessageBox.updateProgress(progressIndex, "", text);
                 window.setTimeout( Ext.bind(this.getDownloadStatus, this), 500 );
@@ -107,16 +122,21 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     cls: 'description',
                     title: this.i18n._('Status'),
                     items: [{
+                        xtype: 'progressbar',
+                        name: 'checkUpgradesProgressbar',
+                        width: 300
+                    }, {
                         xtype: 'label',
                         name: "statusMessage",
                         html: "<i>" + i18n._("Checking for upgrades...") + "</i>",
+                        hidden: true,
                         cls: 'description',
                         margin: '0 25 0 0',
                         border: false
                     }, {
                         xtype: "button",
                         name: 'upgradeButton',
-                        disabled: true,
+                        hidden: true,
                         text: this.i18n._("Upgrade"),
                         iconCls: "action-icon",
                         handler: Ext.bind(function() {
