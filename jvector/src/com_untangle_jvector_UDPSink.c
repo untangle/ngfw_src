@@ -1,5 +1,5 @@
 /**
- * $Id: com_untangle_jvector_UDPSink.c 33807 2013-01-17 19:58:05Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 #include <stdlib.h>
@@ -47,9 +47,9 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSink_create
     jvector_sink_t* snk;
     mvpoll_key_t* key;
     
-
     /* XXX What is this about */
-    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL ) return (uintptr_t)errlogmalloc_null();
+    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL )
+        return (uintptr_t)errlogmalloc_null();
 
     if ( mvpoll_key_base_init( key ) < 0 ) return (uintptr_t)errlog_null( ERR_CRITICAL, "mvpoll_key_base_init\n" );
 

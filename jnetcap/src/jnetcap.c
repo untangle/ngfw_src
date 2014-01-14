@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/jnetcap/src/jnetcap.c $ */
+/* $HeadURL$ */
 #include <jni.h>
 
 #include <stdio.h>
@@ -505,14 +505,15 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 
     if ( _increment_session_count() < 0 ) {
-        netcap_session_raze( netcap_sess );
         errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
+        netcap_session_raze( netcap_sess );
         return;
     }
 
     if ( _critical_section() < 0 ) {
         if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
         thread_arg = NULL;
+        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
     }
@@ -541,14 +542,15 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 
     if ( _increment_session_count() < 0 ) {
-        netcap_session_raze( netcap_sess );
         errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
+        netcap_session_raze( netcap_sess );
         return;
     }
 
     if ( _critical_section() < 0 ) {
         if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
         thread_arg = NULL;
+        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
     }
@@ -621,7 +623,10 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
     
     ret = _critical_section();
     
-    if (ret < 0 && ( netcap_sess != NULL )) netcap_session_raze( netcap_sess );
+    if (ret < 0 && ( netcap_sess != NULL )) {
+        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
+        netcap_session_raze( netcap_sess );
+    }
     
     /* Make sure to always decrement the session count */
     _decrement_session_count();        
