@@ -806,7 +806,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         margin: "10 10 10 10",
                         size: 200,
                         allowBlank: true,
-                        value: (certMode === "SERVER" ? addressList : ""),
+                        value: (certMode === "ROOT" ? "" : addressList),
                         hidden: (certMode === "ROOT" ? true : false),
                         listeners: {
                             render: helptipRenderer
