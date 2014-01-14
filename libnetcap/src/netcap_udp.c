@@ -117,14 +117,11 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
     // First check to see if the session already exists.
     session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
-                                             pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                             pkt->src.port, pkt->dst.port, 0);
-    // Then check reverse if forward entry not found
-    if ( !session ) {
-        session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
-                                                 pkt->dst.host.s_addr, pkt->src.host.s_addr,
-                                                 pkt->dst.port, pkt->src.port, 0);
-    }
+                                             pkt->nat_info.original.src_address,
+                                             pkt->nat_info.original.dst_address,
+                                             ntohs( pkt->nat_info.original.src_protocol_id ),
+                                             ntohs( pkt->nat_info.original.dst_protocol_id ),
+                                             0);
     
     // If it doesn't, intialize the session.
     if ( !session ) {
@@ -140,8 +137,11 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
         // Add the session to the table
         if ( netcap_nc_sesstable_add_tuple ( !NC_SESSTABLE_LOCK, session, IPPROTO_UDP,
-                                             pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                             pkt->src.port,pkt->dst.port,0 ) ) {
+                                             pkt->nat_info.original.src_address,
+                                             pkt->nat_info.original.dst_address,
+                                             ntohs( pkt->nat_info.original.src_protocol_id ),
+                                             ntohs( pkt->nat_info.original.dst_protocol_id ),
+                                             0 ) < 0 ) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
@@ -155,8 +155,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             SESSTABLE_UNLOCK();
             return perrlog("netcap_sesstable_add");
         }
-
-        // Dump the packet into the mailbox
 
         // Put the packet into the mailbox
         if (mailbox_size( &session->cli_mb ) > MAX_MB_SIZE ) {
