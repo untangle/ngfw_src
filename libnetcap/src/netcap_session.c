@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_session.c 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #include "netcap_session.h"
 
@@ -227,10 +227,6 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
             return errlog(ERR_CRITICAL,"mailbox_init\n");
         }
     }
-
-    /* Clear out the ICMP identifiers */
-    netcap_sess->icmp.client_id = 0;
-    netcap_sess->icmp.server_id = 0;
 
     /* Clear out the dead TCP session flags */
     netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_NULL;
