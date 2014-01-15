@@ -2479,14 +2479,19 @@ Ext.define("Ung.SelectDateTimeWindow", {
             increment: 30,
             width: 180,
             emptyText: i18n._('Time'),
-            dayStart: Ext.Date.parse('12:00 AM','h:i A'),
             value: Ext.Date.parse('12:00 AM','h:i A'),
             listeners: {
                 change: {
                     fn: function(combo, newValue, oldValue, opts) {
-                        if ( this.date && newValue!=null) {
-                            this.date.setHours(newValue.getHours());
-                            this.date.setMinutes(newValue.getMinutes());
+                    	if(!this.buttonObj) {
+                    	   return;
+                    	}
+                        if (combo.getValue()!=null) {
+                            if(!this.date) {
+                                this.date = this.down("datepicker[name=date]").getValue() || (new Date());
+                            }
+                            this.date.setHours(combo.getValue().getHours());
+                            this.date.setMinutes(combo.getValue().getMinutes());
                             this.setDate(this.date);
                         }
                     },
@@ -2514,15 +2519,15 @@ Ext.define("Ung.SelectDateTimeWindow", {
     setDate: function(date) {
         this.date = date;
         var dateStr ="";
+        var buttonLabel = null;
         if(this.date) {
             dateStr = i18n.timestampFormat({time: this.date.getTime()});
-            this.buttonObj.setText(i18n.timestampFormat({time: this.date.getTime()}));    
-        } else {
-            this.buttonObj.setText(this.buttonObj.initialLabel);
-            var timefield = this.down("timefield[name=time]");
-            timefield.setValue(timefield.dayStart);
+            buttonLabel = i18n.timestampFormat({time: this.date.getTime()});
         }
         this.down("textfield[name=dateAndTime]").setValue(dateStr);
+        if(this.buttonObj) {
+            this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
+        }
     }
 });
 //Event Log class
