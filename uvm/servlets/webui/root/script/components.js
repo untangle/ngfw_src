@@ -2483,9 +2483,9 @@ Ext.define("Ung.SelectDateTimeWindow", {
             listeners: {
                 change: {
                     fn: function(combo, newValue, oldValue, opts) {
-                    	if(!this.buttonObj) {
-                    	   return;
-                    	}
+                        if(!this.buttonObj) {
+                           return;
+                        }
                         if (combo.getValue()!=null) {
                             if(!this.date) {
                                 this.date = this.down("datepicker[name=date]").getValue() || (new Date());
