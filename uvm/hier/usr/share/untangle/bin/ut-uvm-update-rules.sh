@@ -116,8 +116,8 @@ insert_iptables_rules()
 
     # Route traffic tagged by previous rule to local
     ip rule del priority 100 >/dev/null 2>&1
-    ip rule add priority 100 fwmark 0xFB00/0xFF00 lookup 100
-    ip route add local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1 # ignore error if exists
+    ip rule add priority 100 fwmark 0xFB00/0xFF00 lookup 1000
+    ip route add local 0.0.0.0/0 dev lo table 1000 >/dev/null 2>&1 # ignore error if exists
 
     # Unfortunately we have to give utun an address or the reinjection does not work
     # Use a bogus address
