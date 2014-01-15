@@ -22,7 +22,6 @@
 #include <mvutil/list.h>
 #include <mvutil/hash.h>
 #include <mvutil/unet.h>
-#include <mvutil/mailbox.h>
 #include <linux/netfilter_ipv4.h>
 #include "libnetcap.h"
 #include "netcap_hook.h"
@@ -32,26 +31,16 @@
 #include "netcap_globals.h"
 #include "netcap_interface.h"
 #include "netcap_sesstable.h"
-#include "netcap_icmp.h"
 #include "netcap_nfconntrack.h"
-/* When completing to the server, this is essentially one plus number of ICMP messages to receive
- * before giving up.  On the last attempt, incoming ICMP messages are ignored */
-#define TCP_SRV_COMPLETE_ATTEMPTS 3
 
-/* Delay of the first connection attempt */
+/* How long to wait for TCP connection to complete */
 #define TCP_SRV_COMPLETE_TIMEOUT_MSEC       ( 30 * 1000 )
-
-/* Delay after receiving at least one ICMP message before giving up. */
-#define TCP_SRV_COMPLETE_IGN_TIMEOUT_MSEC   ( 2 * 1000 )
 
 static int  _netcap_tcp_setsockopt_srv ( int sock );
 
 static int _srv_complete_connection( netcap_session_t* netcap_sess );
 static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr );
 static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr );
-
-static int _icmp_mailbox_init    ( netcap_session_t* netcap_sess );
-static int _icmp_mailbox_destroy ( netcap_session_t* netcap_sess );
 
 int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
@@ -72,26 +61,11 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
                        netcap_sess->srv_state );
     }
     
-    ret = 0;
-
-    /* Grab the session table lock */
-    SESSTABLE_WRLOCK();
-    ret = _icmp_mailbox_init( netcap_sess );
-    SESSTABLE_UNLOCK();
-    
-    if ( ret < 0 ) return errlog( ERR_CRITICAL, "_icmp_mailbox_init\n" );    
-
     if ( _srv_complete_connection( netcap_sess ) < 0 ) {
         ret = -1;
     } else {
         ret = 0;
     }
-    
-    SESSTABLE_WRLOCK();
-    if ( _icmp_mailbox_destroy( netcap_sess ) < 0 ) errlog( ERR_CRITICAL, "_destroy_icmp_mailbox\n" );
-    SESSTABLE_UNLOCK();
-
-
 
     return ret;
 }
@@ -163,19 +137,12 @@ static int _srv_complete_connection( netcap_session_t* netcap_sess )
 
 static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr )
 {
-    int mb_fd = -1, sock = -1;
-    int c, numevents;
-    netcap_pkt_t* pkt = NULL;
-    struct icmp* icmp_hdr = NULL;
+    int sock = -1;
+    int numevents;
     struct epoll_event ev;
     struct epoll_event events[1];
-    int timeout;  /* Timeout in milliseconds */
     
     sock = netcap_sess->server_sock;
-    
-    if (( mb_fd = mailbox_get_pollable_event( &netcap_sess->srv_mb )) < 0 ) {
-        return errlog( ERR_CRITICAL, "mailbox_get_pollable_event\n" );
-    }
     
     debug( 8, "TCP: (%10u) Completing connection %i to %s\n", netcap_sess->session_id, sock,
            netcap_session_srv_endp_print( netcap_sess ));
@@ -188,125 +155,31 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
         return perrlog( "epoll_ctl" );
     }
 
-    ev.events  = EPOLLIN;
-    ev.data.fd = mb_fd;
-    
-    if ( epoll_ctl( ep_fd, EPOLL_CTL_ADD, mb_fd, &ev ) < 0 ) {
-        return perrlog( "epoll_ctl" );
-    }
-    
-    /* Number of attempts to complete the connection */
-    for ( c = 0 ; c < TCP_SRV_COMPLETE_ATTEMPTS ; c++ ) {
-        if ( c == 0 ) {
-            timeout = TCP_SRV_COMPLETE_TIMEOUT_MSEC;
-        } else {
-            /* This is the timeout for when ICMP messages may come but the connection
-             * !might! complete anyway(many implementations ignore ICMP messages).
-             */
-            timeout = TCP_SRV_COMPLETE_IGN_TIMEOUT_MSEC;
-        }
+    bzero( events, sizeof( events ));
         
-        /* Look for ICMP messages on the first few attempts, but on the last attempt
-         * just try to connect. */
-        if ( c >= TCP_SRV_COMPLETE_ATTEMPTS - 1 )  {
-            ev.events  = 0;
-            ev.data.fd = mb_fd;
-            
-            if ( epoll_ctl( ep_fd, EPOLL_CTL_DEL, mb_fd, &ev ) < 0 ) {
-                return perrlog( "epoll_ctl" );
-            }
-        }
-        
-        bzero( events, sizeof( events ));
-        
-        if (( numevents = epoll_wait( ep_fd, events, 1, timeout )) < 0 ) {
-            return perrlog( "epoll_wait" );
-        } else if ( numevents == 0 ) {
-            if ( c == 0 ) {
-                /* Connection timeout only if this is the first iteration. 
-                   (Otherwise, could have been ICMP). */
-                netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_DROP;
-            }
-            return -1;
-        } else {
-            if ( events[0].data.fd == mb_fd ) {
-                /* Attempt to read out the ICMP packet */
-                /* A packet should definitely have been available */
-                if (( pkt = mailbox_try_get( &netcap_sess->srv_mb )) == NULL ) {
-                    return errlog( ERR_CRITICAL, "mailbox_try_get\n" );
-                }
-                
-                if (( pkt->data == NULL ) || ( pkt->data_len < ICMP_ADVLENMIN ) || ( pkt->proto != IPPROTO_ICMP )) {
-                    netcap_pkt_raze( pkt );
-                    pkt = NULL;
-                    return errlog( ERR_CRITICAL, "Invalid ICMP packet\n" );
-                }
-                
-                icmp_hdr = (struct icmp*)pkt->data;
-                
-                if (( netcap_icmp_verify_type_and_code( icmp_hdr->icmp_type, icmp_hdr->icmp_code ) < 0 ) || 
-                    ICMP_INFOTYPE( icmp_hdr->icmp_type )) {
-                    /* Invalid ICMP type or code, just drop the packet */
-                    netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_DROP;
-                    netcap_pkt_raze( pkt );
-                    icmp_hdr = NULL;
-                    pkt = NULL;
-                    continue;
-                }
-
-                /* XX May want to do some more validation here */
-                if ( netcap_sess->dead_tcp.exit_type == TCP_CLI_DEAD_ICMP ) {
-                    if (( netcap_sess->dead_tcp.type != icmp_hdr->icmp_type ) ||
-                        ( netcap_sess->dead_tcp.code != icmp_hdr->icmp_code )) {
-                        debug( 8, "TCP: (%10u) ICMP modification (%d/%d) -> (%d/%d)\n",
-                               netcap_sess->dead_tcp.type, netcap_sess->dead_tcp.code,
-                               icmp_hdr->icmp_type, icmp_hdr->icmp_code );
-                    }
-                }
-
-                /* Check to see if this packet is from a different source address */
-                if ( icmp_hdr->icmp_ip.ip_dst.s_addr != pkt->src.host.s_addr ) {
-                    netcap_sess->dead_tcp.use_src = 1;
-                    netcap_sess->dead_tcp.src     = pkt->src.host.s_addr;
-                } else {
-                    netcap_sess->dead_tcp.use_src = 0;
-                    netcap_sess->dead_tcp.src     = (in_addr_t)0;
-                }
-                
-                netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
-                netcap_sess->dead_tcp.type = icmp_hdr->icmp_type;
-                netcap_sess->dead_tcp.code = icmp_hdr->icmp_code;
-
-                debug( 10, "TCP: (%10u) ICMP message type %d code %d\n", netcap_sess->session_id, 
-                       netcap_sess->dead_tcp.type, netcap_sess->dead_tcp.code );
-                
-                if ( icmp_hdr->icmp_type == ICMP_REDIRECT ) {
-                    debug( 10, "TCP: (%10u) ICMP message redirect: %s\n", netcap_sess->session_id, 
-                           unet_next_inet_ntoa( icmp_hdr->icmp_gwaddr.s_addr ));
-                    
-                    netcap_sess->dead_tcp.redirect = icmp_hdr->icmp_gwaddr.s_addr;
-                }
-                
-                netcap_pkt_raze( pkt );
-                icmp_hdr = NULL;
-                pkt = NULL;
-            } else if ( events[0].data.fd == sock ) {
-                /* Check if the connection was established */
-                if ( connect( sock, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
-                    debug( 4, "TCP: (%10u) Server connection failed '%s'\n", netcap_sess->session_id, strerror( errno ));
-                    netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
-                    return -1;
-                } else {
-                    debug( 10, "TCP: (%10u) Server connection complete\n", netcap_sess->session_id );
-                    /* Reenable blocking io */
-                    if ( unet_blocking_enable( sock ) < 0 ) {
-                        errlog( ERR_CRITICAL, "unet_blocking_enable\n" );
-                    }
-                    return 0;
-                }
+    if (( numevents = epoll_wait( ep_fd, events, 1, TCP_SRV_COMPLETE_TIMEOUT_MSEC )) < 0 ) {
+        return perrlog( "epoll_wait" );
+    } else if ( numevents == 0 ) {
+        /* Connection timeout */
+        netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_DROP;
+        return -1;
+    } else {
+        if ( events[0].data.fd == sock ) {
+            /* Check if the connection was established */
+            if ( connect( sock, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
+                debug( 4, "TCP: (%10u) Server connection failed '%s'\n", netcap_sess->session_id, strerror( errno ));
+                netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
+                return -1;
             } else {
-                errlog( ERR_CRITICAL, "Unknown event: %d", events[0].data.fd );
+                debug( 10, "TCP: (%10u) Server connection complete\n", netcap_sess->session_id );
+                /* Reenable blocking io */
+                if ( unet_blocking_enable( sock ) < 0 ) {
+                    errlog( ERR_CRITICAL, "unet_blocking_enable\n" );
+                }
+                return 0;
             }
+        } else {
+            errlog( ERR_CRITICAL, "Unknown event: %d", events[0].data.fd );
         }
     }
         
@@ -389,77 +262,4 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
     return ret;
 }
 
-static int _icmp_mailbox_init    ( netcap_session_t* netcap_sess )
-{
-    netcap_session_t* current_sess;
-    
-    netcap_endpoint_t* src;
-    netcap_endpoint_t* dst;
-    
-    /* Insert the reverse session (matching an incoming packet from the server side ) */
-    dst = &netcap_sess->srv.cli;
-    src = &netcap_sess->srv.srv;
-
-    /* Lookup the tuple */
-    // First check to see if the session already exists.
-    current_sess = netcap_nc_sesstable_get_tuple ( !NC_SESSTABLE_LOCK, IPPROTO_TCP,
-                                                   src->host.s_addr, dst->host.s_addr,
-                                                   src->port, dst->port, 0 );
-    
-    if ( current_sess == NULL ) {
-        debug( 10, "TCP: (%10u) Creating server mailbox\n", netcap_sess->session_id );
-                 
-        /* Create the mailbox */
-        if ( mailbox_init( &netcap_sess->srv_mb ) < 0 ) return errlog ( ERR_CRITICAL, "mailbox_init\n" );
-
-        /* Insert the tuple */
-        if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, netcap_sess, IPPROTO_TCP,
-                                            src->host.s_addr, dst->host.s_addr,
-                                            src->port, dst->port, 0 ) < 0 ) {
-            if ( mailbox_destroy( &netcap_sess->srv_mb ) < 0 ) errlog( ERR_CRITICAL, "mailbox_destroy\n" );
-            return errlog( ERR_CRITICAL, "netcap_nc_sesstable_add_tuple\n" );
-        }
-    } else {
-        return errlog( ERR_WARNING, "TCP: (%10u) Server TCP session already exists %10u\n", 
-                       netcap_sess->session_id, current_sess->session_id );
-    }
-
-    return 0;
-}
-
-static int _icmp_mailbox_destroy ( netcap_session_t* netcap_sess )
-{
-    netcap_endpoint_t* src;
-    netcap_endpoint_t* dst;
-    
-    netcap_pkt_t* pkt = NULL;
-    int c;
-
-    debug( 10, "TCP: (%10u) Removing tuples and destroying server mailbox\n", netcap_sess->session_id );
-    
-    /* Remove the reverse session (matching an incoming packet from the server side ) */
-    dst = &netcap_sess->srv.cli;
-    src = &netcap_sess->srv.srv;
-
-    /* Remove the tuple */
-    if ( netcap_sesstable_remove_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP,
-                                           src->host.s_addr, dst->host.s_addr,
-                                           src->port, dst->port, 0 ) < 0 ) {
-        errlog( ERR_WARNING, "netcap_nc_sesstable_remove_tuple\n" );
-    }
-    
-    /* Empty the mailbox */
-    for ( c = 0 ; ( pkt = (netcap_pkt_t*)mailbox_try_get( &netcap_sess->srv_mb )) != NULL ; c++ ) {
-        netcap_pkt_raze( pkt );
-    }
-    
-    debug( 10, "TCP: (%10u) Deleted %d packets from mailbox\n", netcap_sess->session_id, c );
-    
-    /* Destroy the mailbox */
-    if ( mailbox_destroy( &netcap_sess->srv_mb ) < 0 ) {
-        errlog( ERR_WARNING, "mailbox_destroy\n" );
-    }
-    
-    return 0;
-}
 

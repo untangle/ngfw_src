@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/libnetcap/src/netcap_icmp.c $ */
+/* $HeadURL$ */
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -23,12 +23,7 @@
 #include "netcap_icmp.h"
 
 
-static struct {
-    int send_sock;
-} _icmp = {
-    .send_sock = -1
-};
-
+int _icmp_send_sock = -1;
 
 static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int flags );
 
@@ -40,11 +35,11 @@ int  netcap_icmp_init()
 {
     int one = 1;
 
-    if (( _icmp.send_sock = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 ) return perrlog( "socket" );
+    if (( _icmp_send_sock = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 ) return perrlog( "socket" );
 
-    if ( setsockopt( _icmp.send_sock, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) < 0) {
+    if ( setsockopt( _icmp_send_sock, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) < 0) {
         perrlog( "setsockopt" );
-        if ( close( _icmp.send_sock ) < 0 ) perrlog( "close\n" );
+        if ( close( _icmp_send_sock ) < 0 ) perrlog( "close\n" );
         return -1;
     }
 
@@ -53,8 +48,8 @@ int  netcap_icmp_init()
 
 int  netcap_icmp_cleanup()
 {
-    int send_sock = _icmp.send_sock;
-    _icmp.send_sock = -1;
+    int send_sock = _icmp_send_sock;
+    _icmp_send_sock = -1;
 
     if (( send_sock > 0 ) && close( send_sock ) < 0 ) perrlog( "close" );
 
@@ -205,7 +200,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
            data_len, pkt->ttl, pkt->tos, nfmark);
 
     
-    if (( ret = sendmsg( _icmp.send_sock, &msg, flags )) < 0 ) {
+    if (( ret = sendmsg( _icmp_send_sock, &msg, flags )) < 0 ) {
         errlog( ERR_CRITICAL, "sendmsg: %s | (%s -> %s) len:%i ttl:%i tos:%i nfmark:%#10x\n", errstr,
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ),
                 data_len, pkt->ttl, pkt->tos, nfmark );            
