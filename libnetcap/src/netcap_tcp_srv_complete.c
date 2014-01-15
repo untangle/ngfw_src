@@ -36,7 +36,7 @@
 /* How long to wait for TCP connection to complete */
 #define TCP_SRV_COMPLETE_TIMEOUT_MSEC       ( 30 * 1000 )
 
-static int  _netcap_tcp_setsockopt_srv ( int sock );
+static int  _netcap_tcp_setsockopt_srv ( int sock, int mark );
 
 static int _srv_complete_connection( netcap_session_t* netcap_sess );
 static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr_in* dst_addr );
@@ -70,7 +70,7 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
     return ret;
 }
 
-static int  _netcap_tcp_setsockopt_srv ( int sock )
+static int  _netcap_tcp_setsockopt_srv ( int sock, int mark )
 {
     int one        = 1;
     int thirty     = 30;
@@ -79,7 +79,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     
     struct ip_sendnfmark_opts nfmark = {
         .on = 1,
-        .mark = MARK_BYPASS
+        .mark = MARK_BYPASS | mark
     };
     
     if (setsockopt(sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
@@ -206,7 +206,7 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
     
     if (( newsocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP )) < 0 ) return perrlog("socket");
 
-    if ( _netcap_tcp_setsockopt_srv( newsocket ) < 0 ) return perrlog("_netcap_tcp_setsockopt_srv");
+    if ( _netcap_tcp_setsockopt_srv( newsocket, netcap_sess->initial_mark ) < 0 ) return perrlog("_netcap_tcp_setsockopt_srv");
     
     do {
         debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket, unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));

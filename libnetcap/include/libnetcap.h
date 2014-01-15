@@ -250,6 +250,9 @@ typedef struct netcap_session {
 
     /* TCP Session */
 
+    /* For TCP sessions, this is the inital mark that will be used on the server socket */
+    u_int initial_mark;
+    
     /* How to handle TCP sessions that were never alive */
     struct {
         /* 0: Drop incoming packets *
