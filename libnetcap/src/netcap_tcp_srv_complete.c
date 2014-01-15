@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_tcp_srv_complete.c 35586 2013-08-09 20:50:14Z dmorris $
+ * $Id$
  */
 #include "netcap_tcp.h"
 
@@ -236,8 +236,7 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
                     return errlog( ERR_CRITICAL, "mailbox_try_get\n" );
                 }
                 
-                if (( pkt->data == NULL ) || ( pkt->data_len < ICMP_ADVLENMIN ) || 
-                    ( pkt->proto != IPPROTO_ICMP )) {
+                if (( pkt->data == NULL ) || ( pkt->data_len < ICMP_ADVLENMIN ) || ( pkt->proto != IPPROTO_ICMP )) {
                     netcap_pkt_raze( pkt );
                     pkt = NULL;
                     return errlog( ERR_CRITICAL, "Invalid ICMP packet\n" );

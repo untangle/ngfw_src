@@ -30,11 +30,7 @@
 #include "netcap_pkt.h"
 
 
-static struct {
-    int send_sock;
-} _udp = {
-    .send_sock   = -1,
-};
+static int _udp_send_sock = -1;
 
 static int _netcap_udp_sendto(int sock, void* buf, size_t len, int flags, netcap_pkt_t* pkt);
 
@@ -59,7 +55,7 @@ int  netcap_udp_init ()
     /**
      * create the socket used to send/spoof outgoing udp packets
      */
-    if(( _udp.send_sock = socket(AF_INET,SOCK_DGRAM,0)) < 0) {
+    if(( _udp_send_sock = socket(AF_INET,SOCK_DGRAM,0)) < 0) {
         errlog( ERR_CRITICAL, "Unable to open udp send socket\n" );
         return perrlog ( "socket" );
     }
@@ -67,11 +63,11 @@ int  netcap_udp_init ()
     /**
      * set all the needed socket options
      */
-    if (setsockopt(_udp.send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
+    if (setsockopt(_udp_send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
         return perrlog ( "setsockopt" );
     }
     if ( IP_TRANSPARENT_VALUE() != 0 ) {
-        if (setsockopt(_udp.send_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one)) < 0) 
+        if (setsockopt(_udp_send_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one)) < 0) 
             return perrlog ( "setsockopt" );
     }
     
@@ -80,7 +76,7 @@ int  netcap_udp_init ()
 
 int  netcap_udp_cleanup()
 {
-    if ( _udp.send_sock > 0 && ( close( _udp.send_sock ) < 0 )) perrlog("close");
+    if ( _udp_send_sock > 0 && ( close( _udp_send_sock ) < 0 )) perrlog("close");
     
     return 0;
 }
@@ -90,7 +86,7 @@ int  netcap_udp_send (char* data, int data_len, netcap_pkt_t* pkt)
     if ( !data || !pkt ) return -1;
     if ( !data_len ) return 0;
         
-    return _netcap_udp_sendto( _udp.send_sock, data, data_len, 0, pkt ); 
+    return _netcap_udp_sendto( _udp_send_sock, data, data_len, 0, pkt ); 
 }
 
 int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)

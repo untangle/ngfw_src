@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_tcp.c 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #include "netcap_tcp.h"
 
@@ -115,7 +115,7 @@ int  netcap_tcp_redirect_socks( int** sock_array )
     return RDR_TCP_LOCALS_SOCKS;
 }
 
-int  netcap_tcp_set_server_mark ( netcap_session_t* netcap_sess , int mark)
+int  netcap_tcp_set_server_mark ( netcap_session_t* netcap_sess , int mark )
 {
     if ( !netcap_sess )
         return errlogargs();
@@ -127,7 +127,7 @@ int  netcap_tcp_set_server_mark ( netcap_session_t* netcap_sess , int mark)
     return _netcap_tcp_set_mark( netcap_sess->server_sock, mark );
 }
 
-int  netcap_tcp_set_client_mark ( netcap_session_t* netcap_sess , int mark)
+int  netcap_tcp_set_client_mark ( netcap_session_t* netcap_sess , int mark )
 {
     if ( !netcap_sess )
         return errlogargs();
@@ -168,7 +168,6 @@ static int _netcap_tcp_get_mark ( int sock )
 
     return nfmark.mark;
 }
-
 
 static int _netcap_tcp_set_mark ( int sock, int mark )
 {
