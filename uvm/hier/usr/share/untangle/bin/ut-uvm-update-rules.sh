@@ -71,7 +71,6 @@ insert_iptables_rules()
     # This hack toggles one bit on the mark so it has changed which seems to force the re-routing to happen.
     # This is necessary in scenarios where there are multiple independent bridges with WANs in each.
     ${IPTABLES} -A OUTPUT -t raw -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT'
-    ${IPTABLES} -A OUTPUT -t raw -p udp -j MARK --set-mark             0/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT'
 
     # Redirect any re-injected packets from the TUN interface to us
     ## Add a redirect rule for each address,
@@ -147,7 +146,6 @@ remove_iptables_rules()
 
     ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
     ${IPTABLES} -D OUTPUT -t raw -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT' >/dev/null 2>&1
-    ${IPTABLES} -D OUTPUT -t raw -p udp -j MARK --set-mark             0/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
