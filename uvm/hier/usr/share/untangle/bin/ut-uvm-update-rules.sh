@@ -8,7 +8,7 @@ TUN_DEV=utun
 TUN_ADDR="192.0.2.42"
 
 MASK_BYPASS=$((0x01000000))
-MASK_BOGUS=$((0x20000000)) # unused mark
+MASK_BOGUS=$((0x80000000)) # unused mark
 TCP_REDIRECT_PORTS="9500-9627"
 
 iptables_debug()
