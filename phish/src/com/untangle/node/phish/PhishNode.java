@@ -8,13 +8,13 @@ import org.apache.log4j.Logger;
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.node.util.DaemonController;
 
 public class PhishNode extends SpamNodeImpl implements Phish
 {
@@ -119,16 +119,16 @@ public class PhishNode extends SpamNodeImpl implements Phish
     @Override
     protected void preStart()
     {
-        DaemonController.getInstance().incrementUsageCount( "clamav-daemon" );
-        DaemonController.getInstance().incrementUsageCount( "clamav-freshclam" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-daemon" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-freshclam" );
         super.preStart();
     }
 
     @Override
     protected void postStop()
     {
-        DaemonController.getInstance().decrementUsageCount( "clamav-daemon" );
-        DaemonController.getInstance().decrementUsageCount( "clamav-freshclam" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-daemon" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-freshclam" );
         super.postStop();
     }
 }

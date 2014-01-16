@@ -90,6 +90,13 @@ public interface UvmContext
     CertificateManager certificateManager();
 
     /**
+     * Get the DaemonManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    DaemonManager daemonManager();
+
+    /**
      * The LocalDirectory for managing/authenticating users
      *
      * @return the local directory

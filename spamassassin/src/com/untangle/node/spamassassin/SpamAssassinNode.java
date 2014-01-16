@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
-import com.untangle.node.util.DaemonController;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.DaemonManager;
 
 public class SpamAssassinNode extends SpamNodeImpl
 {
@@ -80,14 +80,14 @@ public class SpamAssassinNode extends SpamNodeImpl
     @Override
     protected void preStart()
     {
-        DaemonController.getInstance().incrementUsageCount( "spamassassin" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "spamassassin" );
         super.preStart();
     }
     
     @Override
     protected void postStop()
     {
-        DaemonController.getInstance().decrementUsageCount( "spamassassin" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "spamassassin" );
         super.postStop();
     }
 

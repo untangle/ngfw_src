@@ -3,8 +3,9 @@
  */
 package com.untangle.node.clam;
 
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.DaemonManager;
 import com.untangle.node.virus.VirusNodeImpl;
-import com.untangle.node.util.DaemonController;
 
 public class ClamNode extends VirusNodeImpl
 {
@@ -26,16 +27,16 @@ public class ClamNode extends VirusNodeImpl
     @Override
     protected void preStart()
     {
-        DaemonController.getInstance().incrementUsageCount( "clamav-daemon" );
-        DaemonController.getInstance().incrementUsageCount( "clamav-freshclam" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-daemon" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-freshclam" );
         super.preStart();
     }
 
     @Override
     protected void postStop()
     {
-        DaemonController.getInstance().decrementUsageCount( "clamav-daemon" );
-        DaemonController.getInstance().decrementUsageCount( "clamav-freshclam" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-daemon" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-freshclam" );
         super.postStop();
     }
     
