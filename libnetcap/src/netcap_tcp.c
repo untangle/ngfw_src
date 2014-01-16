@@ -467,7 +467,11 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
     }
 
-    sess->initial_mark = syn->nfmark;
+    /**
+     * Save the initial mark so it can be used on the server side socket
+     * We only save the dst interface mark.
+     */
+    sess->initial_mark = syn->nfmark & 0x0000ff00;
     
     /**
      * First, put the SYN into the session mailbox.
