@@ -106,8 +106,8 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         return errlog( ERR_CRITICAL, "_process_queued_pkt\n" );
     }    
 
-    debug( 8, "UDP: Intercepted packet ::  (%s:%-5i -> %s:%i)\n",
-           unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port, unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
+    debug( 10, "UDP: Intercepted packet ::  (%s:%-5i -> %s:%i) mark: %08x\n",
+           unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port, unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port, pkt->nfmark);
     
     SESSTABLE_WRLOCK();
 
