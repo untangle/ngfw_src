@@ -43,10 +43,6 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_p
 
 struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
-int _global_first_packet_flag = 1;
-
-
-
 
 int  netcap_udp_init ()
 {
