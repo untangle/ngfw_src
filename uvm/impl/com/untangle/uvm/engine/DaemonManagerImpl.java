@@ -24,25 +24,46 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
     class DaemonObject
     {
+        DaemonObject(String daemonName)
+        {
+            this.daemonName = daemonName;
+        }
+
+        String daemonName = null;
         int usageCount = 0;
+        String monitorName = null;
         long monitorInterval = 0;
         long lastCheck = 0;
-        String processName = null;
     }
 
     /**
      * Stores a map from the daemon name to daemon object which holds the
      * current usage count along with monitoring details.
      */
-    private ConcurrentHashMap<String, DaemonObject> usageCountMap = new ConcurrentHashMap<String, DaemonObject>();
+    private ConcurrentHashMap<String, DaemonObject> daemonHashMap = new ConcurrentHashMap<String, DaemonObject>();
 
     public DaemonManagerImpl()
     {
-        timer.schedule(this, 1000, 1000);
+        timer.scheduleAtFixedRate(this, 15000, 15000);
     }
 
     public void run()
     {
+        long currentTime = System.currentTimeMillis();
+
+        for (DaemonObject object : daemonHashMap.values()) {
+            // ignore objects not configured for monitoring
+            if (object.monitorInterval == 0)
+                continue;
+
+            // ignore objects that don't need to be checked yet
+            if (currentTime < (object.lastCheck + object.monitorInterval))
+                continue;
+
+            // check the process and update the timestamp 
+            checkDaemonProcess(object);
+            object.lastCheck = currentTime;
+        }
     }
 
     public synchronized void incrementUsageCount(String daemonName)
@@ -65,13 +86,17 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     public synchronized void decrementUsageCount(String daemonName)
     {
         int newUsageCount = getUsageCount(daemonName) - 1;
-        setUsageCount(daemonName, newUsageCount);
 
         if (newUsageCount < 0) {
             logger.warn("Invalid daemon usageCount for " + daemonName + ": " + newUsageCount);
         }
 
+        setUsageCount(daemonName, newUsageCount);
+
         if (newUsageCount < 1) {
+            // first we should disable any monitoring that was enabled
+            disableDaemonMonitoring(daemonName);
+
             String cmd = "/etc/init.d/" + daemonName + " stop";
             String output = UvmContextFactory.context().execManager().execOutput(cmd);
             try {
@@ -83,13 +108,13 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
-    public synchronized boolean enableDamonMonitoring(String daemonName, String processName, long secondInterval)
+    public synchronized boolean enableDaemonMonitoring(String daemonName, String monitorName, long secondInterval)
     {
-        DaemonObject daemonObject = usageCountMap.get(daemonName);
+        DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null)
             return (false);
 
-        daemonObject.processName = processName;
+        daemonObject.monitorName = monitorName;
         daemonObject.monitorInterval = (secondInterval * 1000);
         daemonObject.lastCheck = System.currentTimeMillis();
         return (true);
@@ -97,11 +122,11 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
     public synchronized boolean disableDaemonMonitoring(String daemonName)
     {
-        DaemonObject daemonObject = usageCountMap.get(daemonName);
+        DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null)
             return (false);
 
-        daemonObject.processName = null;
+        daemonObject.monitorName = null;
         daemonObject.monitorInterval = 0;
         daemonObject.lastCheck = 0;
         return (true);
@@ -111,10 +136,10 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
     private synchronized int getUsageCount(String daemonName)
     {
-        DaemonObject daemonObject = usageCountMap.get(daemonName);
+        DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null) {
-            daemonObject = new DaemonObject();
-            usageCountMap.put(daemonName, daemonObject);
+            daemonObject = new DaemonObject(daemonName);
+            daemonHashMap.put(daemonName, daemonObject);
         }
 
         return daemonObject.usageCount;
@@ -123,13 +148,27 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     private synchronized void setUsageCount(String daemonName, int usageCount)
     {
         logger.info("Daemon " + daemonName + " usageCount: " + usageCount);
-        DaemonObject daemonObject = usageCountMap.get(daemonName);
+        DaemonObject daemonObject = daemonHashMap.get(daemonName);
 
         if (daemonObject == null) {
-            daemonObject = new DaemonObject();
-            usageCountMap.put(daemonName, daemonObject);
+            daemonObject = new DaemonObject(daemonName);
+            daemonHashMap.put(daemonName, daemonObject);
         }
 
         daemonObject.usageCount = usageCount;
+    }
+
+    private synchronized void checkDaemonProcess(DaemonObject object)
+    {
+        String result = UvmContextFactory.context().execManager().execOutput("ps -e | grep " + object.monitorName + " | wc -l");
+        int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+
+        // if we find the process running just return
+        if (count > 0)
+            return;
+
+        // process does not seem to be running so log and restart
+        logger.warn("Restarting failed daemon: " + object.daemonName);
+        String output = UvmContextFactory.context().execManager().execOutput("/etc/init.d/" + object.daemonName + " restart");
     }
 }

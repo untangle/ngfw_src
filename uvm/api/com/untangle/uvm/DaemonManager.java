@@ -14,7 +14,7 @@ public interface DaemonManager
 
     public void decrementUsageCount(String daemonName);
 
-    public boolean enableDamonMonitoring(String daemonName, String processName, long secondInterval);
+    public boolean enableDaemonMonitoring(String daemonName, String processName, long secondInterval);
 
     public boolean disableDaemonMonitoring(String daemonName);
 }
