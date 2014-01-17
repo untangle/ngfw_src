@@ -11,7 +11,7 @@ class ClientControl:
     hostKeyFile = "@PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key"
     logfile = None
     verbosity = 0
-
+    sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300"
     # set the key file permissions correctly just in case
     os.system("chmod 600 %s" % hostKeyFile)
 
@@ -39,7 +39,7 @@ class ClientControl:
 
         result = 1
         try:
-            sshCommand = "ssh -o StrictHostKeyChecking=no -i %s %s@%s \"%s %s\" %s" % (ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
+            sshCommand = "ssh %s -i %s %s@%s \"%s %s\" %s" % (ClientControl.sshOptions, ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
             if (ClientControl.verbosity > 1):
                 print "\nRunning command          : %s" % sshCommand
             if (ClientControl.verbosity > 0):
