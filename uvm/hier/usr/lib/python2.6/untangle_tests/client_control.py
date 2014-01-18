@@ -11,7 +11,7 @@ class ClientControl:
     hostKeyFile = "@PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key"
     logfile = None
     verbosity = 0
-    sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300"
+    sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"
     # set the key file permissions correctly just in case
     os.system("chmod 600 %s" % hostKeyFile)
 
