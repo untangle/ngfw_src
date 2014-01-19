@@ -94,7 +94,6 @@ def prepareSystem():
     # Not Optional proc settings
     procset('/proc/sys/net/ipv4/ip_forward',"1",False);
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
-    procset('/proc/sys/net/ipv4/icmp_frag_accept',"1",False);
     procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False); 
 
