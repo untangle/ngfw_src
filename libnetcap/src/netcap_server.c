@@ -300,17 +300,6 @@ static int  _handle_message (epoll_info_t* info, int revents)
             errlog(ERR_CRITICAL,"Null Message Received\n");
             break;
 
-        case NETCAP_MSG_ADD_SUB:
-            _server_unlock();
-            errlog( ERR_CRITICAL, "NETCAP_MSG_ADD_SUB is unsupported\n" );
-            break;
-            
-        case NETCAP_MSG_REM_SUB:
-            _server_unlock();            
-            errlog( ERR_CRITICAL, "NETCAP_MSG_REM_SUB is unsupported\n" );
-            break;
-
-
         case NETCAP_MSG_SHUTDOWN:
             debug(5,"NETCAP: Shutdown Received, Thread Terminating\n");
             _server_unlock();

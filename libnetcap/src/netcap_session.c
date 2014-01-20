@@ -337,7 +337,6 @@ int netcap_nc_session_raze(int if_lock, netcap_session_t* netcap_sess)
         return netcap_tcp_session_raze(if_lock,netcap_sess);
 
     case IPPROTO_UDP:
-    case IPPROTO_ICMP:
         return netcap_udp_session_raze(if_lock,netcap_sess);
 
     default:

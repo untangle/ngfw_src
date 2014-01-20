@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_tcp_session.c 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #include <stdlib.h>
 #include <unistd.h>
@@ -23,7 +23,7 @@
 int netcap_tcp_session_init( netcap_session_t* netcap_sess,
                              in_addr_t client_addr, u_short client_port, int client_sock,
                              in_addr_t server_addr, u_short server_port, int server_sock,
-                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq )
+                             netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
     netcap_endpoints_t endpoints;
 
@@ -78,7 +78,7 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
 
 netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port, int client_sock,
                                             in_addr_t server_addr, u_short server_port, int server_sock,
-                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq )
+                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
     int ret;
     netcap_session_t* netcap_sess;
@@ -89,7 +89,7 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
 
     ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
                                     client_sock, server_addr, server_port,
-                                    server_sock, cli_intf, srv_intf, seq );
+                                    server_sock, cli_intf, srv_intf );
 
     if ( ret < 0) {
         if ( netcap_tcp_session_free(netcap_sess)) {

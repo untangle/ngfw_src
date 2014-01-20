@@ -77,11 +77,11 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
     pkt->proto           = IPPROTO_UDP;
     pkt->src.host.s_addr = JLONG_TO_UINT( src );
     pkt->src.port        = (u_short)src_port;
-    pkt->src_intf        = NF_INTF_UNKNOWN;
+    pkt->src_intf        = 0;
 
     pkt->dst.host.s_addr = JLONG_TO_UINT( dst );
     pkt->dst.port        = (u_short)dst_port;
-    pkt->dst_intf        = NF_INTF_UNKNOWN;
+    pkt->dst_intf        = 0;
 
     pkt->ttl             = 255;
     pkt->tos             = 0;

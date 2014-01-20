@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_sesstable.h 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #ifndef __NETCAP_SESSTABLE_H_
 #define __NETCAP_SESSTABLE_H_
@@ -22,8 +22,7 @@ netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int64_t id);
 
 netcap_session_t* netcap_nc_sesstable_get_tuple (int if_lock, int proto, 
                                                  in_addr_t src, in_addr_t dst, 
-                                                 u_short sport, u_short dport,
-                                                 u_int seq);
+                                                 u_short sport, u_short dport);
 
 list_t*    netcap_nc_sesstable_get_all_sessions ( int if_lock );
 int        netcap_nc_sesstable_numsessions (int if_lock);
@@ -32,13 +31,13 @@ int        netcap_nc_sesstable_add (int if_lock, netcap_session_t* sess);
 int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, 
                                           int protocol, 
                                           in_addr_t src, in_addr_t dst, 
-                                          u_short sport, u_short dport, u_int seq);
+                                          u_short sport, u_short dport);
 
 
 int        netcap_sesstable_remove (int if_lock, netcap_session_t* netcap_sess);
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, 
                                           in_addr_t shost, in_addr_t dhost, 
-                                          u_short sport, u_short dport, u_int seq);
+                                          u_short sport, u_short dport);
 
 int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess);
 

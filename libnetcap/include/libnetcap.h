@@ -35,9 +35,7 @@ typedef enum {
 } netcap_callback_action_t;
 
 typedef enum {
-    NC_INTF_ERR = 0,
-    NF_INTF_UNKNOWN = 0,
-    NC_INTF_LOOPBACK = 254,
+    NC_INTF_ERR = 0
 } netcap_intf_t;
 
 typedef enum {
@@ -188,8 +186,6 @@ typedef struct netcap_pkt {
     /* this indicates where the packet was queued */
     netcap_queue_type_t queue_type;
 } netcap_pkt_t;
-
-#define NETCAP_SESSION_REMOVE_SERVER_TUPLE 0x7BCD
 
 typedef struct netcap_session {
     /**

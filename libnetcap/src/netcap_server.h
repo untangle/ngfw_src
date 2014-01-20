@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_server.h 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #ifndef __NETCAP_SERVER_H
 #define __NETCAP_SERVER_H
@@ -8,8 +8,6 @@
 
 typedef enum _netcap_mesg {
     NETCAP_MSG_REFRESH,
-    NETCAP_MSG_ADD_SUB,
-    NETCAP_MSG_REM_SUB,
     NETCAP_MSG_SHUTDOWN,
     NETCAP_MSG_NULL /* not used for anything */
 } netcap_mesg_t;

@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_udp_session.c 33931 2013-02-13 22:31:42Z dmorris $
+ * $Id$
  */
 #include <stdlib.h>
 #include <netinet/ip.h>
@@ -77,7 +77,8 @@ netcap_session_t* netcap_udp_session_create(netcap_pkt_t* pkt)
     return netcap_sess;
 }
 
-int netcap_udp_session_destroy(int if_lock, netcap_session_t* netcap_sess) {
+int netcap_udp_session_destroy(int if_lock, netcap_session_t* netcap_sess)
+{
     int err = 0;
 
     if ( netcap_sess == NULL ) {

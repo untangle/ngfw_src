@@ -77,7 +77,7 @@ static int _netcap_tcp_set_mark ( int sock, int mark );
 static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
                                                      in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                      in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                     netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq );
+                                                     netcap_intf_t cli_intf, netcap_intf_t srv_intf );
 
 int  netcap_tcp_init ( void )
 {
@@ -372,6 +372,7 @@ int  netcap_tcp_syn_cleanup_hook ( netcap_pkt_t* syn )
 static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 {
     netcap_intf_t cli_intf_idx;
+    netcap_intf_t srv_intf_idx;
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
@@ -409,7 +410,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     sess = _netcap_get_or_create_sess(&new_sess_flag,
                                       cli_addr,cli_port,cli_sock,
                                       srv_addr,srv_port,-1,
-                                      cli_intf_idx,NF_INTF_UNKNOWN, 0);
+                                      cli_intf_idx, 0 /* srv intf not known */ );
 
     if (!sess)
         return errlog(ERR_CRITICAL,"Could not find or create new session\n");
@@ -462,7 +463,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 
     /* XXXXX Need to hold a lock between calling the get and putting the SYN in the mailbox
      * so the mailbox cannot be deleted from underneath the function */
-    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1, cli_intf, srv_intf, 0 );
+    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1, cli_intf, srv_intf );
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
     }
@@ -602,7 +603,7 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
 static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                       in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                      netcap_intf_t cli_intf, netcap_intf_t srv_intf, u_int seq )
+                                                      netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
     netcap_session_t* sess;
 
@@ -612,12 +613,12 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
     SESSTABLE_WRLOCK();
 
     sess = netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP,
-                                          cli_addr,srv_addr, cli_port,srv_port,seq);
+                                          cli_addr,srv_addr, cli_port,srv_port);
                                           
     
 #if 0
     debug(2,"LOOKUP: (%s:%i ->",unet_next_inet_ntoa(cli_addr),cli_port);
-    debug_nodate(2," %s:%i seq:%i) -> ",unet_next_inet_ntoa(srv_addr),srv_port,seq);
+    debug_nodate(2," %s:%i) -> ",unet_next_inet_ntoa(srv_addr),srv_port);
     if (sess)
         debug_nodate(2,"FOUND\n");
     else
@@ -634,11 +635,11 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
 
     sess = netcap_tcp_session_create( cli_addr, cli_port, cli_sock,
                                       srv_addr, srv_port, srv_sock,
-                                      cli_intf, srv_intf, seq );
+                                      cli_intf, srv_intf );
 
     if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, sess, IPPROTO_TCP,
                                         cli_addr, srv_addr,
-                                        cli_port, srv_port, seq ) < 0 ) {
+                                        cli_port, srv_port ) < 0 ) {
         netcap_tcp_session_raze(!NC_SESSTABLE_LOCK,sess);
         SESSTABLE_UNLOCK();
         return perrlog_null("netcap_nc_sesstable_add_tuple\n");

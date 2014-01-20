@@ -112,8 +112,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                                              pkt->nat_info.original.src_address,
                                              pkt->nat_info.original.dst_address,
                                              ntohs( pkt->nat_info.original.src_protocol_id ),
-                                             ntohs( pkt->nat_info.original.dst_protocol_id ),
-                                             0);
+                                             ntohs( pkt->nat_info.original.dst_protocol_id ));
     
     // If it doesn't, intialize the session.
     if ( !session ) {
@@ -132,8 +131,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                                              pkt->nat_info.original.src_address,
                                              pkt->nat_info.original.dst_address,
                                              ntohs( pkt->nat_info.original.src_protocol_id ),
-                                             ntohs( pkt->nat_info.original.dst_protocol_id ),
-                                             0 ) < 0 ) {
+                                             ntohs( pkt->nat_info.original.dst_protocol_id )) < 0 ) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
@@ -177,12 +175,13 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             mb      = &session->srv_mb;
             intf    = session->srv.intf;
         } else {
-            netcap_pkt_raze( pkt );
             SESSTABLE_UNLOCK();
-            return errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
-                           unet_next_inet_ntoa( pkt->src.host.s_addr ), 
-                           unet_next_inet_ntoa( session->cli.cli.host.s_addr ), 
-                           unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
+            errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), 
+                    unet_next_inet_ntoa( session->cli.cli.host.s_addr ), 
+                    unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
+            netcap_pkt_raze( pkt );
+            return -1;
         }
 
         /* Verify the packet is from the same interface */
@@ -192,7 +191,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             SESSTABLE_UNLOCK();
             return 0;
         }
-                
+
         // Put the packet into the mailbox
         if (mailbox_size(mb) > MAX_MB_SIZE ) {
             errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
@@ -244,8 +243,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
     
-    if ( pkt->dst_intf != NF_INTF_UNKNOWN ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
-
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));
     memcpy( &dst.sin_addr, &pkt->dst.host , sizeof(struct in_addr) );
