@@ -475,7 +475,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     options: priorityOptions
                 }
             });
-            for( var i = 0; i < columns.length; i++ ){
+            for( i = 0; i < columns.length; i++ ){
                 if( columns[i].headerId == undefined ){
                     columns[i].headerId = 'h' + this.name + '_' + columns[i].dataIndex;
                 }

@@ -186,11 +186,11 @@ int netcap_tcp_session_close(netcap_session_t* netcap_sess)
     }
 
     if (netcap_sess->client_sock >=0 && (close(netcap_sess->client_sock) < 0)) {
-        errlog(ERR_WARNING,"Problem closing socket (%i): %s \n",netcap_sess->client_sock,strerror(errno));
+        errlog(ERR_WARNING,"Problem closing socket (%i): errno: %i \n",netcap_sess->client_sock, errno);
     }
 
     if (netcap_sess->server_sock >= 0 && (close(netcap_sess->server_sock) < 0)) {
-        errlog(ERR_WARNING,"Problem closing socket (%i): %s \n",netcap_sess->server_sock,strerror(errno));
+        errlog(ERR_WARNING,"Problem closing socket (%i): errno: %i \n",netcap_sess->server_sock, errno);
     }
 
     netcap_sess->client_sock = -1;

@@ -136,8 +136,8 @@ netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_add
     
     if ( if_lock ) SESSTABLE_UNLOCK();
 
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Getting tuple", proto, unet_next_inet_ntoa(src), sport);
-    debug_nodate(4,"%s:%i) = 0x%08x\n",  unet_next_inet_ntoa(dst), dport, session );
+    //debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Getting tuple", proto, unet_next_inet_ntoa(src), sport);
+    //debug_nodate(4,"%s:%i) = 0x%08x\n",  unet_next_inet_ntoa(dst), dport, session );
     
     return session;
 }
@@ -193,7 +193,7 @@ int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess 
 
     _verify_initialized();
 
-    debug(5, "SESSTAB: Inserting session id %10u = 0x%08x\n", netcap_sess->session_id, netcap_sess);
+    debug(4, "SESSTAB: Inserting session id %10u = 0x%08x\n", netcap_sess->session_id, netcap_sess);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
@@ -244,16 +244,16 @@ int        netcap_nc_sesstable_add_tuple ( int if_lock, netcap_session_t* sess, 
 
     if ( if_lock) SESSTABLE_UNLOCK();
 
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Inserting tuple", protocol, unet_next_inet_ntoa(src), sport);
-    debug_nodate(4,"%s:%i) = 0x%08x\n",  unet_next_inet_ntoa(dst), dport, sess );
+    //debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Inserting tuple", protocol, unet_next_inet_ntoa(src), sport);
+    //debug_nodate(4,"%s:%i) = 0x%08x\n",  unet_next_inet_ntoa(dst), dport, sess );
     
     return 0;
 }
 
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport )
 {
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Removing tuple", proto, unet_next_inet_ntoa(shost),sport);
-    debug_nodate(4,"%s:%i)\n",unet_next_inet_ntoa(dhost), dport);
+    //debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Removing tuple", proto, unet_next_inet_ntoa(shost),sport);
+    //debug_nodate(4,"%s:%i)\n",unet_next_inet_ntoa(dhost), dport);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
@@ -273,7 +273,7 @@ int        netcap_sesstable_remove ( int if_lock, netcap_session_t* netcap_sess 
 
     if (!netcap_sess) return errlogargs();
 
-    debug(5, "SESSTAB: Removing session id: %d\n", netcap_sess->session_id);
+    debug(4, "SESSTAB: Removing session id: %d\n", netcap_sess->session_id);
 
     if  ( if_lock) SESSTABLE_WRLOCK();
     

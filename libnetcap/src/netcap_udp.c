@@ -341,8 +341,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             /* Fallthrough */
         case EHOSTUNREACH:
             /* Fallthrough */
-            errlog( ERR_WARNING, "UDP: unable to send packet(%s), innocuous response code\n",
-                    strerror(errno));
+            errlog( ERR_WARNING, "UDP: unable to send packet (errno: %i)\n", errno);
             break;
 
         case EINVAL: 
