@@ -45,6 +45,10 @@ int uthread_init (void)
         if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
     }
+    else if ( strstr(utsn.release,"i686") != NULL) {
+        if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
+            return perrlog("pthread_attr_setstacksize");
+    }
     else {
         errlog( ERR_WARNING, "Unknown architecture: %s\n", utsn.release );
         errlog( ERR_WARNING, "Using amd64 stack size.\n" );
