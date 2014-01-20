@@ -8,6 +8,9 @@ Ext.require([
     'Ext.ux.data.PagingMemoryProxy',
     'Ext.ux.grid.FiltersFeature'
 ]);
+Ext.state.Manager.setProvider(
+	new Ext.state.CookieProvider()
+);
 
 if(typeof console === "undefined") {
     //Prevent console.log triggering errors on browsers without console support
