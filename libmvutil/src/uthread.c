@@ -41,11 +41,11 @@ int uthread_init (void)
         if ( pthread_attr_setstacksize( &small_detached_attr, AMD64_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
     }
-    else if ( strstr(utsn.release,"i386") != NULL) {
+    else if ( strstr(utsn.release,"386") != NULL) {
         if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
     }
-    else if ( strstr(utsn.release,"i686") != NULL) {
+    else if ( strstr(utsn.release,"686") != NULL) {
         if ( pthread_attr_setstacksize( &small_detached_attr, I386_STACK_SIZE ) < 0 )
             return perrlog("pthread_attr_setstacksize");
     }
