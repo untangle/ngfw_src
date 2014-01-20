@@ -20,6 +20,8 @@ static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_
 int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt ) 
 {
     netcap_endpoints_t endpoints;
+    int src_intf;
+    int dst_intf;
     
     if ( pkt == NULL ) return errlogargs();
 
@@ -29,12 +31,24 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
 
     netcap_endpoints_bzero( &endpoints );
         
-    memcpy( &endpoints.cli, &pkt->src, sizeof( endpoints.cli ));
-    memcpy( &endpoints.srv, &pkt->dst, sizeof( endpoints.srv ));
+    endpoints.cli.host.s_addr = pkt->nat_info.original.src_address;
+    endpoints.cli.port        = ntohs( pkt->nat_info.original.src_protocol_id );
+    endpoints.srv.host.s_addr = pkt->nat_info.reply.src_address;
+    endpoints.srv.port        = ntohs( pkt->nat_info.reply.src_protocol_id );
     
-    endpoints.intf = pkt->src_intf;
+    //memcpy( &endpoints.cli, &pkt->src, sizeof( endpoints.cli ));
+    //memcpy( &endpoints.srv, &pkt->dst, sizeof( endpoints.srv ));
 
-    if ( netcap_session_init( netcap_sess, &endpoints, pkt->dst_intf, NC_SESSION_IF_MB ) < 0 ) {
+    if ( pkt->src.host.s_addr == pkt->nat_info.reply.src_address ) {
+        src_intf = pkt->dst_intf;
+        dst_intf = pkt->src_intf;
+    } else {
+        src_intf = pkt->src_intf;
+        dst_intf = pkt->dst_intf;
+    }
+
+    endpoints.intf = src_intf;
+    if ( netcap_session_init( netcap_sess, &endpoints, dst_intf, NC_SESSION_IF_MB ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_init\n" );
     }
 
@@ -117,27 +131,19 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess)
     return err;
 }
 
-/**************************************** STATIC ****************************************/
-
 static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     if ( netcap_sess == NULL ) return errlogargs();
         
     switch ( action ) {
     case SRV_COMPLETE: 
-        /* fallthrough */
     case CLI_COMPLETE: 
-        /* fall through */
     case CLI_DROP:
         /* fallthrough */
         return 0;
     case CLI_ICMP:
-        /* XXXX Should do something here */
-        /* fallthrough */
     case CLI_RESET:
-        /* XXXX Should do something here */
     case CLI_FORWARD_REJECT:
-        /* XXXX Should do something here */
         errlog( ERR_WARNING, "_udp_rejection type %d is not implemented, ignoring\n", action );
         return 0;
 

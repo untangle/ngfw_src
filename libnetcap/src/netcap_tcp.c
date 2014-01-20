@@ -372,7 +372,6 @@ int  netcap_tcp_syn_cleanup_hook ( netcap_pkt_t* syn )
 static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 {
     netcap_intf_t cli_intf_idx;
-    netcap_intf_t srv_intf_idx;
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     struct sockaddr_in server;

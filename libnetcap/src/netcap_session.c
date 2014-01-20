@@ -202,9 +202,6 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     // Set the id
     netcap_sess->session_id = netcap_session_next_id();
 
-    /* Indicate to remove endpoints */
-    netcap_sess->remove_tuples = 1;
-
     // Set the traffic structures
     netcap_endpoints_copy( &netcap_sess->srv, endpoints );
     netcap_endpoints_copy( &netcap_sess->cli, endpoints );

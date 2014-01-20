@@ -91,7 +91,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     u_char* full_pkt = NULL;
     int full_pkt_len;
     mailbox_t* mb = NULL;
-
+    int call_hook = 0;
+    netcap_intf_t intf;
+    
     /* If the packet was queued (non-zero id), dequeue it */
     if ( pkt == NULL ) {
         return errlogargs();
@@ -146,68 +148,57 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             return perrlog("netcap_sesstable_add");
         }
 
-        // Put the packet into the mailbox
-        if (mailbox_size( &session->cli_mb ) > MAX_MB_SIZE ) {
-            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
-                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
-                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
-            netcap_pkt_action_raze( pkt, NF_DROP );
-            full_pkt = NULL;
-        } else if ( mailbox_put( &session->cli_mb , (void*)pkt ) < 0 ) {
+        call_hook = 1;
+    }
+
+    // Now either the session was already found or a new one has been created
+    // Put the pkt in the correct mailbox
+    
+    // Figure out the correct mailbox
+    if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
+        mb      = &session->cli_mb;
+        intf    = session->cli.intf;
+    } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
+        mb      = &session->srv_mb;
+        intf    = session->srv.intf;
+    } else {
+        SESSTABLE_UNLOCK();
+        errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
+                unet_next_inet_ntoa( pkt->src.host.s_addr ), 
+                unet_next_inet_ntoa( session->cli.cli.host.s_addr ), 
+                unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
+        netcap_pkt_raze( pkt );
+        return -1;
+    }
+
+    /* Verify the packet is from the same interface */
+    if ( intf != pkt->src_intf ) {
+        errlog( ERR_WARNING, "UDP: Packet from the incorrect interface expected %d actual %d. Dropping...\n", intf, pkt->src_intf );
+        netcap_pkt_action_raze( pkt, NF_DROP );
+        SESSTABLE_UNLOCK();
+        return 0;
+    }
+
+    // Put the packet into the mailbox
+    if (mailbox_size(mb) > MAX_MB_SIZE ) {
+        errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
+                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
+        netcap_pkt_action_raze( pkt, NF_DROP );
+        full_pkt = NULL;
+    } else {
+        if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
             netcap_pkt_action_raze( pkt, NF_DROP );
             perrlog("mailbox_put");
             full_pkt = NULL;
         }
-        
-        SESSTABLE_UNLOCK();
+    }
+                
+    SESSTABLE_UNLOCK();
 
-        // Call the UDP hooks
+    if ( call_hook ) {
         debug(10,"Calling UDP hook(s)\n");
         global_udp_hook(session,arg);
-    } else {
-        netcap_intf_t intf;
-
-        // Figure out the correct mailbox
-        if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
-            mb      = &session->cli_mb;
-            intf    = session->cli.intf;
-        } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
-            mb      = &session->srv_mb;
-            intf    = session->srv.intf;
-        } else {
-            SESSTABLE_UNLOCK();
-            errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
-                    unet_next_inet_ntoa( pkt->src.host.s_addr ), 
-                    unet_next_inet_ntoa( session->cli.cli.host.s_addr ), 
-                    unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
-            netcap_pkt_raze( pkt );
-            return -1;
-        }
-
-        /* Verify the packet is from the same interface */
-        if ( intf != pkt->src_intf ) {
-            errlog( ERR_WARNING, "UDP: Packet from the incorrect interface expected %d actual %d. Dropping...\n", intf, pkt->src_intf );
-            netcap_pkt_action_raze( pkt, NF_DROP );
-            SESSTABLE_UNLOCK();
-            return 0;
-        }
-
-        // Put the packet into the mailbox
-        if (mailbox_size(mb) > MAX_MB_SIZE ) {
-            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
-                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
-                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
-            netcap_pkt_action_raze( pkt, NF_DROP );
-            full_pkt = NULL;
-        } else {
-            if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
-                netcap_pkt_action_raze( pkt, NF_DROP );
-                perrlog("mailbox_put");
-                full_pkt = NULL;
-            }
-        }
-                
-        SESSTABLE_UNLOCK();
     }
 
     return 0;

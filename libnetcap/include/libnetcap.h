@@ -203,12 +203,6 @@ typedef struct netcap_session {
     short alive;
 
     /**
-     * Indicates whether or not to remove the tuples associated with
-     * traf_srv and traf_cli
-     */
-    short remove_tuples;
-
-    /**
      * the session_id
      */
     u_int64_t session_id;
