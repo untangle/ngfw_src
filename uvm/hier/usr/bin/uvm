@@ -1,19 +1,20 @@
 #!/usr/bin/python
-import sys;
-import os;
-import resource;
-import glob;
-import time;
-import threading;
-import signal;
-import datetime;
-import subprocess as sub
+import sys
+import os
+import resource
+import glob
+import time
+import threading
+import signal
+import datetime
+import getopt
+import subprocess
 import syslog
 
 # read the configuration
 exec(open("@PREFIX@/usr/share/untangle/conf/untangle-vm.conf"));
 
-#p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
+#p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE)
 #os.dup2(p.stdin.fileno(), sys.stdout.fileno())
 #os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
@@ -33,12 +34,47 @@ exit_flag = 0;
 uvm_pid = 0;
 monitor_interval_seconds=10;
 syslog_out = syslog.openlog("uvmwrapper");
+use_valgrind = False
 
 def debug(string):
     print string
     sys.stdout.flush()
     syslog.syslog(string);
     
+class ArgumentParser(object):
+    def __init__(self):
+        pass
+
+    def set_valgrind( self, arg ):
+        global use_valgrind
+        use_valgrind = True
+
+    def parse_args( self ):
+        handlers = {
+            '-v' : self.set_valgrind,
+        }
+
+        try:
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'v')
+            for opt in optlist:
+                handlers[opt[0]](opt[1])
+            return args
+        except getopt.GetoptError, exc:
+            print exc
+            printUsage()
+            exit(1)
+
+def printUsage():
+    sys.stderr.write( """\
+%s Usage:
+  required args:
+  optional args:
+    -v                   : use valgrind
+""" % (sys.argv[0]) )
+    sys.exit(1)
+
+parser = ArgumentParser()
+parser.parse_args()
 
 #
 # Set the process name
@@ -128,6 +164,11 @@ def prepareSystem():
 
     os.unsetenv('DISPLAY');
 
+    # do not limit core size
+    resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+
+    # raise the FD limit, we do this incrementally so it automatically sets it 
+    # to some large accepted value
     fdlimit=1024
     for i in range(13):
         try:
@@ -138,8 +179,7 @@ def prepareSystem():
             #debug("Reached limit: %i" % fdlimit)
             break;
 
-    # do not limit core size
-    resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+
 
 #
 # This checks to verify that the system looks appropriate for running the untangle-vm
@@ -346,15 +386,21 @@ while True:
         #os.dup2(so.fileno(), sys.stdout.fileno())
         #os.dup2(se.fileno(), sys.stderr.fileno())
         
-        p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
+        p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE)
         os.dup2(p.stdin.fileno(), sys.stdout.fileno())
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
-        args = ("/usr/bin/java " + 
-                java_opts + " " + uvm_args + 
-                " com.untangle.uvm.engine.Main").split();
+        if use_valgrind:
+            args = ("/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no " 
+                    + "/usr/bin/java " + java_opts + " " + uvm_args + " -XX:UseSSE=0 " + " -Djava.compiler=NONE " + 
+                    " com.untangle.uvm.engine.Main").split();
+            os.execv("/usr/bin/valgrind", args);
+        else:
+            args = ("/usr/bin/java " + 
+                    java_opts + " " + uvm_args + 
+                    " com.untangle.uvm.engine.Main").split();
+            os.execv("/usr/bin/java", args);
 
-        os.execv("/usr/bin/java", args);
         debug("ERROR: execv returned");
         #never returns;
     

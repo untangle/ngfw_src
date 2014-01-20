@@ -219,11 +219,11 @@ void netcap_udp_null_hook (netcap_session_t* netcap_sess, void *arg)
 
 static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags, netcap_pkt_t* pkt)
 {
-    struct msghdr      msg;
+    struct msghdr      msg = {0};
     struct cmsghdr*    cmsg;
     struct iovec       iov[1];
     struct sockaddr_in dst;
-    char               control[MAX_CONTROL_MSG];
+    char               control[MAX_CONTROL_MSG] = {0};
     u_short            sport;
     int                ret;
     /**

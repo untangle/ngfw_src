@@ -147,15 +147,13 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
     debug( 8, "TCP: (%10u) Completing connection %i to %s\n", netcap_sess->session_id, sock,
            netcap_session_srv_endp_print( netcap_sess ));
 
-    bzero(&ev, sizeof(ev));      /* Cleanup valgrind */
+    memset(&ev, 0, sizeof(ev));
     ev.events  = EPOLLOUT;
     ev.data.fd = sock;
     
     if ( epoll_ctl( ep_fd, EPOLL_CTL_ADD, sock, &ev ) < 0 ) {
         return perrlog( "epoll_ctl" );
     }
-
-    bzero( events, sizeof( events ));
         
     if (( numevents = epoll_wait( ep_fd, events, 1, TCP_SRV_COMPLETE_TIMEOUT_MSEC )) < 0 ) {
         return perrlog( "epoll_wait" );
