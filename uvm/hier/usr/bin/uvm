@@ -137,7 +137,9 @@ def prepareSystem():
         except ValueError:
             #debug("Reached limit: %i" % fdlimit)
             break;
-    #os.system("ulimit -a");
+
+    # do not limit core size
+    resource.setrlimit(resource.RLIMIT_CORE, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
 
 #
 # This checks to verify that the system looks appropriate for running the untangle-vm
