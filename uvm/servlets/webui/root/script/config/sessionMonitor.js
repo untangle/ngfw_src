@@ -475,6 +475,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     options: priorityOptions
                 }
             });
+            for( var i = 0; i < columns.length; i++ ){
+                if( columns[i].headerId == undefined ){
+                    columns[i].headerId = 'h' + this.name + '_' + columns[i].dataIndex;
+                }
+            }
             return columns;
         },
         // Current Sessions Grid
@@ -494,70 +499,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 columns: this.getColumns(),
                 stateful: true,
                 stateId: 'state_' + this.name,
-                applyState: function( state ){
-		    var me = this;
-		    if( me.ownerCt == undefined ){
-		      // Ung.SessionMonitor not attached yet
-		      setTimeout( function(){
-		          me.applyState( state );
-		      }, 5 );
-		      return;
-		    }
-			
-		    // Pull original column definitions from templates
-		    var columns = me.ownerCt.getColumns();
-		    var s;
-		    var stateDataIndex, 
-		        statePosition, 
-		        stateWidth;
-		    // Modify column using templete base and state values.
-		    var i = 0;
-		    while( i in state ){
-		        s = state[i].split( ',' );
-			stateDataIndex = s[0];
-			statePosition = parseInt( s[1] );
-			stateWidth = parseInt( s[2] );
-			for( var j = 0; j < columns.length; j++ ){
-			    if( columns[j].dataIndex != stateDataIndex ){
-			        continue;
-			    }
-			    if( !stateWidth ){
-			        columns[j].hidden = true;
-			    }else{
-			        columns[j].hidden = false;
-				columns[j].width = stateWidth;
-			    }
-			    if( j != statePosition ){
-			        // Move to new position
-				var cols = columns.splice( j, 1 );
-				columns.splice( statePosition, 0, cols[0] );
-			    }
-			    break;
-			}
-			i++;
-		    }
-		    me.reconfigure( undefined, columns );
-                },
-                getState: function(){
-		    var me = this;
-		    var state = {};
-		    var header;
-		    for( var i = 0; i < me.headerCt.items.items.length; i++ ){
-		        header = me.headerCt.items.items[i];
-			// Save as format: dataindex,pos,width
-			// If width = 0, hide column
-			state[i] = 
-			    Array(
-			        header.dataIndex,
-				i,
-				( header.hidden
-				    ? '0'
-				    : header.width
-				)
-			    ).join( ',' );
-		    }
-		    return state;
-                },
                 fields: [{
                     name: "id"
                 },{
