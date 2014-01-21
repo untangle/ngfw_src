@@ -20,5 +20,7 @@ public interface SystemManager
 
     boolean upgradesAvailable();
 
+    boolean upgradesAvailable( boolean forceUpdate );
+
     void upgrade();
 }

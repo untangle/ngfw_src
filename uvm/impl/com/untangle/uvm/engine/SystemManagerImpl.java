@@ -285,10 +285,16 @@ public class SystemManagerImpl implements SystemManager
         return; /* probably never returns because usually upgrade process kills this process */
     }
 
+    public boolean upgradesAvailable( boolean forceUpdate )
+    {
+        if ( forceUpdate )
+            UvmContextFactory.context().execManager().execResult( "apt-get update" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "apt-get -s dist-upgrade | grep -q '^Inst'" );
+        return (retCode == 0);
+    }
     public boolean upgradesAvailable()
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "apt-get update ; apt-get -s dist-upgrade | grep -q '^Inst'" );
-        return (retCode == 0);
+        return upgradesAvailable( true );
     }
     
     private SystemSettings defaultSettings()
