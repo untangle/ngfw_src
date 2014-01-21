@@ -137,8 +137,8 @@ netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_add
     
     if ( if_lock ) SESSTABLE_UNLOCK();
 
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Getting tuple", proto, unet_next_inet_ntoa(src), sport);
-    debug_nodate(4,"%s:%i) = 0x%016"PRIxPTR"\n",  unet_next_inet_ntoa(dst), dport, (uintptr_t) session );
+    debug(4,"SESSTAB: Getting tuple     [%i, %s:%i -> %s:%i] = 0x%016"PRIxPTR"\n",
+          proto, unet_next_inet_ntoa(src), sport, unet_next_inet_ntoa(dst), dport, (uintptr_t) session );
     
     return session;
 }
@@ -194,7 +194,12 @@ int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess 
 
     _verify_initialized();
 
-    debug(4, "SESSTAB: Inserting session id %"PRIu64" = 0x%016"PRIxPTR"\n", netcap_sess->session_id, (uintptr_t) netcap_sess);
+    debug(4,"SESSTAB: Inserting session [%i, %s:%i -> %s:%i] [id: %"PRIu64"] = 0x%016"PRIxPTR"\n",
+          netcap_sess->protocol,
+          unet_next_inet_ntoa(netcap_sess->cli.cli.host.s_addr), netcap_sess->cli.cli.port,
+          unet_next_inet_ntoa(netcap_sess->srv.srv.host.s_addr), netcap_sess->srv.srv.port,
+          netcap_sess->session_id,
+          (uintptr_t) netcap_sess);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
@@ -245,16 +250,16 @@ int        netcap_nc_sesstable_add_tuple ( int if_lock, netcap_session_t* sess, 
 
     if ( if_lock) SESSTABLE_UNLOCK();
 
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Inserting tuple", protocol, unet_next_inet_ntoa(src), sport);
-    debug_nodate(4,"%s:%i) = 0x%016"PRIxPTR"\n",  unet_next_inet_ntoa(dst), dport, (uintptr_t) sess );
+    debug(4,"SESSTAB: Inserting tuple   [%i, %s:%i -> %s:%i] = 0x%016"PRIxPTR"\n",
+          protocol, unet_next_inet_ntoa(src), sport, unet_next_inet_ntoa(dst), dport, (uintptr_t) sess );
     
     return 0;
 }
 
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, in_addr_t shost, in_addr_t dhost, u_short sport, u_short dport )
 {
-    debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Removing tuple", proto, unet_next_inet_ntoa(shost),sport);
-    debug_nodate(4,"%s:%i)\n",unet_next_inet_ntoa(dhost), dport);
+    debug(4,"SESSTAB: Removing tuple    [%i, %s:%i -> %s:%i]\n",
+          proto, unet_next_inet_ntoa(shost), sport, unet_next_inet_ntoa(dhost), dport );
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
