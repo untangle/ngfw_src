@@ -7,10 +7,10 @@ import java.util.TimerTask;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
-import java.nio.ByteBuffer;
+import java.net.Socket;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
@@ -95,14 +95,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         setUsageCount(daemonName, newUsageCount);
 
         if (newUsageCount == 1) {
-            String cmd = "/etc/init.d/" + daemonName + " start";
-            String output = UvmContextFactory.context().execManager().execOutput(cmd);
-            try {
-                String lines[] = output.split("\\r?\\n");
-                for (String line : lines)
-                    logger.info(cmd + ": " + line);
-            } catch (Exception e) {
-            }
+            execDaemonControl(daemonName, "start");
         }
     }
 
@@ -119,15 +112,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         if (newUsageCount < 1) {
             // first we should disable any monitoring that was enabled
             disableAllMonitoring(daemonName);
-
-            String cmd = "/etc/init.d/" + daemonName + " stop";
-            String output = UvmContextFactory.context().execManager().execOutput(cmd);
-            try {
-                String lines[] = output.split("\\r?\\n");
-                for (String line : lines)
-                    logger.info(cmd + ": " + line);
-            } catch (Exception e) {
-            }
+            execDaemonControl(daemonName, "stop");
         }
     }
 
@@ -202,21 +187,9 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         daemonObject.usageCount = usageCount;
     }
 
-    private synchronized void handleDaemonCheck(DaemonObject object)
+    private synchronized void execDaemonControl(String daemonName, String command)
     {
-        // run a spiffy command to count the number of process instances
-        String result = UvmContextFactory.context().execManager().execOutput("ps -e | grep " + object.searchString + " | wc -l");
-        int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
-
-        // if we find the process running just return
-        if (count > 0)
-            return;
-
-        // process does not seem to be running so log and restart
-
-        logger.warn("Restarting failed daemon: " + object.daemonName);
-
-        String cmd = "/etc/init.d/" + object.daemonName + " restart";
+        String cmd = "/etc/init.d/" + daemonName + " " + command;
         String output = UvmContextFactory.context().execManager().execOutput(cmd);
         try {
             String lines[] = output.split("\\r?\\n");
@@ -226,25 +199,45 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
+    private synchronized void handleDaemonCheck(DaemonObject object)
+    {
+        // run a spiffy command to count the number of process instances
+        String result = UvmContextFactory.context().execManager().execOutput("ps -e | grep " + object.searchString + " | wc -l");
+
+        // parseInt is very finicky so we use replaceAll with
+        // a regex to strip out anything that is not a digit 
+        int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+
+        // if we find the process running just return
+        if (count > 0)
+            return;
+
+        // process does not seem to be running so log and restart
+        logger.warn("Restarting failed daemon: " + object.daemonName);
+        execDaemonControl(object.daemonName, "restart");
+    }
+
     private synchronized void handleRequestCheck(DaemonObject object)
     {
-        ByteBuffer txbuffer = ByteBuffer.allocate(object.transmitString.length());
-        ByteBuffer rxbuffer = ByteBuffer.allocate(4096);
-        SocketChannel netSocket = null;
+        DataOutputStream txstream = null;
+        DataInputStream rxstream = null;
+        Socket socket = null;
         boolean restart = false;
-        int txcount, rxcount;
+        byte buffer[] = new byte[4096];
+        int txcount = 0;
+        int rxcount = 0;
 
-        // put the transmit string in the buffer and prepare for sending
-        txbuffer.put(object.transmitString.getBytes());
-        txbuffer.flip();
-
-        // connect, send txbuffer an receive rxbuffer
+        // connect, send transmitString and receive the response
         try {
-            netSocket = SocketChannel.open();
-            InetSocketAddress socketAddress = new InetSocketAddress(object.hostString, object.hostPort);
-            netSocket.connect(socketAddress);
-            txcount = netSocket.write(txbuffer);
-            rxcount = netSocket.read(rxbuffer);
+            InetSocketAddress address = new InetSocketAddress(object.hostString, object.hostPort);
+            socket = new Socket();
+            socket.connect(address, 1000);
+            socket.setSoTimeout(1000);
+            txstream = new DataOutputStream(socket.getOutputStream());
+            rxstream = new DataInputStream(socket.getInputStream());
+            txstream.writeBytes(object.transmitString);
+            txcount = txstream.size();
+            rxcount = rxstream.read(buffer);
         }
 
         // catch and log any exceptions and set the restart flag
@@ -261,16 +254,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             restart = true;
         }
 
-        // make sure the socket gets closed ignoring any exceptions
+        // make sure the streams and socket all get closed ignoring exceptions
         try {
-            if (netSocket != null)
-                netSocket.close();
+            if (txstream != null)
+                txstream.close();
+            if (rxstream != null)
+                rxstream.close();
+            if (socket != null)
+                socket.close();
         } catch (Exception exn) {
         }
 
         // if no exceptions then we check the response for the search string
         if (restart == false) {
-            String haystack = new String(rxbuffer.array(), 0, rxbuffer.position());
+            String haystack = new String(buffer, 0, rxcount);
             if (haystack.contains(object.searchString) == false)
                 restart = true;
         }
@@ -280,14 +277,6 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             return;
 
         logger.warn("Restarting failed daemon: " + object.daemonName);
-
-        String cmd = "/etc/init.d/" + object.daemonName + " restart";
-        String output = UvmContextFactory.context().execManager().execOutput(cmd);
-        try {
-            String lines[] = output.split("\\r?\\n");
-            for (String line : lines)
-                logger.info(cmd + ": " + line);
-        } catch (Exception e) {
-        }
+        execDaemonControl(object.daemonName, "restart");
     }
 }
