@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include "mvutil/hash.h"
 #include "mvutil/list.h"
 #include "mvutil/unet.h"
@@ -138,7 +139,7 @@ int         mvpoll_ctl (mvpoll_id_t mvp, int op, mvpoll_key_t* key, eventmask_t 
         ev.data.ptr = key;
         ev.events = event;
         
-        debug(8,"MVPOLL: epoll_ctl(%i,%s,%i,0x%08x)\n",mvp->epfd,MVPOLL_CTL_STR[op],key->data,event);
+        debug(8,"MVPOLL: epoll_ctl(%i,%s,0x%08x)\n",mvp->epfd,MVPOLL_CTL_STR[op],event);
         if (epoll_ctl(mvp->epfd,op,key->data.fd,&ev)<0)
             ret = perrlog("epoll_ctl");
     }
@@ -446,7 +447,8 @@ static int _mvpoll_update_status (mvpoll_t* mvp, mvpoll_keystate_t* keystate, in
         
         ev = (evstate & keystate->eventmask);
         
-        debug(10,"MVPOLL: update_status (0x%08x) ev = 0x%08x, node = 0x%08x\n",mvp,ev,keystate->node);
+        debug(10,"MVPOLL: update_status (0x%016"PRIxPTR") ev = 0x%016"PRIxPTR", node = 0x%016"PRIxPTR"\n",
+              (uintptr_t) mvp, (uintptr_t) ev, (uintptr_t) keystate->node );
         
         /**
          * If there is some event and its not in the list, add one
@@ -553,7 +555,8 @@ static int _mvpoll_ctl_add (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
     if (mvpoll_key_register_observer(key,mvp)<0)
         perrlog("register_observer");
 
-    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%08x, ADD, key: 0x%08x, event: 0x%08x)\n",mvp,key,event);
+    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%016"PRIxPTR", ADD, key: 0x%016"PRIxPTR", event: 0x%016"PRIxPTR")\n",
+          (uintptr_t) mvp, (uintptr_t) key, (uintptr_t) event );
     return 0;
 }
 
@@ -584,7 +587,8 @@ static int _mvpoll_ctl_del (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
         perrlog("ht_remove");
     free(keystate);
 
-    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%08x, DEL, key: 0x%08x, event: 0x%08x)\n",mvp,key,event);
+    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%016"PRIxPTR", DEL, key: 0x%016"PRIxPTR", event: 0x%016"PRIxPTR")\n",
+          (uintptr_t) mvp, (uintptr_t) key, (uintptr_t) event );
     return 0;
 }
 
@@ -604,8 +608,8 @@ static int _mvpoll_ctl_mod (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
     poll_event = key->poll( key );
     _mvpoll_update_status( mvp, keystate, poll_event );
 
-    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%08x, MOD, key: 0x%08x, eventmask: 0x%08x, event: 0x%08x)\n",
-          mvp, key, event, poll_event );
+    debug(5,"MVPOLL: mvpoll_ctl(mvp: 0x%016"PRIxPTR", MOD, key: 0x%016"PRIxPTR", eventmask: %08x, event: 0x%08x)\n",
+          (uintptr_t) mvp, (uintptr_t) key, event, poll_event );
     return 0;
 }
 

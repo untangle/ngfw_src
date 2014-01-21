@@ -5,6 +5,7 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <sys/utsname.h>
 
 #include "mvutil/errlog.h"
@@ -125,8 +126,7 @@ void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf,
         /* Just a sanity check to make sure the correct value is returned */
         if (( verify = pthread_getspecific( tls_key )) != buf ) {
             free( buf );
-            return errlog_null( ERR_CRITICAL, "pthread_getspecific returned different val: %#10x->%#10x",
-                                buf, verify );
+            return errlog_null( ERR_CRITICAL, "pthread_getspecific returned different val: 0x%016"PRIxPTR"->0x%016"PRIxPTR"", (uintptr_t) buf, (uintptr_t) verify );
         }
         
         /* If necessary, call the initializer function, call this last so if the initializer
@@ -134,7 +134,7 @@ void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf,
         if (( init != NULL ) && ( init( buf, size ) < 0 )) {
             free( buf );
             pthread_setspecific( tls_key, NULL );
-            return errlog_null( ERR_CRITICAL, "init: size %d\n", size );
+            return errlog_null( ERR_CRITICAL, "init: size %i\n", (int) size );
         }
 
     }

@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <signal.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <mvutil/hash.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -193,7 +194,7 @@ int        netcap_nc_sesstable_add ( int if_lock, netcap_session_t* netcap_sess 
 
     _verify_initialized();
 
-    debug(4, "SESSTAB: Inserting session id %10u = 0x%08x\n", netcap_sess->session_id, netcap_sess);
+    debug(4, "SESSTAB: Inserting session id %"PRIu64" = 0x%016"PRIxPTR"\n", netcap_sess->session_id, (uintptr_t) netcap_sess);
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
@@ -273,7 +274,7 @@ int        netcap_sesstable_remove ( int if_lock, netcap_session_t* netcap_sess 
 
     if (!netcap_sess) return errlogargs();
 
-    debug(4, "SESSTAB: Removing session id: %d\n", netcap_sess->session_id);
+    debug(4, "SESSTAB: Removing session id: %"PRIu64"\n", netcap_sess->session_id);
 
     if  ( if_lock) SESSTABLE_WRLOCK();
     

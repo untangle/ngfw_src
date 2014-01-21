@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <signal.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -513,7 +514,7 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     if ( _critical_section() < 0 ) {
         if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
         thread_arg = NULL;
-        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
+        errlog(ERR_WARNING, "Error occurred. Killing session (%"PRIu64").\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
     }
@@ -550,7 +551,7 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
     if ( _critical_section() < 0 ) {
         if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
         thread_arg = NULL;
-        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
+        errlog(ERR_WARNING, "Error occurred. Killing session (%"PRIu64").\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
     }
@@ -603,14 +604,14 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
              * happens, it is pretty bad, this really should NEVER happen
              */
             if (( netcap_sess_cleanup = netcap_sesstable_get( session_id )) != NULL ) {
-                errlog( ERR_CRITICAL, "Session (%10u) left in table after hook\n", session_id );
+                errlog( ERR_CRITICAL, "Session (%"PRIu64") left in table after hook\n", session_id );
                 if ( netcap_sess_cleanup == netcap_sess ) {
                     /* Since the thread was created in C, there is no way that another
                      * thread could possible raze this session */
-                    return errlog( ERR_CRITICAL, "Session (%10u) not razed in hook, razing in cleanup\n", session_id );
+                    return errlog( ERR_CRITICAL, "Session (%"PRIu64") not razed in hook, razing in cleanup\n", session_id );
                 } else {
                     netcap_sess = NULL;
-                    return errlog( ERR_CRITICAL, "Session (%10u) replaced, assuming previous was razed\n", session_id );
+                    return errlog( ERR_CRITICAL, "Session (%"PRIu64") replaced, assuming previous was razed\n", session_id );
                 }
             }
         }
@@ -624,7 +625,7 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
     ret = _critical_section();
     
     if (ret < 0 && ( netcap_sess != NULL )) {
-        errlog(ERR_WARNING, "Error occurred. Killing session (%10u).\n", netcap_sess->session_id);
+        errlog(ERR_WARNING, "Error occurred. Killing session (%"PRIu64").\n", netcap_sess->session_id);
         netcap_session_raze( netcap_sess );
     }
     

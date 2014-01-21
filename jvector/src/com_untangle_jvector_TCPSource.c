@@ -1,10 +1,11 @@
 /**
- * $Id: com_untangle_jvector_TCPSource.c 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <sys/socket.h>
 
 #include <libmvutil.h>
@@ -75,8 +76,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
 
     /* Poll the key, if there is an error, get out of town */
     events = src->key->events;
-    debug( 10, "JVECTOR(%08x): TCPSource poll - %08x\n", src->key, events );
-
+    debug( 10, "JVECTOR(0x%016"PRIxPTR"): TCPSource poll - %08x\n", (uintptr_t)src->key, events );
 
 /* Ignore the event flags from poll, if there isn't an error or shutdown after reading 
  * from the fd, then something has gone wrong */

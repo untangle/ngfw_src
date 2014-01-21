@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_tcp_cli.c 35156 2013-06-26 23:00:08Z dmorris $
+ * $Id$
  */
 #include "netcap_tcp.h"
 
@@ -11,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include <inttypes.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #define __FAVOR_BSD   // DUDE! 
@@ -60,12 +61,12 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     if ( netcap_sess == NULL ) return errlogargs();
 
     if ( !netcap_sess->syn_mode ) {
-        debug( 5, "TCP: (%10u) CLI_COMPLETE %s opaque mode\n", netcap_sess->session_id,
+        debug( 5, "TCP: (%"PRIu64") CLI_COMPLETE %s opaque mode\n", netcap_sess->session_id,
                netcap_session_cli_tuple_print( netcap_sess ));
         return 0;
     }
     
-    debug( 6, "TCP: (%10u) CLI_COMPLETE %s\n", netcap_sess->session_id,
+    debug( 6, "TCP: (%"PRIu64") CLI_COMPLETE %s\n", netcap_sess->session_id,
            netcap_session_cli_tuple_print( netcap_sess ));
 
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE )
@@ -80,7 +81,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     }
     
     if ( msg->type != TCP_MSG_SYN || !msg->pkt ) {
-        errlog( ERR_CRITICAL, "TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt );
+        errlog( ERR_CRITICAL, "TCP: Invalid message: %i %i 0x%016"PRIxPTR"\n", msg->type, msg->fd, (uintptr_t) msg->pkt );
         netcap_tcp_msg_raze( msg );
         return -1;
     }
@@ -138,7 +139,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     netcap_tcp_msg_raze( msg );
     msg = NULL;
 
-    debug( 6, "TCP: (%10u) Released SYN :: %s\n", netcap_sess->session_id, netcap_session_cli_tuple_print(netcap_sess));
+    debug( 6, "TCP: (%"PRIu64") Released SYN :: %s\n", netcap_sess->session_id, netcap_session_cli_tuple_print(netcap_sess));
     
     /* 
      * To test the ACCEPT_MSG replacement, do the following:
@@ -159,7 +160,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     while (1) {
         if (!(msg = mailbox_timed_get(&netcap_sess->tcp_mb,5))) {
             if (errno == ETIMEDOUT) {
-                debug(6,"TCP: (%10u) Missed ACCEPT message\n",netcap_sess->session_id);
+                debug(6,"TCP: (%"PRIu64") Missed ACCEPT message\n",netcap_sess->session_id);
                 return -1;
             }
             else
@@ -168,12 +169,12 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 
         if (msg->type != TCP_MSG_ACCEPT || !msg->fd) {
             if (msg->type == TCP_MSG_SYN && msg->pkt) {
-                debug(8,"TCP: (%10u) DUP syn message, passing\n",netcap_sess->session_id);
+                debug(8,"TCP: (%"PRIu64") DUP syn message, passing\n",netcap_sess->session_id);
                 netcap_virtual_interface_send_pkt( msg->pkt );
                 netcap_pkt_action_raze( msg->pkt, NF_DROP );
                 msg->pkt = NULL;
             } else {
-                errlog(ERR_WARNING,"TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt);
+                errlog(ERR_WARNING,"TCP: Invalid message: %i %i 0x%016"PRIxPTR"\n", msg->type, msg->fd, (uintptr_t) msg->pkt);
             }
             netcap_tcp_msg_raze( msg );
             msg = NULL;
@@ -201,12 +202,12 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 
 int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
-    debug( 6, "TCP: (%10u) Client Reject(%d) %s\n", netcap_sess->session_id, 
+    debug( 6, "TCP: (%"PRIu64") Client Reject(%d) %s\n", netcap_sess->session_id, 
            action, netcap_session_cli_tuple_print( netcap_sess ));
 
     switch ( netcap_sess->cli_state ) {
     case CONN_STATE_INCOMPLETE:
-        debug( 6, "TCP: (%10u) Rejecting Client  :: %s\n", netcap_sess->session_id, 
+        debug( 6, "TCP: (%"PRIu64") Rejecting Client  :: %s\n", netcap_sess->session_id, 
                netcap_session_tuple_print( netcap_sess ));
 
         if ( _retrieve_and_reject( netcap_sess, action ) < 0 ) { 
@@ -218,7 +219,7 @@ int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_call
         /**
          * If already accepted, close then send reset anyway
          */
-        debug( 6, "TCP: (%10u) Client completed, close and reseting  :: %s\n", netcap_sess->session_id, 
+        debug( 6, "TCP: (%"PRIu64") Client completed, close and reseting  :: %s\n", netcap_sess->session_id, 
                netcap_session_tuple_print( netcap_sess ));
 
         if ( unet_reset_and_close( netcap_sess->client_sock ) < 0 )
@@ -341,7 +342,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
             if ( errno == ETIMEDOUT ) {
                 if ( c != 0 ) break;
                 
-                return errlog( ERR_CRITICAL, "TCP: (%10u) Missed SYN :: %s\n", 
+                return errlog( ERR_CRITICAL, "TCP: (%"PRIu64") Missed SYN :: %s\n", 
                                netcap_sess->session_id, netcap_session_tuple_print( netcap_sess ));
             } else {
                 return errlog( ERR_CRITICAL, "mailbox_timed_get\n" );
@@ -349,8 +350,8 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
         }
         
         if (( msg->type != TCP_MSG_SYN ) || ( msg->pkt == NULL )) {
-            errlog( ERR_WARNING, "TCP: (%10u) Invalid message: %i %i 0x%08x\n",
-                    netcap_sess->session_id, msg->type, msg->fd, msg->pkt );
+            errlog( ERR_WARNING, "TCP: (%"PRIu64") Invalid message: %i %i 0x%016"PRIxPTR"\n",
+                    netcap_sess->session_id, msg->type, msg->fd, (uintptr_t) msg->pkt );
             netcap_tcp_msg_raze( msg );
             msg = NULL;
             return -1;
@@ -358,7 +359,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
         
         switch ( action ) {
         case CLI_RESET:
-            debug( 8, "TCP: (%10u) Resetting Client  :: %s\n", netcap_sess->session_id, 
+            debug( 8, "TCP: (%"PRIu64") Resetting Client  :: %s\n", netcap_sess->session_id, 
                    netcap_session_tuple_print( netcap_sess ));
             
             if ( _netcap_tcp_cli_send_reset( msg->pkt ) < 0 ) {
@@ -367,7 +368,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
             break;
             
         case CLI_ICMP:
-            debug( 8, "TCP: (%10u) Sending ICMP response to client  :: %s\n", netcap_sess->session_id, 
+            debug( 8, "TCP: (%"PRIu64") Sending ICMP response to client  :: %s\n", netcap_sess->session_id, 
                    netcap_session_tuple_print( netcap_sess ));
             
             if ( _send_icmp_response( netcap_sess, msg->pkt ) < 0 ) {
@@ -376,7 +377,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
             break;
 
         case CLI_FORWARD_REJECT:
-            debug( 8, "TCP: (%10u) Forwarding server rejection to client :: %s\n", netcap_sess->session_id,
+            debug( 8, "TCP: (%"PRIu64") Forwarding server rejection to client :: %s\n", netcap_sess->session_id,
                    netcap_session_tuple_print( netcap_sess ));
             if ( _forward_rejection( netcap_sess, msg->pkt ) < 0 ) {
                 ret = errlog( ERR_CRITICAL, "_forward_rejection\n" );

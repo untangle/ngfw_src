@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 #include "mvutil/lock.h"
 #include "mvutil/errlog.h"
 #include "mvutil/debug.h"
@@ -440,7 +441,7 @@ static void* _ht_lookup (ht_t* table,void* key)
     u_long idx;
 
     if (!table->hash_func || !table->equal_func) {
-        errlog(ERR_CRITICAL,"Constraint failed: NULL func! (0x%08x,0x%08x)\n",table->hash_func,table->equal_func);
+        errlog(ERR_CRITICAL,"Constraint failed: NULL func! (0x%016"PRIxPTR",0x%016"PRIxPTR")\n",(uintptr_t) table->hash_func, (uintptr_t) table->equal_func);
         _ht_print_table(table);
         return NULL;
     }    
@@ -516,12 +517,12 @@ static int   _ht_print_table (ht_t* table)
     if (!table)
         return -1;
     
-    errlog(ERR_INFORM,"table           : 0x%08x\n",table);
+    errlog(ERR_INFORM,"table           : 0x%016"PRIxPTR"\n",(uintptr_t) table);
     errlog(ERR_INFORM,"table->size     : %i\n",table->size);
-    errlog(ERR_INFORM,"table->buckets  : 0x%08x\n",table->buckets);
+    errlog(ERR_INFORM,"table->buckets  : 0x%016"PRIxPTR"\n",(uintptr_t) table->buckets);
     errlog(ERR_INFORM,"table->num_entries  : %i\n",table->num_entries);
-    errlog(ERR_INFORM,"table->hash_func    : 0x%08x\n",table->hash_func);
-    errlog(ERR_INFORM,"table->equal_func   : 0x%08x\n",table->equal_func);
+    errlog(ERR_INFORM,"table->hash_func    : 0x%016"PRIxPTR"\n",(uintptr_t) table->hash_func);
+    errlog(ERR_INFORM,"table->equal_func   : 0x%016"PRIxPTR"\n",(uintptr_t) table->equal_func);
     errlog(ERR_INFORM,"flags: free_key:%i free_contents:%i allow_dups:%i keep_list:%i\n",
            table->free_key_flag,table->free_contents_flag,table->allow_dups_flag,table->keep_list_flag);
 

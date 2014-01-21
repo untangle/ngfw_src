@@ -200,7 +200,7 @@ int          mailbox_get_pollable_event(mailbox_t* mb)
         if (num < 0) 
             perrlog("write");
         if (num < mb->size) 
-            errlog(ERR_CRITICAL,"write truncated (%i/%i)\n",num,mb->size);
+            errlog(ERR_CRITICAL,"write truncated (%i/%i)\n",(int)num,(int)mb->size);
     }
 
     MB_UNLOCK(mb);

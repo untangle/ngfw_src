@@ -6,6 +6,7 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
@@ -608,8 +609,8 @@ static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_
 {
     if ( conntrack == NULL ) return errlogargs();
 
-    errlog( ERR_WARNING, "CALLBACK: Found a conntrack entry %#010x, matching on first\n", conntrack );
-    debug( 6, "Found a conntrack entry %#010x, matching on first\n", conntrack );
+    errlog( ERR_WARNING, "CALLBACK: Found a conntrack entry 0x%016"PRIxPTR", matching on first\n", (uintptr_t) conntrack );
+    debug( 6, "Found a conntrack entry 0x%016"PRIxPTR", matching on first\n", (uintptr_t) conntrack );
     struct nf_conntrack **ct_result;
     if (( ct_result = pthread_getspecific( _netcap_nfconntrack.tls_key  )) == NULL ) {
         return errlog( ERR_CRITICAL, "null args\n" );

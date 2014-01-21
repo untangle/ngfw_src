@@ -13,6 +13,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
@@ -319,10 +320,10 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         CMSG_SPACE(sizeof(pkt->src.host));
 
     /* Send Packet */
-    debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:%#10x\n",
+    debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:0x%08x\n",
            unet_next_inet_ntoa(pkt->src.host.s_addr), pkt->src.port,
-           unet_next_inet_ntoa(pkt->dst.host.s_addr),pkt->dst.port,
-           data_len, pkt->ttl, pkt->tos, nfmark);
+           unet_next_inet_ntoa(pkt->dst.host.s_addr), pkt->dst.port,
+           (int) data_len, pkt->ttl, pkt->tos, nfmark);
 
     if ( ( ret = sendmsg( sock, &msg, flags ) ) < 0 ) {
         /**
@@ -349,7 +350,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
                     errstr, 
                     unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                     unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
-                    data_len, pkt->ttl, pkt->tos, nfmark );
+                    (int) data_len, pkt->ttl, pkt->tos, nfmark );
             break;
 
         default:
@@ -357,7 +358,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
                     errstr, 
                     unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                     unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
-                    data_len, pkt->ttl, pkt->tos, nfmark );
+                    (int) data_len, pkt->ttl, pkt->tos, nfmark );
         }
     }
     

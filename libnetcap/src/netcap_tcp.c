@@ -12,6 +12,7 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include <inttypes.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #define __FAVOR_BSD
@@ -419,7 +420,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
      * Otherwise, put the fd in the mailbox
      */
     if (new_sess_flag) {
-        debug(8,"TCP: (%05d) Calling TCP hook\n", sess->session_id);
+        debug(8,"TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id);
 
         /* Since this is a new session, it must be in opaque mode */
         sess->syn_mode = 0;
@@ -483,7 +484,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     sess->nat_info = syn->nat_info;
 
     if ( new_sess_flag ) {
-        debug( 8, "TCP: (%10u) Calling TCP hook\n", sess->session_id );
+        debug( 8, "TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id );
         global_tcp_hook( sess, NULL );
     }
 
@@ -501,12 +502,12 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
     tcp_msg_t* msg;
 
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE ) {
-        debug(5,"TCP: (%10u) Dropping SYN\n", netcap_sess->session_id);
+        debug(5,"TCP: (%"PRIu64") Dropping SYN\n", netcap_sess->session_id);
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
 
     if ( syn->src_intf != netcap_sess->cli.intf ) {
-        debug( 5, "TCP: (%10u) SYN from the incorrect side\n", netcap_sess->session_id );
+        debug( 5, "TCP: (%"PRIu64") SYN from the incorrect side\n", netcap_sess->session_id );
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
 
@@ -515,7 +516,7 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
         /* There is a message in the mailbox */
         switch( msg->type ) {
         case TCP_MSG_SYN:
-            debug( 7, "TCP: (%10u) Dropping old SYN.\n", netcap_sess->session_id );
+            debug( 7, "TCP: (%"PRIu64") Dropping old SYN.\n", netcap_sess->session_id );
             /* Drop the current SYN in the mailbox */
             if ( netcap_pkt_action_raze( msg->pkt, NF_DROP ) < 0 ) {
                 errlog ( ERR_CRITICAL, "netcap_pkt_action_raze\n" );
@@ -525,7 +526,7 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
             break;
 
         case TCP_MSG_ACCEPT:
-            debug( 7, "TCP: (%10u) Dropping new SYN, ACCEPT is already in mb.\n", netcap_sess->session_id );
+            debug( 7, "TCP: (%"PRIu64") Dropping new SYN, ACCEPT is already in mb.\n", netcap_sess->session_id );
 
             /* Have an accept already, drop the current syn and then place the accept back
              * into the mailbox */
@@ -547,7 +548,7 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
         }
     }
 
-    debug(5,"TCP: (%10u) Putting SYN in mailbox\n", netcap_sess->session_id);
+    debug(5,"TCP: (%"PRIu64") Putting SYN in mailbox\n", netcap_sess->session_id);
     
     /* Send a session a SYN */
     if (( msg = netcap_tcp_msg_create( TCP_MSG_SYN, -1, syn )) == NULL ) {
@@ -567,7 +568,7 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
 {
     tcp_msg_t* msg;
 
-    debug(5,"TCP: (%10u) Putting session complete in mailbox\n", netcap_sess->session_id);
+    debug(5,"TCP: (%"PRIu64") Putting session complete in mailbox\n", netcap_sess->session_id);
     
     /* Send a session a client connection */
     if ( client_fd < 0 ) return errlogargs();

@@ -1,11 +1,12 @@
 /**
- * $Id: vector.c 35573 2013-08-08 19:43:35Z dmorris $
+ * $Id$
  */
 #include <stdlib.h>
 #include <pthread.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <sys/socket.h>
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
@@ -221,11 +222,11 @@ int       vector ( vector_t* vec )
                 continue;
         }
 
-        debug(10,"VECTOR(%08x): ----tick----%08d\n", vec, tick );
+        debug(10,"VECTOR(0x%016"PRIxPTR"): ----tick---- %08d\n", (uintptr_t) vec, tick );
 
 
         if (num_events == 0) {
-            debug(9,"VECTOR(%08x): Session Timeout\n", vec );
+            debug(9,"VECTOR(0x%016"PRIxPTR"): Session Timeout\n", (uintptr_t) vec );
             goto vector_out;
         }
 
@@ -236,20 +237,24 @@ int       vector ( vector_t* vec )
             mvpoll_key_t* key = (mvpoll_key_t*)events[i].key;
 
             if ( key == NULL ) {
-                errlog( ERR_WARNING, "VECTOR(%08x): NULL event key\n", vec );
+                errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): NULL event key\n", (uintptr_t) vec );
                 goto vector_out;
             }
 
             mvpoll_keystub_t* stub = (mvpoll_keystub_t*)key->arg;
             
             if (!stub) {
-                errlog(ERR_WARNING,"VECTOR(%08x): Missing Mvpoll Stub (key:0x%08x)\n", vec, events[i].key);
+                errlog(ERR_WARNING,"VECTOR(0x%016"PRIxPTR"): Missing Mvpoll Stub (key:0x%016"PRIxPTR")\n", (uintptr_t) vec, (uintptr_t) events[i].key);
                 goto vector_out;
             }
 
 #if VECTOR_DEBUG
-            debug(10,"VECTOR(%08x): -Event(%d)- (key: 0x%08x) (stub: 0x%08x) (mvp:%#010x) (relay:0x%08x,%d) (events:0x%08x)\n",
-                  vec, i, events[i].key, stub, vec->mvp, stub->relay, 
+            debug(10,"VECTOR(0x%016"PRIxPTR"): -Event(%d)- (key: 0x%016"PRIxPTR") (stub: 0x%016"PRIxPTR") (mvp:0x%016"PRIxPTR") (relay:0x%016"PRIxPTR",%d) (events:0x%08x)\n",
+                  (uintptr_t) vec, i,
+                  (uintptr_t) events[i].key,
+                  (uintptr_t) stub,
+                  (uintptr_t) vec->mvp,
+                  (uintptr_t) stub->relay, 
                   ( stub->relay == NULL ) ? 0 : list_length( &stub->relay->event_q ), events[i].events);
 #endif
 
@@ -292,9 +297,9 @@ int       vector ( vector_t* vec )
                              * event where the source receives an error which skips
                              * the relay and places it directly into the sink.
                              */
-                            debug( 6, "VECTOR(%08x): src shutdown snk with event in same tick\n", vec );
+                            debug( 6, "VECTOR(0x%016"PRIxPTR"): src shutdown snk with event in same tick\n", (uintptr_t) vec );
                         } else {
-                            errlog( ERR_CRITICAL, "VECTOR(%08x): Mishandled Event(snk shutdown)\n", vec );
+                            errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Mishandled Event(snk shutdown)\n", (uintptr_t) vec );
                             goto vector_out;
                         }
                     }
@@ -316,9 +321,9 @@ int       vector ( vector_t* vec )
                              * event that where the sink event closes the
                              * source.
                              */
-                            debug( 6, "VECTOR(%08x): snk shutdown then src event in same tick\n", vec );
+                            debug( 6, "VECTOR(0x%016"PRIxPTR"): snk shutdown then src event in same tick\n", (uintptr_t) vec );
                         } else {
-                            errlog( ERR_CRITICAL, "VECTOR(%08x): Mishandled Event(src shutdown)\n", vec );
+                            errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Mishandled Event(src shutdown)\n", (uintptr_t) vec );
                             goto vector_out;
                         }
                     }
@@ -329,7 +334,7 @@ int       vector ( vector_t* vec )
         
  vector_out:
     
-    debug(10,"VECTOR(%08x): Shutting down...\n", vec );
+    debug(10,"VECTOR(0x%016"PRIxPTR"): Shutting down...\n", (uintptr_t) vec );
     if (_vector_cleanup(vec)<0)
         perrlog("_vector_cleanup");
     return 0;
@@ -355,7 +360,7 @@ int       vector_send_msg ( vector_t* vec, vector_msg_t msg, void* arg )
         return errlog(ERR_CRITICAL,"truncated write\n");
 
 #if VECTOR_DEBUG
-    debug(10,"Vector message (%i,%08x) sent (fd:%i)\n",(int)msg,arg,vec->msg_pipe[1]);
+    debug(10,"Vector message (%i,0x%016"PRIxPTR") sent (fd:%i)\n",(int)msg, (uintptr_t) arg,vec->msg_pipe[1] );
 #endif
     
     return nbyt;
@@ -395,7 +400,7 @@ static int  _vector_handle_message ( vector_t* vec, int revents )
         return perrlog("read");
 
 #if VECTOR_DEBUG 
-    debug(10, "VECTOR(%08x): Server message (%i,%08x) received\n", vec, *msg, *arg );
+    debug(10, "VECTOR(0x%016"PRIxPTR"): Server message (%i,0x%016"PRIxPTR") received\n", (uintptr_t) vec, *msg, (uintptr_t) *arg );
 #endif
     
     switch(*msg) {
@@ -424,8 +429,8 @@ static int  _vector_handle_src_event ( vector_t* vec, relay_t* relay, int revent
 
     if (relay->src_shutdown) {
         /* This is only an error if the sink hasn't been shutdown yet */
-        errlog( ERR_CRITICAL, "VECTOR(%08x): Got source event for closed source (relay: 0x%08x, revents: 0x%08x)\n", 
-                vec, relay, revents );
+        errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Got source event for closed source (relay: 0x%016"PRIxPTR", revents: 0x%08x)\n", 
+                (uintptr_t) vec, (uintptr_t) relay, revents );
         _mvpoll_print_stat(revents);
         
         /* This has a lower debug number since it only occurs when there is an error */
@@ -444,8 +449,8 @@ static int  _vector_handle_src_event ( vector_t* vec, relay_t* relay, int revent
     } else if ( revents & MVPOLLHUP ) {
         return _vector_handle_src_shutdown_event( vec, relay );
     } else {
-        errlog( ERR_WARNING, "VECTOR(%08x): Got source event with invalid event mask: 0x%08x", 
-                vec, revents );
+        errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): Got source event with invalid event mask: 0x%08x", 
+                (uintptr_t) vec, revents );
         /* do the default thing anyway */
         return _vector_handle_src_input_event( vec, relay );
     }
@@ -456,8 +461,8 @@ static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay )
     event_t* evt;
 
     if ( !relay->src_enabled ) {
-        errlog( ERR_CRITICAL, "VECTOR(%08x): Got input source event from disabled source (relay: 0x%08x)\n",
-                vec, relay );
+        errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Got input source event from disabled source (relay: 0x%016"PRIxPTR")\n",
+                (uintptr_t) vec, (uintptr_t) relay );
 
         /* This has a lower debug number since it only occurs when there is an error */
         _chain_debug_print_prefix( 3, vec->chain, "VECTOR: Description: ");
@@ -468,7 +473,7 @@ static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay )
 
     /* INPUT events cannot extend the relay queue */
     if ( list_length(&relay->event_q) >= relay->event_q_max_len )
-        return errlog( ERR_CRITICAL, "VECTOR(%08x): Constraint failed. Relay full.\n", vec );
+        return errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Constraint failed. Relay full.\n", (uintptr_t) vec );
 
     /* Retrieve the event and verify it is non-null */
     if (( evt = relay->src->get_event( relay->src )) == NULL )
@@ -505,14 +510,14 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
         
         /* This check guarantees that a NULL key is not dereferenced */
         if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
-            errlog( ERR_WARNING, "VECTOR(%08x): Null key\n", vec );
+            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): Null key\n", (uintptr_t) vec );
             key_type = 0xDEAD;
         } else {
             key_type = key->type;
         }
         
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event NULL/%08x)\n", vec, key_type );
+            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): ERR without a shutdown event (event NULL/%08x)\n", (uintptr_t) vec, key_type );
         } else {
                /* This has been changed from an errlog to a debug
                   statment. This is not an abnormal case - epoll will
@@ -524,7 +529,7 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
                   integrity when a error/reset is coming, we just drop
                   the event totally, and replace with an error
                   shutdown event - dmorris */
-            debug( 1, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n", vec, evt->type, key_type );
+            debug( 1, "VECTOR(0x%016"PRIxPTR"): ERR without a shutdown event (event type: %08x/%08x)\n", (uintptr_t) vec, evt->type, key_type );
             
             /* Free the event, and return, if there is an error, no need to queue it */
             evt->raze( evt );
@@ -563,16 +568,16 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
         /* This check guarantees that a NULL key is not dereferenced */
         if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
             /* This check just guarantees that the a NULL key is not dereferenced */
-            errlog( ERR_WARNING, "VECTOR(%08x): Null key\n", vec );
+            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): Null key\n", (uintptr_t) vec );
             key_type = 0xDEAD;
         } else {
             key_type = key->type;
         }
 
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event NULL/%08x)\n", vec, key_type );
+            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): HUP without a shutdown event (event NULL/%08x)\n", (uintptr_t) vec, key_type );
         } else {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x/%08x)\n", vec, evt->type, key_type );
+            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): HUP without a shutdown event (event type: %08x/%08x)\n", (uintptr_t) vec, evt->type, key_type );
         
             /* Free the event */
             evt->raze( evt );
@@ -609,7 +614,7 @@ static int  _vector_handle_snk_event ( vector_t* vec, relay_t* relay, int revent
         return 0;
     }
     if (!relay->snk_enabled) {
-        errlog(ERR_CRITICAL,"Got sink event for disabled sink (relay: 0x%08x, revents: 0x%08x)\n",relay,revents);
+        errlog(ERR_CRITICAL,"Got sink event for disabled sink (relay: 0x%016"PRIxPTR", revents: 0x%08x)\n", (uintptr_t) relay, revents );
         _mvpoll_print_stat(revents);
         _chain_debug_print_prefix( 3, vec->chain, "VECTOR: Description: " );
         // relay_debug_print(10,"VECTOR: relay: ",relay);
@@ -871,8 +876,8 @@ static int _relay_add_queue ( relay_t* relay, event_t* event )
             case EVENT_ACTION_NOTHING:
             case EVENT_ACTION_DEQUEUE:
             default:
-                errlog( ERR_CRITICAL, "VECTOR(%08x): Non-shutdown action(%d) to an error crumb", 
-                        relay->my_vec, action );
+                errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Non-shutdown action(%d) to an error crumb",
+                        (uintptr_t) relay->my_vec, action );
             }
 
             /* Raze the event */
@@ -885,7 +890,7 @@ static int _relay_add_queue ( relay_t* relay, event_t* event )
             event->raze( event );
 
             /* This is an error because a source cannot be open if the corresponding sink is closed. */
-            errlog( ERR_CRITICAL, "VECTOR(%08x): error crumb for shutdown sink\n", relay->my_vec );
+            errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): error crumb for shutdown sink\n", (uintptr_t) relay->my_vec );
         }        
     } else {
         if (list_add_head(&relay->event_q,(void*)event)<0)
@@ -930,12 +935,12 @@ static int _relay_src_enable ( relay_t* relay )
     if (relay->src_enabled) return 0;
 
     if (!(key = relay->src->get_event_key(relay->src)))
-        return errlog(ERR_CRITICAL,"Invalid key: 0x%08x\n",key);
+        return errlog(ERR_CRITICAL,"Invalid key: 0x%016"PRIxPTR"\n",(uintptr_t) key );
     if (relay->src_shutdown)
-        return errlog(ERR_CRITICAL,"Enable on Shutdown Source: key=%#010x.\n", key );
+        return errlog(ERR_CRITICAL,"Enable on Shutdown Source: key=0x%016"PRIxPTR".\n", (uintptr_t) key );
     
 #if VECTOR_DEBUG
-    debug( 10, "VECTOR(%08x): Enable Read on 0x%08x\n", relay->my_vec, key );
+    debug( 10, "VECTOR(0x%016"PRIxPTR"): Enable Read on 0x%016"PRIxPTR"\n", (uintptr_t) relay->my_vec, (uintptr_t) key );
 #endif
 
     relay->src_enabled = 1;
@@ -957,10 +962,10 @@ static int _relay_snk_enable ( relay_t* relay )
     if (relay->snk_shutdown)
         return errlog(ERR_CRITICAL,"Enable on Shutdown Sink.\n");
     if (!(key = relay->snk->get_event_key(relay->snk))) 
-        return errlog(ERR_CRITICAL,"Invalid FD: 0x%08x.\n",key);
+        return errlog(ERR_CRITICAL,"Invalid FD: 0x%016"PRIxPTR".\n",(uintptr_t) key );
 
 #if VECTOR_DEBUG
-    debug(10,"VECTOR(%08x): Enable Write on key: 0x%08x  (relay: 0x%08x)\n", relay->my_vec, key,relay);
+    debug(10,"VECTOR(0x%016"PRIxPTR"): Enable Write on key: 0x%016"PRIxPTR"  (relay: 0x%016"PRIxPTR")\n", (uintptr_t) relay->my_vec, (uintptr_t) key, (uintptr_t) relay );
 #endif
     
     relay->snk_enabled = 1;
@@ -985,7 +990,7 @@ static int _relay_src_disable ( relay_t* relay )
         return errlog(ERR_CRITICAL,"Disable on Shutdown Source.\n");
 
 #if VECTOR_DEBUG
-    debug( 10, "VECTOR(%08x): Disable Read on key: 0x%08x\n", relay->my_vec, key );
+    debug( 10, "VECTOR(0x%016"PRIxPTR"): Disable Read on key: 0x%016"PRIxPTR"\n", (uintptr_t) relay->my_vec, (uintptr_t) key );
 #endif
     
     relay->src_enabled = 0;
@@ -1010,7 +1015,7 @@ static int _relay_snk_disable ( relay_t* relay )
         return errlog(ERR_CRITICAL,"Disable on Shutdown Sink.\n");
 
 #if VECTOR_DEBUG
-    debug(10, "VECTOR(%08x): Disable Write on key: 0x%08x\n", relay->my_vec, key);
+    debug(10, "VECTOR(0x%016"PRIxPTR"): Disable Write on key: 0x%016"PRIxPTR"\n", (uintptr_t) relay->my_vec, (uintptr_t) key);
 #endif
     
     relay->snk_enabled = 0;
@@ -1038,8 +1043,10 @@ static int _relay_src_close ( relay_t* relay )
         if (_relay_src_disable(relay)<0)
             perrlog("_relay_src_disable");
 
-        debug( 10, "VECTOR(%08x): Closing Source (0x%08x)\n", relay->my_vec, 
-              relay->src->get_event_key(relay->src));
+        debug( 10, "VECTOR(0x%016"PRIxPTR"): Closing Source (0x%016"PRIxPTR")\n",
+               (uintptr_t) relay->my_vec, 
+               (uintptr_t) relay->src->get_event_key(relay->src));
+        
         if (relay->src->shutdown(relay->src)<0)
             errlog(ERR_CRITICAL,"Failed to close source\n");
 
@@ -1073,8 +1080,9 @@ static int _relay_snk_close (relay_t* relay)
         if (_relay_snk_disable(relay)<0)
             perrlog("_relay_snk_disable");
 
-        debug(10,"VECTOR(%08x): Closing Sink (0x%08x)\n", relay->my_vec, 
-              relay->snk->get_event_key(relay->snk));
+        debug(10,"VECTOR(0x%016"PRIxPTR"): Closing Sink (0x%016"PRIxPTR")\n",
+              (uintptr_t) relay->my_vec, 
+              (uintptr_t) relay->snk->get_event_key(relay->snk));
 
         if (relay->snk->shutdown(relay->snk)<0)
             errlog(ERR_CRITICAL,"Failed to close source\n");
@@ -1108,8 +1116,11 @@ static int _relay_snk_close (relay_t* relay)
      */
     if (relay->my_vec) {
         vector_t* vec = relay->my_vec;
-        debug(10,"VECTOR(%08x): Retiring relay (%i/%i remain) (0x%08x)\n", vec,
-              vec->live_relay_count-1,list_length(&vec->dead_relays)+vec->live_relay_count,relay);
+        debug(10,"VECTOR(0x%016"PRIxPTR"): Retiring relay (%i/%i remain) (0x%016"PRIxPTR")\n",
+              (uintptr_t) vec,
+              vec->live_relay_count-1,
+              list_length(&vec->dead_relays)+vec->live_relay_count,
+              (uintptr_t) relay);
         if (list_add_tail(&vec->dead_relays,relay)<0)
             perrlog("list_add");
         vec->live_relay_count--;
@@ -1157,7 +1168,7 @@ static int  _mvpoll_keystub_key_sub ( vector_t* vec, mvpoll_key_t* key )
 
     stub = (mvpoll_keystub_t*)key->arg;
 
-    debug( 8, "_mvpoll_keystub_key_sub: %#010x\n", stub );
+    debug( 8, "_mvpoll_keystub_key_sub: 0x%016"PRIxPTR"\n", (uintptr_t)stub );
 
     /**
      * Sanity check
@@ -1272,8 +1283,11 @@ static int  _chain_debug_print ( int debug_level, list_t* chain )
             continue;
         }
         
-        debug_nodate( debug_level, "(%i:0x%08x) 0x%08x->0x%08x  ", i, relay, 
-                      relay->src->get_event_key( relay->src ), relay->snk->get_event_key( relay->snk ));
+        debug_nodate( debug_level, "[%i:0x%016" PRIxPTR "] 0x%016" PRIxPTR "->0x%016" PRIxPTR "  ",
+                      i,
+                      (uintptr_t) relay,
+                      (uintptr_t) relay->src->get_event_key( relay->src ),
+                      (uintptr_t) relay->snk->get_event_key( relay->snk ) );
     }
     debug_nodate(debug_level,"\n");
     

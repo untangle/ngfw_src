@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <sys/epoll.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -263,7 +264,7 @@ int  netcap_server_sndmsg (netcap_mesg_t msg, void* arg)
     if (nbyt < sizeof(buf)) 
         return errlog(ERR_CRITICAL,"truncated write\n");
 
-    debug(10,"Server message (%i,%08x) sent\n",(int)msg,arg);
+    debug(10,"Server message (%i,0x%016"PRIxPTR") sent\n",(int)msg,(uintptr_t)arg);
 
     return nbyt;
 }
@@ -284,7 +285,7 @@ static int  _handle_message (epoll_info_t* info, int revents)
 
     ret = read(_message_pipe[0],&buf,sizeof(buf));
 
-    debug(10,"Server message (%i,%08x) received\n",*msg,*arg);
+    debug(10,"Server message (%i,0x%016"PRIxPTR") received\n",*msg,(uintptr_t)*arg);
 
     if (ret < sizeof(buf)) {
         perrlog("read");
@@ -311,7 +312,7 @@ static int  _handle_message (epoll_info_t* info, int revents)
                     
         default:
             _server_unlock();
-            errlog(ERR_CRITICAL,"Unknown message: %i arg:%08x\n",*msg,*arg);
+            errlog(ERR_CRITICAL,"Unknown message: %i arg:0x%016"PRIxPTR"\n",*msg,(uintptr_t)*arg);
             break;
         }
     }

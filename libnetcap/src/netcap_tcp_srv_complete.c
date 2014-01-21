@@ -13,6 +13,7 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include <inttypes.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #define __FAVOR_BSD
@@ -51,12 +52,12 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
         break;
 
     case CONN_STATE_COMPLETE:
-        errlog( ERR_WARNING, "TCP: (%10u) SRV_COMPLETE %s connection already completed\n", 
+        errlog( ERR_WARNING, "TCP: (%"PRIu64") SRV_COMPLETE %s connection already completed\n", 
                 netcap_sess->session_id, netcap_session_srv_tuple_print( netcap_sess ));
         return 0;
         
     default:
-        return errlog( ERR_WARNING, "TCP: (%10u) SRV_COMPLETE %s unknown state %d\n", 
+        return errlog( ERR_WARNING, "TCP: (%"PRIu64") SRV_COMPLETE %s unknown state %d\n", 
                        netcap_sess->session_id, netcap_session_srv_tuple_print( netcap_sess ),
                        netcap_sess->srv_state );
     }
@@ -144,7 +145,7 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
     
     sock = netcap_sess->server_sock;
     
-    debug( 8, "TCP: (%10u) Completing connection %i to %s\n", netcap_sess->session_id, sock,
+    debug( 8, "TCP: (%"PRIu64") Completing connection %i to %s\n", netcap_sess->session_id, sock,
            netcap_session_srv_endp_print( netcap_sess ));
 
     memset(&ev, 0, sizeof(ev));
@@ -165,11 +166,11 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
         if ( events[0].data.fd == sock ) {
             /* Check if the connection was established */
             if ( connect( sock, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
-                debug( 4, "TCP: (%10u) Server connection failed (errno: %i)\n", netcap_sess->session_id, errno );
+                debug( 4, "TCP: (%"PRIu64") Server connection failed (errno: %i)\n", netcap_sess->session_id, errno );
                 netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
                 return -1;
             } else {
-                debug( 10, "TCP: (%10u) Server connection complete\n", netcap_sess->session_id );
+                debug( 10, "TCP: (%"PRIu64") Server connection complete\n", netcap_sess->session_id );
                 /* Reenable blocking io */
                 if ( unet_blocking_enable( sock ) < 0 ) {
                     errlog( ERR_CRITICAL, "unet_blocking_enable\n" );
@@ -200,14 +201,14 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
         return errlog( ERR_CRITICAL, "unet_sockaddr_in_init\n" );
     }
         
-    debug( 8, "TCP: (%10u) Completing connection to %s:%i\n", netcap_sess->session_id, unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
+    debug( 8, "TCP: (%"PRIu64") Completing connection to %s:%i\n", netcap_sess->session_id, unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
     
     if (( newsocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP )) < 0 ) return perrlog("socket");
 
     if ( _netcap_tcp_setsockopt_srv( newsocket, netcap_sess->initial_mark ) < 0 ) return perrlog("_netcap_tcp_setsockopt_srv");
     
     do {
-        debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket, unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
+        debug( 8,"TCP: (%"PRIu64") Binding %i to %s:%i\n", netcap_sess->session_id, newsocket, unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
         if ( bind( newsocket, (struct sockaddr*)&src_addr, sizeof(src_addr)) < 0 ) {
             ret = errlog( ERR_WARNING,"bind(%s:%i) failed: %s\n", unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ), errstr );
             break;
@@ -221,7 +222,7 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
             break;
         }
         
-        debug( 6, "TCP: (%10u) Connect %i to %s:%i\n", netcap_sess->session_id, newsocket,
+        debug( 6, "TCP: (%"PRIu64") Connect %i to %s:%i\n", netcap_sess->session_id, newsocket,
                unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
     
         if ( connect( newsocket, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
