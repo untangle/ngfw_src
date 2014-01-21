@@ -23,7 +23,7 @@ extern int  _debug_init(void);
  * example: debug(3,"number: %i \n",n) 
  * if level is less than __DEBUG_LEVEL then it will be printed 
  */
-extern int  _debug(int pkg,int level,char *lpszFmt, ...);
+extern int  _debug(int pkg,int level,char *lpszFmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 /**
  * usage: like printf except the first argument is the debug level 
@@ -32,12 +32,12 @@ extern int  _debug(int pkg,int level,char *lpszFmt, ...);
  * if level is less than __DEBUG_LEVEL then it will be printed 
  * This prints a backtrace at the end
  */
-extern int  _debug_backtrace(int pkg,int level,char *lpszFmt, ...);
+extern int  _debug_backtrace(int pkg,int level,char *lpszFmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 /**
  * same as debug but with no date prefix
  */
-extern int  _debug_nodate(int pkg,int level,char *lpszFmt, ...);
+extern int  _debug_nodate(int pkg,int level,char *lpszFmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 /**
  * changes the output debug (defaults to stdout)

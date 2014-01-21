@@ -16,11 +16,11 @@ typedef void (*errlog_fatal_func_t) (void* arg);
 
 extern int   _errlog_init(void);
 extern void  _errlog_cleanup(void);
-extern int   _errlog (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...);
+extern int   _errlog (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...) __attribute__ ((format (printf, 5, 6)));
 extern void  _errlog_set_output (FILE * out);
 extern void  _errlog_date_toggle (int onoff);
 extern void  _errlog_set_fatal_func (errlog_fatal_func_t func);
-extern int   _errlog_noprefix (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...);
+extern int   _errlog_noprefix (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...) __attribute__ ((format (printf, 5, 6)));
 extern void  _errlog_cleanup (void);
 
 #define STD_ERRLOG_PREFIX "ERROR:%s:%i:",__FILE__,__LINE__
