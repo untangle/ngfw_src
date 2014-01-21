@@ -227,7 +227,10 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         int txcount = 0;
         int rxcount = 0;
 
-        // connect, send transmitString and receive the response
+        // connect, send the command, and get the response using the old
+        // school socket stuff so we use short timeout values which is
+        // important since the stuff we monitor may be dead or unresponsive
+
         try {
             InetSocketAddress address = new InetSocketAddress(object.hostString, object.hostPort);
             socket = new Socket();
