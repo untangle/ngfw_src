@@ -515,7 +515,7 @@ public class AlertManagerImpl implements AlertManager
                     alertText += nodeName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
                     alertText += " (";
                     alertText += intf.getName();
-                    alertText += ",";
+                    alertText += ", ";
                     alertText += dnsServer;
                     alertText += ").";
 
@@ -561,7 +561,7 @@ public class AlertManagerImpl implements AlertManager
                         alertText += nodeName + " " + i18nUtil.tr("is installed but but a DNS server");
                         alertText += " (";
                         alertText += intf.getName();
-                        alertText += ",";
+                        alertText += ", ";
                         alertText += dnsServer + ")";
                         alertText += i18nUtil.tr(" fails to resolve DNSBL queries.");
 
@@ -649,7 +649,7 @@ public class AlertManagerImpl implements AlertManager
                     alertText += "Web Filter " + i18nUtil.tr("is installed but a DNS server");
                     alertText += " (";
                     alertText += intf.getName();
-                    alertText += ",";
+                    alertText += ", ";
                     alertText += dnsServer + ")";
                     alertText += i18nUtil.tr(" fails to resolve categorization queries.");
 
@@ -659,9 +659,9 @@ public class AlertManagerImpl implements AlertManager
                     alertText += i18nUtil.tr("A DNS server responds slowly.");
                     alertText += " (";
                     alertText += intf.getName();
-                    alertText += ",";
+                    alertText += ", ";
                     alertText += dnsServer;
-                    alertText += ",";
+                    alertText += ", ";
                     alertText += (t1-t0) + " ms";
                     alertText += ") ";
                     alertText += i18nUtil.tr("This may negatively effect Web Filter performance.");
