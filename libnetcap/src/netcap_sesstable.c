@@ -307,12 +307,12 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
         return errlogargs();
     }
 
-    debug(4,"SESSTAB: Removing session  [%i, %s:%i -> %s:%i] [id: %"PRIu64"] = 0x%016"PRIxPTR"\n",
+    debug(4,"SESSTAB: Removing session  [%i, %s:%i -> %s:%i] = 0x%016"PRIxPTR" [id: %"PRIu64"] \n",
           netcap_sess->protocol,
           unet_next_inet_ntoa(netcap_sess->cli.cli.host.s_addr), netcap_sess->cli.cli.port,
           unet_next_inet_ntoa(netcap_sess->srv.srv.host.s_addr), netcap_sess->srv.srv.port,
-          netcap_sess->session_id,
-          (uintptr_t) netcap_sess);
+          (uintptr_t) netcap_sess,
+          netcap_sess->session_id);
     
     if  ( if_lock ) SESSTABLE_WRLOCK();
 
