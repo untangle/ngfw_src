@@ -465,6 +465,24 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
 
+    /**
+     * Remove the iptables rules for capturing traffic
+     */
+    protected void removeRules( )
+    {
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        if ( retCode < 0 )
+            logger.warn("Unable to link iptables hook to update-rules script");
+        
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( this.updateRulesScript + " -r" );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("remove rules: ");
+            for ( String line : lines )
+                logger.info("remove rules: " + line);
+        } catch (Exception e) {}
+    }
+    
     private synchronized void _setSettings( NetworkSettings newSettings )
     {
         /**

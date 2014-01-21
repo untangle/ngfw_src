@@ -758,6 +758,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void destroy()
     {
+        // the will be removed again by the wrapper
+        // this is just so traffic will pass while the untangle-vm shutsdown
+        networkManager.removeRules();
+
         state = UvmState.DESTROYED;
 
         try {

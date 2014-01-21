@@ -3,9 +3,11 @@
 # This script updates the iptables rules for the untangle-vm
 # If it detects the untangle-vm is running it inserts the rules necessary to "redirect" traffic to the UVM
 # If it detects the untangle-vm is not running it removes the rules (if they exist)
+# If you pass -r as an option it will remove the rules regardless
 
 TUN_DEV=utun
 TUN_ADDR="192.0.2.42"
+FORCE_REMOVE="false"
 
 MASK_BYPASS=$((0x01000000))
 MASK_BOGUS=$((0x80000000)) # unused mark
@@ -160,7 +162,21 @@ rules_already_present()
     #iptables -t raw -nvL OUTPUT | grep -q NOTRACK && iptables -t tune -nvL OUTPUT | grep -q NFQUEUE && echo "true"
 }
 
-if [ "`is_uvm_running`x" = "truex" ]; then
+
+while getopts "r" opt; do
+    case $opt in
+        r) FORCE_REMOVE="true";;
+    esac
+done
+
+if [ "$FORCE_REMOVE" = "true" ] ; then
+  echo "[`date`] Removing iptables rules ..."
+  remove_iptables_rules
+  echo "[`date`] Removing iptables rules ... done"
+  return 0
+fi
+
+if [ "`is_uvm_running`x" = "truex" ] ; then
     if [ "`rules_already_present`x" = "truex" ]; then
         echo "[`date`] The untangle-vm is running. Rules already exist. Doing nothing. "
     else

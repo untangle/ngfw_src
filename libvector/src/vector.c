@@ -634,8 +634,7 @@ static int  _vector_handle_snk_event ( vector_t* vec, relay_t* relay, int revent
             return errlog(ERR_CRITICAL,"Constraint failed. Null event.\n");
 
         action = relay->snk->send_event(relay->snk,evt);
-
-        debug( 8, "send_event: %d\n", action );
+        //debug( 8, "send_event: %d\n", action );
             
         switch (action) {
         case EVENT_ACTION_ERROR:
