@@ -619,12 +619,14 @@ public class AlertManagerImpl implements AlertManager
                     logger.warn( "Invalid Lookup", e );
                     continue;
                 }
+                long t0 = System.currentTimeMillis();
                 try {
                     lookup.setResolver( new SimpleResolver( dnsServer ) );
                     records = lookup.run();
                 } catch (Exception e) {
                     logger.warn("Invalid Resolver: " + dnsServer );
                 }
+                long t1 = System.currentTimeMillis();
                 
                 if ( records == null ) {
                     records = new Record[0];
@@ -650,6 +652,19 @@ public class AlertManagerImpl implements AlertManager
                     alertText += ",";
                     alertText += dnsServer + ")";
                     alertText += i18nUtil.tr(" fails to resolve categorization queries.");
+
+                    alertList.add(alertText);
+                } else if ( t1-t0 > 300 ) {
+                    String alertText = "";
+                    alertText += i18nUtil.tr("A DNS server responds slowly.");
+                    alertText += " (";
+                    alertText += intf.getName();
+                    alertText += ",";
+                    alertText += dnsServer;
+                    alertText += ",";
+                    alertText += (t1-t0) + " ms";
+                    alertText += ") ";
+                    alertText += i18nUtil.tr("This may negatively effect Web Filter performance.");
 
                     alertList.add(alertText);
                 }
