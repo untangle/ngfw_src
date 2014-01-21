@@ -62,12 +62,12 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
     netcap_sess->ttl      = pkt->ttl;
     netcap_sess->tos      = pkt->tos;
 
-    /* Set the callback, for most actions this doesn't do anything */
-    netcap_sess->callback = _callback;
-
-    debug(7,"UDP: FLAG Copying NAT info from packet to session\n");
+    /* Copy NAT info */
     netcap_sess->nat_info = pkt->nat_info;
 
+    /* Set the callback, for most actions this doesn't do anything */
+    netcap_sess->callback = _callback;
+    
     return 0;
 }
 

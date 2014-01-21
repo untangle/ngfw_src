@@ -307,6 +307,13 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
         return errlogargs();
     }
 
+    debug(4,"SESSTAB: Removing session  [%i, %s:%i -> %s:%i] [id: %"PRIu64"] = 0x%016"PRIxPTR"\n",
+          netcap_sess->protocol,
+          unet_next_inet_ntoa(netcap_sess->cli.cli.host.s_addr), netcap_sess->cli.cli.port,
+          unet_next_inet_ntoa(netcap_sess->srv.srv.host.s_addr), netcap_sess->srv.srv.port,
+          netcap_sess->session_id,
+          (uintptr_t) netcap_sess);
+    
     if  ( if_lock ) SESSTABLE_WRLOCK();
 
     /* Try to remove the session id, ignore errors */
