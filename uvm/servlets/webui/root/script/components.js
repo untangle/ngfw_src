@@ -9,7 +9,7 @@ Ext.require([
     'Ext.ux.grid.FiltersFeature'
 ]);
 Ext.state.Manager.setProvider(
-	new Ext.state.CookieProvider()
+	new Ext.state.LocalStorageProvider()
 );
 
 if(typeof console === "undefined") {
@@ -4003,7 +4003,8 @@ Ext.define('Ung.MonitorGrid', {
     }, {
         ftype: 'groupingsummary'
     }],
-    constructor: function(config) {
+    stateful: true,
+   constructor: function(config) {
         var defaults = {
             data: [],
             plugins: [
@@ -4022,10 +4023,15 @@ Ext.define('Ung.MonitorGrid', {
         this.callParent(arguments);
     },
     initComponent: function() {
+	this.stateId = 'state_' + this.name;
+    	var headerIdPrefix = 'header_'+this.stateId;
         for (var i = 0; i < this.columns.length; i++) {
             var col=this.columns[i];
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
+            }
+            if( col.headerId == undefined ){
+                col.headerId = headerIdPrefix + col.dataIndex;
             }
         }    
         if(this.dataFn) {

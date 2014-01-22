@@ -485,7 +485,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         // Current Sessions Grid
         buildGridCurrentSessions: function() {
             this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
-                name: "gridCurrentSessions",
+                name: this.name + "_gridCurrentSessions",
                 settingsCmp: this,
                 height: 500,
                 sortField: this.sortField,
@@ -497,8 +497,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 dataFnArg: 0,
                 appList: this.getAppList(),
                 columns: this.getColumns(),
-                stateful: true,
-                stateId: 'state_' + this.name,
                 fields: [{
                     name: "id"
                 },{
