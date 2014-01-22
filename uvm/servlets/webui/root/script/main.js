@@ -41,6 +41,9 @@ Ext.define("Ung.Main", {
                 return true;
             };
         }
+        if(Ext.util.LocalStorage.supported) {
+            Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
+        }
         this.firstTimeRun = Ung.Util.getQueryStringParam("firstTimeRun");
         this.target = Ung.Util.getQueryStringParam("target");
         this.appsLastState = {};

@@ -475,17 +475,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     options: priorityOptions
                 }
             });
-            for( i = 0; i < columns.length; i++ ){
-                if( columns[i].headerId == undefined ){
-                    columns[i].headerId = 'h' + this.name + '_' + columns[i].dataIndex;
-                }
-            }
             return columns;
         },
         // Current Sessions Grid
         buildGridCurrentSessions: function() {
             this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
-                name: this.name + "_gridCurrentSessions",
+                name: this.name+"Grid",
                 settingsCmp: this,
                 height: 500,
                 sortField: this.sortField,

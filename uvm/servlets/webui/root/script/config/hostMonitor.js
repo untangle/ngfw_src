@@ -93,7 +93,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }
             };
             this.gridCurrentHosts = Ext.create('Ung.MonitorGrid',{
-                name: "CurrentHosts",
+                name: "hostMonitorGrid",
                 helpSource: 'host_viewer_current_hosts',
                 settingsCmp: this,
                 height: 500,

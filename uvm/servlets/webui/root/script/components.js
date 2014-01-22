@@ -8,9 +8,6 @@ Ext.require([
     'Ext.ux.data.PagingMemoryProxy',
     'Ext.ux.grid.FiltersFeature'
 ]);
-Ext.state.Manager.setProvider(
-	new Ext.state.LocalStorageProvider()
-);
 
 if(typeof console === "undefined") {
     //Prevent console.log triggering errors on browsers without console support
@@ -3991,6 +3988,7 @@ Ext.define('Ung.MonitorGrid', {
     totalRecords: null,
     autoRefreshEnabled: false,
     verticalScrollerType: 'paginggridscroller',
+    stateful: true,
     plugins: {
         ptype: 'bufferedrenderer',
         trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
@@ -4003,8 +4001,7 @@ Ext.define('Ung.MonitorGrid', {
     }, {
         ftype: 'groupingsummary'
     }],
-    stateful: true,
-   constructor: function(config) {
+    constructor: function(config) {
         var defaults = {
             data: [],
             plugins: [
@@ -4017,21 +4014,20 @@ Ext.define('Ung.MonitorGrid', {
                 }
             },
             changedData: {},
-            subCmps:[]
+            subCmps:[],
+            stateId: "monitorGrid-"+config.name
         };
         Ext.applyIf(config, defaults);
         this.callParent(arguments);
     },
     initComponent: function() {
-	this.stateId = 'state_' + this.name;
-    	var headerIdPrefix = 'header_'+this.stateId;
         for (var i = 0; i < this.columns.length; i++) {
             var col=this.columns[i];
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }
-            if( col.headerId == undefined ){
-                col.headerId = headerIdPrefix + col.dataIndex;
+            if( col.stateId === undefined ){
+               col.stateId=col.dataIndex;
             }
         }    
         if(this.dataFn) {
