@@ -190,8 +190,7 @@ public final class MailSummary implements Serializable
                 result += "Got a document\n";
             }
         } catch (Exception ex) {
-            result += "Got exception\n";
-            ex.printStackTrace();
+            result += "exception:\n" + ex.toString();
         }
 
         result += "MailSummary";

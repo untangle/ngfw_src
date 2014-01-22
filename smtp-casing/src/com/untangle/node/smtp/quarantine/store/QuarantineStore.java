@@ -613,8 +613,7 @@ public class QuarantineStore
             }
             return baseDir;
         } catch (Exception ex) {
-            // m_logger.warn("getOrCreateInboxDirWL: ", ex);
-            ex.printStackTrace(System.out);
+            logger.warn("getOrCreateInboxDirWL: ", ex);
             return null;
         }
     }

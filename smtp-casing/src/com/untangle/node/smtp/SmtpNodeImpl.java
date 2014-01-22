@@ -335,13 +335,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
             if (test.isDirectory()) {
                 //boolean success = true;
                 for (File f : test.listFiles()) {
-                    System.out.println(f.getAbsolutePath());
+                    //System.out.println(f.getAbsolutePath());
                     result.addAll(getTests(f.getAbsolutePath()));
                 }
             } else {
                 if (test.getName().endsWith(".class")) {
-                    String name = test.getAbsolutePath().substring(
-                            test.getAbsolutePath().lastIndexOf("com/untangle/node"));
+                    String name = test.getAbsolutePath().substring(test.getAbsolutePath().lastIndexOf("com/untangle/node"));
                     name = name.substring(0, name.length() - 6);
                     name = name.replaceAll("/", ".");
                     Class cls = getClass().getClassLoader().loadClass(name);
@@ -354,7 +353,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Exception:",e);
         }
         return result;
     }
@@ -368,13 +367,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
             if (test.isDirectory()) {
                 //boolean success = true;
                 for (File f : test.listFiles()) {
-                    System.out.println(f.getAbsolutePath());
+                    //System.out.println(f.getAbsolutePath());
                     result = result + runTests(f.getAbsolutePath());
                 }
             } else {
                 if (test.getName().endsWith(".class")) {
-                    String name = test.getAbsolutePath().substring(
-                            test.getAbsolutePath().lastIndexOf("com/untangle/node"));
+                    String name = test.getAbsolutePath().substring(test.getAbsolutePath().lastIndexOf("com/untangle/node"));
                     name = name.substring(0, name.length() - 6);
                     name = name.replaceAll("/", ".");
                     Class cls = getClass().getClassLoader().loadClass(name);
@@ -391,7 +389,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Exception:",e);
         }
         return result;
     }
