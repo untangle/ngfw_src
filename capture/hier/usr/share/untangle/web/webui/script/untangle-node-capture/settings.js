@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     renderer: function(value) { return i18n.timestampFormat(value); }
                     // hidden because last activity is not used for timeout (the host table lastSessionTime is)
                     // so this is confusing users
-                    // },{ 
+                    // },{
                     //     header: this.i18n._("Last Activity"),
                     //     dataIndex:'sessionActivity',
                     //     width: 180,
@@ -673,8 +673,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             xtype: "textarea",
                             allowBlank: true,
                             name: "basicLoginMessageText",
-                            width: 400,
-                            height: 250,
+                            width: 600,
+                            height: 200,
                             fieldLabel: this.i18n._("Message Text"),
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginMessageText,
@@ -688,7 +688,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             allowBlank: false,
                             name: "basicLoginFooter",
                             fieldLabel: this.i18n._("Lower Text"),
-                            width: 400,
+                            width: 600,
                             pageType: "BASIC_LOGIN",
                             value: this.settings.basicLoginFooter,
                             listeners: {
@@ -833,9 +833,25 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             }]
                         }]
                     },{
+                        xtype: "checkbox",
+                        margin: '10 0 0 0',
+                        boxLabel: this.i18n._("Enable test to verify that the server root certificate is installed on the client device."),
+                        hideLabel: true,
+                        checked: this.settings.checkServerCertificate,
+                        listeners: {
+                                "change": Ext.bind(function(elem, checked) {
+                                    this.settings.checkServerCertificate = checked;
+                                }, this)
+                        }
+                    },{
+                        xtype: 'fieldset',
+                        cls: 'description',
+                        width: 500,
+                        html: this.i18n._('NOTE: When enabled and the root certificate is not detected, a notification message and download link will appear on the captive page.')
+                    },{
                         xtype: "button",
                         name: "viewPage",
-                        text: i18n._("View Page"),
+                        text: i18n._("Preview Captive Portal Page"),
                         handler: Ext.bind(function()
                         {
                             if ( this.node.state != "on" ) {
@@ -851,17 +867,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                             }
                             window.open("/capture/handler.py/index?appid=" + this.node.nodeId , "_blank");
                         }, this)
-                    },{
-                            xtype: "checkbox",
-                            boxLabel: this.i18n._("Check SSL certificate"),
-                            tooltip: this.i18n._("This will check on the client machine if the server's SSL certificate is installed."),
-                            hideLabel: true,
-                            checked: this.settings.checkServerCertificate,
-                            listeners: {
-                                "change": Ext.bind(function(elem, checked) {
-                                    this.settings.checkServerCertificate = checked;
-                                }, this)
-                            }
                     }]
                 },{
                     xtype: "fieldset",
@@ -882,7 +887,6 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 },{
                     xtype: 'fieldset',
                     cls: 'description',
-                    height: 100,
                     width: 500,
                     html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
@@ -1046,9 +1050,9 @@ if (!Ung.hasResource["Ung.Capture"]) {
         },
 
         buildRuleEventLog: function() {
-            this.gridRuleEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'RuleEventLog', i18n._('Rule Event Log'), 
-                    'captive_portal_rule_event_log', 
-                    ['time_stamp','c_client_addr','c_client_port','s_server_addr','s_server_port','capture_rule_index','capture_blocked'], 
+            this.gridRuleEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'RuleEventLog', i18n._('Rule Event Log'),
+                    'captive_portal_rule_event_log',
+                    ['time_stamp','c_client_addr','c_client_port','s_server_addr','s_server_port','capture_rule_index','capture_blocked'],
                     this.getRpcNode().getRuleEventQueries);
         },
         beforeSave: function(isApply, handler) {
