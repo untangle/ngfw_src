@@ -4491,10 +4491,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete the Ping Test." ),
                     testEmptyText: this.i18n._("Ping Test Output"),
                     initComponent : function() {
+                        var a = this;
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             width:150,
-                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
@@ -4544,10 +4552,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete DNS test." ),
                     testEmptyText: this.i18n._("DNS Test Output"),
                     initComponent : function() {
+                        var a = this;
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             width:150,
-                            emptyText : this.settingsCmp.i18n._( "Hostname" )
+                            emptyText : this.settingsCmp.i18n._( "Hostname" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
@@ -4596,16 +4612,31 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete Connection test." ),
                     testEmptyText: this.i18n._("Connection Test Output"),
                     initComponent : function() {
+                        var a = this;
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             width:150,
-                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         }), this.port = new Ext.form.field.Number({
                             xtype : "numberfield",
                             minValue : 1,
                             maxValue : 65536,
                             width: 60,
-                            emptyText : this.settingsCmp.i18n._( "Port" )
+                            emptyText : this.settingsCmp.i18n._( "Port" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
@@ -4663,10 +4694,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete the Traceroute Test." ),
                     testEmptyText: this.i18n._("Traceroute Test Output"),
                     initComponent : function() {
+                        var a = this;
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             width:150,
-                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         }), this.protocol = new Ext.form.field.ComboBox({
                             xtype : "combo",
                             editable : false,
@@ -4724,6 +4763,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete the Download Test." ),
                     testEmptyText: this.i18n._("Download Test Output"),
                     initComponent : function() {
+                        var a = this;
                         this.testTopToolbar = [this.url = new Ext.form.field.ComboBox({
                             xtype : "combo",
                             editable : true,
@@ -4732,7 +4772,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             value : "http://cachefly.cachefly.net/5mb.test",
                             store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
                                      ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                                     ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']]
+                                     ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']],
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         })];
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
@@ -4777,6 +4824,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testErrorMessage : this.i18n._( "Unable to complete the Packet Test." ),
                     testEmptyText: this.i18n._("Packet Test Output"),
                     initComponent : function() {
+                        var a = this;
                         var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
                                         [ 30, this.settingsCmp.i18n._( "30 seconds" )],
                                         [ 120, this.settingsCmp.i18n._( "120 seconds" )]];
@@ -4785,13 +4833,27 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype : "textfield",
                             value : "any",
                             width:150,
-                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" )
+                            emptyText : this.settingsCmp.i18n._( "IP Address or Hostname" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         }), this.port = new Ext.form.field.Number({
                             xtype : "numberfield",
                             minValue : 1,
                             maxValue : 65536,
                             width: 60,
-                            emptyText : this.settingsCmp.i18n._( "Port" )
+                            emptyText : this.settingsCmp.i18n._( "Port" ),
+                            listeners: {
+                                specialkey: function(field, e){
+                                    if (e.getKey() == e.ENTER) {
+                                        a.onRunTest();
+                                    }
+                                }
+                            }
                         }), this.intf = new Ext.form.field.ComboBox({
                             xtype : "combo",
                             editable : false,
