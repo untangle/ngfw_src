@@ -5,17 +5,19 @@ function getServer() {
 }
 
 function imgLoadFailure() {
-    var cont = document.getElementById('submit');
+    var form = document.getElementsByTagName('form');
+    var cont =  form[0];
     var newParagraph = document.createElement('p');
-    var text = document.createTextNode("The root CA certificate is not installed");
+    var text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
     var newLine = document.createElement('br');
     newParagraph.appendChild(text);
-    newParagraph.appendChild(newLine);
+    newParagraph.appendChild(document.createElement('br'));
+    newParagraph.appendChild(document.createElement('br'));
     var newLink = document.createElement('a');
-    var linkText = document.createTextNode("Click here to download the root CA certificate");
+    var linkText = document.createTextNode("Click this link to download and install the root certificate.");
     newLink.appendChild(linkText);
     newLink.href = '/cert';
-    newLink.title ="Download root CA certificate"
+    newLink.title ="Download server root CA certificate"
     newParagraph.appendChild(newLink);
     cont.parentElement.appendChild(newParagraph);
 }
