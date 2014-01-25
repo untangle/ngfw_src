@@ -258,7 +258,7 @@ def getUDPSpeed():
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"pkill mgen >/dev/null 2>&1\"")
     os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + ":mgen_recv.dat ./ >/dev/null 2>&1")
     wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
-    print "wcResults " + str(wcResults)
+    # print "wcResults " + str(wcResults)
     numOfPackets = wcResults.split(' ')[0]
     return numOfPackets
     
