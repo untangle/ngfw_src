@@ -86,6 +86,33 @@ def createBypassMatcherRule( matcherType, value):
         "ruleId": 1
     } 
 
+def createQoSMatcherRule( matcherType, value, priority):
+    return {
+        "bypass": True, 
+        "description": "test QoS " + str(matcherType) + " " + str(value), 
+        "enabled": True, 
+        "javaClass": "com.untangle.uvm.network.QosRule", 
+        "matchers": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.QosRuleMatcher", 
+                    "matcherType": str(matcherType), 
+                    "value": str(value)
+                }, 
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.BypassRuleMatcher", 
+                    "matcherType": "PROTOCOL", 
+                    "value": "TCP,UDP"
+                }
+            ]
+        }, 
+        "priority": priority,
+        "ruleId": 3
+    } 
+
 def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
@@ -144,6 +171,11 @@ def appendForward(newRule):
 def appendBypass(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['bypassRules']['list'].append(newRule)
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def appendQoSRule(newRule):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['qosSettings']['qosRules']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def appendFWRule(newRule):
@@ -211,6 +243,24 @@ def getDownloadSpeed():
         bandwidth_speed *= 1000
     # print "bandwidth_speed <%s>" % bandwidth_speed
     return bandwidth_speed
+    
+def getUDPSpeed():
+    # Use mgen to get UDP speed.  Returns number of packets received.
+    # start mgen receiver on radius server.
+    os.system("rm mgen_recv.dat >/dev/null 2>&1")
+    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm mgen_recv.dat >/dev/null 2>&1\"")
+    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
+    # start the UDP generator on the client behind the Untangle.
+    clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1")
+    # wait for UDP to finish
+    time.sleep(70)
+    # kill mgen receiver    
+    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"pkill mgen >/dev/null 2>&1\"")
+    os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + ":mgen_recv.dat ./ >/dev/null 2>&1")
+    wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
+    print "wcResults " + str(wcResults)
+    numOfPackets = wcResults.split(' ')[0]
+    return numOfPackets
     
 
 class NetworkTests(unittest2.TestCase):
@@ -352,6 +402,37 @@ class NetworkTests(unittest2.TestCase):
         assert ((wget_speed_pre_QoSLimit) and (wget_speed_post_QoSLimit))
         # since the limit is 80% of first measure, check that second measure is < 90% of first measure
         assert (wget_speed_pre_QoSLimit * .9 >  wget_speed_post_QoSLimit)
+
+    # Test UDP QoS limits speed
+    def test_053_testUDPwithQoS(self):
+        mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
+        if mgenResult:
+            # http://www.nrl.navy.mil/itd/ncs/products/mgen
+            raise unittest2.SkipTest("Mgen app needs to be installed on client")
+
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        if not netsettings['qosSettings']['qosEnabled']:
+            netsettings['qosSettings']['qosEnabled'] = True
+            uvmContext.networkManager().setNetworkSettings(netsettings)
+        appendBypass(createBypassMatcherRule("DST_PORT","5000"))
+        appendQoSRule(createQoSMatcherRule("DST_PORT","5000", 1))
+        pre_UDP_packets = getUDPSpeed()
+
+        # Change UDP priority to limited
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        i = 0
+        for qosCustomRules in netsettings['qosSettings']['qosRules']['list']:
+            if qosCustomRules['description'] == "test QoS DST_PORT 5000":
+                for qosRule in qosCustomRules['matchers']['list']:
+                    if qosRule["value"] == "5000":
+                        netsettings['qosSettings']['qosRules']['list'][i]['priority'] = 7
+            i += 1
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        post_UDP_packets = getUDPSpeed()
+        print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
+        
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert (pre_UDP_packets >  post_UDP_packets)
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
