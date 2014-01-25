@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_init.c 35400 2013-07-23 16:31:40Z dmorris $
+ * $Id$
  */
 #include "netcap_init.h"
 
@@ -54,9 +54,7 @@ static int _tls_init   ( void* buf, size_t size );
 
 static int ip_transparent = 19;
 static int ip_saddr = 22; 
-static int ip_recvnfmark = 23;
 static int ip_sendnfmark = 24;
-static int ip_firstnfmark = 25;
 
 int netcap_init()
 {
@@ -100,17 +98,19 @@ static int _netcap_init()
     else if ( strstr(utsn.release,"2.6.32") != NULL) {
         ip_transparent = 19;
         ip_saddr = 22;
-        ip_recvnfmark = 23;
         ip_sendnfmark = 24;
-        ip_firstnfmark = 25;
+    }
+    else if ( strstr(utsn.release,"3.0.35") != NULL) {
+        ip_transparent = 19;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
     }
     else {
+        errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
         /* unknown kernel */ 
         ip_transparent = 19;
-        ip_saddr = 22;
-        ip_recvnfmark = 23;
-        ip_sendnfmark = 24;
-        ip_firstnfmark = 25;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
     }
     
     if (netcap_sesstable_init()<0)
@@ -230,19 +230,9 @@ int IP_SADDR_VALUE ( )
     return ip_saddr;
 }
 
-int IP_RECVNFMARK_VALUE ( )
-{
-    return ip_recvnfmark;
-}
-
 int IP_SENDNFMARK_VALUE ( )
 {
     return ip_sendnfmark;
-}
-
-int IP_FIRSTNFMARK_VALUE ( )
-{
-    return ip_firstnfmark;
 }
 
 static int _tls_init( void* buf, size_t size )

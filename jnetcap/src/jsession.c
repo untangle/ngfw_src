@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/jnetcap/src/jsession.c $
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -139,10 +139,6 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
         
         if ( req_id & JN_Session( FLAG_IF_CLIENT_MASK )) return session->client_sock;
         return session->server_sock;
-
-    case JN_TCPSession( FLAG_ACKED ):
-        if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );
-        return (!session->syn_mode) & 1;
 
     case JN_UDPSession( FLAG_TTL ): 
         if ( session->protocol != IPPROTO_UDP ) {

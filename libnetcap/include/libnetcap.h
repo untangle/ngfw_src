@@ -193,8 +193,9 @@ typedef struct netcap_session {
      */
     int protocol; 
 
-    int syn_mode; /* 1 = syn_mode, 0 = opaque mode */
-
+    /**
+     * The nat info for this session (pulled from conntrack
+     */
     nat_info_t  nat_info;
 
     /**
@@ -374,11 +375,6 @@ int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)
 
 int  netcap_endpoints_copy          ( netcap_endpoints_t* dst, netcap_endpoints_t* src );
 int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
-
-/**
- * Toggle opaque mode
- */
-int  netcap_tcp_syn_mode (int toggle);
 
 /**
  * Gets the socket mark - used on packets sent to the server

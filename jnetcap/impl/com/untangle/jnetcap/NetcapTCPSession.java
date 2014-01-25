@@ -1,5 +1,5 @@
 /**
- * $Id: NetcapTCPSession.java 33931 2013-02-13 22:31:42Z dmorris $
+ * $Id$
  */
 package com.untangle.jnetcap;
 
@@ -9,19 +9,12 @@ import java.net.InetAddress;
 public class NetcapTCPSession extends NetcapSession
 {
     private static final int FLAG_FD                    = 32;
-    private static final int FLAG_ACKED                 = 33;
 
     public NetcapTCPSession( long id )
     {
         super( id, Netcap.IPPROTO_TCP );
     }
     
-    /* Get whether or not the client has already ACKED the session */
-    public boolean acked()
-    {
-        return ( getIntValue( FLAG_ACKED, pointer.value()) == 1 ) ? true : false;
-    }
-
     /* ??? This is a dirty hack to work around the fact that you cannot overwrite *
      * the return value with a subclass, this is fixed in 1.5.0                   *
      * in 1.5, this would just read:

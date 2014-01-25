@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_globals.h 35400 2013-07-23 16:31:40Z dmorris $
+ * $Id$
  */
 #ifndef __NETCAP_GLOBALS_
 #define __NETCAP_GLOBALS_
@@ -38,19 +38,9 @@ int IP_TRANSPARENT_VALUE ( );
 int IP_SADDR_VALUE ( );
 
 /**
- * Returns IP_RECVNFMARK constant (varies by kernel version)
- */
-int IP_RECVNFMARK_VALUE ( );
-
-/**
  * Returns IP_SENDNFMARK constant (varies by kernel version)
  */
 int IP_SENDNFMARK_VALUE ( );
-
-/**
- * Returns IP_FIRSTNFMARK constant (varies by kernel version)
- */
-int IP_FIRSTNFMARK_VALUE ( );
 
 struct ip_sendnfmark_opts {
     u_int32_t on;

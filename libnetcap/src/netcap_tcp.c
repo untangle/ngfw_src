@@ -38,22 +38,14 @@
 #define RDR_TCP_LOCALS_SOCKS 128
 
 static struct {
-    int syn_mode;
     int base_port;
     int redirect_socks[RDR_TCP_LOCALS_SOCKS];
 } _tcp = {
-    .syn_mode  = 1,
     .base_port = -1
 };
 
-/* Callback functions */
-/* XX May make more sense to call extern functions that are not global netcap functions
- * just _tcp rather than prefixing with netcap.
- */
 extern int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action );
-
 extern int  _netcap_tcp_callback_srv_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action );
-
 extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 
 /* Initialization and cleanup routines */
@@ -186,12 +178,6 @@ static int _netcap_tcp_set_mark ( int sock, int mark )
     return 0;
 }
 
-int  netcap_tcp_syn_mode ( int toggle )
-{
-    _tcp.syn_mode = toggle;
-    return 0;
-}
-
 int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     if ( netcap_sess == NULL ) return errlogargs();
@@ -221,9 +207,6 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 {
     if ( syn == NULL )
         return errlogargs();
-
-    if ( !_tcp.syn_mode )
-        return netcap_pkt_action_raze( syn, NF_ACCEPT );
 
     if (!( syn->th_flags & TH_SYN )) {
         errlog( ERR_CRITICAL,"Caught non SYN packet\n" );
@@ -372,31 +355,17 @@ int  netcap_tcp_syn_cleanup_hook ( netcap_pkt_t* syn )
 
 static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 {
-    netcap_intf_t cli_intf_idx;
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
     u_int server_len = sizeof(server);
-    int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
-    int nfmark;
-    u_int nfmark_len = sizeof(nfmark);
 
     /**
-     * Get the mark
-     * and convert it to and interface index
-     */
-    if ( getsockopt(cli_sock, SOL_IP, IP_FIRSTNFMARK_VALUE(), &nfmark, &nfmark_len) < 0 )
-        return perrlog("getsockopt");
-    if ( netcap_interface_mark_to_cli_intf(nfmark,&cli_intf_idx) < 0 )
-        return perrlog("netcap_interface_mark_to_intf");
-
-    /**
-     * fill in src,dst,src.port, and dst.port
+     * fill in src, dst, src.port, and dst.port
      */
     if ( getsockopt( cli_sock, SOL_IP, SO_ORIGINAL_DST, &server, &server_len ) < 0 )
         return perrlog("getsockopt");
-
     memcpy( &cli_addr, &client.sin_addr.s_addr, sizeof(client.sin_addr.s_addr));
     memcpy( &srv_addr, &server.sin_addr.s_addr, sizeof(server.sin_addr.s_addr));
     cli_port = ntohs(client.sin_port);
@@ -407,35 +376,22 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
            unet_next_inet_ntoa( cli_addr ), cli_port,
            unet_next_inet_ntoa( srv_addr ), srv_port );
 
-    sess = _netcap_get_or_create_sess(&new_sess_flag,
-                                      cli_addr,cli_port,cli_sock,
-                                      srv_addr,srv_port,-1,
-                                      cli_intf_idx, 0 /* srv intf not known */ );
+    SESSTABLE_WRLOCK();
 
-    if (!sess)
-        return errlog(ERR_CRITICAL,"Could not find or create new session\n");
-
-    /**
-     * If this is a new session, call the hook
-     * Otherwise, put the fd in the mailbox
-     */
-    if (new_sess_flag) {
-        debug(8,"TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id);
-
-        /* Since this is a new session, it must be in opaque mode */
-        sess->syn_mode = 0;
-
-        /* Client has already completed */
-        sess->cli_state = CONN_STATE_COMPLETE;
-        
-        if (_netcap_tcp_setsockopt_cli(cli_sock)<0)
-            perrlog("_netcap_tcp_setsockopt_cli");
-
-        global_tcp_hook( sess, NULL ); /* XXX NULL argument */
+    sess = netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP, cli_addr, srv_addr, cli_port, srv_port);
+                                          
+    SESSTABLE_UNLOCK();
+    
+    if (!sess) {
+        errlog( ERR_WARNING, "TCP: Could not find session for accepted connection :: (%s:%-5i) -> (%s:%-5i)\n",
+           unet_next_inet_ntoa( cli_addr ), cli_port,
+           unet_next_inet_ntoa( srv_addr ), srv_port );
+        if ( close( cli_sock ) < 0 )
+            perrlog("close");
+        return -1;
     }
-    else {
-        _session_put_complete_fd( sess, cli_sock );
-    }
+    
+    _session_put_complete_fd( sess, cli_sock );
 
     return 0;
 }
@@ -613,7 +569,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
     SESSTABLE_WRLOCK();
 
     sess = netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP,
-                                          cli_addr,srv_addr, cli_port,srv_port);
+                                          cli_addr, srv_addr, cli_port, srv_port);
                                           
     
 #if 0

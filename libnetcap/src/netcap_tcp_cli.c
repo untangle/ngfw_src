@@ -60,12 +60,6 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     tcp_msg_t* msg;
     if ( netcap_sess == NULL ) return errlogargs();
 
-    if ( !netcap_sess->syn_mode ) {
-        debug( 5, "TCP: (%"PRIu64") CLI_COMPLETE %s opaque mode\n", netcap_sess->session_id,
-               netcap_session_cli_tuple_print( netcap_sess ));
-        return 0;
-    }
-    
     debug( 6, "TCP: (%"PRIu64") CLI_COMPLETE %s\n", netcap_sess->session_id,
            netcap_session_cli_tuple_print( netcap_sess ));
 

@@ -70,9 +70,6 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     
     netcap_sess->callback = netcap_tcp_callback;
 
-    /* Create it in SYN mode by default */
-    netcap_sess->syn_mode = 1;
-    
     return 0;
 }
 

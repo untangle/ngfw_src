@@ -1,5 +1,5 @@
 /**
- * $Id: NetcapTCPHook.java 35103 2013-06-20 19:11:43Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -143,13 +143,10 @@ public class NetcapTCPHook implements NetcapCallback
         {
             if ( logger.isDebugEnabled()) {
                 logger.debug( "TCP - Completing client connection: " + sessionGlobalState );
-                logger.debug( "TCP - client acked: " + netcapTCPSession.acked());
             }
 
             try {
-                if ( !netcapTCPSession.acked())
-                    netcapTCPSession.clientComplete();
-
+                netcapTCPSession.clientComplete();
                 netcapTCPSession.tcpClientSide().blocking( false );
 
                 ifClientComplete = true;
