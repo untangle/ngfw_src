@@ -74,6 +74,8 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
     <title>Reports</title>
     <style type="text/css">
       @import "/ext4/resources/css/ext-all-gray.css?s=<%=buildStamp%>";
+      @import "/ext4/examples/ux/grid/css/GridFilters.css?s=<%=buildStamp%>";
+      @import "/ext4/examples/ux/grid/css/RangeMenu.css?s=<%=buildStamp%>";
     </style>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=<%=buildStamp%>"></script>
 
