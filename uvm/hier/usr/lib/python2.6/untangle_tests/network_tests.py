@@ -405,6 +405,9 @@ class NetworkTests(unittest2.TestCase):
 
     # Test UDP QoS limits speed
     def test_053_testUDPwithQoS(self):
+        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
         if mgenResult:
             # http://www.nrl.navy.mil/itd/ncs/products/mgen
