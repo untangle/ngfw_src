@@ -435,7 +435,7 @@ class NetworkTests(unittest2.TestCase):
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
         post_UDP_packets = getUDPSpeed()
-        print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
+        # print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
         
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pre_UDP_packets >  post_UDP_packets)
