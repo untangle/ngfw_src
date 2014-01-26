@@ -407,7 +407,10 @@ class NetworkTests(unittest2.TestCase):
     def test_053_testUDPwithQoS(self):
         externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+            raise unittest2.SkipTest("External test client unreachable, skipping UDP with QoS test")
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (wan_IP.split(".")[0] != "10"):
+            raise unittest2.SkipTest("Not on 10.x network, skipping")            
         mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
         if mgenResult:
             # http://www.nrl.navy.mil/itd/ncs/products/mgen
