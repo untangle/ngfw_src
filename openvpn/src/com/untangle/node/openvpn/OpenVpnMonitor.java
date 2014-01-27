@@ -355,7 +355,11 @@ class OpenVpnMonitor implements Runnable
         }
 
         String poolAddressStr = valueArray[ADDRESS_POOL_INDEX];
-
+        if ( "127.0.0.1".equals(poolAddressStr) ) {
+            logger.debug("Ignoring client with 127.0.0.1 address: " + name );
+            return;
+        }
+        
         InetAddress address = null;
         InetAddress poolAddress = null;
         int port = 0;
