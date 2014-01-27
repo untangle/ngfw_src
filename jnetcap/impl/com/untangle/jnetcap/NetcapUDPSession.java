@@ -8,8 +8,6 @@ import java.net.InetAddress;
 @SuppressWarnings("unused") //JNI
 public class NetcapUDPSession extends NetcapSession 
 {
-    protected static final int MERGED_DEAD = 0xDEAD00D;
-
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;
     private final static int FLAG_TOS            = 65;
@@ -46,31 +44,6 @@ public class NetcapUDPSession extends NetcapSession
         return new SessionEndpoints( ifClient );
     }
     
-    /**
-     * Merge this session with any other UDP sessions started at the same time.</p>
-     * @param traffic - Description of the traffic going to the server (dst should refer
-     *                  to the server endpoint).
-     * @return Returns whether or not the session was merged, or merged out.  True If this session
-     *         should continue, false if this session was merged out.
-     */
-    public boolean merge( IPTraffic traffic, int intf )
-    {
-        int ret  = merge( pointer.value(),
-                          Inet4AddressConverter.toLong( traffic.dst().host()), traffic.dst().port(),
-                          Inet4AddressConverter.toLong( traffic.src().host()), traffic.src().port(),
-                          intf );
-        
-        if ( ret == MERGED_DEAD ) {
-            return false;
-        } else if ( ret == 0 ) {
-            return true;
-        } else {
-            Netcap.error( "Invalid merge" );
-        }
-        
-        return false;
-    }
-
     /**
      * Complete a connection.
      */
@@ -121,18 +94,6 @@ public class NetcapUDPSession extends NetcapSession
     private static native byte[] data( long packetPointer );
     private static native int    getData( long packetPointer, byte[] buffer );
     
-    /**
-     * Merge this session with any other UDP session that may have started in the reverse
-     * direction.</p>
-     *
-     * @param sessionPointer - Pointer to the udp session.
-     * @param srcAddr - Source address(server side, server address)
-     * @param srcPort - Source port(server side, server port)
-     * @param dstAddr - Destination address(server side, client address)
-     * @param dstPort - Destination port(server side, client port)
-     */
-    private static native int    merge( long sessionPointer, long srcAddr, int srcPort, long dstAddr, int dstPort, int intf );
-
     private static native long    mailboxPointer( long sessionPointer, boolean ifClient );
     
     /* This is for sending the data associated with a netcap_pkt_t structure */

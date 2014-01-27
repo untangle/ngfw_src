@@ -94,10 +94,7 @@ public class NetcapUDPHook implements NetcapCallback
         }
 
         /**
-         * Complete the connection for the server side.  This merges
-         * the sessions inside of the netcap session table.  It may
-         * happen that this session has been merged out, at which point
-         * this session is ended.
+         * Complete the connection for the server side.  
          */
         protected boolean serverComplete()
         {
@@ -132,12 +129,6 @@ public class NetcapUDPHook implements NetcapCallback
             this.netcapUDPSession.setServerTraffic(serverTraffic);
 
             int intf = serverSide.getServerIntf();
-
-            if ( !netcapUDPSession.merge( serverTraffic, intf )) {
-                /* Merged out and indicate that the session was rejected */
-                state = IPNewSessionRequestImpl.REJECTED;
-                return false;
-            }
 
             netcapUDPSession.serverComplete( serverTraffic );
 
