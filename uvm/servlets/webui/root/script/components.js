@@ -7222,8 +7222,10 @@ Ext.define('Ung.RuleBuilder', {
         // check that all the matchers have a selected type and value
         var records=this.store.getRange();
         var rule;
-        for(var i=0; i<records.length;i++) {
-            var record=records[i];
+        var record;
+        var i;
+        for( i=0 ; i<records.length ; i++ ) {
+            record = records[i];
             if(Ext.isEmpty(record.get("name"))) {
                 return i18n._("A valid type must be selected for all matchers.");
             } else {
@@ -7236,13 +7238,39 @@ Ext.define('Ung.RuleBuilder', {
                             } else if(record.get("vtype")=='ipMatcher') {
                                 return Ext.form.field.VTypes.ipMatcherText;
                             } else {
-                                return Ext.String.format(i18n._("{0} value is required."), rule.displayName);
+                                return rules.displayName + " " + i18n._("value is required.");
                             }
                         }
                     }
                 }
             } 
         }
+        // verify that if DST_PORT or SRC_PORT is specified
+        // that if protocol is specified it must be TCP and/or UDP only
+        // other protocols do not support ports
+        var portRulesFound = false;
+        for( i=0 ; i<records.length ; i++ ) {
+            record = records[i];
+            if ( record.get("name") == "DST_PORT" || record.get("name") == "SRC_PORT" )
+                portRulesFound = true;
+        }
+        if ( portRulesFound ) {
+            for( i=0 ; i<records.length ; i++ ) {
+                record = records[i];
+                if ( record.get("name") == "PROTOCOL" ) {
+                    var value = record.get("value");
+                    value = value.replace("TCP","").replace("UDP","");
+                    value = value.replace("tcp","").replace("udp","");
+                    var values = value.split(",");
+                    // values should be [ "" ] for valid rules
+                    if ( values.length != 1 || values[0] != "" ) {
+                        return i18n._("Can not specify a port condition on port-less protocols: ") + values.join(" ");
+                    }
+                    console.log(rule);
+                }
+            }
+        }
+        
         return true;
     },
     isDirty: function() {
