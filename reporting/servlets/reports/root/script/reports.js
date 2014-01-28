@@ -11,6 +11,13 @@ function getWinHeight(){
     return window.innerHeight;
 }
 
+function getWinWidth(){
+    if(!window.innerWidth){
+        return window.screen.width - 190;
+    }
+    return window.innerWidth;
+}
+
 function handleTimeout(ex) {
     if (ex instanceof JSONRpcClient.Exception) {
         if (ex.code == 550) {
@@ -227,7 +234,6 @@ Ext.define('Ung.Reports', {
             cls: "base-container",
             layout: 'border',
             height: getWinHeight() - 40,
-            width: 960,
             defaults: { border: false,
                         bodyStyle: 'background-color:#F0F0F0;'
                        },
@@ -238,7 +244,6 @@ Ext.define('Ung.Reports', {
                 layout:'border',
                 style: 'padding: 7px 5px 7px 7px;background-color:#F0F0F0',
                 height: 70,
-                width: 960,
                 border:0,
                 defaults: {
                     border: 0,
@@ -254,7 +259,7 @@ Ext.define('Ung.Reports', {
                 }, {
                     xtype: 'label',
                     height:60,
-                    style: 'font-family:serif;font-weight:bold;font-size:37px;margin-left:15px;',
+                    style: 'font-family:sans-serif;font-weight:bold;font-size:37px;margin-left:15px;',
                     text: i18n._('Reports'),
                     region: 'center',
                     border: 0
@@ -265,15 +270,14 @@ Ext.define('Ung.Reports', {
                         border: 0
                     },
                     region: 'east',
-                    width: 490,
                     height: 60,
-                    cls: 'dateRange',
+                    width: 200,
                     items: [
                     {
                         xtype:"fieldset",
+                        layout:'anchor',
                         border: 0,
                         padding: 0,
-                        cls: 'dateContainer',
                         id: 'rangeFieldSet',
                         style:'border: 0',
                         items: [
@@ -313,7 +317,6 @@ Ext.define('Ung.Reports', {
                 border:false,
                 region:"center",
                 layout:"border",
-                width: 960,
                 height: getWinHeight() - 30,
                 items: [{
                     xtype:'treepanel',
@@ -373,7 +376,6 @@ Ext.define('Ung.Reports', {
                     title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id: 'report-details',
                     layout:"anchor",
-                    width: 700,
                     height: getWinHeight() - 30,
                     autoScroll: false,
                     collapsible: false,
@@ -421,7 +423,6 @@ Ext.define('Ung.Reports', {
                 hasReorder: false,
                 hasEdit: false,
                 hasDelete: false,
-                width: 950,
                 height: getWinHeight()-60,
                 hasAdd: false,
                 data: this.getAvailableReportsData(),
@@ -477,7 +478,7 @@ Ext.define('Ung.Reports', {
                 applyTo: 'window-container',
                 layout: 'fit',
                 title: i18n._("Available Reports"),
-                width: 960,
+                width: getWinWidth() - 100,
                 resizable: false,
                 modal: true,
                 draggable: false,
@@ -485,7 +486,6 @@ Ext.define('Ung.Reports', {
                 closeAction:'hide',
                 plain: true,
                 items: Ext.create('Ext.panel.Panel',{
-                    deferredRender: false,
                     border: false,
                     items: this.datesGrid
                 }),
@@ -1143,7 +1143,15 @@ Ext.define('Ung.ReportDetails', {
         }
         return Ext.create('Ext.panel.Panel',{
             title: i18n._('Summary'),
-            layout:{ type:'table',columns:2},
+            layout:{ 
+                type:'table',
+                columns:2,
+                tableAttrs: {
+                    style: {
+                        width: '100%'
+                    }
+                }
+            },
             border:false,
             defaults: {
                 border:false
@@ -1292,7 +1300,6 @@ Ext.define('Ung.ReportDetails', {
             items.push(Ext.create('Ext.grid.Panel',{
                 style: 'margin-top:10px;',
                 autoScroll: true,
-                width: 330,
                 height: 243,
                 border:0,
                 store: Ext.create('Ext.data.ArrayStore',{
@@ -1331,7 +1338,15 @@ Ext.define('Ung.ReportDetails', {
             }
         }
         var cfg={title: section.title,
-                layout:{ type:'table',columns:2},
+                layout:{ 
+            	    type:'table',
+            	    columns:2,
+                    tableAttrs: {
+                        style: {
+                            width: '100%'
+                        }
+                    }
+                },
                 autoWidth: true,
                 border: 0,
                 defaults: {
