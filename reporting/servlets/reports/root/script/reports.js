@@ -1340,14 +1340,16 @@ Ext.define('Ung.ReportDetails', {
         var cfg={title: section.title,
                 layout:{ 
             	    type:'table',
-            	    columns:2,
+            	    columns: 2,
                     tableAttrs: {
                         style: {
                             width: '100%'
                         }
+                    },
+                    tdAttrs: {
+                        width: '50%'
                     }
                 },
-                autoWidth: true,
                 border: 0,
                 defaults: {
                     border: 0,
