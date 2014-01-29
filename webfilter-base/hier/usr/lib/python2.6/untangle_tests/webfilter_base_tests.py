@@ -2,6 +2,7 @@ import unittest2
 import time
 import sys
 import datetime
+import re
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -80,6 +81,8 @@ class WebFilterBaseTests(unittest2.TestCase):
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             flushEvents()
+        # remove previous temp files
+        clientControl.runCommand("rm -f /tmp/webfilter_base_test_* >/dev/null 2>&1")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -413,6 +416,40 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0][self.shortNodeName() + '_blocked'] == False)
         assert(events['list'][0][self.shortNodeName() + '_flagged'] == False)
+
+    # verify that a block page is shown but unblock button option is available.
+    def test_120_unblockOption(self):
+        addBlockedUrl("test.untangle.com/test/testPage1.html")
+        settings = node.getSettings()
+        settings["unblockMode"] = "Host"
+        node.setSettings(settings)        
+        # this test URL should be blocked but allow  
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/webfilter_base_test_120.log -O /tmp/webfilter_base_test_120.out http://test.untangle.com/test/testPage1.html")
+        resultButton = clientControl.runCommand("grep -q 'unblock' /tmp/webfilter_base_test_120.out")
+        resultBlock = clientControl.runCommand("grep -q 'blockpage' /tmp/webfilter_base_test_120.out")
+
+        # get the IP address of the block page 
+        ipfind = clientControl.runCommand("grep 'Location' /tmp/webfilter_base_test_120.log",True)
+        # print 'ipFind %s' % ipfind
+        ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
+        blockPageIP = ip[0]
+        # print 'Block page IP address is %s' % blockPageIP
+        blockParamaters = re.findall( r'\?(.*)\s', ipfind )
+        paramaters = blockParamaters[0]
+        # Use unblock button.
+        unBlockParameters = "global=false&"+ paramaters + "&password="
+        # print "unBlockParameters %s" % unBlockParameters
+        clientControl.runCommand("wget -q --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        resultUnBlock = clientControl.runCommand("wget -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+
+        settings = node.getSettings()
+        settings["unblockMode"] = "None"
+        node.setSettings(settings)        
+        nukeBlockedUrls()
+        print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
+        assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
+
+
 
     def test_999_finalTearDown(self):
         global node
