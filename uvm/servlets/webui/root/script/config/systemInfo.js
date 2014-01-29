@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     this.cancelAction();
                 }, this)
             }, {
-                title: i18n._('System Info')
+                title: i18n._('About')
             }];
             this.buildServer();
             this.buildLicenses();
@@ -43,8 +43,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 cls: 'ung-panel',
                 autoScroll: true,
                 items: [{
-                    title: this.i18n._('System Info'),
-                    name: 'System Info',
+                    title: this.i18n._('About'),
+                    name: 'About',
                     xtype: 'fieldset',
                     buttonAlign: 'left',
                     items: [{
@@ -59,7 +59,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             this.i18n._('UID')+": " + serverUID
                     }, {
                         xtype: 'textarea',
-                        name: 'System Info',
+                        name: 'About',
                         hideLabel: true,
                         readOnly: true,
                         style: 'font-weight: bold;',

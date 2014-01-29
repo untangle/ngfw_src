@@ -909,7 +909,7 @@ Ext.define("Ung.Main", {
                 "handler": main.openConfig
             }, {
                 "name":"systemInfo",
-                "displayName":i18n._("System Info"),
+                "displayName":i18n._("About"),
                 "iconClass":"icon-config-support",
                 "helpSource":"system_info",
                 "className":"Ung.SystemInfo",
