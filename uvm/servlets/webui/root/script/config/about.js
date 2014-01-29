@@ -1,7 +1,7 @@
-if (!Ung.hasResource["Ung.SystemInfo"]) {
-    Ung.hasResource["Ung.SystemInfo"] = true;
+if (!Ung.hasResource["Ung.About"]) {
+    Ung.hasResource["Ung.About"] = true;
 
-     Ext.define("Ung.SystemInfo", {
+     Ext.define("Ung.About", {
         extend: "Ung.StatusWin",
         panelServer: null,
         panelLicenses: null,
@@ -37,7 +37,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             this.panelServer = Ext.create('Ext.panel.Panel',{
                 name: 'Server',
-                helpSource: 'system_info_server',
+                helpSource: 'about_server',
                 parentId: this.getId(),
                 title: this.i18n._('Server'),
                 cls: 'ung-panel',
@@ -76,7 +76,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         buildLicenseAgreement: function() {
             this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
                 name: 'License Agreement',
-                helpSource: 'system_info_license_agreement',
+                helpSource: 'about_license_agreement',
                 parentId: this.getId(),
                 title: this.i18n._('License Agreement'),
                 cls: 'ung-panel',
@@ -98,7 +98,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
             this.panelLicenses = Ext.create('Ext.panel.Panel',{
                 name: 'Licenses',
-                helpSource: 'system_info_licenses',
+                helpSource: 'about_licenses',
                 parentId: this.getId(),
                 title: this.i18n._('Licenses'),
                 cls: 'ung-panel',
@@ -198,4 +198,4 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         }
     });
 }
-//@ sourceURL=systemInfo.js
+//@ sourceURL=about.js

@@ -370,9 +370,9 @@ msgid "System"
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:899
-#: ../servlets/webui/root/script/config/systemInfo.js:16
-#: ../servlets/webui/root/script/config/systemInfo.js:36
-msgid "System Info"
+#: ../servlets/webui/root/script/config/about.js:16
+#: ../servlets/webui/root/script/config/about.js:36
+msgid "About"
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:929
@@ -1007,8 +1007,8 @@ msgstr ""
 #: ../servlets/webui/root/script/config/hostMonitor.js:416
 #: ../servlets/webui/root/script/config/network.js:3749
 #: ../servlets/webui/root/script/config/network.js:3751
-#: ../servlets/webui/root/script/config/systemInfo.js:124
-#: ../servlets/webui/root/script/config/systemInfo.js:126
+#: ../servlets/webui/root/script/config/about.js:124
+#: ../servlets/webui/root/script/config/about.js:126
 msgid "Refresh"
 msgstr ""
 
@@ -1293,7 +1293,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/network.js:461
 #: ../servlets/webui/root/script/config/network.js:627
 #: ../servlets/webui/root/script/config/network.js:3614
-#: ../servlets/webui/root/script/config/systemInfo.js:157
+#: ../servlets/webui/root/script/config/about.js:157
 msgid "Name"
 msgstr ""
 
@@ -1967,7 +1967,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:21
 #: ../servlets/webui/root/script/config/localDirectory.js:9
 #: ../servlets/webui/root/script/config/network.js:250
-#: ../servlets/webui/root/script/config/systemInfo.js:11
+#: ../servlets/webui/root/script/config/about.js:11
 #: ../servlets/webui/root/script/config/system.js:39
 #: ../servlets/webui/root/script/config/upgrade.js:10
 msgid "Configuration"
@@ -4404,76 +4404,76 @@ msgstr ""
 msgid "This shows all current sessions."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:32
+#: ../servlets/webui/root/script/config/about.js:32
 msgid "Version"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:48
+#: ../servlets/webui/root/script/config/about.js:48
 msgid "Do not publicly post or share the UID."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:49
-#: ../servlets/webui/root/script/config/systemInfo.js:165
+#: ../servlets/webui/root/script/config/about.js:49
+#: ../servlets/webui/root/script/config/about.js:165
 msgid "UID"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:58
+#: ../servlets/webui/root/script/config/about.js:58
 msgid "Build"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:59
+#: ../servlets/webui/root/script/config/about.js:59
 msgid "Kernel"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:60
+#: ../servlets/webui/root/script/config/about.js:60
 msgid "History"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:61
+#: ../servlets/webui/root/script/config/about.js:61
 msgid "Reboots"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:71
+#: ../servlets/webui/root/script/config/about.js:71
 msgid "License Agreement"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:76
+#: ../servlets/webui/root/script/config/about.js:76
 msgid "View License"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:93
-#: ../servlets/webui/root/script/config/systemInfo.js:99
-#: ../servlets/webui/root/script/config/systemInfo.js:114
+#: ../servlets/webui/root/script/config/about.js:93
+#: ../servlets/webui/root/script/config/about.js:99
+#: ../servlets/webui/root/script/config/about.js:114
 msgid "Licenses"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:100
+#: ../servlets/webui/root/script/config/about.js:100
 msgid ""
 "Licenses determine entitlement to paid applications and services. Click "
 "Refresh to force reconciliation with the license server."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:116
+#: ../servlets/webui/root/script/config/about.js:116
 msgid "The Current list of Licenses available on this Server."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:161
+#: ../servlets/webui/root/script/config/about.js:161
 msgid "App"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:169
+#: ../servlets/webui/root/script/config/about.js:169
 msgid "Start Date"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:174
+#: ../servlets/webui/root/script/config/about.js:174
 msgid "End Date"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:179
+#: ../servlets/webui/root/script/config/about.js:179
 msgid "Valid"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:183
+#: ../servlets/webui/root/script/config/about.js:183
 msgid "Status"
 msgstr ""
 

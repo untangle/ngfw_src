@@ -67,7 +67,7 @@ msgstr "初期化中..."
 #: ../servlets/webui/root/script/config/email.js:1309
 #: ../servlets/webui/root/script/config/localDirectory.js:382
 #: ../servlets/webui/root/script/config/policyManager.js:1223
-#: ../servlets/webui/root/script/config/systemInfo.js:329
+#: ../servlets/webui/root/script/config/about.js:329
 #: ../servlets/webui/root/script/config/system.js:238
 #: ../servlets/webui/root/script/config/system.js:269
 #: ../servlets/webui/root/script/config/system.js:1161
@@ -282,7 +282,7 @@ msgstr "アップデートをダウンロード中..."
 #: ../servlets/webui/root/script/config/localDirectory.js:323
 #: ../servlets/webui/root/script/config/localDirectory.js:332
 #: ../servlets/webui/root/script/config/policyManager.js:758
-#: ../servlets/webui/root/script/config/systemInfo.js:277
+#: ../servlets/webui/root/script/config/about.js:277
 #: ../servlets/webui/root/script/config/system.js:1018
 #: ../servlets/webui/root/script/config/system.js:1053
 #: ../servlets/webui/root/script/config/system.js:1068
@@ -329,7 +329,7 @@ msgstr "管理"
 #: ../servlets/setup/root/script/setup.js:1691
 #: ../servlets/webui/root/script/config/administration.js:324
 #: ../servlets/webui/root/script/config/email.js:24
-#: ../servlets/webui/root/script/config/systemInfo.js:147
+#: ../servlets/webui/root/script/config/about.js:147
 #: ../servlets/reports/root/script/reports.js:978
 msgid "Email"
 msgstr "Eメール"
@@ -352,9 +352,9 @@ msgid "System"
 msgstr "システム"
 
 #: ../servlets/webui/root/script/main.js:890
-#: ../servlets/webui/root/script/config/systemInfo.js:16
-#: ../servlets/webui/root/script/config/systemInfo.js:60
-msgid "System Info"
+#: ../servlets/webui/root/script/config/about.js:16
+#: ../servlets/webui/root/script/config/about.js:60
+msgid "About"
 msgstr "システム情報"
 
 #: ../servlets/webui/root/script/main.js:922
@@ -364,7 +364,7 @@ msgstr "システム情報"
 #: ../servlets/webui/root/script/config/administration.js:976
 #: ../servlets/webui/root/script/config/email.js:19
 #: ../servlets/webui/root/script/config/localDirectory.js:9
-#: ../servlets/webui/root/script/config/systemInfo.js:11
+#: ../servlets/webui/root/script/config/about.js:11
 #: ../servlets/webui/root/script/config/system.js:12
 #: ../servlets/webui/root/script/config/upgrade.js:9
 msgid "Configuration"
@@ -1036,7 +1036,7 @@ msgstr "未保存のデータは失われます。続行しますか？"
 #: ../servlets/webui/root/script/config/email.js:1310
 #: ../servlets/webui/root/script/config/localDirectory.js:383
 #: ../servlets/webui/root/script/config/policyManager.js:1223
-#: ../servlets/webui/root/script/config/systemInfo.js:329
+#: ../servlets/webui/root/script/config/about.js:329
 #: ../servlets/webui/root/script/config/system.js:1161
 #: ../servlets/webui/root/script/config/upgrade.js:430
 msgid "Saving..."
@@ -1461,44 +1461,44 @@ msgstr "パスワードを保存できません"
 #: ../servlets/setup/root/script/setup.js:366
 #: ../servlets/setup/root/script/setup.js:457
 #: ../servlets/setup/root/script/setup.js:458
-#: ../servlets/webui/root/script/config/systemInfo.js:102
+#: ../servlets/webui/root/script/config/about.js:102
 msgid "Registration"
 msgstr "登録"
 
 #: ../servlets/setup/root/script/setup.js:375
-#: ../servlets/webui/root/script/config/systemInfo.js:122
+#: ../servlets/webui/root/script/config/about.js:122
 msgid "Please provide administrator contact info."
 msgstr "お問い合わせ先情報を、管理者に提供してください。"
 
 #: ../servlets/setup/root/script/setup.js:378
 #: ../servlets/webui/root/script/config/localDirectory.js:124
 #: ../servlets/webui/root/script/config/localDirectory.js:249
-#: ../servlets/webui/root/script/config/systemInfo.js:129
+#: ../servlets/webui/root/script/config/about.js:129
 msgid "First Name"
 msgstr "名"
 
 #: ../servlets/setup/root/script/setup.js:382
-#: ../servlets/webui/root/script/config/systemInfo.js:138
+#: ../servlets/webui/root/script/config/about.js:138
 msgid "Last Name/Surname"
 msgstr "名字/姓"
 
 #: ../servlets/setup/root/script/setup.js:392
-#: ../servlets/webui/root/script/config/systemInfo.js:158
+#: ../servlets/webui/root/script/config/about.js:158
 msgid "Organization Name"
 msgstr "団体名"
 
 #: ../servlets/setup/root/script/setup.js:393
-#: ../servlets/webui/root/script/config/systemInfo.js:161
+#: ../servlets/webui/root/script/config/about.js:161
 msgid "(if applicable)"
 msgstr "(該当する場合)"
 
 #: ../servlets/setup/root/script/setup.js:399
-#: ../servlets/webui/root/script/config/systemInfo.js:171
+#: ../servlets/webui/root/script/config/about.js:171
 msgid "Number of PCs on your network"
 msgstr "あなたのネットワーク上にあるPCの数"
 
 #: ../servlets/setup/root/script/setup.js:402
-#: ../servlets/webui/root/script/config/systemInfo.js:175
+#: ../servlets/webui/root/script/config/about.js:175
 msgid "(approximate; include Windows, Linux and Mac)"
 msgstr "（類似のWindows、LinuxおよびMac含む）"
 
@@ -1507,37 +1507,37 @@ msgid "Where will you be using {0}?"
 msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:408
-#: ../servlets/webui/root/script/config/systemInfo.js:186
+#: ../servlets/webui/root/script/config/about.js:186
 msgid "My Business"
 msgstr "自分のビジネス"
 
 #: ../servlets/setup/root/script/setup.js:415
-#: ../servlets/webui/root/script/config/systemInfo.js:195
+#: ../servlets/webui/root/script/config/about.js:195
 msgid "A Client's Business"
 msgstr "お客様のビジネス"
 
 #: ../servlets/setup/root/script/setup.js:422
-#: ../servlets/webui/root/script/config/systemInfo.js:204
+#: ../servlets/webui/root/script/config/about.js:204
 msgid "School"
 msgstr "学校"
 
 #: ../servlets/setup/root/script/setup.js:429
-#: ../servlets/webui/root/script/config/systemInfo.js:212
+#: ../servlets/webui/root/script/config/about.js:212
 msgid "Home"
 msgstr "自宅"
 
 #: ../servlets/setup/root/script/setup.js:442
-#: ../servlets/webui/root/script/config/systemInfo.js:226
+#: ../servlets/webui/root/script/config/about.js:226
 msgid "Other"
 msgstr "その他"
 
 #: ../servlets/setup/root/script/setup.js:444
-#: ../servlets/webui/root/script/config/systemInfo.js:228
+#: ../servlets/webui/root/script/config/about.js:228
 msgid "Please Describe"
 msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:450
-#: ../servlets/webui/root/script/config/systemInfo.js:235
+#: ../servlets/webui/root/script/config/about.js:235
 msgid "<span class=\"required-star\">*</span> Required"
 msgstr "<span class=\"required-star\">*</span> 必須"
 
@@ -3419,41 +3419,41 @@ msgstr ""
 msgid "Port Forwarded"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:55
+#: ../servlets/webui/root/script/config/about.js:55
 msgid "Version"
 msgstr "バージョン"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:72
+#: ../servlets/webui/root/script/config/about.js:72
 #: ../servlets/reports/root/script/reports.js:546
 #: ../servlets/reports/root/script/reports.js:1091
 msgid "Summary"
 msgstr "サマリー"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:73
+#: ../servlets/webui/root/script/config/about.js:73
 msgid "UID"
 msgstr "UID"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:74
+#: ../servlets/webui/root/script/config/about.js:74
 msgid "Build"
 msgstr "ビルド"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:75
+#: ../servlets/webui/root/script/config/about.js:75
 msgid "Java"
 msgstr "Java"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:182
+#: ../servlets/webui/root/script/config/about.js:182
 msgid "Where will you be using {0}"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:245
+#: ../servlets/webui/root/script/config/about.js:245
 msgid "License Agreement"
 msgstr "ライセンス契約書"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:249
+#: ../servlets/webui/root/script/config/about.js:249
 msgid "View License"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:278
+#: ../servlets/webui/root/script/config/about.js:278
 msgid "You must complete all required fields."
 msgstr "必要事項をすべて記入してください"
 

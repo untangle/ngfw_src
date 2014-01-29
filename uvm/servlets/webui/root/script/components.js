@@ -1820,8 +1820,8 @@ Ung.CheckStoreRegistration = {
     url: null,
     start: function(now) {
         //this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
-        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + main.systemInfo();
-        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.systemInfo();
+        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + main.about();
+        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.about();
         this.stop();
         this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
         this.started = true;

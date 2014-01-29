@@ -69,7 +69,7 @@ msgstr "Initialisation en cours..."
 #: ../servlets/webui/root/script/config/localDirectory.js:383
 #: ../servlets/webui/root/script/config/policyManager.js:1223
 #: ../servlets/webui/root/script/config/sessionMonitor.js:199
-#: ../servlets/webui/root/script/config/systemInfo.js:314
+#: ../servlets/webui/root/script/config/about.js:314
 #: ../servlets/webui/root/script/config/system.js:238
 #: ../servlets/webui/root/script/config/system.js:269
 #: ../servlets/webui/root/script/config/system.js:293
@@ -289,7 +289,7 @@ msgstr "Téléchargement des mises à jour..."
 #: ../servlets/webui/root/script/config/localDirectory.js:324
 #: ../servlets/webui/root/script/config/localDirectory.js:333
 #: ../servlets/webui/root/script/config/policyManager.js:758
-#: ../servlets/webui/root/script/config/systemInfo.js:269
+#: ../servlets/webui/root/script/config/about.js:269
 #: ../servlets/webui/root/script/config/system.js:1020
 #: ../servlets/webui/root/script/config/system.js:1055
 #: ../servlets/webui/root/script/config/system.js:1070
@@ -336,7 +336,7 @@ msgstr "Administration"
 #: ../servlets/setup/root/script/setup.js:1718
 #: ../servlets/webui/root/script/config/administration.js:324
 #: ../servlets/webui/root/script/config/email.js:24
-#: ../servlets/webui/root/script/config/systemInfo.js:143
+#: ../servlets/webui/root/script/config/about.js:143
 #: ../servlets/reports/root/script/reports.js:976
 msgid "Email"
 msgstr "Courriel"
@@ -359,9 +359,9 @@ msgid "System"
 msgstr "Système"
 
 #: ../servlets/webui/root/script/main.js:893
-#: ../servlets/webui/root/script/config/systemInfo.js:16
-#: ../servlets/webui/root/script/config/systemInfo.js:60
-msgid "System Info"
+#: ../servlets/webui/root/script/config/about.js:16
+#: ../servlets/webui/root/script/config/about.js:60
+msgid "About"
 msgstr "Information Système"
 
 #: ../servlets/webui/root/script/main.js:925
@@ -371,7 +371,7 @@ msgstr "Information Système"
 #: ../servlets/webui/root/script/config/administration.js:976
 #: ../servlets/webui/root/script/config/email.js:19
 #: ../servlets/webui/root/script/config/localDirectory.js:9
-#: ../servlets/webui/root/script/config/systemInfo.js:11
+#: ../servlets/webui/root/script/config/about.js:11
 #: ../servlets/webui/root/script/config/system.js:12
 #: ../servlets/webui/root/script/config/upgrade.js:9
 msgid "Configuration"
@@ -1062,7 +1062,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/email.js:1310
 #: ../servlets/webui/root/script/config/localDirectory.js:384
 #: ../servlets/webui/root/script/config/policyManager.js:1223
-#: ../servlets/webui/root/script/config/systemInfo.js:314
+#: ../servlets/webui/root/script/config/about.js:314
 #: ../servlets/webui/root/script/config/system.js:1163
 #: ../servlets/webui/root/script/config/upgrade.js:430
 msgid "Saving..."
@@ -1494,44 +1494,44 @@ msgstr "Impossible de sauvegarder le mot de passe"
 #: ../servlets/setup/root/script/setup.js:366
 #: ../servlets/setup/root/script/setup.js:457
 #: ../servlets/setup/root/script/setup.js:458
-#: ../servlets/webui/root/script/config/systemInfo.js:98
+#: ../servlets/webui/root/script/config/about.js:98
 msgid "Registration"
 msgstr "Enregistrement"
 
 #: ../servlets/setup/root/script/setup.js:375
-#: ../servlets/webui/root/script/config/systemInfo.js:118
+#: ../servlets/webui/root/script/config/about.js:118
 msgid "Please provide administrator contact info."
 msgstr "SVP veuillez fournir les informations du contact administrateur."
 
 #: ../servlets/setup/root/script/setup.js:378
 #: ../servlets/webui/root/script/config/localDirectory.js:125
 #: ../servlets/webui/root/script/config/localDirectory.js:250
-#: ../servlets/webui/root/script/config/systemInfo.js:125
+#: ../servlets/webui/root/script/config/about.js:125
 msgid "First Name"
 msgstr "Prénom"
 
 #: ../servlets/setup/root/script/setup.js:382
-#: ../servlets/webui/root/script/config/systemInfo.js:134
+#: ../servlets/webui/root/script/config/about.js:134
 msgid "Last Name/Surname"
 msgstr "Nom/Prénom"
 
 #: ../servlets/setup/root/script/setup.js:392
-#: ../servlets/webui/root/script/config/systemInfo.js:154
+#: ../servlets/webui/root/script/config/about.js:154
 msgid "Organization Name"
 msgstr "Nom de l'organisation"
 
 #: ../servlets/setup/root/script/setup.js:393
-#: ../servlets/webui/root/script/config/systemInfo.js:157
+#: ../servlets/webui/root/script/config/about.js:157
 msgid "(if applicable)"
 msgstr "(le cas échéant)"
 
 #: ../servlets/setup/root/script/setup.js:399
-#: ../servlets/webui/root/script/config/systemInfo.js:167
+#: ../servlets/webui/root/script/config/about.js:167
 msgid "Number of PCs on your network"
 msgstr "Nombre de PCs dans votre réseau"
 
 #: ../servlets/setup/root/script/setup.js:402
-#: ../servlets/webui/root/script/config/systemInfo.js:171
+#: ../servlets/webui/root/script/config/about.js:171
 msgid "(approximate; include Windows, Linux and Mac)"
 msgstr "(approximatif; incluent Windows, Linux et Mac)"
 
@@ -1541,32 +1541,32 @@ msgid "Where will you be using {0}?"
 msgstr "Où utiliserez vous Untangle"
 
 #: ../servlets/setup/root/script/setup.js:408
-#: ../servlets/webui/root/script/config/systemInfo.js:182
+#: ../servlets/webui/root/script/config/about.js:182
 msgid "My Business"
 msgstr "Mon travail"
 
 #: ../servlets/setup/root/script/setup.js:415
-#: ../servlets/webui/root/script/config/systemInfo.js:191
+#: ../servlets/webui/root/script/config/about.js:191
 msgid "A Client's Business"
 msgstr "Au travail d'un client"
 
 #: ../servlets/setup/root/script/setup.js:422
-#: ../servlets/webui/root/script/config/systemInfo.js:200
+#: ../servlets/webui/root/script/config/about.js:200
 msgid "School"
 msgstr "Etablissement scolaire"
 
 #: ../servlets/setup/root/script/setup.js:429
-#: ../servlets/webui/root/script/config/systemInfo.js:208
+#: ../servlets/webui/root/script/config/about.js:208
 msgid "Home"
 msgstr "A la maison"
 
 #: ../servlets/setup/root/script/setup.js:442
-#: ../servlets/webui/root/script/config/systemInfo.js:222
+#: ../servlets/webui/root/script/config/about.js:222
 msgid "Other"
 msgstr "Autre"
 
 #: ../servlets/setup/root/script/setup.js:444
-#: ../servlets/webui/root/script/config/systemInfo.js:224
+#: ../servlets/webui/root/script/config/about.js:224
 msgid "Please Describe"
 msgstr "SVP décrivez"
 
@@ -3492,42 +3492,42 @@ msgstr ""
 msgid "Port Forwarded"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:55
+#: ../servlets/webui/root/script/config/about.js:55
 msgid "Version"
 msgstr "Version"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:72
+#: ../servlets/webui/root/script/config/about.js:72
 #: ../servlets/reports/root/script/reports.js:544
 #: ../servlets/reports/root/script/reports.js:1089
 msgid "Summary"
 msgstr "Sommaire"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:73
+#: ../servlets/webui/root/script/config/about.js:73
 msgid "UID"
 msgstr "UID"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:74
+#: ../servlets/webui/root/script/config/about.js:74
 msgid "Build"
 msgstr "Build"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:75
+#: ../servlets/webui/root/script/config/about.js:75
 msgid "Java"
 msgstr "Java"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:178
+#: ../servlets/webui/root/script/config/about.js:178
 #, fuzzy
 msgid "Where will you be using {0}"
 msgstr "Où utiliserez vous Untangle"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:237
+#: ../servlets/webui/root/script/config/about.js:237
 msgid "License Agreement"
 msgstr "Accord de licence"
 
-#: ../servlets/webui/root/script/config/systemInfo.js:241
+#: ../servlets/webui/root/script/config/about.js:241
 msgid "View License"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/systemInfo.js:270
+#: ../servlets/webui/root/script/config/about.js:270
 msgid "You must complete all required fields."
 msgstr "Vous devez remplir tous les champs obligatoires."
 

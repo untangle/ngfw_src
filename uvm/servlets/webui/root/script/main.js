@@ -207,8 +207,8 @@ Ext.define("Ung.Main", {
         this.loadConfig();
         this.loadPolicies();
     },
-    systemInfo: function (forceReload) {
-        if(forceReload || rpc.systemInfo === undefined) {
+    about: function (forceReload) {
+        if(forceReload || rpc.about === undefined) {
             var serverUID, fullVersion, language;
             try {
                 serverUID = rpc.jsonrpc.UvmContext.getServerUID();
@@ -223,9 +223,9 @@ Ext.define("Ung.Main", {
             query = query + "&" + "webui=true";
             query = query + "&" + "lang=" + language;
             
-            rpc.systemInfo = query;
+            rpc.about = query;
         }
-        return rpc.systemInfo;
+        return rpc.about;
         
     },
     openLegal: function( topic ) {
@@ -235,7 +235,7 @@ Ext.define("Ung.Main", {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        var url = baseUrl + "?" + this.systemInfo();
+        var url = baseUrl + "?" + this.about();
 
         console.log("Open Url   :", url);
         window.open(url); // open a new window
@@ -247,25 +247,25 @@ Ext.define("Ung.Main", {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        var url = baseUrl + "?" + "source=" + topic + "&" + this.systemInfo();
+        var url = baseUrl + "?" + "source=" + topic + "&" + this.about();
 
         console.log("Open Url   :", url);
         window.open(url); // open a new window
     },
     openSupportScreen: function() {
-        var url = rpc.storeUrl + "?" + "action=support" + "&" + this.systemInfo();
+        var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
         window.open(url); // open a new window
     },
     openRegisterScreen: function() {
-        var url = rpc.storeUrl + "?" + "action=register" + "&" + this.systemInfo();
+        var url = rpc.storeUrl + "?" + "action=register" + "&" + this.about();
         this.openIFrame( url, i18n._("Register"));
     },
     openMyAccountScreen: function() {
-        var url = rpc.storeUrl + "?" + "action=my_account" + "&" + this.systemInfo();
+        var url = rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
         window.open(url); // open a new window
     },
     openLibItemStore: function (libItemName, title) {
-        var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.systemInfo() ;
+        var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.about() ;
 
         console.log("Open Url   :", url);
         window.open(url); // open a new window
@@ -908,12 +908,12 @@ Ext.define("Ung.Main", {
                 "scriptFile":"system.js",
                 "handler": main.openConfig
             }, {
-                "name":"systemInfo",
+                "name":"about",
                 "displayName":i18n._("About"),
                 "iconClass":"icon-config-support",
                 "helpSource":"system_info",
-                "className":"Ung.SystemInfo",
-                "scriptFile":"systemInfo.js",
+                "className":"Ung.About",
+                "scriptFile":"about.js",
                 "handler": main.openConfig
             }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
