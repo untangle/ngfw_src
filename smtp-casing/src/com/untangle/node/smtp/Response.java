@@ -60,25 +60,33 @@ public class Response implements Token
 
     public ByteBuffer getBytes()
     {
-
         int len = 0;
+        byte[] rcBytes = Integer.toString(m_code).getBytes();
+        
         for (String arg : m_args) {
-            len += 3;// NNN
+            len += rcBytes.length;// NNN
             len += 1;// SP or DASH
-            len += (arg == null ? 0 : arg.length());
+            len += (arg == null ? 0 : arg.getBytes().length);
             len += 2;// CRLF
         }
         ByteBuffer ret = ByteBuffer.allocate(len);
 
-        byte[] rcBytes = Integer.toString(m_code).getBytes();// Hack
-
-        for (int i = 0; i < m_args.length; i++) {
-            ret.put(rcBytes);
-            ret.put((i == m_args.length - 1 ? (byte) SP : (byte) DASH));
-            if (m_args[i] != null) {
-                ret.put(m_args[i].getBytes());
+        try {
+            for (int i = 0; i < m_args.length; i++) {
+                ret.put(rcBytes);
+                ret.put((i == m_args.length - 1 ? (byte) SP : (byte) DASH));
+                if (m_args[i] != null) {
+                    ret.put(m_args[i].getBytes());
+                }
+                ret.put(CRLF_BA);
             }
-            ret.put(CRLF_BA);
+        } catch (RuntimeException e) {
+            String str = "" + m_code + ":";
+            for (String arg : m_args) {
+                if (arg != null)
+                    str += "[" + arg + "] ";
+            }
+            throw new RuntimeException("Exception while processing response: " + str, e);
         }
 
         ret.flip();
