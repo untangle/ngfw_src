@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.network.NetworkSettingsListener;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
@@ -51,6 +53,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
 
+    private final NetworkListener listener;
+    
     private OpenVpnSettings settings;
 
     private boolean isWebAppDeployed = false;
@@ -61,6 +65,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
+        this.listener         = new NetworkListener();
 
         this.pipeSpec = new SoloPipeSpec( "openvpn", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
@@ -126,6 +131,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             throw new RuntimeException(e);
         }
 
+        UvmContextFactory.context().networkManager().registerListener( this.listener );
+
         this.openVpnMonitor.start();
         this.openVpnMonitor.enable();
     }
@@ -135,6 +142,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     {
         super.preStop();
 
+        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        
         try {
             this.openVpnMonitor.disable();
         } catch ( Exception e ) {
@@ -520,6 +529,17 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         isWebAppDeployed = false;
     }
 
+    private void networkSettingsEvent( NetworkSettings settings ) throws Exception
+    {
+        // refresh iptables rules in case WAN config has changed
+        logger.info("Network Settings have changed. Syncing new settings...");
+
+        // Several openvpn settings rely on network settings.
+        // As such when the network settings change, re-sync the openvpn settings
+        // They aren't critical though so don't restart the server.
+        this.openVpnManager.configure( this.settings );
+    }
+    
     private List<JSONObject> _getRemoteServersStatus()
     {
         List<JSONObject> results = new LinkedList<JSONObject>();
@@ -598,5 +618,17 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
         return results;
     }
-    
+
+    private class NetworkListener implements NetworkSettingsListener
+    {
+        public void event( NetworkSettings settings )
+        {
+            if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
+            try {
+                networkSettingsEvent( settings );
+            } catch( Exception e ) {
+                logger.error( "Unable to reconfigure the NAT node" );
+            }
+        }
+    }
 }
