@@ -249,7 +249,7 @@ class DailyUsage(Graph):
 
 class IpsDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'attack-events', _('Attack Events'))
+        DetailSection.__init__(self, 'attack-events', _('Intrusion Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -262,10 +262,11 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('ips_description', _('SID:description')),
+        rv = rv + [ColumnDesc('ips_ruleid', _('Rule ID')),
+                   ColumnDesc('ips_description', _('Description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
-                   ColumnDesc('c_server_addr', _('Server')),
-                   ColumnDesc('c_server_port', _('Port'))]
+                   ColumnDesc('s_server_addr', _('Server')),
+                   ColumnDesc('s_server_port', _('Port'))]
 
         return rv
 
