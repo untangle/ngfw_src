@@ -584,6 +584,8 @@ public class OpenVpnManager
         }
         
         try {
+            logger.info( "Writing File: " + IPTABLES_SCRIPT );
+
             int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
             int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
 
