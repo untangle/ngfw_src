@@ -25,16 +25,12 @@ class HttpCasing implements Casing
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    // constructors -----------------------------------------------------------
-
     public HttpCasing(NodeTCPSession session, boolean clientSide, HttpNodeImpl node)
     {
         this.node = node;
         parser = new HttpParser(session, clientSide, this);
         unparser = new HttpUnparser(session, clientSide, this);
     }
-
-    // Casing methods ---------------------------------------------------------
 
     public Unparser unparser()
     {
@@ -45,8 +41,6 @@ class HttpCasing implements Casing
     {
         return parser;
     }
-
-    // package private methods ------------------------------------------------
 
     HttpNodeImpl getNode()
     {
@@ -60,10 +54,10 @@ class HttpCasing implements Casing
 
     RequestLineToken dequeueRequest(int statusCode)
     {
-        if (0 < requests.size()) {
+        if ( requests.size() > 0 ) {
             return requests.remove(0);
         } else {
-            if (4 != statusCode / 100) {
+            if ( statusCode < 400 || statusCode > 499 ) {
                 logger.warn("requests is empty: " + statusCode);
             }
             return null;
