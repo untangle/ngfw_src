@@ -419,6 +419,7 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify that a block page is shown but unblock button option is available.
     def test_120_unblockOption(self):
+        global node
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         settings = node.getSettings()
         settings["unblockMode"] = "Host"
@@ -441,15 +442,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         # print "unBlockParameters %s" % unBlockParameters
         clientControl.runCommand("wget -q --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
         resultUnBlock = clientControl.runCommand("wget -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-
-        settings = node.getSettings()
-        settings["unblockMode"] = "None"
-        node.setSettings(settings)        
-        nukeBlockedUrls()
+        
+        # remove and re-install web app to reset the host unblock list
+        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
-
-
 
     def test_999_finalTearDown(self):
         global node
