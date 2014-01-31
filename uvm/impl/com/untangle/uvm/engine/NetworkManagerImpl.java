@@ -1269,6 +1269,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleDns );
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
+        rules.add( filterRuleSnmp );
         rules.add( filterRuleBlock );
 
         return rules;
