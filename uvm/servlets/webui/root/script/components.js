@@ -1340,7 +1340,7 @@ Ext.define("Ung.Node", {
             name: "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls: 'icon-buy',
-            hidden: !(this.license != null && this.license.trial), //show only if trial license
+            hidden: !(this.license != null && (!this.license.valid || this.license.trial)), //show only if trial license, or invalid license
             ctCls:'buy-button-text',
             text: '<font color="green">' + i18n._('Buy Now') + '</font>',
             handler: Ext.bind(this.onBuyNowAction, this)
@@ -1446,6 +1446,9 @@ Ext.define("Ung.Node", {
         }
     },
     onPowerClick: function() {
+        if(this.license && !this.license.valid) {
+            return;
+        }
         if (!this.powerOn) {
             this.start();
         } else {
@@ -1687,7 +1690,7 @@ Ext.define("Ung.Node", {
         document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power-expired":"node-power":"";
         var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
         if(nodeBuyButton) {
-            if(this.license && this.license.trial) {
+            if(this.license && (!this.license.valid  || this.license.trial)) {
                 nodeBuyButton.show();
             } else {
                 nodeBuyButton.hide();

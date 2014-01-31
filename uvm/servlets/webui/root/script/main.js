@@ -829,13 +829,21 @@ Ext.define("Ung.Main", {
             appItem.hide();
             return;
         }
-        
-        Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
-        main.addNodePreview( nodeProperties );
-        rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
+        main.getLicenseManager().getLicense(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            main.updateRackView();
-        }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
+            var license = result;
+            //if the node license is not valid or if the license is expired trial go to buy app in store
+            if(license!=null && (!license.valid || (license.trial && license.expired))) {
+                main.openLibItemStore( nodeProperties.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), nodeProperties.displayName) );
+            } else {
+                Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
+                main.addNodePreview( nodeProperties );
+                rpc.nodeManager.instantiate(function (result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    main.updateRackView();
+                }, nodeProperties.name, rpc.currentPolicy.policyId);
+            }
+        }, nodeProperties.name);
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
