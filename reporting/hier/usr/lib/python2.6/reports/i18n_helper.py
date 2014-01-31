@@ -20,7 +20,24 @@ import gettext
 
 import os
 
+def get_uvm_settings_item(a,b):
+    return None
+
+try:
+    from uvm.settings_reader import get_uvm_settings_item
+except ImportError:
+    pass
+
 def get_translation(domain):
 #    return gettext.translation(domain, fallback=True)
-    return gettext.translation(domain, fallback=True, codeset='utf-8')
+    lang = get_uvm_language()
+    return gettext.translation(domain, fallback=True, codeset='utf-8',languages=[lang])
+        
+def get_uvm_language():
+    lang = 'us'
 
+    setval = get_uvm_settings_item('language','language')
+    if (setval != None):
+        lang = setval
+
+    return lang
