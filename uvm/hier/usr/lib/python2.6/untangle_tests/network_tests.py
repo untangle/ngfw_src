@@ -652,6 +652,25 @@ class NetworkTests(unittest2.TestCase):
         assert (mtuValue == mtuSetValue)
         assert (mtu2Value == mtuAutoValue)
         
+    # Verify SNMP
+    def test_120_SNMP(self):
+        snmpwalkResult = clientControl.runCommand("test -x /usr/bin/snmpwalk")  
+        if snmpwalkResult:
+            raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['port'] = 161
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        uvmContext.systemManager().setSettings(systemSettings)
+        result = clientControl.runCommand("snmpwalk -v 2c -c atstest 192.168.10.61 | grep untangle >/dev/null 2>&1")
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert(result == 0)
+
     def test_999_finalTearDown(self):
         global node,nodeFW
         # Restore original settings to return to initial settings
