@@ -271,7 +271,7 @@ Ext.define('Ung.Reports', {
                     },
                     region: 'east',
                     height: 60,
-                    width: 200,
+                    width: 350,
                     items: [
                     {
                         xtype:"fieldset",
