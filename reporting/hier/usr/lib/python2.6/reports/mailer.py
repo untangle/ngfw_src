@@ -129,8 +129,8 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
 
     subject = ('%s %s' % (company_name, length_name)) + ' ' + _('Report Summary') + ' ' + ('[%s]' % machine_name)
     msgRoot['Subject'] = Header(subject, 'utf-8')
-    msgRoot['From'] = "%s" % Header(sender, 'utf-8')
-    msgRoot['To'] = "%s" % Header(receiver, 'utf-8')
+    msgRoot['From'] = "%s" % Header(sender, 'ascii')
+    msgRoot['To'] = "%s" % Header(receiver, 'ascii')
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
