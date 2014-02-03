@@ -57,6 +57,8 @@ Ext.define('Ung.Reports', {
     printView: false,
     drillType:null,
     drillValue:null,
+    // the Ext.Viewport object for the application
+    viewport: null,
 
     appNames: { },
 
@@ -229,14 +231,8 @@ Ext.define('Ung.Reports', {
             }
         });
 
-        var panel = Ext.create('Ext.panel.Panel',{
-            renderTo: 'base',
-            cls: "base-container",
-            layout: 'border',
-            height: getWinHeight() - 40,
-            defaults: { border: false,
-                        bodyStyle: 'background-color:#F0F0F0;'
-                       },
+        this.viewport = Ext.create('Ext.container.Viewport',{
+            layout:'border',
             items: [ 
             {
                 xtype:'panel',
