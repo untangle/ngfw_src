@@ -7261,10 +7261,10 @@ Ext.define('Ung.RuleBuilder', {
                     var value = record.get("value");
                     value = value.replace("TCP","").replace("UDP","");
                     value = value.replace("tcp","").replace("udp","");
-                    var values = value.split(",");
-                    // values should be [ "" ] for valid rules
-                    if ( values.length != 1 || values[0] != "" ) {
-                        return i18n._("Can not specify a port condition on port-less protocols: ") + values.join(" ");
+                    var testvalue = value.replace(",","");
+                    // testvalues should "" for valid rules
+                    if ( testvalue != "" ) {
+                        return i18n._("Can not specify a port condition on port-less protocols: ") + value.split(",").join(" ");
                     }
                     console.log(rule);
                 }
