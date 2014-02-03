@@ -7266,7 +7266,6 @@ Ext.define('Ung.RuleBuilder', {
                     if ( testvalue != "" ) {
                         return i18n._("Can not specify a port condition on port-less protocols: ") + value.split(",").join(" ");
                     }
-                    console.log(rule);
                 }
             }
         }
