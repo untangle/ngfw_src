@@ -14,6 +14,7 @@ Ext.define("Ung.Main", {
     appsLastState: null,
     nodePreviews: null,
     config: null,
+    totalMemoryMb: 2000,
     nodes: null,
     // the Ext.Viewport object for the application
     viewport: null,
@@ -815,7 +816,7 @@ Ext.define("Ung.Main", {
         }, this));
     },
 
-    installNode: function(nodeProperties, appItem) {
+    installNode: function(nodeProperties, appItem, completeFn) {
         if(!rpc.isRegistered) {
             main.openRegisterScreen();
             return;
@@ -835,7 +836,9 @@ Ext.define("Ung.Main", {
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             main.updateRackView();
-        }, nodeProperties), nodeProperties.name, rpc.currentPolicy.policyId);
+            if (completeFn)
+                completeFn();
+        }, this), nodeProperties.name, rpc.currentPolicy.policyId);
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
