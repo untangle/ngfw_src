@@ -837,6 +837,7 @@ Ext.define("Ung.Main", {
             if (exception) {
                 Ung.AppItem.updateState( nodeProperties.displayName, null );
                 main.removeNodePreview( nodeProperties.name );
+                main.updateRackView();
                 Ung.Util.handleException(exception);
                 return;
             }

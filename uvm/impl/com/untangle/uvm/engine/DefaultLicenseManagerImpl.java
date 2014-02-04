@@ -61,6 +61,11 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     {
         return this.licenses;
     }
+
+    public void requestTrialLicense( String nodeName ) throws Exception
+    {
+        return;
+    }
     
     /**
      * Return true if the user has any premium products.
