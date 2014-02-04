@@ -1,5 +1,5 @@
 /*
- * $Id: LicenseManager.java 30329 2011-12-03 22:54:14Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 
@@ -31,4 +31,13 @@ public interface LicenseManager
      * Return true if the user has any premium products.
      */
     public boolean hasPremiumLicense();
+
+    /**
+     * Requests a trial license from license server and refreshes licenses.
+     * If it already has a valid license it does nothing and returns.
+     * If it can not connect to the license server for the request it throws an exception
+     * It does not guaratee a new license will be fetched.
+     * The server can deny the request in which case this will return with no exception
+     */
+    public void requestTrialLicense( String nodeName ) throws Exception;
 }

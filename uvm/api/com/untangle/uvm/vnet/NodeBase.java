@@ -587,6 +587,17 @@ public abstract class NodeBase implements Node
             return;
         }
 
+        // if no valid license exists, request a trial license
+        try {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+                logger.info("No valid license for: " + nodeProperties.getName());
+                logger.info("Requesting trial for: " + nodeProperties.getName());
+                UvmContextFactory.context().licenseManager().requestTrialLicense( nodeProperties.getName() );
+            }
+        } catch (Exception e) {
+            logger.warn( "Exception fetching trial license. Ignoring...", e );
+        }
+        
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
