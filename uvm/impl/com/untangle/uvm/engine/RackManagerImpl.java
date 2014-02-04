@@ -144,7 +144,7 @@ public class RackManagerImpl implements RackManager
                 installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
         }
-        
+
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */

@@ -1182,6 +1182,13 @@ Ext.define("Ung.AppItem", {
         }
     },
     // install node / uninstall App
+    installNode: function( completeFn ) {
+        if(!this.progressBar.hidden) {
+            return;
+        }
+        main.installNode(this.nodeProperties, this, completeFn);
+    },
+    // install node / uninstall App
     installNodeFn: function(e) {
         e.preventDefault();
         if(!this.progressBar.hidden) {
@@ -1837,6 +1844,89 @@ Ung.CheckStoreRegistration = {
         }
         this.started = false;
     },
+    showPostRegistrationPopup: function() {
+        var popup = Ext.create('Ext.window.MessageBox', {
+            buttons: [{
+                name: 'Yes',
+                text: i18n._("Yes, install the recommended apps."),
+                handler: Ext.bind(function() {
+                    var app;
+                    var totalMem = main.totalMemoryMb;
+                    var i = 0;
+                    var secondsDelay = 2.0;
+                    
+                    var apps = [ "Web Filter",
+                                 //"Web Filter Lite",
+                                 "Virus Blocker",
+                                 //"Virus Blocker Lite",
+                                 "Spam Blocker",
+                                 //"Spam Blocker Lite",
+                                 //"Phish Blocker",
+                                 //"Web Cache",
+                                 "Bandwidth Control",
+                                 "HTTPS Inspector",
+                                 "Application Control",
+                                 //"Application Control Lite",
+                                 "Captive Portal",
+                                 "Firewall",
+                                 //"Intrusion Prevention",
+                                 //"Ad Blocker",
+                                 "Reports",
+                                 "Policy Manager",
+                                 "Directory Connector",
+                                 "WAN Failover",
+                                 "WAN Balancer",
+                                 "IPsec VPN",
+                                 "OpenVPN",
+                                 "Configuration Backup",
+                                 "Branding Manager",
+                                 "Live Support"];
+
+                    for ( i = 0 ; i < apps.length ; i++ ) {
+                        var completeFn = null;
+                        if ( i == apps.length - 1 ) {
+                            completeFn = function() {
+                                Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
+                            };
+                        }
+                        Ext.Function.defer( function(name, completeFn) {
+                            var app = Ung.AppItem.getApp(name);
+                            if ( app ) 
+                                app.installNode(completeFn);
+                        }, i * 1000 * secondsDelay, this, [apps[i], completeFn]);
+
+                    }
+
+                    if (main.totalMemoryMb > 900 ) {
+                        var highMemoryApps = [ "Virus Blocker Lite",
+                                               "Phish Blocker"];
+                        for ( i = 0 ; i < highMemoryApps.length ; i++ ) {
+                            Ext.Function.defer( function(name) {
+                                var app = Ung.AppItem.getApp(name);
+                                if ( app ) 
+                                    app.installNode();
+                            }, (i+5) * 1000 * secondsDelay, this, [highMemoryApps[i]]);
+                        }
+                    }
+                    
+                    popup.close();
+                }, this)
+            },{
+                name: 'No',
+                text: i18n._("No, I will install the apps manually."),
+                handler: Ext.bind(function() {
+                    popup.close();
+                }, this)
+            }]
+        });
+        popup.show({
+            title: i18n._("Registration complete."),
+            msg: i18n._("Thank you for using Untangle!") + "<br/>" + "<br/>" +
+                i18n._("Applications can now be installed and configured.") + "<br/>" +
+                i18n._("Would you to install the recommended applications now?"),
+            icon: Ext.MessageBox.QUESTION
+        });
+    },
     run: function () {
         Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
@@ -1849,9 +1939,7 @@ Ung.CheckStoreRegistration = {
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.CheckStoreRegistration.stop();
-                        Ext.MessageBox.alert(i18n._("Registration complete."),
-                                             i18n._("Thank you for using Untangle!") + "<br/>" +
-                                             i18n._("You may now install applications into the rack."));
+                        Ung.CheckStoreRegistration.showPostRegistrationPopup();
                     });
                 }
             },
@@ -2011,6 +2099,7 @@ Ext.define("Ung.SystemStats", {
         this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed.value+rxSpeed.unit;
         var memoryFree=Ung.Util.bytesToMBs(stats.MemFree);
         var memoryUsed=Ung.Util.bytesToMBs(stats.MemTotal-stats.MemFree);
+        main.totalMemoryMb = Ung.Util.bytesToMBs(stats.MemTotal);
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
         this.getEl().down("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
         var diskPercent=Math.round((1-stats.freeDiskSpace/stats.totalDiskSpace)*20 )*5;
