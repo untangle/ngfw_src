@@ -1882,32 +1882,29 @@ Ung.CheckStoreRegistration = {
                                  "Branding Manager",
                                  "Live Support"];
 
-                    for ( i = 0 ; i < apps.length ; i++ ) {
-                        var completeFn = null;
-                        if ( i == apps.length - 1 ) {
-                            completeFn = function() {
-                                Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
-                            };
-                        }
-                        Ext.Function.defer( function(name, completeFn) {
-                            var app = Ung.AppItem.getApp(name);
-                            if ( app ) 
-                                app.installNode(completeFn);
-                        }, i * 1000 * secondsDelay, this, [apps[i], completeFn]);
-
+                    // only install this on 1gig+ machines
+                    if ( main.totalMemoryMb > 900 ) {
+                        apps.splice(2,0,"Virus Blocker Lite");
+                        apps.splice(4,0,"Phish Blocker");
                     }
 
-                    if (main.totalMemoryMb > 900 ) {
-                        var highMemoryApps = [ "Virus Blocker Lite",
-                                               "Phish Blocker"];
-                        for ( i = 0 ; i < highMemoryApps.length ; i++ ) {
-                            Ext.Function.defer( function(name) {
-                                var app = Ung.AppItem.getApp(name);
-                                if ( app ) 
-                                    app.installNode();
-                            }, (i+5) * 1000 * secondsDelay, this, [highMemoryApps[i]]);
+                    var fn = function( appsToInstall ) {
+                        // if there are no more apps left to install we are done
+                        if ( appsToInstall.length == 0 ) {
+                            Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
+                            return;
                         }
-                    }
+                        var name = appsToInstall[0];
+                        appsToInstall.shift();
+                        var completeFn = Ext.bind( fn, this, [appsToInstall] ); // function to install remaining apps
+                        var app = Ung.AppItem.getApp(name);
+                        if ( app ) 
+                            app.installNode( completeFn );
+                        else
+                            completeFn();
+                    };
+
+                    fn( apps );
                     
                     popup.close();
                 }, this)
@@ -1921,6 +1918,7 @@ Ung.CheckStoreRegistration = {
         });
         popup.show({
             title: i18n._("Registration complete."),
+            width: 400,
             msg: i18n._("Thank you for using Untangle!") + "<br/>" + "<br/>" +
                 i18n._("Applications can now be installed and configured.") + "<br/>" +
                 i18n._("Would you to install the recommended applications now?"),
