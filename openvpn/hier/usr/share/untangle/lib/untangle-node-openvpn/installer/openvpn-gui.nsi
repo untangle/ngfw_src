@@ -7,6 +7,7 @@
 ; ****************************************************************************
 
 ; OpenVPN install script for Windows, using NSIS
+; WebFooL whas here ;-)
 
 SetCompressor lzma
 
@@ -18,8 +19,9 @@ SetCompressor lzma
 ; the installer to global directories (e.g. Start menu, desktop, etc.)
 !define MULTIUSER_EXECUTIONLEVEL Admin
 !include "MultiUser.nsh"
-!include "GetWindowsVersion.nsi"
+;!include "GetWindowsVersion.nsi"
 ;!include "setpath.nsi"
+!include "x64.nsh"
 
 ; EnvVarUpdate.nsh is needed to update the PATH environment variable
 !include "EnvVarUpdate.nsh"
@@ -188,34 +190,18 @@ Section /o "${PACKAGE_NAME} User-Space Components" SecOpenVPNUserSpace
 
 	SetOverwrite on
 
-GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit openvpn.exe.."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\openvpn.exe"
-goto end
-
-W64:
-        DetailPrint "Installing 64-bit openvpn.exe."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win64\openvpn.exe"
-goto end
-
-end:
+        ${If} ${RunningX64}
+        DetailPrint "Installing 64-bit OpenVPN.exe."
+        SetOutPath "$INSTDIR\bin"
+        File "${OPENVPN_ROOT}\bin-win64\openvpn.exe"
+        ${Else}
+        DetailPrint "Installing 32-bit OpenVPN.exe."
+        SetOutPath "$INSTDIR\bin"
+        File "${OPENVPN_ROOT}\bin-win32\openvpn.exe"
+        ${EndIf}
 
 
-	SetOutPath "$INSTDIR\doc"
+        SetOutPath "$INSTDIR\doc"
 	File "${OPENVPN_ROOT}\install-win32\INSTALL-win32.txt"
 	File "${OPENVPN_ROOT}\install-win32\openvpn.8.html"
 
@@ -230,32 +216,15 @@ Section /o "${PACKAGE_NAME} Service" SecService
 
 	SetOverwrite on
 	
-	GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit openvpnserv.exe."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\openvpnserv.exe"
-goto end
-
-W64:
+        ${If} ${RunningX64}
         DetailPrint "Installing 64-bit openvpnserv.exe."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win64\openvpnserv.exe"
-goto end
-
-end:
-
+        SetOutPath "$INSTDIR\bin"
+        File "${OPENVPN_ROOT}\bin-win64\openvpnserv.exe"
+        ${Else}
+        DetailPrint "Installing 32-bit openvpnserv.exe."
+        SetOutPath "$INSTDIR\bin"
+        File "${OPENVPN_ROOT}\bin-win32\openvpnserv.exe"
+        ${EndIf}
 
         # Include your custom config file(s) here.
  SetOutPath "$INSTDIR\config"
@@ -273,6 +242,17 @@ end:
 	FileWrite $R1 "sessions which are being run as a service.$\r$\n"
 	FileClose $R1
 
+	${If} ${RunningX64}
+	SetRegView 64
+	; set registry parameters for openvpnserv
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "config_dir" "$INSTDIR\config"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "config_ext"  "${OPENVPN_CONFIG_EXT}"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "exe_path"    "$INSTDIR\bin\openvpn.exe"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "log_dir"     "$INSTDIR\log"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "priority"    "NORMAL_PRIORITY_CLASS"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "log_append"  "0"
+        ${Else}
+        SetRegView 32
 	; set registry parameters for openvpnserv
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "config_dir" "$INSTDIR\config"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "config_ext"  "${OPENVPN_CONFIG_EXT}"
@@ -280,6 +260,8 @@ end:
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_dir"     "$INSTDIR\log"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "priority"    "NORMAL_PRIORITY_CLASS"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_append"  "0"
+        ${EndIf}
+
 
 	; install openvpnserv as a service (to be started manually from service control manager)
 	DetailPrint "Service INSTALL"
@@ -334,31 +316,17 @@ Section /o "OpenSSL Utilities" SecOpenSSLUtilities
 
 	SetOverwrite on
 	
- GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit openssl.exe."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\openssl.exe"
-goto end
-
-W64:
+	${If} ${RunningX64}
         DetailPrint "Installing 64-bit openssl.exe."
 	SetOutPath "$INSTDIR\bin"
 	File "${OPENVPN_ROOT}\bin-win64\openssl.exe"
-goto end
+        ${Else}
+        DetailPrint "Installing 32-bit openssl.exe."
+	SetOutPath "$INSTDIR\bin"
+	File "${OPENVPN_ROOT}\bin-win32\openssl.exe"
+        ${EndIf}
 
-end:
+
 SectionEnd
 
 Section /o "Add ${PACKAGE_NAME} to PATH" SecAddPath
@@ -385,100 +353,54 @@ SectionGroup "!Dependencies (Advanced)"
 	Section /o "OpenSSL DLLs" SecOpenSSLDLLs
 
 		SetOverwrite on
-  GetVersion::WindowsPlatformArchitecture
-  Pop $R0
 
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit libeay32.dll & ssleay32.dll."
-	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\libeay32.dll"
-        File "${OPENVPN_ROOT}\bin-win32\ssleay32.dll"
-goto end
-
-W64:
+	${If} ${RunningX64}
         DetailPrint "Installing 64-bit libeay32.dll & ssleay32.dll."
 	SetOutPath "$INSTDIR\bin"
 	File "${OPENVPN_ROOT}\bin-win64\libeay32.dll"
         File "${OPENVPN_ROOT}\bin-win64\ssleay32.dll"
-goto end
-
-end:
-	
-	SectionEnd
-
-	Section /o "LZO DLLs" SecLZODLLs
-
-		SetOverwrite on
-		
-		  GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit liblzo2-2.dll."
+        ${Else}
+        DetailPrint "Installing 32-bit libeay32.dll & ssleay32.dll."
 	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\liblzo2-2.dll"
-goto end
+	File "${OPENVPN_ROOT}\bin-win32\libeay32.dll"
+        File "${OPENVPN_ROOT}\bin-win32\ssleay32.dll"
+        ${EndIf}
 
-W64:
+
+SectionEnd
+
+Section /o "LZO DLLs" SecLZODLLs
+
+	SetOverwrite on
+		
+ 	${If} ${RunningX64}
         DetailPrint "Installing 64-bit liblzo2-2.dll."
 	SetOutPath "$INSTDIR\bin"
 	File "${OPENVPN_ROOT}\bin-win64\liblzo2-2.dll"
-goto end
-
-end:
-
-	SectionEnd
-
-	Section /o "PKCS#11 DLLs" SecPKCS11DLLs
-
-		SetOverwrite on
-		
-				  GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-
-StrCmp $R0 '64' 0 +3
- DetailPrint "64 is  $R0"
-  Goto W64
-StrCmp $R0 '32' 0 +3
- DetailPrint "32 is  $R0"
-  Goto W32
-# else
-goto end
-
-W32:
-        DetailPrint "Installing 32-bit libpkcs11-helper-1.dll."
+        ${Else}
+        DetailPrint "Installing 32-bit liblzo2-2.dll."
 	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\libpkcs11-helper-1.dll"
-goto end
+	File "${OPENVPN_ROOT}\bin-win32\liblzo2-2.dll"
+        ${EndIf}
 
-W64:
+
+SectionEnd
+
+Section /o "PKCS#11 DLLs" SecPKCS11DLLs
+
+	SetOverwrite on
+
+	${If} ${RunningX64}
         DetailPrint "Installing 64-bit libpkcs11-helper-1.dll."
 	SetOutPath "$INSTDIR\bin"
 	File "${OPENVPN_ROOT}\bin-win64\libpkcs11-helper-1.dll"
-goto end
+        ${Else}
+        DetailPrint "Installing 32-bit libpkcs11-helper-1.dll."
+	SetOutPath "$INSTDIR\bin"
+	File "${OPENVPN_ROOT}\bin-win32\libpkcs11-helper-1.dll"
+        ${EndIf}
 
-end:
-		
-
-	SectionEnd
+SectionEnd
 
 SectionGroupEnd
 
@@ -513,8 +435,9 @@ Function .onInit
 	SetShellVarContext all
 
 	; Check if we're running on 64-bit Windows
-	${If} "${ARCH}" == "x86_64"
-		SetRegView 64
+	${If} ${RunningX64}
+
+                SetRegView 64
 
 		; Change the installation directory to C:\Program Files, but only if the
 		; user has not provided a custom install location.
@@ -558,8 +481,14 @@ Section -post
 	File "${OPENVPN_ROOT}\install-win32\license.txt"
 
 	; Store install folder in registry
-	WriteRegStr HKLM "SOFTWARE\${PACKAGE_NAME}" "" "$INSTDIR"
-
+	${If} ${RunningX64}
+	SetRegView 64
+        WriteRegStr HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "" "$INSTDIR"
+        ${Else}
+        SetRegView 32
+        WriteRegStr HKLM "SOFTWARE\${PACKAGE_NAME}" "" "$INSTDIR"
+        ${EndIf}
+	
 	; Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -596,7 +525,7 @@ Function un.onInit
 	ClearErrors
 	!insertmacro MULTIUSER_UNINIT
 	SetShellVarContext all
-	${If} "${ARCH}" == "x86_64"
+	${If} ${RunningX64}
 		SetRegView 64
 	${EndIf}
 FunctionEnd
@@ -656,6 +585,7 @@ Section "Uninstall"
 	!insertmacro DelRegKeyIfUnchanged HKCR ".${OPENVPN_CONFIG_EXT}" "${PACKAGE_NAME}File"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
+	DeleteRegKey HKLM "SOFTWARE\WOW6432Node\${PACKAGE_NAME}"
 	DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
 
 SectionEnd
