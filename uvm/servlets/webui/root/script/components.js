@@ -464,7 +464,7 @@ Ung.Util = {
             /* worst case - just say something */
             if (message == null) {
                 if ( exception && exception.message ) {
-                    message = i18n._("An error has occurred") + ":&nbsp;"  + exception.message;
+                    message = i18n._("An error has occurred") + ":" + "<br/>"  + exception.message;
                 } else {
                     message = i18n._("An error has occurred.");
                 }

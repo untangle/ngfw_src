@@ -834,7 +834,12 @@ Ext.define("Ung.Main", {
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
+            if (exception) {
+                Ung.AppItem.updateState( nodeProperties.displayName, null );
+                main.removeNodePreview( nodeProperties.name );
+                Ung.Util.handleException(exception);
+                return;
+            }
             main.updateRackView();
             if (completeFn)
                 completeFn();
