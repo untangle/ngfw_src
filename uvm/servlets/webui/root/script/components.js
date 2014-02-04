@@ -1850,11 +1850,6 @@ Ung.CheckStoreRegistration = {
                 name: 'Yes',
                 text: i18n._("Yes, install the recommended apps."),
                 handler: Ext.bind(function() {
-                    var app;
-                    var totalMem = main.totalMemoryMb;
-                    var i = 0;
-                    var secondsDelay = 2.0;
-                    
                     var apps = [ "Web Filter",
                                  //"Web Filter Lite",
                                  "Virus Blocker",
