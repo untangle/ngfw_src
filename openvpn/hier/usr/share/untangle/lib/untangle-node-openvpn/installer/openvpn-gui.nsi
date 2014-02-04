@@ -242,6 +242,17 @@ Section /o "${PACKAGE_NAME} Service" SecService
 	FileWrite $R1 "sessions which are being run as a service.$\r$\n"
 	FileClose $R1
 
+	${If} ${RunningX64}
+	SetRegView 64
+	; set registry parameters for openvpnserv
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "config_dir" "$INSTDIR\config"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "config_ext"  "${OPENVPN_CONFIG_EXT}"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "exe_path"    "$INSTDIR\bin\openvpn.exe"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "log_dir"     "$INSTDIR\log"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "priority"    "NORMAL_PRIORITY_CLASS"
+	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "log_append"  "0"
+        ${Else}
+        SetRegView 32
 	; set registry parameters for openvpnserv
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "config_dir" "$INSTDIR\config"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "config_ext"  "${OPENVPN_CONFIG_EXT}"
@@ -249,6 +260,8 @@ Section /o "${PACKAGE_NAME} Service" SecService
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_dir"     "$INSTDIR\log"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "priority"    "NORMAL_PRIORITY_CLASS"
 	!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PACKAGE_NAME}" "log_append"  "0"
+        ${EndIf}
+
 
 	; install openvpnserv as a service (to be started manually from service control manager)
 	DetailPrint "Service INSTALL"
@@ -423,7 +436,8 @@ Function .onInit
 
 	; Check if we're running on 64-bit Windows
 	${If} ${RunningX64}
-		SetRegView 64
+
+                SetRegView 64
 
 		; Change the installation directory to C:\Program Files, but only if the
 		; user has not provided a custom install location.
@@ -467,8 +481,14 @@ Section -post
 	File "${OPENVPN_ROOT}\install-win32\license.txt"
 
 	; Store install folder in registry
-	WriteRegStr HKLM "SOFTWARE\${PACKAGE_NAME}" "" "$INSTDIR"
-
+	${If} ${RunningX64}
+	SetRegView 64
+        WriteRegStr HKLM "SOFTWARE\Wow6432Node\${PACKAGE_NAME}" "" "$INSTDIR"
+        ${Else}
+        SetRegView 32
+        WriteRegStr HKLM "SOFTWARE\${PACKAGE_NAME}" "" "$INSTDIR"
+        ${EndIf}
+	
 	; Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -565,6 +585,7 @@ Section "Uninstall"
 	!insertmacro DelRegKeyIfUnchanged HKCR ".${OPENVPN_CONFIG_EXT}" "${PACKAGE_NAME}File"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
+	DeleteRegKey HKLM "SOFTWARE\WOW6432Node\${PACKAGE_NAME}"
 	DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
 
 SectionEnd
