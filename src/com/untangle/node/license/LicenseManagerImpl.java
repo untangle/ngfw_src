@@ -6,6 +6,7 @@ package com.untangle.node.license;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -189,6 +194,54 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     public final boolean hasPremiumLicense()
     {
         return this.settings.getLicenses().size() > 0;
+    }
+
+    public void requestTrialLicense( String nodeName ) throws Exception
+    {
+        // if already have a valid license, just return
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) )
+            return;
+        
+        /**
+         * the API specifies libitem, however libitems no longer exist
+         * specify the node, but also hit the old API with the old libitem name
+         */
+        String licenseUrl = System.getProperty( "uvm.license.url" );
+        if ( licenseUrl == null )
+            licenseUrl = "https://license.untangle.com/license.php";
+
+        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName;
+        String oldName = nodeName.replace("node","libitem").replace("casing","libitem");
+        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldName;
+
+        URL url;
+        HttpClient hc;
+        HttpMethod get;
+        
+        try {
+            logger.info("Requesting Trial: " + urlStr);
+            url = new URL(urlStr);
+            hc = new HttpClient();
+            get = new GetMethod(url.toString());
+            hc.executeMethod(get);
+
+            logger.info("Requesting Trial: " + urlStr);
+            url = new URL(urlStr2);
+            hc = new HttpClient();
+            get = new GetMethod(url.toString());
+            hc.executeMethod(get);
+        } catch ( java.net.UnknownHostException e ) {
+            logger.warn("Exception requesting trial license:" + e.toString());
+            throw ( new Exception( "Unable to fetch trial license: DNS lookup failed.", e ) );
+        } catch ( java.net.ConnectException e ) {
+            logger.warn("Exception requesting trial license:" + e.toString());
+            throw ( new Exception( "Unable to fetch trial license: Connection timeout.", e ) );
+        } catch ( Exception e ) {
+            logger.warn("Exception requesting trial license:" + e.toString());
+            throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
+        }
+         
+        try { UvmContextFactory.context().licenseManager().reloadLicenses(); } catch ( Exception e ) {}
     }
 
     public Object getSettings()
