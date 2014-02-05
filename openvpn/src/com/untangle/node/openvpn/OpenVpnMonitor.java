@@ -353,7 +353,7 @@ class OpenVpnMonitor implements Runnable
 
         String poolAddressStr = valueArray[ADDRESS_POOL_INDEX];
         if ( "127.0.0.1".equals(poolAddressStr) ) {
-            logger.debug("Ignoring client with 127.0.0.1 address: " + name );
+            logger.warn("Ignoring client with 127.0.0.1 address: " + name + " " + poolAddressStr );
             return;
         }
         
@@ -376,14 +376,14 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
+        if ( "127.0.0.1".equals(poolAddress.getHostAddress()) ) {
+            logger.warn("Ignoring client with 127.0.0.1 address: " + name + " " + poolAddress.getHostAddress() );
+            return;
+        }
+
         Key key = new Key( name, address, port, poolAddress, start );
         Stats stats = statusMap.get( key );
 
-        if ( "127.0.0.1".equals(poolAddress.getHostAddress()) ) {
-            logger.debug("Ignoring client with 127.0.0.1 address: " + name );
-            return;
-        }
-        
         if ( stats == null ) {
             node.incrementConnectCount();
 
