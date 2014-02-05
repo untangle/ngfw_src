@@ -654,7 +654,6 @@ Ext.define("Ung.Main", {
         if(!rpc.isRegistered) {
             this.showWelcomeScreen();
         }
-        Ung.CheckStoreRegistration.showPostRegistrationPopup(); //XXX FIXME
         this.updateSeparator();
         for(i=0; i<this.nodes.length; i++) {
             node=this.nodes[i];
