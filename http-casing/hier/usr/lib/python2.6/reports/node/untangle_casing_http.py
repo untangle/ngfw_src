@@ -61,8 +61,8 @@ CREATE TABLE reports.http_events (
     method character(1), 
     uri text,
     host text, 
-    c2s_content_length integer,
-    s2c_content_length integer, 
+    c2s_content_length bigint,
+    s2c_content_length bigint, 
     s2c_content_type text,
     adblocker_blocked boolean,
     adblocker_cookie_ident text,
@@ -79,6 +79,9 @@ CREATE TABLE reports.http_events (
     clam_name text,
     commtouchav_clean boolean,
     commtouchav_name text)""")
+
+        sql_helper.convert_column("reports","http_events","s2c_content_length","integer","bigint");
+        sql_helper.convert_column("reports","http_events","c2s_content_length","integer","bigint");
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","http_events","request_id", unique=True):
