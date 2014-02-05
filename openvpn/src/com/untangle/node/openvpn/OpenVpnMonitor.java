@@ -64,9 +64,6 @@ class OpenVpnMonitor implements Runnable
     private Map<Key,Stats> statusMap    = new ConcurrentHashMap<Key,Stats>();
     private Map<String,Stats> activeMap = new ConcurrentHashMap<String,Stats>();
 
-    /* This is a list that contains the contents of the command "status 2" from openvpn */
-    private final List<String> clientStatus = new LinkedList<String>();
-
     private final OpenVpnNodeImpl node;
 
     /* The thread the monitor is running on */
@@ -252,15 +249,15 @@ class OpenVpnMonitor implements Runnable
             for ( Stats stats : statusMap.values()) stats.updated = false;
 
             /* Preload, so it is is safe to send commands while processeing */
-            this.clientStatus.clear();
+            List<String> clientStatus = new LinkedList<String>();
 
             while( true ) {
                 String line = in.readLine().trim();
                 if ( line.equalsIgnoreCase( END_MARKER )) break;
-                this.clientStatus.add( line );
+                clientStatus.add( line );
             }
 
-            for ( String line : this.clientStatus ) processLine( line );
+            for ( String line : clientStatus ) processLine( line );
 
             /* Log disconnects and connects */
             logEvents();
@@ -378,6 +375,11 @@ class OpenVpnMonitor implements Runnable
         Key key = new Key( name, address, port, poolAddress, start );
         Stats stats = statusMap.get( key );
 
+        if ( "127.0.0.1".equals(poolAddress.getHostAddress()) ) {
+            logger.debug("Ignoring client with 127.0.0.1 address: " + name );
+            return;
+        }
+        
         if ( stats == null ) {
             node.incrementConnectCount();
 
