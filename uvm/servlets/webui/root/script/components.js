@@ -1918,7 +1918,7 @@ Ung.CheckStoreRegistration = {
         });
         popup.show({
             title: i18n._("Registration complete."),
-            width: 450,
+            width: 470,
             msg: i18n._("Thank you for using Untangle!") + "<br/>" + "<br/>" +
                 i18n._("Applications can now be installed and configured.") + "<br/>" +
                 i18n._("Would you to install the recommended applications now?"),
