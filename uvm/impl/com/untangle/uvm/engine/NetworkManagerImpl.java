@@ -622,7 +622,7 @@ public class NetworkManagerImpl implements NetworkManager
                 external.setSymbolicDev( devName );
                 external.setConfigType( InterfaceSettings.ConfigType.ADDRESSED );
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
-                external.setV6ConfigType( InterfaceSettings.V6ConfigType.AUTO );
+                external.setV6ConfigType( InterfaceSettings.V6ConfigType.DISABLED );
                 external.setV4NatEgressTraffic( true );
                 interfaces.add( external );
             }
