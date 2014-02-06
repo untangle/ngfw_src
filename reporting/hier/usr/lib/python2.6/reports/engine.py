@@ -19,14 +19,14 @@ from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 
-UVM_JAR_DIR = '/SCM/work/src/dist/usr/share/java/uvm/'
+UVM_JAR_DIR = '/@PREFIX@/usr/share/java/uvm/'
 
 TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
-NETCONFIG_JSON_OBJ = json.loads(open('/SCM/work/src/dist/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
+NETCONFIG_JSON_OBJ = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
@@ -481,10 +481,10 @@ def _later_pages(canvas, doc):
 def __generate_plots(report_base, dir):
     path = []
 
-    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
-    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-libuvm-api/')
-    path.append('/SCM/work/src/dist/usr/share/untangle/conf/')
-    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-node-reporting/')
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
+    path.append('@PREFIX@/dist/usr/share/untangle/lib/untangle-libuvm-api/')
+    path.append('@PREFIX@/src/dist/usr/share/untangle/conf/')
+    path.append('@PREFIX@/src/dist/usr/share/untangle/lib/untangle-node-reporting/')
 
     for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
@@ -611,7 +611,7 @@ def __get_node_partial_order(exclude_uninstalled=True):
 def __get_installed_nodes():
     list = []
 
-    nodes_settings = json.loads(open('/SCM/work/src/dist/usr/share/untangle/settings/untangle-vm/nodes.js', 'r').read())
+    nodes_settings = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js', 'r').read())
     for node in nodes_settings["nodes"]["list"]:
         list.append(node["nodeName"])
 
