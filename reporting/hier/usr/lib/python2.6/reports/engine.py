@@ -19,7 +19,7 @@ from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 
-UVM_JAR_DIR = '/@PREFIX@/usr/share/java/uvm/'
+UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
 
 TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
