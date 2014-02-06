@@ -646,8 +646,10 @@ Ext.define('Ung.Reports', {
     },
     getDateRangeText: function(selectedDate) {
         var oneDay = 24*3600*1000;
-        toDate =new Date(selectedDate.dt.time - oneDay);
-        fromDate = new Date(selectedDate.dt.time - ((selectedDate.numDays)*oneDay));
+        var tzOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        
+        toDate =new Date( selectedDate.dt.time + tzOffset - oneDay );
+        fromDate = new Date( selectedDate.dt.time + tzOffset - ( ( selectedDate.numDays) * oneDay ));
         formatString = 'l, F j Y';
         var startDate = i18n.dateLongFormat(fromDate,formatString);
         var endDate = i18n.dateLongFormat(toDate,formatString);

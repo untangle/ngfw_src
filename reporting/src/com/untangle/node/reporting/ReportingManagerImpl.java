@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -89,6 +90,7 @@ public class ReportingManagerImpl implements ReportingManager
     public List<DateItem> getDates()
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        df.setTimeZone( TimeZone.getTimeZone("GMT") );
 
         List<DateItem> l = new ArrayList<DateItem>();
 
@@ -431,6 +433,7 @@ public class ReportingManagerImpl implements ReportingManager
         sb.append("/");
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        df.setTimeZone( TimeZone.getTimeZone("GMT") );
         sb.append(df.format(d));
 
         sb.append("/");
@@ -450,6 +453,7 @@ public class ReportingManagerImpl implements ReportingManager
         sb.append("/");
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        df.setTimeZone( TimeZone.getTimeZone("GMT") );
         sb.append(df.format(d));
 
         sb.append("/");
@@ -561,6 +565,7 @@ public class ReportingManagerImpl implements ReportingManager
         }
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setTimeZone( TimeZone.getTimeZone("GMT") );
 
         String cmdStr = SUBREPORT_SCRIPT +
             " --node=\"" + appName + "\" " +
