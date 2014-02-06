@@ -482,9 +482,9 @@ def __generate_plots(report_base, dir):
     path = []
 
     path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
-    path.append('@PREFIX@/dist/usr/share/untangle/lib/untangle-libuvm-api/')
-    path.append('@PREFIX@/src/dist/usr/share/untangle/conf/')
-    path.append('@PREFIX@/src/dist/usr/share/untangle/lib/untangle-node-reporting/')
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
+    path.append('@PREFIX@/usr/share/untangle/conf/')
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-node-reporting/')
 
     for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
