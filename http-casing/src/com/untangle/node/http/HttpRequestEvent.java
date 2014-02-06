@@ -22,7 +22,7 @@ public class HttpRequestEvent extends LogEvent
     private URI requestUri;
     private SessionEvent sessionEvent;
     private String host;
-    private int contentLength;
+    private long contentLength;
 
     // constructors -----------------------------------------------------------
 
@@ -40,7 +40,7 @@ public class HttpRequestEvent extends LogEvent
         requestLine.setHttpRequestEvent(this); /* XXX hack - this should live elsewhere */
     }
 
-    public HttpRequestEvent(RequestLine requestLine, String host, int contentLength)
+    public HttpRequestEvent(RequestLine requestLine, String host, long contentLength)
     {
         this.host = host;
         this.contentLength = contentLength;
@@ -64,8 +64,8 @@ public class HttpRequestEvent extends LogEvent
     /**
      * Content length, as counted by the parser.
      */
-    public int getContentLength() { return contentLength; }
-    public void setContentLength( int contentLength ) { this.contentLength = contentLength; }
+    public long getContentLength() { return contentLength; }
+    public void setContentLength( long contentLength ) { this.contentLength = contentLength; }
 
     /**
      * Get the sessionId
@@ -131,7 +131,7 @@ public class HttpRequestEvent extends LogEvent
         pstmt.setString(++i, Character.toString(getMethod().getKey()));
         pstmt.setString(++i, getRequestUri().toString());
         pstmt.setString(++i, getHost());
-        pstmt.setInt(++i, getContentLength());
+        pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getSessionEvent().getHostname());
 
         return pstmt;

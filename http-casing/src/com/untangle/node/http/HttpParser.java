@@ -74,8 +74,8 @@ public class HttpParser extends AbstractParser
 
     private int state;
     private int transferEncoding;
-    private int contentLength; /* counts down content-length and chunks */
-    private int lengthCounter; /* counts up to final */
+    private long contentLength; /* counts down content-length and chunks */
+    private long lengthCounter; /* counts up to final */
 
     // constructors -----------------------------------------------------------
 
@@ -754,7 +754,7 @@ public class HttpParser extends AbstractParser
                 logger.debug(sessStr + "using content length encoding");
             }
             transferEncoding = CONTENT_LENGTH_ENCODING;
-            contentLength = Integer.parseInt(value);
+            contentLength = Long.parseLong(value);
             if (logger.isDebugEnabled()) {
                 logger.debug(sessStr + "CL contentLength = " + contentLength);
             }

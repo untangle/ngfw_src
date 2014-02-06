@@ -14,13 +14,13 @@ public class HttpResponseEvent extends LogEvent
 {
     private RequestLine requestLine;
     private String contentType;
-    private int contentLength;
+    private long contentLength;
 
     // constructors -----------------------------------------------------------
 
     public HttpResponseEvent() { }
 
-    public HttpResponseEvent(RequestLine requestLine, String contentType, int contentLength)
+    public HttpResponseEvent(RequestLine requestLine, String contentType, long contentLength)
     {
         this.requestLine = requestLine;
         this.contentType = contentType;
@@ -60,12 +60,12 @@ public class HttpResponseEvent extends LogEvent
     /**
      * Content length, as counted by the parser.
      */
-    public int getContentLength()
+    public long getContentLength()
     {
         return contentLength;
     }
 
-    public void setContentLength(int contentLength)
+    public void setContentLength(long contentLength)
     {
         this.contentLength = contentLength;
     }
@@ -84,7 +84,7 @@ public class HttpResponseEvent extends LogEvent
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
-        pstmt.setInt(++i, getContentLength());
+        pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getContentType());
         pstmt.setLong(++i, getRequestLine().getRequestId());
 

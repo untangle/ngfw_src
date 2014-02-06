@@ -79,6 +79,9 @@ CREATE TABLE reports.http_events (
     clam_name text,
     commtouchav_clean boolean,
     commtouchav_name text)""")
+    
+        sql_helper.convert_column("reports","http_events","s2c_content_length","integer","bigint");
+        sql_helper.convert_column("reports","http_events","c2s_content_length","integer","bigint");
 
         # 10.2 conversion, in 10.1 and 10.0 these columns were integes, convert them
         sql_helper.convert_column("reports","http_events","s2c_content_length","integer","bigint");

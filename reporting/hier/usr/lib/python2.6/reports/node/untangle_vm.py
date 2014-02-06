@@ -13,8 +13,8 @@ from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
-from reports import Graph
 from reports import Highlight
+from reports import Graph
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -28,6 +28,8 @@ from reports.engine import Node
 from reports.engine import get_wan_clause
 from reports.sql_helper import print_timing
 from uvm.settings_reader import get_node_settings_item
+
+from reports.distribute import distributeValues
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1
@@ -309,6 +311,13 @@ SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::num
 class BandwidthUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'bandwidth-usage', _('Bandwidth Usage'))
+    
+    @staticmethod    
+    def bandwidthUsageDistributor(row, valueMap,current_date, chunks):
+        if current_date in valueMap:
+            valueMap[current_date] += float(row[2])/chunks
+        else:
+            valueMap[current_date] = float(row[2])/chunks;
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -338,15 +347,20 @@ class BandwidthUsage(Graph):
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 include_end_time = True)
             curs.execute(q, h)
 
             dates = []
             throughput = []
+            valueMap={}
 
             for r in curs.fetchall():
-                dates.append(r[0])
-                throughput.append(float(r[1]) / time_interval)
+                distributeValues(r,valueMap,time_interval, BandwidthUsage.bandwidthUsageDistributor)
+                
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                throughput.append(valueMap[key])
 
             if not throughput:
                 throughput = [0,]

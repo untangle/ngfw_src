@@ -19,14 +19,14 @@ from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 
-UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
+UVM_JAR_DIR = '/SCM/work/src/dist/usr/share/java/uvm/'
 
 TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
-NETCONFIG_JSON_OBJ = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
+NETCONFIG_JSON_OBJ = json.loads(open('/SCM/work/src/dist/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
@@ -151,6 +151,8 @@ class FactTable:
             schema, tablename = self.__name.split(".")
             sql_helper.add_column(schema, tablename, c.name, c.type)
 
+        #in case of existing table just add the new column
+        sql_helper.add_column(schema,tablename,'end_time_stamp','timestamp without time zone')
         sd = TimestampFromMx(sql_helper.get_update_info(self.__name, start_date))
 
         conn = sql_helper.get_connection()
@@ -164,7 +166,7 @@ class FactTable:
             raise e
 
     def __ddl(self):
-        ddl = 'CREATE TABLE %s (time_stamp timestamp without time zone' \
+        ddl = 'CREATE TABLE %s (time_stamp timestamp without time zone, end_time_stamp timestamp without time zone' \
             % self.__name
         for c in (self.__dimensions + self.__measures):
             ddl += ", %s %s" % (c.name, c.type)
@@ -172,9 +174,12 @@ class FactTable:
         return ddl
 
     def __insert_stmt(self):
-        insert_strs = ['time_stamp']
-        select_strs = ["date_trunc('minute', %s)" % self.__time_column]
-        group_strs = ["date_trunc('minute', %s)" % self.__time_column]
+        insert_strs = ['time_stamp','end_time_stamp']
+        if self.__detail_table == 'reports.sessions':
+            select_strs = ["date_trunc('minute', min(%s))" % self.__time_column,"date_trunc('minute', max(end_time))"]
+        else:
+            select_strs = ["date_trunc('minute', min(%s))" % self.__time_column,"date_trunc('minute', max(%s))" % self.__time_column]
+        group_strs = []
 
         for c in self.__dimensions:
             insert_strs.append(c.name)
@@ -184,15 +189,19 @@ class FactTable:
         for c in self.__measures:
             insert_strs.append(c.name)
             select_strs.append(c.value_expression)
+        
+        grouping_str = ' GROUP BY %s' % string.join(group_strs, ',')
+        if len(group_strs) == 0:
+            grouping_str=''
 
         return """\
 INSERT INTO %s (%s)
     SELECT %s FROM %s
     WHERE %s >= %%s AND %s < %%s
-    GROUP BY %s""" % (self.__name, string.join(insert_strs, ','),
+    %s""" % (self.__name, string.join(insert_strs, ','),
                       string.join(select_strs, ','), self.__detail_table,
                       self.__time_column, self.__time_column,
-                      string.join(group_strs, ','))
+                      grouping_str)
 
 class Column:
     def __init__(self, name, type, value_expression=None):
@@ -472,10 +481,10 @@ def _later_pages(canvas, doc):
 def __generate_plots(report_base, dir):
     path = []
 
-    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
-    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
-    path.append('@PREFIX@/usr/share/untangle/conf/')
-    path.append('@PREFIX@/usr/share/untangle/lib/untangle-node-reporting/')
+    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
+    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-libuvm-api/')
+    path.append('/SCM/work/src/dist/usr/share/untangle/conf/')
+    path.append('/SCM/work/src/dist/usr/share/untangle/lib/untangle-node-reporting/')
 
     for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
@@ -602,7 +611,7 @@ def __get_node_partial_order(exclude_uninstalled=True):
 def __get_installed_nodes():
     list = []
 
-    nodes_settings = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js', 'r').read())
+    nodes_settings = json.loads(open('/SCM/work/src/dist/usr/share/untangle/settings/untangle-vm/nodes.js', 'r').read())
     for node in nodes_settings["nodes"]["list"]:
         list.append(node["nodeName"])
 

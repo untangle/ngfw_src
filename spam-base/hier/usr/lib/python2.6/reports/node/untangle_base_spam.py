@@ -30,6 +30,9 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.sql_helper import print_timing
 
+from reports.distribute import distributeValues
+
+
 _ = reports.i18n_helper.get_translation('untangle-base-spam').lgettext
 
 class SpamBaseNode(Node):
@@ -235,6 +238,18 @@ class HourlySpamRate(Graph):
         self.__vendor_name = vendor_name
         self.__spam_label = spam_label
         self.__ham_label = ham_label
+        
+    @staticmethod
+    def spamHourlySpamRateDistributor(row, valueMap,current_date, chunks):
+        m = row[2]
+        s = row[3]
+        h = m - s
+        if current_date in valueMap:
+            val = valueMap[current_date]
+            val[0] += (s / chunks)
+            val[1] += (h / chunks)
+        else:
+            valueMap[current_date] = [s/chunks, h/chunks]
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -296,20 +311,23 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             q, h = sql_helper.get_averaged_query(sums, "reports.mail_addr_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 extra_where = extra_where)
+                                                 extra_where = extra_where,
+                                                 include_end_time = True)
             curs.execute(q, h)
 
             dates = []
             ham = []
             spam = []
+            valueMap = {}
 
             for r in curs.fetchall():
-                dates.append(r[0])
-                m = r[1]
-                s = r[2]
-                h = m - s
-                spam.append(s)
-                ham.append(h)
+                distributeValues(r,valueMap,60*60, HourlySpamRate.spamHourlySpamRateDistributor)
+                
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                spam.append(valueMap[key][0])
+                ham.append(valueMap[key][1])
+                
         finally:
             conn.commit()
 
@@ -334,7 +352,21 @@ class DailySpamRate(Graph):
         self.__vendor_name = vendor_name
         self.__spam_label = spam_label
         self.__ham_label = ham_label
-
+        
+    @staticmethod
+    def spamDailySpamRateDistributor(row, valueMap,current_date, chunks):
+        hams = float(row[2])
+        spams = float(row[3])
+        totals = float(row[2]+row[3])                
+        if current_date in valueMap:
+            val = valueMap[current_date]
+            val[0] += (hams / chunks)
+            val[1] += (spams / chunks)
+            val[2] += (totals / chunks)
+        else:
+            valueMap[current_date] = [hams/chunks, spams/chunks, totals/chunks]
+        
+        
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
@@ -369,7 +401,8 @@ class DailySpamRate(Graph):
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 include_end_time = True)
 
             curs = conn.cursor()
             curs.execute(q, h)
@@ -378,12 +411,16 @@ class DailySpamRate(Graph):
             totals = []
             spams = []
             hams = []
+            valueMap = {}
             
             for r in curs.fetchall():
-                dates.append(r[0])
-                hams.append(float(r[1]))
-                spams.append(float(r[2]))
-                totals.append(float(r[1]+r[2]))                
+                distributeValues(r,valueMap,time_interval, DailySpamRate.spamDailySpamRateDistributor)
+
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                hams.append(valueMap[key][0])
+                spams.append(valueMap[key][1])
+                totals.append(valueMap[key][1])
 
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))

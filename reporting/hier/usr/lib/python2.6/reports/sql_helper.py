@@ -462,6 +462,7 @@ def get_averaged_query(sums, table_name, start_date, end_date,
                        extra_fields = [],
                        time_field = DEFAULT_TIME_FIELD,
                        time_interval = 60,
+                       include_end_time = False,
                        debug = False):
 #     time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
 #     time_interval = time_interval / slices
@@ -473,28 +474,33 @@ def get_averaged_query(sums, table_name, start_date, end_date,
                          'time_interval' : time_interval }
     
     query = """
-SELECT date(%%(start_date)s) +
-       date_trunc('second',
+        SELECT date(%%(start_date)s) +
+            date_trunc('second',
                   (%(time_field)s - %%(start_date)s) / %%(time_interval)s) * %%(time_interval)s
-       AS time"""
-
+        AS time"""
+    if include_end_time:
+        query += """
+            , date(%%(start_date)s) +
+            date_trunc('second',
+                    (end_time_stamp - %%(start_date)s) / %%(time_interval)s) * %%(time_interval)s
+            AS end_time"""
     for e in extra_fields:
         query += ", " + e
     for s in sums:
         query += ", " + s
 
     query += """
-FROM %(table_name)s
-WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""
+        FROM %(table_name)s
+        WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""
 
     for ex in extra_where: # of the form (strTemplate, dictionary)
         template, h = ex
         query += "\nAND " + template.replace("%(", "%%(")
         params_to_quote.update(h)
 
-    query += """
-GROUP by time"""
-
+    query += " GROUP by time"
+    if include_end_time:
+        query += ",end_time "
     for e in extra_fields:
         query += ", " + e
 

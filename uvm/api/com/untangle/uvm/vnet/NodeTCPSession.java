@@ -65,28 +65,28 @@ public interface NodeTCPSession extends NodeSession
     // To tell Vnet to give a TCPClientReadableEvent with at most this
     // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
     // to the client read buffer size.
-    int clientReadLimit();
+    long clientReadLimit();
 
     /**
      * <code>clientReadLimit</code> sets the maximum number of bytes that will be read from
      * the client for the next chunk.  Min is 1 byte, max and default is the read buffer size.
      *
-     * @param numBytes an <code>int</code> value
+     * @param numBytes an <code>long</code> value
      */
-    void clientReadLimit(int numBytes);
+    void clientReadLimit(long numBytes);
 
     // To tell VNet to give a TCPServerReadableEvent with at most this
     // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
     // to the server read buffer size.
-    int serverReadLimit();
+    long serverReadLimit();
 
     /**
      * <code>serverReadLimit</code> sets the maximum number of bytes that will be read from
      * the server for the next chunk.  Min is 1 byte, max and default is the read buffer size.
      *
-     * @param numBytes an <code>int</code> value
+     * @param numBytes an <code>long</code> value
      */
-    void serverReadLimit(int numBytes);
+    void serverReadLimit(long numBytes);
 
     /**
      * <code>shutdownClient</code> shuts down the output to the client.  Sends a FIN to the

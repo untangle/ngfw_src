@@ -37,8 +37,8 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     private final String logPrefix;
 
-    protected int[] readLimit;
-    protected int[] readBufferSize;
+    protected long[] readLimit;
+    protected long[] readBufferSize;
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
@@ -52,8 +52,8 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             throw new IllegalArgumentException("Illegal maximum client read bufferSize: " + clientReadBufferSize);
         if (serverReadBufferSize < 2 || serverReadBufferSize > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum server read bufferSize: " + serverReadBufferSize);
-        this.readBufferSize = new int[] { clientReadBufferSize, serverReadBufferSize };
-        this.readLimit = new int[] { clientReadBufferSize, serverReadBufferSize };
+        this.readBufferSize = new long[] { clientReadBufferSize, serverReadBufferSize };
+        this.readLimit = new long[] { clientReadBufferSize, serverReadBufferSize };
 
         PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
 
@@ -62,7 +62,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     public int serverReadBufferSize()
     {
-        return readBufferSize[SERVER];
+        return (int)readBufferSize[SERVER];
     }
 
     public void serverReadBufferSize(int numBytes)
@@ -76,7 +76,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     public int clientReadBufferSize()
     {
-        return readBufferSize[CLIENT];
+        return (int)readBufferSize[CLIENT];
     }
 
     public void clientReadBufferSize(int numBytes)
@@ -88,12 +88,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             readLimit[CLIENT] = numBytes;
     }
 
-    public int serverReadLimit()
+    public long serverReadLimit()
     {
         return readLimit[SERVER];
     }
 
-    public void serverReadLimit(int numBytes)
+    public void serverReadLimit(long numBytes)
     {
         if (numBytes > readBufferSize[SERVER])
             numBytes = readBufferSize[SERVER];
@@ -102,12 +102,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readLimit[SERVER] = numBytes;
     }
 
-    public int clientReadLimit()
+    public long clientReadLimit()
     {
         return readLimit[CLIENT];
     }
 
-    public void clientReadLimit(int numBytes)
+    public void clientReadLimit(long numBytes)
     {
         if (numBytes > readBufferSize[CLIENT])
             numBytes = readBufferSize[CLIENT];
@@ -517,8 +517,8 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
                     else if (lineMode)
                         logger.debug("Creating readbuf because lineMode");
                 }
-                readBuf[side] = ByteBuffer.allocate(readBufferSize[side]);
-                readBuf[side].limit(readLimit[side]);
+                readBuf[side] = ByteBuffer.allocate((int)readBufferSize[side]);
+                readBuf[side].limit((int)readLimit[side]); //TODO: check the safety of this conversion
             }
             if (readBuf[side] != null) {
                 logger.debug("putting into existing readbuf");
@@ -558,7 +558,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
                 logger.debug("using jvector buf as new readbuf");
                 readBuf[side] = ByteBuffer.wrap(dcdata, 0, dcsize);
                 readBuf[side].position(dcsize);
-                readBuf[side].limit(readLimit[side]);
+                readBuf[side].limit((int)readLimit[side]); //TODO: check the safety of this conversion
                 numRead = dcsize;
             }
         }

@@ -30,6 +30,8 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
+from reports.distribute import distributeValues
+
 _ = reports.i18n_helper.get_translation('untangle-base-webfilter').lgettext
 
 def N_(message): return message
@@ -154,6 +156,20 @@ class DailyWebUsage(Graph):
 
         self.__short_name = node_name
 
+    @staticmethod
+    def webfilterDailyWebUsageDistributor(row, valueMap,current_date, chunks):
+        hits = row[2]-row[3]
+        blocks = row[3]
+        violations = row[4]-row[3]
+        if current_date in valueMap:
+            val = valueMap[current_date]
+            val[0] += (hits / chunks)
+            val[1] += (blocks / chunks)
+            val[2] += (violations / chunks)
+        else:
+            valueMap[current_date] = [hits/chunks,blocks/chunks,violations/chunks]
+        
+
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
@@ -190,22 +206,29 @@ class DailyWebUsage(Graph):
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 include_end_time = True)
             curs.execute(q, h)
 
             dates = []
             hits = []
             blocks = []
             violations = []
+            valueMap={}
 
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
-                dates.append(r[0])
-                hits.append(r[1]-r[2])
-                blocks.append(r[2])
-                violations.append(r[3]-r[2])
+                distributeValues(r,valueMap,time_interval, DailyWebUsage.webfilterDailyWebUsageDistributor)                    
+
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                hits.append(valueMap[key][0])
+                blocks.append(valueMap[key][1])
+                violations.append(valueMap[key][2])
+                
+            valueMap.clear()        
 
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))

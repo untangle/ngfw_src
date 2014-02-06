@@ -29,6 +29,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
+from reports.distribute import distributeValues
 
 _ = reports.i18n_helper.get_translation('untangle-node-ips').lgettext
 
@@ -176,8 +177,14 @@ AND ips_description != ''"""
 class DailyUsage(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'attacks', _('Attacks'))
-
         self.__vendor_name = vendor_name
+        
+    @staticmethod
+    def ipsDailyUsageDistributor(row, valueMap,current_date, chunks):
+        if current_date in valueMap:
+            valueMap[current_date] += row[2]/chunks
+        else:
+            valueMap[current_date] = row[2]/chunks;
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
@@ -211,15 +218,20 @@ class DailyUsage(Graph):
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 include_end_time = True)
             curs.execute(q, h)
 
             dates = []
             attacks = []
+            valueMap = {}
             
             for r in curs.fetchall():
-                dates.append(r[0])
-                attacks.append(r[1])
+                distributeValues(r,valueMap,time_interval, DailyUsage.ipsDailyUsageDistributor)            
+                
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                attacks.append(valueMap[key])
 
             if not attacks:
                 attacks = [0,]

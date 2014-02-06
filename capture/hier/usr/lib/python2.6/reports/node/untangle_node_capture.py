@@ -30,6 +30,8 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
+from reports.distribute import distributeValues
+
 _ = reports.i18n_helper.get_translation('untangle-node-capture').lgettext
 def N_(message): return message
 
@@ -167,6 +169,26 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
 class DailyUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage', _('Usage'))
+        
+    @staticmethod    
+    def captureDailyUsageDistributor(row, valueMap,current_date, chunks):
+        success = row[2]
+        failure = row[3]
+        timeout = row[4]
+        inactive = row[5]
+        user_logout = row[6]
+        admin_logout = row[7]
+        if current_date in valueMap:
+            val = valueMap[current_date]
+            val[0] += (success / chunks)
+            val[1] += (failure / chunks)
+            val[2] += (timeoout / chunks)
+            val[3] += (inactive / chunks)
+            val[4] += (user_logout / chunks)
+            val[5] += (admin_logout / chunks)
+        else:
+            valueMap[current_date] = [success / chunks,failure / chunks,timeoout / chunks, inactive / chunks, user_logout / chunks, admin_logout / chunks]
+        
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -224,7 +246,8 @@ SELECT COALESCE(SUM(dt.success_pd)/%s,0), COALESCE(MAX(dt.success_pd),0),
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 include_end_time = True)
             curs.execute(q, h)
 
             dates = []
@@ -234,16 +257,20 @@ SELECT COALESCE(SUM(dt.success_pd)/%s,0), COALESCE(MAX(dt.success_pd),0),
             inactive = []
             user_logout = []
             admin_logout = []
+            valueMap = {}
 
             for r in curs.fetchall():
-                dates.append(r[0])
-                success.append(r[1])
-                failure.append(r[2])
-                timeout.append(r[3])
-                inactive.append(r[4])
-                user_logout.append(r[5])
-                admin_logout.append(r[6])
-
+                distributeValues(r,valueMap,time_interval, DailyUsage.captureDailyUsageDistributor)
+                
+            for key in sorted(valueMap.keys()):
+                dates.append(key)
+                success.append(valueMap[key][0])
+                failure.append(valueMap[key][1])
+                timeout.append(valueMap[key][2])
+                inactive.append(valueMap[key][3])
+                user_logout.append(valueMap[key][4])
+                admin_logout.append(valueMap[key][5])
+                
             if not success:
                 success = [0,]
             if not failure:

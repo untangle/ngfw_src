@@ -1,5 +1,5 @@
 /**
- * $Id: AbstractParser.java 34494 2013-04-06 23:29:09Z mahotz $
+ * $Id$
  */
 package com.untangle.node.token;
 
@@ -72,7 +72,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    protected int readLimit()
+    protected long readLimit()
     {
         if (clientSide) {
             return session.clientReadLimit();
@@ -81,7 +81,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    protected void readLimit(int limit)
+    protected void readLimit(long limit)
     {
         if (clientSide) {
             session.clientReadLimit(limit);
