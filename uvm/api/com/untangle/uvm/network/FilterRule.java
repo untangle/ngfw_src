@@ -27,6 +27,7 @@ public class FilterRule implements JSONString, Serializable
     private Integer ruleId;
     private boolean enabled = true;
     private boolean blocked = false;
+    private Boolean readOnly = null;
     private String description;
     
     public FilterRule() { }
@@ -45,8 +46,8 @@ public class FilterRule implements JSONString, Serializable
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }
 
-    public Boolean getEnabled() { return enabled; }
-    public void setEnabled( Boolean enabled ) { this.enabled = enabled; }
+    public boolean getEnabled() { return enabled; }
+    public void setEnabled( boolean enabled ) { this.enabled = enabled; }
 
     public String getDescription() { return description; }
     public void setDescription( String description ) { this.description = description; }
@@ -54,6 +55,9 @@ public class FilterRule implements JSONString, Serializable
     public boolean getBlocked() { return blocked; }
     public void setBlocked( boolean newDestination ) { this.blocked = newDestination; }
 
+    public Boolean getReadOnly() { return this.readOnly; }
+    public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

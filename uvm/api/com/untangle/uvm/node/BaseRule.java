@@ -6,14 +6,15 @@ package com.untangle.uvm.node;
 @SuppressWarnings("serial")
 public class BaseRule implements java.io.Serializable
 {
-    Integer id = null;
-    String name = null; 
-    String description = null; 
-    String category = null; 
-    Boolean enabled = null;
-    Boolean blocked = null;
-    Boolean flagged = null;
-    Object attachment = null;
+    private Integer id = null;
+    private String name = null; 
+    private String description = null; 
+    private String category = null; 
+    private Boolean enabled = null;
+    private Boolean blocked = null;
+    private Boolean flagged = null;
+    private Boolean readOnly = null;
+    private Object attachment = null;
 
     public BaseRule() {}
 
@@ -58,6 +59,9 @@ public class BaseRule implements java.io.Serializable
     
     public Boolean getFlagged() { return this.flagged; }
     public void setFlagged( Boolean newValue ) { this.flagged = newValue; }
+
+    public Boolean getReadOnly() { return this.readOnly; }
+    public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
     
     public String getDescription() { return this.description; }
     public void setDescription( String newValue ) { this.description = newValue; }

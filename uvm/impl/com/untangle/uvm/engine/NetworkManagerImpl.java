@@ -1107,6 +1107,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
+        filterRuleSsh.setReadOnly( true );
         List<FilterRuleMatcher> ruleSshMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleSshMatcher1 = new FilterRuleMatcher();
         ruleSshMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1122,6 +1123,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
+        filterRuleHttpsWan.setReadOnly( true );
         List<FilterRuleMatcher> ruleHttpsWanMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleHttpsWanMatcher1 = new FilterRuleMatcher();
         ruleHttpsWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1141,6 +1143,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsNonWan.setEnabled( true );
         filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
         filterRuleHttpsNonWan.setBlocked( false );
+        filterRuleHttpsNonWan.setReadOnly( true );
         List<FilterRuleMatcher> ruleHttpsNonWanMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleHttpsNonWanMatcher1 = new FilterRuleMatcher();
         ruleHttpsNonWanMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1160,6 +1163,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRulePing.setEnabled( true );
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
+        filterRulePing.setReadOnly( true );
         List<FilterRuleMatcher> rulePingMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher rulePingMatcher1 = new FilterRuleMatcher();
         rulePingMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
@@ -1171,6 +1175,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleIPsec.setEnabled( true );
         filterRuleIPsec.setDescription( "Allow IPsec" );
         filterRuleIPsec.setBlocked( false );
+        filterRuleIPsec.setReadOnly( true );
         List<FilterRuleMatcher> ruleIPsecMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleIPsecMatcher1 = new FilterRuleMatcher();
         ruleIPsecMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
@@ -1201,6 +1206,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDhcp.setEnabled( true );
         filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
         filterRuleDhcp.setBlocked( false );
+        filterRuleDhcp.setReadOnly( true );
         List<FilterRuleMatcher> ruleDhcpMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleDhcpMatcher1 = new FilterRuleMatcher();
         ruleDhcpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1220,6 +1226,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttp.setEnabled( true );
         filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
         filterRuleHttp.setBlocked( false );
+        filterRuleHttp.setReadOnly( true );
         List<FilterRuleMatcher> ruleHttpMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleHttpMatcher1 = new FilterRuleMatcher();
         ruleHttpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1239,6 +1246,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSnmp.setEnabled( true );
         filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
         filterRuleSnmp.setBlocked( false );
+        filterRuleSnmp.setReadOnly( true );
         List<FilterRuleMatcher> ruleSnmpMatchers = new LinkedList<FilterRuleMatcher>();
         FilterRuleMatcher ruleSnmpMatcher1 = new FilterRuleMatcher();
         ruleSnmpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
@@ -1258,6 +1266,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setDescription( "Block All" );
         filterRuleBlock.setBlocked( true );
+        filterRuleBlock.setReadOnly( true );
         List<FilterRuleMatcher> rule4Matchers = new LinkedList<FilterRuleMatcher>();
         filterRuleBlock.setMatchers( rule4Matchers );
         
