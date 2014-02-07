@@ -4214,6 +4214,13 @@ Ext.define('Ung.MonitorGrid', {
             handler: Ext.bind(function () {
                 this.getStore().clearGrouping();
             }, this) 
+        },{
+            text: i18n._('Reset View'),
+            tooltip: i18n._('Restore default columns positions, widths and visibility'),
+            handler: Ext.bind(function () {
+                Ext.state.Manager.clear(this.stateId);
+                this.reconfigure(this.getStore(), this.initialConfig.columns);
+            }, this) 
         });
         
         this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
