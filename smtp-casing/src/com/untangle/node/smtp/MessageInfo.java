@@ -5,12 +5,15 @@ package com.untangle.node.smtp;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.mail.internet.MimeUtility;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
@@ -57,7 +60,7 @@ public class MessageInfo extends LogEvent implements Serializable
         if (subject != null && subject.length() > MAX_STRING_SIZE) {
             subject = subject.substring(0, MAX_STRING_SIZE);
         }
-        this.subject = subject;
+        this.subject = decodeText(subject);
 
         switch (serverPort) {
             case SMTP_PORT:
@@ -78,14 +81,17 @@ public class MessageInfo extends LogEvent implements Serializable
     }
 
     /* Business methods */
-    public void addAddress(AddressKind kind, String address, String personal)
+    public void addAddress(AddressKind kind, String rawAddress, String rawPersonal)
     {
         Integer p = counts.get(kind);
         if (null == p) {
             p = 0;
         }
         counts.put(kind, ++p);
-
+        
+        String address = decodeText(rawAddress);
+        String personal = decodeText(rawPersonal);
+        
         MessageInfoAddr newAddr = new MessageInfoAddr(this, p, kind, address, personal);
         addresses.add(newAddr);
         if (AddressKind.FROM.equals(kind))
@@ -159,8 +165,9 @@ public class MessageInfo extends LogEvent implements Serializable
         return subject;
     }
 
-    public void setSubject(String subject)
+    public void setSubject(String rawSubject)
     {
+        String subject = decodeText(rawSubject);
         if (subject != null && subject.length() > MAX_STRING_SIZE) {
             subject = subject.substring(0, MAX_STRING_SIZE);
         }
@@ -194,7 +201,7 @@ public class MessageInfo extends LogEvent implements Serializable
 
     public void setSender(String sender)
     {
-        this.sender = sender;
+        this.sender = decodeText(sender);
     }
     
     public File getTmpFile()
@@ -207,6 +214,19 @@ public class MessageInfo extends LogEvent implements Serializable
         this.tmpFile = tmpFile;
     }
     
+    
+    private String decodeText(String rawValue)
+    {
+        if (rawValue == null)
+            return null;
+        String value = null;
+        try {
+            value = MimeUtility.decodeText(rawValue);
+        } catch (UnsupportedEncodingException e) {
+            value = rawValue;
+        }
+        return value;
+    }
 
     private static String sql = "INSERT INTO reports.mail_msgs "
             + "(time_stamp, session_id, client_intf, server_intf, "
