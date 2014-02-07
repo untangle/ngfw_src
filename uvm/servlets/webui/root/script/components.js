@@ -2640,6 +2640,7 @@ Ext.define("Ung.GridEventLogBase", {
     loadMask: true,
     startDate: null,
     endDate: null,
+    stateful: true,
     // called when the component is initialized
     constructor: function(config) {
         this.subCmps = [];
@@ -2668,6 +2669,14 @@ Ext.define("Ung.GridEventLogBase", {
             features:[],
             viewConfig: {}
         });
+        this.stateId = 
+            'eventLog-' +
+            ( this.initialConfig.selectedApplication
+                ? this.initialConfig.selectedApplication + 
+                    '-' +
+                    this.initialConfig.sectionName
+                : this.initialConfig.helpSource 
+            );
         
         this.viewConfig.enableTextSelection = true;
         this.store=Ext.create('Ext.data.Store', {
@@ -2869,6 +2878,9 @@ Ext.define("Ung.GridEventLogBase", {
                             }
                     };
             }
+            if( col.stateId === undefined ){
+               col.stateId = col.dataIndex;
+            }
         }
         this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
         this.features.push(this.filterFeature);
@@ -2936,15 +2948,15 @@ Ext.define("Ung.GridEventLogBase", {
     refreshNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
 
-        var newEvents = result;
+        var newEventEntries = result;
 
         /**
          * If we got results append them to the current events list
          * And make another call for more
          */
-        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
-            this.events.push.apply( this.events, newEvents.list );
-            this.setLoading(i18n._('Fetching Events...') + ' (' + this.events.length + ')');
+        if ( newEventEntries != null && newEventEntries.list != null && newEventEntries.list.length != 0 ) {
+            this.eventEntries.push.apply( this.eventEntries, newEventEntries.list );
+            this.setLoading(i18n._('Fetching Events...') + ' (' + this.eventEntries.length + ')');
             this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
             return;
         }
@@ -2954,7 +2966,7 @@ Ext.define("Ung.GridEventLogBase", {
          * Display the results
          */
         if (this.settingsCmp !== null) {
-            this.getStore().getProxy().data = this.events;
+            this.getStore().getProxy().data = this.eventEntries;
             this.getStore().loadPage(1);
         }
         this.setLoading(false);
@@ -2963,13 +2975,13 @@ Ext.define("Ung.GridEventLogBase", {
     refreshCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
 
-        this.events = [];
+        this.eventEntries = [];
 
         if( testMode ) {
             var emptyRec={};
             var length = Math.floor((Math.random()*5000));
             for(var i=0; i<length; i++) {
-                this.events.push(this.getTestRecord(i, this.fields));
+                this.eventEntries.push(this.getTestRecord(i, this.fields));
             }
             this.refreshNextChunkCallback(null);
         }
@@ -3033,14 +3045,14 @@ Ext.define("Ung.GridEventLog", {
     autoRefreshNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
 
-        var newEvents = result;
+        var newEventEntries = result;
 
         /**
          * If we got results append them to the current events list
          * And make another call for more
          */
-        if ( newEvents != null && newEvents.list != null && newEvents.list.length != 0 ) {
-            this.events.push.apply( this.events, newEvents.list );
+        if ( newEventEntries != null && newEventEntries.list != null && newEventEntries.list.length != 0 ) {
+            this.eventEntries.push.apply( this.eventEntries, newEventEntries.list );
             this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
             return;
         }
@@ -3050,7 +3062,7 @@ Ext.define("Ung.GridEventLog", {
          * Display the results
          */
         if (this.settingsCmp !== null) {
-            this.getStore().getProxy().data = this.events;
+            this.getStore().getProxy().data = this.eventEntries;
             this.getStore().load({
                 params: {
                     start: 0
@@ -3068,12 +3080,12 @@ Ext.define("Ung.GridEventLog", {
     autoRefreshCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
 
-        this.events = [];
+        this.eventEntries = [];
 
         if( testMode ) {
             var emptyRec={};
             for(var j=0; j<30; j++) {
-                this.events.push(this.getTestRecord(j, this.fields));
+                this.eventEntries.push(this.getTestRecord(j, this.fields));
             }
             this.autoRefreshNextChunkCallback(null);
         }

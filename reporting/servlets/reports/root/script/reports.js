@@ -70,6 +70,11 @@ Ext.define('Ung.Reports', {
         this.initSemaphore = 3;
         this.progressBar = Ext.MessageBox;                
         this.treeNodes =[];
+        
+        if(Ext.supports.LocalStorage) {
+            Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
+        }
+        
         rpc = {};
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
 
@@ -845,11 +850,11 @@ Ext.define("Ung.GridEventLogReports", {
     },
     autoRefreshCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
-        var events = result;
+        var eventEntries = result;
         if(testMode) {
             var emptyRec={};
             for(var i=0; i<30; i++) {
-                events.list.push(this.getTestRecord(i, this.fields));
+                eventEntries.list.push(this.getTestRecord(i, this.fields));
             }
         }
     },
