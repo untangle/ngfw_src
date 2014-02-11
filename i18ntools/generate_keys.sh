@@ -62,6 +62,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/classd/src/com/untangle/node/classd/ClassDNodeImpl.java 
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/commtouchas/src/com/untangle/node/commtouchas/CommtouchAsNode.java 
     find ../../uvm/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    find ../../reporting/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
     msgmerge -U -N  $1.pot tmp_keys.pot
