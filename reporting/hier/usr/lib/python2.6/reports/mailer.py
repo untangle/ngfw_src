@@ -57,7 +57,7 @@ from uvm.settings_reader import get_settings_item
 from uvm.settings_reader import get_node_settings_item
 from uvm.settings_reader import get_uvm_settings_item
 
-_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
+_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
 
 def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachment_size_limit):
     if attach_csv:

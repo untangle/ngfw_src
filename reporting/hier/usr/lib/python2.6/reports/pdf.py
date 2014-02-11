@@ -55,7 +55,7 @@ logger = getLogger(__name__)
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
 
-_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
+_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
 
 def __getStyleSheet():
     """Returns a stylesheet object"""
