@@ -77,7 +77,7 @@
         <c:if test="${!empty additional_fields}">
           ${additional_fields}
         </c:if>
-        <div class="u-form-item" style="margin-left:170px; !important;">
+        <div class="u-form-item">
             <c:if test="${showUnblockNow}">
               <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
                 <uvm:i18n>Unblock For Now</uvm:i18n>
