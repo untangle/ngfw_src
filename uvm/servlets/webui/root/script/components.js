@@ -1844,82 +1844,6 @@ Ung.CheckStoreRegistration = {
         }
         this.started = false;
     },
-    showPostRegistrationPopup: function() {
-        var popup = Ext.create('Ext.window.MessageBox', {
-            buttons: [{
-                name: 'Yes',
-                text: i18n._("Yes, install the recommended apps."),
-                handler: Ext.bind(function() {
-                    var apps = [ "Web Filter",
-                                 //"Web Filter Lite",
-                                 "Virus Blocker",
-                                 //"Virus Blocker Lite",
-                                 "Spam Blocker",
-                                 //"Spam Blocker Lite",
-                                 //"Phish Blocker",
-                                 //"Web Cache",
-                                 "Bandwidth Control",
-                                 "HTTPS Inspector",
-                                 "Application Control",
-                                 //"Application Control Lite",
-                                 "Captive Portal",
-                                 "Firewall",
-                                 //"Intrusion Prevention",
-                                 //"Ad Blocker",
-                                 "Reports",
-                                 "Policy Manager",
-                                 "Directory Connector",
-                                 "WAN Failover",
-                                 "WAN Balancer",
-                                 "IPsec VPN",
-                                 "OpenVPN",
-                                 "Configuration Backup",
-                                 "Branding Manager",
-                                 "Live Support"];
-
-                    // only install this on 1gig+ machines
-                    if ( main.totalMemoryMb > 900 ) {
-                        apps.splice(2,0,"Virus Blocker Lite");
-                        apps.splice(4,0,"Phish Blocker");
-                    }
-
-                    var fn = function( appsToInstall ) {
-                        // if there are no more apps left to install we are done
-                        if ( appsToInstall.length == 0 ) {
-                            Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
-                            return;
-                        }
-                        var name = appsToInstall[0];
-                        appsToInstall.shift();
-                        var completeFn = Ext.bind( fn, this, [appsToInstall] ); // function to install remaining apps
-                        var app = Ung.AppItem.getApp(name);
-                        if ( app ) 
-                            app.installNode( completeFn );
-                        else
-                            completeFn();
-                    };
-
-                    fn( apps );
-                    
-                    popup.close();
-                }, this)
-            },{
-                name: 'No',
-                text: i18n._("No, I will install the apps manually."),
-                handler: Ext.bind(function() {
-                    popup.close();
-                }, this)
-            }]
-        });
-        popup.show({
-            title: i18n._("Registration complete."),
-            width: 470,
-            msg: i18n._("Thank you for using Untangle!") + "<br/>" + "<br/>" +
-                i18n._("Applications can now be installed and configured.") + "<br/>" +
-                i18n._("Would you to install the recommended applications now?"),
-            icon: Ext.MessageBox.QUESTION
-        });
-    },
     run: function () {
         Ext.data.JsonP.request({
             url: Ung.CheckStoreRegistration.url,
@@ -1932,7 +1856,7 @@ Ung.CheckStoreRegistration = {
                         main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.CheckStoreRegistration.stop();
-                        Ung.CheckStoreRegistration.showPostRegistrationPopup();
+                        main.showPostRegistrationPopup();
                     });
                 }
             },

@@ -502,7 +502,6 @@ public final class SpamAssassinClient implements Runnable
         List<ReportItem> reportItemList = new LinkedList<ReportItem>();
         String firstLine = null;
         // CR terminates final line (e.g., ends detail block); count CR
-        long tmpLen = 1;
 
         String riScore;
         String riCateg;
@@ -511,7 +510,6 @@ public final class SpamAssassinClient implements Runnable
         int k;
 
         for (String detail : detailList) {
-            tmpLen += (detail.length() + 1); // each line ends w/ LF; count LF
 
             if (firstLine == null)
                 firstLine = detail;
@@ -532,11 +530,6 @@ public final class SpamAssassinClient implements Runnable
                 reportItem = new ReportItem(Float.parseFloat(riScore), riCateg);
                 reportItemList.add(reportItem);
             }
-        }
-
-        if (len != tmpLen) {
-            reportItemList.clear();
-            throw new Exception(dbgName + ", spamd result is missing data, expected " + len + " bytes but only received " + tmpLen + " bytes");
         }
 
         this.spamReport = new SpamReport(reportItemList, score, this.threshold);
