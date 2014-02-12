@@ -2595,12 +2595,9 @@ Ext.define("Ung.GridEventLogBase", {
         });
         this.stateId = 
             'eventLog-' +
-            ( this.initialConfig.selectedApplication
-                ? this.initialConfig.selectedApplication + 
-                    '-' +
-                    this.initialConfig.sectionName
-                : this.initialConfig.helpSource 
-            );
+            ( this.initialConfig.selectedApplication ?
+              this.initialConfig.selectedApplication + '-' + this.initialConfig.sectionName :
+              this.initialConfig.helpSource );
         
         this.viewConfig.enableTextSelection = true;
         this.store=Ext.create('Ext.data.Store', {
