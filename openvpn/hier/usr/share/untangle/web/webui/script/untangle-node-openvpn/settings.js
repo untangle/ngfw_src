@@ -114,6 +114,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         gridRemoteServers: null,
         panelServer: null,
         gridConnectionEventLog: null,
+        isNodeRunning: null,
         initComponent: function(container, position) {
             // Register the VTypes, need i18n to be initialized for the text
             if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
@@ -133,7 +134,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.form.VTypes["openvpnSiteNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
 
-            
+            this.isNodeRunning = this.getRpcNode().getRunState() === "RUNNING";
             this.buildStatus();
             this.buildServer();
             this.buildClient();
@@ -316,9 +317,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.buildClientStatusGrid();
             this.buildServerStatusGrid();
 
-            var runState = this.getRpcNode().getRunState();
             var statusDescription = "";
-            if (runState === "RUNNING") {
+            if (this.isNodeRunning) {
                 statusDescription = "<font color=\"green\">" + this.i18n._("OpenVPN is currently running.") + "</font>";
             } else {
                 statusDescription = "<font color=\"red\">" + this.i18n._("OpenVPN is not currently running.") + "</font>";
@@ -661,7 +661,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         dataIndex: null,
                         renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                             var out= '';
-                            if(record.data.internalId>=0) {
+                            if(this.isNodeRunning && record.data.internalId>=0) {
                                 var id = Ext.id();
                                 Ext.defer(function () {
                                     var button = Ext.widget('button', {
