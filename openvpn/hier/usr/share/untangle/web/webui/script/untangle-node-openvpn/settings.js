@@ -661,12 +661,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         dataIndex: null,
                         renderer: Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                             var out= '';
-                            if(this.isNodeRunning && record.data.internalId>=0) {
+                            if(record.data.internalId>=0) {
                                 var id = Ext.id();
                                 Ext.defer(function () {
                                     var button = Ext.widget('button', {
                                         renderTo: id, 
                                         text: this.i18n._("Download Client"), 
+                                        disabled: !this.isNodeRunning,
                                         width: 110,
                                         handler: Ext.bind(function () { 
                                             this.gridRemoteClients.distributeWindow.populate(record);
