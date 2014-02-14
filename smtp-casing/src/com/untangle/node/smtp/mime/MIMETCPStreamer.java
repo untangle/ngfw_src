@@ -17,6 +17,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
@@ -55,7 +56,7 @@ public class MIMETCPStreamer implements TCPStreamer
      *            called when streaming is complete or an error is encountered.
      */
     public MIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, final Pipeline pipeline, int readChunkSz,
-            boolean disposeWhenComplete) {
+            boolean disposeWhenComplete, NodeTCPSession session) {
 
         m_msg = msg;
         m_chunkSz = readChunkSz;
@@ -63,6 +64,8 @@ public class MIMETCPStreamer implements TCPStreamer
         this.messageInfo = messageInfo;
         try {
             writeToFile();
+            if (file != null && disposeWhenComplete)
+                session.attachTempFile(file.getAbsolutePath());
             m_logger.debug("File is of length: " + file.length());
             m_fos = new FileInputStream(file);
             m_channel = m_fos.getChannel();
