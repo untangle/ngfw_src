@@ -4,32 +4,745 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 
     Ext.define('Ung.BaseWebFilter', {
         extend:'Ung.NodeWin',
-        gridExceptions: null,
-        gridEventLog: null,
+
         // called when the component is rendered
         initComponent: function() {
+            this.buildUrlValidator();
+
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-            this.buildBlockLists();
-            this.buildPassLists();
-            this.buildEventLog();
-            // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
+            this.buildTabPanel([
+                this.buildPanelBlockedCategories(),
+                this.buildPanelBlockedSites(),
+                this.buildPanelBlockedFileTypes(),
+                this.buildPanelBlockedMimeTypes(),
+                this.buildPanelPassedSites(),
+                this.buildPanelPassedClients(),
+                this.buildPanelAdvanced(),
+                this.buildEventLog()
+            ]);
             this.callParent(arguments);
         },
+        
+        save: function( isApply ){
+            var settingsCmp = this;
+            for( var i = 0; i < this.tabs.items.items.length; i++ ){
+                var panel = this.tabs.items.items[i];
+                for( var j = 0; j < panel.items.items.length; j++ ){
+                    var cmp = panel.items.items[j];
+                    if( cmp.getList ){
+                        cmp.getList( function( saveList ){
+                            settingsCmp.settings[cmp.dataProperty] = saveList;
+                        }, true)
+                    }
+                }
+            }
+            this.callParent( arguments );
+        },
+
+        //
+        buildUrlValidator: function(){
+            this.urlValidator = Ext.bind(function(fieldValue) {
+                if (fieldValue.indexOf("https://") == 0) {
+                    return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
+                }
+                // strip "http://" from beginning of rule
+                if (fieldValue.indexOf("http://") == 0) {
+                    fieldValue = fieldValue.substr(7);
+                }
+                // strip "www." from beginning of rule
+                if (fieldValue.indexOf("www.") == 0) {
+                    fieldValue = fieldValue.substr(4);
+                }
+                // strip "*." from beginning of rule
+                if (fieldValue.indexOf("*.") == 0) {
+                    fieldValue = fieldValue.substr(2);
+                }
+                // strip "/" from the end
+                if (fieldValue.indexOf("/") == fieldValue.length - 1) {
+                    fieldValue = fieldValue.substring(0, fieldValue.length - 1);
+                }
+                if (fieldValue.trim().length == 0) {
+                    return this.i18n._("Invalid \"URL\" specified");
+                }
+                return true;
+            }, this);
+        },
+        
         // Block Lists Panel
-        buildBlockLists: function() {
-            this.panelBlockLists = Ext.create('Ext.panel.Panel',{
-                name: 'BlockLists',
-                //helpSource: 'web_filter_block_lists',
-                //helpSource: 'web_filter_lite_block_lists',
-                helpSource: this.helpSourceName + '_block_lists',
-                winCategories: null,
-                winBlockedUrls: null,
-                winBlockedExtensions: null,
-                winBlockedMimeTypes: null,
+        buildPanelBlockedCategories: function() {
+            this.gridCategories = Ext.create('Ung.EditorGrid',{
+                name: 'Blocked Categories',
+                title: this.i18n._("Blocked Categories"),
+                sizetoParent: true,
+                settingsCmp: this,
+                hasAdd: false,
+                hasDelete: false,
+                dataProperty: "categories",
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                paginated: false,
+                flex: 1,
+                columns: [{
+                    header: this.i18n._("Category"),
+                    width: 200,
+                    dataIndex: 'name'
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    resizable: false,
+                    listeners: {
+                        "checkchange": {
+                            fn: Ext.bind(function(elem, rowIndex, checked) {
+                                    if (checked) {
+                                        var record = this.NEWgridCategories.getStore().getAt(rowIndex);
+                                        record.set('flagged', true);
+                                    }
+                                }, this)
+                            }
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Flag"),
+                    dataIndex: 'flagged',
+                    resizable: false,
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    header: this.i18n._("Description"),
+                    flex:1,
+                    width: 400,
+                    dataIndex: 'description',
+                    editor:{
+                        xtype:'textfield',
+                        allowBlank: false
+                    }
+                }],
+                sortField: 'name',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [
+                    {
+                        xtype:'textfield',
+                        name: "Category",
+                        dataIndex: "name",
+                        fieldLabel: this.i18n._("Category"),
+                        allowBlank: false,
+                        width: 400,
+                        disabled: true
+                    },{
+                        xtype:'checkbox',
+                        name: "Block",
+                        dataIndex: "blocked",
+                        fieldLabel: this.i18n._("Block"),
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                        var rowEditor = this.NEWgridCategories.rowEditor;
+                                        if (checked) {
+                                            rowEditor.down('checkbox[name="Flag"]').setValue(true);
+                                        }
+                                    }, this)
+                                }
+                        }
+                    },{
+                        xtype:'checkbox',
+                        name: "Flag",
+                        dataIndex: "flagged",
+                        fieldLabel: this.i18n._("Flag"),
+                        tooltip: this.i18n._("Flag as Violation")
+                    },{
+                        xtype:'textarea',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        width: 400,
+                        height: 60
+                    }]
+            });
+            
+            this.categoriesPanel = Ext.create('Ext.panel.Panel',{
+                name: 'BlockedCategories',
+                helpSource: this.helpSourceName + '_blocked_categories',
                 parentId: this.getId(),
 
-                title: this.i18n._('Block Lists'),
+                title: this.i18n._('Blocked Categories'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Blocked Categories"),
+                    html: this.i18n . _("Block or flag access to sites associated with the specified category."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridCategories
+                ]
+            });
+            
+            return this.categoriesPanel;
+        },
+        
+        // Blocked sites
+        buildPanelBlockedSites: function() {
+            this.gridBlockedSites = Ext.create('Ung.EditorGrid',{
+                name: 'Sites',
+                settingsCmp: this,
+                emptyRow: {
+                    "string": this.i18n._("[no site]"),
+                    "blocked": true,
+                    "flagged": true,
+                    "description": this.i18n._("[no description]")
+                },
+                flex: 1,    
+                title: this.i18n._("Sites"),
+                paginated: false,
+                dataProperty: "blockedUrls",
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                columns: [{
+                    header: this.i18n._("Site"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        validator: this.urlValidator,
+                        blankText: this.i18n._("Invalid \"URL\" specified")
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    resizable: false
+                },{ 
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Flag"),
+                    dataIndex: 'flagged',
+                    resizable: false,
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    flex:1,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [{
+                    xtype:'textfield',
+                    name: "Site",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("Site"),
+                    allowBlank: false,
+                    width: 400,
+                    validator: this.urlValidator,
+                    blankText: this.i18n._("Invalid \"URL\" specified")
+                },{
+                    xtype:'checkbox',
+                    name: "Block",
+                    dataIndex: "blocked",
+                    fieldLabel: this.i18n._("Block")
+                },{
+                    xtype:'checkbox',
+                    name: "Flag",
+                    dataIndex: "flagged",
+                    fieldLabel: this.i18n._("Flag"),
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                     height: 60
+                }]
+            });
+            
+            this.blockedSitesPanel = Ext.create('Ext.panel.Panel',{
+                name: 'BlockedSites',
+                helpSource: this.helpSourceName + '_blocked_sites',
+                parentId: this.getId(),
+
+                title: this.i18n._('Blocked Sites'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Blocked Sites"),
+                    html: this.i18n . _("Block or flag access to the specified site."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridBlockedSites
+                ]
+            });
+            
+            return this.blockedSitesPanel;
+        },
+        
+        // Blocked File Types
+        buildPanelBlockedFileTypes: function() {
+            this.gridBlockedFileTypes = Ext.create('Ung.EditorGrid',{
+                flex: 1,
+                name: 'File Types',
+                settingsCmp: this,
+                emptyRow: {
+                    "string": this.i18n._("[no extension]"),
+                    "blocked": true,
+                    "flagged": true,
+                    "category": this.i18n._("[no category]"),
+                    "description": this.i18n._("[no description]")
+                },
+                title: this.i18n._("File Types"),
+                dataProperty: "blockedExtensions",
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                sizetoParent: true,
+                paginated: false,                
+                columns: [{
+                    header: this.i18n._("File Type"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor: {
+                        xtype: 'textfield',
+                        allowBlank: false
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    resizable: false
+                },{ 
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Flag"),
+                    dataIndex: 'flagged',
+                    resizable: false,
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    header: this.i18n._("Category"),
+                    width: 200,
+                    dataIndex: 'category',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex:1,
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [
+                {
+                    xtype:'textfield',
+                    name: "File Type",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("File Type"),
+                    allowBlank: false,
+                    width: 300
+                },{
+                    xtype:'checkbox',
+                    name: "Block",
+                    dataIndex: "blocked",
+                    fieldLabel: this.i18n._("Block")
+                },{
+                    xtype:'checkbox',
+                    name: "Flag",
+                    dataIndex: "flagged",
+                    fieldLabel: this.i18n._("Flag"),
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    xtype:'textarea',
+                    name: "Category",
+                    dataIndex: "category",
+                    fieldLabel: this.i18n._("Category"),
+                    width: 300
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                    height: 60
+                }]
+            });
+            
+            this.blockedFileTypesPanel = Ext.create('Ext.panel.Panel',{
+                name: 'BlockedFileTypes',
+                helpSource: this.helpSourceName + '_blocked_filetypes',
+                parentId: this.getId(),
+                title: this.i18n._('Blocked File Types'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Blocked File Types"),
+                    html: this.i18n . _("Block or flag access to files associated with the specified file type."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridBlockedFileTypes
+                ]
+            });
+            
+            return this.blockedFileTypesPanel;
+        },
+        
+        // Blocked MIME Types
+        buildPanelBlockedMimeTypes: function() {
+            this.gridBlockedMimeTypes = Ext.create('Ung.EditorGrid',{
+                name: 'MIME Types',
+                paginated: false,
+                settingsCmp: this,
+                emptyRow: {
+                    "string": this.i18n._("[no mime type]"),
+                    "blocked": true,
+                    "flagged": true,
+                    "category": this.i18n._("[no category]"),
+                    "description": this.i18n._("[no description]")
+                },
+                title: this.i18n._("MIME Types"),
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                dataProperty: "blockedMimeTypes",
+                flex: 1,    
+                columns: [{
+                    header: this.i18n._("MIME type"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{ 
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Block"),
+                    dataIndex: 'blocked',
+                    resizable: false
+                },{ 
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Flag"),
+                    dataIndex: 'flagged',
+                    resizable: false,
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    header: this.i18n._("Category"),
+                    width: 100,
+                    dataIndex: 'category',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:true
+                    }
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    flex:1,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [{
+                    xtype:'textfield',
+                    name: "MIME Type",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("MIME Type"),
+                    allowBlank: false,
+                    width: 400
+                },{
+                    xtype:'checkbox',
+                    name: "Block",
+                    dataIndex: "blocked",
+                    fieldLabel: this.i18n._("Block")
+                },{
+                    xtype:'checkbox',
+                    name: "Flag",
+                    dataIndex: "flagged",
+                    fieldLabel: this.i18n._("Flag"),
+                    tooltip: this.i18n._("Flag as Violation")
+                },{
+                    xtype:'textarea',
+                    name: "Category",
+                    dataIndex: "category",
+                    fieldLabel: this.i18n._("Category"),
+                    width: 300
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                    height: 60
+                }]
+            });
+            
+            this.blockedMimeTypesPanel = Ext.create('Ext.panel.Panel',{
+                name: 'BlockedMimeTypes',
+                helpSource: this.helpSourceName + '_blocked_mimetypes',
+                parentId: this.getId(),
+
+                title: this.i18n._('Blocked Mime Types'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Blocked MIME Types"),
+                    html: this.i18n . _("Block or flag access to files associated with the specified MIME type."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridBlockedMimeTypes
+                ]
+            });
+            
+            return this.blockedMimeTypesPanel;
+        },
+
+        // Allowed Sites
+        buildPanelPassedSites: function() {
+            this.gridAllowedSites = Ext.create('Ung.EditorGrid',{
+                name: 'Sites',
+                settingsCmp: this,
+                emptyRow: {
+                    "string": this.i18n._("[no site]"),
+                    "enabled": true,
+                    "description": this.i18n._("[no description]")
+                },
+                paginated: false,                
+                flex: 1,    
+                title: this.i18n._("Sites"),
+                dataProperty: "passedUrls",
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                columns: [{
+                    header: this.i18n._("Site"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank: false,
+                        validator: this.urlValidator,
+                        blankText: this.i18n._("Invalid \"URL\" specified")
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Pass"),
+                    dataIndex: 'enabled',
+                    resizable: false
+                },{
+                    header: this.i18n._("Description"),
+                    flex:1,
+                    width: 200,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [{
+                    xtype:'textfield',
+                    name: "Site",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("Site"),
+                    allowBlank: false,
+                    width: 400,
+                    validator: this.urlValidator,
+                    blankText: this.i18n._("Invalid \"URL\" specified")
+                },{
+                    xtype:'checkbox',
+                    name: "Pass",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Pass")
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                    height: 60
+                }]
+            });
+
+            this.allowedSitesPanel = Ext.create('Ext.panel.Panel',{
+                name: 'PassedSites',
+                helpSource: this.helpSourceName + '_passed_sites',
+                parentId: this.getId(),
+
+                title: this.i18n._('Passed Sites'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Passed Sites"),
+                    html: this.i18n . _("Always allow access to the specified site regardless of matching block policies."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridAllowedSites
+                ]
+            });
+            
+            return this.allowedSitesPanel;
+        },
+        
+        // Allowed Clients
+        buildPanelPassedClients: function() {
+            this.gridAllowedClients = Ext.create('Ung.EditorGrid',{
+                name: 'Client IP addresses',
+                paginated: false,                
+                settingsCmp: this,
+                emptyRow: {
+                    "string": "1.2.3.4",
+                    "enabled": true,
+                    "description": this.i18n._("[no description]")
+                },
+                title: this.i18n._("Client IP addresses"),
+                dataProperty: "passedClients",
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                fields: this.genericRuleFields,
+                flex: 1,    
+                columns: [{
+                    header: this.i18n._("IP address/range"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    width:55,
+                    header: this.i18n._("Pass"),
+                    dataIndex: 'enabled',
+                    resizable: false
+                },{
+                    header: this.i18n._("Description"),
+                    flex:1,
+                    width: 200,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [
+                {
+                    xtype:'textfield',
+                    name: "IP address/range",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("IP address/range"),
+                    allowBlank: false,
+                    width: 400
+                },{
+                    xtype:'checkbox',
+                    name: "Pass",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Pass")
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                    height: 60
+                }]
+            });
+
+            this.allowedClientsPanel = Ext.create('Ext.panel.Panel',{
+                name: 'PassedClients',
+                helpSource: this.helpSourceName + '_passed_clients',
+                parentId: this.getId(),
+
+                title: this.i18n._('Passed Clients'),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Passed Clients"),
+                    html: this.i18n . _("Always allow access for client networks regardless of matching block policies."),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridAllowedClients
+                ]
+            });
+            
+            return this.allowedClientsPanel;
+        },
+        // Advanced options
+        buildPanelAdvanced: function() {
+            this.panelAdvanced = Ext.create('Ext.panel.Panel',{
+                name: 'Advanced',
+                helpSource: this.helpSourceName + '_advanced',
+
+                title: this.i18n._('Advanced'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -37,43 +750,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     buttonAlign: 'left'
                 },
                 items: [{
-                    name: "fieldset_manage_categories",
-                    items: [{
-                        xtype: "button",
-                        name: "EditCategories",
-                        text: this.i18n._("Edit Categories"),
-                        handler: Ext.bind(function() {
-                            this.panelBlockLists.onManageCategories();
-                        }, this)
-                    }]
-                },{
-                    items: [{
-                        xtype: "button",
-                        name: 'EditSites',
-                        text: this.i18n._("Edit Sites"),
-                        handler: Ext.bind(function() {
-                            this.panelBlockLists.onManageBlockedUrls();
-                        }, this)
-                    }]
-                },{
-                    items: [{
-                        xtype: "button",
-                        name: "EditFileTypes",
-                        text: this.i18n._("Edit File Types"),
-                        handler: Ext.bind(function() {
-                            this.panelBlockLists.onManageBlockedExtensions();
-                        }, this)
-                    }]
-                },{
-                    items: [{
-                        xtype: "button",
-                        name: "EditMIMETypes",
-                        text: this.i18n._("Edit MIME Types"),
-                        handler: Ext.bind(function() {
-                            this.panelBlockLists.onManageBlockedMimeTypes();
-                        }, this)
-                    }]
-                },{
                     name: "fieldset_miscellaneous",
                     title: this.i18n._("Advanced Options"),
                     items: [{
@@ -108,918 +784,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }
                     }]
                 }],
-
-                onManageCategories: function() {
-                    if (!this.winCategories) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildCategories();
-                        this.winCategories = Ext.create('Ung.ManageListWindow',{
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridCategories.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelBlockLists.winCategories.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelBlockLists.winCategories.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("Categories")
-                            }],
-                            grid: settingsCmp.gridCategories,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridCategories.getList(Ext.bind(function(saveList) {
-                                    this.getRpcNode().setCategories(Ext.bind(function(result, exception) {
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getCategories(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.categories = result;
-                                            this.gridCategories.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }                                                        
-                        });
-                    }
-                    this.winCategories.show();
-                },
-                onManageBlockedUrls: function() {
-                    if (!this.winBlockedUrls) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildBlockedUrls();
-                        this.winBlockedUrls = Ext.create('Ung.ManageListWindow',{
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridBlockedUrls.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelBlockLists.winBlockedUrls.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelBlockLists.winBlockedUrls.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("Sites")
-                            }],
-                            grid: settingsCmp.gridBlockedUrls,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedUrls.getList(Ext.bind(function(saveList) {
-                                    this.alterUrls(saveList);
-                                    this.getRpcNode().setBlockedUrls(Ext.bind(function(result, exception) {
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedUrls(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.blockedUrls = result;
-                                            this.gridBlockedUrls.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }                                                        
-                        });
-                    }
-                    this.winBlockedUrls.show();
-                },
-                onManageBlockedExtensions: function() {
-                    if (!this.winBlockedExtensions) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildBlockedExtensions();
-                        this.winBlockedExtensions = Ext.create('Ung.ManageListWindow',{
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridBlockedExtensions.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelBlockLists.winBlockedExtensions.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelBlockLists.winBlockedExtensions.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("File Types")
-                            }],
-                            grid: settingsCmp.gridBlockedExtensions,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedExtensions.getList(Ext.bind(function(saveList) {
-                                    this.getRpcNode().setBlockedExtensions(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedExtensions(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.blockedExtensions = result;
-                                            this.gridBlockedExtensions.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }                                                        
-                        });
-                    }
-                    this.winBlockedExtensions.show();
-                },
-                onManageBlockedMimeTypes: function() {
-                    if (!this.winBlockedMimeTypes) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildBlockedMimeTypes();
-                        this.winBlockedMimeTypes = Ext.create('Ung.ManageListWindow',{
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridBlockedMimeTypes.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelBlockLists.winBlockedMimeTypes.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelBlockLists.winBlockedMimeTypes.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("MIME Types")
-                            }],
-                            grid: settingsCmp.gridBlockedMimeTypes,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridBlockedMimeTypes.getList(Ext.bind(function(saveList) {
-                                    this.getRpcNode().setBlockedMimeTypes(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getBlockedMimeTypes(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.blockedMimeTypes = result;
-                                            this.gridBlockedMimeTypes.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }
-                        });
-                    }
-                    this.winBlockedMimeTypes.show();
-                },
-                beforeDestroy: function() {
-                    Ext.destroy(this.winCategories, this.winBlockedUrls, this.winBlockedExtensions, this.winBlockedMimeTypes);
-                    Ext.Panel.prototype.beforeDestroy.call(this);
-                }
             });
-        },
-        // Block Categories
-        buildCategories: function() {
-
-        this.gridCategories = Ext.create('Ung.EditorGrid',{
-                name: 'Categories',
-                settingsCmp: this,
-                hasAdd: false,
-                hasDelete: false,
-                title: this.i18n._("Categories"),
-                dataProperty: "categories",
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                paginated: false,
-                columns: [{
-                    header: this.i18n._("Category"),
-                    width: 200,
-                    dataIndex: 'name'
-                }, 
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Block"),
-                    dataIndex: 'blocked',
-                    resizable: false,
-                    listeners: {
-                        "checkchange": {
-                            fn: Ext.bind(function(elem, rowIndex, checked) {
-                                    if (checked) {
-                                        var record = this.gridCategories.getStore().getAt(rowIndex);
-                                        record.set('flagged', true);
-                                    }
-                                }, this)
-                            }
-                    }
-                },
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Flag"),
-                    dataIndex: 'flagged',
-                    resizable: false,
-                    tooltip: this.i18n._("Flag as Violation")
-                },
-                {
-                    header: this.i18n._("Description"),
-                    flex:1,
-                    width: 400,
-                    dataIndex: 'description',
-                    editor:{
-                        xtype:'textfield',
-                        allowBlank: false
-                    }
-                }],
-                sortField: 'name',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                    {
-                        xtype:'textfield',
-                        name: "Category",
-                        dataIndex: "name",
-                        fieldLabel: this.i18n._("Category"),
-                        allowBlank: false,
-                        width: 400,
-                        disabled: true
-                    },
-                    {
-                        xtype:'checkbox',
-                        name: "Block",
-                        dataIndex: "blocked",
-                        fieldLabel: this.i18n._("Block"),
-                        listeners: {
-                            "change": {
-                                fn: Ext.bind(function(elem, checked) {
-                                        var rowEditor = this.gridCategories.rowEditor;
-                                        if (checked) {
-                                            rowEditor.down('checkbox[name="Flag"]').setValue(true);
-                                        }
-                                    }, this)
-                                }
-                        }
-                    },
-                    {
-                        xtype:'checkbox',
-                        name: "Flag",
-                        dataIndex: "flagged",
-                        fieldLabel: this.i18n._("Flag"),
-                        tooltip: this.i18n._("Flag as Violation")
-                    }, 
-                    {
-                        xtype:'textarea',
-                        name: "Description",
-                        dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
-                        width: 400,
-                        height: 60
-                    }]
-            });
-        },
-        // Block Sites
-        buildBlockedUrls: function() {
-            var urlValidator = Ext.bind(function(fieldValue) {
-                if (fieldValue.indexOf("https://") == 0) {
-                    return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
-                }
-                // strip "http://" from beginning of rule
-                if (fieldValue.indexOf("http://") == 0) {
-                    fieldValue = fieldValue.substr(7);
-                }
-                // strip "www." from beginning of rule
-                if (fieldValue.indexOf("www.") == 0) {
-                    fieldValue = fieldValue.substr(4);
-                }
-                // strip "*." from beginning of rule
-                if (fieldValue.indexOf("*.") == 0) {
-                    fieldValue = fieldValue.substr(2);
-                }
-                // strip "/" from the end
-                if (fieldValue.indexOf("/") == fieldValue.length - 1) {
-                    fieldValue = fieldValue.substring(0, fieldValue.length - 1);
-                }
-                if (fieldValue.trim().length == 0) {
-                    return this.i18n._("Invalid \"URL\" specified");
-                }
-                return true;
-            }, this);
-
-            this.gridBlockedUrls = Ext.create('Ung.EditorGrid',{
-                name: 'Sites',
-                settingsCmp: this,
-                emptyRow: {
-                    "string": this.i18n._("[no site]"),
-                    "blocked": true,
-                    "flagged": true,
-                    "description": this.i18n._("[no description]")
-                },
-                title: this.i18n._("Sites"),
-                dataProperty: "blockedUrls",
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                columns: [{
-                    header: this.i18n._("Site"),
-                    width: 200,
-                    dataIndex: 'string',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false,
-                        validator: urlValidator,
-                        blankText: this.i18n._("Invalid \"URL\" specified")
-                    }
-                },
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Block"),
-                    dataIndex: 'blocked',
-                    resizable: false
-                },
-                { 
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Flag"),
-                    dataIndex: 'flagged',
-                    resizable: false,
-                    tooltip: this.i18n._("Flag as Violation")
-                },
-                {
-                    header: this.i18n._("Description"),
-                    width: 200,
-                    flex:1,
-                    dataIndex: 'description',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }],
-                sortField: 'string',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                    {
-                        xtype:'textfield',
-                        name: "Site",
-                        dataIndex: "string",
-                        fieldLabel: this.i18n._("Site"),
-                        allowBlank: false,
-                        width: 400,
-                        validator: urlValidator,
-                        blankText: this.i18n._("Invalid \"URL\" specified")
-                    },
-                    {
-                        xtype:'checkbox',
-                        name: "Block",
-                        dataIndex: "blocked",
-                        fieldLabel: this.i18n._("Block")
-                    },
-                    {
-                        xtype:'checkbox',
-                        name: "Flag",
-                        dataIndex: "flagged",
-                        fieldLabel: this.i18n._("Flag"),
-                        tooltip: this.i18n._("Flag as Violation")
-                    },
-                    {
-                        xtype:'textarea',
-                        name: "Description",
-                        dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
-                        width: 400,
-                        height: 60
-                    }]
-            });
-        },
-        // Block File Types
-        buildBlockedExtensions: function() {
-            this.gridBlockedExtensions = Ext.create('Ung.EditorGrid',{
-                name: 'File Types',
-                settingsCmp: this,
-                emptyRow: {
-                    "string": this.i18n._("[no extension]"),
-                    "blocked": true,
-                    "flagged": true,
-                    "category": this.i18n._("[no category]"),
-                    "description": this.i18n._("[no description]")
-                },
-                title: this.i18n._("File Types"),
-                dataProperty: "blockedExtensions",
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                columns: [{
-                    header: this.i18n._("File Type"),
-                    width: 200,
-                    dataIndex: 'string',
-                    editor: {
-                        xtype: 'textfield',
-                        allowBlank: false
-                    }
-                }, 
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Block"),
-                    dataIndex: 'blocked',
-                    resizable: false
-                },
-                { 
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Flag"),
-                    dataIndex: 'flagged',
-                    resizable: false,
-                    tooltip: this.i18n._("Flag as Violation")
-                },
-                {
-                    header: this.i18n._("Category"),
-                    width: 200,
-                    dataIndex: 'category',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }, 
-                {
-                    header: this.i18n._("Description"),
-                    width: 200,
-                    dataIndex: 'description',
-                    flex:1,
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }],
-                sortField: 'string',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "File Type",
-                    dataIndex: "string",
-                    fieldLabel: this.i18n._("File Type"),
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Block",
-                    dataIndex: "blocked",
-                    fieldLabel: this.i18n._("Block")
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Flag",
-                    dataIndex: "flagged",
-                    fieldLabel: this.i18n._("Flag"),
-                    tooltip: this.i18n._("Flag as Violation")
-                },
-                {
-                    xtype:'textarea',
-                    name: "Category",
-                    dataIndex: "category",
-                    fieldLabel: this.i18n._("Category"),
-                    width: 300
-                },
-                {
-                    xtype:'textarea',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 400,
-                    height: 60
-                }]
-            });
-        },
-        // Block MIME Types
-        buildBlockedMimeTypes: function() {
-            this.gridBlockedMimeTypes = Ext.create('Ung.EditorGrid',{
-                name: 'MIME Types',
-                settingsCmp: this,
-                emptyRow: {
-                    "string": this.i18n._("[no mime type]"),
-                    "blocked": true,
-                    "flagged": true,
-                    "category": this.i18n._("[no category]"),
-                    "description": this.i18n._("[no description]")
-                },
-                title: this.i18n._("MIME Types"),
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                dataProperty: "blockedMimeTypes",
-                columns: [{
-                    header: this.i18n._("MIME type"),
-                    width: 200,
-                    dataIndex: 'string',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }, 
-                { 
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Block"),
-                    dataIndex: 'blocked',
-                    resizable: false
-                },
-                { 
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Flag"),
-                    dataIndex: 'flagged',
-                    resizable: false,
-                    tooltip: this.i18n._("Flag as Violation")
-                }, 
-                {
-                    header: this.i18n._("Category"),
-                    width: 100,
-                    dataIndex: 'category',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:true
-                    }
-                }, 
-                {
-                    header: this.i18n._("Description"),
-                    width: 200,
-                    flex:1,
-                    dataIndex: 'description',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }],
-                sortField: 'string',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "MIME Type",
-                    dataIndex: "string",
-                    fieldLabel: this.i18n._("MIME Type"),
-                    allowBlank: false,
-                    width: 400
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Block",
-                    dataIndex: "blocked",
-                    fieldLabel: this.i18n._("Block")
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Flag",
-                    dataIndex: "flagged",
-                    fieldLabel: this.i18n._("Flag"),
-                    tooltip: this.i18n._("Flag as Violation")
-                },
-                {
-                    xtype:'textarea',
-                    name: "Category",
-                    dataIndex: "category",
-                    fieldLabel: this.i18n._("Category"),
-                    width: 300
-                },
-                {
-                    xtype:'textarea',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 400,
-                    height: 60
-                }]
-            });
-        },
-
-        // Pass Lists Panel
-        buildPassLists: function() {
-            this.panelPassLists = Ext.create('Ext.panel.Panel',{
-            // private fields
-                name: 'PassLists',
-                //helpSource: 'web_filter_pass_lists',
-                //helpSource: 'web_filter_lite_pass_lists',
-                helpSource: this.helpSourceName + '_pass_lists',
-                winPassedUrls: null,
-                winPassedClients: null,
-                parentId: this.getId(),
-                autoScroll: true,
-                title: this.i18n._('Pass Lists'),
-                bodyStyle: 'padding:5px 5px 0px; 5px;',
-                defaults: {
-                    xtype: 'fieldset',
-                    buttonAlign: 'left'
-                },
-                items: [
-                    {
-                        xtype:'fieldset',
-                        items:{
-                            xtype:'button',
-                            name: 'EditPassedSites',
-                            text: this.i18n._("Edit Passed Sites"),
-                            handler: Ext.bind(function() {
-                                this.panelPassLists.onManagePassedUrls();
-                            }, this)
-                        }
-                    },
-                    {
-                        xtype:'fieldset',
-                        items: {
-                            xtype:'button',
-                            name: 'EditPassedClientIPs',
-                            text: this.i18n._("Edit Passed Client IPs"),
-                            handler: Ext.bind(function() {
-                                this.panelPassLists.onManagePassedClients();
-                            }, this)
-                        }
-                    }],
-                onManagePassedUrls: function() {
-                    if (!this.winPassedUrls) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildPassedUrls();
-                        this.winPassedUrls = Ext.create('Ung.ManageListWindow', {
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridPassedUrls.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelPassLists.winPassedUrls.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelPassLists.winPassedUrls.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("Sites")
-                            }],
-                            grid: settingsCmp.gridPassedUrls,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridPassedUrls.getList(Ext.bind(function(saveList) {
-                                    this.alterUrls(saveList);
-                                    this.getRpcNode().setPassedUrls(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getPassedUrls(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.passedUrls = result;
-                                            this.gridPassedUrls.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }                            
-                        });
-                    }
-                    this.winPassedUrls.show();
-                },
-                onManagePassedClients: function() {
-                    if (!this.winPassedClients) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildPassedClients();
-                        this.winPassedClients = Ext.create('Ung.ManageListWindow',{
-                            breadcrumbs: [{
-                                title: i18n._(rpc.currentPolicy.name),
-                                action: Ext.bind(function() {
-                                    Ung.Window.cancelAction(
-                                       this.gridPassedClients.isDirty() || this.isDirty(),
-                                       Ext.bind(function() {
-                                            this.panelPassLists.winPassedClients.closeWindow();
-                                            this.closeWindow();
-                                       }, this)
-                                    );
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.node.displayName,
-                                action: Ext.bind(function() {
-                                    this.panelPassLists.winPassedClients.cancelAction();
-                                },settingsCmp)
-                            }, {
-                                title: settingsCmp.i18n._("Client IP addresses")
-                            }],
-                            grid: settingsCmp.gridPassedClients,
-                            applyAction: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                settingsCmp.gridPassedClients.getList(Ext.bind(function(saveList) {
-                                    this.getRpcNode().setPassedClients(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.getRpcNode().getPassedClients(Ext.bind(function(result, exception) {
-                                            Ext.MessageBox.hide();
-                                            if(Ung.Util.handleException(exception)) return;
-                                            this.settings.passedClients = result;
-                                            this.gridPassedClients.clearDirty();
-                                            if(callback != null) {
-                                                callback();
-                                            }
-                                        }, this));
-                                    }, this), saveList);
-                                },settingsCmp));
-                            }                                                 
-                        });
-                    }
-                    this.winPassedClients.show();
-                },
-                beforeDestroy: function() {
-                    Ext.destroy(this.winPassedUrls, this.winPassedClients);
-                    Ext.Panel.prototype.beforeDestroy.call(this);
-                }
-            });
-        },
-        // Passed Sites
-        buildPassedUrls: function() {
-            var urlValidator = Ext.bind(function(fieldValue) {
-                if (fieldValue.indexOf("https://") == 0) {
-                    return this.i18n._("\"URL\" specified cannot be passed because it uses secure http (https)");
-                }
-                // strip "http://" from beginning of rule
-                // strip "www." from beginning of rule
-                // strip "*." from beginning of rule
-                // strip "/" from the end
-                if (fieldValue.indexOf("http://") == 0) {
-                    fieldValue = fieldValue.substr(7);
-                }
-                if (fieldValue.indexOf("www.") == 0) {
-                    fieldValue = fieldValue.substr(4);
-                }
-                if (fieldValue.indexOf("*.") == 0) {
-                    fieldValue = fieldValue.substr(2);
-                }
-                if (fieldValue.indexOf("/") == fieldValue.length - 1) {
-                    fieldValue = fieldValue.substring(0, fieldValue.length - 1);
-                }
-                if (fieldValue.trim().length == 0) {
-                    return this.i18n._("Invalid \"URL\" specified");
-                }
-                return true;
-            }, this);
-
-
-            this.gridPassedUrls = Ext.create('Ung.EditorGrid',{
-                name: 'Sites',
-                settingsCmp: this,
-                emptyRow: {
-                    "string": this.i18n._("[no site]"),
-                    "enabled": true,
-                    "description": this.i18n._("[no description]")
-                },
-                title: this.i18n._("Sites"),
-                dataProperty: "passedUrls",
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                columns: [{
-                    header: this.i18n._("Site"),
-                    width: 200,
-                    dataIndex: 'string',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank: false,
-                        validator: urlValidator,
-                        blankText: this.i18n._("Invalid \"URL\" specified")
-                    }
-                }, 
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Pass"),
-                    dataIndex: 'enabled',
-                    resizable: false
-                },
-                {
-                    header: this.i18n._("Description"),
-                    flex:1,
-                    width: 200,
-                    dataIndex: 'description',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }],
-                sortField: 'string',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "Site",
-                    dataIndex: "string",
-                    fieldLabel: this.i18n._("Site"),
-                    allowBlank: false,
-                    width: 400,
-                    validator: urlValidator,
-                    blankText: this.i18n._("Invalid \"URL\" specified")
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Pass",
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Pass")
-                },
-                {
-                    xtype:'textarea',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 400,
-                    height: 60
-                }]
-            });
-        },
-        // Passed IP Addresses
-        buildPassedClients: function() {
-            this.gridPassedClients = Ext.create('Ung.EditorGrid',{
-                name: 'Client IP addresses',
-                settingsCmp: this,
-                emptyRow: {
-                    "string": "1.2.3.4",
-                    "enabled": true,
-                    "description": this.i18n._("[no description]")
-                },
-                title: this.i18n._("Client IP addresses"),
-                dataProperty: "passedClients",
-                recordJavaClass: "com.untangle.uvm.node.GenericRule",
-                fields: this.genericRuleFields,
-                columns: [{
-                    header: this.i18n._("IP address/range"),
-                    width: 200,
-                    dataIndex: 'string',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }, 
-                {
-                    xtype:'checkcolumn',
-                    width:55,
-                    header: this.i18n._("Pass"),
-                    dataIndex: 'enabled',
-                    resizable: false
-                },
-                {
-                    header: this.i18n._("Description"),
-                    flex:1,
-                    width: 200,
-                    dataIndex: 'description',
-                    editor: {
-                        xtype:'textfield',
-                        allowBlank:false
-                    }
-                }],
-                sortField: 'string',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "IP address/range",
-                    dataIndex: "string",
-                    fieldLabel: this.i18n._("IP address/range"),
-                    allowBlank: false,
-                    width: 400
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Pass",
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Pass")
-                },
-                {
-                    xtype:'textarea',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 400,
-                    height: 60
-                }]
-            });
+            return this.panelAdvanced;
         },
         // Event Log
         buildEventLog: function() {
@@ -1028,6 +794,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     ['time_stamp','username','c_client_addr','c_server_addr','s_server_port','host','uri',this.getRpcNode().getName() + '_blocked',
                      this.getRpcNode().getName() + '_flagged',this.getRpcNode().getName() + '_category',this.getRpcNode().getName() + '_reason'], 
                     this.getRpcNode().getEventQueries);
+            return this.gridEventLog;
         },
         // private method
         alterUrls: function(saveList) {
