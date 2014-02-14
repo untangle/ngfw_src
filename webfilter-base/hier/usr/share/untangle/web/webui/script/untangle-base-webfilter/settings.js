@@ -32,7 +32,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     if( cmp.getList ){
                         cmp.getList( function( saveList ){
                             settingsCmp.settings[cmp.dataProperty] = saveList;
-                        }, true)
+                        }, true);
                     }
                 }
             }
