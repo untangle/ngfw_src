@@ -25,20 +25,29 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
                              in_addr_t server_addr, u_short server_port, int server_sock,
                              netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
-    netcap_endpoints_t endpoints;
+    netcap_endpoints_t cli_endpoints;
+    netcap_endpoints_t srv_endpoints;
 
-    netcap_endpoints_bzero(&endpoints);
+    netcap_endpoints_bzero(&cli_endpoints);
+    netcap_endpoints_bzero(&srv_endpoints);
 
-    endpoints.cli.port = client_port;
-    endpoints.srv.port = server_port;
+    cli_endpoints.cli.port = client_port;
+    cli_endpoints.srv.port = server_port;
+    srv_endpoints.cli.port = client_port;
+    srv_endpoints.srv.port = server_port;
 
-    memcpy( &endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
-    memcpy( &endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
-
-    endpoints.intf = cli_intf;
+    memcpy( &cli_endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
+    memcpy( &cli_endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
+    memcpy( &srv_endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
+    memcpy( &srv_endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
+    //FIXME the client side and the server side are not the same!
+    //NAT and port forwarding will change the client/server side.
+    
+    cli_endpoints.intf = cli_intf;
+    srv_endpoints.intf = srv_intf;
     
     // Create a new session without mailboxes
-    if ( netcap_session_init( netcap_sess, &endpoints, srv_intf, !NC_SESSION_IF_MB ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, &cli_endpoints, &srv_endpoints, !NC_SESSION_IF_MB ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_session_init");
     }
     
@@ -197,7 +206,7 @@ int netcap_tcp_session_close(netcap_session_t* netcap_sess)
 }
 
 void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *msg)
-{    
+{
     if ( netcap_sess == NULL ) {
         debug( level, "NULL Session!!" );
         return;

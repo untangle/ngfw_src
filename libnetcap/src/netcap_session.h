@@ -33,9 +33,8 @@ int netcap_sessions_cleanup( void );
 int netcap_session_tls_init( session_tls_t* tls );
 
 netcap_session_t* netcap_session_malloc ( void );
-int netcap_session_init                 ( netcap_session_t* netcap_sess, netcap_endpoints_t* endpoints, 
-                                          netcap_intf_t srv_intf, int if_mb );
-netcap_session_t* netcap_session_create ( netcap_endpoints_t* endpoints, netcap_intf_t srv_intf, int if_mb );
+int netcap_session_init                 ( netcap_session_t* netcap_sess, netcap_endpoints_t* cli_endpoints, netcap_endpoints_t* srv_endpoints, int if_mb );
+netcap_session_t* netcap_session_create ( netcap_endpoints_t* cli_endpoints, netcap_endpoints_t* srv_endpoints, int if_mb );
 
 int netcap_session_free(netcap_session_t* session);
 int netcap_session_destroy(netcap_session_t* netcap_sess);

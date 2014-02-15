@@ -19,7 +19,8 @@ static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_
 
 int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt ) 
 {
-    netcap_endpoints_t endpoints;
+    netcap_endpoints_t cli_endpoints;
+    netcap_endpoints_t srv_endpoints;
     int src_intf;
     int dst_intf;
     
@@ -29,16 +30,19 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
         return errlog( ERR_CRITICAL, "non-udp packet for udp session: %d.\n", pkt->proto );
     }
 
-    netcap_endpoints_bzero( &endpoints );
+    netcap_endpoints_bzero( &cli_endpoints );
+    netcap_endpoints_bzero( &srv_endpoints );
         
-    endpoints.cli.host.s_addr = pkt->nat_info.original.src_address;
-    endpoints.cli.port        = ntohs( pkt->nat_info.original.src_protocol_id );
-    endpoints.srv.host.s_addr = pkt->nat_info.reply.src_address;
-    endpoints.srv.port        = ntohs( pkt->nat_info.reply.src_protocol_id );
-    
-    //memcpy( &endpoints.cli, &pkt->src, sizeof( endpoints.cli ));
-    //memcpy( &endpoints.srv, &pkt->dst, sizeof( endpoints.srv ));
+    cli_endpoints.cli.host.s_addr = pkt->nat_info.original.src_address;
+    cli_endpoints.cli.port        = ntohs( pkt->nat_info.original.src_protocol_id );
+    cli_endpoints.srv.host.s_addr = pkt->nat_info.original.dst_address;
+    cli_endpoints.srv.port        = ntohs( pkt->nat_info.original.dst_protocol_id );
 
+    srv_endpoints.cli.host.s_addr = pkt->nat_info.reply.dst_address;
+    srv_endpoints.cli.port        = ntohs( pkt->nat_info.reply.dst_protocol_id );
+    srv_endpoints.srv.host.s_addr = pkt->nat_info.reply.src_address;
+    srv_endpoints.srv.port        = ntohs( pkt->nat_info.reply.src_protocol_id );
+    
     if ( pkt->src.host.s_addr == pkt->nat_info.reply.src_address ) {
         src_intf = pkt->dst_intf;
         dst_intf = pkt->src_intf;
@@ -46,9 +50,10 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
         src_intf = pkt->src_intf;
         dst_intf = pkt->dst_intf;
     }
+    cli_endpoints.intf = src_intf;
+    srv_endpoints.intf = dst_intf;
 
-    endpoints.intf = src_intf;
-    if ( netcap_session_init( netcap_sess, &endpoints, dst_intf, NC_SESSION_IF_MB ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, &cli_endpoints, &srv_endpoints, NC_SESSION_IF_MB ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_init\n" );
     }
 
