@@ -1,5 +1,5 @@
 /**
- * $Id: NetcapTCPHook.java 35103 2013-06-20 19:11:43Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -67,6 +67,16 @@ public class NetcapTCPHook implements NetcapCallback
         protected TCPNetcapHook( long id )
         {
             netcapTCPSession   = new NetcapTCPSession( id );
+
+            if ( logger.isDebugEnabled() ) {
+                logger.debug("New Session: Client side: " + id + " (TCP " +
+                             netcapTCPSession.clientSide().client().host().getHostAddress() + ":" + netcapTCPSession.clientSide().client().port() + " -> " +
+                             netcapTCPSession.clientSide().server().host().getHostAddress() + ":" + netcapTCPSession.clientSide().server().port() + ")");
+                logger.debug("New Session: Server side: " + id + " (TCP " +
+                             netcapTCPSession.serverSide().client().host().getHostAddress() + ":" + netcapTCPSession.serverSide().client().port() + " -> " +
+                             netcapTCPSession.serverSide().server().host().getHostAddress() + ":" + netcapTCPSession.serverSide().server().port() + ")");
+            }
+
             Thread.currentThread().setName("Session " + id + " (TCP " +
                                            netcapTCPSession.clientSide().client().host().getHostAddress() + ":" + netcapTCPSession.clientSide().client().port() + " -> " +
                                            netcapTCPSession.serverSide().server().host().getHostAddress() + ":" + netcapTCPSession.serverSide().server().port() + ")");

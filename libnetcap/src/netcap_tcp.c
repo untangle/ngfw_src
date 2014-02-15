@@ -457,6 +457,14 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     cli_intf = syn->src_intf;
     srv_intf = syn->dst_intf;
 
+    // FIXME
+    // currently the session is store incorrectly 
+    // should be the following, but that screws up the session lookup in the accept()
+    // cli_addr = syn->nat_info.original.src_address;
+    // cli_port = ntohs(syn->nat_info.original.src_protocol_id);
+    // srv_addr = syn->nat_info.reply.src_address;
+    // srv_port = ntohs(syn->nat_info.reply.src_protocol_id);
+
     debug( 8, "SYN: Intercepted packet ::  (%s:%-5i -> %s:%i) (intf:%d,%d) (syn:%i ack:%i)\n",
            unet_next_inet_ntoa( cli_addr ), cli_port, unet_next_inet_ntoa( srv_addr ), srv_port, 
            cli_intf, srv_intf, !!( syn->th_flags & TH_SYN ), !!( syn->th_flags & TH_ACK ));
