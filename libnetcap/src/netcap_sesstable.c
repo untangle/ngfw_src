@@ -301,7 +301,8 @@ int        netcap_sesstable_remove ( int if_lock, netcap_session_t* netcap_sess 
 
 int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netcap_sess )
 {
-    netcap_endpoints_t* endpoints;
+    netcap_endpoints_t* cli_endpoints;
+    netcap_endpoints_t* srv_endpoints;
 
     if ( netcap_sess == NULL ) {
         return errlogargs();
@@ -320,15 +321,16 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
     _netcap_sesstable_remove(netcap_sess);
 
     /* Remove the forward tuple */
-    endpoints = &netcap_sess->cli;
+    cli_endpoints = &netcap_sess->cli;
+    srv_endpoints = &netcap_sess->srv;
 
     if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
-                                         endpoints->cli.host.s_addr, endpoints->srv.host.s_addr,
-                                         endpoints->cli.port, endpoints->srv.port ) < 0 ) {
+                                         cli_endpoints->cli.host.s_addr, srv_endpoints->srv.host.s_addr,
+                                         cli_endpoints->cli.port, srv_endpoints->srv.port ) < 0 ) {
         errlog( ERR_WARNING, "Failed to remove tuple (%d,%s:%i -> %s:%i)\n",
                 netcap_sess->protocol, 
-                unet_next_inet_ntoa( endpoints->cli.host.s_addr ), endpoints->cli.port,
-                unet_next_inet_ntoa( endpoints->srv.host.s_addr ), endpoints->srv.port );
+                unet_next_inet_ntoa( cli_endpoints->cli.host.s_addr ), cli_endpoints->cli.port,
+                unet_next_inet_ntoa( srv_endpoints->srv.host.s_addr ), srv_endpoints->srv.port );
 
         /**
          * If its UDP try removing the reverse tuple
@@ -336,12 +338,12 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
          **/
         if ( netcap_sess->protocol == IPPROTO_UDP ) {
             if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
-                                                 endpoints->srv.host.s_addr, endpoints->cli.host.s_addr,
-                                                 endpoints->srv.port, endpoints->cli.port ) < 0 ) 
+                                                 srv_endpoints->srv.host.s_addr, cli_endpoints->cli.host.s_addr,
+                                                 srv_endpoints->srv.port, cli_endpoints->cli.port ) < 0 ) 
                 errlog(ERR_WARNING,"Failed to remove reverse tuple (%d,%s:%i -> %s:%i)\n",
                        netcap_sess->protocol, 
-                       unet_next_inet_ntoa( endpoints->srv.host.s_addr ), endpoints->srv.port,
-                       unet_next_inet_ntoa( endpoints->cli.host.s_addr ), endpoints->cli.port );
+                       unet_next_inet_ntoa( srv_endpoints->srv.host.s_addr ), srv_endpoints->srv.port,
+                       unet_next_inet_ntoa( cli_endpoints->cli.host.s_addr ), cli_endpoints->cli.port );
         }
     }
         

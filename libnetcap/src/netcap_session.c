@@ -192,9 +192,10 @@ netcap_session_t* netcap_session_malloc(void)
     return netcap_sess;
  }
 
-int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, int if_mb )
+int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *cli_endpoints, netcap_endpoints_t *srv_endpoints, int if_mb )
 {
-    if ( endpoints == NULL ) return errlog(ERR_CRITICAL, "Invalid arguments");
+    if ( cli_endpoints == NULL ) return errlog(ERR_CRITICAL, "Invalid arguments");
+    if ( srv_endpoints == NULL ) return errlog(ERR_CRITICAL, "Invalid arguments");
 
     // Clear out the app_data variable
     netcap_sess->app_data = NULL;
@@ -203,10 +204,15 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     netcap_sess->session_id = netcap_session_next_id();
 
     // Set the traffic structures
-    netcap_endpoints_copy( &netcap_sess->srv, endpoints );
-    netcap_endpoints_copy( &netcap_sess->cli, endpoints );
+    netcap_endpoints_copy( &netcap_sess->srv, srv_endpoints );
+    netcap_endpoints_copy( &netcap_sess->cli, cli_endpoints );
 
-    netcap_sess->srv.intf = srv_intf;
+    // debug( 10,"new session: client side: %s:%i -> %s:%i\n",
+    //        unet_next_inet_ntoa( netcap_sess->cli.cli.host.s_addr ), netcap_sess->cli.cli.port,
+    //        unet_next_inet_ntoa( netcap_sess->cli.srv.host.s_addr ), netcap_sess->cli.srv.port );
+    // debug( 10,"new session: server side: %s:%i -> %s:%i\n",
+    //        unet_next_inet_ntoa( netcap_sess->srv.cli.host.s_addr ), netcap_sess->srv.cli.port,
+    //        unet_next_inet_ntoa( netcap_sess->srv.srv.host.s_addr ), netcap_sess->srv.srv.port );
 
     if ( netcap_sess->session_id == 0 ) return errlog( ERR_CRITICAL, "netcap_session_next_id\n" );
     
@@ -239,7 +245,7 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     return 0;
 }
 
-netcap_session_t* netcap_session_create( netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, int if_mb )
+netcap_session_t* netcap_session_create( netcap_endpoints_t *cli_endpoints, netcap_endpoints_t *srv_endpoints, int if_mb )
 {
     netcap_session_t* netcap_sess = NULL;
 
@@ -249,7 +255,7 @@ netcap_session_t* netcap_session_create( netcap_endpoints_t *endpoints, netcap_i
         return errlog_null(ERR_CRITICAL,"netcap_session_malloc");
     }
 
-    if ( netcap_session_init( netcap_sess, endpoints, srv_intf, if_mb ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, cli_endpoints, srv_endpoints, if_mb ) < 0 ) {
         free ( netcap_sess );
         return errlog_null( ERR_CRITICAL, "netcap_session_init" );
     }

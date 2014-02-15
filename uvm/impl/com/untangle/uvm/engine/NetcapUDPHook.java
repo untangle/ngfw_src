@@ -68,6 +68,15 @@ public class NetcapUDPHook implements NetcapCallback
         protected UDPNetcapHook( long id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
+            if ( logger.isDebugEnabled() ) {
+                logger.debug("New Session: Client side: " + id + " (UDP " +
+                             netcapUDPSession.clientSide().client().host().getHostAddress() + ":" + netcapUDPSession.clientSide().client().port() + " -> " +
+                             netcapUDPSession.clientSide().server().host().getHostAddress() + ":" + netcapUDPSession.clientSide().server().port() + ")");
+                logger.debug("New Session: Server side: " + id + " (UDP " +
+                             netcapUDPSession.serverSide().client().host().getHostAddress() + ":" + netcapUDPSession.serverSide().client().port() + " -> " +
+                             netcapUDPSession.serverSide().server().host().getHostAddress() + ":" + netcapUDPSession.serverSide().server().port() + ")");
+            }
+            
             Thread.currentThread().setName("Session " + id + " (UDP " +
                                            netcapUDPSession.clientSide().client().host().getHostAddress() + ":" + netcapUDPSession.clientSide().client().port() + " -> " +
                                            netcapUDPSession.serverSide().server().host().getHostAddress() + ":" + netcapUDPSession.serverSide().server().port() + ")");
