@@ -324,6 +324,11 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
     cli_endpoints = &netcap_sess->cli;
     srv_endpoints = &netcap_sess->srv;
 
+    // FIXME, tcp sessions are currently stored with all client-side information
+    // see netcap_tcp.c FIXME comment
+    if ( netcap_sess->protocol == IPPROTO_TCP )
+        srv_endpoints = &netcap_sess->cli;
+    
     if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
                                          cli_endpoints->cli.host.s_addr, srv_endpoints->srv.host.s_addr,
                                          cli_endpoints->cli.port, srv_endpoints->srv.port ) < 0 ) {
