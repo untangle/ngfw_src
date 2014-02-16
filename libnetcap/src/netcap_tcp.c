@@ -379,7 +379,6 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
     u_int server_len = sizeof(server);
-    int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
     int nfmark;
     u_int nfmark_len = sizeof(nfmark);
@@ -409,35 +408,22 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
            unet_next_inet_ntoa( cli_addr ), cli_port,
            unet_next_inet_ntoa( srv_addr ), srv_port );
 
-    sess = _netcap_get_or_create_sess(&new_sess_flag,
-                                      cli_addr,cli_port,cli_sock,
-                                      srv_addr,srv_port,-1,
-                                      cli_intf_idx, 0 /* srv intf not known */ );
+    SESSTABLE_WRLOCK();
 
-    if (!sess)
-        return errlog(ERR_CRITICAL,"Could not find or create new session\n");
-
-    /**
-     * If this is a new session, call the hook
-     * Otherwise, put the fd in the mailbox
-     */
-    if (new_sess_flag) {
-        debug(8,"TCP: (%"PRIu64") Calling TCP hook\n", sess->session_id);
-
-        /* Since this is a new session, it must be in opaque mode */
-        sess->syn_mode = 0;
-
-        /* Client has already completed */
-        sess->cli_state = CONN_STATE_COMPLETE;
-        
-        if (_netcap_tcp_setsockopt_cli(cli_sock)<0)
-            perrlog("_netcap_tcp_setsockopt_cli");
-
-        global_tcp_hook( sess, NULL ); /* XXX NULL argument */
+    sess = netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_TCP, cli_addr, srv_addr, cli_port, srv_port);
+   
+    SESSTABLE_UNLOCK();
+ 
+    if (!sess) {
+        errlog( ERR_WARNING, "TCP: Could not find session for accepted connection :: (%s:%-5i) -> (%s:%-5i)\n",
+                unet_next_inet_ntoa( cli_addr ), cli_port,
+                unet_next_inet_ntoa( srv_addr ), srv_port );
+        if ( close( cli_sock ) < 0 )
+            perrlog("close");
+        return -1;
     }
-    else {
-        _session_put_complete_fd( sess, cli_sock );
-    }
+
+    _session_put_complete_fd( sess, cli_sock );
 
     return 0;
 }
