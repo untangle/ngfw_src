@@ -114,9 +114,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     // use the pre-NAT source and post-NAT dest (original src and reply src)
     session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
                                              pkt->nat_info.original.src_address,
-                                             pkt->nat_info.reply.src_address,
+                                             pkt->nat_info.original.dst_address,
                                              ntohs( pkt->nat_info.original.src_protocol_id ),
-                                             ntohs( pkt->nat_info.reply.src_protocol_id ));
+                                             ntohs( pkt->nat_info.original.dst_protocol_id ));
     
     // If it doesn't, intialize the session.
     if ( !session ) {
@@ -134,9 +134,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         // use the pre-NAT source and post-NAT dest (original src and reply src)
         if ( netcap_nc_sesstable_add_tuple ( !NC_SESSTABLE_LOCK, session, IPPROTO_UDP,
                                              pkt->nat_info.original.src_address,
-                                             pkt->nat_info.reply.src_address,
+                                             pkt->nat_info.original.dst_address,
                                              ntohs( pkt->nat_info.original.src_protocol_id ),
-                                             ntohs( pkt->nat_info.reply.src_protocol_id )) < 0 ) {
+                                             ntohs( pkt->nat_info.original.dst_protocol_id )) < 0 ) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
