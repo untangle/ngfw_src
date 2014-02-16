@@ -262,6 +262,28 @@ def getUDPSpeed():
     numOfPackets = wcResults.split(' ')[0]
     return numOfPackets
     
+def sendUDPPackets():
+    # Use mgen to send UDP packets.  Returns number of packets received.
+    # start mgen receiver on client. radius server.
+    os.system("rm mgen_recv.dat >/dev/null 2>&1")
+    clientControl.runCommand("rm mgen_recv.dat >/dev/null 2>&1")
+    clientControl.runCommand("mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &")
+    # os.system("rm mgen_recv.dat >/dev/null 2>&1")
+    # os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm mgen_recv.dat >/dev/null 2>&1\"")
+    # os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
+    # start the UDP generator on the radius server.
+    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1\"")
+    # clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1")
+    # wait for UDP to finish
+    time.sleep(70)
+    # kill mgen receiver    
+    clientControl.runCommand("pkill mgen >/dev/null 2>&1")
+    # os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + radiusServer + " \"pkill mgen >/dev/null 2>&1\"")
+    os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.6/untangle_tests/testShell.key testshell@" + ClientControl.hostIP + ":mgen_recv.dat ./ >/dev/null 2>&1")
+    wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
+    # print "wcResults " + str(wcResults)
+    numOfPackets = wcResults.split(' ')[0]
+    return numOfPackets
 
 class NetworkTests(unittest2.TestCase):
 
@@ -376,6 +398,26 @@ class NetworkTests(unittest2.TestCase):
         result = clientControl.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
         ClientControl.hostIP = tmp_hostIP
         assert (result == 0)
+
+    # test a port forward from outside if possible
+    def test_040_portForwardUDPInbound(self):
+        # We will use radiusServer for this test. Test to see if we can reach it.
+        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+        # Also test that it can probably reach us (we're on a 10.x network)
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (wan_IP.split(".")[0] != "10"):
+            raise unittest2.SkipTest("Not on 10.x network, skipping")
+
+        nukePortForwardRules()
+        # port forward UDP 5000 to client box
+        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.hostIP,"5000"))
+
+        # send UDP packets through the port forward
+        UDP_packets = sendUDPPackets()
+        nukePortForwardRules()
+        assert (UDP_packets >  0)
 
     # Test that QoS limits speed
     def test_050_enableQoS(self):
