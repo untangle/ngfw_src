@@ -21,8 +21,11 @@
 #include "netcap_pkt.h"
 
 int netcap_tcp_session_init( netcap_session_t* netcap_sess,
-                             in_addr_t client_addr, u_short client_port, int client_sock,
-                             in_addr_t server_addr, u_short server_port, int server_sock,
+                             in_addr_t c_client_addr, u_short c_client_port, 
+                             in_addr_t c_server_addr, u_short c_server_port, 
+                             in_addr_t s_client_addr, u_short s_client_port,
+                             in_addr_t s_server_addr, u_short s_server_port,
+                             int client_sock, int server_sock,
                              netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
     netcap_endpoints_t cli_endpoints;
@@ -31,17 +34,15 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     netcap_endpoints_bzero(&cli_endpoints);
     netcap_endpoints_bzero(&srv_endpoints);
 
-    cli_endpoints.cli.port = client_port;
-    cli_endpoints.srv.port = server_port;
-    srv_endpoints.cli.port = client_port;
-    srv_endpoints.srv.port = server_port;
+    cli_endpoints.cli.host.s_addr = c_client_addr;
+    cli_endpoints.cli.port = c_client_port;
+    cli_endpoints.srv.host.s_addr = c_server_addr;
+    cli_endpoints.srv.port = c_server_port;
 
-    memcpy( &cli_endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
-    memcpy( &cli_endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
-    memcpy( &srv_endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
-    memcpy( &srv_endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
-    //FIXME the client side and the server side are not the same!
-    //NAT and port forwarding will change the client/server side.
+    srv_endpoints.cli.host.s_addr = s_client_addr;
+    srv_endpoints.cli.port = s_client_port;
+    srv_endpoints.srv.host.s_addr = s_server_addr;
+    srv_endpoints.srv.port = s_server_port;
     
     cli_endpoints.intf = cli_intf;
     srv_endpoints.intf = srv_intf;
@@ -82,8 +83,11 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     return 0;
 }
 
-netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port, int client_sock,
-                                            in_addr_t server_addr, u_short server_port, int server_sock,
+netcap_session_t* netcap_tcp_session_create(in_addr_t c_client_addr, u_short c_client_port, 
+                                            in_addr_t c_server_addr, u_short c_server_port, 
+                                            in_addr_t s_client_addr, u_short s_client_port,
+                                            in_addr_t s_server_addr, u_short s_server_port,
+                                            int client_sock, int server_sock,
                                             netcap_intf_t cli_intf, netcap_intf_t srv_intf )
 {
     int ret;
@@ -93,9 +97,13 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
         return errlog_null( ERR_CRITICAL, "netcap_udp_session_malloc\n" );
     }
 
-    ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
-                                    client_sock, server_addr, server_port,
-                                    server_sock, cli_intf, srv_intf );
+    ret = netcap_tcp_session_init ( netcap_sess,
+                                    c_client_addr, c_client_port,
+                                    c_server_addr, c_server_port,
+                                    s_client_addr, s_client_port,
+                                    s_server_addr, s_server_port,
+                                    client_sock, server_sock,
+                                    cli_intf, srv_intf );
 
     if ( ret < 0) {
         if ( netcap_tcp_session_free(netcap_sess)) {
