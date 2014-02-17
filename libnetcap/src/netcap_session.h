@@ -55,20 +55,15 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess);
 #define netcap_tcp_session_malloc() netcap_session_malloc()
 
 
-int netcap_tcp_session_init( netcap_session_t* netcap_sess,
-                             in_addr_t c_client_addr, u_short c_client_port, 
-                             in_addr_t c_server_addr, u_short c_server_port, 
-                             in_addr_t s_client_addr, u_short s_client_port,
-                             in_addr_t s_server_addr, u_short s_server_port,
-                             int client_sock, int server_sock,
+int netcap_tcp_session_init( netcap_session_t* netcap_sess, 
+                             in_addr_t client_addr, u_short client_port,
+                             int client_sock, in_addr_t server_addr, 
+                             u_short server_port, int server_sock,
                              netcap_intf_t cli_intf, netcap_intf_t srv_intf );
 
-
-netcap_session_t* netcap_tcp_session_create(in_addr_t c_client_addr, u_short c_client_port, 
-                                            in_addr_t c_server_addr, u_short c_server_port, 
-                                            in_addr_t s_client_addr, u_short s_client_port,
-                                            in_addr_t s_server_addr, u_short s_server_port,
-                                            int client_sock, int server_sock,
+netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port,
+                                            int client_sock, in_addr_t server_addr,
+                                            u_short server_port, int server_sock,
                                             netcap_intf_t cli_intf, netcap_intf_t srv_intf );
 
 void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *msg);

@@ -18,6 +18,7 @@
 #include "netcap_hook.h"
 #include "netcap_queue.h"
 #include "netcap_globals.h"
+#include "netcap_sesstable.h"
 #include "netcap_session.h"
 #include "netcap_icmp.h"
 

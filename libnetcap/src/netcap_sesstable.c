@@ -26,11 +26,6 @@
 #define _verify_initialized_null() if ( _initialized != _INITIALIZED ) \
                                      return errlog_null ( ERR_CRITICAL, "Unitialized\n" );
 
-/**
- * The session tuple is the key of the session table
- * The "client-side" or "original" in netfilter terimonolgy should be used
- * as the key to the sesstable
- */
 typedef struct session_tuple {
     u_short proto;
     in_addr_t shost;
@@ -329,13 +324,32 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
     cli_endpoints = &netcap_sess->cli;
     srv_endpoints = &netcap_sess->srv;
 
+    // FIXME, tcp sessions are currently stored with all client-side information
+    // see netcap_tcp.c FIXME comment
+    if ( netcap_sess->protocol == IPPROTO_TCP )
+        srv_endpoints = &netcap_sess->cli;
+    
     if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
-                                         cli_endpoints->cli.host.s_addr, cli_endpoints->srv.host.s_addr,
-                                         cli_endpoints->cli.port, cli_endpoints->srv.port ) < 0 ) {
+                                         cli_endpoints->cli.host.s_addr, srv_endpoints->srv.host.s_addr,
+                                         cli_endpoints->cli.port, srv_endpoints->srv.port ) < 0 ) {
         errlog( ERR_WARNING, "Failed to remove tuple (%d,%s:%i -> %s:%i)\n",
                 netcap_sess->protocol, 
                 unet_next_inet_ntoa( cli_endpoints->cli.host.s_addr ), cli_endpoints->cli.port,
-                unet_next_inet_ntoa( cli_endpoints->srv.host.s_addr ), cli_endpoints->srv.port );
+                unet_next_inet_ntoa( srv_endpoints->srv.host.s_addr ), srv_endpoints->srv.port );
+
+        /**
+         * If its UDP try removing the reverse tuple
+         * This should never happen, but it is just a safety mechanism
+         **/
+        if ( netcap_sess->protocol == IPPROTO_UDP ) {
+            if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
+                                                 srv_endpoints->srv.host.s_addr, cli_endpoints->cli.host.s_addr,
+                                                 srv_endpoints->srv.port, cli_endpoints->cli.port ) < 0 ) 
+                errlog(ERR_WARNING,"Failed to remove reverse tuple (%d,%s:%i -> %s:%i)\n",
+                       netcap_sess->protocol, 
+                       unet_next_inet_ntoa( srv_endpoints->srv.host.s_addr ), srv_endpoints->srv.port,
+                       unet_next_inet_ntoa( cli_endpoints->cli.host.s_addr ), cli_endpoints->cli.port );
+        }
     }
         
     if  ( if_lock ) SESSTABLE_UNLOCK();
