@@ -240,7 +240,7 @@ Ext.define('Ung.Reports', {
                 xtype:'panel',
                 region: 'north',
                 layout:'border',
-                style: 'padding: 7px 5px 7px 7px;background-color:#F0F0F0',
+                style: 'padding: 7px 5px 7px 7px;background-color:#F0F0F0;',
                 height: 70,
                 border:0,
                 defaults: {
@@ -252,21 +252,15 @@ Ext.define('Ung.Reports', {
                     xtype:'panel',
                     html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0" height="50"/>',
                     region: 'west',
-                    border: 0,
                     width: 100
                 }, {
                     xtype: 'label',
                     height:60,
-                    style: 'font-family:sans-serif;font-weight:bold;font-size:37px;margin-left:15px;',
+                    style: 'font-family:sans-serif;font-weight:bold;font-size:37px;padding-left:15px;background-color:#F0F0F0;',
                     text: i18n._('Reports'),
                     region: 'center',
-                    border: 0
                 }, {
                     xtype:'panel',
-                    border:0,
-                    defaults: {
-                        border: 0
-                    },
                     region: 'east',
                     height: 60,
                     width: 350,
@@ -274,7 +268,6 @@ Ext.define('Ung.Reports', {
                     {
                         xtype:"fieldset",
                         layout:'anchor',
-                        border: 0,
                         padding: 0,
                         id: 'rangeFieldSet',
                         style:'border: 0',
