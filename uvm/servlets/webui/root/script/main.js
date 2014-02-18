@@ -1412,7 +1412,7 @@ Ext.define("Ung.Main", {
             width: 470,
             msg: i18n._("Thank you for using Untangle!") + "<br/>" + "<br/>" +
                 i18n._("Applications can now be installed and configured.") + "<br/>" +
-                i18n._("Would you to install the recommended applications now?"),
+                i18n._("Would you like to install the recommended applications now?"),
             icon: Ext.MessageBox.QUESTION
         });
     }
