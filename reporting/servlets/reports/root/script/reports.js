@@ -1212,7 +1212,7 @@ Ext.define('Ung.ReportDetails', {
 
             columns.push({
                 header: "Value",
-                width: 150,
+                flex: 1,
                 sortable: false,
                 menuDisabled: true,
                 dataIndex: 'value',
@@ -1244,7 +1244,7 @@ Ext.define('Ung.ReportDetails', {
                 }, this)
             });
             items.push(Ext.create('Ext.grid.Panel',{
-                style: 'margin-top:10px;',
+                style: 'margin-top:10px;margin-right:35px',
                 autoScroll: true,
                 height: 243,
                 border:0,
@@ -1264,10 +1264,9 @@ Ext.define('Ung.ReportDetails', {
                     xtype: 'label',
                     text: this.i18n._('Key Statistics'),
                     style: 'font-weight: bold;padding-left:3px;',
-                    width: 150
+                    flex: 1,
                 }, {
                     xtype:'button',
-                    width:100,
                     tooltip:this.i18n._('Export Excel'),
                     style: 'padding: 0px 0px 0px 0px;',
                     iconCls:'export-excel',
