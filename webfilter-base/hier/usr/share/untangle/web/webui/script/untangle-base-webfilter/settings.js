@@ -711,7 +711,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 helpSource: this.helpSourceName + '_pass_clients',
                 parentId: this.getId(),
 
-                title: this.i18n._('Passed Clients'),
+                title: this.i18n._('Pass Clients'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
