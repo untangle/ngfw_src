@@ -55,8 +55,8 @@ Ext.define('Ung.Reports', {
     progressBar: null,
     //print view for printing summary page
     printView: false,
-    drillType:null,
-    drillValue:null,
+    drillType: null,
+    drillValue: null,
     // the Ext.Viewport object for the application
     viewport: null,
 
@@ -68,7 +68,7 @@ Ext.define('Ung.Reports', {
     },
     init: function() {
         this.initSemaphore = 3;
-        this.progressBar = Ext.MessageBox;                
+        this.progressBar = Ext.MessageBox;
         this.treeNodes =[];
         
         if(Ext.supports.LocalStorage) {
@@ -143,9 +143,8 @@ Ext.define('Ung.Reports', {
                 return;
             }
             this.cutOffDateInMillisecs = result.time;
-        },this));         
+        },this));
     },
-    
 
     completeGetDates: function( result, exception ) {
         if (exception) {
@@ -202,9 +201,7 @@ Ext.define('Ung.Reports', {
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        
         reports.getApplicationData(reports.selectedApplication, reports.numDays);     
-        console.log("Drill Type and value:", this.drillType,",", this.drillValue);
         if ( this.drillType != null && this.drillType.length > 0 && this.drillValue != null && this.drillValue.length > 0) {
             if ( this.drillType=='host') {
                 reports.getApplicationDataForHost(reports.selectedApplication,this.drillValue);
@@ -318,18 +315,19 @@ Ext.define('Ung.Reports', {
                 border:false,
                 region:"center",
                 layout:"border",
-                height: getWinHeight() - 30,
                 items: [{
-                    xtype:'treepanel',
+                    xtype: 'treepanel',
                     id: 'tree-panel',
                     region: 'west',
                     margin: '1 1 0 1',
                     autoScroll: true,
                     rootVisible: false,
                     title: i18n._('Reports'),
-                    enableDD: false,
                     enableDrag: false,
-                    width:180,
+                    width: 220,
+                    minWidth: 65,
+                    maxWidth: 350,
+                    split: true,
                     store: treeStore,
                     listeners: {
                         'load': function(node) {
@@ -377,7 +375,6 @@ Ext.define('Ung.Reports', {
                     title: 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id: 'report-details',
                     layout:"anchor",
-                    height: getWinHeight() - 30,
                     autoScroll: false,
                     collapsible: false,
                     split: true,
@@ -453,7 +450,7 @@ Ext.define('Ung.Reports', {
                 },{
                     header: i18n._( "View" ),
                     width: 85,
-                    dataIndex: "dt",                    
+                    dataIndex: "dt",
                     renderer: Ext.bind(function(value,meta,record){
                         return '<a href="javascript:reports.showReportFor('+value.time+','+record.data.numDays+')">'+i18n._("View Report")+'</a>';
                     },this)
@@ -716,7 +713,7 @@ Ext.define('Ung.Reports', {
             reports.breadcrumbs.push({ text: this.selectedNode.data.text,
                                        handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays]),
                                        drilldownType: rpc.drilldownType,
-                                       drilldownValue: rpc.drilldownValue                                   
+                                       drilldownValue: rpc.drilldownValue
                                      });
         }                  
         Ung.Util.loadModuleTranslations( nodeName, i18n,
@@ -827,47 +824,20 @@ Ext.define('Ung.Reports', {
 
 Ext.define("Ung.GridEventLogReports", {
     extend: "Ung.GridEventLogBase",
-    // default is getEventQueries() from settingsCmp
-//    eventQueriesFn: null,
-    // called when the component is initialized
-    
     reportsDate: null,
     selectedApplication: null,
     sectionName: null,
     drilldownType: null,
     drilldownValue: null,
-    reportingManager: null,
     numDays: null,
-    enableColumnHide: true,
-    enableColumnMove: true,
-    enableColumnMenu: true,
     eventQuery: null,
-    constructor: function(config) {         
-        this.callParent(arguments);
-    },
-    initComponent: function() {
-        this.callParent(arguments);
-    },
-    autoRefreshCallback: function(result, exception) {
-        if(Ung.Util.handleException(exception)) return;
-        var eventEntries = result;
-        if(testMode) {
-            var emptyRec={};
-            for(var i=0; i<30; i++) {
-                eventEntries.list.push(this.getTestRecord(i, this.fields));
-            }
-        }
-    },
-    autoRefreshList: function() {
-        this.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
-                this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
-    },
+    hasTimestampFilter: false,
+    hasAutoRefresh: false,
+    hasSelectors: false,
     exportHandler: function() {
-            
         Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
         var downloadForm = document.getElementById('downloadForm');
         downloadForm["type"].value="reportsEventLogExport";
-        
         downloadForm["app"].value=this.selectedApplication;
         downloadForm["section"].value=this.sectionName;
         downloadForm["numDays"].value=this.numDays;
@@ -875,17 +845,16 @@ Ext.define("Ung.GridEventLogReports", {
         downloadForm["type"].value= this.drilldownType;
         downloadForm["value"].value= this.drilldownValue;
         downloadForm["colList"].value=this.getColumnList();
-        
-        
         downloadForm.submit();
         Ext.MessageBox.hide();
     },
     getColumnList: function() {
         var columnList = "";
         for (var i=0; i<this.columns.length ; i++) {
-            if (!this.columns[i].hidden){
-                if (i !== 0)
+            if (!this.columns[i].hidden) {
+                if (i !== 0) {
                     columnList += ",";
+                }
                 columnList += this.columns[i].dataIndex;
             }
         }
@@ -894,18 +863,10 @@ Ext.define("Ung.GridEventLogReports", {
     refreshHandler: function (forceFlush) {
         this.refreshList();
     },
-    flushHandler: function (forceFlush) {
-        this.refreshList();
-    },
-    // called when the component is rendered
-    afterRender: function() {
-        this.callParent(arguments);
-        
-    },
     refreshList: function() {
         this.setLoading(i18n._('Querying Database...'));
-        this.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this),this.reportsDate, this.numDays, 
-                this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
+        rpc.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this), this.reportsDate, this.numDays, 
+            this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
     }
 });
 
@@ -928,7 +889,6 @@ Ext.define('Ung.ReportDetails', {
         var data = [];
         var i = 0;
         var list = rpc.applicationData.applications.list;
-
 
         for (i=0; i<list.length; i++) {
             data.push([list[i].javaClass,list[i].name,list[i].title]);
@@ -1061,7 +1021,6 @@ Ext.define('Ung.ReportDetails', {
             }
         }
     
-
         //create breadcrums item
         var breadcrumbArr=[];
         for(i=0;i<reports.breadcrumbs.length;i++) {
@@ -1162,7 +1121,6 @@ Ext.define('Ung.ReportDetails', {
             columnWidth: 0.5,
             items:items
         });
-        
     },
     getHighlightHTML: function(summaryItem,smallIcons) {
         var stringTemplate = summaryItem.stringTemplate,
@@ -1204,7 +1162,6 @@ Ext.define('Ung.ReportDetails', {
             });
         }
         
-        
         for (var i = 0; i < section.summaryItems.list.length; i++) {
             var summaryItem = section.summaryItems.list[i];       
 
@@ -1213,22 +1170,16 @@ Ext.define('Ung.ReportDetails', {
             columns = [];
             items.push({html:str,colspan:2,bodyStyle:'padding:10px'});
         } else {
-
             // graph
-            
             items.push({html:'<img src="'+summaryItem.imageUrl+'" width="338" height="230"/>', bodyStyle:'padding:20px'});
             // key statistics
-
             colors = summaryItem.colors.map;
-
             columns = [];
             var data = [],columnTwoWidth=175;
             for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
                 var keyStatistic = summaryItem.keyStatistics.list[j];
                 data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
             }
-
-            columns = [];
 
             if (summaryItem.plotType == 'pie-chart') {
                 columnTwoWidth = 135;
@@ -1240,7 +1191,6 @@ Ext.define('Ung.ReportDetails', {
                     dataIndex: 'color',
                     renderer: Ext.bind(function(value, medata, record) {
                         return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>';
-                        //return value;
                     },this)
                 });
             }
@@ -1317,14 +1267,12 @@ Ext.define('Ung.ReportDetails', {
                 }),
                 columns: columns,
                 // inline toolbars
-                tbar:[
-                {
+                tbar:[{
                     xtype: 'label',
                     text: this.i18n._('Key Statistics'),
                     style: 'font-weight: bold;padding-left:3px;',
                     width: 150
-                },
-                {
+                }, {
                     xtype:'button',
                     width:100,
                     tooltip:this.i18n._('Export Excel'),
@@ -1342,8 +1290,8 @@ Ext.define('Ung.ReportDetails', {
         }
         var cfg={title: section.title,
                 layout:{ 
-            	    type:'table',
-            	    columns: 2,
+                    type:'table',
+                    columns: 2,
                     tableAttrs: {
                         style: {
                             width: '100%'
@@ -1459,9 +1407,7 @@ Ext.define('Ung.ReportDetails', {
             fields.push({ name: c.name });
         }
         
-        
-        var detailSection = null;
-            detailSection = Ext.create('Ung.GridEventLogReports',{
+        var detailSection = Ext.create('Ung.GridEventLogReports',{
                 name: section.title,
                 settingsCmp: this,
                 title: section.title,
@@ -1470,18 +1416,11 @@ Ext.define('Ung.ReportDetails', {
                 sectionName: section.name,
                 drilldownType: rpc.drilldownType,
                 drilldownValue: rpc.drilldownValue,
-                reportingManager: rpc.reportingManager,
                 eventQuery: section.sql,
                 numDays: reports.numDays,
                 columns: columns,
-                hasTimestampFilter: false,
-                hasAutoRefresh: false,
                 fields: fields
             });
-                
-//                Ung.CustomEventLog.buildHttpEventLogImpl (this, 'EventLog', section.title, 
-//                this.helpSourceName + '_event_log', columns, null, 'Ung.GridEventLogReports', false, false);
- 
         return detailSection;
     }
 });

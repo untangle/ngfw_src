@@ -2543,8 +2543,9 @@ Ext.define("Ung.SelectDateTimeWindow", {
 //Event Log class
 Ext.define("Ung.GridEventLogBase", {
     extend: "Ext.grid.Panel",
-    
-    hasTimestampFilter: true,
+    hasSelectors: null,
+    hasTimestampFilter: null,
+    hasAutoRefresh: null,
     reserveScrollbar: true,
     // refresh on activate Tab (each time the tab is clicked)
     refreshOnActivate: true,
@@ -2589,7 +2590,6 @@ Ext.define("Ung.GridEventLogBase", {
         Ext.applyIf(this, {
             title: i18n._('Event Log'),
             name: 'EventLog',
-            hasAutoRefresh: true,
             features:[],
             viewConfig: {}
         });
@@ -2664,7 +2664,14 @@ Ext.define("Ung.GridEventLogBase", {
                     this.searchField.setValue("");
                     this.filters.clearFilters();
                 }, this) 
-            }, '->',{
+            }, {
+                text: i18n._('Reset View'),
+                tooltip: i18n._('Restore default columns positions, widths and visibility'),
+                handler: Ext.bind(function () {
+                    Ext.state.Manager.clear(this.stateId);
+                    this.reconfigure(this.getStore(), this.initialConfig.columns);
+                }, this) 
+            },'->',{
                 xtype: 'button',
                 id: "export_"+this.getId(),
                 text: i18n._('Export'),
@@ -2678,14 +2685,17 @@ Ext.define("Ung.GridEventLogBase", {
             dock: 'bottom',
             items: [{
                 xtype: 'tbtext',
+                hidden: !this.hasSelectors,
                 id: "querySelector_"+this.getId(),
                 text: ''
             }, {
                 xtype: 'tbtext',
+                hidden: !this.hasSelectors,
                 id: "rackSelector_"+this.getId(),
                 text: ''
             }, {
                 xtype: 'tbtext',
+                hidden: !this.hasSelectors,
                 id: "limitSelector_"+this.getId(),
                 text: ''
             }, 
@@ -2810,7 +2820,7 @@ Ext.define("Ung.GridEventLogBase", {
         this.searchField=this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
     },
-    autoRefreshEnabled: true,
+    autoRefreshEnabled: false,
     startAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=true;
         var columnModel=this.columns;
@@ -2843,12 +2853,14 @@ Ext.define("Ung.GridEventLogBase", {
     getColumnList: function() {
         var columnList = "";
         for (var i=0; i<this.fields.length ; i++) {
-            if (i !== 0)
+            if (i !== 0) {
                 columnList += ",";
-            if (this.fields[i].mapping != null)
+            }
+            if (this.fields[i].mapping != null) {
                 columnList += this.fields[i].mapping;
-            else if (this.fields[i].name != null)
+            } else if (this.fields[i].name != null) {
                 columnList += this.fields[i].name;
+            }
         }
         return columnList;
     },
@@ -2936,6 +2948,9 @@ Ext.define("Ung.GridEventLogBase", {
 Ext.define("Ung.GridEventLog", {
     extend: "Ung.GridEventLogBase",
     // the settings component
+    hasTimestampFilter: true,
+    hasAutoRefresh: true,
+    hasSelectors: true,
     settingsCmp: null,    
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
