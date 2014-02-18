@@ -71,8 +71,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         // Block Lists Panel
         buildPanelBlockedCategories: function() {
             this.gridCategories = Ext.create('Ung.EditorGrid',{
-                name: 'Blocked Categories',
-                title: this.i18n._("Blocked Categories"),
+                name: 'Categories',
+                title: this.i18n._("Categories"),
                 sizetoParent: true,
                 settingsCmp: this,
                 hasAdd: false,
@@ -162,11 +162,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
             
             this.categoriesPanel = Ext.create('Ext.panel.Panel',{
-                name: 'BlockedCategories',
-                helpSource: this.helpSourceName + '_blocked_categories',
+                name: 'BlockCategories',
+                title: this.i18n._('Block Categories'),
+                helpSource: this.helpSourceName + '_block_categories',
                 parentId: this.getId(),
-
-                title: this.i18n._('Blocked Categories'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -179,7 +178,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 items: [{
                     cls: 'description',
-                    title: this.i18n . _("Blocked Categories"),
+                    title: this.i18n . _("Block Categories"),
                     html: this.i18n . _("Block or flag access to sites associated with the specified category."),
                     style: "margin-bottom: 10px;"
                 },
@@ -194,6 +193,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildPanelBlockedSites: function() {
             this.gridBlockedSites = Ext.create('Ung.EditorGrid',{
                 name: 'Sites',
+                title: this.i18n._("Sites"),
                 settingsCmp: this,
                 emptyRow: {
                     "string": this.i18n._("[no site]"),
@@ -202,7 +202,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description": this.i18n._("[no description]")
                 },
                 flex: 1,    
-                title: this.i18n._("Sites"),
                 paginated: false,
                 dataProperty: "blockedUrls",
                 recordJavaClass: "com.untangle.uvm.node.GenericRule",
@@ -273,11 +272,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
             
             this.blockedSitesPanel = Ext.create('Ext.panel.Panel',{
-                name: 'BlockedSites',
-                helpSource: this.helpSourceName + '_blocked_sites',
+                name: 'BlockSites',
+                title: this.i18n._('Block Sites'),
+                helpSource: this.helpSourceName + '_block_sites',
                 parentId: this.getId(),
-
-                title: this.i18n._('Blocked Sites'),
+                title: this.i18n._('Block Sites'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -397,10 +396,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
             
             this.blockedFileTypesPanel = Ext.create('Ext.panel.Panel',{
-                name: 'BlockedFileTypes',
-                helpSource: this.helpSourceName + '_blocked_filetypes',
+                name: 'BlockFileTypes',
+                title: this.i18n._('Block File Types'),
+                helpSource: this.helpSourceName + '_block_filetypes',
                 parentId: this.getId(),
-                title: this.i18n._('Blocked File Types'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -413,7 +412,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 items: [{
                     cls: 'description',
-                    title: this.i18n . _("Blocked File Types"),
+                    title: this.i18n . _("Block File Types"),
                     html: this.i18n . _("Block or flag access to files associated with the specified file type."),
                     style: "margin-bottom: 10px;"
                 },
@@ -518,11 +517,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
             
             this.blockedMimeTypesPanel = Ext.create('Ext.panel.Panel',{
-                name: 'BlockedMimeTypes',
-                helpSource: this.helpSourceName + '_blocked_mimetypes',
+                name: 'BlockMimeTypes',
+                title: this.i18n._('Block Mime Types'),
+                helpSource: this.helpSourceName + '_block_mimetypes',
                 parentId: this.getId(),
-
-                title: this.i18n._('Blocked Mime Types'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -535,7 +533,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 items: [{
                     cls: 'description',
-                    title: this.i18n . _("Blocked MIME Types"),
+                    title: this.i18n . _("Block MIME Types"),
                     html: this.i18n . _("Block or flag access to files associated with the specified MIME type."),
                     style: "margin-bottom: 10px;"
                 },
@@ -615,11 +613,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
 
             this.allowedSitesPanel = Ext.create('Ext.panel.Panel',{
-                name: 'PassedSites',
-                helpSource: this.helpSourceName + '_passed_sites',
+                name: 'PassSites',
+                helpSource: this.helpSourceName + '_pass_sites',
                 parentId: this.getId(),
 
-                title: this.i18n._('Passed Sites'),
+                title: this.i18n._('Pass Sites'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
@@ -632,8 +630,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 items: [{
                     cls: 'description',
-                    title: this.i18n . _("Passed Sites"),
-                    html: this.i18n . _("Always allow access to the specified site regardless of matching block policies."),
+                    title: this.i18n . _("Pass Sites"),
+                    html: this.i18n . _("Allow access to the specified site regardless of matching block policies."),
                     style: "margin-bottom: 10px;"
                 },
                     this.gridAllowedSites
@@ -709,8 +707,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
 
             this.allowedClientsPanel = Ext.create('Ext.panel.Panel',{
-                name: 'PassedClients',
-                helpSource: this.helpSourceName + '_passed_clients',
+                name: 'PassClients',
+                helpSource: this.helpSourceName + '_pass_clients',
                 parentId: this.getId(),
 
                 title: this.i18n._('Passed Clients'),
@@ -726,8 +724,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 items: [{
                     cls: 'description',
-                    title: this.i18n . _("Passed Clients"),
-                    html: this.i18n . _("Always allow access for client networks regardless of matching block policies."),
+                    title: this.i18n . _("Pass Clients"),
+                    html: this.i18n . _("Allow access for client networks regardless of matching block policies."),
                     style: "margin-bottom: 10px;"
                 },
                     this.gridAllowedClients
