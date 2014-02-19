@@ -3860,11 +3860,13 @@ if (!Ung.hasResource["Ung.Network"]) {
                 settingsCmp: this,
                 paginated: false,
                 hasReorder: true,
+                hasReadOnly: true,
                 addAtTop: false,
                 emptyRow: {
                     "ruleId": -1,
                     "enabled": true,
                     "blocked": false,
+                    "readOnly": null,
                     "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.FilterRule"
                 },
@@ -3881,6 +3883,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: 'matchers'
                 },{
                     name: 'description'
+                }, {
+                    name: 'readOnly'
                 }, {
                     name: 'javaClass'
                 }],

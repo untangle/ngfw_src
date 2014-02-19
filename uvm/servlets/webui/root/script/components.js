@@ -5058,6 +5058,9 @@ Ext.define('Ung.RowEditorWindow', {
             component.suspendEvents();
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
+            if(component.dataIndex!= 'enabled' && this.grid.hasReadOnly) {
+                component.setDisabled(record.get("readOnly") === true);
+            }
             return;
         }
         if (component.items) {
@@ -5161,12 +5164,14 @@ Ext.define('Ung.grid.EditColumn', {
     menuDisabled: true,
     resizable: false,
     iconCls: 'icon-edit-row',
+    hasReadOnly: false,
     constructor: function(config) {
-        if (!config.header) {
-            config.header = i18n._("Edit");
-        }
-        if (!config.width) {
-            config.width = 50;
+        Ext.applyIf(config, {
+            header: i18n._("Edit"),
+            width: 50
+        });
+        if(config.hasReadOnly) {
+            this.getClass = this.getClassReadOnly;
         }
         this.callParent(arguments);
     },
@@ -5176,6 +5181,13 @@ Ext.define('Ung.grid.EditColumn', {
     handler: function(view, rowIndex, colIndex) {
         var rec = view.getStore().getAt(rowIndex);
         this.grid.editHandler(rec);
+    },
+    getClassReadOnly: function(value, metadata, record) {
+        if(!record.get("readOnly")) {
+            return this.iconCls; 
+        } else {
+            return 'icon-detail-row';
+        }
     }
 });
 
@@ -5185,12 +5197,14 @@ Ext.define('Ung.grid.DeleteColumn', {
     menuDisabled: true,
     resizable: false,
     iconCls: 'icon-delete-row',
+    hasReadOnly: false,
     constructor: function(config) {
-        if (!config.header) {
-            config.header = i18n._("Delete");
-        }
-        if (!config.width) {
-            config.width = 55;
+        Ext.applyIf(config, {
+            header: i18n._("Delete"),
+            width: 55
+        });
+        if(config.hasReadOnly) {
+            this.getClass = this.getClassReadOnly;
         }
         this.callParent(arguments);
     },
@@ -5200,6 +5214,13 @@ Ext.define('Ung.grid.DeleteColumn', {
     handler: function(view, rowIndex, colIndex) {
         var rec = view.getStore().getAt(rowIndex);
         this.grid.deleteHandler(rec);
+    },
+    getClassReadOnly: function(value, metadata, record) {
+        if(!record.get("readOnly")) {
+            return this.iconCls;
+        } else {
+            return 'x-hide-display';
+        }
     }
 });
 
@@ -5247,6 +5268,8 @@ Ext.define('Ung.EditorGrid', {
     configReorder: null,
     // the default Empty record for a new row
     emptyRow: null,
+    // implements readOnly rows feaure
+    hasReadOnly: null,
     // input lines used by the row editor
     rowEditorInputLines: null,
     // label width for row editor input lines
@@ -5308,6 +5331,7 @@ Ext.define('Ung.EditorGrid', {
     },
     
     initComponent: function() {
+        var grid=this;
         if(this.hasInlineEditor) {
             this.inlineEditor=Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
@@ -5331,14 +5355,29 @@ Ext.define('Ung.EditorGrid', {
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }
+            if(this.hasReadOnly && col.dataIndex != 'enabled') {
+                if(col.xtype == "checkcolumn") {
+                    if (!col.listeners) { 
+                        col.listeners = {};
+                    }
+                    col.listeners["beforecheckchange"] = {
+                        fn: function(elem, rowIndex, checked, eOpts) {
+                            var record = grid.getStore().getAt(rowIndex);
+                            if (record.get('readOnly') == true) {
+                                return false;
+                            }
+                        }
+                    };
+                }
+            }
         }    
         if (this.hasEdit) {
-            var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {});
+            var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {hasReadOnly: this.hasReadOnly});
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
         }
         if (this.hasDelete) {
-            var deleteColumn = Ext.create('Ung.grid.DeleteColumn', this.configDelete || {});
+            var deleteColumn = Ext.create('Ung.grid.DeleteColumn', this.configDelete || {hasReadOnly: this.hasReadOnly});
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
         }
@@ -5434,6 +5473,11 @@ Ext.define('Ung.EditorGrid', {
                 parentId: this.getId(),
                 handler: Ext.bind(this.exportHandler, this)
             },'-');        
+        }
+        if(this.hasReadOnly) {
+            this.on('beforeedit', function(editor, e) {
+                if (e.record.get('readOnly') == true) return false;
+            });
         }
         this.callParent(arguments);
     },
