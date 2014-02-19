@@ -4,35 +4,153 @@ var rpc = null;
 var reports = null;
 var testMode = false;
 
-function getWinHeight(){
-    if(!window.innerHeight){
-        return window.screen.height - 190;
-    }
-    return window.innerHeight;
-}
-
-function getWinWidth(){
-    if(!window.innerWidth){
-        return window.screen.width - 190;
-    }
-    return window.innerWidth;
-}
-
-function handleTimeout(ex) {
-    if (ex instanceof JSONRpcClient.Exception) {
-        if (ex.code == 550) {
-            setTimeout(function () { location.reload(true);}, 300);
-            return true;
-        }
-    }
-    return false;
-}
-
 JSONRpcClient.toplevel_ex_handler = function (ex) {
-    handleTimeout(ex);
+    Ung.Util.handleTimeout(ex);
 };
 JSONRpcClient.max_req_active = 10;
 
+Ung.Util = {
+    // Load css file Dynamically
+    loadCss: function(filename) {
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", filename);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+    },
+    // Load script file Dynamically
+    loadScript: function(sScriptSrc, handler) {
+        var error=null;
+        try {
+            if(window.XMLHttpRequest)
+                var req = new XMLHttpRequest();
+            else
+                var req = new ActiveXObject("Microsoft.XMLHTTP");
+            req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
+            req.send(null);
+            if( window.execScript)
+                window.execScript(req.responseText);
+            else
+                window.eval(req.responseText);
+        } catch (e) {
+            error=e;
+        }
+        if(handler) {
+            handler.call(this);
+        }
+        return error;
+    },
+    loadModuleTranslations : function(appName, i18n, handler) {
+        if(!Ung.i18nModuleInstances[appName]) {
+            rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, appName, i18n, handler) {
+                if (exception) {
+                    var message = exception.message;
+                    if (message == null || message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                    }
+                    
+                    Ext.MessageBox.alert("Failed", message);
+                    return;
+                };
+                var moduleMap=result.map;
+                Ung.i18nModuleInstances[appName] = new Ung.ModuleI18N({
+                        "map" : i18n.map,
+                        "moduleMap" : moduleMap
+                });
+                handler.call(this);
+            },this,[appName, i18n, handler],true), appName);
+        } else {
+            handler.call(this);
+        }
+    },
+    handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
+        if(exception) {
+            console.error("handleException:", exception);
+            if(exception.message == null) {
+                exception.message = "";
+            }
+            var message = null;
+            var gotoStartPage=false;
+            /* special text for rack error */
+            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") != -1)) {
+                message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
+                message += i18n._("Each application can only be installed once in each policy/rack.") + "<br/>";
+            }
+            /* handle connection lost */
+            if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+                /* handle connection lost (this happens on windows only for some reason) */
+                (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
+                /* special text for "method not found" and "Service Temporarily Unavailable" */
+                exception.message.indexOf("method not found") != -1 ||
+                exception.message.indexOf("Service Unavailable") != -1 ||
+                exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
+                exception.message.indexOf("This application is not currently available") != -1) {
+                message  = i18n._("The connection to the server has been lost.") + "<br/>";
+                message += i18n._("Press OK to return to the login page.") + "<br/>";
+                if (type !== "noAlert") {
+                    handler = Ung.Util.goToStartPage; //override handler
+                }
+            }
+            /* worst case - just say something */
+            if (message == null) {
+                message = i18n._("An error has occurred.");
+            }
+            
+            var details = "";
+            if ( exception ) {
+                if ( exception.javaStack )
+                    exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+                if ( exception.name )
+                    details += "<b>" + i18n._("Exception name") +":</b> " + exception.name + "<br/><br/>";
+                if ( exception.code )
+                    details += "<b>" + i18n._("Exception code") +":</b> " + exception.code + "<br/><br/>";
+                if ( exception.message )
+                    details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( exception.javaStack )
+                    details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( exception.stack ) 
+                    details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( rpc.fullVersionAndRevision != null ) 
+                    details += "<b>" + i18n._("Build") +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
+                details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
+            }
+            
+            if (handler==null) {
+                Ung.Util.showWarningMessage(message, details);
+            } else if(type==null || type== "alertCallback") {
+                Ung.Util.showWarningMessage(message, details, handler);
+            } else if (type== "alert") {
+                Ung.Util.showWarningMessage(message, details);
+                handler();
+            } else if (type== "noAlert") {
+                handler(message, details);
+            }
+            return !continueExecution;
+        }
+        return false;
+    },
+    handleTimeout: function (ex) {
+        if (ex instanceof JSONRpcClient.Exception) {
+            if (ex.code == 550) {
+                setTimeout(function () { location.reload(true);}, 300);
+                return true;
+            }
+        }
+        return false;
+    },
+    getWinHeight: function() {
+        if(!window.innerHeight) {
+            return window.screen.height - 190;
+        }
+        return window.innerHeight;
+    },
+    getWinWidth: function () {
+        if(!window.innerWidth) {
+            return window.screen.width - 190;
+        }
+        return window.innerWidth;
+    }
+};
 // Main object class
 Ext.define('Ung.Reports', {
     //The selected reports date
@@ -85,7 +203,7 @@ Ext.define('Ung.Reports', {
 
     completeLanguageManager: function( result, exception ) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
         }
@@ -96,7 +214,7 @@ Ext.define('Ung.Reports', {
 
     completeGetTranslations: function( result, exception ) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
             return;
@@ -108,7 +226,7 @@ Ext.define('Ung.Reports', {
 
     completeSkinManager: function(result,exception) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
         }
@@ -118,7 +236,7 @@ Ext.define('Ung.Reports', {
 
     completeGetSkinSettings: function(result, exception) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
             return;
@@ -131,7 +249,7 @@ Ext.define('Ung.Reports', {
 
     completeReportingManager: function(result, exception) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
         }
@@ -148,7 +266,7 @@ Ext.define('Ung.Reports', {
 
     completeGetDates: function( result, exception ) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed", exception.message);
             }
             return;
@@ -414,7 +532,7 @@ Ext.define('Ung.Reports', {
                 hasReorder: false,
                 hasEdit: false,
                 hasDelete: false,
-                height: getWinHeight()-60,
+                height: Ung.Util.getWinHeight()-60,
                 hasAdd: false,
                 data: this.getAvailableReportsData(),
                 title: i18n._( "Report Details" ),
@@ -469,11 +587,11 @@ Ext.define('Ung.Reports', {
                 applyTo: 'window-container',
                 layout: 'fit',
                 title: i18n._("Available Reports"),
-                width: getWinWidth() - 100,
+                width: Ung.Util.getWinWidth() - 100,
                 resizable: false,
                 modal: true,
                 draggable: false,
-                height: getWinHeight()-30,
+                height: Ung.Util.getWinHeight()-30,
                 closeAction:'hide',
                 plain: true,
                 items: Ext.create('Ext.panel.Panel',{
@@ -492,12 +610,12 @@ Ext.define('Ung.Reports', {
         this.availableReportsWindow.show();
     },
     isDynamicDataAvailable: function(selectedDate) {
-         var oneDay = 24*3600*1000,
+        var oneDay = 24*3600*1000,
         toDateInMillisecs =selectedDate.dt.time - oneDay,
         fromDateInMillisecs = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),
         cutOffDateInMillisecs = this.cutOffDateInMillisecs;
 
-        return fromDateInMillisecs  - cutOffDateInMillisecs < 0  ? false: true;
+        return fromDateInMillisecs >= cutOffDateInMillisecs;
     },    
     getTreeNodesFromTableOfContent: function(tableOfContents) {
         var treeNodes = [];
@@ -623,7 +741,7 @@ Ext.define('Ung.Reports', {
             this.numDays =  this.reportDatesItems[i].numDays;   
             rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
                 if (exception) {
-                    if (!handleTimeout(exception)) {
+                    if (!Ung.Util.handleTimeout(exception)) {
                         Ext.MessageBox.alert("Failed", exception.message);
                     }
                     return;
@@ -673,7 +791,7 @@ Ext.define('Ung.Reports', {
     },
     processHiglightsData: function(result,exception,nodeName,numDays) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed",exception.message);
             }
             return;
@@ -696,7 +814,7 @@ Ext.define('Ung.Reports', {
     },
     processApplicationData: function (result,exception,nodeName,numDays) {
         if (exception) {
-            if (!handleTimeout(exception)) {
+            if (!Ung.Util.handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed",exception.message);
             }
             return;
@@ -734,7 +852,7 @@ Ext.define('Ung.Reports', {
              if (exception) {
                  var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
                  if(exception.message){
-                     if (!handleTimeout(exception)) {
+                     if (!Ung.Util.handleTimeout(exception)) {
                          Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
                      }
                  }else{
@@ -772,7 +890,7 @@ Ext.define('Ung.Reports', {
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
             if (exception) {
-                if (!handleTimeout(exception)) {
+                if (!Ung.Util.handleTimeout(exception)) {
                     Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                 }
                 return;
