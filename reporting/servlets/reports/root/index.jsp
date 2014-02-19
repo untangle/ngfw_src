@@ -94,7 +94,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
     String drillValue= request.getParameter("drillValue");
     String args = "";
     if(selectedApplication != null && reportsDate != null && numDays != null){
-        args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+",drillType:'" + drillType +"',drillValue:'" + drillValue +"'";
+        args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaClass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+",drillType:'" + drillType +"',drillValue:'" + drillValue +"'";
     }
 %>
         Ext.onReady(function(){
