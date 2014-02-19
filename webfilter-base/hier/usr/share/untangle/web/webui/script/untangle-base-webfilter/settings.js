@@ -276,7 +276,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title: this.i18n._('Block Sites'),
                 helpSource: this.helpSourceName + '_block_sites',
                 parentId: this.getId(),
-                title: this.i18n._('Block Sites'),
                 cls: 'ung-panel',
                 autoScroll: true,
                 defaults: {
