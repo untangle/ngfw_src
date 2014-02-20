@@ -267,7 +267,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 xtype: 'templatecolumn',
                 menuDisabled: true,
                 resizable: false,
-                width: 35,
+                width: 30,
                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
             }, {
                 header: i18n._( "Device" ),
@@ -346,7 +346,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header: i18n._( "Status" ),
                 dataIndex: 'connected',
                 sortable: false,
-                width: 220,
+                width: 223,
+                flex: 1,
                 tdCls: 'ua-draggable',
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                     var connected = record.get("connected");
@@ -362,7 +363,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header: i18n._( "MAC Address" ),
                 dataIndex: 'macAddress',
                 sortable: false,
-                width: 110,
+                width: 120,
                 renderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
                     var text = "";
                     if ( value && value.length > 0 ) {
