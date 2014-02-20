@@ -4948,6 +4948,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.packetTest.show();
         },        
         validate: function() {
+            var i;
             var domainNameCmp =this.panelHostName.down('textfield[name="DomainName"]');
             if (!domainNameCmp.isValid()) {
                 this.tabs.setActiveTab(this.panelHostName);
@@ -4972,7 +4973,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             }
             if(this.settings.qosSettings.qosEnabled) {
                 var qosBandwidthList = this.gridQosWanBandwidth.getPageList();
-                for(var i=0; i<qosBandwidthList.length; i++) {
+                for( i=0; i<qosBandwidthList.length; i++) {
                     var qosBandwidth = qosBandwidthList[i]; 
                     if(qosBandwidth.configType == "ADDRESSED" &&
                        qosBandwidth.isWan &&
@@ -4985,6 +4986,31 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 }
             }
+            var found = false;
+            var rules = this.gridInputFilterRules.getPageList();
+            if( rules ) {
+                for( i=0; i<rules.length ; i++ ) {
+                    var rule = rules[i];
+                    if ( rule.description == "Block All" ) {
+                        found = true;
+                        if ( rule.enabled == false ) {
+                            this.tabs.setActiveTab(this.panelAdvanced);
+                            this.advancedTabPanel.setActiveTab(this.panelFilter);
+                            this.gridInputFilterRules.focus();
+                            Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is dangerous and not allowed! Refer to the documentation."));
+                            return false;
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                this.tabs.setActiveTab(this.panelAdvanced);
+                this.advancedTabPanel.setActiveTab(this.panelFilter);
+                this.gridInputFilterRules.focus();
+                Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is missing. This is dangerous and not allowed! Refer to the documentation."));
+                return false;
+            }
+            
             return true;
         },
         needRackReload: false,
