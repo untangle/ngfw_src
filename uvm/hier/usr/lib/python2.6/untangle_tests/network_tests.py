@@ -8,6 +8,7 @@ import re
 import subprocess
 import ipaddr
 import time
+import system_props
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -404,6 +405,10 @@ class NetworkTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
+        mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
+        if mgenResult:
+            # http://www.nrl.navy.mil/itd/ncs/products/mgen
+            raise unittest2.SkipTest("Mgen app needs to be installed on client")
 
         nukePortForwardRules()
         # port forward UDP 5000 to client box
@@ -704,7 +709,9 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['sendTraps'] = True
         systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
         uvmContext.systemManager().setSettings(systemSettings)
-        result = clientControl.runCommand("snmpwalk -v 2c -c atstest 192.168.10.61 | grep untangle >/dev/null 2>&1")
+        systemProperties = system_props.SystemProperties()
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+        result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle >/dev/null 2>&1")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 0)
 
