@@ -1113,6 +1113,7 @@ public class NetworkManagerImpl implements NetworkManager
         // enabled in dev env
         // disabled but there in normal env
         FilterRule filterRuleSsh = new FilterRule();
+        filterRuleSsh.setReadOnly( true );
         filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
@@ -1129,6 +1130,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSsh.setMatchers( ruleSshMatchers );
 
         FilterRule filterRuleHttpsWan = new FilterRule();
+        filterRuleHttpsWan.setReadOnly( true );
         filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
@@ -1149,6 +1151,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsWan.setMatchers( ruleHttpsWanMatchers );
 
         FilterRule filterRuleHttpsNonWan = new FilterRule();
+        filterRuleHttpsNonWan.setReadOnly( true );
         filterRuleHttpsNonWan.setEnabled( true );
         filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
         filterRuleHttpsNonWan.setBlocked( false );
@@ -1169,6 +1172,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsNonWan.setMatchers( ruleHttpsNonWanMatchers );
 
         FilterRule filterRulePing = new FilterRule();
+        filterRulePing.setReadOnly( true );
         filterRulePing.setEnabled( true );
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
@@ -1181,6 +1185,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRulePing.setMatchers( rulePingMatchers );
 
         FilterRule filterRuleIPsec = new FilterRule();
+        filterRuleIPsec.setReadOnly( true );
         filterRuleIPsec.setEnabled( true );
         filterRuleIPsec.setDescription( "Allow IPsec" );
         filterRuleIPsec.setBlocked( false );
@@ -1193,6 +1198,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleIPsec.setMatchers( ruleIPsecMatchers );
         
         FilterRule filterRuleDns = new FilterRule();
+        filterRuleDns.setReadOnly( true );
         filterRuleDns.setEnabled( true );
         filterRuleDns.setDescription( "Allow DNS on non-WANs" );
         filterRuleDns.setBlocked( false );
@@ -1212,6 +1218,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDns.setMatchers( ruleDnsMatchers );
 
         FilterRule filterRuleDhcp = new FilterRule();
+        filterRuleDhcp.setReadOnly( true );
         filterRuleDhcp.setEnabled( true );
         filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
         filterRuleDhcp.setBlocked( false );
@@ -1232,6 +1239,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDhcp.setMatchers( ruleDhcpMatchers );
         
         FilterRule filterRuleHttp = new FilterRule();
+        filterRuleHttp.setReadOnly( true );
         filterRuleHttp.setEnabled( true );
         filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
         filterRuleHttp.setBlocked( false );
@@ -1252,6 +1260,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttp.setMatchers( ruleHttpMatchers );
 
         FilterRule filterRuleSnmp = new FilterRule();
+        filterRuleSnmp.setReadOnly( true );
         filterRuleSnmp.setEnabled( true );
         filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
         filterRuleSnmp.setBlocked( false );
@@ -1272,6 +1281,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSnmp.setMatchers( ruleSnmpMatchers );
 
         FilterRule filterRuleBlock = new FilterRule();
+        filterRuleBlock.setReadOnly( true );
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setDescription( "Block All" );
         filterRuleBlock.setBlocked( true );
