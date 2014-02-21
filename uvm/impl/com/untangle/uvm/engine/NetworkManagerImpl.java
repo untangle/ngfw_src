@@ -1184,19 +1184,6 @@ public class NetworkManagerImpl implements NetworkManager
         rulePingMatchers.add(rulePingMatcher1);
         filterRulePing.setMatchers( rulePingMatchers );
 
-        FilterRule filterRuleIPsec = new FilterRule();
-        filterRuleIPsec.setReadOnly( true );
-        filterRuleIPsec.setEnabled( true );
-        filterRuleIPsec.setDescription( "Allow IPsec" );
-        filterRuleIPsec.setBlocked( false );
-        filterRuleIPsec.setReadOnly( true );
-        List<FilterRuleMatcher> ruleIPsecMatchers = new LinkedList<FilterRuleMatcher>();
-        FilterRuleMatcher ruleIPsecMatcher1 = new FilterRuleMatcher();
-        ruleIPsecMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
-        ruleIPsecMatcher1.setValue("ESP,AH");
-        ruleIPsecMatchers.add(ruleIPsecMatcher1);
-        filterRuleIPsec.setMatchers( ruleIPsecMatchers );
-        
         FilterRule filterRuleDns = new FilterRule();
         filterRuleDns.setReadOnly( true );
         filterRuleDns.setEnabled( true );
@@ -1293,7 +1280,6 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleHttpsWan );
         rules.add( filterRuleHttpsNonWan );
         rules.add( filterRulePing );
-        rules.add( filterRuleIPsec );
         rules.add( filterRuleDns );
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
