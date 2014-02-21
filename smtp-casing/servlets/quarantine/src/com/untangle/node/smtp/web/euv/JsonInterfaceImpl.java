@@ -244,7 +244,11 @@ public class JsonInterfaceImpl implements JsonInterface
         if (action != SAFELIST_ACTION.DELETE) {
             for (InboxRecord record : inboxRecords) {
                 for (String addr : addresses) {
-                    if (record.getMailSummary().getSender().equalsIgnoreCase(addr)) {
+                    if ( record.getMailSummary() == null )
+                        continue;
+                    if ( record.getMailSummary().getSender() == null )
+                        continue;
+                    if ( record.getMailSummary().getSender().equals( addr ) ) {
                         mids.add(record.getMailID());
                         break;
                     }
