@@ -1,5 +1,5 @@
 /**
- * $Id: vector.h 35573 2013-08-08 19:43:35Z dmorris $
+ * $Id$
  */
 #ifndef __VECTOR_H
 #define __VECTOR_H
@@ -38,6 +38,7 @@ vector_t* vector_create ( list_t* chain );
 int       vector_free ( vector_t* vec );
 int       vector_destroy ( vector_t* vec );
 int       vector_raze ( vector_t* vec );
+void      vector_print ( vector_t* vec );
 
 int       vector ( vector_t* vec );
 int       vector_send_msg ( vector_t* vec, vector_msg_t msg, void* arg );

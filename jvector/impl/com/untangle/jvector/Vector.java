@@ -1,5 +1,5 @@
 /**
- * $Id: Vector.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.jvector;
 
@@ -30,15 +30,14 @@ public class Vector
     protected final static int MVPOLLERR = 0x008;
     protected final static int MVPOLLHUP = 0x010;
 
-
     protected static final Logger logger = Logger.getLogger( Vector.class );
 
-    /* Most of these should/could be static */
-    private native long  vector_create (long listptr);
-    private native int  vector_raze (long vecptr);
-    private native int  vector_send_msg (long vecptr, int msg, long arg);
-    private native void vector_set_timeout (long vecptr, int timeout_sec);
-    private native int  vector (long vecptr);
+    private static native long  vector_create ( long listptr );
+    private static native int   vector_raze ( long vecptr );
+    private static native void  vector_print ( long vecptr );
+    private static native int   vector_send_msg ( long vecptr, int msg, long arg );
+    private static native void  vector_set_timeout ( long vecptr, int timeout_sec );
+    private static native int   vector ( long vecptr );
 
     private native long  list_create (int flags);
     private native long  list_add_tail (long listptr, long val);
@@ -77,6 +76,11 @@ public class Vector
         return vector(vec_ptr);
     }
 
+    public void print()
+    {
+        vector_print(vec_ptr);
+    }
+    
     /**
      * Set the vector timeout in msec
      */

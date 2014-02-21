@@ -24,7 +24,7 @@
 #include "jnetcap.h"
 #include "jsession.h"
 
-#include JH_IPTraffic
+#include JH_UDPAttributes
 #include JH_UDPSession
 
 #define VERIFY_PKT_SESSION(session) if ((session)->protocol != IPPROTO_UDP) \
@@ -55,18 +55,18 @@ static void _udp_callback( jlong session_ptr, netcap_callback_action_t action );
 
 static netcap_endpoint_t* _get_pkt_endpoint( netcap_pkt_t* pkt, int req_id )
 {
-    if (( req_id & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) return &pkt->src;
+    if (( req_id & JN_UDPAttributes( FLAG_SRC_MASK )) == JN_UDPAttributes( FLAG_SRC )) return &pkt->src;
     
     return &pkt->dst;
 }
 
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
- * Method:    createIPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
+ * Method:    createUDPAttributes
  * Signature: (JJJJ)I
  */
-JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
+JNIEXPORT jlong JNICALL JF_UDPAttributes( createUDPAttributes )
   (JNIEnv* env, jclass _class, jlong src, jint src_port, jlong dst, jint dst_port )
 {
     netcap_pkt_t* pkt;
@@ -95,11 +95,11 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
 
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    send
  * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL JF_IPTraffic( send )
+JNIEXPORT jint JNICALL JF_UDPAttributes( send )
   (JNIEnv* env, jclass _class, jlong _pkt, jbyteArray _data )
 {
     jbyte* data;
@@ -127,11 +127,11 @@ JNIEXPORT jint JNICALL JF_IPTraffic( send )
 }
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    getLongValue
  * Signature: (JI)J
  */
-JNIEXPORT jlong JNICALL JF_IPTraffic( getLongValue )
+JNIEXPORT jlong JNICALL JF_UDPAttributes( getLongValue )
   (JNIEnv* env, jclass _class, jlong pkt_ptr, jint req )
 {
     netcap_pkt_t* pkt;
@@ -142,19 +142,19 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( getLongValue )
 
     endpoint = _get_pkt_endpoint( pkt, req );
     
-    switch( req & JN_IPTraffic( FLAG_MASK )) {
-    case JN_IPTraffic( FLAG_HOST ): return UINT_TO_JLONG((uint)endpoint->host.s_addr );
+    switch( req & JN_UDPAttributes( FLAG_MASK )) {
+    case JN_UDPAttributes( FLAG_HOST ): return UINT_TO_JLONG((uint)endpoint->host.s_addr );
     }
 
     return (jlong)errlogargs();    
 }
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    getIntValue
  * Signature: (JI)I
  */
-JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
+JNIEXPORT jint JNICALL JF_UDPAttributes( getIntValue )
   ( JNIEnv* env, jclass _class, jlong pkt_ptr, jint req )
 {
     netcap_pkt_t* pkt;
@@ -168,28 +168,28 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
 
     if (( endpoint  = _get_pkt_endpoint( pkt, req )) == NULL ) return errlogargs();
 
-    switch( req & JN_IPTraffic( FLAG_MASK )) {
-    case JN_IPTraffic( FLAG_PORT ): return endpoint->port;
-    case JN_IPTraffic( FLAG_TTL ): return pkt->ttl;
-    case JN_IPTraffic( FLAG_TOS ): return pkt->tos;
-    case JN_IPTraffic( FLAG_MARK_EN ): return pkt->is_marked;
-    case JN_IPTraffic( FLAG_MARK ): return pkt->nfmark;
-    case JN_IPTraffic( FLAG_INTERFACE ):
-        if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) return pkt->src_intf;
+    switch( req & JN_UDPAttributes( FLAG_MASK )) {
+    case JN_UDPAttributes( FLAG_PORT ): return endpoint->port;
+    case JN_UDPAttributes( FLAG_TTL ): return pkt->ttl;
+    case JN_UDPAttributes( FLAG_TOS ): return pkt->tos;
+    case JN_UDPAttributes( FLAG_MARK_EN ): return pkt->is_marked;
+    case JN_UDPAttributes( FLAG_MARK ): return pkt->nfmark;
+    case JN_UDPAttributes( FLAG_INTERFACE ):
+        if (( req & JN_UDPAttributes( FLAG_SRC_MASK )) == JN_UDPAttributes( FLAG_SRC )) return pkt->src_intf;
         return pkt->dst_intf;
 
-    case JN_IPTraffic( FLAG_PROTOCOL ): return pkt->proto;
+    case JN_UDPAttributes( FLAG_PROTOCOL ): return pkt->proto;
     }
 
     return errlogargs();
 }
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    setLongValue
  * Signature: (JIJ)I
  */
-JNIEXPORT jint JNICALL JF_IPTraffic( setLongValue )
+JNIEXPORT jint JNICALL JF_UDPAttributes( setLongValue )
   (JNIEnv* env, jclass _class, jlong pkt_ptr, jint req, jlong value )
 {
     netcap_pkt_t* pkt;
@@ -199,8 +199,8 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setLongValue )
     JLONG_TO_PACKET( pkt, pkt_ptr );
     endpoint = _get_pkt_endpoint( pkt, req );
 
-    switch( req & JN_IPTraffic( FLAG_MASK )) {
-    case JN_IPTraffic( FLAG_HOST ): endpoint->host.s_addr = UINT_TO_JLONG(value); break;
+    switch( req & JN_UDPAttributes( FLAG_MASK )) {
+    case JN_UDPAttributes( FLAG_HOST ): endpoint->host.s_addr = UINT_TO_JLONG(value); break;
     default:
         return errlogargs();
     }
@@ -209,11 +209,11 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setLongValue )
 }
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    setIntValue
  * Signature: (JII)I
  */
-JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
+JNIEXPORT jint JNICALL JF_UDPAttributes( setIntValue )
   (JNIEnv* env, jclass _class, jlong pkt_ptr, jint req, jint value )
 {
     netcap_pkt_t* pkt;
@@ -222,14 +222,14 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
     JLONG_TO_PACKET( pkt, pkt_ptr );
     endpoint = _get_pkt_endpoint( pkt, req );
 
-    switch( req & JN_IPTraffic( FLAG_MASK ) ) {
-    case JN_IPTraffic( FLAG_PORT ): endpoint->port = value; break;
-    case JN_IPTraffic( FLAG_TTL ):  pkt->ttl = value; break;
-    case JN_IPTraffic( FLAG_TOS ):  pkt->tos = value; break;
-    case JN_IPTraffic( FLAG_MARK_EN ): pkt->is_marked = value; break;
-    case JN_IPTraffic( FLAG_MARK ): pkt->nfmark = value; break;
-    case JN_IPTraffic( FLAG_INTERFACE ): 
-        if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
+    switch( req & JN_UDPAttributes( FLAG_MASK ) ) {
+    case JN_UDPAttributes( FLAG_PORT ): endpoint->port = value; break;
+    case JN_UDPAttributes( FLAG_TTL ):  pkt->ttl = value; break;
+    case JN_UDPAttributes( FLAG_TOS ):  pkt->tos = value; break;
+    case JN_UDPAttributes( FLAG_MARK_EN ): pkt->is_marked = value; break;
+    case JN_UDPAttributes( FLAG_MARK ): pkt->nfmark = value; break;
+    case JN_UDPAttributes( FLAG_INTERFACE ): 
+        if (( req & JN_UDPAttributes( FLAG_SRC_MASK )) == JN_UDPAttributes( FLAG_SRC )) {
             pkt->src_intf = value;
         } else {
             pkt->dst_intf = value; 
@@ -243,18 +243,18 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
 }
 
 /*
- * Class:     com_untangle_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_UDPAttributes
  * Method:    raze
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL JF_IPTraffic( raze )
+JNIEXPORT void JNICALL JF_UDPAttributes( raze )
   (JNIEnv* env, jclass _class, jlong _pkt )
 {
     netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG(_pkt);
     if ( pkt == NULL ) return (void)errlogargs();
 
     /* Remove the packet */
-    debug(10, "FLAG: IPTraffic.raze packet %d\n", pkt->packet_id);
+    debug(10, "FLAG: UDPAttributes.raze packet %d\n", pkt->packet_id);
         
     netcap_pkt_action_raze( pkt, NF_DROP );
 

@@ -1,5 +1,5 @@
 /**
- * $Id: NetcapHook.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 
@@ -267,7 +267,7 @@ public abstract class NetcapHook implements Runnable
 
                     if ( logger.isDebugEnabled())
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );
-                    
+
                     /* Start vectoring */
                     vector.vector();
 

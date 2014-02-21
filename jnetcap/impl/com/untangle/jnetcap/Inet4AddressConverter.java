@@ -13,8 +13,7 @@ public class Inet4AddressConverter
     static final int INADDRSZ = 4;
     
     /* No point in creating any instances */
-    private Inet4AddressConverter() {
-    }
+    private Inet4AddressConverter() { }
 
     public static InetAddress getByAddress ( String dotNotation )
     {
@@ -42,7 +41,8 @@ public class Inet4AddressConverter
         return getByAddress( input );
     }
 
-    public static InetAddress getByHexAddress( String hex, boolean isLittleEndian ) {
+    public static InetAddress getByHexAddress( String hex, boolean isLittleEndian )
+    {
         int input[] = new int[INADDRSZ];
         
         hex = hex.trim();
@@ -60,7 +60,8 @@ public class Inet4AddressConverter
 
     }
 
-    public static InetAddress getByAddress ( int input[] ) {
+    public static InetAddress getByAddress ( int input[] )
+    {
         byte byteArray[] = new byte[INADDRSZ];
         InetAddress address = null;
 
@@ -117,7 +118,8 @@ public class Inet4AddressConverter
         return address;
     }
 
-    private static int byteToInt ( byte val ) {
+    private static int byteToInt ( byte val )
+    {
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;

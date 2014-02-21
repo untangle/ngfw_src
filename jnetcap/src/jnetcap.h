@@ -1,5 +1,5 @@
 /**
- * $Id: jnetcap.h 35405 2013-07-23 17:55:30Z dmorris $
+ * $Id$
  */
 #ifndef __JNETCAP_H_
 #define __JNETCAP_H_
@@ -40,9 +40,9 @@ int jnetcap_initialized( void );
 #define JN_TCPSession(VAL)  JN_BUILD_NAME( NetcapTCPSession, VAL )
 #define JF_TCPSession(FUNC) JF_BUILD_NAME( NetcapTCPSession, FUNC )
 
-#define JH_IPTraffic       "com_untangle_jnetcap_IPTraffic.h"
-#define JN_IPTraffic(VAL)  JN_BUILD_NAME( IPTraffic, VAL )
-#define JF_IPTraffic(FUNC) JF_BUILD_NAME( IPTraffic, FUNC )
+#define JH_UDPAttributes       "com_untangle_jnetcap_UDPAttributes.h"
+#define JN_UDPAttributes(VAL)  JN_BUILD_NAME( UDPAttributes, VAL )
+#define JF_UDPAttributes(FUNC) JF_BUILD_NAME( UDPAttributes, FUNC )
 
 #endif  // __JNETCAP_H_
 

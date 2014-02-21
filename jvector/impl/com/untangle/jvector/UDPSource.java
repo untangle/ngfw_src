@@ -1,5 +1,5 @@
 /**
- * $Id: UDPSource.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.jvector;
 
@@ -15,15 +15,15 @@ public class UDPSource extends Source
     
     protected static final int READ_TIMEOUT = 10;
 
-    protected final PacketMailbox mailbox;
+    protected final UDPPacketMailbox mailbox;
 
-    public UDPSource( PacketMailbox mailbox )
+    public UDPSource( UDPPacketMailbox mailbox )
     {
         this.mailbox = mailbox;
         pointer = create( mailbox.pointer() );
     }
 
-    public UDPSource( PacketMailbox mailbox, SourceEndpointListener listener )
+    public UDPSource( UDPPacketMailbox mailbox, SourceEndpointListener listener )
     {
         this( mailbox );
         registerListener( listener );
@@ -37,9 +37,7 @@ public class UDPSource extends Source
     protected Crumb get_event()
     {
         PacketCrumb crumb;
-
-        /* XXX How should we handle the byte array */
-        Packet packet;
+        UDPPacket packet;
 
         try {
             packet = mailbox.read( READ_TIMEOUT );
@@ -47,7 +45,7 @@ public class UDPSource extends Source
             return ShutdownCrumb.getInstance();
         }
         
-        if ( packet.traffic().pointer() == 0 ) {
+        if ( packet.attributes().pointer() == 0 ) {
             Vector.logError( "No packet to receive from the mailbox" );
             /* Return a shutdown crumb */
             return ShutdownCrumb.getInstance();

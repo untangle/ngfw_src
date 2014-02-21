@@ -1,5 +1,5 @@
 # -*-ruby-*-
-# $Id: package.rb 31901 2012-05-10 01:13:35Z dmorris $
+# $Id$
 
 jnetcap = BuildEnv::SRC['jnetcap']
 uvm_lib    = BuildEnv::SRC['untangle-libuvm']
@@ -9,7 +9,7 @@ j = JarTarget.build_target(jnetcap, Jars::Base, 'impl', "./jnetcap/impl" )
 BuildEnv::SRC.installTarget.install_jars(j, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
-  'com.untangle.jnetcap.IPTraffic',
+  'com.untangle.jnetcap.UDPAttributes',
   'com.untangle.jnetcap.NetcapUDPSession',
   'com.untangle.jnetcap.NetcapSession',
   'com.untangle.jnetcap.NetcapTCPSession' ]

@@ -1,5 +1,5 @@
 /**
- * $Id: jvector.c 35609 2013-08-13 06:19:27Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 #include <stdlib.h>
@@ -82,8 +82,6 @@ static struct
 #define J_GET_INSTANCE        "getInstance"
 #define J_GET_INSTANCE_SIG    "()"
 
-
-/* XXX Probably want to move this to jmvutil */
 static jmethodID _get_global_java_mid( jclass class, const char* method_name, const char* method_sig );
 
 /* This returns a global reference */
@@ -150,8 +148,7 @@ int               jvector_load                ( JNIEnv* env )
     _jvector.src.raze = _get_global_java_mid( _jvector.src.class, J_SRC_RAZE, J_SRC_RAZE_SIG );
 
     /* If any of the MIDs are NULL, return an error */
-    if (( _jvector.src.get_event == NULL ) || ( _jvector.src.shutdown == NULL ) || 
-        ( _jvector.src.raze == NULL )) {
+    if (( _jvector.src.get_event == NULL ) || ( _jvector.src.shutdown == NULL ) || ( _jvector.src.raze == NULL )) {
         return JNI_ERR;
     }
 
@@ -164,8 +161,7 @@ int               jvector_load                ( JNIEnv* env )
     _jvector.snk.raze = _get_global_java_mid( _jvector.snk.class, J_SNK_RAZE, J_SNK_RAZE_SIG );
 
     /* If any of the MIDs are NULL, return an error */
-    if (( _jvector.snk.send_event == NULL ) || ( _jvector.snk.shutdown == NULL ) || 
-        ( _jvector.snk.raze == NULL )) {
+    if (( _jvector.snk.send_event == NULL ) || ( _jvector.snk.shutdown == NULL ) || ( _jvector.snk.raze == NULL )) {
         return JNI_ERR;
     }
     

@@ -1,5 +1,5 @@
 /**
- * $Id: com_untangle_jvector_Vector.c 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -70,6 +70,17 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1raze
     (JNIEnv* env, jobject _this, jlong vec_ptr)
 {
     return (uintptr_t)vector_raze((vector_t*)(uintptr_t)vec_ptr);
+}
+
+/*
+ * Class:     Vector
+ * Method:    vector_print
+ * Signature: (I)I
+ */
+JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1print
+    (JNIEnv* env, jobject _this, jlong vec_ptr)
+{
+    return vector_print((vector_t*)(uintptr_t)vec_ptr);
 }
 
 /*

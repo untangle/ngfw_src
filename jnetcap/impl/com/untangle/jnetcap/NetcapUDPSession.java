@@ -12,11 +12,11 @@ public class NetcapUDPSession extends NetcapSession
     private final static int FLAG_TTL            = 64;
     private final static int FLAG_TOS            = 65;
     
-    private final PacketMailbox clientMailbox;
-    private final PacketMailbox serverMailbox;
+    private final UDPPacketMailbox clientMailbox;
+    private final UDPPacketMailbox serverMailbox;
 
-    private IPTraffic serverTraffic = null;
-    private IPTraffic clientTraffic = null;
+    private UDPAttributes serverTraffic = null;
+    private UDPAttributes clientTraffic = null;
     
     public NetcapUDPSession( long id ) 
     {
@@ -26,8 +26,15 @@ public class NetcapUDPSession extends NetcapSession
         serverMailbox = new UDPSessionMailbox( false );
     }
     
-    public PacketMailbox clientMailbox() { return clientMailbox; }    
-    public PacketMailbox serverMailbox() { return serverMailbox; }
+    public UDPPacketMailbox clientMailbox()
+    {
+        return clientMailbox;
+    }    
+
+    public UDPPacketMailbox serverMailbox()
+    {
+        return serverMailbox;
+    }
     
     public byte ttl()
     { 
@@ -44,20 +51,17 @@ public class NetcapUDPSession extends NetcapSession
         return new SessionEndpoints( ifClient );
     }
     
-    /**
-     * Complete a connection.
-     */
-    public void serverComplete( IPTraffic serverTraffic )
+    public void serverComplete( UDPAttributes serverTraffic )
     {
-        // serverComplete( pointer.value() );
+        // nothing needed here
     }
 
-    public void setServerTraffic(IPTraffic serverTraffic)
+    public void setServerTraffic(UDPAttributes serverTraffic)
     {
         this.serverTraffic = serverTraffic;
     }
 
-    public void setClientTraffic(IPTraffic clientTraffic)
+    public void setClientTraffic(UDPAttributes clientTraffic)
     {
         this.clientTraffic = clientTraffic;
     }
@@ -105,7 +109,7 @@ public class NetcapUDPSession extends NetcapSession
     /* Set the Session mark */
     private static native void setSessionMark( long sessionPointer, int mark );
     
-    class UDPSessionMailbox implements PacketMailbox
+    class UDPSessionMailbox implements UDPPacketMailbox
     {
         private final boolean ifClient;
 
@@ -113,11 +117,11 @@ public class NetcapUDPSession extends NetcapSession
             this.ifClient = ifClient;
         }
 
-        public Packet read( int timeout )
+        public UDPPacket read( int timeout )
         {
             CPointer packetPointer = new CPointer( NetcapUDPSession.read( pointer.value(), ifClient, timeout ));
             
-            IPTraffic ipTraffic = new IPTraffic( packetPointer );
+            UDPAttributes ipTraffic = new UDPAttributes( packetPointer );
             
             if (ipTraffic.getProtocol() != Netcap.IPPROTO_UDP) {
                 int tmp = ipTraffic.getProtocol();
@@ -130,7 +134,7 @@ public class NetcapUDPSession extends NetcapSession
             return new PacketMailboxUDPPacket( packetPointer );
         }
 
-        public Packet read() 
+        public UDPPacket read() 
         {
             return read( 0 );
         }
@@ -140,20 +144,20 @@ public class NetcapUDPSession extends NetcapSession
             return NetcapUDPSession.mailboxPointer( pointer.value(), ifClient );
         }
 
-        abstract class PacketMailboxPacket implements Packet
+        abstract class PacketMailboxPacket implements UDPPacket
         {
             private final CPointer pointer;
-            protected final IPTraffic traffic;
+            protected final UDPAttributes attributes;
             
             PacketMailboxPacket( CPointer pointer ) 
             {
                 this.pointer = pointer;
-                this.traffic = makeTraffic( pointer );
+                this.attributes = makeAttributes( pointer );
             }
             
-            public IPTraffic traffic()
+            public UDPAttributes attributes()
             {
-                return traffic;
+                return attributes;
             }
             
             public byte[] data() 
@@ -176,10 +180,10 @@ public class NetcapUDPSession extends NetcapSession
 
             public void raze() 
             {
-                traffic.raze();
+                attributes.raze();
             }
             
-            protected abstract IPTraffic makeTraffic( CPointer pointer );
+            protected abstract UDPAttributes makeAttributes( CPointer pointer );
         }
         
         class PacketMailboxUDPPacket extends PacketMailboxPacket implements UDPPacket
@@ -189,9 +193,9 @@ public class NetcapUDPSession extends NetcapSession
                 super( pointer );
             }
 
-            protected IPTraffic makeTraffic( CPointer pointer )
+            protected UDPAttributes makeAttributes( CPointer pointer )
             {
-                return new IPTraffic( pointer );
+                return new UDPAttributes( pointer );
             }
         }
 

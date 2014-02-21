@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/jnetcap/impl/com/untangle/jnetcap/Netcap.java $ */
+/* $HeadURL$ */
 package com.untangle.jnetcap;
 
 import java.io.FileReader;
@@ -37,8 +37,6 @@ public final class Netcap
 
     private static final Netcap INSTANCE = new Netcap();
     
-    private static final List<InterfaceData> EMPTY_INTERFACE_DATA_LIST = Collections.emptyList();
-
     protected static final Logger logger = Logger.getLogger( Netcap.class );
 
     /* Singleton */

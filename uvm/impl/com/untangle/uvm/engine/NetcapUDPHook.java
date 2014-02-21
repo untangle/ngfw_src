@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.jnetcap.IPTraffic;
+import com.untangle.jnetcap.UDPAttributes;
 import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapUDPSession;
@@ -60,8 +60,8 @@ public class NetcapUDPHook implements NetcapCallback
         protected final UDPSideListener clientSideListener = new UDPSideListener();
         protected final UDPSideListener serverSideListener = new UDPSideListener();
 
-        protected IPTraffic serverTraffic = null;
-        protected IPTraffic clientTraffic = null;
+        protected UDPAttributes serverTraffic = null;
+        protected UDPAttributes clientTraffic = null;
 
         protected NodeUDPSession prevSession = null;
 
@@ -110,7 +110,7 @@ public class NetcapUDPHook implements NetcapCallback
 
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
-                serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
+                serverTraffic = new UDPAttributes( netcapUDPSession.serverSide());
             } else {
                 /* Setup the UDP parameters to use the parameters from the last session in the chain */
                 NodeUDPSession session = (NodeUDPSession)sessionList.get( sessionList.size() - 1 );
@@ -121,7 +121,7 @@ public class NetcapUDPHook implements NetcapCallback
                     logger.debug( "Server: " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
                 }
 
-                serverTraffic = new IPTraffic( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());
+                serverTraffic = new UDPAttributes( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());
 
                 serverTraffic.ttl( ((NodeUDPSessionImpl)session).ttl());
                 serverTraffic.tos( ((NodeUDPSessionImpl)session).tos());
@@ -151,7 +151,7 @@ public class NetcapUDPHook implements NetcapCallback
          */
         protected boolean clientComplete()
         {
-            clientTraffic = IPTraffic.makeSwapped( netcapUDPSession.clientSide());
+            clientTraffic = UDPAttributes.makeSwapped( netcapUDPSession.clientSide());
 
             /* Setup the marking */
             clientTraffic.isMarkEnabled( true );

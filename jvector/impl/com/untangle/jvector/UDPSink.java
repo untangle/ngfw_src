@@ -1,5 +1,5 @@
 /**
- * $Id: UDPSink.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.jvector;
 
@@ -16,12 +16,12 @@ public class UDPSink extends Sink
 
     protected SinkEndpointListener listener = null;
 
-    protected final IPTraffic traffic;
+    protected final UDPAttributes traffic;
 
     /* Flag for the write function to indicate when ttl or tos is unused */
     protected static final int DISABLED = -1;
 
-    public UDPSink( IPTraffic traffic, SinkEndpointListener listener)
+    public UDPSink( UDPAttributes traffic, SinkEndpointListener listener)
     {
         /* Must lock the traffic structure so no one can modify where data is going */
         traffic.lock();
@@ -130,7 +130,7 @@ public class UDPSink extends Sink
 
     /**
      * Send out a ICMP or UDP packet.</p>
-     * @param pointer - Pointer to the traffic structure (netcap_pkt_t/IPTraffic.pointer)
+     * @param pointer - Pointer to the traffic structure (netcap_pkt_t/UDPAttributes.pointer)
      * @param data    - byte array of the data to send out
      * @param offset  - Offset within the byte array, this allows for multiple writes if one write
      *                  cannot accomodate the entire byte buffer.

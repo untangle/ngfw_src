@@ -1,5 +1,5 @@
 /**
- * $Id: Endpoint.java 35102 2013-06-20 18:52:32Z dmorris $
+ * $Id$
  */
 package com.untangle.jnetcap;
 

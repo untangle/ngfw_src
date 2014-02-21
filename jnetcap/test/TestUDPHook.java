@@ -59,10 +59,10 @@ class TestUDPHook implements NetcapCallback {
                 UDPMailbox clientMailbox = session.clientMailbox();
                 UDPMailbox serverMailbox = session.serverMailbox();
                 
-                IPTraffic clientTraffic = IPTraffic.makeSwapped( session.clientSide());
+                UDPAttributes clientTraffic = UDPAttributes.makeSwapped( session.clientSide());
                 clientTraffic.lock();
                 
-                IPTraffic serverTraffic = new IPTraffic( session.serverSide());
+                UDPAttributes serverTraffic = new UDPAttributes( session.serverSide());
                 
                 /* Make it appear like the traffic is from the server port */
                 serverTraffic.src().port( session.clientSide().server().port() );

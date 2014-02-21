@@ -379,6 +379,10 @@ void      vector_set_timeout ( vector_t* vec, int timeout_msec )
     }
 }
 
+void      vector_print ( vector_t* vec )
+{
+    _chain_debug_print_prefix( 0, vec->chain, "VECTOR: Description: " );
+}
 
 static int  _vector_handle_message ( vector_t* vec, int revents )
 {
@@ -1282,11 +1286,14 @@ static int  _chain_debug_print ( int debug_level, list_t* chain )
             continue;
         }
         
+        mvpoll_key_t* src_key = relay->src->get_event_key( relay->src );
+        mvpoll_key_t* snk_key = relay->snk->get_event_key( relay->snk );
+        
         debug_nodate( debug_level, "[%i:0x%016" PRIxPTR "] 0x%016" PRIxPTR "->0x%016" PRIxPTR "  ",
                       i,
                       (uintptr_t) relay,
-                      (uintptr_t) relay->src->get_event_key( relay->src ),
-                      (uintptr_t) relay->snk->get_event_key( relay->snk ) );
+                      (uintptr_t) src_key,
+                      (uintptr_t) snk_key);
     }
     debug_nodate(debug_level,"\n");
     

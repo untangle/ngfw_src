@@ -3,18 +3,18 @@
  */
 package com.untangle.jnetcap;
 
-public interface PacketMailbox
+public interface UDPPacketMailbox
 {
     /**
      * Wait forever reading a packet from the packet mailbox.  Use with caution.
      */
-    public Packet read();
+    public UDPPacket read();
     
     /**
      * Timed wait to read a packet from the packet mailbox.</p>
      * @param timeout - Timeout in milliseconds
      */
-    public Packet read( int timeout );
+    public UDPPacket read( int timeout );
 
     /* Retrieve the value of the C pointer */
     public long pointer();

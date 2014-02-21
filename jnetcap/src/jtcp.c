@@ -1,5 +1,5 @@
 /**
- * $Id: jtcp.c 35405 2013-07-23 17:55:30Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 

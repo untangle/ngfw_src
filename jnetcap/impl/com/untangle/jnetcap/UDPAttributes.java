@@ -5,13 +5,10 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-/* This should probably be more generic, but it doesn't exactly apply for TCP, it is mainly only
- * for ICMP and UDP.  TCP packets died above netcap when we stopped catching SYN/ACKS *
- * All of the methods apply for TCP except for the send method which should only be for UDP traffic
- * objects */
-/* XXX This is not a good name */
-/* XXX Could potentially be abstract */
-public class IPTraffic
+/**
+ * Represents the attributes of the side (client side or server side) of a UDP session
+ */
+public class UDPAttributes
 {
     /**
      * The items with this bit are lockable, meaning once the lock flag is set
@@ -44,40 +41,40 @@ public class IPTraffic
     /* Pointer to the netcap_pkt_t structure in netcap */
     protected CPointer pointer;
     
-    private IPTraffic()
+    private UDPAttributes()
     {
-        this.src = new IPTrafficEndpoint( true );
-        this.dst = new IPTrafficEndpoint( false );
+        this.src = new UDPAttributesEndpoint( true );
+        this.dst = new UDPAttributesEndpoint( false );
     }
 
-    public IPTraffic( InetAddress src, int srcPort, InetAddress dst, int dstPort ) 
+    public UDPAttributes( InetAddress src, int srcPort, InetAddress dst, int dstPort ) 
     {
         this();
 
         /* Create a new destination with the other parameters set to their defaults */
-        pointer = new CPointer ( createIPTraffic( Inet4AddressConverter.toLong( src ), srcPort,
-                                                  Inet4AddressConverter.toLong( dst ), dstPort ));
+        pointer = new CPointer ( createUDPAttributes( Inet4AddressConverter.toLong( src ), srcPort,
+                                                Inet4AddressConverter.toLong( dst ), dstPort ));
     }
 
-    public IPTraffic( Endpoints endpoints ) 
+    public UDPAttributes( Endpoints endpoints ) 
     {
         this( endpoints.client().host(), endpoints.client().port(), 
               endpoints.server().host(), endpoints.server().port());
     }
 
     /**
-     * Create a new IPTraffic with the endpoints with the option of
+     * Create a new UDPAttributes with the endpoints with the option of
      * swapping the client and server endpoint.
      * @param endpoints - src and destination.  (client is src, server is dst)
      * @param swapped - whether or not to swap the endpoints.
      */
-    public static IPTraffic makeSwapped( Endpoints endpoints )
+    public static UDPAttributes makeSwapped( Endpoints endpoints )
     {
-        return new IPTraffic( endpoints.server().host(), endpoints.server().port(), 
+        return new UDPAttributes( endpoints.server().host(), endpoints.server().port(), 
                               endpoints.client().host(), endpoints.client().port());        
     }
 
-    protected IPTraffic( CPointer pointer ) 
+    protected UDPAttributes( CPointer pointer ) 
     {
         this();
         this.pointer = pointer;
@@ -244,9 +241,7 @@ public class IPTraffic
         Netcap.load();
     }
 
-    /* XXX Consolidate all of the get/set functions into a group of package functions
-     * inside of the Netcap class */
-    private static native long   createIPTraffic ( long src, int srcPort, long dst, int dstPort );
+    private static native long   createUDPAttributes ( long src, int srcPort, long dst, int dstPort );
     private static native long   getLongValue    ( long packetPointer, int req );
     private static native int    getIntValue     ( long packetPointer, int req );
     private static native int    setLongValue    ( long packetPointer, int req, long value );
@@ -254,10 +249,11 @@ public class IPTraffic
     private static native int    send            ( long packetPointer, byte[] data );
     private static native void   raze            ( long packetPointer );
     
-    private class IPTrafficEndpoint implements MutableEndpoint {
+    private class UDPAttributesEndpoint implements MutableEndpoint
+    {
         private final boolean ifSrc;
 
-        IPTrafficEndpoint( boolean ifSrc ) 
+        UDPAttributesEndpoint( boolean ifSrc ) 
         {
             this.ifSrc = ifSrc;
         }

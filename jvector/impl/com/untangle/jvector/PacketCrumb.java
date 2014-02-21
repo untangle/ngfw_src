@@ -1,10 +1,9 @@
 /**
- * $Id: PacketCrumb.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.jvector;
 
 import com.untangle.jnetcap.Netcap;
-import com.untangle.jnetcap.Packet;
 import com.untangle.jnetcap.UDPPacket;
 
 public abstract class PacketCrumb extends DataCrumb
@@ -32,28 +31,28 @@ public abstract class PacketCrumb extends DataCrumb
         this.options = options;
     }
 
-    protected PacketCrumb( Packet packet, byte[] data, int offset, int limit )
+    protected PacketCrumb( UDPPacket packet, byte[] data, int offset, int limit )
     {
-        this( packet.traffic().ttl(), packet.traffic().tos(), null, data, offset, limit );        
+        this( packet.attributes().ttl(), packet.attributes().tos(), null, data, offset, limit );        
     }
 
-    protected PacketCrumb( Packet packet, byte[] data, int limit )
+    protected PacketCrumb( UDPPacket packet, byte[] data, int limit )
     {
         this( packet, data, 0, limit );
     }
 
-    protected PacketCrumb( Packet packet, byte[] data )
+    protected PacketCrumb( UDPPacket packet, byte[] data )
     {
         this( packet, data, data.length );
     }
     
-    static PacketCrumb makeCrumb( Packet packet ) throws JVectorException
+    static PacketCrumb makeCrumb( UDPPacket packet ) throws JVectorException
     {
-        int protocol = packet.traffic().getProtocol();
+        int protocol = packet.attributes().getProtocol();
 
         switch ( protocol ) {
         case Netcap.IPPROTO_UDP:
-            return new UDPPacketCrumb((UDPPacket)packet, packet.data());
+            return new UDPPacketCrumb( packet, packet.data() );
         default:
             throw new JVectorException( "Unable to determine which crumb to create from protocol: " + protocol );
         }
