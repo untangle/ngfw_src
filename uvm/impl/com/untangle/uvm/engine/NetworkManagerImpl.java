@@ -184,11 +184,6 @@ public class NetworkManagerImpl implements NetworkManager
         // notify interested parties that the settings have changed
         callNetworkListeners();
 
-        // restart pyconnector
-        // we only do this here and not in a networking hook so that its only
-        // done when new settings are saved, not everytime networking is restarted
-        UvmContextFactory.context().execManager().execResult("/etc/init.d/untangle-pyconnector restart");
-
         if ( errorOccurred ) {
             throw new RuntimeException(errorStr);
         }
