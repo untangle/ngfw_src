@@ -14,6 +14,7 @@ public class IntfConstants
     public static final String EXTERNAL = "External";
     public static final String DMZ      = "DMZ";
     public static final String OPENVPN  = "OpenVPN";
+    public static final String L2TP     = "L2TP";
 
     /**
      * An interface index of 0 is an error condition
@@ -29,6 +30,7 @@ public class IntfConstants
     public static final int   INTERNAL_INTF = 2;
     public static final int   DMZ_INTF      = 3;
     public static final int   OPENVPN_INTF  = 250;
-    public static final int   MAX_INTF      = 250;
+    public static final int   L2TP_INTF     = 251;
+    public static final int   MAX_INTF      = 251;
 }
 

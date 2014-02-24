@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/node/IntfMatcher.java $ */
+/* $HeadURL$ */
 package com.untangle.uvm.node;
 
 import java.util.LinkedList;
@@ -86,6 +86,17 @@ public class IntfMatcher
         if ( interfaceId == 0xfa ) {
             intfSettings = new InterfaceSettings();
             intfSettings.setInterfaceId( 250 );
+            intfSettings.setIsWan( false );
+        }
+
+        /**
+         * L2TP (251) interface special handling
+         * Create a fake "interface settings" object
+         * because L2TP interface doesnt have settings
+         */
+        if ( interfaceId == 0xfb ) {
+            intfSettings = new InterfaceSettings();
+            intfSettings.setInterfaceId( 251 );
             intfSettings.setIsWan( false );
         }
 

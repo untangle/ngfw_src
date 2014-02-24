@@ -348,6 +348,14 @@ public class NetworkManagerImpl implements NetworkManager
             return address;
         }
         
+        /**
+         * Special handling for L2TP
+         */
+        if ( intfId == 251) {
+            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
+            return address;
+        }
+        
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
             logger.warn("Failed to find interface " + intfId);
