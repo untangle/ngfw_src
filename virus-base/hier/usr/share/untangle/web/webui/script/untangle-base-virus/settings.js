@@ -439,14 +439,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // Event Log
         buildWebEventLog: function() {
-            this.gridWebEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'WebEventLog', i18n._('Web Event Log'), 
+            this.gridWebEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'WebEventLog', this.i18n._('Web Event Log'), 
                     this.helpSourceName + '_web_event_log', 
                     ['time_stamp','c_client_addr','username','c_server_addr','host','uri',this.nodeName + '_name'], 
                     this.getRpcNode().getWebEventQueries);
         },
         // Event Log
         buildMailEventLog: function() {
-            this.gridMailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EmailEventLog', i18n._('Email Event Log'), 
+            this.gridMailEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EmailEventLog', this.i18n._('Email Event Log'), 
                     this.helpSourceName + '_email_event_log', 
                     ['time_stamp','c_client_addr','username','c_server_addr','subject','addr','sender',this.nodeName + '_name'], 
                     this.getRpcNode().getMailEventQueries);
