@@ -189,6 +189,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     items: [{
                         xtype: 'udayfield',
                         name: 'Upgrade Days',
+                        i18n: this.i18n,
                         value: this.getSystemSettings().autoUpgradeDays,
                         listeners: {
                             "change": {

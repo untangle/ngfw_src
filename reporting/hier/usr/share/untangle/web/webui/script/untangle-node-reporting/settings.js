@@ -116,6 +116,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     },  {
                         xtype: 'udayfield',
                         name: 'Daily Days',
+                        i18n: this.i18n,
                         value: this.getSettings().generateDailyReports,
                         listeners: {
                             "change": {
@@ -134,6 +135,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     },  {
                         xtype: 'udayfield',
                         name: 'Weekly Days',
+                        i18n: this.i18n,
                         value: this.getSettings().generateWeeklyReports,
                         listeners: {
                             "change": {

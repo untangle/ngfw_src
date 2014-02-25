@@ -144,6 +144,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     alias: "widget.udayfield",
     columns: 7,
     width: 700,
+    i18n: null,
     isDayEnabled: function (dayOfWeekMatcher, dayInt) {
         if (dayOfWeekMatcher.indexOf("any") != -1)
             return true;
@@ -185,44 +186,44 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
         xtype: 'checkbox',
         name: 'sunday',
         dayId: '1',
-        boxLabel: this.i18n._('Sunday'),
+        boxLabel: 'Sunday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'monday',
         dayId: '2',
-        boxLabel: this.i18n._('Monday'),
+        boxLabel: 'Monday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'tuesday',
         dayId: '3',
-        boxLabel: this.i18n._('Tuesday'),
+        boxLabel: 'Tuesday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'wednesday',
         dayId: '4',
-        boxLabel: this.i18n._('Wednesday'),
+        boxLabel: 'Wednesday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'thursday',
         dayId: '5',
-        boxLabel: this.i18n._('Thursday'),
+        boxLabel: 'Thursday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'friday',
         dayId: '6',
         checked: true,
-        boxLabel: this.i18n._('Friday'),
+        boxLabel: 'Friday',
         hideLabel: true
     },{
         xtype: 'checkbox',
         name: 'saturday',
         dayId: '7',
-        boxLabel: this.i18n._('Saturday'),
+        boxLabel: 'Saturday',
         hideLabel: true
     }],
     arrayContains: function(array, value) {
@@ -246,6 +247,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
             if ( this.arrayContains(initValue, item.dayId) || this.arrayContains(initValue, item.name) || this.arrayContains(initValue, "any")) {
                 item.checked = true;
             }
+            item.boxLabel = this.i18n._(item.boxLabel);
         }
         this.callParent(arguments);
     },
