@@ -1,5 +1,5 @@
 /*
- * $Id: LicenseRevocation.java,v 1.00 2011/08/24 11:06:23 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.license;
 
