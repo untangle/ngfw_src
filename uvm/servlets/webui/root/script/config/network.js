@@ -3029,7 +3029,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             });
 
             this.routeButton = Ext.create('Ext.button.Button',{
-                text: " Refresh Routes ",
+                text: this.i18n._(" Refresh Routes "),
                 handler: function(b,e) {
                     main.getExecManager().exec(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
