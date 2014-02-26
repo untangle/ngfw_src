@@ -5231,7 +5231,7 @@ Ext.define('Ung.grid.ReorderColumn', {
     extend:'Ext.grid.column.Template',
     menuDisabled:true,
     resizable: false,
-    header:i18n._("Reorder"),
+    header: "Reorder",
     width: 55,
     tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
 });
@@ -5342,7 +5342,9 @@ Ext.define('Ung.EditorGrid', {
         }
         if (this.hasReorder) {
             this.paginated=false;
-            var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
+            var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {
+            	header: i18n._("Reorder")
+            });
             this.columns.push(reorderColumn);
             
             this.viewConfig.plugins= {
