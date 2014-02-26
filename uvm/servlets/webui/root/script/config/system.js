@@ -401,7 +401,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             name: "argument",
                             fieldLabel: i18n._( "Restore Options" ),
                             width: 400,
-                            store: [["","Restore all settings."], [".*/network.*","Restore all except keep current network settings."]],
+                            store: [["",this.i18n._("Restore all settings.")], [".*/network.*",this.i18n._("Restore all except keep current network settings.")]],
                             value: "",
                             queryMode: 'local',
                             allowBlank: false, 
