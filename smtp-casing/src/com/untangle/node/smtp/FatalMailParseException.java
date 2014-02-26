@@ -1,5 +1,5 @@
 /**
- * $Id: FatalMailParseException.java,v 1.00 2013/03/16 21:59:12 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.smtp;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: SkinManager.java,v 1.00 2012/06/05 18:23:22 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

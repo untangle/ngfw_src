@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# $Id: mailer.py,v 1.00 2012/05/30 11:51:31 dmorris Exp $
+# $Id$
 
 PREFIX = '@PREFIX@'
 REPORTS_PYTHON_DIR = '%s/usr/lib/python2.6' % PREFIX

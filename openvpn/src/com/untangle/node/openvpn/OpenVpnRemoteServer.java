@@ -1,5 +1,5 @@
 /**
- * $Id: OpenVpnRemoteServer.java,v 1.00 2013/04/15 11:31:16 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.openvpn;
 

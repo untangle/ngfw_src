@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/libnetcap/src/netcap_icmp.h $ */
+/* $HeadURL$ */
 #ifndef __NETCAP_ICMP_H_
 #define __NETCAP_ICMP_H_
 

@@ -1,5 +1,5 @@
 /**
- * $Id: SpamLoadChecker.java,v 1.00 2012/01/30 11:48:42 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.spam;
 

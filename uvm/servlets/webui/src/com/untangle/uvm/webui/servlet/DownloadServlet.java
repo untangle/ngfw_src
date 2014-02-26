@@ -1,5 +1,5 @@
 /**
- * $Id: GridSettingsServlet.java,v 1.00 2012/06/07 13:13:44 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.servlet;
 

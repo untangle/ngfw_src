@@ -1,5 +1,5 @@
 /**
- * $Id: StaticRoute.java,v 1.00 2013/01/14 14:50:10 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.network;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: IpsStatistics.java,v 1.00 2012/05/02 20:50:43 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.ips;
 

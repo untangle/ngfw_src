@@ -1,5 +1,5 @@
 /**
- * $Id: StartPageServlet.java,v 1.00 2012/06/12 12:33:13 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.servlet;
 

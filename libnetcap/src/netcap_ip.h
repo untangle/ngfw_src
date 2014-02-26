@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_ip.h 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #ifndef __NETCAP_IP_H
 #define __NETCAP_IP_H

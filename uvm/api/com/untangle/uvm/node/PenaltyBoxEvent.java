@@ -1,5 +1,5 @@
 /**
- * $Id: PenaltyBoxEvent.java,v 1.00 2012/05/02 10:18:59 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

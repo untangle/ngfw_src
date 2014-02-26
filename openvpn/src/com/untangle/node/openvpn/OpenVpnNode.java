@@ -1,5 +1,5 @@
 /**
- * $Id: OpenVpnNode.java 34022 2013-02-26 19:14:43Z dmorris $
+ * $Id$
  */
 package com.untangle.node.openvpn;
 

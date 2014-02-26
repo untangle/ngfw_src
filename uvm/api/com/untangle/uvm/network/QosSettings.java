@@ -1,5 +1,5 @@
 /**
- * $Id: QosSettings.java,v 1.00 2013/03/06 13:38:35 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.network;
 

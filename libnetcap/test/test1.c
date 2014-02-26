@@ -1,5 +1,5 @@
 /**
- * $Id: test1.c 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #include <stdlib.h>
 #include <stdio.h>

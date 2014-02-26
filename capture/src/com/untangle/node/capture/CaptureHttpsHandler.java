@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureHttpsHandler.java,v 1.00 2012/08/20 11:06:59 dmorris Exp $
+ * $Id$
  */
 
 package com.untangle.node.capture;

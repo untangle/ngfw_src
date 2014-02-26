@@ -1,5 +1,5 @@
 /*
- * $Id: DetailSection.java,v 1.00 2011/12/17 12:31:18 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

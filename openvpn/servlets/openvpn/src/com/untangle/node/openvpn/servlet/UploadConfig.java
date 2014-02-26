@@ -1,5 +1,5 @@
 /**
- * $Id: UploadConfig.java,v 1.00 2013/04/27 13:56:05 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.openvpn.servlet;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: UtJsonRpcServlet.java 35053 2013-06-17 21:07:03Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.setup.jabsorb;
 

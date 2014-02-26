@@ -1,5 +1,5 @@
 /**
- * $Id: jvector.h 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 #ifndef _JVECTOR_H_
 #define _JVECTOR_H_

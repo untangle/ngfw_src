@@ -1,5 +1,5 @@
 /**
- * $Id: OpenVpnStatusEvent.java 30552 2011-12-21 23:59:19Z dmorris $
+ * $Id$
  */
 package com.untangle.node.openvpn;
 

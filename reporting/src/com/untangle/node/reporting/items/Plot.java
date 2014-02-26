@@ -1,5 +1,5 @@
 /**
- * $Id: Plot.java,v 1.00 2012/01/08 18:05:02 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

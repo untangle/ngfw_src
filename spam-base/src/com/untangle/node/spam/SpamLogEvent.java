@@ -1,5 +1,5 @@
 /**
- * $Id: SpamLogEvent.java 35339 2013-07-18 23:26:52Z dmorris $
+ * $Id$
  */
 package com.untangle.node.spam;
 

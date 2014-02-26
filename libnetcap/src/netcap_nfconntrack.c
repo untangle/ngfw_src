@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_nfconntrack.c,v 1.00 2013/08/08 11:32:34 dmorris Exp $
+ * $Id$
  */
 #include <pthread.h>
 #include <netinet/ip.h>

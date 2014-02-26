@@ -1,5 +1,5 @@
 /**
- * $Id: ChicletServlet.java,v 1.00 2012/06/11 14:54:05 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.servlet;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: GlobUtil.java,v 1.00 2011/10/05 11:49:32 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.util;
 

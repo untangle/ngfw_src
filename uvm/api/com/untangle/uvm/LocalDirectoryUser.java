@@ -1,5 +1,5 @@
 /*
- * $Id: LocalDirectoryUser.java,v 1.00 2011/08/10 15:27:40 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: TokenHandler.java 34627 2013-05-03 18:30:42Z dmorris $
+ * $Id$
  */
 package com.untangle.node.token;
 

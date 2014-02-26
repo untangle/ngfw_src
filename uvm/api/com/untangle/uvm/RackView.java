@@ -1,5 +1,5 @@
 /**
- * $Id: RackView.java,v 1.00 2012/04/06 11:29:48 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

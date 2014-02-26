@@ -1,5 +1,5 @@
 /**
- * $Id: ShieldEvent.java 33317 2012-10-17 19:12:21Z dmorris $
+ * $Id$
  */
 package com.untangle.node.shield;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: NodeSessionStats.java 31925 2012-05-12 04:12:27Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 

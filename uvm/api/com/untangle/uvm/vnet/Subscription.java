@@ -1,5 +1,5 @@
 /**
- * $Id: Subscription.java 33567 2012-12-06 19:43:32Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 

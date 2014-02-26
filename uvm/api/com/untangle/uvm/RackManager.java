@@ -1,5 +1,5 @@
 /*
- * $Id: RackManager.java,v 1.00 2011/09/24 20:53:51 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

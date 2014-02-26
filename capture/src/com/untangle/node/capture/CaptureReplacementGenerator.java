@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureReplacementGenerator.java 31737 2012-04-19 23:13:40Z mahotz $
+ * $Id$
  */
 
 package com.untangle.node.capture;

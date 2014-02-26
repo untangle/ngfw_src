@@ -1,5 +1,5 @@
 /**
- * $HeadURL: svn://chef/work/src/uvm/api/com/untangle/uvm/node/UrlMatcher.java $
+ * $HeadURL$
  */
 package com.untangle.uvm.node;
 

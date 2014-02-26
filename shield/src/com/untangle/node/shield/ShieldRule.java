@@ -1,5 +1,5 @@
 /*
- * $Id: ShieldRule.java 34439 2013-04-01 21:11:16Z dmorris $
+ * $Id$
  */
 package com.untangle.node.shield;
 

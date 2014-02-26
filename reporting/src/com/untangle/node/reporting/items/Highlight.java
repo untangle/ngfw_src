@@ -1,5 +1,5 @@
 /**
- * $Id: Highlight.java,v 1.00 2013/11/19 16:13:08 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: fd_source.c 35574 2013-08-08 20:02:49Z dmorris $
+ * $Id$
  */
 #include <stdlib.h>
 #include <unistd.h>

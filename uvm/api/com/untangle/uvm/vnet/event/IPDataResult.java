@@ -1,5 +1,5 @@
 /**
- * $Id: IPDataResult.java 35079 2013-06-19 22:15:28Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet.event;
 

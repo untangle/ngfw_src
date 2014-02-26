@@ -1,5 +1,5 @@
 /**
- * $Id: GlobMatcher.java 31783 2012-04-25 23:52:19Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

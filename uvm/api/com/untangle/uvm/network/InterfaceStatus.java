@@ -1,5 +1,5 @@
 /**
- * $Id: InterfaceStatus.java,v 1.00 2013/03/21 14:45:17 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.network;
 

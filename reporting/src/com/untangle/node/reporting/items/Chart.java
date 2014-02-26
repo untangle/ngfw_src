@@ -1,5 +1,5 @@
 /**
- * $Id: Chart.java,v 1.00 2012/01/08 20:12:21 dmorris Exp $
+ * $Id$
  */
 
 package com.untangle.node.reporting.items;

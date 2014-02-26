@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureUserEvent.java 31915 2012-05-11 00:45:52Z mahotz $
+ * $Id$
  */
 
 package com.untangle.node.capture;

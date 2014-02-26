@@ -1,5 +1,5 @@
 /*
- * $Id: ConnectivityTester.java 34024 2013-02-26 19:42:44Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm;
 

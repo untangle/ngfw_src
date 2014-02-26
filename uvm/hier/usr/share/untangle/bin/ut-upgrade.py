@@ -1,5 +1,5 @@
 #!/usr/bin/python -u
-# $Id: ut-apt,v 1.00 2013/05/27 17:02:52 dmorris Exp $#!/usr/bin/python
+# $Id$#!/usr/bin/python
 
 import getopt
 import sys

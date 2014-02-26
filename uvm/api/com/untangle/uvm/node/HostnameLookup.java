@@ -1,5 +1,5 @@
 /**
- * $Id: HostnameLookup.java,v 1.00 2012/02/16 15:24:14 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

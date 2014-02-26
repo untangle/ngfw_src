@@ -1,5 +1,5 @@
 /**
- * $Id: QuotaEvent.java,v 1.00 2012/05/02 11:04:48 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

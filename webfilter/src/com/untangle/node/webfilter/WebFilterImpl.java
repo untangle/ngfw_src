@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/mawk/work/src/webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java $
+ * $HeadURL$
  */
 package com.untangle.node.webfilter;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: SpamSmtpTarpitEvent.java 34220 2013-03-10 17:41:01Z dmorris $
+ * $Id$
  */
 package com.untangle.node.spam;
 

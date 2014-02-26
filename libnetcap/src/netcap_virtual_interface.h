@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_virtual_interface.h,v 1.00 2013/08/08 11:32:06 dmorris Exp $
+ * $Id$
  */
 #ifndef __NETCAP_VIRTUAL_INTERFACE_H
 #define __NETCAP_VIRTUAL_INTERFACE_H

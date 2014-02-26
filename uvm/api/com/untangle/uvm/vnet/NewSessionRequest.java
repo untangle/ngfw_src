@@ -1,5 +1,5 @@
 /**
- * $Id: NewSessionRequest.java 34444 2013-04-01 23:17:13Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 

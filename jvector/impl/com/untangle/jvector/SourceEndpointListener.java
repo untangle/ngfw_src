@@ -1,5 +1,5 @@
 /**
- * $Id: SourceEndpointListener.java 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 package com.untangle.jvector;
 

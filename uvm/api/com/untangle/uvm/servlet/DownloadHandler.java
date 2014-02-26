@@ -1,5 +1,5 @@
 /**
- * $Id: DownloadHandler.java,v 1.00 2013/06/12 14:42:55 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.servlet;
 

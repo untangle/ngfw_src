@@ -1,5 +1,5 @@
 /*
- * $Id: GenericRule.java,v 1.00 2011/09/06 14:41:19 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

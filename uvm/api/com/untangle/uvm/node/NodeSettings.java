@@ -1,5 +1,5 @@
 /*
- * $Id: NodeSettings.java 31807 2012-04-30 21:00:27Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: IPMaskedAddressSerializer.java,v 1.00 2013/11/18 14:57:27 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.jabsorb.serializer;
 

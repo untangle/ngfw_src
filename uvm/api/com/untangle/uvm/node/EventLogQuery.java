@@ -1,5 +1,5 @@
 /**
- * $Id: EventLogQuery.java,v 1.00 2011/12/17 17:16:45 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

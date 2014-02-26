@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_version.c 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #include "libnetcap.h"
 #include <mvutil/debug.h>

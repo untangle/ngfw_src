@@ -1,5 +1,5 @@
 /**
- * $Id: ReportingUser.java,v 1.00 2012/05/14 12:58:47 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting;
 

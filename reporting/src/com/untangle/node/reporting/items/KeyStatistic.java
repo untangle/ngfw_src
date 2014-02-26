@@ -1,5 +1,5 @@
 /**
- * $Id: KeyStatistic.java,v 1.00 2012/06/11 14:58:00 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

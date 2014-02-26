@@ -1,5 +1,5 @@
 /**
- * $Id: DNSPacket.java,v 1.00 2012/10/14 22:30:00 mahotz Exp $
+ * $Id$
  */
 
 package com.untangle.node.capture;

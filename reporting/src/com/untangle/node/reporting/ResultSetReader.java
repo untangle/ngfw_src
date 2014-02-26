@@ -1,5 +1,5 @@
 /**
- * $Id: ResultSetReader.java,v 1.00 2013/12/31 11:18:30 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting;
 

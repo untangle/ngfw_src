@@ -1,5 +1,5 @@
 /**
- * $Id: DirectoryConnector.java,v 1.00 2011/08/15 14:13:23 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

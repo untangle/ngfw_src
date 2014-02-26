@@ -1,5 +1,5 @@
 /**
- * $Id: Downloader.java,v 1.00 2013/04/24 15:55:59 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.openvpn.servlet;
 

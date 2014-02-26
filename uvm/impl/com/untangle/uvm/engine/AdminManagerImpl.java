@@ -1,5 +1,5 @@
 /**
- * $Id: AdminManagerImpl.java 35303 2013-07-17 10:39:51Z atreznai $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 

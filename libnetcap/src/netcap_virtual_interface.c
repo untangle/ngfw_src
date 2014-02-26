@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_virtual_interface.c,v 1.00 2013/08/08 11:36:02 dmorris Exp $
+ * $Id$
  */
 #include <stdlib.h>
 #include <sys/types.h>

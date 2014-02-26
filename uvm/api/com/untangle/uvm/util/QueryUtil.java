@@ -1,5 +1,5 @@
 /**
- * $Id: QueryUtil.java,v 1.00 2013/11/19 16:16:48 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.util;
 

@@ -1,5 +1,5 @@
 # -*-ruby-*-
-# $Id: target.rb,v 1.00 2012/06/11 20:25:15 dmorris Exp $
+# $Id$
 
 require 'gettext/utils'
 

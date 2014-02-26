@@ -1,5 +1,5 @@
 /**
- * $Id: LanguageSettings.java,v 1.00 2012/05/09 15:56:38 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

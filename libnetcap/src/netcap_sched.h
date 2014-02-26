@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_sched.h 35571 2013-08-08 18:37:27Z dmorris $
+ * $Id$
  */
 #ifndef __NETCAP_SCHED_H_
 #define __NETCAP_SCHED_H_

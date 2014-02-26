@@ -1,5 +1,5 @@
 /**
- * $Id: CasingPipeSpec.java 35447 2013-07-29 17:24:43Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.vnet;
 

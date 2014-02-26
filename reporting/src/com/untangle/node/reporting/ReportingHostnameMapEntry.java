@@ -1,5 +1,5 @@
 /**
- * $Id: ReportingHostnameMapEntry.java,v 1.00 2012/05/16 14:43:52 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting;
 

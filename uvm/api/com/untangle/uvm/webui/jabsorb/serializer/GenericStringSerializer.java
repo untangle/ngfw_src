@@ -1,5 +1,5 @@
 /**
- * $Id: GenericStringSerializer.java,v 1.00 2012/04/26 11:46:32 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.jabsorb.serializer;
 

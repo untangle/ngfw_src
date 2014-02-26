@@ -1,5 +1,5 @@
 /**
- * $Id: AdministrationOutsideAccessValve.java,v 1.00 2012/09/12 14:13:06 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.util;
 

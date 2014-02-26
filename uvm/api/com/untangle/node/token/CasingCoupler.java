@@ -1,5 +1,5 @@
 /**
- * $Id: CasingCoupler.java 34281 2013-03-28 00:00:00Z mahotz $
+ * $Id$
  */
 package com.untangle.node.token;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: SessionTuple.java 34506 2013-04-08 23:04:30Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: LanguageManagerImpl.java,v 1.00 2011/12/04 10:55:07 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 

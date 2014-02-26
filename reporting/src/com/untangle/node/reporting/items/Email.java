@@ -1,5 +1,5 @@
 /**
- * $Id: Email.java,v 1.00 2012/06/11 14:57:07 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

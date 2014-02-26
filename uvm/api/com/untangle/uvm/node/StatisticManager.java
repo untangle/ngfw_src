@@ -1,5 +1,5 @@
 /*
- * $Id: StatisticManager.java 30512 2011-12-18 21:48:44Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.node;
 

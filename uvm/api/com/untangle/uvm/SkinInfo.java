@@ -1,5 +1,5 @@
 /**
- * $Id: SkinInfo.java,v 1.00 2012/06/05 18:18:24 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

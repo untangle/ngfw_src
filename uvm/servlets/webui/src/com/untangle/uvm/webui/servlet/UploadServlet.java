@@ -1,5 +1,5 @@
 /**
- * $Id: UploadServlet.java,v 1.00 2012/08/30 12:21:52 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.servlet;
 

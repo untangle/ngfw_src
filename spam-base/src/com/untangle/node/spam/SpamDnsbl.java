@@ -1,5 +1,5 @@
 /**
- * $Id: SpamDnsbl.java,v 1.00 2011/12/27 15:00:01 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.spam;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: Welcome.java,v 1.00 2012/04/11 14:44:40 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.setup.servlet;
 

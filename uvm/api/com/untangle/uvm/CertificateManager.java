@@ -1,5 +1,5 @@
 /*
- * $Id: CertificateManager.java 35697 2013-08-22 05:43:10Z mahotz $
+ * $Id$
  */
 
 package com.untangle.uvm;

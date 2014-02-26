@@ -1,5 +1,5 @@
 /**
- * $Id: MIMEAccumulator.java 34539 2013-04-12 05:06:33Z dmorris $
+ * $Id$
  */
 package com.untangle.node.smtp.mime;
 

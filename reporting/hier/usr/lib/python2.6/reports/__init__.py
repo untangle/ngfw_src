@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.00 2012/01/08 20:49:50 dmorris Exp $
+# $Id$
 
 import codecs
 import cStringIO

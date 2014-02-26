@@ -1,5 +1,5 @@
 /**
- * $Id: global.h 35567 2013-08-08 07:47:12Z dmorris $
+ * $Id$
  */
 #include <jni.h>
 

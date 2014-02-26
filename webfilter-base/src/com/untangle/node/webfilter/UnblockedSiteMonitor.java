@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/webfilter-base/impl/com/untangle/node/webfilter/UnblockedSitesMonitor.java $
+ * $HeadURL$
  */
 package com.untangle.node.webfilter;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: source.h 35573 2013-08-08 19:43:35Z dmorris $
+ * $Id$
  */
 #ifndef __SOURCE_H
 #define __SOURCE_H

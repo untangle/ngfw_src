@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureNode.java,v 1.00 2011/12/27 09:42:36 mahotz Exp $
+ * $Id$
  */
 
 package com.untangle.node.capture;

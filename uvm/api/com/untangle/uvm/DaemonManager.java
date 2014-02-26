@@ -1,5 +1,5 @@
 /*
- * $Id: DaemonManager.java 36469 2013-11-21 20:11:48Z dmorris $
+ * $Id$
  */
 
 package com.untangle.uvm;

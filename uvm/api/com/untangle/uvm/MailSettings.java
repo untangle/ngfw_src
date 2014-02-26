@@ -1,5 +1,5 @@
 /**
- * $Id: MailSettings.java 32079 2012-06-06 23:20:33Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm;
 

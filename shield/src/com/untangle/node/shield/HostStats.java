@@ -1,5 +1,5 @@
 /**
- * $Id: HostStats.java,v 1.00 2013/05/20 13:38:10 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.shield;
 

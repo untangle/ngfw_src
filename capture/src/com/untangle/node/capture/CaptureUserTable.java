@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureUserTable.java,v 1.00 2011/12/14 01:02:03 mahotz Exp $
+ * $Id$
  */
 
 package com.untangle.node.capture;

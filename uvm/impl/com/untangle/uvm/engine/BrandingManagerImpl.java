@@ -1,5 +1,5 @@
 /**
- * $Id: BrandingManagerImpl.java,v 1.00 2012/04/06 11:46:05 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.engine;
 

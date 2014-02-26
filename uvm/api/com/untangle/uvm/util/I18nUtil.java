@@ -1,5 +1,5 @@
 /**
- * $Id: I18nUtil.java,v 1.00 2013/11/19 16:16:52 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.util;
 

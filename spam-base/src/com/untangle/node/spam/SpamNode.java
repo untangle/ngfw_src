@@ -1,5 +1,5 @@
 /**
- * $Id: SpamNode.java 34230 2013-03-11 22:31:53Z dmorris $
+ * $Id$
  */
 package com.untangle.node.spam;
 

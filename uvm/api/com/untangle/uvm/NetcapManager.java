@@ -1,5 +1,5 @@
 /*
- * $Id: NetcapManager.java 34455 2013-04-02 03:20:19Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm;
 

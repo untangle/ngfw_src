@@ -1,5 +1,5 @@
 /**
- * $Id: LoadAvg.java 30961 2012-01-30 20:09:33Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.util;
 

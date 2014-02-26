@@ -1,5 +1,5 @@
 /**
- * $Id: TimeSeriesChart.java,v 1.00 2012/01/08 20:14:47 dmorris Exp $h
+ * $Id$h
  */
 package com.untangle.node.reporting.items;
 

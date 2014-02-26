@@ -1,5 +1,5 @@
 /**
- * $Id: HostTableEntry.java,v 1.00 2012/11/08 13:03:51 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm;
 

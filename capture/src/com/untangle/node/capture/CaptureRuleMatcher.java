@@ -1,5 +1,5 @@
 /**
- * $Id: CaptureRuleMatcher.java,v 1.00 2011/08/24 14:43:42 dmorris Exp $
+ * $Id$
  */
 
 package com.untangle.node.capture;

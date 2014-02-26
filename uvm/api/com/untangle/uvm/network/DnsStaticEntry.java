@@ -1,5 +1,5 @@
 /**
- * $Id: DnsStaticEntry.java,v 1.00 2013/03/08 21:07:34 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.network;
 

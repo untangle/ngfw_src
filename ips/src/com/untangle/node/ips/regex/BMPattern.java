@@ -24,7 +24,7 @@ import java.text.CharacterIterator;
  * 
  * @xerces.internal
  *
- * @version $Id: BMPattern.java 572108 2007-09-02 18:48:31Z mrglavas $
+ * @version $Id$
  */
 public class BMPattern {
     final char[] pattern;

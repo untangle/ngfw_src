@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/libnetcap/src/netcap_queue.c $ */
+/* $HeadURL$ */
 #include "netcap_queue.h"
 
 #include <sys/types.h>

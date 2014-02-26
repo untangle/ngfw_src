@@ -1,5 +1,5 @@
 /**
- * $Id: StackedBarChart.java,v 1.00 2012/01/08 19:39:45 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.reporting.items;
 

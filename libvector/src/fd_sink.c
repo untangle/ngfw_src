@@ -1,5 +1,5 @@
 /**
- * $Id: fd_sink.c 35573 2013-08-08 19:43:35Z dmorris $
+ * $Id$
  */
 #include <libnetcap.h>
 

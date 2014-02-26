@@ -1,5 +1,5 @@
 /**
- * $Id: WebFilterDecisionEngine.java,v 1.00 2011/07/07 12:12:27 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.webfilter;
 

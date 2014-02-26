@@ -1,5 +1,5 @@
 /**
- * $Id: netcap_nfconntrack.h,v 1.00 2013/08/08 11:34:10 dmorris Exp $
+ * $Id$
  */
 #ifndef __NETCAP_NFCONNTRACK_H
 #define __NETCAP_NFCONNTRACK_H

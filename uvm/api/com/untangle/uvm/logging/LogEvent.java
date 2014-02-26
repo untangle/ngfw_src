@@ -1,5 +1,5 @@
 /**
- * $Id: LogEvent.java 32297 2012-06-25 20:54:12Z dmorris $
+ * $Id$
  */
 package com.untangle.uvm.logging;
 

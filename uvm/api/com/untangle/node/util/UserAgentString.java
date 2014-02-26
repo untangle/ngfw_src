@@ -1,5 +1,5 @@
 /**
- * $Id: UsegAgentString.java,v 1.00 2012/10/15 12:22:11 dmorris Exp $
+ * $Id$
  */
 package com.untangle.node.util;
 

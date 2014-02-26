@@ -1,5 +1,5 @@
 /**
- * $Id: MimeTypeSerializer.java,v 1.00 2013/11/18 14:56:12 dmorris Exp $
+ * $Id$
  */
 package com.untangle.uvm.webui.jabsorb.serializer;
 
