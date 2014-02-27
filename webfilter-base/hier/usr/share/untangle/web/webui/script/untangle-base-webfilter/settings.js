@@ -161,7 +161,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }]
             });
             
-            this.categoriesPanel = Ext.create('Ext.panel.Panel',{
+            this.blockedCategoriesPanel = Ext.create('Ext.panel.Panel',{
                 name: 'BlockCategories',
                 title: this.i18n._('Block Categories'),
                 helpSource: this.helpSourceName + '_block_categories',
@@ -186,7 +186,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 ]
             });
             
-            return this.categoriesPanel;
+            return this.blockedCategoriesPanel;
         },
         
         // Blocked sites
