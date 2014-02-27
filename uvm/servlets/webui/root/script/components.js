@@ -136,7 +136,7 @@ Ext.override(Ext.PagingToolbar, {
 });
 
 Ext.override( Ext.form.FieldSet, {
-   border: 0 
+    border: 0 
 });
 
 Ext.define("Ung.form.DayOfWeekMatcherField", {
@@ -237,7 +237,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
         var i;
         var initValue = "none";
         if ((typeof this.value) == "string") {
-             initValue = this.value.split(",");
+            initValue = this.value.split(",");
         }
         this.value = null;
         for (i = 0 ; i < this.items.length ; i++)
@@ -268,7 +268,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
         } else {
             return arr.join();
         }
-            
+        
     }
 });
 
@@ -514,7 +514,7 @@ Ung.Util = {
         for(var key in obj) {
             val=obj[key];
             if(val!=null) {
-              msg+=" | "+key+" - "+val;
+                msg+=" | "+key+" - "+val;
             }
         }
         return msg;
@@ -579,8 +579,8 @@ Ung.Util = {
                 if(Ung.Util.handleException(exception)) return;
                 var moduleMap=result.map;
                 Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                        "map": i18n.map,
-                        "moduleMap": moduleMap
+                    "map": i18n.map,
+                    "moduleMap": moduleMap
                 });
                 handler.call(this);
             }, this,[moduleName, handler],true), moduleName);
@@ -712,7 +712,7 @@ Ung.Util = {
             data = this.getInterfaceList(false, true);
         else
             data = this.getInterfaceList(true, true);
-            
+        
         var interfaceStore=Ext.create('Ext.data.ArrayStore',{
             idIndex:0,
             fields: ['key', 'name'],
@@ -808,8 +808,8 @@ Ung.Util = {
     },
     defaultRenderer: function (value) {
         return (typeof value == 'string') ?
-           value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
-           value;
+            value.length<1? "&#160;": Ext.util.Format.htmlEncode(value):
+        value;
     },
     getQueryStringParam: function(name) {
         name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -823,40 +823,40 @@ Ung.Util = {
     },
     getGenericRuleFields: function(settingsCmp) {
         return [{
-                name: 'id'
-            }, {
-                name: 'name',
-                defaultValue:  undefined
-            }, {
-                name: 'string',
-                defaultValue:  undefined
-            }, {
-                name: 'description',
-                defaultValue:  undefined
-            }, {
-                name: 'category',
-                defaultValue:  undefined
-            }, {
-                name: 'enabled',
-                defaultValue: 'true'
-            }, {
-                name: 'blocked',
-                defaultValue:  undefined
-            }, {
-                name: 'flagged',
-                defaultValue:  undefined
-            }];
+            name: 'id'
+        }, {
+            name: 'name',
+            defaultValue:  undefined
+        }, {
+            name: 'string',
+            defaultValue:  undefined
+        }, {
+            name: 'description',
+            defaultValue:  undefined
+        }, {
+            name: 'category',
+            defaultValue:  undefined
+        }, {
+            name: 'enabled',
+            defaultValue: 'true'
+        }, {
+            name: 'blocked',
+            defaultValue:  undefined
+        }, {
+            name: 'flagged',
+            defaultValue:  undefined
+        }];
     },
     buildJsonListFromStrings: function(stringsList, propertyName) {
-          var jsonList=[];
-          if(stringsList != null && stringsList.length>0) {
-              for(var i=0; i<stringsList.length; i++) {
-                  var el={};
-                  el[propertyName]=stringsList[i];
-                  jsonList.push(el);
-              }
-          }
-          return jsonList;
+        var jsonList=[];
+        if(stringsList != null && stringsList.length>0) {
+            for(var i=0; i<stringsList.length; i++) {
+                var el={};
+                el[propertyName]=stringsList[i];
+                jsonList.push(el);
+            }
+        }
+        return jsonList;
     },
     makeDataFn: function(dataProperty, dataFn, dataFnArgs) {
         return function(forceReloadOrHandler) {
@@ -883,7 +883,7 @@ Ung.Util = {
         for(var i=0; i<pairArray.length; i++) {
             map[pairArray[i][0]] = pairArray[i][1];
         }
-        return map;
+            return map;
     },
     createRecordsMap : function(recList, property) {
         var map = {};
@@ -969,10 +969,10 @@ Ung.Util.RetryHandler = {
         var params = [ d ];
 
         if ( input.params ) {
-            params = params.concat( input.params );
+                params = params.concat( input.params );
         }
 
-        fn.apply( fnScope, params );
+            fn.apply( fnScope, params );
     }
 };
 
@@ -1144,8 +1144,8 @@ Ext.define("Ung.AppItem", {
         var currentPercentComplete;
         var progressIndex;
         switch (newState) {
-          case null:
-          case "installed":
+              case null:
+              case "installed":
             this.displayButtonsOrProgress(true);
             this.download=null;
             break;
@@ -1232,13 +1232,13 @@ Ext.define("Ung.Node", {
                 i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
                 '<BR>',
                 '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
-                i18n._('indicates that the application is "on" and operating normally.'),
+                    i18n._('indicates that the application is "on" and operating normally.'),
                 '<BR>',
                 '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
-                i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
+                    i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
                 '<BR>',
                 '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
-                i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
+                    i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
                 '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
                 '</div>'].join('');
         },
@@ -1249,11 +1249,11 @@ Ext.define("Ung.Node", {
             return i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'); 
         },
         template: new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
-            '<div class="node-faceplate-info">{licenseMessage}</div>',
-            '<div class="node-metrics" id="node-metrics_{id}"></div>',
-            '<div class="node-state" id="node-state_{id}" name="State"></div>',
-            '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
-            '<div class="node-buttons" id="node-buttons_{id}"></div>')
+                                   '<div class="node-faceplate-info">{licenseMessage}</div>',
+                                   '<div class="node-metrics" id="node-metrics_{id}"></div>',
+                                   '<div class="node-state" id="node-state_{id}" name="State"></div>',
+                                   '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
+                                   '<div class="node-buttons" id="node-buttons_{id}"></div>')
     },    
     autoEl: "div",
     cls: "node",
@@ -1330,7 +1330,7 @@ Ext.define("Ung.Node", {
                 el.setOpacity(1);
                 el.frame("#63BE4A", 1, { duration: 1000 });
             }});
-        }
+            }
         var nodeButtons=[{
             xtype: "button",
             name: "Show Settings",
@@ -1357,7 +1357,7 @@ Ext.define("Ung.Node", {
             ctCls:'buy-button-text',
             text: '<font color="green">' + i18n._('Buy Now') + '</font>',
             handler: Ext.bind(this.onBuyNowAction, this)
-        }];
+            }];
         var templateHTML = Ung.Node.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,
@@ -1415,7 +1415,7 @@ Ext.define("Ung.Node", {
     },
     // is runState "RUNNING"
     isRunning: function() {
-      return (this.runState == "RUNNING");
+        return (this.runState == "RUNNING");
     },
     setState: function(state) {
         this.state = state;
@@ -1467,7 +1467,7 @@ Ext.define("Ung.Node", {
     },
     start: function () {
         if(this.state=="attention") {
-          return;
+            return;
         }
         this.loadNode(Ext.bind(function() {
             this.setPowerOn(true);
@@ -1616,7 +1616,7 @@ Ext.define("Ung.Node", {
 
     completeRemoveAction: function() {
         var message = Ext.String.format(
-                i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
+            i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
                 if (this.settingsWin) {
@@ -1664,7 +1664,7 @@ Ext.define("Ung.Node", {
                 this.subCmps.push(this.faceplateMetrics);
             }
         }
-            
+        
     },
     getLicenseMessage: function() {
         var licenseMessage = "";
@@ -1721,7 +1721,7 @@ Ext.define("Ung.NodePreview", {
         this.getEl().addCls("node");
         this.getEl().set({
             'viewPosition': this.viewPosition
-        });
+            });
         var templateHTML = Ung.NodePreview.template.applyTemplate({
             'id': this.getId(),
             'image': 'chiclet?name='+this.name,
@@ -1930,7 +1930,7 @@ Ext.define("Ung.SystemStats", {
             html: sessionsArr.join('')
         });
 
-        // cpu tooltip
+            // cpu tooltip
         var cpuArr=[
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
@@ -1952,7 +1952,7 @@ Ext.define("Ung.SystemStats", {
             html: cpuArr.join('')
         });
 
-        // memory tooltip
+            // memory tooltip
         var memoryArr=[
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
             '<div class="values"><span name="memory_total"></span> MB</div>',
@@ -1996,7 +1996,7 @@ Ext.define("Ung.SystemStats", {
 
     },
     update: function(stats) {
-        var toolTipEl;
+            var toolTipEl;
         var sessionsText = '<font color="#55BA47">' + stats.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
         
@@ -2098,7 +2098,7 @@ Ext.define("Ung.FaceplateMetric", {
     chartDataLength: 20,
     chartTip: null,
     afterRender: function() {
-        this.callParent(arguments);
+            this.callParent(arguments);
         var out = [];
         for (var i = 0; i < 4; i++) {
             var top = 1 + i * 15;
@@ -2132,7 +2132,7 @@ Ext.define("Ung.FaceplateMetric", {
         if(this.nodeName === "untangle-node-firewall" ||
            this.nodeName === "untangle-node-openvpn" ||
            this.nodeName === "untangle-node-splitd") {
-            this.hasChart = false;
+                this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
         //Do not build chart graph if the node doesn't have live-session metrics
@@ -2176,7 +2176,7 @@ Ext.define("Ung.FaceplateMetric", {
         });
         this.chart.on("click", function(e) { main.showNodeSessions( this.parentNodeId ); }, this);
         var chartTipArr=[
-           '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
+            '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
         ];
         this.chartTip=Ext.create('Ext.tip.ToolTip',{
             target: chartContainerEl,
@@ -2189,37 +2189,37 @@ Ext.define("Ung.FaceplateMetric", {
         });
         
     },
-    buildActiveMetrics: function () {
-        var nodeCmp = Ext.getCmp(this.parentId);
-        var activeMetrics = nodeCmp.activeMetrics;
-        if(activeMetrics.length>4) {
-            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
-        }
-        var metricsLen=Math.min(activeMetrics.length,4);
-        var i, nameDiv, valueDiv;
-        /* set all four to blank */
-        for(i=0; i<4;i++) {
-            nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
-            valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
-            nameDiv.innerHTML = "&nbsp;";
-            nameDiv.style.display="none";
-            valueDiv.innerHTML = "&nbsp;";
-            valueDiv.style.display="none";
-        }
-        /* fill in name and value */
-        for(i=0; i<metricsLen;i++) {
-            var metricIndex=activeMetrics[i];
-            var metric = nodeCmp.metrics.list[metricIndex];
-            if (metric != null && metric !== undefined) {
+        buildActiveMetrics: function () {
+                var nodeCmp = Ext.getCmp(this.parentId);
+            var activeMetrics = nodeCmp.activeMetrics;
+            if(activeMetrics.length>4) {
+                Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+                }
+            var metricsLen=Math.min(activeMetrics.length,4);
+            var i, nameDiv, valueDiv;
+            /* set all four to blank */
+            for(i=0; i<4;i++) {
                 nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
                 valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
-                nameDiv.innerHTML = i18n._(metric.displayName);
-                nameDiv.style.display="";
+                nameDiv.innerHTML = "&nbsp;";
+                nameDiv.style.display="none";
                 valueDiv.innerHTML = "&nbsp;";
-                valueDiv.style.display="";
+                valueDiv.style.display="none";
             }
-        }
-    },
+            /* fill in name and value */
+            for(i=0; i<metricsLen;i++) {
+                var metricIndex=activeMetrics[i];
+                var metric = nodeCmp.metrics.list[metricIndex];
+                if (metric != null && metric !== undefined) {
+                    nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+                    valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
+                    nameDiv.innerHTML = i18n._(metric.displayName);
+                    nameDiv.style.display="";
+                    valueDiv.innerHTML = "&nbsp;";
+                    valueDiv.style.display="";
+                }
+            }
+        },
     showMetricSettings: function() {
         var nodeCmp = Ext.getCmp(this.parentId);
         this.newActiveMetrics=[];
@@ -2396,7 +2396,7 @@ Ext.define("Ung.GlobalFiltersFeature", {
             globalFilter: {
                 value: "",
                 caseSensitive: false
-            }
+                }
         });
         this.callParent(arguments);
     },
@@ -2416,19 +2416,19 @@ Ext.define("Ung.GlobalFiltersFeature", {
             value=value.toLowerCase();
         }
         this.globalFilter.value = value;
-        this.reload();
+            this.reload();
     },
     globalFilterFn: function(record) {
         //TODO: 1) support regular exppressions
         //2) provide option to search in displayed columns only
-        var inputValue = this.globalFilter.value,
-            caseSensitive = this.globalFilter.caseSensitive;
+            var inputValue = this.globalFilter.value,
+        caseSensitive = this.globalFilter.caseSensitive;
         if(inputValue.length === 0) {
             return true;
         }
         var fields = record.fields.items,
-            fLen   = record.fields.length,
-            f, val;
+        fLen   = record.fields.length,
+        f, val;
 
         for (f = 0; f < fLen; f++) {
             val = record.get(fields[f].name);
@@ -2496,7 +2496,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
                 change: {
                     fn: function(combo, newValue, oldValue, opts) {
                         if(!this.buttonObj) {
-                           return;
+                            return;
                         }
                         if (combo.getValue()!=null) {
                             if(!this.date) {
@@ -2523,7 +2523,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
             handler: function() {
                 this.setDate(null);
                 this.hide();
-            },
+                },
             scope: this
         }];
         this.callParent(arguments);
@@ -2565,7 +2565,7 @@ Ext.define("Ung.GridEventLogBase", {
         leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
     },
     loadMask: true,
-    startDate: null,
+        startDate: null,
     endDate: null,
     stateful: true,
     // called when the component is initialized
@@ -2577,7 +2577,7 @@ Ext.define("Ung.GridEventLogBase", {
             fields: config.fields
         });
         config.modelName = modelName;
-         
+        
         this.callParent(arguments);
     },
     beforeDestroy: function() {
@@ -2701,64 +2701,64 @@ Ext.define("Ung.GridEventLogBase", {
                 id: "limitSelector_"+this.getId(),
                 text: ''
             }, 
-            {
-                xtype: 'button',
-                text: i18n._('From'),
-                initialLabel:  i18n._('From'),
-                hidden: !this.hasTimestampFilter,
-                width: 132,
-                tooltip: i18n._('Select Start date and time'),
-                handler: function(button) {
-                    me.startDateWindow.buttonObj=button;
-                    me.startDateWindow.show();
-                },
-                scope: this
-            },{
-                xtype: 'tbtext',
-                hidden: !this.hasTimestampFilter,
-                text: '-'
-            }, {
-                xtype: 'button',
-                text: i18n._('To'),
-                initialLabel:  i18n._('To'),
-                hidden: !this.hasTimestampFilter,
-                width: 132,
-                tooltip: i18n._('Select End date and time'),
-                handler: function(button) {
-                    me.endDateWindow.buttonObj=button;
-                    me.endDateWindow.show();
-                },
-                scope: this
-            },
-            {
-                xtype: 'button',
-                id: "refresh_"+this.getId(),
-                text: i18n._('Refresh'),
-                name: "Refresh",
-                tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-                iconCls: 'icon-refresh',
-                handler:function () {
-                    this.refreshHandler(true);
-                },
-                scope: this
-            }, {
-                xtype: 'button',
-                hidden: !this.hasAutoRefresh,
-                id: "auto_refresh_"+this.getId(),
-                text: i18n._('Auto Refresh'),
-                enableToggle: true,
-                pressed: false,
-                name: "Auto Refresh",
-                tooltip: i18n._('Auto Refresh every 5 seconds'),
-                iconCls: 'icon-autorefresh',
-                handler: Ext.bind(function(button) {
-                    if(button.pressed) {
-                        this.startAutoRefresh();
-                    } else {
-                        this.stopAutoRefresh();
-                    }
-                }, this)
-            }]
+                    {
+                        xtype: 'button',
+                        text: i18n._('From'),
+                        initialLabel:  i18n._('From'),
+                        hidden: !this.hasTimestampFilter,
+                        width: 132,
+                        tooltip: i18n._('Select Start date and time'),
+                        handler: function(button) {
+                            me.startDateWindow.buttonObj=button;
+                            me.startDateWindow.show();
+                        },
+                        scope: this
+                    },{
+                        xtype: 'tbtext',
+                        hidden: !this.hasTimestampFilter,
+                        text: '-'
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('To'),
+                        initialLabel:  i18n._('To'),
+                        hidden: !this.hasTimestampFilter,
+                        width: 132,
+                        tooltip: i18n._('Select End date and time'),
+                        handler: function(button) {
+                            me.endDateWindow.buttonObj=button;
+                            me.endDateWindow.show();
+                        },
+                        scope: this
+                    },
+                    {
+                        xtype: 'button',
+                        id: "refresh_"+this.getId(),
+                        text: i18n._('Refresh'),
+                        name: "Refresh",
+                        tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                        iconCls: 'icon-refresh',
+                        handler:function () {
+                            this.refreshHandler(true);
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'button',
+                        hidden: !this.hasAutoRefresh,
+                        id: "auto_refresh_"+this.getId(),
+                        text: i18n._('Auto Refresh'),
+                        enableToggle: true,
+                        pressed: false,
+                        name: "Auto Refresh",
+                        tooltip: i18n._('Auto Refresh every 5 seconds'),
+                        iconCls: 'icon-autorefresh',
+                        handler: Ext.bind(function(button) {
+                            if(button.pressed) {
+                                this.startAutoRefresh();
+                            } else {
+                                this.stopAutoRefresh();
+                            }
+                        }, this)
+                    }]
         }];
 
         for (var i in this.columns) {
@@ -2773,46 +2773,46 @@ Ext.define("Ung.GridEventLogBase", {
                     col.filter = { type: 'string' };
                 else 
                     col.filter = { type: 'datetime',
-                            dataIndex: 'time_stamp',
-                            date: {
-                                format: 'Y-m-d'
-                            },
-                            time: {
-                                format: 'H:i:s A',
-                                increment: 1
-                            },
-                            validateRecord : function (record) {
-                                var me = this, 
-                                key,
-                                pickerValue,
-                                val1 = record.get(me.dataIndex);
-                                
-                                var val = new Date(val1.time);
-                                if(!Ext.isDate(val)){
-                                    return false;
-                                }
-                                val = val.getTime();
+                                   dataIndex: 'time_stamp',
+                                   date: {
+                                       format: 'Y-m-d'
+                                   },
+                                   time: {
+                                       format: 'H:i:s A',
+                                       increment: 1
+                                   },
+                                   validateRecord : function (record) {
+                                       var me = this, 
+                                       key,
+                                       pickerValue,
+                                       val1 = record.get(me.dataIndex);
+                                       
+                                       var val = new Date(val1.time);
+                                       if(!Ext.isDate(val)){
+                                           return false;
+                                       }
+                                       val = val.getTime();
 
-                                for (key in me.fields) {
-                                    if (me.fields[key].checked) {
-                                        pickerValue = me.getFieldValue(key).getTime();
-                                        if (key == 'before' && pickerValue <= val) {
-                                            return false;
-                                        }
-                                        if (key == 'after' && pickerValue >= val) {
-                                            return false;
-                                        }
-                                        if (key == 'on' && pickerValue != val) {
-                                            return false;
-                                        }
-                                    }
-                                }
-                                return true;
-                            }
-                    };
+                                       for (key in me.fields) {
+                                           if (me.fields[key].checked) {
+                                               pickerValue = me.getFieldValue(key).getTime();
+                                               if (key == 'before' && pickerValue <= val) {
+                                                   return false;
+                                               }
+                                               if (key == 'after' && pickerValue >= val) {
+                                                   return false;
+                                               }
+                                               if (key == 'on' && pickerValue != val) {
+                                                   return false;
+                                               }
+                                           }
+                                       }
+                                       return true;
+                                   }
+                                 };
             }
             if( col.stateId === undefined ){
-               col.stateId = col.dataIndex;
+                col.stateId = col.dataIndex;
             }
         }
         this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
@@ -2829,7 +2829,7 @@ Ext.define("Ung.GridEventLogBase", {
         this.getStore().sort(columnModel[0].dataIndex, "DESC");
         for (var i in columnModel) {
             columnModel[i].sortable = false;
-        }
+            }
         if(setButton) {
             var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
             autoRefreshButton.toggle(true);
@@ -2876,7 +2876,7 @@ Ext.define("Ung.GridEventLogBase", {
             rec[property]=
                 (property=='id')?index+1:
                 (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
-                    property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
+            property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
         }
         return rec;
     },
@@ -3164,7 +3164,7 @@ Ext.define("Ung.GridEventLog", {
                                                           selQuery, selPolicy, selLimit);
             } else { 
                 rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this), 
-                                                             selQuery, selPolicy, selLimit, this.startDateWindow.date, this.endDateWindow.date);
+                                                                      selQuery, selPolicy, selLimit, this.startDateWindow.date, this.endDateWindow.date);
             }
         } else {
             this.setLoading(false);
@@ -3204,799 +3204,799 @@ Ext.define("Ung.GridEventLog", {
 });
 
 Ung.CustomEventLog = {
-        buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-//            var lineNum = Ext.create('Ext.grid.RowNumberer');
-//            lineNum.setWidth(50);
-            var grid = Ext.create('Ung.GridEventLog',{
-                name: nameParam,
-                settingsCmp: settingsCmpParam,
-                helpSource: helpSourceParam,
-                eventQueriesFn: eventQueriesFnParam,
-                title: titleParam,
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: Ung.SortTypes.asTimestamp
-                }, {
-                    name: 'bandwidth_priority'
-                }, {
-                    name: 'bandwidth_rule'
-                }, {
-                    name: 'username'
-                }, {
-                    name: 'hostname'
-                }, {
-                    name: 'c_client_addr'
-                }, {
-                    name: 'c_client_port'
-                }, {
-                    name: 'c_server_addr'
-                }, {
-                    name: 'c_server_port'
-                }, {
-                    name: 's_server_addr'
-                }, {
-                    name: 's_server_port'
-                }, {
-                    name: 'classd_application',
-                    type: 'string'
-                }, {
-                    name: 'classd_protochain',
-                    type: 'string'
-                }, {
-                    name: 'classd_flagged',
-                    type: 'boolean'
-                }, {
-                    name: 'classd_blocked',
-                    type: 'boolean'
-                }, {
-                    name: 'classd_confidence'
-                }, {
-                    name: 'classd_detail'
-                }, {
-                    name: 'protofilter_blocked'
-                }, {
-                    name: 'protofilter_protocol',
-                    type: 'string'
-                }, {
-                    name: 'classd_ruleid'
-                }, {
-                    name: 'https_status'
-                }, {
-                    name: 'https_detail'
-                }, {
-                    name: 'https_ruleid'
-                }, {
-                    name: 'policy_id'
-                }, {
-                    name: 'firewall_blocked'
-                }, {
-                    name: 'firewall_flagged'
-                }, {
-                    name: 'firewall_rule_index'
-                }, {
-                    name: 'ips_blocked'
-                }, {
-                    name: 'ips_ruleid'
-                }, {
-                    name: 'ips_description',
-                    type: 'string'
-                }, {
-                    name: "capture_rule_index"
-                }, {
-                    name: "capture_blocked"
-                }],
-                columns: [{
-                    hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
-                    header: i18n._("Timestamp"),
-                    width: Ung.Util.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
+    buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+        //            var lineNum = Ext.create('Ext.grid.RowNumberer');
+        //            lineNum.setWidth(50);
+        var grid = Ext.create('Ung.GridEventLog',{
+            name: nameParam,
+            settingsCmp: settingsCmpParam,
+            helpSource: helpSourceParam,
+            eventQueriesFn: eventQueriesFnParam,
+            title: titleParam,
+            fields: [{
+                name: 'time_stamp',
+                sortType: Ung.SortTypes.asTimestamp
+            }, {
+                name: 'bandwidth_priority'
+            }, {
+                name: 'bandwidth_rule'
+            }, {
+                name: 'username'
+            }, {
+                name: 'hostname'
+            }, {
+                name: 'c_client_addr'
+            }, {
+                name: 'c_client_port'
+            }, {
+                name: 'c_server_addr'
+            }, {
+                name: 'c_server_port'
+            }, {
+                name: 's_server_addr'
+            }, {
+                name: 's_server_port'
+            }, {
+                name: 'classd_application',
+                type: 'string'
+            }, {
+                name: 'classd_protochain',
+                type: 'string'
+            }, {
+                name: 'classd_flagged',
+                type: 'boolean'
+            }, {
+                name: 'classd_blocked',
+                type: 'boolean'
+            }, {
+                name: 'classd_confidence'
+            }, {
+                name: 'classd_detail'
+            }, {
+                name: 'protofilter_blocked'
+            }, {
+                name: 'protofilter_protocol',
+                type: 'string'
+            }, {
+                name: 'classd_ruleid'
+            }, {
+                name: 'https_status'
+            }, {
+                name: 'https_detail'
+            }, {
+                name: 'https_ruleid'
+            }, {
+                name: 'policy_id'
+            }, {
+                name: 'firewall_blocked'
+            }, {
+                name: 'firewall_flagged'
+            }, {
+                name: 'firewall_rule_index'
+            }, {
+                name: 'ips_blocked'
+            }, {
+                name: 'ips_ruleid'
+            }, {
+                name: 'ips_description',
+                type: 'string'
+            }, {
+                name: "capture_rule_index"
+            }, {
+                name: "capture_blocked"
+            }],
+            columns: [{
+                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                header: i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
+                header: i18n._("Client"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_client_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_client_port') < 0,
+                header: i18n._("Client port"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 'c_client_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('username') < 0,
+                header: i18n._("Username"),
+                width: Ung.Util.usernameFieldWidth,
+                sortable: true,
+                dataIndex: 'username'
+            }, {
+                hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                header: i18n._("Hostname"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'hostname'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
+                header: i18n._("Server"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_server_port') < 0,
+                header: i18n._("Server Port"),
+                width: Ung.Util.portFieldWidth, 
+                sortable: true,
+                dataIndex: 'c_server_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_ruleid') < 0,
+                header: i18n._("Rule ID"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'classd_ruleid',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('bandwidth_priority') < 0,
+                header: i18n._("Priority"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'bandwidth_priority',
+                renderer: function(value) {
+                    if (Ext.isEmpty(value))
+                        return "";
+                    
+                    switch(value) {
+                      case 0: return "";
+                      case 1: return i18n._("Very High");
+                      case 2: return i18n._("High");
+                      case 3: return i18n._("Medium");
+                      case 4: return i18n._("Low");
+                      case 5: return i18n._("Limited");
+                      case 6: return i18n._("Limited More");
+                      case 7: return i18n._("Limited Severely");
+                    default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
                     }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
-                    header: i18n._("Client"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'c_client_addr'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('c_client_port') < 0,
-                    header: i18n._("Client port"),
-                    width: Ung.Util.portFieldWidth,
-                    sortable: true,
-                    dataIndex: 'c_client_port',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('username') < 0,
-                    header: i18n._("Username"),
-                    width: Ung.Util.usernameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'username'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('hostname') < 0,
-                    header: i18n._("Hostname"),
-                    width: Ung.Util.hostnameFieldWidth,
-                    sortable: true,
-                    dataIndex: 'hostname'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
-                    header: i18n._("Server"),
-                    width: Ung.Util.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'c_server_addr'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('c_server_port') < 0,
-                    header: i18n._("Server Port"),
-                    width: Ung.Util.portFieldWidth, 
-                    sortable: true,
-                    dataIndex: 'c_server_port',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_ruleid') < 0,
-                    header: i18n._("Rule ID"),
-                    width: 70,
-                    sortable: true,
-                    dataIndex: 'classd_ruleid',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('bandwidth_priority') < 0,
-                    header: i18n._("Priority"),
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'bandwidth_priority',
-                    renderer: function(value) {
-                        if (Ext.isEmpty(value))
-                            return "";
-                        
-                        switch(value) {
-                          case 0: return "";
-                          case 1: return i18n._("Very High");
-                          case 2: return i18n._("High");
-                          case 3: return i18n._("Medium");
-                          case 4: return i18n._("Low");
-                          case 5: return i18n._("Limited");
-                          case 6: return i18n._("Limited More");
-                          case 7: return i18n._("Limited Severely");
-                          default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
-                        }
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('bandwidth_rule') < 0,
-                    header: i18n._("Rule"),
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'bandwidth_rule',
-                    renderer: function(value) {
-                        if (Ext.isEmpty(value))
-                            return i18n._("none");
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('bandwidth_rule') < 0,
+                header: i18n._("Rule"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'bandwidth_rule',
+                renderer: function(value) {
+                    if (Ext.isEmpty(value))
+                        return i18n._("none");
+                    return value;
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_application') < 0,
+                header: i18n._("Application"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'classd_application'
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_protochain') < 0,
+                header: i18n._("ProtoChain"),
+                width: 180,
+                sortable: true,
+                dataIndex: 'classd_protochain'
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_blocked') < 0,
+                header: i18n._("Blocked (Application Control)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'classd_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_flagged') < 0,
+                header: i18n._("Flagged (Application Control)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'classd_flagged',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_confidence') < 0,
+                header: i18n._("Confidence"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 'classd_confidence',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('classd_detail') < 0,
+                header: i18n._("Detail"),
+                width: 200,
+                sortable: true,
+                dataIndex: 'classd_detail'
+            },{
+                hidden: visibleColumnsParam.indexOf('protofilter_protocol') < 0,
+                header: i18n._("Protocol"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'protofilter_protocol'
+            }, {
+                hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
+                header: i18n._("Blocked (Application Control Lite)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'protofilter_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('https_ruleid') < 0,
+                header: i18n._("Rule ID (Https)"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'https_ruleid',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('https_status') < 0,
+                header: i18n._("Status (Https)"),
+                width: 100,
+                sortable: true,
+                dataIndex: 'https_status'
+            }, {
+                hidden: visibleColumnsParam.indexOf('https_detail') < 0,
+                header: i18n._("Detail (Https)"),
+                width: 250,
+                sortable: true,
+                dataIndex: 'https_detail'
+            }, {
+                hidden: visibleColumnsParam.indexOf('policy_id') < 0,
+                header: i18n._('Policy Id'),
+                width: 60,
+                sortable: true,
+                flex:1,
+                dataIndex: 'policy_id',
+                renderer: function(value) {
+                    return main.getPolicyName(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('firewall_blocked') < 0,
+                header: i18n._("Blocked (Firewall)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'firewall_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('firewall_flagged') < 0,
+                header: i18n._("Flagged (Firewall)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'firewall_flagged',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('firewall_rule_index') < 0,
+                header: i18n._('Rule Id (Firewall)'),
+                width: 60,
+                sortable: true,
+                flex:1,
+                dataIndex: 'firewall_rule_index',
+                renderer: function(value) {
+                    if (value <= 0) {
+                        return i18n._("none");
+                    } else {
                         return value;
                     }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_application') < 0,
-                    header: i18n._("Application"),
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'classd_application'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_protochain') < 0,
-                    header: i18n._("ProtoChain"),
-                    width: 180,
-                    sortable: true,
-                    dataIndex: 'classd_protochain'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_blocked') < 0,
-                    header: i18n._("Blocked (Application Control)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'classd_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
+                header: i18n._("Server") ,
+                width: Ung.Util.ipFieldWidth + 40, // +40 for column header
+                sortable: true,
+                dataIndex: 's_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
+                header: i18n._("Server Port"),
+                width: Ung.Util.portFieldWidth + 40, // +40 for column header
+                sortable: true,
+                dataIndex: 's_server_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('ips_blocked') < 0,
+                header: i18n._("Blocked (IPS)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'ips_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('ips_ruleid') < 0,
+                header: i18n._('Rule Id (IPS)'),
+                width: 60,
+                sortable: true,
+                dataIndex: 'ips_ruleid'
+            }, {
+                hidden: visibleColumnsParam.indexOf('ips_description') < 0,
+                header: i18n._('Rule Description (IPS)'),
+                width: 150,
+                sortable: true,
+                flex:1,
+                dataIndex: 'ips_description'
+            }, {
+                hidden: visibleColumnsParam.indexOf('capture_rule_index') < 0,
+                header: i18n._("Rule ID (Captive Portal)"),
+                width: 80,
+                dataIndex: 'capture_rule_index'
+            }, {
+                hidden: visibleColumnsParam.indexOf('capture_blocked') < 0,
+                header: i18n._("Captured"),
+                width: 100,
+                sortable: true,
+                dataIndex: "capture_blocked",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }]
+        });
+        return grid;
+    },
+    buildHttpEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+        var grid = Ext.create('Ung.GridEventLog',{
+            name: nameParam,
+            settingsCmp: settingsCmpParam,
+            helpSource: helpSourceParam,
+            eventQueriesFn: eventQueriesFnParam,
+            title: titleParam,
+            fields: [{
+                name: 'time_stamp',
+                sortType: Ung.SortTypes.asTimestamp
+            }, {
+                name: 'webfilter_blocked',
+                type: 'boolean'
+            }, {
+                name: 'sitefilter_blocked',
+                type: 'boolean'
+            }, {
+                name: 'webfilter_flagged',
+                type: 'boolean'
+            }, {
+                name: 'sitefilter_flagged',
+                type: 'boolean'
+            }, {
+                name: 'webfilter_category',
+                type: 'string'
+            }, {
+                name: 'sitefilter_category',
+                type: 'string'
+            }, {
+                name: 'c_client_addr'
+            }, {
+                name: 'username'
+            }, {
+                name: 'hostname'
+            }, {
+                name: 'c_server_addr'
+            }, {
+                name: 's_server_port'
+            }, {
+                name: 'host'
+            }, {
+                name: 'uri'
+            }, {
+                name: 'webfilter_reason',
+                type: 'string',
+                convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
+            }, {
+                name: 'sitefilter_reason',
+                type: 'string',
+                convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
+            }, {
+                name: 'adblocker_action',
+                type: 'string',
+                convert: Ext.bind(function(value) {
+                    if (value == 'B') {
+                        return i18n._("block");
+                    } else {
+                        return i18n._("pass");
                     }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_flagged') < 0,
-                    header: i18n._("Flagged (Application Control)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'classd_flagged',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_confidence') < 0,
-                    header: i18n._("Confidence"),
-                    width: Ung.Util.portFieldWidth,
-                    sortable: true,
-                    dataIndex: 'classd_confidence',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('classd_detail') < 0,
-                    header: i18n._("Detail"),
-                    width: 200,
-                    sortable: true,
-                    dataIndex: 'classd_detail'
-                },{
-                    hidden: visibleColumnsParam.indexOf('protofilter_protocol') < 0,
-                    header: i18n._("Protocol"),
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'protofilter_protocol'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
-                    header: i18n._("Blocked (Application Control Lite)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'protofilter_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('https_ruleid') < 0,
-                    header: i18n._("Rule ID (Https)"),
-                    width: 70,
-                    sortable: true,
-                    dataIndex: 'https_ruleid',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('https_status') < 0,
-                    header: i18n._("Status (Https)"),
-                    width: 100,
-                    sortable: true,
-                    dataIndex: 'https_status'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('https_detail') < 0,
-                    header: i18n._("Detail (Https)"),
-                    width: 250,
-                    sortable: true,
-                    dataIndex: 'https_detail'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('policy_id') < 0,
-                    header: i18n._('Policy Id'),
-                    width: 60,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'policy_id',
-                    renderer: function(value) {
-                        return main.getPolicyName(value);
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('firewall_blocked') < 0,
-                    header: i18n._("Blocked (Firewall)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'firewall_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('firewall_flagged') < 0,
-                    header: i18n._("Flagged (Firewall)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'firewall_flagged',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('firewall_rule_index') < 0,
-                    header: i18n._('Rule Id (Firewall)'),
-                    width: 60,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'firewall_rule_index',
-                    renderer: function(value) {
-                        if (value <= 0) {
-                            return i18n._("none");
-                        } else {
-                            return value;
-                        }
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
-                    header: i18n._("Server") ,
-                    width: Ung.Util.ipFieldWidth + 40, // +40 for column header
-                    sortable: true,
-                    dataIndex: 's_server_addr'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
-                    header: i18n._("Server Port"),
-                    width: Ung.Util.portFieldWidth + 40, // +40 for column header
-                    sortable: true,
-                    dataIndex: 's_server_port',
-                    filter: {
-                        type: 'numeric'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('ips_blocked') < 0,
-                    header: i18n._("Blocked (IPS)"),
-                    width: Ung.Util.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'ips_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }, {
-                    hidden: visibleColumnsParam.indexOf('ips_ruleid') < 0,
-                    header: i18n._('Rule Id (IPS)'),
-                    width: 60,
-                    sortable: true,
-                    dataIndex: 'ips_ruleid'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('ips_description') < 0,
-                    header: i18n._('Rule Description (IPS)'),
-                    width: 150,
-                    sortable: true,
-                    flex:1,
-                    dataIndex: 'ips_description'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('capture_rule_index') < 0,
-                    header: i18n._("Rule ID (Captive Portal)"),
-                    width: 80,
-                    dataIndex: 'capture_rule_index'
-                }, {
-                    hidden: visibleColumnsParam.indexOf('capture_blocked') < 0,
-                    header: i18n._("Captured"),
-                    width: 100,
-                    sortable: true,
-                    dataIndex: "capture_blocked",
-                    filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
-                    }
-                }]
-            });
-            return grid;
-        },
-        buildHttpEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-          var grid = Ext.create('Ung.GridEventLog',{
-              name: nameParam,
-              settingsCmp: settingsCmpParam,
-              helpSource: helpSourceParam,
-              eventQueriesFn: eventQueriesFnParam,
-              title: titleParam,
-              fields: [{
-                  name: 'time_stamp',
-                  sortType: Ung.SortTypes.asTimestamp
-              }, {
-                  name: 'webfilter_blocked',
-                  type: 'boolean'
-              }, {
-                  name: 'sitefilter_blocked',
-                  type: 'boolean'
-              }, {
-                  name: 'webfilter_flagged',
-                  type: 'boolean'
-              }, {
-                  name: 'sitefilter_flagged',
-                  type: 'boolean'
-              }, {
-                  name: 'webfilter_category',
-                  type: 'string'
-              }, {
-                  name: 'sitefilter_category',
-                  type: 'string'
-              }, {
-                  name: 'c_client_addr'
-              }, {
-                  name: 'username'
-              }, {
-                  name: 'hostname'
-              }, {
-                  name: 'c_server_addr'
-              }, {
-                  name: 's_server_port'
-              }, {
-                  name: 'host'
-              }, {
-                  name: 'uri'
-              }, {
-                  name: 'webfilter_reason',
-                  type: 'string',
-                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
-              }, {
-                  name: 'sitefilter_reason',
-                  type: 'string',
-                  convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
-              }, {
-                  name: 'adblocker_action',
-                  type: 'string',
-                  convert: Ext.bind(function(value) {
-                      if (value == 'B') {
-                          return i18n._("block");
-                      } else {
-                          return i18n._("pass");
-                      }
-                  }, this)
-              }, {
-                  name: 'adblocker_cookie_ident'
-              }, {
-                  name: 'commtouchav_name'
-              }, {
-                  name: 'clam_name'
-              }],
-              columns: [{
-                  hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
-                  header: i18n._("Timestamp"),
-                  width: Ung.Util.timestampFieldWidth,
-                  sortable: true,
-                  dataIndex: 'time_stamp',
-                  renderer: function(value) {
-                      return i18n.timestampFormat(value);
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('hostname') < 0,
-                  header: i18n._("Hostname"),
-                  width: Ung.Util.hostnameFieldWidth,
-                  sortable: true,
-                  dataIndex: 'hostname'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
-                  header: i18n._("Client"),
-                  width: Ung.Util.ipFieldWidth,
-                  sortable: true,
-                  dataIndex: 'c_client_addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('username') < 0,
-                  header: i18n._("Username"),
-                  width: Ung.Util.usernameFieldWidth,
-                  sortable: true,
-                  dataIndex: 'username'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('host') < 0,
-                  header: i18n._("Host"),
-                  width: Ung.Util.hostnameFieldWidth,
-                  sortable: true,
-                  dataIndex: 'host'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('uri') < 0,
-                  header: i18n._("Uri"),
-                  flex:1,
-                  width: Ung.Util.uriFieldWidth,
-                  sortable: true,
-                  dataIndex: 'uri'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
-                  header: i18n._("Blocked (Webfilter Lite)"),
-                  width: Ung.Util.booleanFieldWidth,
-                  sortable: true,
-                  dataIndex: 'webfilter_blocked',
-                  filter: {
-                      type: 'boolean',
-                      yesText: 'true',
-                      noText: 'false'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('webfilter_flagged') < 0,
-                  header: i18n._("Flagged (Webfilter Lite)"),
-                  width: Ung.Util.booleanFieldWidth,
-                  dataIndex: 'webfilter_flagged',
-                  filter: {
-                      type: 'boolean',
-                      yesText: 'true',
-                      noText: 'false'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('webfilter_reason') < 0,
-                  header: i18n._("Reason For Action (Webfilter Lite)"),
-                  width: 150,
-                  sortable: true,
-                  dataIndex: 'webfilter_reason'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
-                  header: i18n._("Category (Webfilter Lite)"),
-                  width: 120,
-                  sortable: true,
-                  dataIndex: 'webfilter_category'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
-                  header: i18n._("Blocked  (Webfilter)"),
-                  width: Ung.Util.booleanFieldWidth,
-                  sortable: true,
-                  dataIndex: 'sitefilter_blocked',
-                  filter: {
-                      type: 'boolean',
-                      yesText: 'true',
-                      noText: 'false'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('sitefilter_flagged') < 0,
-                  header: i18n._("Flagged (Webfilter)"),
-                  width: Ung.Util.booleanFieldWidth,
-                  sortable: true,
-                  dataIndex: 'sitefilter_flagged',
-                  filter: {
-                      type: 'boolean',
-                      yesText: 'true',
-                      noText: 'false'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('sitefilter_reason') < 0,
-                  header: i18n._("Reason For Action (Webfilter)"),
-                  width: 150,
-                  sortable: true,
-                  dataIndex: 'sitefilter_reason'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
-                  header: i18n._("Category (Webfilter)"),
-                  width: 120,
-                  sortable: true,
-                  dataIndex: 'sitefilter_category'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
-                  header: i18n._("Server"),
-                  width: Ung.Util.ipFieldWidth,
-                  sortable: true,
-                  dataIndex: 'c_server_addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
-                  header: i18n._("Server Port"),
-                  width: Ung.Util.portFieldWidth,
-                  sortable: true,
-                  dataIndex: 's_server_port',
-                  filter: {
-                      type: 'numeric'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('adblocker_action') < 0,
-                  header: i18n._("Action (Ad Blocker)"),
-                  width: 120,
-                  sortable: true,
-                  dataIndex: 'adblocker_action'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('adblocker_cookie_ident') < 0,
-                  header: i18n._("Cookie"),
-                  width: 100,
-                  sortable: true,
-                  dataIndex: 'adblocker_cookie_ident'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('clam_name') < 0,
-                  header: i18n._("Virus Name (Clam)"),
-                  width: 140,
-                  sortable: true,
-                  dataIndex: 'clam_name'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
-                  header: i18n._("Virus Name (Commtouchav)"),
-                  width: 140,
-                  sortable: true,
-                  dataIndex: 'commtouchav_name'
-              }]
-          });
-          return grid;
-      },
-      buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-          var grid = Ext.create('Ung.GridEventLog',{
-              name: nameParam,
-              settingsCmp: settingsCmpParam,
-              helpSource: helpSourceParam,
-              eventQueriesFn: eventQueriesFnParam,
-              title: titleParam,
-              fields: [{
-                  name: 'time_stamp',
-                  sortType: Ung.SortTypes.asTimestamp
-              }, {
-                  name: 'hostname'
-              }, {
-                  name: 'c_client_addr'
-              }, {
-                  name: 'username'
-              }, {
-                  name: 'c_server_addr'
-              }, {
-                  name: 's_server_addr'
-              }, {
-                  name: 'commtouchav_name'
-              }, {
-                  name: 'clam_name'
-              }, {
-                  name: 'subject',
-                  type: 'string'
-              }, {
-                  name: 'addr',
-                  type: 'string'
-              }, {
-                  name: 'sender',
-                  type: 'string'
-              }, {
-                  name: 'vendor'
-              }, {
-                  name:  'spamassassin_action',
-                  type: 'string',
-                  convert: Ext.bind( function(value, rec ) {
-                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                  }, this)
-              }, {
-                  name: 'spamassassin_score'
-              }, {
-                  name:  'commtouchas_action',
-                  type: 'string',
-                  convert: Ext.bind( function(value, rec ) {
-                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                  }, this)
-              }, {
-                  name: 'commtouchas_score'
-              }, {
-                  name:  'phish_action',
-                  type: 'string',
-                  convert: Ext.bind( function(value, rec ) {
-                      return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                  }, this)
-              }, {
-                  name: 'phish_score'
-              }],
-              columns: [{
-                  hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
-                  header: i18n._("Timestamp"),
-                  width: Ung.Util.timestampFieldWidth,
-                  sortable: true,
-                  dataIndex: 'time_stamp',
-                  renderer: function(value) {
-                      return i18n.timestampFormat(value);
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('hostname') < 0,
-                  header: i18n._("Hostname"),
-                  width: Ung.Util.hostnameFieldWidth,
-                  sortable: true,
-                  dataIndex: 'hostname'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
-                  header: i18n._("Client"),
-                  width: Ung.Util.ipFieldWidth,
-                  sortable: true,
-                  dataIndex: 'c_client_addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
-                  header: i18n._("Server"),
-                  width: Ung.Util.ipFieldWidth,
-                  sortable: true,
-                  dataIndex: 'c_server_addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
-                  header: i18n._("Server"),
-                  width: Ung.Util.ipFieldWidth,
-                  sortable: true,
-                  dataIndex: 's_server_addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('clam_name') < 0,
-                  header: i18n._("Virus Name (Clam)"),
-                  width: 140,
-                  sortable: true,
-                  dataIndex: 'clam_name'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
-                  header: i18n._("Virus Name (Commtouchav)"),
-                  width: 140,
-                  sortable: true,
-                  dataIndex: 'commtouchav_name'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('addr') < 0,
-                  header: i18n._("Receiver"),
-                  width: Ung.Util.emailFieldWidth,
-                  sortable: true,
-                  dataIndex: 'addr'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('sender') < 0,
-                  header: i18n._("Sender"),
-                  width: Ung.Util.emailFieldWidth,
-                  sortable: true,
-                  dataIndex: 'sender'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('subject') < 0,
-                  header: i18n._("Subject"),
-                  flex:1,
-                  width: 150,
-                  sortable: true,
-                  dataIndex: 'subject'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
-                  header: i18n._("Action (Spamassassin)"),
-                  width: 125,
-                  sortable: true,
-                  dataIndex: 'spamassassin_action'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
-                  header: i18n._("Spam score (Spamassassin)"),
-                  width: 70,
-                  sortable: true,
-                  dataIndex: 'spamassassin_score',
-                  filter: {
-                      type: 'numeric'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('commtouchas_action') < 0,
-                  header: i18n._("Action (Commtouchas)"),
-                  width: 125,
-                  sortable: true,
-                  dataIndex: 'commtouchas_action'
-              }, {
-                  hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
-                  header: i18n._("Spam score (Commtouchas)"),
-                  width: 70,
-                  sortable: true,
-                  dataIndex: 'commtouchas_score',
-                  filter: {
-                      type: 'numeric'
-                  }
-              }, {
-                  hidden: visibleColumnsParam.indexOf('phish_action') < 0,
-                  header: i18n._("Action (Phish)"),
-                  width: 125,
-                  sortable: true,
-                  dataIndex: 'phish_action'
-              }]
-          });
-          return grid;
-      },
-      httpEventConvertReason: function(value) {
-          switch (value) {
-              case 'D':
-                  return i18n._("in Categories Block list");
-              case 'U':
-                  return i18n._("in URLs Block list");
-              case 'E':
-                  return i18n._("in File Extensions Block list");
-              case 'M':
-                  return i18n._("in MIME Types Block list");
-              case 'H':
-                  return i18n._("Hostname is an IP address");
-              case 'I':
-                  return i18n._("in URLs Pass list");
-              case 'C':
-                  return i18n._("in Clients Pass list");
-              case 'B':
-                  return i18n._("Client Bypass");
-              default:
-              case 'DEFAULT':
-                  return i18n._("no rule applied");
-          }
-          return null;
-      },
-      mailEventConvertAction: function(value, rec ) { 
-          if (value == 'P') { // PASSED
-              return i18n._("pass message");
-          } else if (value == 'M') { // MARKED
-              return i18n._("mark message");
-          } else if (value == 'D') { // DROP
-              return i18n._("drop message");
-          } else if (value == 'B') { // DROP
-              return i18n._("block message");
-          } else if (value == 'Q') { // QUARANTINED
-              return i18n._("quarantine message");
-          } else if (value == 'S') { // SAFELISTED
-              return i18n._("pass safelist message");
-          } else if (value == 'Z') { // OVERSIZE
-              return i18n._("pass oversize message");
-          } else if (value == 'O') { // OUTBOUND
-              return i18n._("pass outbound message");
-          } else {
-              return i18n._("unknown action");
-          }
-          return "";
-      }
+                }, this)
+            }, {
+                name: 'adblocker_cookie_ident'
+            }, {
+                name: 'commtouchav_name'
+            }, {
+                name: 'clam_name'
+            }],
+            columns: [{
+                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                header: i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                header: i18n._("Hostname"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'hostname'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
+                header: i18n._("Client"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_client_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('username') < 0,
+                header: i18n._("Username"),
+                width: Ung.Util.usernameFieldWidth,
+                sortable: true,
+                dataIndex: 'username'
+            }, {
+                hidden: visibleColumnsParam.indexOf('host') < 0,
+                header: i18n._("Host"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'host'
+            }, {
+                hidden: visibleColumnsParam.indexOf('uri') < 0,
+                header: i18n._("Uri"),
+                flex:1,
+                width: Ung.Util.uriFieldWidth,
+                sortable: true,
+                dataIndex: 'uri'
+            }, {
+                hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
+                header: i18n._("Blocked (Webfilter Lite)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'webfilter_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('webfilter_flagged') < 0,
+                header: i18n._("Flagged (Webfilter Lite)"),
+                width: Ung.Util.booleanFieldWidth,
+                dataIndex: 'webfilter_flagged',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('webfilter_reason') < 0,
+                header: i18n._("Reason For Action (Webfilter Lite)"),
+                width: 150,
+                sortable: true,
+                dataIndex: 'webfilter_reason'
+            }, {
+                hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
+                header: i18n._("Category (Webfilter Lite)"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'webfilter_category'
+            }, {
+                hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
+                header: i18n._("Blocked  (Webfilter)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'sitefilter_blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('sitefilter_flagged') < 0,
+                header: i18n._("Flagged (Webfilter)"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'sitefilter_flagged',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('sitefilter_reason') < 0,
+                header: i18n._("Reason For Action (Webfilter)"),
+                width: 150,
+                sortable: true,
+                dataIndex: 'sitefilter_reason'
+            }, {
+                hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
+                header: i18n._("Category (Webfilter)"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'sitefilter_category'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
+                header: i18n._("Server"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
+                header: i18n._("Server Port"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 's_server_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('adblocker_action') < 0,
+                header: i18n._("Action (Ad Blocker)"),
+                width: 120,
+                sortable: true,
+                dataIndex: 'adblocker_action'
+            }, {
+                hidden: visibleColumnsParam.indexOf('adblocker_cookie_ident') < 0,
+                header: i18n._("Cookie"),
+                width: 100,
+                sortable: true,
+                dataIndex: 'adblocker_cookie_ident'
+            }, {
+                hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                header: i18n._("Virus Name (Clam)"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'clam_name'
+            }, {
+                hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                header: i18n._("Virus Name (Commtouchav)"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'commtouchav_name'
+            }]
+        });
+        return grid;
+    },
+    buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+        var grid = Ext.create('Ung.GridEventLog',{
+            name: nameParam,
+            settingsCmp: settingsCmpParam,
+            helpSource: helpSourceParam,
+            eventQueriesFn: eventQueriesFnParam,
+            title: titleParam,
+            fields: [{
+                name: 'time_stamp',
+                sortType: Ung.SortTypes.asTimestamp
+            }, {
+                name: 'hostname'
+            }, {
+                name: 'c_client_addr'
+            }, {
+                name: 'username'
+            }, {
+                name: 'c_server_addr'
+            }, {
+                name: 's_server_addr'
+            }, {
+                name: 'commtouchav_name'
+            }, {
+                name: 'clam_name'
+            }, {
+                name: 'subject',
+                type: 'string'
+            }, {
+                name: 'addr',
+                type: 'string'
+            }, {
+                name: 'sender',
+                type: 'string'
+            }, {
+                name: 'vendor'
+            }, {
+                name:  'spamassassin_action',
+                type: 'string',
+                convert: Ext.bind( function(value, rec ) {
+                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                }, this)
+            }, {
+                name: 'spamassassin_score'
+            }, {
+                name:  'commtouchas_action',
+                type: 'string',
+                convert: Ext.bind( function(value, rec ) {
+                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                }, this)
+            }, {
+                name: 'commtouchas_score'
+            }, {
+                name:  'phish_action',
+                type: 'string',
+                convert: Ext.bind( function(value, rec ) {
+                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
+                }, this)
+            }, {
+                name: 'phish_score'
+            }],
+            columns: [{
+                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                header: i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                header: i18n._("Hostname"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'hostname'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
+                header: i18n._("Client"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_client_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
+                header: i18n._("Server"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
+                header: i18n._("Server"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 's_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                header: i18n._("Virus Name (Clam)"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'clam_name'
+            }, {
+                hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                header: i18n._("Virus Name (Commtouchav)"),
+                width: 140,
+                sortable: true,
+                dataIndex: 'commtouchav_name'
+            }, {
+                hidden: visibleColumnsParam.indexOf('addr') < 0,
+                header: i18n._("Receiver"),
+                width: Ung.Util.emailFieldWidth,
+                sortable: true,
+                dataIndex: 'addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('sender') < 0,
+                header: i18n._("Sender"),
+                width: Ung.Util.emailFieldWidth,
+                sortable: true,
+                dataIndex: 'sender'
+            }, {
+                hidden: visibleColumnsParam.indexOf('subject') < 0,
+                header: i18n._("Subject"),
+                flex:1,
+                width: 150,
+                sortable: true,
+                dataIndex: 'subject'
+            }, {
+                hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
+                header: i18n._("Action (Spamassassin)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'spamassassin_action'
+            }, {
+                hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
+                header: i18n._("Spam score (Spamassassin)"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'spamassassin_score',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('commtouchas_action') < 0,
+                header: i18n._("Action (Commtouchas)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'commtouchas_action'
+            }, {
+                hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
+                header: i18n._("Spam score (Commtouchas)"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'commtouchas_score',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('phish_action') < 0,
+                header: i18n._("Action (Phish)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'phish_action'
+            }]
+        });
+        return grid;
+    },
+    httpEventConvertReason: function(value) {
+        switch (value) {
+          case 'D':
+            return i18n._("in Categories Block list");
+          case 'U':
+            return i18n._("in URLs Block list");
+          case 'E':
+            return i18n._("in File Extensions Block list");
+          case 'M':
+            return i18n._("in MIME Types Block list");
+          case 'H':
+            return i18n._("Hostname is an IP address");
+          case 'I':
+            return i18n._("in URLs Pass list");
+          case 'C':
+            return i18n._("in Clients Pass list");
+          case 'B':
+            return i18n._("Client Bypass");
+        default:
+          case 'DEFAULT':
+            return i18n._("no rule applied");
+        }
+        return null;
+    },
+    mailEventConvertAction: function(value, rec ) { 
+        if (value == 'P') { // PASSED
+            return i18n._("pass message");
+        } else if (value == 'M') { // MARKED
+            return i18n._("mark message");
+        } else if (value == 'D') { // DROP
+            return i18n._("drop message");
+        } else if (value == 'B') { // DROP
+            return i18n._("block message");
+        } else if (value == 'Q') { // QUARANTINED
+            return i18n._("quarantine message");
+        } else if (value == 'S') { // SAFELISTED
+            return i18n._("pass safelist message");
+        } else if (value == 'Z') { // OVERSIZE
+            return i18n._("pass oversize message");
+        } else if (value == 'O') { // OUTBOUND
+            return i18n._("pass outbound message");
+        } else {
+            return i18n._("unknown action");
+        }
+        return "";
+    }
 };
 
 // Monitor Grid class
@@ -4063,7 +4063,7 @@ Ext.define('Ung.MonitorGrid', {
                 col.sortable = this.columnsDefaultSortable;
             }
             if( col.stateId === undefined ){
-               col.stateId=col.dataIndex;
+                col.stateId=col.dataIndex;
             }
         }    
         if(this.dataFn) {
@@ -4159,7 +4159,7 @@ Ext.define('Ung.MonitorGrid', {
                 this.filters.clearFilters();
             }, this) 
         },{
-            text: i18n._('Clear Grouping'),
+                text: i18n._('Clear Grouping'),
             tooltip: i18n._('Grouping can be used by clicking on column headers arrow down menu and clicking Group by this field'),
             handler: Ext.bind(function () {
                 this.getStore().clearGrouping();
@@ -4352,7 +4352,7 @@ Ext.define('Ung.Window', {
         Ext.applyIf(config, defaults);
         this.subCmps = [];
         this.callParent(arguments);
-    },
+        },
     initComponent: function() {
         if (!this.title) {
             this.title = '<span id="title_' + this.getId() + '"></span>';
@@ -4364,7 +4364,7 @@ Ext.define('Ung.Window', {
         if (this.name && this.getEl()) {
             this.getEl().set({
                 'name': this.name
-            });
+                });
         }
         if (this.breadcrumbs) {
             this.subCmps.push(new Ung.Breadcrumbs({
@@ -4397,18 +4397,18 @@ Ext.define('Ung.Window', {
     isDirty: function() {
         return false;
     },
-    cancelAction: function(handler) {
-        if (this.isDirty()) {
-            Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-                Ext.bind(function(btn) {
-                if (btn == 'yes') {
-                    this.closeWindow(handler);
-                }
-            }, this));
-        } else {
-            this.closeWindow(handler);
-        }
-    },
+        cancelAction: function(handler) {
+            if (this.isDirty()) {
+                Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
+                                       Ext.bind(function(btn) {
+                                           if (btn == 'yes') {
+                                               this.closeWindow(handler);
+                                           }
+                                       }, this));
+            } else {
+                this.closeWindow(handler);
+            }
+        },
     close: function() {
         //Need to override default Ext.Window method to fix issue #10238
         if (this.fireEvent('beforeclose', this) !== false) {
@@ -4428,11 +4428,11 @@ Ext.define('Ung.Window', {
 Ung.Window.cancelAction = function(dirty, closeWinFn) {
     if (dirty) {
         Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-            function(btn) {
-                if (btn == 'yes') {
-                    closeWinFn();
-                }
-            });
+                               function(btn) {
+                                   if (btn == 'yes') {
+                                       closeWinFn();
+                                   }
+                               });
     } else {
         closeWinFn();
     }
@@ -4483,7 +4483,7 @@ Ext.define("Ung.SettingsWin", {
                 if(tabIndex != -1) {
                     this.tabs.setActiveTab(tabIndex);
                     if(targetTokens.length >= 4 && targetTokens[3] !=null ) {
-                        var activeTab = this.tabs.getActiveTab();
+                            var activeTab = this.tabs.getActiveTab();
                         var compArr = this.tabs.query('[name="'+targetTokens[3]+'"]');
                         if(compArr.length > 0) {
                             var comp = compArr[0];
@@ -4548,9 +4548,9 @@ Ext.define("Ung.SettingsWin", {
             }
             return;
         }
-        if(!this.validate()) {
-            return;
-        }
+            if(!this.validate()) {
+                return;
+            }
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
         if(Ext.isFunction(this.beforeSave)) {
             this.beforeSave(isApply, this.save);
@@ -4611,7 +4611,7 @@ Ext.define("Ung.NodeWin", {
                 name: 'Help',
                 id: this.getId() + "_helpBtn",
                 iconCls: 'icon-help',
-                text: i18n._('Help'),
+                    text: i18n._('Help'),
                 handler: Ext.bind(function() {
                     this.helpAction();
                 }, this)
@@ -4738,7 +4738,7 @@ Ung.NodeWin.dependency = {};
 Ung.NodeWin.getClassName = function(name) {
     var className = Ung.NodeWin.classNames[name];
     return className === undefined ? null: className;
-};
+    };
 // Static function to register a settings class name for a node
 Ung.NodeWin.registerClassName = function(name, className) {
     Ung.NodeWin.classNames[name] = className;
@@ -4848,32 +4848,32 @@ Ext.define('Ung.UpdateWindow', {
     initComponent: function() {
         if(this.bbar==null) {
             this.bbar=[
-            '->',
-            {
-                name: "Save",
-                id: this.getId() + "_saveBtn",
-                iconCls: 'save-icon',
-                text: i18n._('Save'),
-                handler: Ext.bind(function() {
-                    Ext.Function.defer(this.saveAction,1, this);
-                }, this)
-            },'-',{
-                name: "Cancel",
-                id: this.getId() + "_cancelBtn",
-                iconCls: 'cancel-icon',
-                text: i18n._('Cancel'),
-                handler: Ext.bind(function() {
-                    this.cancelAction();
-                }, this)
-            },'-',{
-                name: "Apply",
-                id: this.getId() + "_applyBtn",
-                iconCls: 'apply-icon',
-                text: i18n._('Apply'),
-                handler: Ext.bind(function() {
-                    Ext.Function.defer(this.applyAction,1, this, []);
-                }, this)
-            },'-'];
+                '->',
+                {
+                    name: "Save",
+                    id: this.getId() + "_saveBtn",
+                    iconCls: 'save-icon',
+                    text: i18n._('Save'),
+                    handler: Ext.bind(function() {
+                        Ext.Function.defer(this.saveAction,1, this);
+                    }, this)
+                },'-',{
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Apply",
+                    id: this.getId() + "_applyBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Apply'),
+                    handler: Ext.bind(function() {
+                        Ext.Function.defer(this.applyAction,1, this, []);
+                    }, this)
+                },'-'];
         }
         this.callParent(arguments);
     },
@@ -4927,7 +4927,7 @@ Ext.define('Ung.EditWindow', {
                     handler: Ext.bind(function() {
                         Ext.defer(this.updateAction,1, this);
                     }, this)
-            },'-');
+                },'-');
         }
         this.callParent(arguments);
     },
@@ -5343,7 +5343,7 @@ Ext.define('Ung.EditorGrid', {
         if (this.hasReorder) {
             this.paginated=false;
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {
-            	header: i18n._("Reorder")
+                header: i18n._("Reorder")
             });
             this.columns.push(reorderColumn);
             
@@ -5514,7 +5514,7 @@ Ext.define('Ung.EditorGrid', {
                     helpSource: this.rowEditorHelpSource
                 });
             } else if (this.rowEditorConfig != null) {
-                this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
+                    this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
             }
         }
         if(this.rowEditor!=null) {
@@ -5557,7 +5557,7 @@ Ext.define('Ung.EditorGrid', {
             rec[property]=
                 (property=='id')?index+1:
                 (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(i*10000)).getTime()}:
-                    property+"_"+(i*(index+1))+"_"+Math.floor((Math.random()*10));
+            property+"_"+(i*(index+1))+"_"+Math.floor((Math.random()*10));
         }
         return rec;
     },
@@ -5573,7 +5573,7 @@ Ext.define('Ung.EditorGrid', {
             } else if(this.dataProperty) {
                 this.data=this.settingsCmp.settings[this.dataProperty].list;
             } else if(this.dataExpression) {
-                this.data=eval("this.settingsCmp."+this.dataExpression);
+                    this.data=eval("this.settingsCmp."+this.dataExpression);
             }
         } else {
             this.data=data;
@@ -5749,7 +5749,7 @@ Ext.define('Ung.EditorGrid', {
             //to remove bottom pagination bar
             this.minPaginateCount = Ung.Util.maxRowCount;
             this.setTotalRecords(this.totalRecords);
-    
+            
             //make all cahnged data apear in first page
             for (var id in this.changedData) {
                 var cd = this.changedData[id];
@@ -5764,7 +5764,7 @@ Ext.define('Ung.EditorGrid', {
         } else {
             if(handler) {
                 handler.call(this);
-            }
+                }
         }
     },
     genAddedId: function() {
@@ -6010,21 +6010,21 @@ Ext.define('Ung.EditorGrid', {
         var deleted = [];
         var modified = [];
         for (var id in this.changedData) {
-          var cd = this.changedData[id];
-          if ("deleted" == cd.op) {
-            if (id > 0) {
-              deleted.push(parseInt(id, 10));
-              }
-          } else {
-            if (this.recordJavaClass != null) {
-              cd.recData["javaClass"] = this.recordJavaClass;
-            }
-            if (id < 0) {
-              added.push(cd.recData);
+            var cd = this.changedData[id];
+            if ("deleted" == cd.op) {
+                if (id > 0) {
+                    deleted.push(parseInt(id, 10));
+                }
             } else {
-              modified.push(cd.recData);
+                if (this.recordJavaClass != null) {
+                    cd.recData["javaClass"] = this.recordJavaClass;
+                }
+                if (id < 0) {
+                    added.push(cd.recData);
+                } else {
+                    modified.push(cd.recData);
+                }
             }
-          }
         }
         return [{
             list: added,
@@ -6040,7 +6040,7 @@ Ext.define('Ung.EditorGrid', {
     // Get the page list
     // for the unpaginated grids, that send all the records on save
     //Attention this only gets the records from the current page!
-    //It can't be used for grids that may have pagination.
+        //It can't be used for grids that may have pagination.
     //Can be used only for grids that have explicitly set: paginated: false
     getPageList: function(useId, useInternalId) {
         var list=[];
@@ -6099,7 +6099,7 @@ Ext.define('Ung.EditorGrid', {
             if(skipRepagination) {
                 this.setTotalRecords(this.totalRecords);
             }
-    
+            
             //make all cahnged data apear in first page
             for (var id in this.changedData) {
                 var cd = this.changedData[id];
@@ -6115,7 +6115,7 @@ Ext.define('Ung.EditorGrid', {
                         this.minPaginateCount = oldSettings.minPaginateCount;
                         this.getStore().loadPage(oldSettings.page, {
                             limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
-                                callback:Ext.bind(function() {
+                            callback:Ext.bind(function() {
                                 handler({
                                     javaClass: "java.util.LinkedList",
                                     list: result
@@ -6142,38 +6142,38 @@ Ext.define('Ung.EditorGrid', {
     },
     //Trying to create a function to get data from all pages in one line without the need of the callback function as parameter
     //This is not working as expected so it should not be used. may stay here for future development
-/*
-    _getGridData: function() {
-        var data=null;
-        if(this.isPaginated()) {
-            var oldSettings = {
-                changedData: Ext.clone(this.changedData),
-                page: this.getStore().currentPage
-            };
-            //make all cahnged data apear in first page
-            for (id in this.changedData) {
-                var cd = this.changedData[id];
-                cd.page=1;
-            }
-            //reload grid
-            this.getStore().loadPage(1, {
-                limit: Ung.Util.maxRowCount
-            });
-            data=this.getPageList();
-            this.changedData = oldSettings.changedData;
-            //reload grid context
-            this.getStore().loadPage(oldSettings.page, {
-                limit: this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
-            });
-        } else {
-            data=this.getPageList();  
-        }
-        return {
-            javaClass: "java.util.LinkedList",
-            list: data
-        };
-    },
-*/    
+    /*
+      _getGridData: function() {
+      var data=null;
+      if(this.isPaginated()) {
+      var oldSettings = {
+      changedData: Ext.clone(this.changedData),
+      page: this.getStore().currentPage
+      };
+      //make all cahnged data apear in first page
+      for (id in this.changedData) {
+      var cd = this.changedData[id];
+      cd.page=1;
+      }
+      //reload grid
+      this.getStore().loadPage(1, {
+      limit: Ung.Util.maxRowCount
+      });
+      data=this.getPageList();
+      this.changedData = oldSettings.changedData;
+      //reload grid context
+      this.getStore().loadPage(oldSettings.page, {
+      limit: this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount
+      });
+      } else {
+      data=this.getPageList();  
+      }
+      return {
+      javaClass: "java.util.LinkedList",
+      list: data
+      };
+      },
+    */    
     getDeletedList: function() {
         var list=[];
         var records=this.getStore().getRange();
@@ -6329,7 +6329,7 @@ Ext.define('Ung.ImportSettingsWindow', {
                             failure: Ext.bind(this.importSettingsFailure, this )
                         });
                     }, this)
-            },'-'];         
+                },'-'];         
         }
         this.items = Ext.create('Ext.panel.Panel',{
             anchor: "100% 100%",
@@ -6441,9 +6441,9 @@ Ext.define('Ung.ImportSettingsWindow', {
         var result = action.result;
         if(!result) {
             Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed. No file chosen."));
-        } else {
-            Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
-        }
+            } else {
+                Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
+            }
     },
     isDirty: function() {
         return false;  
@@ -6658,7 +6658,7 @@ Ext.define('Ung.TimeEditorWindow', {
             return;
         if (record_value.indexOf(",") != -1)
             return;
-        var splits = record_value.split("-");
+            var splits = record_value.split("-");
         if (splits.length != 2)
             return;
 
@@ -6701,7 +6701,7 @@ Ext.define('Ung.UserEditorWindow', {
         this.gridPanel = Ext.create('Ext.grid.Panel', {
             title: i18n._('Users'),
             id: 'usersGrid_'+this.getId(),
-            height: 300,
+                height: 300,
             width: 400,
             enableColumnHide: false,
             enableColumnMove: false,
@@ -6841,9 +6841,9 @@ Ext.define('Ung.UserEditorWindow', {
                     if (!first)
                         str = str + ",";
                     else
-                        first = false;
+                            first = false;
                     str = str + row.uid;
-                }
+                    }
             }
             return str;
         }
@@ -7010,7 +7010,7 @@ Ext.define('Ung.RuleBuilder', {
     settingsCmp: null,
     enableColumnHide: false,
     enableColumnMove: false,
-    dirtyFlag: false,
+        dirtyFlag: false,
     alias: 'widget.rulebuilder',
     javaClass: null,
 
@@ -7038,7 +7038,7 @@ Ext.define('Ung.RuleBuilder', {
         }
         this.store = Ext.create('Ext.data.Store', { model:this.modelName});
         this.matchersMap=Ung.Util.createRecordsMap(this.matchers, 'name');
-      
+        
         this.recordDefaults={name:"", value:"", vtype:""};
         var deleteColumn = Ext.create('Ung.grid.DeleteColumn',{});
         this.plugins=[deleteColumn];
@@ -7118,7 +7118,7 @@ Ext.define('Ung.RuleBuilder', {
                     break;
                   case "editor":
                     res='<input type="text" size="30" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
-                    break;
+                        break;
                   case "checkgroup":
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
                     var out=[];
@@ -7134,7 +7134,7 @@ Ext.define('Ung.RuleBuilder', {
                         }
                         out.push('<div class="checkbox" style="width:100px; float: left; padding:3px 0;">');
                         out.push('<input id="'+rule_value+'[]" class="rule_builder_checkbox" '+checked_str+' onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" style="display:inline; float:left;margin:0;" name="'+rule_label+'" value="'+rule_value+'" type="checkbox">');
-                        out.push('<label for="'+rule_value+'[]" style="display:inline;float:left;margin:0 0 0 0.6em;padding:0;text-align:left;width:50%;">'+rule_label+'</label>');
+                            out.push('<label for="'+rule_value+'[]" style="display:inline;float:left;margin:0 0 0 0.6em;padding:0;text-align:left;width:50%;">'+rule_label+'</label>');
                         out.push('</div>');
                     }
                     res=out.join("");
@@ -7197,7 +7197,7 @@ Ext.define('Ung.RuleBuilder', {
     },
     changeRowValue: function(recordId,valObj) {
         var record=this.store.getById(recordId);
-       
+        
         switch(valObj.type) {
           case "checkbox":
             var record_value=record.get("value");
@@ -7221,28 +7221,28 @@ Ext.define('Ung.RuleBuilder', {
                 new_value.replace("&&","");
             }
             switch (record.get('vtype')) {
-                case "portMatcher": 
-                    if ( !Ext.form.field.VTypes.portMatcher(new_value)) {
+              case "portMatcher": 
+                if ( !Ext.form.field.VTypes.portMatcher(new_value)) {
                         valObj.value='';
-                        valObj.select();
-                        valObj.setAttribute('style','border:1px #C30000 solid');
-                    } else {
-                        valObj.removeAttribute('style');
-                        record.data.value=new_value;
-                    }
-                    break;
-                case "ipMatcher": 
-                    if ( !Ext.form.field.VTypes.ipMatcher(new_value)) {
-                        valObj.value='';
-                        valObj.select();
-                        valObj.setAttribute('style','border:1px #C30000 solid');
-                    } else {
-                        valObj.removeAttribute('style');
-                        record.data.value=new_value;
-                    }
-                    break;
-                default:
+                    valObj.select();
+                    valObj.setAttribute('style','border:1px #C30000 solid');
+                } else {
+                    valObj.removeAttribute('style');
                     record.data.value=new_value;
+                }
+                break;
+              case "ipMatcher": 
+                if ( !Ext.form.field.VTypes.ipMatcher(new_value)) {
+                    valObj.value='';
+                    valObj.select();
+                    valObj.setAttribute('style','border:1px #C30000 solid');
+                } else {
+                    valObj.removeAttribute('style');
+                    record.data.value=new_value;
+                }
+                break;
+            default:
+                record.data.value=new_value;
             }
             break;
         }
@@ -7425,9 +7425,9 @@ Ung.RuleValidator = {
             } else {
                 if ( ipList[i].indexOf("/") != -1) {
                     retVal = retVal && ( this.isCIDRValid(ipList[i]) || this.isIpNetmaskValid(ipList[i]));
-                } else {
-                    retVal = retVal && this.isSingleIpValid(ipList[i]);
-                }
+                    } else {
+                        retVal = retVal && this.isSingleIpValid(ipList[i]);
+                    }
             }
             if (!retVal) {
                 return false;
