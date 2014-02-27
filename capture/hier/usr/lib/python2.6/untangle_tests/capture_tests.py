@@ -366,6 +366,19 @@ class CaptureTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
         assert (search == 0)
 
+        # check if RADIUS login and password a second time.
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = clientControl.runCommand("wget -a /tmp/capture_test_040a.log -O /tmp/capture_test_040a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",True)
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_040a.out")
+        assert (search == 0)
+
+        # logout user to clean up test a second time.
+        # wget http://<internal IP>/capture/logout  
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
+        assert (search == 0)
 
     def test_999_finalTearDown(self):
         global node, nodeAD
