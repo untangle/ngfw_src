@@ -138,7 +138,48 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
-        this._setSettings( newSettings );
+        /**
+         * validate settings
+         * validate: routes can not route traffic to self
+         */
+        sanityCheckNetworkSettings( newSettings );
+        
+        /**
+         * TODO:
+         * calculate system dev based on settings of each dev
+         */
+        sanitizeNetworkSettings( newSettings );
+
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(NetworkSettings.class, this.settingsFilename, newSettings);
+
+            /**
+             * If its the dev env also save to /etc
+             */
+            if ( UvmContextFactory.context().isDevel() ) {
+                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings, false);
+            }
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.networkSettings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
+
+        /**
+         * Now that the settings have been successfully saved
+         * Restart networking
+         */
         ExecManagerResult result;
         boolean errorOccurred = false;
         String errorStr = null;
@@ -486,47 +527,6 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
     
-    private synchronized void _setSettings( NetworkSettings newSettings )
-    {
-        /**
-         * validate settings
-         * validate: routes can not route traffic to self
-         */
-        sanityCheckNetworkSettings( newSettings );
-        
-        /**
-         * TODO:
-         * calculate system dev based on settings of each dev
-         */
-        sanitizeNetworkSettings( newSettings );
-
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        try {
-            settingsManager.save(NetworkSettings.class, this.settingsFilename, newSettings);
-
-            /**
-             * If its the dev env also save to /etc
-             */
-            if ( UvmContextFactory.context().isDevel() ) {
-                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings, false);
-            }
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.networkSettings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
-    }
-
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
