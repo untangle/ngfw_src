@@ -102,7 +102,8 @@ for entry in chaplist:
 for entry in templist:
     file.write("%s\t\t%s\t\t%s\t\t%s\n" % (entry[0], entry[1], entry[2], entry[3]))
 
-# close the file and lock it down
+# flush and close the file and lock it down
+file.flush()
 file.close()
 os.chmod(chapfile, 0600)
 
