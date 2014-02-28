@@ -91,10 +91,10 @@ file.write("##\n")
 # write all of the existing secrets that we aren't messing with
 for entry in chaplist:
     if (callmode == "PPPOE"):
-        if (entry[1] != "*"):
+        if (entry[1] == "*"):
             continue
     if (callmode == "L2TP"):
-        if (entry[1] != "untangle-l2tp"):
+        if (entry[1] == "untangle-l2tp"):
             continue
     file.write("%s\t\t%s\t\t%s\t\t%s\n" % (entry[0], entry[1], entry[2], entry[3]))
 
