@@ -84,6 +84,9 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
         if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
+            if ((host == 'Empty') or (uri == 'Empty')):
+                page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                return(page)
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + uri)
             else:
@@ -141,6 +144,9 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
         if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:
+            if ((host == 'Empty') or (uri == 'Empty')):
+                page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                return(page)
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + uri)
             else:
