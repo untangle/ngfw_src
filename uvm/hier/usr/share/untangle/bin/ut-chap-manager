@@ -75,8 +75,9 @@ if (os.access(chapfile, os.R_OK) == True):
 else:
     chaplist = []
 
-# load all of the new secrets
+# load all of the new secrets and remove the temporary file
 templist = load_chap_file(sys.argv[2])
+os.unlink(sys.argv[2])
 
 # write the standard disclaimer and other comments
 file = open(chapfile, "w")
