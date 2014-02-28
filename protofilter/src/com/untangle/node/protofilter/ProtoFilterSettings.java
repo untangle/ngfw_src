@@ -23,39 +23,21 @@ public class ProtoFilterSettings implements java.io.Serializable
     {
     }
 
-    public int getVersion()
-    { return this.version; }
-
-    public void setVersion(int i)
-    { this.version = i; }
+    public int getVersion() { return this.version; }
+    public void setVersion( int newValue ) { this.version = newValue; }
     
-    public int getByteLimit()
-    { return this.byteLimit; }
+    public int getByteLimit() { return this.byteLimit; }
+    public void setByteLimit( int newValue ) { this.byteLimit = newValue; }
 
-    public void setByteLimit(int i)
-    { this.byteLimit = i; }
+    public int getChunkLimit() { return this.chunkLimit; }
+    public void setChunkLimit( int newValue ) { this.chunkLimit = newValue; }
 
-    public int getChunkLimit()
-    { return this.chunkLimit; }
+    public String getUnknownString() { return this.unknownString; }
+    public void setUnknownString( String newValue ) { this.unknownString = newValue; }
 
-    public void setChunkLimit(int i)
-    { this.chunkLimit = i; }
+    public boolean isStripZeros() { return this.stripZeros; }
+    public void setStripZeros( boolean newValue ) { this.stripZeros = newValue; }
 
-    public String getUnknownString()
-    { return this.unknownString; }
-
-    public void setUnknownString(String s)
-    { this.unknownString = s; }
-
-    public boolean isStripZeros()
-    { return this.stripZeros; }
-
-    public void setStripZeros(boolean b)
-    { this.stripZeros = b; }
-
-    public LinkedList<ProtoFilterPattern> getPatterns()
-    { return patterns; }
-
-    public void setPatterns(LinkedList<ProtoFilterPattern> s)
-    { this.patterns = s; }
+    public LinkedList<ProtoFilterPattern> getPatterns() { return patterns; }
+    public void setPatterns( LinkedList<ProtoFilterPattern> newValue ) { this.patterns = newValue; }
 }
