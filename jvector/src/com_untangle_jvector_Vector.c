@@ -85,6 +85,17 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1print
 
 /*
  * Class:     Vector
+ * Method:    vector_compress_relays
+ * Signature: (III)I
+ */
+JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1compress
+    (JNIEnv* env, jobject _this, jlong vec_ptr, jlong snk_ptr, jlong src_ptr )
+{
+    return vector_compress( (vector_t*)(uintptr_t)vec_ptr, (sink_t*)(uintptr_t)snk_ptr, (source_t*)(uintptr_t)src_ptr );
+}
+
+/*
+ * Class:     Vector
  * Method:    vector_send_msg
  * Signature: (III)I
  */

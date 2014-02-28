@@ -268,6 +268,8 @@ public abstract class NetcapHook implements Runnable
                     if ( logger.isDebugEnabled())
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );
 
+                    //vector.print();
+
                     /* Start vectoring */
                     vector.vector();
 
@@ -336,7 +338,10 @@ public abstract class NetcapHook implements Runnable
 
         try {
             /* Delete the vector */
-            if ( vector != null ) vector.raze();
+            if ( vector != null ) {
+                vector.raze();
+                vector = null;
+            }
 
             /* Delete everything else */
             raze();
@@ -476,48 +481,64 @@ public abstract class NetcapHook implements Runnable
             relayList.add( new Relay( clientSource, serverSink ));
             relayList.add( new Relay( serverSource, clientSink ));
         } else {
-            IncomingSocketQueue prevIncomingSQ = null;
-            OutgoingSocketQueue prevOutgoingSQ = null;
+            Sink   prevSink = null;
+            Source prevSource = null;
 
             boolean first = true;
-            for ( Iterator<NodeSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
-                NodeSessionImpl session = iter.next();
+            NodeSessionImpl prevSession = null;
+            Iterator<NodeSessionImpl> iter = sessionList.iterator();
+            do {
+                NodeSessionImpl session = null;
+                try { session = iter.next(); } catch ( Exception e ) {};
 
-                if ( first ) {
-                    /* First one, link in the client sessionEvent */
-                    clientSource = makeClientSource();
-                    clientSink   = makeClientSink();
-
-                    relayList.add( new Relay( clientSource, session.clientIncomingSocketQueue()));
-                    relayList.add( new Relay( session.clientOutgoingSocketQueue(), clientSink ));
-                } else {
-                    relayList.add( new Relay( prevOutgoingSQ, session.clientIncomingSocketQueue()));
-                    relayList.add( new Relay( session.clientOutgoingSocketQueue(), prevIncomingSQ ));
+                Source source;
+                Sink sink;
+                
+                if ( session != null ) {
+                    source = session.clientOutgoingSocketQueue();
+                    sink   = session.clientIncomingSocketQueue();
+                } else { 
+                    // If session is null, we are past the end of the list
+                    // as such, wrap things up by using the actual server source/sink
+                    source = makeServerSource();
+                    sink   = makeServerSink();
                 }
+                if ( first ) {
+                    // If this is the first node, start things with the actual client source/sink
+                    prevSource = makeClientSource();
+                    prevSink = makeClientSink();
+                    first = false;
+                }
+
+                Relay c2sInputRelay = new Relay( prevSource, sink );
+                Relay s2cOutputRelay = new Relay( source, prevSink );
+
+                relayList.add( c2sInputRelay );
+                relayList.add( s2cOutputRelay );
+
+                // if ( prevSession != null ) {
+                //     // the previous session's c2s output relay is the same as this sessions c2s input relay
+                //     prevSession.c2sOutputRelay = c2sInputRelay;
+                //     // the previous session's s2c input relay is the same as this sessions s2c output relay
+                //     prevSession.s2cInputRelay = s2cOutputRelay;
+                // }
+
+                if ( session == null )
+                    break;
+                
+                // session.c2sInputRelay  = c2sInputRelay;
+                // session.s2cOutputRelay = s2cOutputRelay;
+
+                prevSource = session.serverOutgoingSocketQueue();
+                prevSink = session.serverIncomingSocketQueue();
+                prevSession = session;
 
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "NetcapHook: buildPipeline - added session: " + session );
                 }
 
                 session.pipelineConnector().addSession( session );
-
-                prevOutgoingSQ = session.serverOutgoingSocketQueue();
-                prevIncomingSQ = session.serverIncomingSocketQueue();
-
-                first = false;
-            }
-
-            if ( state == IPNewSessionRequestImpl.REQUESTED ) {
-                serverSource = makeServerSource();
-                serverSink   = makeServerSink();
-
-                relayList.add( new Relay( prevOutgoingSQ, serverSink ));
-                relayList.add( new Relay( serverSource, prevIncomingSQ ));
-            } else if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
-                /* XXX Also have to close the socket queues if the
-                 * session is endpointed */
-            } else {
-            }
+            } while ( true ) ;
         }
 
         printRelays( relayList );

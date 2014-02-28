@@ -371,12 +371,10 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     }
 
     protected void sendWritableEvent(int side)
-        
     {
         TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
 
-        IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent)
-            : dispatcher.dispatchTCPServerWritable(wevent);
+        IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent) : dispatcher.dispatchTCPServerWritable(wevent);
         
         if (result == IPDataResult.SEND_NOTHING)
             // Optimization

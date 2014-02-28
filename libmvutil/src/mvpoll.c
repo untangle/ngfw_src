@@ -242,7 +242,6 @@ int           mvpoll_key_fd_init   ( mvpoll_key_t* key, int fd )
     return 0;
 }
 
-
 mvpoll_key_t* mvpoll_key_fd_create (int fd)
 {
     mvpoll_key_t* key = malloc(sizeof(mvpoll_key_t));
@@ -352,7 +351,19 @@ int  mvpoll_key_raze (mvpoll_key_t* key)
     return ret;
 }
 
+void mvpoll_print ( mvpoll_id_t mvp )
+{
+    int i;
+    list_node_t* step;
 
+    debug( 0, "MVPOLL: 0x%016"PRIxPTR"\n", (uintptr_t)mvp );
+
+    for ( i = 0, step = list_head(&mvp->keys) ; step ; i++, step = list_node_next(step) ) {
+        mvpoll_key_t* key = (mvpoll_key_t*)list_node_val(step);
+        debug( 0, "KEY(%i): 0x%016"PRIxPTR" type: %i\n", i, (uintptr_t)key, key->type );
+    }
+
+}
 
 /**
  * This collects all epoll and userspace events into the event array
@@ -572,9 +583,9 @@ static int _mvpoll_ctl_del (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
     mvpoll_keystate_t* keystate;
 
     if (!(keystate = ht_lookup(&mvp->keystate_table,key)))
-        return errlog(ERR_CRITICAL,"Key not found\n");
+        return errlog(ERR_CRITICAL,"Key not found: 0x%016"PRIxPTR"\n", (uintptr_t)key);
     if (!list_contains(&mvp->keys,key))
-        return errlog(ERR_CRITICAL,"Key not found\n");
+        return errlog(ERR_CRITICAL,"Key not found: 0x%016"PRIxPTR"\n", (uintptr_t)key);
 
     if (mvpoll_key_unregister_observer(key,mvp)<0)
         perrlog("register_observer");
@@ -602,7 +613,7 @@ static int _mvpoll_ctl_mod (mvpoll_t* mvp, mvpoll_key_t* key, eventmask_t event)
     eventmask_t poll_event;
 
     if (!(keystate = ht_lookup(&mvp->keystate_table,key)))
-        return errlog(ERR_CRITICAL,"Key not found\n");
+        return errlog(ERR_CRITICAL,"Key not found: 0x%016"PRIxPTR"\n", (uintptr_t)key);
 
     keystate->eventmask = event;
     poll_event = key->poll( key );

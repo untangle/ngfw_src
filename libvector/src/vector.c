@@ -65,8 +65,9 @@ static int  _vector_handle_src_event ( vector_t* vec, relay_t* relay, int revent
 static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay );
 static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay );
 static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay );
-
 static int  _vector_handle_snk_event ( vector_t* vec, relay_t* relay, int revents );
+static int  _vector_compress_relays ( vector_t* vec, relay_t* relay1, relay_t* relay2 );
+static void _vector_check_for_compression( vector_t* vec, struct mvpoll_event* events, int num_events );
 
 static int  _relay_add_queue ( relay_t* relay, event_t* event );
 static int  _relay_remove_queue ( relay_t* relay, list_node_t* node );
@@ -83,7 +84,8 @@ static int  _mvpoll_keystub_add_events ( vector_t* vec, mvpoll_key_t* key, int e
 static int  _mvpoll_keystub_sub_events ( vector_t* vec, mvpoll_key_t* key, int events );
 
 static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* prefix );
-static int  _chain_debug_print ( int debug_level, list_t* chain );
+static relay_t* _find_relay_with_source( vector_t* vec, source_t* src );
+static relay_t* _find_relay_with_sink( vector_t* vec, sink_t* snk );
 
 
 vector_t* vector_malloc ( void )
@@ -210,7 +212,7 @@ int       vector ( vector_t* vec )
             break;
 
         timeout = vec->max_timeout;
-        
+
         /**
          * wait on events
          */
@@ -235,7 +237,6 @@ int       vector ( vector_t* vec )
          */
         for (i=0;i<num_events;i++) {
             mvpoll_key_t* key = (mvpoll_key_t*)events[i].key;
-
             if ( key == NULL ) {
                 errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): NULL event key\n", (uintptr_t) vec );
                 goto vector_out;
@@ -257,7 +258,6 @@ int       vector ( vector_t* vec )
                   (uintptr_t) stub->relay, 
                   ( stub->relay == NULL ) ? 0 : list_length( &stub->relay->event_q ), events[i].events);
 #endif
-
             /**
              * Msg key event
              */
@@ -329,10 +329,13 @@ int       vector ( vector_t* vec )
                     }
                 }
             }
-        }
-    }
+        } // for each event
+
+        _vector_check_for_compression( vec, events, num_events );
         
- vector_out:
+    } // while true
+        
+vector_out:
     
     debug(10,"VECTOR(0x%016"PRIxPTR"): Shutting down...\n", (uintptr_t) vec );
     if (_vector_cleanup(vec)<0)
@@ -382,6 +385,238 @@ void      vector_set_timeout ( vector_t* vec, int timeout_msec )
 void      vector_print ( vector_t* vec )
 {
     _chain_debug_print_prefix( 0, vec->chain, "VECTOR: Description: " );
+}
+
+/**
+ * vector_compress tells the vector engine to reorganize this vector to squishing together the sink and source.
+ * 
+ * Before a compression it can look like this:
+ * client ... ( src1 --> relay1 --> snk1 ) incomingSocketQueue -> application -> outgoingSocketQueue -> ( src2 --> relay2 --> snk2 ) ... server
+ * If you call compress_relays( snk1, src2) it will change to this:
+ * client ... ( src1 --> relay3 --> snk2 ) ... server
+ * 
+ * Effectively removing the application between sink and source from the chain.
+ *
+ * It accepts the inner sink and source as arguments instead of the relay because thats what the application knows.
+ * It will use these sink and source to find the appropriate relay.
+ * When those relays are "idle" it will compresss them.
+ * It must schedule it later so that the application can write any final events after calling compress_relays()
+ */
+void      vector_compress ( vector_t* vec, sink_t* sink, source_t* source )
+{
+    debug( 8, "vector_compress( snk: 0x%016"PRIxPTR", src: 0x%016"PRIxPTR" )\n", (uintptr_t)sink, (uintptr_t)source );
+
+    if ( vec == NULL || sink == NULL || source == NULL ) {
+        errlogargs();
+        return;
+    }
+
+    /**
+     * Add it to the list of relays to compress, the actual compression will take place later
+     */
+    if ( list_add_tail( &vec->compress_relays, sink ) < 0 ) {
+        perrlog("list_add_tail");
+        return;
+    }
+    if ( list_add_tail( &vec->compress_relays, source ) < 0 ) {
+        perrlog("list_add_tail");
+        return;
+    }
+
+    return;
+}
+
+static void _vector_check_for_compression( vector_t* vec, struct mvpoll_event* events, int num_events )
+{
+    if ( list_length( &vec->compress_relays ) < 2 )
+        return;
+
+    /**
+     * Check for any relays that should be compressed
+     */
+    list_node_t* step;
+    step = list_head( &vec->compress_relays );
+    sink_t* sink = list_node_val(step);
+    step = list_node_next( step );
+    source_t* source = list_node_val(step);
+
+    relay_t* relay1 = _find_relay_with_sink( vec, sink );
+    relay_t* relay2 = _find_relay_with_source( vec, source );
+
+    if ( relay1 == NULL || relay2 == NULL ) {
+        errlog( ERR_CRITICAL, "Unable to find relay: sink: 0x%016"PRIxPTR" -> 0x%016"PRIxPTR"  source: 0x%016"PRIxPTR" -> 0x%016"PRIxPTR"\n",
+                (uintptr_t)sink, (uintptr_t)relay1, (uintptr_t)source, (uintptr_t)relay2);
+        void* value;
+        if ( list_pop_head ( &vec->compress_relays, &value ) < 0 ) {
+            perrlog("list_pop_head");
+        }
+        if ( list_pop_head ( &vec->compress_relays, &value ) < 0 ) {
+            perrlog("list_pop_head");
+        }
+        return;
+    } 
+
+    /**
+     * Check that the relays to be compressed aren't involved in any current events
+     * This avoids accidently losing events when releasing the session and writing the last bit of data
+     */
+    int relays_involved_in_current_event = 0;
+    int i;
+    for (i=0;i<num_events;i++) {
+        mvpoll_key_t* key = (mvpoll_key_t*)events[i].key;
+        if ( key != NULL ) {
+            mvpoll_keystub_t* stub = (mvpoll_keystub_t*)key->arg;
+            if ( stub != NULL ) {
+                if ( stub->relay == relay1 || stub->relay == relay2 )
+                    relays_involved_in_current_event = 1;
+            }
+        }
+    }
+                
+    /**
+     * We should only compress the two relays if they are both idle and empty
+     */
+    if ( relay1->src_enabled && relay2->src_enabled &&
+         !relay1->snk_enabled && !relay2->snk_enabled &&
+         list_length(&relay1->event_q) == 0 && list_length(&relay2->event_q) == 0 &&
+         !relays_involved_in_current_event ) {
+
+        /**
+         * Remove these two relays from the list
+         */
+        void* value;
+        if ( list_pop_head ( &vec->compress_relays, &value ) < 0 ) {
+            perrlog("list_pop_head");
+        }
+        if ( list_pop_head ( &vec->compress_relays, &value ) < 0 ) {
+            perrlog("list_pop_head");
+        }
+
+        /**
+         * Collapse the two relays into one
+         */
+        debug( 8, "found good opportunity to compress: 0x%016"PRIxPTR" -> 0x%016"PRIxPTR"\n", (uintptr_t)relay1, (uintptr_t)relay2 );
+        if ( _vector_compress_relays( vec, relay1, relay2 ) < 0 ) {
+            perrlog("_vector_compress_relays");
+        }
+    }
+}
+
+static int _vector_compress_relays ( vector_t* vec, relay_t* relay1, relay_t* relay2 )
+{
+    _chain_debug_print_prefix( 8, vec->chain, "VECTOR: BEFORE COMPRESS" );
+
+    if ( vec == NULL || relay1 == NULL || relay2 == NULL || relay1 == relay2 ) {
+        return errlogargs();
+    }
+    if ( relay1->src_shutdown ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay1 src is shutdown\n" );
+    }
+    if ( relay1->snk_shutdown ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay1 snk is shutdown\n" );
+    }
+    if ( relay2->src_shutdown ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay2 src is shutdown\n" );
+    }
+    if ( relay2->snk_shutdown ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay2 snk is shutdown\n" );
+    }
+    if ( list_length(&relay1->event_q) > 0 ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay1 has %i events in event_q\n", list_length(&relay1->event_q) );
+    }
+    if ( list_length(&relay2->event_q) > 0 ) {
+        return errlog( ERR_WARNING,"Can not compress relays. relay2 has %i events in event_q\n", list_length(&relay2->event_q) );
+    }
+
+    // The goal is to "compress" relay1 and relay2.
+    // This means we go from this:
+    //   ( src1 -> snk1 ) node/app ( src2 -> snk2 )
+    // To:
+    //   ( src1 -> snk2 )
+    // This effectively removes the node/app from this pipeline by connecting relay1's src to relay2's sink in a new relay3.
+
+    // Gameplan.
+    // This is called when the app wants to remove (release) itself from the pipeline.
+    // To do this we will create a new relay (relay3) which is src1 to snk2 and add it to the vector list
+    // Then we remove relay1 and relay2
+
+    // remove relay1 and relay2 from chain
+    int current_length = list_length( vec->chain );
+    if ( list_remove_val( vec->chain, relay1 ) < 0 ) {
+        return errlog( ERR_CRITICAL,"Failed to remove relay1: 0x%016"PRIxPTR"\n", (uintptr_t)relay1 );
+    }
+    if ( list_remove_val( vec->chain, relay2 ) < 0 ) {
+        return errlog( ERR_CRITICAL,"Failed to remove relay2: 0x%016"PRIxPTR"\n", (uintptr_t)relay2 );
+    }
+    int new_length = list_length( vec->chain );
+    if ( current_length != new_length + 2 ) {
+        return errlog(ERR_CRITICAL,"Failed to find relays in chain\n");
+    }
+
+    source_t* src1 = relay1->src;
+    sink_t*   snk1 = relay1->snk;
+    source_t* src2 = relay2->src;
+    sink_t*   snk2 = relay2->snk;
+    mvpoll_key_t* src1_key = src1->get_event_key( src1 );  
+    mvpoll_key_t* snk1_key = snk1->get_event_key( snk1 );  
+    mvpoll_key_t* src2_key = src2->get_event_key( src2 );  
+    mvpoll_key_t* snk2_key = snk2->get_event_key( snk2 );  
+    mvpoll_keystub_t* snk1_keystub = (mvpoll_keystub_t*)snk1_key->arg;
+    mvpoll_keystub_t* src2_keystub = (mvpoll_keystub_t*)src2_key->arg;
+
+    /**
+     * remove keystub from mvpoll for snk1 and src2
+     */
+    snk1_keystub->relay = NULL; /* set to NULL so it doesnt complain "Removing stub on open source" */
+    src2_keystub->relay = NULL; /* set to NULL so it doesnt complain "Removing stub on open source" */
+    if ( _mvpoll_keystub_key_sub( vec, snk1_key ) < 0 ) {
+        return errlog(ERR_CRITICAL,"Unable to remove relay1 snk key\n");
+    }
+    if ( _mvpoll_keystub_key_sub( vec, src2_key ) < 0 ) {
+        return errlog(ERR_CRITICAL,"Unable to remove relay1 src key\n");
+    }
+    // mvpoll_print( vec->mvp );
+
+    /**
+     * Create replacement relay3
+     */
+    relay_t* relay3 = relay_create();
+    relay3->src = src1;
+    relay3->snk = snk2;
+    relay3->my_vec = vec;
+    relay3->src_enabled = 1;
+    relay3->snk_enabled = 0;
+    relay3->src_shutdown = 0;
+    relay3->snk_shutdown = 0;
+
+    if ( list_add_tail( vec->chain, relay3 ) < 0 ) {
+        return perrlog("list_add_tail");
+    }
+    vec->live_relay_count--; /* removed 2, added 1 = -1 */
+
+    /**
+     * Change remaining src/snk to point at relay3
+     */
+    mvpoll_keystub_t* stub;
+    stub = (mvpoll_keystub_t*)snk2_key->arg; 
+    stub->relay = relay3; /* change this sink to belong to relay1 */
+    stub = (mvpoll_keystub_t*)src1_key->arg; 
+    stub->relay = relay3; /* change this sink to belong to relay1 */
+
+    /**
+     * Free unused resource associated with relay1 & relay2
+     * But not the re-used source and sink
+     */
+    free( snk1_keystub );
+    free( src2_keystub );
+
+    snk1->raze( snk1 );
+    src2->raze( src2 );
+    relay_free( relay1 );
+    relay_free( relay2 );
+    
+    _chain_debug_print_prefix( 8, vec->chain, "VECTOR: AFTER COMPRESS" );
+    return 0;
 }
 
 static int  _vector_handle_message ( vector_t* vec, int revents )
@@ -688,6 +923,8 @@ static int  _vector_setup ( vector_t* vec )
      */
     if (list_init(&vec->dead_relays,0)<0)
         return perrlog("list_init");
+    if (list_init(&vec->compress_relays,0)<0)
+        return perrlog("list_init");
     
     /**
      * Create the Mvpoll key
@@ -851,7 +1088,9 @@ static int  _vector_cleanup ( vector_t* vec )
 
     if (list_destroy(&vec->dead_relays)<0)
         perrlog("list_destroy");
-
+    if (list_destroy(&vec->compress_relays)<0)
+        perrlog("list_destroy");
+    
     return 0;
 }
 
@@ -1175,6 +1414,7 @@ static int  _mvpoll_keystub_key_sub ( vector_t* vec, mvpoll_key_t* key )
 
     /**
      * Sanity check
+     * We do this when compressing relays
      */
     if (stub->relay) {
         if (!stub->issink && !stub->relay->src_shutdown)
@@ -1250,21 +1490,6 @@ static int  _mvpoll_keystub_sub_events ( vector_t* vec, mvpoll_key_t* key, int e
  */
 static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* prefix )
 {
-    if (!chain || !prefix) 
-        return errlogargs();
-
-    if ( debug_level > debug_get_mylevel())
-        return 0;
-    
-    debug(debug_level,"%s",prefix);
-    return _chain_debug_print(debug_level,chain);
-}
-
-/**
- * Prints a chain
- */
-static int  _chain_debug_print ( int debug_level, list_t* chain )
-{
     int i,len;
     list_node_t* step;
     
@@ -1276,7 +1501,7 @@ static int  _chain_debug_print ( int debug_level, list_t* chain )
     
     len = list_length(chain);
 
-    debug_nodate(debug_level,"Relay: ");
+    debug(debug_level,"%s: Chain: 0x%016"PRIxPTR"\n", prefix, (uintptr_t)chain);
     for (i=0, step = list_head(chain) ; step ; i++, step = list_node_next(step)) {
         relay_t* relay = list_node_val(step);
 
@@ -1286,16 +1511,47 @@ static int  _chain_debug_print ( int debug_level, list_t* chain )
             continue;
         }
         
-        mvpoll_key_t* src_key = relay->src->get_event_key( relay->src );
-        mvpoll_key_t* snk_key = relay->snk->get_event_key( relay->snk );
-        
-        debug_nodate( debug_level, "[%i:0x%016" PRIxPTR "] 0x%016" PRIxPTR "->0x%016" PRIxPTR "  ",
-                      i,
-                      (uintptr_t) relay,
-                      (uintptr_t) src_key,
-                      (uintptr_t) snk_key);
+        debug( debug_level, "%s: Relay: %i 0x%016" PRIxPTR " (src: 0x%016" PRIxPTR " (%i) -> [%i] -> snk: 0x%016" PRIxPTR " (%i)\n",
+               prefix,
+               i,
+               (uintptr_t) relay,
+               (uintptr_t) relay->src,
+               relay->src_enabled,
+               list_length(&relay->event_q),
+               (uintptr_t) relay->snk,
+               relay->snk_enabled);
     }
-    debug_nodate(debug_level,"\n");
-    
+
     return 0;
 }
+
+static relay_t* _find_relay_with_source( vector_t* vec, source_t* src )
+{
+    list_node_t* step;
+    
+    for (step = list_head(vec->chain); step; step = list_node_next(step)) {
+        relay_t* relay = (relay_t*)list_node_val(step);
+        if ( relay == NULL )
+            continue;
+        if ( relay->src == src )
+            return relay;
+    }
+
+    return NULL;
+}
+    
+static relay_t* _find_relay_with_sink( vector_t* vec, sink_t* snk )
+{
+    list_node_t* step;
+    
+    for (step = list_head(vec->chain); step; step = list_node_next(step)) {
+        relay_t* relay = (relay_t*)list_node_val(step);
+        if ( relay == NULL )
+            continue;
+        if ( relay->snk == snk )
+            return relay;
+    }
+
+    return NULL;
+}
+

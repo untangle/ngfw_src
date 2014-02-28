@@ -33,6 +33,14 @@ public abstract class Source
         pointer = 0;
     }
 
+    public boolean isRazed()
+    {
+        if ( pointer == 0L )
+            return true;
+        else
+            return false;
+    }
+
     /* 
      * This function is called by vectoring once it completes.  The C component is 
      * freed automatically.  Since this is called from C, the C component is freed

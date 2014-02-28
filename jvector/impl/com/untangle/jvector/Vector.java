@@ -35,6 +35,7 @@ public class Vector
     private static native long  vector_create ( long listptr );
     private static native int   vector_raze ( long vecptr );
     private static native void  vector_print ( long vecptr );
+    private static native void  vector_compress ( long vecptr, long sink, long source );
     private static native int   vector_send_msg ( long vecptr, int msg, long arg );
     private static native void  vector_set_timeout ( long vecptr, int timeout_sec );
     private static native int   vector ( long vecptr );
@@ -53,8 +54,6 @@ public class Vector
 
     private long vec_ptr = 0;
     private long list_ptr;
-
-    /* This list is always razed */
 
     public Vector (LinkedList<Relay> list)
     {
@@ -80,6 +79,11 @@ public class Vector
     {
         vector_print(vec_ptr);
     }
+
+    public void compress( Sink sink, Source source )
+    {
+        vector_compress( vec_ptr, sink.snk_ptr(), source.src_ptr() );
+    }
     
     /**
      * Set the vector timeout in msec
@@ -97,6 +101,14 @@ public class Vector
         /* Raze the associated list */
         if ( list_ptr != 0 ) list_raze( list_ptr );
         list_ptr = 0;
+    }
+
+    public boolean isRazed()
+    {
+        if ( vec_ptr == 0L )
+            return true;
+        else
+            return false;
     }
 
     public void shutdown()

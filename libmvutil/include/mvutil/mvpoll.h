@@ -100,7 +100,6 @@ struct mvpoll_key {
      * List of observers, all keys must keep track of observers for notify
      */
     list_t observers;
-    
     /**
      * The event mask returned for this key for this TICK.  This value should
      * ONLY be used to determine vector received a HUP or ERR on this key.
@@ -116,29 +115,30 @@ struct mvpoll_event {
     mvpoll_key_t* key;
 };
 
-mvpoll_id_t mvpoll_create (int size);
-int         mvpoll_raze (mvpoll_id_t);
+mvpoll_id_t mvpoll_create ( int size );
+int         mvpoll_raze ( mvpoll_id_t mvp );
 
-int         mvpoll_wait (mvpoll_id_t mvp, struct mvpoll_event* events, int maxevents, int timeout);
-int         mvpoll_ctl (mvpoll_id_t mvp, int op, struct mvpoll_key* key, eventmask_t events);
-int         mvpoll_raze (mvpoll_id_t mvp);
-list_t*     mvpoll_get_keylist (mvpoll_id_t mvp);
-int         mvpoll_key_exists (mvpoll_id_t mvp, struct mvpoll_key* key);
+int         mvpoll_wait ( mvpoll_id_t mvp, struct mvpoll_event* events, int maxevents, int timeout );
+int         mvpoll_ctl ( mvpoll_id_t mvp, int op, struct mvpoll_key* key, eventmask_t events );
+int         mvpoll_raze ( mvpoll_id_t mvp );
+list_t*     mvpoll_get_keylist ( mvpoll_id_t mvp );
+int         mvpoll_key_exists ( mvpoll_id_t mvp, struct mvpoll_key* key );
 
+void        mvpoll_print ( mvpoll_id_t mvp );
 
 int           mvpoll_key_fd_init   ( mvpoll_key_t* key, int fd );
-mvpoll_key_t* mvpoll_key_fd_create (int fd);
+mvpoll_key_t* mvpoll_key_fd_create ( int fd );
 
 int           mvpoll_key_base_init   ( mvpoll_key_t* key );
-mvpoll_key_t* mvpoll_key_base_create (void);
+mvpoll_key_t* mvpoll_key_base_create ( void );
 
 
-int  mvpoll_key_register_observer (mvpoll_key_t* key, mvpoll_t* mvp);
-int  mvpoll_key_unregister_observer (mvpoll_key_t* key, mvpoll_t* mvp);
-void mvpoll_key_notify_observers (mvpoll_key_t* key, eventmask_t state);
-int  mvpoll_key_expire (mvpoll_key_t* key);
-int  mvpoll_key_destroy (mvpoll_key_t* key);
-int  mvpoll_key_raze (mvpoll_key_t* key);
+int  mvpoll_key_register_observer ( mvpoll_key_t* key, mvpoll_t* mvp );
+int  mvpoll_key_unregister_observer ( mvpoll_key_t* key, mvpoll_t* mvp );
+void mvpoll_key_notify_observers ( mvpoll_key_t* key, eventmask_t state );
+int  mvpoll_key_expire ( mvpoll_key_t* key );
+int  mvpoll_key_destroy ( mvpoll_key_t* key );
+int  mvpoll_key_raze ( mvpoll_key_t* key );
 
 
 #endif

@@ -31,6 +31,7 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.SocketQueueListener;
 import com.untangle.jvector.Vector;
+import com.untangle.jvector.Relay;
 
 import org.apache.log4j.Logger;
 
@@ -449,6 +450,29 @@ public abstract class NodeSessionImpl implements NodeSession
         cancelTimer();
 
         released = true;
+        
+        Vector vector = sessionGlobalState.netcapHook().getVector();
+        if ( vector == null || vector.isRazed() )
+            return;
+        
+
+        
+        if ( clientIncomingSocketQueue != null &&
+             serverOutgoingSocketQueue != null && 
+             !clientIncomingSocketQueue.isRazed() &&
+             !serverOutgoingSocketQueue.isRazed() ) {
+
+            vector.compress( clientIncomingSocketQueue, serverOutgoingSocketQueue );
+        }
+
+        if ( serverIncomingSocketQueue != null &&
+             clientOutgoingSocketQueue != null &&
+             !serverIncomingSocketQueue.isRazed() &&
+             !clientOutgoingSocketQueue.isRazed() ) {
+
+            vector.compress( serverIncomingSocketQueue, clientOutgoingSocketQueue );
+        }
+
     }
 
     public boolean released()

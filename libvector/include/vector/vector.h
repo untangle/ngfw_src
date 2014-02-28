@@ -5,6 +5,7 @@
 #define __VECTOR_H
 
 #include <mvutil/mvpoll.h>
+#include "relay.h"
 
 #define _VECTOR_MSG_SHUTDOWN   1
 
@@ -27,6 +28,8 @@ typedef struct vector {
     
     list_t dead_relays;
 
+    list_t compress_relays;
+
     int    max_timeout;
     
 } vector_t;
@@ -39,6 +42,7 @@ int       vector_free ( vector_t* vec );
 int       vector_destroy ( vector_t* vec );
 int       vector_raze ( vector_t* vec );
 void      vector_print ( vector_t* vec );
+void      vector_compress ( vector_t* vec, sink_t* sink, source_t* source );
 
 int       vector ( vector_t* vec );
 int       vector_send_msg ( vector_t* vec, vector_msg_t msg, void* arg );
