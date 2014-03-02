@@ -646,7 +646,6 @@ public class IPMaskedAddress implements Serializable
         }
 
         if ( curByte == maskLengthBytes ) {
-            logger.warn("Byte Mask too short: " + curByte + " == " + maskLengthBytes);
             return mask;
         }
         
