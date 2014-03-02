@@ -51,7 +51,7 @@ class RouterSessionManager
 
     }
 
-    void releaseSession( NodeSession session, Protocol protocol )
+    void releaseSession( NodeSession session )
     {
         RouterSessionData sessionData;
         if (logger.isDebugEnabled()) {
@@ -116,7 +116,6 @@ class RouterSessionManager
         if ( logger.isDebugEnabled()) {
             logger.debug( "Looking up session: " + key );
         }
-
         if (( redirect = redirectMap.remove( key )) == null ) {
             return false;
         }
@@ -125,7 +124,6 @@ class RouterSessionManager
         }
 
         /* Remove the redirect rule once it is matched */
-        // free the reserved port!!!
         redirect.cleanup(node);
 
         return true;
@@ -237,9 +235,7 @@ class SessionRedirect
 
     synchronized void cleanup( RouterImpl node )
     {
-
         if ( reservedPort > 0 ) {
-            node.getHandler().releasePort( key.protocol, reservedPort );
             removeRedirectRule();
         }
 

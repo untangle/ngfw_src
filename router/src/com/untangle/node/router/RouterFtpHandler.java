@@ -32,6 +32,10 @@ class RouterFtpHandler extends FtpStateMachine
     private SessionRedirect portCommandSessionRedirect = null;
     private SessionRedirectKey portCommandKey          = null;
 
+    private final static int portStart = 10000;
+    private final static int portRange = 5000;
+    private static int portCurrent = portStart;
+    
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
     RouterFtpHandler( NodeTCPSession session, RouterImpl node )
@@ -100,8 +104,7 @@ class RouterFtpHandler extends FtpStateMachine
         if ( receivedPortCommand && replyCode == 200 && portCommandKey != null &&
              portCommandSessionRedirect != null ) {
             /* Now enable the session redirect */
-            sessionManager.registerSessionRedirect( sessionData, portCommandKey,
-                                                    portCommandSessionRedirect );
+            sessionManager.registerSessionRedirect( sessionData, portCommandKey, portCommandSessionRedirect );
         } else {
             switch ( replyCode ) {
             case FtpReply.PASV:
@@ -177,13 +180,14 @@ class RouterFtpHandler extends FtpStateMachine
         portCommandKey             = null;
 
         if ( sessionData.isClientRedirect()) {
-            int port = node.getHandler().getNextPort( Protocol.TCP );
+            int port = getNextPort( );
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
             portCommandKey = new SessionRedirectKey( Protocol.TCP, sessionData.modifiedClientAddr(), port );
 
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
+            logger.info("Rewriting FTP PORT command: " + sessionData.modifiedClientAddr().getHostAddress() + ":" + port );
             portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
                                                               sessionData.originalClientAddr(), addr.getPort(),
                                                               port, sessionData.modifiedClientAddr(),
@@ -311,5 +315,17 @@ class RouterFtpHandler extends FtpStateMachine
 
         return ( sessionData != null );
     }
+
+    private synchronized int getNextPort()
+    {
+        int ret = portCurrent;
+
+        portCurrent++;
+        if ( portCurrent > portStart + portRange )
+            portCurrent = portStart;
+
+        return ret;
+    }
+
 }
 

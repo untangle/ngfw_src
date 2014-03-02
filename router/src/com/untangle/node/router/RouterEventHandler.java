@@ -15,41 +15,18 @@ import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import org.apache.log4j.Logger;
 
-import static com.untangle.node.router.RouterConstants.*;
-
-class RouterEventHandler extends AbstractEventHandler
+public class RouterEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(RouterEventHandler.class);
-
-    private static final String PROPERTY_BASE = "com.untangle.node.router.";
-    private static final String PROPERTY_TCP_PORT_START = PROPERTY_BASE + "tcp-port-start";
-    private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
-    private static final String PROPERTY_UDP_PORT_START = PROPERTY_BASE + "udp-port-start";
-    private static final String PROPERTY_UDP_PORT_END   = PROPERTY_BASE + "udp-port-end";
-    //unused// private static final String PROPERTY_ICMP_PID_START = PROPERTY_BASE + "icmp-pid-start";
-    //unused// private static final String PROPERTY_ICMP_PID_END   = PROPERTY_BASE + "icmp-pid-end";
-
-    /* tracks the open TCP ports for NAT */
-    private final PortList tcpPortList;
-
-    /* Tracks the open UDP ports for NAT */
-    private final PortList udpPortList;
 
     /* Router Node */
     private final RouterImpl node;
 
     /* Setup  */
-    RouterEventHandler(RouterImpl node)
+    protected RouterEventHandler(RouterImpl node)
     {
         super(node);
 
-        int start = Integer.getInteger(PROPERTY_TCP_PORT_START, TCP_NAT_PORT_START);
-        int end = Integer.getInteger(PROPERTY_TCP_PORT_END, TCP_NAT_PORT_END);
-        tcpPortList = PortList.makePortList(start, end);
-
-        start = Integer.getInteger(PROPERTY_UDP_PORT_START, UDP_NAT_PORT_START);
-        end = Integer.getInteger(PROPERTY_UDP_PORT_END, UDP_NAT_PORT_END);
-        udpPortList = PortList.makePortList(start, end);
         this.node = node;
     }
 
@@ -66,7 +43,6 @@ class RouterEventHandler extends AbstractEventHandler
     }
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
-        
     {
         InetAddress origClientAddr = request.getClientAddr();
         InetAddress newClientAddr = request.getNatFromHost();
@@ -78,15 +54,9 @@ class RouterEventHandler extends AbstractEventHandler
         int newServerPort  = request.getNatToPort();
 
         if ( logger.isDebugEnabled()) {
-            logger.debug( "pre-translation : " + origClientAddr + ":" + origClientPort +  " -> "
-                          + origServerAddr + ":" + origServerPort );
-            logger.debug( "post-translation: " + newClientAddr + ":" + newClientPort +  " -> "
-                          + newServerAddr + ":" + newServerPort );
+            logger.debug( "pre-translation : " + origClientAddr + ":" + origClientPort +  " -> " + origServerAddr + ":" + origServerPort );
+            logger.debug( "post-translation: " + newClientAddr + ":" + newClientPort +  " -> " + newServerAddr + ":" + newServerPort );
         }
-
-        RouterAttachment attachment = new RouterAttachment();
-
-        request.attach( attachment );
 
         // if  we are a redirected session, we will already be registered with the
         // session manager. If so it will automatically delete the iptables rule that was used to
@@ -101,161 +71,54 @@ class RouterEventHandler extends AbstractEventHandler
         if ( !origClientAddr.equals(newClientAddr) ||
              !origServerAddr.equals(newServerAddr) ||
              (origClientPort != newClientPort) ||
-             (origServerPort != newServerPort) ){
+             (origServerPort != newServerPort) ) {
 
             /* Update the session information so it matches what is in the NAT info */
             /* Here is where we have to insert the magic, just for TCP */
             request.setClientAddr( newClientAddr );
-            if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
-                // if we changed the source addr of a TCP connection,
-                // we will need to allocate client port manually because the kernel will not know about
-                // ports we are non-locally bound to and may try to reuse them prematurly.
-                int port = getNextPort( Protocol.TCP );
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "Mangling client port from " + origClientPort + " to " + port );
-                }
-                request.setClientPort( port );
-                attachment.releasePort( port );
-            } else {
-                request.setClientPort( newClientPort );
-            }
+            request.setClientPort( newClientPort );
             request.setServerAddr( newServerAddr );
             request.setServerPort( newServerPort );
 
-
-            if (isFtp(request,protocol)){
+            if ( isFtp( request, protocol ) ) {
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "Ftp Session NATed, registering with the SessionManager");
                 }
                 node.getSessionManager().registerSession( request, protocol,
                                                           origClientAddr, origClientPort,
                                                           origServerAddr, origServerPort );
-
-                attachment.isManagedSession( true );
-            }else{
+            } else {
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "non-Ftp Session NATed, not registering with the SessionManager");
                 }
             }
-        }else{
+        } else {
             if ( logger.isDebugEnabled()) {
                 logger.debug( "Session Not NATed, so not registering with the SessionManager");
             }
         }
 
+        //request.release();
     }
 
-
-    @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-        
+    public void handleTCPFinalized( TCPSessionEvent event )
     {
-        NodeSession s = event.session();
-        RouterAttachment na = (RouterAttachment)s.attachment();
-        if (na != null) {
-            LogEvent eventToLog = na.eventToLog();
-            if (eventToLog != null) {
-                node.logEvent(eventToLog);
-                na.eventToLog(null);
-            }
-        }
+        cleanupSession( event.session() );
     }
 
-    @Override
-    public void handleUDPComplete(UDPSessionEvent event)
-        
+    public void handleUDPFinalized( UDPSessionEvent event )
     {
-        NodeSession s = event.session();
-        RouterAttachment na = (RouterAttachment)s.attachment();
-        if (na != null) {
-            LogEvent eventToLog = na.eventToLog();
-            if (eventToLog != null) {
-                node.logEvent(eventToLog);
-                na.eventToLog(null);
-            }
-        }
+        cleanupSession( event.session() );
     }
 
-    public void handleTCPFinalized(TCPSessionEvent event)
-        
+    private void cleanupSession( NodeSession session )
     {
-        cleanupSession(Protocol.TCP, event.ipsession());
+        node.getSessionManager().releaseSession( session );
     }
 
-    public void handleUDPFinalized(UDPSessionEvent event)
-        
+    private boolean isFtp( IPNewSessionRequest request, Protocol protocol )
     {
-        cleanupSession(Protocol.UDP, event.ipsession());
-    }
-
-    /**
-     * Retrieve the next port from the port list
-     */
-    int getNextPort(Protocol protocol)
-    {
-        return getPortList(protocol).getNextPort();
-    }
-
-    /**
-     * Release a port
-     * Utility function for RouterSessionManager.
-     */
-    void releasePort(Protocol protocol, int port)
-    {
-        getPortList(protocol).releasePort(port);
-    }
-
-    /**
-     * Cleanup any of the information associated with a UDP or TCP session.
-     * Presently not implemented to handle ICMP sessions.
-     */
-    private void cleanupSession(Protocol protocol, NodeSession session)
-    {
-        RouterAttachment attachment = (RouterAttachment)session.attachment();
-
-        if (attachment == null) {
-            logger.debug("null attachment on routered session");
-            return;
-        }
-
-        int releasePort = attachment.releasePort();
-
-        if ( releasePort != 0 ) {
-            if ( releasePort != session.getClientPort() && releasePort != session.getServerPort()) {
-                /* This happens for all NAT ftp PORT sessions */
-                logger.info("Release port " + releasePort +" is neither client nor server port");
-            }
-
-            if (logger.isDebugEnabled()) logger.debug("Releasing port: " + releasePort);
-
-            getPortList( protocol).releasePort( releasePort );
-        } else {
-            if ( logger.isDebugEnabled()) {
-                logger.debug("Ignoring non-natd port: " + session.getClientPort() + "/" + session.getServerPort());
-            }
-        }
-
-        if ( attachment.isManagedSession()) {
-            logger.debug("Removing session from the managed list");
-
-            node.getSessionManager().releaseSession(session, protocol);
-        }
-    }
-
-    private PortList getPortList(Protocol protocol)
-    {
-        if ( protocol == Protocol.UDP ) {
-            return udpPortList;
-        } else if ( protocol == Protocol.TCP ) {
-            return tcpPortList;
-        }
-
-        throw new IllegalArgumentException( "Unhandled protocol: " + protocol );
-    }
-
-    private boolean isFtp(IPNewSessionRequest request, Protocol protocol)
-    {
-        if ((protocol == Protocol.TCP) && (request.getServerPort() == FTP_SERVER_PORT)) {
+        if ((protocol == Protocol.TCP) && (request.getServerPort() == 21)) {
             return true;
         }
 
