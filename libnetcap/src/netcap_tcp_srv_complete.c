@@ -97,6 +97,8 @@ static int  _netcap_tcp_setsockopt_srv ( int sock, int mark )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
+    if (setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&one,sizeof(one)) < 0)
+        perrlog("setsockopt");
 
     if (setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark))<0)
         return perrlog( "setsockopt" );
