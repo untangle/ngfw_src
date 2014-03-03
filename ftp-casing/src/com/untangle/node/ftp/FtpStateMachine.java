@@ -28,6 +28,7 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     private final Fitting clientFitting;
     private final Fitting serverFitting;
 
+    public final NodeTCPSession session;
     /**
      * Used to obtain the control session that opened the data session on the
      * given port.
@@ -39,7 +40,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     protected FtpStateMachine(NodeTCPSession session)
     {
         super(session);
-
+        
+        this.session = session;
         Pipeline p = getPipeline();
         clientFitting = p.getClientFitting(session.pipelineConnector());
         serverFitting = p.getServerFitting(session.pipelineConnector());
