@@ -43,7 +43,7 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     srv_endpoints.cli.port = s_client_port;
     srv_endpoints.srv.host.s_addr = s_server_addr;
     srv_endpoints.srv.port = s_server_port;
-    
+
     cli_endpoints.intf = cli_intf;
     srv_endpoints.intf = srv_intf;
     

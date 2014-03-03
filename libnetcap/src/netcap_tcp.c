@@ -432,7 +432,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
                                        c_cli_addr, c_cli_port,
                                        c_srv_addr, c_srv_port,
                                        s_cli_addr, s_cli_port,
-                                       s_srv_addr, c_srv_port,
+                                       s_srv_addr, s_srv_port,
                                        cli_intf, srv_intf );
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
