@@ -32,7 +32,7 @@ class RouterFtpHandler extends FtpStateMachine
     private SessionRedirect portCommandSessionRedirect = null;
     private SessionRedirectKey portCommandKey          = null;
 
-    private final static int portStart = 10000;
+    private final static int portStart = 10000 + (int)(Math.random()*3000);
     private final static int portRange = 5000;
     private static int portCurrent = portStart;
     
@@ -45,6 +45,22 @@ class RouterFtpHandler extends FtpStateMachine
         this.node = node;
         this.sessionManager = node.getSessionManager();
 
+        /**
+         * Remove redirect if this session is the redirected session
+         */
+        if (node.getSessionManager().isSessionRedirect(session,Protocol.TCP,node)){
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Found a redirected session");
+            }
+        }
+
+        /**
+         * If its the control session register
+         */
+        if (session.getNewServerPort() == 21) {
+            node.getSessionManager().registerSession( session );
+        }
+        
         /* Lazily set session data since the other event handler can
          * run before or after this event handler */
         this.sessionData = null;
@@ -84,6 +100,7 @@ class RouterFtpHandler extends FtpStateMachine
         if (logger.isDebugEnabled()) {
             logger.debug( "Passing command: " + function );
         }
+
         return new TokenResult( null, new Token[] { command } );
     }
 
@@ -139,6 +156,12 @@ class RouterFtpHandler extends FtpStateMachine
         getSession().shutdownClient();
     }
 
+    @Override
+    public void handleFinalized() throws TokenException
+    {
+        node.getSessionManager().releaseSession( this.session );
+    }
+
     private TokenResult portCommand( FtpCommand command ) throws TokenException
     {
         return handlePortCommand( command );
@@ -187,7 +210,6 @@ class RouterFtpHandler extends FtpStateMachine
 
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
-            logger.info("Rewriting FTP PORT command: " + sessionData.modifiedClientAddr().getHostAddress() + ":" + port );
             portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
                                                               sessionData.originalClientAddr(), addr.getPort(),
                                                               port, sessionData.modifiedClientAddr(),
@@ -200,6 +222,8 @@ class RouterFtpHandler extends FtpStateMachine
 
             FtpFunction function = command.getFunction();
 
+            logger.info("Rewriting FTP PORT command original: " + command );
+
             if ( FtpFunction.EPRT.equals( function )) {
                 command = FtpCommand.extendedPortCommand( addr );
             } else if ( FtpFunction.PORT.equals( function )) {
@@ -208,6 +232,8 @@ class RouterFtpHandler extends FtpStateMachine
                 logger.error( "Unkown port command: " + function );
                 return SYNTAX_REPLY;
             }
+            logger.info("Rewriting FTP PORT command      new: " + command );
+
         } else if ( sessionData.isServerRedirect()) {
             /* 1. Tell the event handler to redirect the session from the server. */
             //////////////////////////sessionManager.redirectServerSession( sessionData, session );

@@ -45,12 +45,19 @@ public abstract class NodeSessionImpl implements NodeSession
     protected boolean released = false;
 
     protected final short protocol;
-    protected final InetAddress clientAddr;
-    protected final InetAddress serverAddr;
-    protected final int clientPort;
-    protected final int serverPort;
+
     protected final int clientIntf;
     protected final int serverIntf;
+
+    protected final InetAddress origClientAddr;
+    protected final int origClientPort;
+    protected final InetAddress origServerAddr;
+    protected final int origServerPort;
+
+    protected final InetAddress newClientAddr;
+    protected final int newClientPort;
+    protected final InetAddress newServerAddr;
+    protected final int newServerPort;
 
     private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
@@ -117,12 +124,19 @@ public abstract class NodeSessionImpl implements NodeSession
 
         this.stats = new NodeSessionStats();
         this.protocol      = request.getProtocol();
-        this.clientAddr    = request.getClientAddr();
-        this.clientPort    = request.getClientPort();
+
         this.clientIntf    = request.getClientIntf();
-        this.serverPort    = request.getServerPort();
-        this.serverAddr    = request.getServerAddr();
         this.serverIntf    = request.getServerIntf();
+
+        this.origClientAddr    = request.getOrigClientAddr();
+        this.origClientPort    = request.getOrigClientPort();
+        this.newClientAddr    = request.getNewClientAddr();
+        this.newClientPort    = request.getNewClientPort();
+
+        this.origServerPort    = request.getOrigServerPort();
+        this.origServerAddr    = request.getOrigServerAddr();
+        this.newServerPort    = request.getNewServerPort();
+        this.newServerAddr    = request.getNewServerAddr();
 
         if ( isVectored ) {
             SocketQueueListener sqListener = new SessionSocketQueueListener();
@@ -854,42 +868,25 @@ public abstract class NodeSessionImpl implements NodeSession
         }
     }
 
-    public short getProtocol()
-    {
-        return protocol;
-    }
+    public short getProtocol() { return protocol; }
+    public int getClientIntf() { return clientIntf; }
+    public int getServerIntf() { return serverIntf; }
 
-    public InetAddress getClientAddr()
-    {
-        return clientAddr;
-    }
+    public InetAddress getOrigClientAddr() { return origClientAddr; }
+    public int getOrigClientPort() { return origClientPort; }
+    public InetAddress getNewClientAddr() { return newClientAddr; }
+    public int getNewClientPort() { return newClientPort; }
 
-    public InetAddress getServerAddr()
-    {
-        return serverAddr;
-    }
+    public InetAddress getOrigServerAddr() { return origServerAddr; }
+    public int getOrigServerPort() { return origServerPort; }
+    public InetAddress getNewServerAddr() { return newServerAddr; }
+    public int getNewServerPort() { return newServerPort; }
 
-    public int getClientPort()
-    {
-        return clientPort;
-    }
+    public InetAddress getClientAddr() { return origClientAddr; }
+    public int getClientPort() { return origClientPort; }
+    public InetAddress getServerAddr() { return newServerAddr; }
+    public int getServerPort() { return newServerPort; }
 
-    public int getServerPort()
-    {
-        return serverPort;
-    }
-
-    public int getClientIntf()
-    {
-        return clientIntf;
-    }
-
-    public int getServerIntf()
-    {
-        return serverIntf;
-    }
-
-    // Callback called on finalize
     protected void closeFinal()
     {
         cancelTimer();

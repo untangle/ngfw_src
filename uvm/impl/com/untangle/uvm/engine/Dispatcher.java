@@ -521,8 +521,8 @@ public class Dispatcher
             // Send the new session event.  
             if (logger.isDebugEnabled())
                 logger.debug("New TCP session " +
-                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+                             session.getOrigClientAddr().getHostAddress() + ":" + session.getOrigClientPort() + " -> " +
+                             session.getNewServerAddr().getHostAddress() + ":" + session.getNewServerPort());
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
@@ -583,8 +583,8 @@ public class Dispatcher
             // thread instead?  XXX
             if (logger.isDebugEnabled())
                 logger.debug("New UDP session " +
-                             session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
-                             session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+                             session.getOrigClientAddr().getHostAddress() + ":" + session.getOrigClientPort() + " -> " +
+                             session.getNewServerAddr().getHostAddress() + ":" + session.getNewServerPort());
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {

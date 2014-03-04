@@ -17,11 +17,9 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class RouterImpl extends NodeBase implements Router
 {
-    private final RouterEventHandler handler;
     private final RouterSessionManager sessionManager;
     private final DhcpMonitor dhcpMonitor;
 
-    private final SoloPipeSpec routerPipeSpec;
     private final SoloPipeSpec routerFtpPipeSpecCtl;
     private final SoloPipeSpec routerFtpPipeSpecData;
 
@@ -33,14 +31,13 @@ public class RouterImpl extends NodeBase implements Router
     {
         super( nodeSettings, nodeProperties );
 
-        this.handler          = new RouterEventHandler(this);
+        //this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
         this.dhcpMonitor      = new DhcpMonitor( this );
 
         /**
          * Have to figure out pipeline ordering, this should always towards the server
          */
-        routerPipeSpec = new SoloPipeSpec("router", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
 
         /**
          * This subscription has to evaluate after NAT
@@ -48,20 +45,10 @@ public class RouterImpl extends NodeBase implements Router
         routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
         routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
 
-        pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
+        pipeSpecs = new SoloPipeSpec[] { routerFtpPipeSpecCtl, routerFtpPipeSpecData };
     }
 
     // package protected methods ----------------------------------------------
-
-    RouterEventHandler getHandler()
-    {
-        return handler;
-    }
-
-    PipelineConnector getRouterPipelineConnector()
-    {
-        return routerPipeSpec.getPipelineConnector();
-    }
 
     PipelineConnector getRouterFtpPipeSpecCtl()
     {

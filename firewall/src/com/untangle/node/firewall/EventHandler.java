@@ -63,8 +63,8 @@ class EventHandler extends AbstractEventHandler
         for (FirewallRule rule : firewallRuleList) {
             if (rule.isMatch(request.getProtocol(),
                              request.getClientIntf(), request.getServerIntf(),
-                             request.getClientAddr(), request.getNatToHost(),
-                             request.getClientPort(), request.getNatToPort())) {
+                             request.getOrigClientAddr(), request.getNewServerAddr(),
+                             request.getOrigClientPort(), request.getNewServerPort())) {
                 matchedRule = rule;
                 break;
             }

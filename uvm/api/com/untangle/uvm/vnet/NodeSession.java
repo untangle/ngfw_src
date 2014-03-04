@@ -185,30 +185,56 @@ public interface NodeSession extends SessionTuple
     int getServerIntf();
 
     /**
-     * Gets the Client Address of this session. </p>
+     * Gets the original (pre-NAT) Client Address of this session. </p>
      *
      * @return  the client address
      */
-    InetAddress getClientAddr();
+    InetAddress getOrigClientAddr();
 
     /**
-     * Gets the Server Address of this session. </p>
+     * Gets the new (post-NAT) Client Address of this session. </p>
+     *
+     * @return  the client address
+     */
+    InetAddress getNewClientAddr();
+    
+    /**
+     * Gets the original (pre-NAT) Server Address of this session. </p>
      *
      * @return  the server addr.
      */
-    InetAddress getServerAddr();
+    InetAddress getOrigServerAddr();
 
     /**
-     * Gets the client port for this session.</p>
+     * Gets the new (post-NAT) Server Address of this session. </p>
+     *
+     * @return  the server addr.
+     */
+    InetAddress getNewServerAddr();
+    
+    /**
+     * Gets the original (pre-NAT) client port for this session.</p>
      * @return the client port.
      */
-    int getClientPort();
+    int getOrigClientPort();
 
     /**
-     * Gets the server port for this session.</p>
+     * Gets the new (post-NAT) client port for this session.</p>
+     * @return the client port.
+     */
+    int getNewClientPort();
+    
+    /**
+     * Gets the original (pre-NAT) server port for this session.</p>
      * @return the server port.
      */
-    int getServerPort();
+    int getOrigServerPort();
+
+    /**
+     * Gets the new (post-NAT) server port for this session.</p>
+     * @return the server port.
+     */
+    int getNewServerPort();
 
     /**
      * Get the attachments to this session

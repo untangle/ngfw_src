@@ -113,7 +113,6 @@ public abstract class NetcapHook implements Runnable
 
             /**
              * Create the initial tuples based on current information
-             * Set the current serverSide = clientSide, the apps (like router) will change the tuple if it gets NATd or port forwarded
              */
             clientSide = new SessionTupleImpl( sessionGlobalState.id(),
                                                sessionGlobalState.getProtocol(),
@@ -123,7 +122,14 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
-            serverSide = clientSide;
+            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
+                                               sessionGlobalState.getProtocol(),
+                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
+                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
+                                               netcapSession.serverSide().client().host(),
+                                               netcapSession.serverSide().server().host(),
+                                               netcapSession.serverSide().client().port(),
+                                               netcapSession.serverSide().server().port());
 
             /* lookup the user information */
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
@@ -161,8 +167,8 @@ public abstract class NetcapHook implements Runnable
             if (policyManager != null) {
                 this.policyId  = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
                                                              netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
-                                                             netcapSession.clientSide().client().host(), netcapSession.clientSide().server().host(),
-                                                             netcapSession.clientSide().client().port(), netcapSession.clientSide().server().port());
+                                                             netcapSession.clientSide().client().host(), netcapSession.serverSide().server().host(),
+                                                             netcapSession.clientSide().client().port(), netcapSession.serverSide().server().port());
             } else {
                 this.policyId = 1L; /* Default Policy */
             }
@@ -183,10 +189,16 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setCClientPort( clientSide.getClientPort() );
             sessionEvent.setCServerAddr( clientSide.getServerAddr() );
             sessionEvent.setCServerPort( clientSide.getServerPort() );
-            sessionEvent.setSClientAddr( clientSide.getClientAddr() );
-            sessionEvent.setSClientPort( clientSide.getClientPort() );
-            sessionEvent.setSServerAddr( clientSide.getServerAddr() );
-            sessionEvent.setSServerPort( clientSide.getServerPort() );
+            sessionEvent.setSClientAddr( serverSide.getClientAddr() );
+            sessionEvent.setSClientPort( serverSide.getClientPort() );
+            sessionEvent.setSServerAddr( serverSide.getServerAddr() );
+            sessionEvent.setSServerPort( serverSide.getServerPort() );
+
+            int tupleHashCodeOriginal =
+                serverSide.getClientAddr().hashCode() + 
+                serverSide.getClientPort() + 
+                serverSide.getServerAddr().hashCode() + 
+                serverSide.getServerPort();
 
             /* log the session event */
             UvmContextFactory.context().logEvent(sessionEvent);
@@ -213,12 +225,14 @@ public abstract class NetcapHook implements Runnable
             /* Connect to the client */
             clientActionCompleted = connectClientIfNecessary();
 
+            int tupleHashCodeNew =
+                serverSide.getClientAddr().hashCode() + 
+                serverSide.getClientPort() + 
+                serverSide.getServerAddr().hashCode() + 
+                serverSide.getServerPort();
+
             /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
-            if (  clientSide.getServerIntf() != serverSide.getServerIntf() ||
-                ! clientSide.getClientAddr().equals( serverSide.getClientAddr() ) ||
-                  clientSide.getClientPort() !=  serverSide.getClientPort()  ||
-                ! clientSide.getServerAddr().equals( serverSide.getServerAddr() ) ||
-                  clientSide.getServerPort() != serverSide.getServerPort() ) {
+            if (  tupleHashCodeOriginal != tupleHashCodeNew ) {
                 SessionNatEvent natEvent = new SessionNatEvent( sessionEvent.getSessionId(),
                                                                 serverSide.getServerIntf(),
                                                                 serverSide.getClientAddr(),

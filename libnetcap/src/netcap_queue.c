@@ -455,9 +455,9 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     }
 
     if ( netcap_interface_mark_to_cli_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
-        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
+        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d] mark:%08x\n",
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
-                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port, pkt->nfmark );
     } else {
         debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
     }    

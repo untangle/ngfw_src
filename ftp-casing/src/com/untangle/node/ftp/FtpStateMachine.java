@@ -145,7 +145,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     /**
      * Remove all mappings of this control session
      */
-    public static void removeDataSockets(long ctlSessionId){
+    public static void removeDataSockets(long ctlSessionId)
+    {
         Set<InetSocketAddress> set = new HashSet<InetSocketAddress>(ctlSessionIdByDataSocket.keySet());
         for (InetSocketAddress dataSocket : set){
             if (ctlSessionIdByDataSocket.get(dataSocket).longValue() == ctlSessionId)

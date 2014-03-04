@@ -4,12 +4,15 @@
 package com.untangle.node.router;
 
 import java.net.InetAddress;
-
 import java.util.List;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 class RouterSessionData
 {
+    private static final Logger logger = Logger.getLogger( RouterSessionData.class );
+
     private final InetAddress originalClientAddr;
     private final int         originalClientPort;
 
@@ -27,6 +30,8 @@ class RouterSessionData
     protected RouterSessionData( InetAddress oClientAddr, int oClientPort, InetAddress mClientAddr, int mClientPort,
                                  InetAddress oServerAddr, int oServerPort, InetAddress mServerAddr, int mServerPort )
     {
+        logger.warn("XXX RouterSessionData: " + oClientAddr + ":" + oClientPort + " modified to: " + mClientAddr + ":" + mClientPort + " " + oServerAddr + ":" + oServerPort + " modified to: " + mServerAddr +":"+ mServerPort +"\n" );
+
         originalClientAddr = oClientAddr;
         originalClientPort = oClientPort;
 
@@ -64,7 +69,6 @@ class RouterSessionData
     {
         return modifiedClientPort;
     }
-
 
     boolean isServerRedirect()
     {

@@ -21,10 +21,6 @@ public abstract class NetcapSession
     private final static int FLAG_HOST          = 16;
     private final static int FLAG_PORT          = 17;
     private final static int FLAG_INTERFACE     = 18;
-    private final static int FLAG_NAT_FROM_HOST = 19;
-    private final static int FLAG_NAT_FROM_PORT = 20;
-    private final static int FLAG_NAT_TO_HOST   = 21;
-    private final static int FLAG_NAT_TO_PORT   = 22;
 
     /* This is the mask for the the client/server parts */
     @SuppressWarnings("unused")
@@ -34,9 +30,6 @@ public abstract class NetcapSession
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;
     
-    public NatInfo natInfo;
-
-
     /* This is for children that override the SessionEndpoints class */
     protected NetcapSession( long id, short protocol )
     {
@@ -44,8 +37,6 @@ public abstract class NetcapSession
 
         clientSide = makeEndpoints( true );
         serverSide = makeEndpoints( false );
-         
-        updateNatInfo();
     }
     
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP */
@@ -183,15 +174,6 @@ public abstract class NetcapSession
         pointer.raze();
     }
 
-    private void updateNatInfo()
-    {
-        natInfo = new NatInfo();
-        natInfo.fromHost = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_FROM_HOST, pointer.value()));
-        natInfo.fromPort = getIntValue( FLAG_NAT_FROM_PORT, pointer.value());
-        natInfo.toHost   = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_TO_HOST, pointer.value()));
-        natInfo.toPort   = getIntValue( FLAG_NAT_TO_PORT, pointer.value());
-    }
-
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
     public Endpoints clientSide() { return clientSide; }
@@ -214,14 +196,6 @@ public abstract class NetcapSession
     static
     {
         Netcap.load();
-    }
-
-    public class NatInfo 
-    {
-        public InetAddress fromHost;
-        public int fromPort;
-        public InetAddress toHost;
-        public int toPort;
     }
 
     protected class SessionEndpoints implements Endpoints

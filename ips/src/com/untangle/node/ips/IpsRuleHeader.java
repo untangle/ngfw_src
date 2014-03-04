@@ -15,7 +15,7 @@ import java.util.WeakHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.Protocol;
 
@@ -125,19 +125,19 @@ public class IpsRuleHeader
             return clientPortFlag ^ clientPortRange.contains(port);
     }
 
-    public boolean matches( SessionTuple sess, boolean sessInbound, boolean forward )
+    public boolean matches( IPNewSessionRequest sess, boolean sessInbound, boolean forward )
     {
         return matches(sess, sessInbound, forward, false);
     }
 
-    private boolean matches( SessionTuple sess, boolean sessInbound, boolean forward, boolean swapFlag )
+    private boolean matches( IPNewSessionRequest sess, boolean sessInbound, boolean forward, boolean swapFlag )
     {
         if(this.protocol != Protocol.getInstance(sess.getProtocol()))
             return false;
 
         /**Check Port Match*/
-        boolean clientPortMatch = clientPortRange.contains(forward ? sess.getClientPort() : sess.getServerPort());
-        boolean serverPortMatch = serverPortRange.contains(forward ? sess.getServerPort() : sess.getClientPort());
+        boolean clientPortMatch = clientPortRange.contains(forward ? sess.getOrigClientPort() : sess.getNewServerPort());
+        boolean serverPortMatch = serverPortRange.contains(forward ? sess.getNewServerPort() : sess.getOrigClientPort());
         boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
 
         if(!portMatch && !bidirectional)
@@ -151,7 +151,7 @@ public class IpsRuleHeader
         boolean isInbound = forward ? sessInbound : !sessInbound;
 
         /**Check IP Match*/
-        InetAddress cAddr = forward ? sess.getClientAddr() : sess.getServerAddr();
+        InetAddress cAddr = forward ? sess.getOrigClientAddr() : sess.getNewServerAddr();
         boolean clientIPMatch = false;
         Iterator<IPMatcher> clientIt = clientIpSet.iterator();
 
@@ -161,7 +161,7 @@ public class IpsRuleHeader
             // logger.debug("client matcher: " + matcher + " sez: " + clientIPMatch);
         }
 
-        InetAddress sAddr = forward ? sess.getServerAddr() : sess.getClientAddr();
+        InetAddress sAddr = forward ? sess.getNewServerAddr() : sess.getOrigClientAddr();
         boolean serverIPMatch = false;
         Iterator<IPMatcher> serverIt = serverIpSet.iterator();
         while(serverIt.hasNext() && !serverIPMatch) {

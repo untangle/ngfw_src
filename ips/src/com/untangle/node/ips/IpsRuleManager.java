@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 
 public class IpsRuleManager
 {
@@ -191,18 +191,18 @@ public class IpsRuleManager
         return returnList;
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean toServer)
+    public Set<IpsRuleSignature> matchesHeader(IPNewSessionRequest request, boolean sessInbound, boolean toServer)
     {
-        return matchesHeader(sess, sessInbound, toServer, headers);
+        return matchesHeader(request, sessInbound, toServer, headers);
     }
 
-    public Set<IpsRuleSignature> matchesHeader(SessionTuple sess, boolean sessInbound, boolean toServer, List<IpsRuleHeader> matchList)
+    public Set<IpsRuleSignature> matchesHeader(IPNewSessionRequest request, boolean sessInbound, boolean toServer, List<IpsRuleHeader> matchList)
     {
         Set<IpsRuleSignature> returnSet = new HashSet<IpsRuleSignature>();
         //logger.debug("Total List size: "+matchList.size());
 
         for(IpsRuleHeader header : matchList) {
-            if(header.matches(sess, sessInbound, toServer)) {
+            if(header.matches(request, sessInbound, toServer)) {
                 // logger.debug("Header " + header + " matches " + req);
                 returnSet.addAll(getSignatures(header));
             } else {

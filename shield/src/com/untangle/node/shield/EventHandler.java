@@ -55,7 +55,7 @@ class EventHandler extends AbstractEventHandler
             return;
         }
 
-        InetAddress clientAddr = request.getClientAddr();
+        InetAddress clientAddr = request.getOrigClientAddr();
         HostStats stats;
         
         synchronized ( this.node ) {
@@ -72,8 +72,8 @@ class EventHandler extends AbstractEventHandler
             for (ShieldRule rule : rules) {
                 if (rule.isMatch(request.getProtocol(),
                                  request.getClientIntf(), request.getServerIntf(),
-                                 request.getClientAddr(), request.getNatToHost(),
-                                 request.getClientPort(), request.getNatToPort())) {
+                                 request.getOrigClientAddr(), request.getNewServerAddr(),
+                                 request.getOrigClientPort(), request.getNewServerPort())) {
                     multiplier = rule.getMultiplier();
                     break;
                 }

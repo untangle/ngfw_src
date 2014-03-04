@@ -99,13 +99,7 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
     int flag = req_id & JN_Session( FLAG_MASK );
     switch( flag ) {
     case JN_Session( FLAG_HOST ): return UINT_TO_JLONG( endpoint->host.s_addr );
-    case JN_Session( FLAG_NAT_FROM_HOST ):
-      debug(10,"FLAG: FLAG_NAT_FROM_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.dst_address ));
-      return session->nat_info.reply.dst_address;
     case JN_Session( FLAG_ID ): return session->session_id;
-    case JN_Session( FLAG_NAT_TO_HOST   ):
-      debug(10,"FLAG: FLAG_NAT_TO_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.src_address ));
-      return session->nat_info.reply.src_address;
     }
 
     return (jlong)errlog(ERR_CRITICAL,"Invalid arguments: flag %i\n", flag);    
@@ -126,14 +120,8 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
 
     switch( req_id & JN_Session( FLAG_MASK )) { 
 
-    case JN_Session( FLAG_NAT_FROM_PORT ):
-      debug(10,"FLAG: FLAG_NAT_FROM_PORT = %u\n",ntohs(session->nat_info.reply.dst_protocol_id ));
-      return ntohs(session->nat_info.reply.dst_protocol_id);
-    case JN_Session( FLAG_NAT_TO_PORT   ):
-      debug(10,"FLAG: FLAG_NAT_TO_PORT = %u\n",ntohs(session->nat_info.reply.src_protocol_id ));      
-      return ntohs(session->nat_info.reply.src_protocol_id);
-
     case JN_Session( FLAG_PROTOCOL ): return session->protocol;
+
     case JN_TCPSession( FLAG_FD ):
         if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );
         

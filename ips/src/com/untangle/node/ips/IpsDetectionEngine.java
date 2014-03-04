@@ -121,8 +121,8 @@ public class IpsDetectionEngine
         node.incrementScanCount();
 
         //Get Mapped list
-        List<IpsRuleHeader> c2sList = portC2SMap.get(request.getServerPort());
-        List<IpsRuleHeader> s2cList = portS2CMap.get(request.getServerPort());
+        List<IpsRuleHeader> c2sList = portC2SMap.get(request.getNewServerPort());
+        List<IpsRuleHeader> s2cList = portS2CMap.get(request.getNewServerPort());
 
         if ( LoadAvg.get().getOneMin() >= node.getSettings().getLoadBypassLimit() ) {
             logger.debug("Releasing session (load bypass limit exceeded): " + request);
@@ -136,7 +136,7 @@ public class IpsDetectionEngine
         }
         
         if(c2sList == null) {
-            c2sList = manager.matchingPortsList( request.getServerPort(), true );
+            c2sList = manager.matchingPortsList( request.getNewServerPort(), true );
             // bug1443 -- save memory by reusing value.
             synchronized(allPortMapLists) {
                 boolean found = false;
@@ -150,15 +150,15 @@ public class IpsDetectionEngine
                 }
                 if (!found)
                     allPortMapLists.add(c2sList);
-                portC2SMap.put(request.getServerPort(),c2sList);
+                portC2SMap.put(request.getNewServerPort(),c2sList);
             }
 
             if (logger.isDebugEnabled())
-                logger.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.getServerPort());
+                logger.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.getNewServerPort());
         }
 
         if(s2cList == null) {
-            s2cList = manager.matchingPortsList( request.getServerPort(), false );
+            s2cList = manager.matchingPortsList( request.getNewServerPort(), false );
             synchronized(allPortMapLists) {
                 boolean found = false;
                 for (Iterator<List<IpsRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
@@ -171,11 +171,11 @@ public class IpsDetectionEngine
                 }
                 if (!found)
                     allPortMapLists.add(s2cList);
-                portS2CMap.put(request.getServerPort(),s2cList);
+                portS2CMap.put(request.getNewServerPort(),s2cList);
             }
 
             if (logger.isDebugEnabled())
-                logger.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.getServerPort());
+                logger.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.getNewServerPort());
         }
 
         //Check matches

@@ -681,7 +681,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // check the session against the rule list
         for (CaptureRule rule : ruleList) {
-            if (rule.isMatch(sessreq.getProtocol(), sessreq.getClientIntf(), sessreq.getServerIntf(), sessreq.getClientAddr(), sessreq.getServerAddr(), sessreq.getClientPort(), sessreq.getServerPort())) {
+            if (rule.isMatch(sessreq.getProtocol(), sessreq.getClientIntf(), sessreq.getServerIntf(), sessreq.getOrigClientAddr(), sessreq.getNewServerAddr(), sessreq.getOrigClientPort(), sessreq.getNewServerPort())) {
                 return (rule);
             }
         }

@@ -15,15 +15,8 @@ public class NetcapTCPSession extends NetcapSession
         super( id, Netcap.IPPROTO_TCP );
     }
     
-    /* ??? This is a dirty hack to work around the fact that you cannot overwrite *
-     * the return value with a subclass, this is fixed in 1.5.0                   *
-     * in 1.5, this would just read:
-     * public TCPEndpoints clientSide() { return clientSide; }
-     * public TCPEndpoints serverSide() { return serverSide; }
-     * Perhaps this may be too confusing.
-     */
-    public TCPEndpoints tcpClientSide() { return (TCPEndpoints)clientSide; }
-    public TCPEndpoints tcpServerSide() { return (TCPEndpoints)serverSide; }
+    public TCPEndpoints clientSide() { return (TCPEndpoints)clientSide; }
+    public TCPEndpoints serverSide() { return (TCPEndpoints)serverSide; }
 
     protected Endpoints makeEndpoints( boolean ifClient ) 
     {

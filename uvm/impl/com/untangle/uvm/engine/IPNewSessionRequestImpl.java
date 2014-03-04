@@ -12,7 +12,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 
-public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
+ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
     protected final PipelineConnectorImpl pipelineConnector;
     protected final SessionGlobalState sessionGlobalState;
@@ -35,18 +35,18 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     public static final byte PROHIBITED = 13;
     public static final byte TCP_REJECT_RESET = 64; // Only valid for TCP connections
 
-    protected InetAddress clientAddr;
-    protected int clientPort;
-    protected int clientIntf;
+    protected final int clientIntf;
+    protected final int serverIntf;
 
-    protected InetAddress serverAddr;
-    protected int serverPort;
-    protected int serverIntf;
+    protected final InetAddress origClientAddr;
+    protected final int origClientPort;
+    protected final InetAddress origServerAddr;
+    protected final int origServerPort;
 
-    protected final InetAddress natFromHost;
-    protected final int natFromPort;
-    protected final InetAddress natToHost;
-    protected final int natToPort;
+    protected InetAddress newClientAddr;
+    protected int newClientPort;
+    protected InetAddress newServerAddr;
+    protected int newServerPort;
 
     protected SessionEvent sessionEvent;
 
@@ -60,57 +60,53 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
+    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent sessionEvent )
     {
         this.sessionGlobalState = sessionGlobalState;
         this.pipelineConnector  = connector;
-
+        this.sessionEvent = sessionEvent;
+        
         Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
         Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
 
-        Endpoint client = clientSide.client();
-        Endpoint server = clientSide.server();
-
-        /* Get the server and client from the client end of the endpoint from the netcap session */
-        clientAddr = client.host();
-        clientPort = client.port();
-
         clientIntf = clientSide.interfaceId();
         serverIntf = serverSide.interfaceId();
-        this.sessionEvent = pe;
+        
+        origClientAddr = clientSide.client().host();
+        origClientPort = clientSide.client().port();
+        origServerAddr = clientSide.server().host();
+        origServerPort = clientSide.server().port();
 
-        serverAddr = server.host();
-        serverPort = server.port();
-
-        natFromHost = sessionGlobalState.netcapSession().natInfo.fromHost;
-        natFromPort = sessionGlobalState.netcapSession().natInfo.fromPort;
-        natToHost = sessionGlobalState.netcapSession().natInfo.toHost;
-        natToPort = sessionGlobalState.netcapSession().natInfo.toPort;
+        newClientAddr = serverSide.client().host();
+        newClientPort = serverSide.client().port();
+        newServerAddr = serverSide.server().host();
+        newServerPort = serverSide.server().port();
     }
 
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( NodeSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public IPNewSessionRequestImpl( NodeSession session, PipelineConnectorImpl connector, SessionEvent sessionEvent, SessionGlobalState sessionGlobalState)
     {
         this.sessionGlobalState = ((NodeSessionImpl)session).sessionGlobalState();
         this.pipelineConnector  = connector;
+        this.sessionEvent = sessionEvent;
+        
+        Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
+        Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
+        
+        clientIntf = clientSide.interfaceId();
+        serverIntf = serverSide.interfaceId();
+        
+        origClientAddr = session.getOrigClientAddr();
+        origClientPort = session.getOrigClientPort();
+        origServerAddr = session.getOrigServerAddr();
+        origServerPort = session.getOrigServerPort();
 
-        /* Get the server and client from the previous request */
-        clientAddr = session.getClientAddr();
-        clientPort = session.getClientPort();
-        clientIntf = session.getClientIntf();
-
-        serverAddr = session.getServerAddr();
-        serverPort = session.getServerPort();
-        serverIntf = session.getServerIntf();
-
-        natFromHost = sessionGlobalState.netcapSession().natInfo.fromHost;
-        natFromPort = sessionGlobalState.netcapSession().natInfo.fromPort;
-        natToHost = sessionGlobalState.netcapSession().natInfo.toHost;
-        natToPort = sessionGlobalState.netcapSession().natInfo.toPort;
-
-        this.sessionEvent = pe;
+        newClientAddr = session.getNewClientAddr();
+        newClientPort = session.getNewClientPort();
+        newServerAddr = session.getNewServerAddr();
+        newServerPort = session.getNewServerPort();
     }
 
     public PipelineConnectorImpl pipelineConnector()
@@ -207,61 +203,26 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return sessionGlobalState.clientSideListener().getRxChunks();
     }
     
-    public short getProtocol()
-    {
-        return sessionGlobalState.getProtocol();
-    }
+    public short getProtocol() { return sessionGlobalState.getProtocol(); }
+    public int getClientIntf() { return clientIntf; }
+    public int getServerIntf() { return serverIntf; }
+    
+    public InetAddress getOrigClientAddr() { return origClientAddr; }
+    public int getOrigClientPort() { return origClientPort; }
+    public InetAddress getNewClientAddr() { return newClientAddr; }
+    public int getNewClientPort() { return newClientPort; }
 
-    public InetAddress getClientAddr()
-    {
-        return clientAddr;
-    }
+    public InetAddress getOrigServerAddr() { return origServerAddr; }
+    public int getOrigServerPort() { return origServerPort; }
+    public InetAddress getNewServerAddr() { return newServerAddr; }
+    public int getNewServerPort() { return newServerPort; }
 
-    public void setClientAddr( InetAddress addr )
-    {
-        clientAddr = addr;
-    }
-
-    public int getClientPort()
-    {
-        return clientPort;
-    }
-
-    public void setClientPort( int port )
-    {
-        clientPort = port;
-    }
-
-    public int getClientIntf()
-    {
-        return clientIntf;
-    }
-
-    public InetAddress getServerAddr()
-    {
-        return serverAddr;
-    }
-
-    public void setServerAddr( InetAddress addr )
-    {
-        serverAddr = addr;
-    }
-
-    public int getServerPort()
-    {
-        return serverPort;
-    }
-
-    public void setServerPort( int port )
-    {
-        serverPort = port;
-    }
-
-    public int getServerIntf()
-    {
-        return serverIntf;
-    }
-
+    public void setNewClientAddr( InetAddress newValue ) { this.newClientAddr = newValue; }
+    public void setNewClientPort( int newValue ) { this.newClientPort = newValue; }
+    public void setNewServerAddr( InetAddress newValue ) { this.newServerAddr = newValue; }
+    public void setNewServerPort( int newValue ) { this.newServerPort = newValue; }
+    
+    
     public SessionEvent sessionEvent()
     {
         return sessionEvent;
@@ -328,26 +289,6 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         }
 
         state = RELEASED;
-    }
-
-    public InetAddress getNatFromHost()
-    {
-        return natFromHost;
-    }
-
-    public int getNatFromPort()
-    {
-        return natFromPort;
-    }
-
-    public InetAddress getNatToHost()
-    {
-        return natToHost;
-    }
-
-    public int getNatToPort()
-    {
-        return natToPort;
     }
 
     public Object attach(Object ob)

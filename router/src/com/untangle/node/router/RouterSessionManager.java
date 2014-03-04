@@ -31,13 +31,13 @@ class RouterSessionManager
         this.node = node;
     }
 
-    void registerSession( IPNewSessionRequest request, Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort )
+    void registerSession( IPNewSessionRequest request )
     {
         RouterSessionData data =
-            new RouterSessionData( clientAddr, clientPort,
-                                   request.getClientAddr(), request.getClientPort(),
-                                   serverAddr, serverPort,
-                                   request.getServerAddr(), request.getServerPort());
+            new RouterSessionData( request.getOrigClientAddr(), request.getOrigClientPort(),
+                                   request.getNewClientAddr(), request.getNewClientPort(),
+                                   request.getOrigServerAddr(), request.getOrigServerPort(),
+                                   request.getNewServerAddr(), request.getNewServerPort());
 
         if (logger.isDebugEnabled()) {
             logger.debug( "Registering session: " + request.id());
@@ -51,6 +51,26 @@ class RouterSessionManager
 
     }
 
+    void registerSession( NodeTCPSession session )
+    {
+        RouterSessionData data =
+            new RouterSessionData( session.getOrigClientAddr(), session.getOrigClientPort(),
+                                   session.getNewClientAddr(), session.getNewClientPort(),
+                                   session.getOrigServerAddr(), session.getOrigServerPort(),
+                                   session.getNewServerAddr(), session.getNewServerPort());
+
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Registering session: " + session.id());
+        }
+
+        /* Insert the data into the map */
+        RouterSessionData tmp;
+        if (( tmp = map.put( session.id(), data )) != null ) {
+            logger.error( "Duplicate session key: " + tmp );
+        }
+
+    }
+    
     void releaseSession( NodeSession session )
     {
         RouterSessionData sessionData;
@@ -108,9 +128,9 @@ class RouterSessionManager
      * Check to see if this session should be redirected because of one of the
      * it is in the session redirect map
      */
-    boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol, RouterImpl node )
+    boolean isSessionRedirect( NodeSession session, Protocol protocol, RouterImpl node )
     {
-        SessionRedirectKey key = new SessionRedirectKey( request, protocol );
+        SessionRedirectKey key = new SessionRedirectKey( session, protocol );
         SessionRedirect redirect;
 
         if ( logger.isDebugEnabled()) {
@@ -149,7 +169,7 @@ class SessionRedirectKey
 
     SessionRedirectKey( IPNewSessionRequest request, Protocol protocol )
     {
-        this( protocol, request.getServerAddr(), request.getServerPort());
+        this( protocol, request.getOrigServerAddr(), request.getOrigServerPort());
     }
 
     SessionRedirectKey( NodeTCPSession session )
@@ -268,7 +288,7 @@ class SessionRedirect
             logger.debug("rule clientPort: "+redirectRulePort);
         }
 
-        String cmd = "iptables -t nat -I PREROUTING " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
+        String cmd = "iptables -t nat -I port-forward-rules " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
         logger.warn( "FTP iptables cmd: " + cmd );
         int result = UvmContextFactory.context().execManager().execResult( cmd );
         if (result != 0) {
@@ -287,7 +307,7 @@ class SessionRedirect
             logger.debug("rule clientPort: "+redirectRulePort);
         }
 
-        String cmd = "iptables -t nat -D PREROUTING " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
+        String cmd = "iptables -t nat -D port-forward-rules " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
         logger.warn( "FTP iptables cmd: " + cmd );
         int result = UvmContextFactory.context().execManager().execResult( cmd );
         if (result != 0) {

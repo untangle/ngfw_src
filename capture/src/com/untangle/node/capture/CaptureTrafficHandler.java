@@ -42,7 +42,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
 
         // first we look for and ignore all traffic on port 80 since
         // the http handler will take care of all that
-        if (sessreq.getServerPort() == 80) {
+        if (sessreq.getNewServerPort() == 80) {
             sessreq.release();
             return;
         }
@@ -55,14 +55,14 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         }
 
         // next check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(sessreq.getClientAddr()) == true) {
+        if (node.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(sessreq.getClientAddr(), sessreq.getServerAddr());
+        PassedAddress passed = node.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
 
         if (passed != null) {
             if (passed.getLog() == true) {
@@ -98,8 +98,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // the traffic needs to be blocked but we have detected HTTPS traffic
         // so we add a special global attachment that the https handler uses
         // to detect sessions that need https-->http redirection
-        if (sessreq.getServerPort() == 443) {
-            sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, sessreq.getClientAddr());
+        if (sessreq.getNewServerPort() == 443) {
+            sessreq.globalAttach(NodeSession.KEY_CAPTURE_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
         }
@@ -119,14 +119,14 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         IPNewSessionRequest sessreq = event.sessionRequest();
 
         // first check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(sessreq.getClientAddr()) == true) {
+        if (node.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(sessreq.getClientAddr(), sessreq.getServerAddr());
+        PassedAddress passed = node.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
 
         if (passed != null) {
             if (passed.getLog() == true) {
@@ -164,7 +164,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         // can't be circumvented by creative UDP port 53 traffic and it
         // will allow HTTP requests to become established which is
         // required for the http-casing to do the redirect
-        if (sessreq.getServerPort() == 53) {
+        if (sessreq.getNewServerPort() == 53) {
             // just return here which will cause all subsequent query
             // packets to hit the handleUDPClientPacket method
             return;

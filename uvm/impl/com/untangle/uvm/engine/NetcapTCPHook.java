@@ -118,17 +118,11 @@ public class NetcapTCPHook implements NetcapCallback
             } else {
                 /* Complete with the parameters from the last node */
                 NodeTCPSession session = (NodeTCPSession)sessionList.get( sessionList.size() - 1 );
-
-                clientAddr = session.getClientAddr();
-                clientPort = session.getClientPort();
-                serverAddr = session.getServerAddr();
-                serverPort = session.getServerPort();
+                clientAddr = session.getNewClientAddr();
+                clientPort = session.getNewClientPort();
+                serverAddr = session.getNewServerAddr();
+                serverPort = session.getNewServerPort();
             }
-
-            /* XXX Have to check if it is destined locally, if so, you don't create two
-             * connections, you just connect locally, instead, we could redirect the connection
-             * from 127.0.0.1 to 127.0.0.1, it just limits the number of possible sessions
-             * to that one server to 0xFFFF */
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "TCP - Completing server connection: " + sessionGlobalState );
@@ -139,7 +133,7 @@ public class NetcapTCPHook implements NetcapCallback
             try {
                 int intfId = clientSide.getServerIntf();
                 netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intfId );
-                netcapTCPSession.tcpServerSide().blocking( false );
+                netcapTCPSession.serverSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {
                 logger.debug( "TCP - Unable to complete connection to the server: " + e );
@@ -157,7 +151,7 @@ public class NetcapTCPHook implements NetcapCallback
 
             try {
                 netcapTCPSession.clientComplete();
-                netcapTCPSession.tcpClientSide().blocking( false );
+                netcapTCPSession.clientSide().blocking( false );
 
                 ifClientComplete = true;
             } catch ( Exception e ) {
@@ -205,7 +199,7 @@ public class NetcapTCPHook implements NetcapCallback
 
         protected Sink makeClientSink()
         {
-            return new TCPSink( netcapTCPSession.tcpClientSide().fd(), clientSideListener );
+            return new TCPSink( netcapTCPSession.clientSide().fd(), clientSideListener );
         }
 
         protected Sink makeServerSink()
@@ -214,12 +208,12 @@ public class NetcapTCPHook implements NetcapCallback
                 throw new IllegalStateException( "Requesting server sink for an uncompleted connection" );
             }
 
-            return new TCPSink( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
+            return new TCPSink( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
         protected Source makeClientSource()
         {
-            return new TCPSource( netcapTCPSession.tcpClientSide().fd(), clientSideListener );
+            return new TCPSource( netcapTCPSession.clientSide().fd(), clientSideListener );
         }
 
         protected Source makeServerSource()
@@ -228,17 +222,17 @@ public class NetcapTCPHook implements NetcapCallback
                 throw new IllegalStateException( "Requesting server source for an uncompleted connection" );
             }
 
-            return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
+            return new TCPSource( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
+        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent sessionEvent )
         {
             TCPNewSessionRequestImpl request;
 
             if ( prevSession == null ) {
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
+                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, sessionEvent );
             } else {
-                request = new TCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
+                request = new TCPNewSessionRequestImpl( prevSession, agent, sessionEvent, sessionGlobalState );
             }
 
             // newSession() returns null when rejecting the session

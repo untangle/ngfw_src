@@ -60,8 +60,8 @@ public class NetcapUDPHook implements NetcapCallback
         protected final UDPSideListener clientSideListener = new UDPSideListener();
         protected final UDPSideListener serverSideListener = new UDPSideListener();
 
-        protected UDPAttributes serverTraffic = null;
-        protected UDPAttributes clientTraffic = null;
+        protected UDPAttributes serviceSideAttributes = null;
+        protected UDPAttributes clientSideAttributes = null;
 
         protected NodeUDPSession prevSession = null;
 
@@ -110,35 +110,35 @@ public class NetcapUDPHook implements NetcapCallback
 
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
-                serverTraffic = new UDPAttributes( netcapUDPSession.serverSide());
+                serviceSideAttributes = new UDPAttributes( netcapUDPSession.serverSide() );
             } else {
                 /* Setup the UDP parameters to use the parameters from the last session in the chain */
                 NodeUDPSession session = (NodeUDPSession)sessionList.get( sessionList.size() - 1 );
 
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "UDP: Completing session:" );
-                    logger.debug( "Client: " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort());
-                    logger.debug( "Server: " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+                    logger.debug( "Client: " + session.getNewClientAddr().getHostAddress() + ":" + session.getNewClientPort());
+                    logger.debug( "Server: " + session.getNewServerAddr().getHostAddress() + ":" + session.getNewServerPort());
                 }
+                
+                serviceSideAttributes = new UDPAttributes( session.getNewClientAddr(), session.getNewClientPort(), session.getNewServerAddr(), session.getNewServerPort());
 
-                serverTraffic = new UDPAttributes( session.getClientAddr(), session.getClientPort(), session.getServerAddr(), session.getServerPort());
-
-                serverTraffic.ttl( ((NodeUDPSessionImpl)session).ttl());
-                serverTraffic.tos( ((NodeUDPSessionImpl)session).tos());
+                serviceSideAttributes.ttl( ((NodeUDPSessionImpl)session).ttl());
+                serviceSideAttributes.tos( ((NodeUDPSessionImpl)session).tos());
             }
 
             /* Packets cannot go back out on the client interface */
             /* Setup the marking */
-            serverTraffic.isMarkEnabled( true );
+            serviceSideAttributes.isMarkEnabled( true );
             
             int nfmark = clientSide.getClientIntf() + ( serverSide.getServerIntf() << 8 );
-            serverTraffic.mark( nfmark);
+            serviceSideAttributes.mark( nfmark);
 
-            serverTraffic.lock();
+            serviceSideAttributes.lock();
 
-            this.netcapUDPSession.setServerTraffic(serverTraffic);
+            this.netcapUDPSession.setServerTraffic(serviceSideAttributes);
 
-            netcapUDPSession.serverComplete( serverTraffic );
+            netcapUDPSession.serverComplete( serviceSideAttributes );
 
             return true;
         }
@@ -151,18 +151,18 @@ public class NetcapUDPHook implements NetcapCallback
          */
         protected boolean clientComplete()
         {
-            clientTraffic = UDPAttributes.makeSwapped( netcapUDPSession.clientSide());
+            clientSideAttributes = UDPAttributes.makeSwapped( netcapUDPSession.clientSide());
 
             /* Setup the marking */
-            clientTraffic.isMarkEnabled( true );
+            clientSideAttributes.isMarkEnabled( true );
                 
             /* Packets cannot go back out on the server interface */
             int nfmark = clientSide.getServerIntf() + ( serverSide.getClientIntf() << 8 );
-            clientTraffic.mark( nfmark );
+            clientSideAttributes.mark( nfmark );
 
-            clientTraffic.lock();
+            clientSideAttributes.lock();
 
-            this.netcapUDPSession.setClientTraffic(clientTraffic);
+            this.netcapUDPSession.setClientTraffic(clientSideAttributes);
 
             return true;
         }
@@ -179,12 +179,12 @@ public class NetcapUDPHook implements NetcapCallback
 
         protected Sink makeClientSink()
         {
-            return new UDPSink( clientTraffic, clientSideListener);
+            return new UDPSink( clientSideAttributes, clientSideListener);
         }
 
         protected Sink makeServerSink()
         {
-            return new UDPSink( serverTraffic, serverSideListener);
+            return new UDPSink( serviceSideAttributes, serverSideListener);
         }
 
         protected Source makeClientSource()
@@ -220,7 +220,7 @@ public class NetcapUDPHook implements NetcapCallback
                 /* Only advance the previous session if the node requested the session */
                 if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
                     ( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
-                    logger.debug( "Passing new session data client: " + session.getClientAddr());
+                    logger.debug( "Passing new session data client: " + session.getNewClientAddr());
                     prevSession = session;
                 } else {
                     logger.debug( "Reusing session data" );
@@ -241,15 +241,15 @@ public class NetcapUDPHook implements NetcapCallback
             /* No longer need these */
 
             try {
-                if ( serverTraffic != null )
-                    serverTraffic.raze();
+                if ( serviceSideAttributes != null )
+                    serviceSideAttributes.raze();
             } catch ( Exception e ) {
                 logger.error( "Unable to raze server traffic", e );
             }
 
             try {
-                if ( clientTraffic != null )
-                    clientTraffic.raze();
+                if ( clientSideAttributes != null )
+                    clientSideAttributes.raze();
             } catch ( Exception e ) {
                 logger.error( "Unable to raze client traffic", e );
             }

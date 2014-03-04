@@ -11,39 +11,11 @@ import com.untangle.uvm.node.SessionTuple;
 /**
  * The new IP session request interface
  */
-public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
+public interface IPNewSessionRequest extends NewSessionRequest
 {
-    /**
-     * Sets the client address for this session.
-     */
-    void setClientAddr( InetAddress addr );
-
-    /**
-     * Sets the client port for this session.
-     */
-    void setClientPort( int port );
-
-    /**
-     * Sets the server address for this session.
-     */
-    void setServerAddr( InetAddress addr );
-
-    /**
-     * Sets the server port for this session.
-     */
-    void setServerPort( int port );
-
-    /**
-     * Get the Session Event for this session
-     */
-    SessionEvent sessionEvent();
-
-    /**
-     * May only be called before session is established (from SessionRequest handler)
-     */
-    void rejectSilently();
-
-
+    static final short PROTO_TCP = 6;
+    static final short PROTO_UDP = 17;
+    
     // Codes for rejectReturnUnreachable()
     static final byte NET_UNREACHABLE = 0;
     static final byte HOST_UNREACHABLE = 1;
@@ -56,6 +28,36 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
     static final byte PROHIBITED = 13;
 
     /**
+     * Sets the client address for this session.
+     */
+    void setNewClientAddr( InetAddress addr );
+
+    /**
+     * Sets the client port for this session.
+     */
+    void setNewClientPort( int port );
+
+    /**
+     * Sets the server address for this session.
+     */
+    void setNewServerAddr( InetAddress addr );
+
+    /**
+     * Sets the server port for this session.
+     */
+    void setNewServerPort( int port );
+
+    /**
+     * Get the Session Event for this session
+     */
+    SessionEvent sessionEvent();
+
+    /**
+     * May only be called before session is established (from SessionRequest handler)
+     */
+    void rejectSilently();
+    
+    /**
      * May only be called before session is established (from SessionRequest handler)
      */
     void rejectReturnUnreachable( byte code );
@@ -67,12 +69,10 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
      */
     void release();
 
+    /**
+     * Unused? XXX
+     */
     void endpoint();
-
-    InetAddress getNatFromHost();
-    int getNatFromPort();
-    InetAddress getNatToHost();
-    int getNatToPort();
 
     /**
      * Returns the protocol for the session.</p>
@@ -95,29 +95,54 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionTuple
     int getServerIntf();
 
     /**
-     * Gets the Client Address of this session. </p>
+     * Gets the original (pre-NAT) Client Address of this session. </p>
      *
      * @return  the client address
      */
-    InetAddress getClientAddr();
+    InetAddress getOrigClientAddr();
 
     /**
-     * Gets the Server Address of this session. </p>
+     * Gets the new (post-NAT) Client Address of this session. </p>
+     *
+     * @return  the client address
+     */
+    InetAddress getNewClientAddr();
+    
+    /**
+     * Gets the original (pre-NAT) Server Address of this session. </p>
      *
      * @return  the server addr.
      */
-    InetAddress getServerAddr();
+    InetAddress getOrigServerAddr();
 
     /**
-     * Gets the client port for this session.</p>
+     * Gets the new (post-NAT) Server Address of this session. </p>
+     *
+     * @return  the server addr.
+     */
+    InetAddress getNewServerAddr();
+    
+    /**
+     * Gets the original (pre-NAT) client port for this session.</p>
      * @return the client port.
      */
-    int getClientPort();
+    int getOrigClientPort();
 
     /**
-     * Gets the server port for this session.</p>
+     * Gets the new (post-NAT) client port for this session.</p>
+     * @return the client port.
+     */
+    int getNewClientPort();
+    
+    /**
+     * Gets the original (pre-NAT) server port for this session.</p>
      * @return the server port.
      */
-    int getServerPort();
+    int getOrigServerPort();
 
+    /**
+     * Gets the new (post-NAT) server port for this session.</p>
+     * @return the server port.
+     */
+    int getNewServerPort();
 }

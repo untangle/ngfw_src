@@ -15,8 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * FTP node implementation.
  */
-public class FtpNodeImpl extends NodeBase
-    implements FtpNode
+public class FtpNodeImpl extends NodeBase implements FtpNode
 {
     private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
     private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
