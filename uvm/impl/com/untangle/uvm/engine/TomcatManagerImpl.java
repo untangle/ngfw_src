@@ -126,16 +126,20 @@ public class TomcatManagerImpl implements TomcatManager
     public boolean unloadServlet(String contextRoot)
     {
         try {
-            if (null != baseHost) {
+            if ( baseHost != null ) {
                 Container c = baseHost.findChild(contextRoot);
-                if (null != c) {
+                if ( c != null ) {
                     logger.info("Unloading Servlet: " + contextRoot);
+
                     baseHost.removeChild(c);
-                    try {
-                        ((StandardContext)c).destroy();
-                    } catch (Exception x) {
-                        logger.warn("Exception destroying web app \"" + contextRoot + "\"", x);
-                    }
+
+                    // this seems to cause a warning about destroy() being called twice
+                    // try {
+                    //     ((StandardContext)c).destroy();
+                    // } catch (Exception x) {
+                    //     logger.warn("Exception destroying web app \"" + contextRoot + "\"", x);
+                    // }
+
                     return true;
                 }
             }
