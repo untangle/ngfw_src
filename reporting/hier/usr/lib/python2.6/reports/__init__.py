@@ -437,24 +437,39 @@ class DetailSection(Section):
         conn = sql_helper.get_connection()
 
         try:
-            r = []
-            for c in self.get_columns(host=None, user=None, email=None):
-                r.append(c.title or '')
-            w.writerow(r)
+            visibleColumnNames = []
+            visibleColumns = self.get_columns(host=None, user=None, email=None)
+            for c in visibleColumns:
+                visibleColumnNames.append(c.name)
 
             curs = conn.cursor()
             curs.execute(sql)
-
+            
+            r = []
+            columnIsVisible = []
+            for column in curs.description:
+                try: 
+                    i = visibleColumnNames.index(column.name)
+                    c = visibleColumns[i]
+                    r.append(c.title or '')
+                    columnIsVisible.append(True)
+                except ValueError:
+                    columnIsVisible.append(False)
+            w.writerow(r)
+            
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
                 r1 = []
-                for el in r: # strip off milliseconds
-                    if isinstance(el, mx.DateTime.DateTimeType):
-                        r1.append(el.strftime("%Y-%m-%d %H:%M:%S"))
-                    else:
-                        r1.append(el)
+                colIndex = 0;
+                for el in r:
+                    if columnIsVisible[colIndex] :
+                        if isinstance(el, mx.DateTime.DateTimeType): # strip off milliseconds
+                            r1.append(el.strftime("%Y-%m-%d %H:%M:%S"))
+                        else:
+                            r1.append(el)
+                    colIndex  = colIndex + 1
                 w.writerow(r1)
         except Exception:
             logger.error("error adding details for '%s'" % self.name, exc_info=True)
