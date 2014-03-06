@@ -12,7 +12,6 @@ public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
 {
     protected byte ttl;
     protected byte tos;
-    protected byte[] options;
 
     public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent pe )
     {
@@ -53,14 +52,6 @@ public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
     }
 
     /**
-     * Retrieve the options associated with the first UDP packet in the session.
-     */
-    public byte[] options()
-    {
-        return options;
-    }
-    
-    /**
      * Set the TTL for a session.</p>
      * @param value - new TTL value.
      */
@@ -77,14 +68,4 @@ public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
     {
         tos = value;
     }
-
-    /**
-     * Set the options for this session.</p>
-     * @param value - The new options.
-     */
-    public void options( byte[] value )
-    {
-        options = value;
-    }
-    
 }

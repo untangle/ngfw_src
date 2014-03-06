@@ -33,7 +33,6 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
     protected final byte ttl;
     protected final byte tos;
-    protected final byte options[];
     
     private final String logPrefix;
     
@@ -54,7 +53,6 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         this.logger = pipelineConnector.sessionLoggerUDP();
         this.ttl     = request.ttl();
         this.tos     = request.tos();
-        this.options = request.options();
     }
 
     public int serverMaxPacketSize()
@@ -151,14 +149,6 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     public byte tos()
     {
         return tos;
-    }
-
-    /**
-     * Retrieve the options associated with the first UDP packet in the session.
-     */
-    public byte[] options()
-    {
-        return options;
     }
 
     protected boolean isSideDieing(int side, IncomingSocketQueue in)
