@@ -12,11 +12,8 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 
- abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
+public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
-    protected final PipelineConnectorImpl pipelineConnector;
-    protected final SessionGlobalState sessionGlobalState;
-
     public static final byte REQUESTED = 2;
     public static final byte REJECTED = 99;
     public static final byte RELEASED = 98;
@@ -35,6 +32,10 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
     public static final byte PROHIBITED = 13;
     public static final byte TCP_REJECT_RESET = 64; // Only valid for TCP connections
 
+    protected final PipelineConnectorImpl pipelineConnector;
+    protected final SessionGlobalState sessionGlobalState;
+    protected final SessionEvent sessionEvent;
+    
     protected final int clientIntf;
     protected final int serverIntf;
 
@@ -48,17 +49,14 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
     protected InetAddress newServerAddr;
     protected int newServerPort;
 
-    protected SessionEvent sessionEvent;
-
-    protected byte state = REQUESTED;
-
-    /* This is used to distinguish between REJECTED and REJECTED with code */
-    protected byte code  = REJECTED;
+    protected byte state = REQUESTED; /* REQUESTED, REJECTED, RELEASED */
+    protected byte rejectCode  = REJECTED;
 
     protected volatile Object attachment = null;
     
-    /* Two ways to create an IPNewSessionRequest:
-     * A. Pass in the netcap session and get the parameters from there.
+    /**
+     * First way to create an IPNewSessionRequest:
+     * Pass in the netcap session and get the parameters from there.
      */
     public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, PipelineConnectorImpl connector, SessionEvent sessionEvent )
     {
@@ -83,8 +81,9 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         newServerPort = serverSide.server().port();
     }
 
-    /* Two ways to create an IPNewSessionRequest:
-     * B. Pass in the previous request and get the parameters from there
+    /**
+     * Second way to create an IPNewSessionRequest:
+     * Pass in the previous request and get the parameters from there
      */
     public IPNewSessionRequestImpl( NodeSession session, PipelineConnectorImpl connector, SessionEvent sessionEvent, SessionGlobalState sessionGlobalState)
     {
@@ -167,7 +166,6 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         return sessionEvent;
     }
 
-    // One of REQUESTED, REJECTED, RELEASED
     public byte state()
     {
         return state;
@@ -175,10 +173,9 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 
     public byte rejectCode()
     {
-        return code;
+        return rejectCode;
     }
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     public void rejectSilently()
     {
         if ( state != REQUESTED ) {
@@ -197,7 +194,6 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         state = ENDPOINTED;
     }
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     public void rejectReturnUnreachable( byte code )
     {
         if ( state != REQUESTED ) {
@@ -212,7 +208,7 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         case DEST_HOST_UNKNOWN:
         case PROHIBITED:
             state     = REJECTED;
-            this.code = code;
+            this.rejectCode = code;
             break;
 
         default:
@@ -220,7 +216,6 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         }
     }
 
-    // May only be called before session is established (from TCPNewSessionRequestEvent handler)
     public void release()
     {
         if ( state != REQUESTED ) {

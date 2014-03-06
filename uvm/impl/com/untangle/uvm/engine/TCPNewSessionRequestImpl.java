@@ -31,7 +31,7 @@ public class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
         
         this.state = REJECTED;
         
-        this.code = TCP_REJECT_RESET;
+        this.rejectCode = TCP_REJECT_RESET;
     }
 
 }
