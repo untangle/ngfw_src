@@ -98,11 +98,14 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         clientIntf = clientSide.interfaceId();
         serverIntf = serverSide.interfaceId();
         
-        origClientAddr = session.getOrigClientAddr();
-        origClientPort = session.getOrigClientPort();
-        origServerAddr = session.getOrigServerAddr();
-        origServerPort = session.getOrigServerPort();
+        origClientAddr = clientSide.client().host();
+        origClientPort = clientSide.client().port();
+        origServerAddr = clientSide.server().host();
+        origServerPort = clientSide.server().port();
 
+        /**
+         * get the new tuple attributes from the previous session in case it was changed
+         */
         newClientAddr = session.getNewClientAddr();
         newClientPort = session.getNewClientPort();
         newServerAddr = session.getNewServerAddr();
@@ -139,70 +142,6 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
         return sessionGlobalState.user();
     }
 
-    /**
-     * Number of bytes received from the client.
-     */
-    public long c2tBytes()
-    {
-        return sessionGlobalState.clientSideListener().getRxBytes();
-    }
-
-    /**
-     * Number of bytes transmitted to the server.
-     */
-    public long t2sBytes()
-    {
-        return sessionGlobalState.serverSideListener().getTxBytes();
-    }
-
-    /**
-     * Number of bytes received from the server.
-     */
-    public long s2tBytes()
-    {
-        return sessionGlobalState.serverSideListener().getRxBytes();
-    }
-    
-    /**
-     * Number of bytes transmitted to the client.
-     */
-    public long t2cBytes()
-    {
-        return sessionGlobalState.clientSideListener().getTxBytes();
-    }
-
-    /**
-     * Number of chunks received from the client.
-     */
-    public long c2tChunks()
-    {
-        return sessionGlobalState.clientSideListener().getRxChunks();
-    }
-
-    /**
-     * Number of chunks transmitted to the server.
-     */
-    public long t2sChunks()
-    {
-        return sessionGlobalState.serverSideListener().getTxChunks();
-    }
-
-    /**
-     * Number of chunks received from the server.
-     */
-    public long s2tChunks()
-    {
-        return sessionGlobalState.serverSideListener().getRxChunks();
-    }
-    
-    /**
-     * Number of chunks transmitted to the client.
-     */
-    public long t2cChunks()
-    {
-        return sessionGlobalState.clientSideListener().getRxChunks();
-    }
-    
     public short getProtocol() { return sessionGlobalState.getProtocol(); }
     public int getClientIntf() { return clientIntf; }
     public int getServerIntf() { return serverIntf; }
