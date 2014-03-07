@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -21,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
+import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.handler.ScannedMessageResult;
 import com.untangle.node.smtp.handler.SmtpStateMachine;
@@ -32,23 +34,20 @@ import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.node.token.TokenResultBuilder;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.
  */
-public class SpamSmtpHandler extends SmtpStateMachine
+public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTranslator
 {
 
     private final Logger logger = Logger.getLogger(SpamSmtpHandler.class);
 
     private static final String MOD_SUB_TEMPLATE = "[SPAM] $MIMEMessage:SUBJECT$";
-    private static final String MOD_BODY_TEMPLATE = "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n"
-            + "was determined by the Spam Blocker to be spam based on a score\r\n"
-            + "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
-    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,
-            MOD_BODY_TEMPLATE);
+    private static WrappedMessageGenerator msgGenerator;
 
     private final SpamNodeImpl spamImpl;
     private final SpamSmtpConfig config;
@@ -67,6 +66,27 @@ public class SpamSmtpHandler extends SmtpStateMachine
         this.safelist = safelist;
         this.config = config;
         this.session = session;
+        msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
+    }
+    
+    @Override
+    public String getTranslatedBodyTemplate()
+    {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager()
+            .getTranslations("untangle-casing-smtp");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        String bodyTemplate = i18nUtil.tr("The attached message from")
+                              + " $MIMEMessage:FROM$\r\n"
+                              + i18nUtil.tr("was determined by the Spam Blocker to be spam based on a score of")
+                              + " $SPAMReport:SCORE$\r\n" + i18nUtil.tr("where anything above")
+                              + " $SPAMReport:SCORE$ " + i18nUtil.tr("is spam.") + "\r\n";
+        return bodyTemplate;
+    }
+    
+    @Override
+    public String getTranslatedSubjectTemplate()
+    {
+        return MOD_SUB_TEMPLATE;
     }
 
     /**

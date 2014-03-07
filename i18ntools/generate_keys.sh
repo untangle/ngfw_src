@@ -194,6 +194,9 @@ moduleName=`echo "$1"|cut -d"-" -f3`
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/quarantine/root/request.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/quarantine/root/safelist.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../src/com/untangle/node/smtp/quarantine/Quarantine.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../spam-base/src/com/untangle/node/spam/SpamSmtpHandler.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../phish/src/com/untangle/node/phish/PhishSmtpHandler.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../virus-base/src/com/untangle/node/virus/SmtpSessionHandler.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ktr -o tmp_keys.pot ../src/resources/com/untangle/node/smtp/quarantine/DigestSimpleEmail_HTML.vm
     find ../hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../servlets/quarantine/root/inbox.jspx >> ./tmp_keys.pot

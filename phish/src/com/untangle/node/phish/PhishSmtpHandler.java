@@ -3,12 +3,16 @@
  */
 package com.untangle.node.phish;
 
-import com.untangle.uvm.vnet.NodeTCPSession;
+import java.util.Map;
+
+import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
-import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamSmtpConfig;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Protocol Handler which is called-back as scanable messages
@@ -17,19 +21,34 @@ import com.untangle.node.spam.SpamSmtpConfig;
 public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
 {
     private static final String MOD_SUB_TEMPLATE = "[PHISH] $MIMEMessage:SUBJECT$";
-    private static final String MOD_BODY_TEMPLATE =
-        "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by the Phish Blocker to be PHISH (a\r\n" +
-        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
-        "found was $SPAMReport:FULL$";
-
-    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+   
+    private static WrappedMessageGenerator msgGenerator;
     
     protected PhishSmtpHandler( NodeTCPSession session, long maxClientWait, long maxSvrWait,
                                 PhishNode impl, SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist)
     {
         super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
-        PhishSmtpHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+        PhishSmtpHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,getTranslatedBodyTemplate(), this);
+    }
+    
+    @Override
+    public String getTranslatedBodyTemplate()
+    {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager()
+            .getTranslations("untangle-casing-smtp");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        String bodyTemplate = i18nUtil.tr("The attached message from")
+                              + " $MIMEMessage:FROM$\r\n"
+                              + i18nUtil
+                                  .tr("was determined by the Phish Blocker to be PHISH (a fraudulent email intended to steal information).  ")
+                              + "\n\r" + i18nUtil.tr("The kind of PHISH that was found was") + " $SPAMReport:FULL$";
+        return bodyTemplate;
+    }
+    
+    @Override
+    public String getTranslatedSubjectTemplate()
+    {
+        return MOD_SUB_TEMPLATE;
     }
 
     @Override

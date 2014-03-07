@@ -7,6 +7,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.Part;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.node.smtp.SmtpTransaction;
+import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.handler.ScannedMessageResult;
 import com.untangle.node.smtp.handler.SmtpStateMachine;
@@ -23,19 +25,16 @@ import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
 import com.untangle.node.smtp.mime.MIMEOutputStream;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Pipeline;
 
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
  */
-public class SmtpSessionHandler extends SmtpStateMachine
+public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTranslator
 {
     private static final String MOD_SUB_TEMPLATE = "[VIRUS] $MIMEMessage:SUBJECT$";
-
-    private static final String MOD_BODY_TEMPLATE = "The attached message from $MIMEMessage:FROM$\r\n"
-            + "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"
-            + "The infected portion of the message was removed by Virus Blocker.\r\n";
 
     private final Logger logger = Logger.getLogger(SmtpSessionHandler.class);
     private final Pipeline pipeline;
@@ -49,7 +48,26 @@ public class SmtpSessionHandler extends SmtpStateMachine
 
         this.virusImpl = impl;
         this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
-        this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, MOD_BODY_TEMPLATE);
+        this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
+    }
+    
+    @Override
+    public String getTranslatedBodyTemplate()
+    {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager()
+            .getTranslations("untangle-casing-smtp");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        String bodyTemplate = i18nUtil.tr("The attached message from")
+                              + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was found to contain the virus")
+                              + " \"$VirusReport:VIRUS_NAME$\".\r\n"
+                              + i18nUtil.tr("The infected portion of the message was removed by Virus Blocker.")+"\r\n";
+        return bodyTemplate;
+    }
+    
+    @Override
+    public String getTranslatedSubjectTemplate()
+    {
+        return MOD_SUB_TEMPLATE;
     }
 
     @Override

@@ -9,6 +9,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.mime.MIMEMessageTemplateValues;
 import com.untangle.node.smtp.mime.MIMEUtil;
+import com.untangle.uvm.LanguageManager;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Template;
 import com.untangle.uvm.node.TemplateValues;
 import com.untangle.uvm.node.TemplateValuesChain;
@@ -30,9 +33,11 @@ public class WrappedMessageGenerator
     private final Logger m_logger = Logger.getLogger(getClass());
     private Template m_subjectTemplate;
     private Template m_bodyTemplate;
+    private String templateLanguage = "";
+    private TemplateTranslator templateTranslator;
 
     public WrappedMessageGenerator() {
-        this(null, null);
+        this(null, null, null);
     }
 
     /**
@@ -43,9 +48,13 @@ public class WrappedMessageGenerator
      * @param bodyTemplate
      *            the bodyTemplate
      */
-    public WrappedMessageGenerator(String subjectTemplate, String bodyTemplate) {
+    public WrappedMessageGenerator(String subjectTemplate, String bodyTemplate, TemplateTranslator templateTranslator) {
         setSubject(subjectTemplate);
         setBody(bodyTemplate);
+        UvmContext uvm = UvmContextFactory.context();
+        LanguageManager languageManager = uvm.languageManager();
+        templateLanguage = languageManager.getLanguageSettings().getLanguage();
+        this.templateTranslator = templateTranslator;
     }
 
     /**
@@ -91,6 +100,8 @@ public class WrappedMessageGenerator
      */
     public MimeMessage wrap(MimeMessage msg, TemplateValuesChain values)
     {
+        checkAndTranslateTemplates();
+        
         // Add the original message to the chain
         values.append(new MIMEMessageTemplateValues(msg));
 
@@ -118,6 +129,23 @@ public class WrappedMessageGenerator
             m_logger.debug("No template for new subject");
         }
         return ret;
+    }
+    
+    /**
+     * Checks if the language settings have changed, and recompile the templates if necessary
+     */
+    private void checkAndTranslateTemplates()
+    {
+        UvmContext uvm = UvmContextFactory.context();
+        LanguageManager languageManager = uvm.languageManager();
+        String language = languageManager.getLanguageSettings().getLanguage();
+        if (!language.equalsIgnoreCase(templateLanguage)) {
+            String subjectTemplate = templateTranslator.getTranslatedSubjectTemplate();
+            String bodyTemplate = templateTranslator.getTranslatedBodyTemplate();
+            setSubject(subjectTemplate);
+            setBody(bodyTemplate);
+            templateLanguage = language;
+        }
     }
 
     public String getSubject()
