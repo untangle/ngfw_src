@@ -110,6 +110,30 @@ public abstract class DecisionEngine
             return null;
         }
 
+        String refererHeader = header.getValue( "referer" );
+        if( node.getSettings().getPassReferers() && 
+            ( null != refererHeader ) ) {
+            try{
+                URI refererUri = new URI( refererHeader.replaceAll("(?<!:)/+", "/") );
+                String refererHost = refererUri.getHost();
+                if (null == refererHost ) {
+                    refererHost = host;
+                }
+                refererHost = UrlMatchingUtil.normalizeHostname(refererHost);
+
+                rule = UrlMatchingUtil.checkSiteList( refererHost, refererUri.getPath().toString(), node.getSettings().getPassedUrls() );
+                description = (rule != null)? rule.getDescription():null;        
+                if ( description != null ) {
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, description, node.getName());
+                    logger.debug("LOG: Referer in pass list: " + requestLine.getRequestLine());
+                    node.logEvent(hbe);
+                    return null;
+                }
+            }catch( URISyntaxException e) {
+                logger.error("Could not parse referer URI '" + refererHeader + "'", e);
+            }
+        }   
+
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if ( checkUnblockedSites( host, uri, clientIp ) ) {

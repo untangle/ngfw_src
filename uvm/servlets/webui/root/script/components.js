@@ -3965,6 +3965,8 @@ Ung.CustomEventLog = {
             return i18n._("Hostname is an IP address");
           case 'I':
             return i18n._("in URLs Pass list");
+          case 'R':
+            return i18n._("in URLs Pass list (via referer)");
           case 'C':
             return i18n._("in Clients Pass list");
           case 'B':

@@ -39,6 +39,7 @@ public class WebFilterSettings implements Serializable
     private Boolean enforceYoutubeForSchools = false;
     private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
+    private Boolean passReferers = false;
     
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
@@ -79,6 +80,12 @@ public class WebFilterSettings implements Serializable
      */
     public Boolean getBlockAllIpHosts() { return blockAllIpHosts; }
     public void setBlockAllIpHosts( Boolean blockAllIpHosts ) { this.blockAllIpHosts = blockAllIpHosts; }
+
+    /**
+     * Block all requests to hosts identified only by an IP address.
+     */
+    public Boolean getPassReferers() { return passReferers; }
+    public void setPassReferers( Boolean passReferers ) { this.passReferers = passReferers; }
 
     /**
      * If true, enables checking of HTTPS traffic.

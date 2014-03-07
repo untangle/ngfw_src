@@ -449,6 +449,37 @@ class WebFilterBaseTests(unittest2.TestCase):
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
 
+    # disable pass referer and verify that a page with content that would be blocked is blocked.
+    def test_130_passrefererDisabled(self):
+        global node
+        addBlockedUrl("test.untangle.com/test/refererPage.html")
+        addPassedUrl("test.untangle.com/test/testPage1.html")
+        settings = node.getSettings()
+        settings["passReferers"] = False
+        node.setSettings(settings)
+        resultReferer = clientControl.runCommand("wget --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+
+        # remove and re-install web app to reset the host unblock list
+        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        assert( resultReferer == 1 )        
+
+    # disable pass referer and verify that a page with content that would be blocked is allowed.
+    def test_131_passrefererEnabled(self):
+        global node
+        addBlockedUrl("test.untangle.com/test/refererPage.html")
+        addPassedUrl("test.untangle.com/test/testPage1.html")
+        settings = node.getSettings()
+        settings["passReferers"] = True
+        node.setSettings(settings)
+        resultReferer = clientControl.runCommand("wget --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+
+        # remove and re-install web app to reset the host unblock list
+        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        print "block %s passReferers %s" % (resultReferer,settings["passReferers"])
+        assert( resultReferer == 0 )        
+
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )

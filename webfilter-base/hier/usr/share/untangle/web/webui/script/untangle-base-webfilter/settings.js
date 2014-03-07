@@ -763,6 +763,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }
                         }
                     },{
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Pass if referers match Pass Sites"),
+                        hideLabel: true,
+                        name: 'Pass Referers',
+                        checked: this.settings.passReferers,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    this.settings.passReferers = checked;
+                                }, this)
+                            }
+                        }
+                    },{
                         xtype: "combo",
                         editable: false,
                         queryMode: 'local',
