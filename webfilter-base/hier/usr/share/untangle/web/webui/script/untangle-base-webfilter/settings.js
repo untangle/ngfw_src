@@ -42,12 +42,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         //
         buildUrlValidator: function(){
             this.urlValidator = Ext.bind(function(fieldValue) {
-                if (fieldValue.indexOf("https://") == 0) {
-                    return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
+                if (fieldValue.match( /^([^:]+):\/\// ) != null ){
+                    return this.i18n._("Site cannot contain URL protocol.");
                 }
-                // strip "http://" from beginning of rule
-                if (fieldValue.indexOf("http://") == 0) {
-                    fieldValue = fieldValue.substr(7);
+                if (fieldValue.match( /^([^:]+):\d+\// ) != null ){
+                    return this.i18n._("Site cannot contain port.");
                 }
                 // strip "www." from beginning of rule
                 if (fieldValue.indexOf("www.") == 0) {
