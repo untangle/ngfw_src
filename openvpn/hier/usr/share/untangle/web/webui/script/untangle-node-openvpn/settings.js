@@ -201,13 +201,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 recordJavaClass: "com.untangle.node.openvpn.OpenVpnStatusEvent",
                 dataFn: this.getRpcNode().getActiveClients,
                 fields: [{
-                    name: "address"
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: "clientName"
                 }, {
-                    name: "poolAddress"
+                    name: "poolAddress",
+                    sortType: Ung.SortTypes.asIp
                 }, {
-                    name: "start"
+                    name: "start",
+                    sortType: Ung.SortTypes.asTimestamp
                 }, {
                     name: "bytesRxTotal"
                 }, {
@@ -364,7 +367,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'client_name'
                 }, {
-                    name: 'remote_address'
+                    name: 'remote_address',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'tx_bytes',
                     convert: function(val) {
@@ -784,7 +788,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name: 'name'
                 }, {
-                    name: 'network'
+                    name: 'network',
+                    sortType: Ung.SortTypes.asIp
                 }],
                 autoExpandMin: 250,
                 // the list of columns for the column model

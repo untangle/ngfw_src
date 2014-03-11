@@ -466,11 +466,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: 'time_stamp',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'c_client_addr'
+                    name: 'c_client_addr',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'username'
                 }, {
-                    name: 'c_server_addr'
+                    name: 'c_server_addr',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'uri',
                     mapping: 'uri'

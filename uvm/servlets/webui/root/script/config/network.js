@@ -445,7 +445,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "mbit" //from deviceStatus
                 }, 
                 {
-                    name: "v4Address" //from interfaceStatus
+                    name: "v4Address", //from interfaceStatus
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: "v4Netmask" //from interfaceStatus
                 }, {
@@ -2225,9 +2226,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'enabled'
                 }, {
-                    name: 'newDestination'
+                    name: 'newDestination',
+                    sortType: Ung.SortTypes.asIp
                 }, {
-                    name: 'newPort'
+                    name: 'newPort',
+                    sortType: 'asInt'
                 }, {
                     name: 'matchers'
                 },{
@@ -2253,7 +2256,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._("Enable"),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width:55
+                    width: 55
                 }, {
                     header: this.i18n._("Description"),
                     width: 200,
@@ -2266,13 +2269,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("New Destination"),
                     dataIndex: 'newDestination',
-                    resizable: false,
-                    width:150
+                    width: 150
                 }, {
                     header: this.i18n._("New Port"),
                     dataIndex: 'newPort',
-                    resizable: false,
-                    width:55
+                    width: 65
                 },troubleshootColumn],
                 columnsDefaultSortable: false,
                 onTroubleshoot: Ext.bind(function(record) {
@@ -2932,9 +2933,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 fields: [{
                     name: 'ruleId'
                 }, {
-                    name: 'network'
+                    name: 'network',
+                    sortType: Ung.SortTypes.asIp
                 }, {
-                    name: 'prefix'
+                    name: 'prefix',
+                    sortType: 'asInt'
                 }, {
                     name: 'nextHop'
                 },{
@@ -3563,13 +3566,17 @@ if (!Ung.hasResource["Ung.Network"]) {
                 fields: [{
                     name: 'proto'
                 },{
-                    name: 'src'
+                    name: 'src',
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: 'dst'
+                    name: 'dst',
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: 'src_port'
+                    name: 'src_port',
+                    sortType: 'asInt'
                 },{
-                    name: 'dst_port'
+                    name: 'dst_port',
+                    sortType: 'asInt'
                 },{
                     name:'priority'
                 }],   
@@ -4035,7 +4042,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 fields: [{
                     name: 'name'
                 }, {
-                    name: 'address'
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
                 }],
                 columnsDefaultSortable: true,
                 columns: [{
@@ -4074,7 +4082,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 fields: [{
                     name: 'domain'
                 }, {
-                    name: 'localServer'
+                    name: 'localServer',
+                    sortType: Ung.SortTypes.asIp
                 }],
                 columnsDefaultSortable: true,
                 columns: [{
@@ -4126,7 +4135,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 fields: [{
                     name: 'macAddress'
                 }, {
-                    name: 'address'
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'description'
                 }],
@@ -4244,7 +4254,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     name: "macAddress"
                 },{
-                    name: "address"
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "hostname"
                 }],

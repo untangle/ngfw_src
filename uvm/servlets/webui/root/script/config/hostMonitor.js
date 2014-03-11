@@ -107,7 +107,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "id"
                 },{
                     name: "address",
-                    type: 'string'
+                    type: 'string',
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "hostname",
                     type: 'string'
@@ -352,10 +353,11 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         }
                     ]
                 }),
-                recordJavaClass: "com.untangle.uvm.HostTable.HostTableEntry",
+                recordJavaClass: "com.untangle.uvm.HostTableEntry",
                 dataFn: Ext.bind(this.getPenaltyBoxedHosts, this),
                 fields: [{
-                    name: "address"
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "penaltyBoxEntryTime"
                 },{
@@ -438,10 +440,11 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         }
                     ]
                 }),
-                recordJavaClass: "com.untangle.node.bandwidth.QuotaBoxEntry",
+                recordJavaClass: "com.untangle.uvm.HostTableEntry",
                 dataFn: Ext.bind(this.getQuotaHosts, this),
                 fields: [{
-                    name: "address"
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "quotaSize"
                 },{
@@ -554,7 +557,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: 'end_time',
                     sortType: Ung.SortTypes.asTimestamp
                 }, {
-                    name: 'address'
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'reason'
                 }],
@@ -600,7 +604,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 }, {
                     name: 'action'
                 }, {
-                    name: 'address'
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'size'
                 }, {

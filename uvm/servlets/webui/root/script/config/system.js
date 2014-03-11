@@ -924,13 +924,17 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     name: 'shield_blocked'
                 }, {
-                    name: 'c_client_addr'
+                    name: 'c_client_addr',
+                    sortType: Ung.SortTypes.asIp
                 }, {
-                    name: 'c_client_port'
+                    name: 'c_client_port',
+                    sortType: 'asInt'
                 }, {
-                    name: 'c_server_addr'
+                    name: 'c_server_addr',
+                    sortType: Ung.SortTypes.asIp
                 }, {
-                    name: 's_server_port'
+                    name: 's_server_port',
+                    sortType: 'asInt'
                 }],
                 columns: [{
                     header: this.i18n._("Timestamp"),

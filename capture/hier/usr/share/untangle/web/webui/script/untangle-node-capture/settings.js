@@ -109,10 +109,11 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         }
                     ]
                 }),
-                recordJavaClass: "com.untangle.node.capture.HostDatabaseEntry",
+                recordJavaClass: "com.untangle.node.capture.CaptureUserEntry",
                 dataFn: this.getRpcNode().getActiveUsers,
                 fields: [{
-                    name: "userAddress"
+                    name: "userAddress",
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "userName"
                 },{
@@ -339,7 +340,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 },{
                     name: "log"
                 },{
-                    name: "address"
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: "description"
                 }],
@@ -974,7 +976,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     name: "time_stamp",
                     sortType: Ung.SortTypes.asTimestamp
                 },{
-                    name: "client_addr"
+                    name: "client_addr",
+                    sortType: Ung.SortTypes.asIp
                 },{
                     name: "login_name"
                 },{

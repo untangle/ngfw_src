@@ -501,21 +501,29 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name: "policy"
                 },{
-                    name: "preNatClient"
+                    name: "preNatClient",
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: "preNatServer"
+                    name: "preNatServer",
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: "preNatClientPort"
+                    name: "preNatClientPort",
+                    sortType: 'asInt'
                 },{
-                    name: "preNatServerPort"
+                    name: "preNatServerPort",
+                    sortType: 'asInt'
                 },{
-                    name: "postNatClient"
+                    name: "postNatClient",
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: "postNatServer"
+                    name: "postNatServer",
+                    sortType: Ung.SortTypes.asIp
                 },{
-                    name: "postNatClientPort"
+                    name: "postNatClientPort",
+                    sortType: 'asInt'
                 },{
-                    name: "postNatServerPort"
+                    name: "postNatServerPort",
+                    sortType: 'asInt'
                 },{
                     name: "clientIntf"
                 },{

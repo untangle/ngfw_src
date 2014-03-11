@@ -987,37 +987,19 @@ Ung.SortTypes = {
         return value.time;
     },
     /**
-     * @param {Mixed} value The SessionEvent value being converted
+     * Ip address sorting. may contain netmask.
+     * @param value of the ip field
      * @return {String} The comparison value
      */
-    asClient: function(value) {
-        return value === null ? "": value.c_client_addr + ":" + value.c_client_port;
-    },
-    /**
-     * @param {Mixed} value The SessionEvent value being converted
-     * @return {String} The comparison value
-     */
-    asServer: function(value) {
-        return value === null ? "": value.s_server_addr + ":" + value.s_server_port;
-    },
-    /**
-     * @param value of the UID for users / groups
-     * @reutrn the comparison value
-     */
-    asUID: function (value) {
-        if ( value == "[any]" || value == "[authenticated]" || value == "[unauthenticated]" ) {
-            return "";
-        }
-        return value;
-    },
-    /**
-     * @param value of the last name field - if no value is given it is pushed to the last.
-     */
-    asLastName: function (value) {
+    asIp: function(value){
         if(Ext.isEmpty(value)) {
             return null;
         }
-        return value;
+        var i, len, parts = (""+value).replace(/\//g,".").split('.');
+        for(i = 0, len = parts.length; i < len; i++){
+            parts[i] = Ext.String.leftPad(parts[i], 3, '0');
+        }
+        return parts.join('.');
     }
 };
 
@@ -2876,6 +2858,8 @@ Ext.define("Ung.GridEventLogBase", {
             rec[property]=
                 (property=='id')?index+1:
                 (property=='time_stamp')?{javaClass:"java.util.Date", time: (new Date(Math.floor((Math.random()*index*12345678)))).getTime()}:
+                (property.indexOf('_addr') != -1)?Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"."+Math.floor((Math.random()*255))+"/"+Math.floor((Math.random()*32)):
+                (property.indexOf('_port') != -1)?Math.floor((Math.random()*65000)):
             property+"_"+(i*index)+"_"+Math.floor((Math.random()*10));
         }
         return rec;
@@ -3205,8 +3189,6 @@ Ext.define("Ung.GridEventLog", {
 
 Ung.CustomEventLog = {
     buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-        //            var lineNum = Ext.create('Ext.grid.RowNumberer');
-        //            lineNum.setWidth(50);
         var grid = Ext.create('Ung.GridEventLog',{
             name: nameParam,
             settingsCmp: settingsCmpParam,
@@ -3225,17 +3207,23 @@ Ung.CustomEventLog = {
             }, {
                 name: 'hostname'
             }, {
-                name: 'c_client_addr'
+                name: 'c_client_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
-                name: 'c_client_port'
+                name: 'c_client_port',
+                sortType: 'asInt'
             }, {
-                name: 'c_server_addr'
+                name: 'c_server_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
-                name: 'c_server_port'
+                name: 'c_server_port',
+                sortType: 'asInt'
             }, {
-                name: 's_server_addr'
+                name: 's_server_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
-                name: 's_server_port'
+                name: 's_server_port',
+                sortType: 'asInt'
             }, {
                 name: 'classd_application',
                 type: 'string'
@@ -3599,15 +3587,18 @@ Ung.CustomEventLog = {
                 name: 'sitefilter_category',
                 type: 'string'
             }, {
-                name: 'c_client_addr'
+                name: 'c_client_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
                 name: 'username'
             }, {
                 name: 'hostname'
             }, {
-                name: 'c_server_addr'
+                name: 'c_server_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
-                name: 's_server_port'
+                name: 's_server_port',
+                sortType: 'asInt'
             }, {
                 name: 'host'
             }, {
@@ -3800,13 +3791,16 @@ Ung.CustomEventLog = {
             }, {
                 name: 'hostname'
             }, {
-                name: 'c_client_addr'
+                name: 'c_client_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
                 name: 'username'
             }, {
-                name: 'c_server_addr'
+                name: 'c_server_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
-                name: 's_server_addr'
+                name: 's_server_addr',
+                sortType: Ung.SortTypes.asIp
             }, {
                 name: 'commtouchav_name'
             }, {

@@ -664,7 +664,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 fields: [{
                     name: 'id'
                 }, {
-                    name: 'address'
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'hostname'
                 }],
