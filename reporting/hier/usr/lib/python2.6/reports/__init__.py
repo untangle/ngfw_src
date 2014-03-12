@@ -441,9 +441,9 @@ class DetailSection(Section):
             curs.execute(sql)
             
             r = []
-            logger.debug('Description: %s' % (curs.description,))
+            #logger.debug('Description: %s' % (curs.description,))
             for column in curs.description:
-                r.append(column.name)
+                r.append(column[0])
             w.writerow(r)
             
             while 1:
