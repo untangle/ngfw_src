@@ -346,10 +346,10 @@ public class SystemManagerImpl implements SystemManager
             append(settings.isEnabled()?"yes":"no").
             append(EOL);
         //Note the line below also specifies the listening port
-        snmpdCtl.append("SNMPDOPTS='-Lsd -Lf /dev/null -p /var/run/snmpd.pid UDP:").
+        snmpdCtl.append("SNMPDOPTS='-Ls6d -Lf /dev/null -p /var/run/snmpd.pid UDP:").
             append(Integer.toString(settings.getPort())).append("'").append(EOL);
         snmpdCtl.append("TRAPDRUN=no").append(EOL);
-        snmpdCtl.append("TRAPDOPTS='-Lsd -p /var/run/snmptrapd.pid'").append(EOL);
+        snmpdCtl.append("TRAPDOPTS='-Ls6d -p /var/run/snmptrapd.pid'").append(EOL);
 
         strToFile(snmpdCtl.toString(), SNMP_DEFAULT_FILE_NAME);
     }
@@ -362,6 +362,8 @@ public class SystemManagerImpl implements SystemManager
         snmpd_config.append("# Turn off SMUX - recommended way from the net-snmp folks").append(EOL);
         snmpd_config.append("# is to bind to a goofy IP").append(EOL);
         snmpd_config.append("smuxsocket 1.0.0.0").append(TWO_LINES);
+
+        snmpd_config.append("dontLogTCPWrappersConnects 1").append(EOL);
 
         if(settings.isSendTraps() &&
            isNotNullOrBlank(settings.getTrapHost()) &&
