@@ -23,6 +23,7 @@ import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.node.UrlMatcher;
 
 /**
  * This is the core functionality of web filter
@@ -88,6 +89,15 @@ public abstract class DecisionEngine
             }
         }
         host = UrlMatchingUtil.normalizeHostname(host);
+  
+        //
+        // If restricting google app access, verify google domain and add restrict header.
+        if( node.getSettings().getRestrictGoogleApps() ){
+            UrlMatcher matcher = new UrlMatcher( "*google*" );
+            if( matcher.isMatch( host, uri.toString() ) ){
+              header.addField("X-GoogApps-Allowed-Domains", node.getSettings().getRestrictGoogleAppsDomain() );
+            }
+        }      
 
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings

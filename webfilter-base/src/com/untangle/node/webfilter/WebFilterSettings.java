@@ -40,6 +40,8 @@ public class WebFilterSettings implements Serializable
     private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = false;
+    private Boolean restrictGoogleApps = false;
+    private String restrictGoogleAppsDomain = "";
     
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
@@ -86,6 +88,18 @@ public class WebFilterSettings implements Serializable
      */
     public Boolean getPassReferers() { return passReferers; }
     public void setPassReferers( Boolean passReferers ) { this.passReferers = passReferers; }
+
+    /**
+     * Add header for Google to ensure only allowed domains for non-search applications
+     */
+    public Boolean getRestrictGoogleApps() { return restrictGoogleApps; }
+    public void setRestrictGoogleApps( Boolean restrictGoogleApps ) { this.restrictGoogleApps = restrictGoogleApps; }
+
+    /**
+     * Domain list (comma separated string) for restrictGoogleApps
+     */
+    public String getRestrictGoogleAppsDomain() { return restrictGoogleAppsDomain; }
+    public void setRestrictGoogleAppsDomain( String restrictGoogleAppsDomain ) { this.restrictGoogleAppsDomain = restrictGoogleAppsDomain; }
 
     /**
      * If true, enables checking of HTTPS traffic.

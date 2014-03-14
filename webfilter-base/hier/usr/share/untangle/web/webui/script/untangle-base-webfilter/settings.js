@@ -775,6 +775,62 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }
                         }
                     },{
+                        xtype: "checkbox",
+                        boxLabel: this.i18n._("Block Google applications"),    
+                        hideLabel: true,
+                        name: 'restrictGoogleApps',
+                        checked: this.settings.restrictGoogleApps,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind( function( elem, checked ){
+                                    this.settings.restrictGoogleApps = checked;
+                                    this.panelAdvanced.query('fieldset[name="restrictGoogleAppsFieldset"]')[0].setVisible( checked );
+                                }, this )
+                            }
+                        }
+                    },{
+                        xtype: 'fieldset',
+                        name: 'restrictGoogleAppsFieldset',
+                        hidden: !this.settings.restrictGoogleApps,
+                        items: [{
+                            xtype: 'displayfield',
+                            value: this.i18n._("NOTE: The HTTPS Inspector must be installed and running with the Inspect Google Traffic configured to Inspect."),
+                            style: {
+                                marginBottom: '10px'
+                            }                        
+                        },{
+                            xtype: "textfield",
+                            fieldLabel: "Domain",
+                            tooltip: i18n._("Specify the comma separated list of domains allowed to access non-search Google applications"),
+                            passwordField: true,
+                            name: "restrictGoogleAppsDomain",
+                            value: this.settings.restrictGoogleAppsDomain,
+                            validator: Ext.bind(function(fieldValue) {
+                                    var domains = fieldValue.split(/,/);
+                                    for( var i = 0; i < domains.length; i++ ){
+                                        var domain = domains[i];
+                                        if ( domain.match( /^([^:]+):\/\// ) != null ){
+                                            return this.i18n._("Domain cannot contain URL protocol.");
+                                        }
+                                        if( domain.match( /^([^:]+):\d+\// ) != null ){
+                                            return this.i18n._("Domain cannot contain port.");
+                                        }
+                                        if (domain.trim().length == 0) {
+                                            return this.i18n._("Invalid domain specified");
+                                        }
+                                    }
+                                    return true;
+                                }, this),
+                            listeners: {
+                                "change": {
+                                    fn: function(elem,newValue,oldValue) {
+                                        this.settings.restrictGoogleAppsDomain = newValue;
+                                    },
+                                    scope: this
+                                }
+                            }
+                        }]
+                    },{
                         xtype: "combo",
                         editable: false,
                         queryMode: 'local',
