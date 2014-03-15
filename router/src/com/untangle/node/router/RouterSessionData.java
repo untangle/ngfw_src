@@ -30,8 +30,6 @@ class RouterSessionData
     protected RouterSessionData( InetAddress oClientAddr, int oClientPort, InetAddress mClientAddr, int mClientPort,
                                  InetAddress oServerAddr, int oServerPort, InetAddress mServerAddr, int mServerPort )
     {
-        logger.warn("XXX RouterSessionData: " + oClientAddr + ":" + oClientPort + " modified to: " + mClientAddr + ":" + mClientPort + " " + oServerAddr + ":" + oServerPort + " modified to: " + mServerAddr +":"+ mServerPort +"\n" );
-
         originalClientAddr = oClientAddr;
         originalClientPort = oClientPort;
 
