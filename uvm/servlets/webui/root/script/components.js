@@ -3260,7 +3260,14 @@ Ung.CustomEventLog = {
             }, {
                 name: 'firewall_flagged'
             }, {
-                name: 'firewall_rule_index'
+                name: 'firewall_rule_index',
+                convert: function( v, record ){
+                    if (v <= 0) {
+                        return i18n._("none");
+                    } else {
+                        return v.toString();
+                    }
+                }
             }, {
                 name: 'ips_blocked'
             }, {
@@ -3491,14 +3498,7 @@ Ung.CustomEventLog = {
                 width: 60,
                 sortable: true,
                 flex:1,
-                dataIndex: 'firewall_rule_index',
-                renderer: function(value) {
-                    if (value <= 0) {
-                        return i18n._("none");
-                    } else {
-                        return value;
-                    }
-                }
+                dataIndex: 'firewall_rule_index'
             }, {
                 hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
                 header: i18n._("Server") ,
