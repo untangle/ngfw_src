@@ -111,7 +111,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             return appList;
         },
         getColumns: function() {
-            var interfaceStore=Ung.Util.getInterfaceStore();
             var policyListOptions=[[null, i18n._( "Services" )], ["0", i18n._("No Rack")]];
             for( var i=0 ; i<rpc.policies.length ; i++ ) {
                 var policy = rpc.policies[i];
@@ -151,23 +150,15 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 header: this.i18n._("Client Interface"),
                 dataIndex: "clientIntf",
                 width: 85,
-                renderer: function(value) {
-                    var record = interfaceStore.findRecord("key", value);
-                    return record==null ? ( value==null || value<0 ? "" : Ext.String.format( i18n._("Interface {0}"), value ) ) : record.get("name");
-                },
                 filter: {
-                    type: 'numeric'
+                    type: 'string'
                 }
             },{
                 header: this.i18n._("Server Interface"),
                 dataIndex: "serverIntf",
                 width: 85,
-                renderer: function(value) {
-                    var record = interfaceStore.findRecord("key", value);
-                    return record==null ? ( value==null || value<0 ? "" : Ext.String.format( i18n._("Interface {0}"), value ) ) : record.get("name");
-                },
                 filter: {
-                    type: 'numeric'
+                    type: 'string'
                 }
             },{
                 header: this.i18n._("Hostname"),
@@ -479,6 +470,15 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         },
         // Current Sessions Grid
         buildGridCurrentSessions: function() {
+            this.fieldConvertInterface = function( value, record){
+                var interfaceRecord = Ung.Util.getInterfaceStore().findRecord("key", value);
+                return ( interfaceRecord == null ) 
+                    ? ( ( value == null ) || ( value < 0 )
+                        ? "" 
+                        : Ext.String.format( i18n._("Interface {0}"), value ) 
+                      ) 
+                    : interfaceRecord.get("name");
+            };
             this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
                 name: this.name+"Grid",
                 settingsCmp: this,
@@ -525,9 +525,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name: "postNatServerPort",
                     sortType: 'asInt'
                 },{
-                    name: "clientIntf"
+                    name: "clientIntf",
+                    convert: this.fieldConvertInterface
                 },{
-                    name: "serverIntf"
+                    name: "serverIntf",
+                    convert: this.fieldConvertInterface
                 },{
                     name: "natted"
                 },{
