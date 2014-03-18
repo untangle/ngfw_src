@@ -116,8 +116,23 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 var policy = rpc.policies[i];
                 policyListOptions.push([policy.policyId+"", policy.name]);
             }
+            var policyListOptionsStore = new Ext.data.ArrayStore({
+                fields: [ 'id', 'text' ],
+                data: policyListOptions
+            });
+            var priorityOptionsStore = new Ext.data.ArrayStore({
+                fields: [ 'id', 'text' ],
+                data: [
+                    [1, i18n._("Very High")], 
+                    [2, i18n._("High")], 
+                    [3, i18n._("Medium")] , 
+                    [4, i18n._("Low")], 
+                    [5, i18n._("Limited")], 
+                    [6, i18n._("Limited More")], 
+                    [7, i18n._("Limited Severely")]
+                ]
+            });
             var priorityList=[i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")];
-            var priorityOptions = [[1, i18n._("Very High")], [2, i18n._("High")], [3, i18n._("Medium")] , [4, i18n._("Low")], [5, i18n._("Limited")], [6, i18n._("Limited More")], [7, i18n._("Limited Severely")]];
 
             var columns= [{
                 header: this.i18n._("Protocol"),
@@ -144,7 +159,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 filter: {
                     type: 'list',
-                    options: policyListOptions
+                    store: policyListOptionsStore
                 }
             },{
                 header: this.i18n._("Client Interface"),
@@ -451,7 +466,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 filter: {
                     type: 'list',
-                    options: priorityOptions
+                    store: priorityOptionsStore
                 }
             },{
                 hidden: true,
@@ -463,7 +478,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },
                 filter: {
                     type: 'list',
-                    options: priorityOptions
+                    store: priorityOptionsStore
                 }
             });
             return columns;
