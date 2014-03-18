@@ -487,12 +487,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         buildGridCurrentSessions: function() {
             this.fieldConvertInterface = function( value, record){
                 var interfaceRecord = Ung.Util.getInterfaceStore().findRecord("key", value);
-                return ( interfaceRecord == null ) 
-                    ? ( ( value == null ) || ( value < 0 )
-                        ? "" 
-                        : Ext.String.format( i18n._("Interface {0}"), value ) 
-                      ) 
-                    : interfaceRecord.get("name");
+                if ( interfaceRecord == null ) {
+                    if ( ( value == null ) || ( value < 0 ) )
+                        return "";
+                    else
+                        return Ext.String.format( i18n._("Interface {0}"), value );
+                } else {
+                    return interfaceRecord.get("name");
+                }
             };
             this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
                 name: this.name+"Grid",
