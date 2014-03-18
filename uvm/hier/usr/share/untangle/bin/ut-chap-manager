@@ -34,6 +34,8 @@ def load_chap_file(filename):
     for line in file:
         if line.strip().startswith("#"):
             continue
+        if (len(line) < 4):
+            continue
         chaplist.append([])
         ww = 0
         for word in line.split():
