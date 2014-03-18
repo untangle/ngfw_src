@@ -4,6 +4,7 @@
 #include <jni.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <libvector.h>
 #include <mvutil/debug.h>
 #include <mvutil/mvpoll.h>
@@ -56,7 +57,7 @@ static struct
 
 #define J_SRC                  "com/untangle/jvector/Source"
 #define J_SRC_GET_EVENT        "get_event"
-#define J_SRC_GET_EVENT_SIG    "()Lcom/untangle/jvector/Crumb;"
+#define J_SRC_GET_EVENT_SIG    "(Lcom/untangle/jvector/Sink;)Lcom/untangle/jvector/Crumb;"
 #define J_SRC_SHUTDOWN         "shutdown"
 #define J_SRC_SHUTDOWN_SIG     "()I"
 #define J_SRC_RAZE             "sourceRaze"
@@ -96,7 +97,7 @@ static void              _sink_raze           ( sink_t* snk );
 static void              _source_raze         ( source_t* src );
 static int               _source_shutdown     ( source_t* src );
 static mvpoll_key_t*     _source_get_event_key( source_t* snk );
-static event_t*          _source_get_event    ( source_t* src );
+static event_t*          _source_get_event    ( source_t* src, sink_t* snk );
 
 static void              _event_raze          ( event_t* ev );
 
@@ -131,7 +132,7 @@ int               jvector_load                ( JNIEnv* env )
     debug_set_level( VECTOR_DEBUG_PKG, 0 );
 
     debug( 8, "JVECTOR: Loading.\n" );
-
+    
     if ( env == NULL ) return errlogargs();
 
     if (( jvm = jmvutil_get_java_vm()) == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
@@ -142,7 +143,7 @@ int               jvector_load                ( JNIEnv* env )
     if (( _jvector.src.class = _get_global_java_class( J_SRC )) == NULL ) return JNI_ERR;
 
     _jvector.src.get_event = _get_global_java_mid( _jvector.src.class, J_SRC_GET_EVENT, J_SRC_GET_EVENT_SIG );
-
+    
     _jvector.src.shutdown = _get_global_java_mid( _jvector.src.class, J_SRC_SHUTDOWN, J_SRC_SHUTDOWN_SIG );
 
     _jvector.src.raze = _get_global_java_mid( _jvector.src.class, J_SRC_RAZE, J_SRC_RAZE_SIG );
@@ -258,6 +259,9 @@ int               jvector_sink_init           ( jvector_sink_t* snk, jobject thi
     snk->snk.get_event_key = _sink_get_event_key;
     snk->snk.shutdown      = _sink_shutdown;
     snk->snk.raze          = _sink_raze;
+
+    snk->pipefd[0] = 0;
+    snk->pipefd[1] = 0;
     
     /* Create a reference for this, this could be a weak global reference which means that
      * it will automatically be garbage collected, we use a global reference and explicitly
@@ -499,6 +503,15 @@ static void              _sink_raze           ( sink_t* snk )
         mvpoll_key_raze( jv_snk->key );
 
     jv_snk->key = NULL;
+
+    if ( jv_snk->pipefd[1] > 0 ) {
+        if ( close( jv_snk->pipefd[1] ) < 0 )
+            perrlog("close");
+    }
+    if ( jv_snk->pipefd[0] > 0 ) {
+        if ( close( jv_snk->pipefd[0] ) < 0 )
+            perrlog("close");
+    }
     
     /* Free the sink */
     free( snk );
@@ -562,10 +575,11 @@ static int               _source_shutdown     ( source_t* src )
     return ret;
 }
 
-static event_t*          _source_get_event    ( source_t* src )
+static event_t*          _source_get_event    ( source_t* src, sink_t* snk )
 {
     jvector_source_t* jv_src = (jvector_source_t*)src;
     jvector_event_t*  jv_event;
+    jvector_sink_t*   jv_snk = (jvector_sink_t*)snk;
     jmethodID mid;
     jobject   crumb;
     jobject   crumb_local;
@@ -578,7 +592,7 @@ static event_t*          _source_get_event    ( source_t* src )
     mid = jv_src->mid.get_event;
     if ( _init_java_call( jv_src, &env, mid, "source.get_event" ) < 0 ) return NULL;
     
-    crumb = (*env)->CallObjectMethod( env, jv_src->this, mid );
+    crumb = (*env)->CallObjectMethod( env, jv_src->this, mid, jv_snk->this );
 
     /* Check if there was an exception */
     if ( jmvutil_error_exception_clear() < 0 ) {
@@ -601,7 +615,6 @@ static event_t*          _source_get_event    ( source_t* src )
     case com_untangle_jvector_Crumb_TYPE_SHUTDOWN: event_type |= EVENT_SHUTDOWN_MASK;       /*fallthrough*/
 
     case com_untangle_jvector_Crumb_TYPE_UDP_PACKET: /*fallthrough*/
-    case com_untangle_jvector_Crumb_TYPE_ICMP_PACKET: /*fallthrough*/        
     case com_untangle_jvector_Crumb_TYPE_DATA:
         if (( jv_event = jvector_event_create()) == NULL )
             return errlog_null( ERR_CRITICAL, "jvector_event_create\n" );

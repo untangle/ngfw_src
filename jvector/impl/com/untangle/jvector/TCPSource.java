@@ -6,9 +6,8 @@ package com.untangle.jvector;
 public class TCPSource extends Source
 {
     protected SourceEndpointListener listener = null;
-
-    private static int maxRead = 8 * 1024;
-
+    
+    private static final int MAX_READ_SIZE = 8 * 1024;
     private static final int READ_RESET = -1;
 
     public TCPSource( int fd )
@@ -27,14 +26,32 @@ public class TCPSource extends Source
         this.listener = listener;
     }
     
-    protected Crumb get_event()
+    protected Crumb get_event( Sink sink )
     {
-        /* XXX How should we handle the byte array */
-        byte[] data = new byte[maxRead];
         int ret;
-        
         Crumb crumb;
 
+        int bytes_available = peek( pointer );
+        
+        if ( sink instanceof TCPSink ) {
+            /**
+             * We only send a FakeDataCrumb if data is available
+             * If not, do a traditional read so resets and closes
+             * are handled like normal
+             */
+            if ( bytes_available > 0 ) {
+                crumb = new FakeDataCrumb( this );
+                return crumb;
+            }
+        }
+
+        int readSize;
+        if ( bytes_available > 0 && bytes_available < MAX_READ_SIZE )
+            readSize = bytes_available + 1;
+        else
+            readSize = MAX_READ_SIZE;
+        
+        byte[] data = new byte[ readSize ];
         ret = read( pointer, data );
         
         switch( ret ) {
@@ -79,5 +96,6 @@ public class TCPSource extends Source
      * reading data from the file descriptor
      */
     protected static native int read( long pointer, byte[] data );
+    protected static native int peek( long pointer );
     protected static native int shutdown( long pointer );
 }

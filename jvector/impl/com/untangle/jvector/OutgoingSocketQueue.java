@@ -46,7 +46,7 @@ public class OutgoingSocketQueue extends Source
         pointer = create();
     }
 
-    protected Crumb get_event()
+    protected Crumb get_event( Sink unused )
     {
         if ( this.eventList.isEmpty()) {
             Vector.logError( "get_event without any data in the OutgoingSocketQueue" );

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <libmvutil.h>
 #include <libvector.h>
@@ -122,6 +123,58 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
 
     return number_bytes;
+}
+
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
+( JNIEnv *env, jobject _this, jlong snk_ptr, jlong src_ptr )
+{
+    jvector_sink_t*   snk = (jvector_sink_t*)(uintptr_t)snk_ptr;
+    jvector_source_t* src = (jvector_source_t*)(uintptr_t)src_ptr;
+
+    int snk_fd = snk->key->data.fd;
+    int src_fd = src->key->data.fd;
+
+    int max_write = 4096;
+    int result;
+
+    if ( snk->pipefd[0] == 0 ) {
+        result = pipe( snk->pipefd );
+        if ( result < 0 ) {
+            perrlog("pipe");
+            if ( snk->pipefd[0] > 0 ) {
+                if ( close( snk->pipefd[0] ) < 0 )
+                    perrlog("close");
+            }
+            if ( snk->pipefd[1] > 0 ) {
+                if ( close( snk->pipefd[1] ) < 0 )
+                    perrlog("close");
+            }
+            return -1;
+        }
+    }
+
+    /**
+     * write to the pipe
+     */
+    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, 0 );
+    if ( num_bytes < 0 ) {
+        return perrlog("splice");
+    }
+    if ( num_bytes == 0 ) {
+        return errlog( ERR_CRITICAL, "socket closed on splice.\n" );
+    }
+    
+    int bytes_remaining = num_bytes;
+    while ( bytes_remaining > 0 ) {
+        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, num_bytes, 0 );
+        if ( result < 0 ) {
+            return perrlog("splice");
+        }
+
+        bytes_remaining -= result;
+    }
+
+    return num_bytes;
 }
 
 /*

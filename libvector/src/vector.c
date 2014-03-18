@@ -715,7 +715,7 @@ static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay )
         return errlog( ERR_CRITICAL, "VECTOR(0x%016"PRIxPTR"): Constraint failed. Relay full.\n", (uintptr_t) vec );
 
     /* Retrieve the event and verify it is non-null */
-    if (( evt = relay->src->get_event( relay->src )) == NULL )
+    if (( evt = relay->src->get_event( relay->src, relay->snk )) == NULL )
         return errlog( ERR_CRITICAL, "Failed to get Event\n" );
 
     if ( relay->event_hook )
@@ -739,7 +739,7 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
     event_t* evt;
 
     /* Retrieve the event, this is at shutdown, so it may return NULL */
-    if (( evt = relay->src->get_event( relay->src )) == NULL )
+    if (( evt = relay->src->get_event( relay->src, relay->snk )) == NULL )
         errlog( ERR_WARNING, "relay->src->get_event\n" );
 
     /* This must be a shutdown event */
@@ -796,7 +796,7 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
     event_t* evt;
 
     /* Retrieve the event, this is at shutdown, so it may return NULL */
-    if (( evt = relay->src->get_event( relay->src )) == NULL )
+    if (( evt = relay->src->get_event( relay->src, relay->snk )) == NULL )
         errlog( ERR_WARNING, "relay->src->get_event\n" );
 
     /* This must be a shutdown event */

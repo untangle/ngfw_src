@@ -8,6 +8,7 @@
 #include <mvutil/errlog.h>
 
 #include <vector/fd_source.h>
+#include <vector/sink.h>
 
 #define FD_SOURCE_DEBUG 1
 #define FD_SOURCE_DEBUG_LVL 9
@@ -28,7 +29,7 @@ source_t* fd_source_create ( int fd )
     return (source_t*)src;
 }
 
-event_t*  fd_source_get_event ( source_t* src )
+event_t*  fd_source_get_event ( source_t* src, sink_t* unused )
 {
     event_t* evt = event_create(0);
     int fd = ((fd_source_t*)src)->fd;

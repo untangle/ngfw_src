@@ -33,7 +33,11 @@ public class TCPSink extends Sink
 
         switch ( crumb.type() ) {
         case Crumb.TYPE_DATA:
-            return write( (DataCrumb)crumb );
+            if ( crumb instanceof FakeDataCrumb ) {
+                return splice( (FakeDataCrumb)crumb );
+            } else {
+                return write( (DataCrumb)crumb );
+            }
 
         case Crumb.TYPE_RESET:
             Vector.logDebug( "Writing a reset crumb" );
@@ -47,6 +51,23 @@ public class TCPSink extends Sink
             Vector.logError( "Unknown event type: " + crumb );
             return Vector.ACTION_ERROR;
         }
+    }
+
+    protected int splice( FakeDataCrumb crumb )
+    {
+        TCPSource src = (TCPSource)crumb.getSource();
+
+        int numWritten = splice( this.pointer, src.pointer );
+
+        if ( numWritten == 0 ) {
+            /* XXX not sure what to do here */
+            return Vector.ACTION_SHUTDOWN;
+        }
+        
+        if ( src != null  && src.listener != null ) src.listener.dataEvent( src, numWritten );
+        if ( listener != null ) listener.dataEvent( this, numWritten );
+
+        return Vector.ACTION_DEQUEUE;
     }
 
     protected int write( DataCrumb crumb )
@@ -104,8 +125,9 @@ public class TCPSink extends Sink
     }
 
     protected native long create( int fd );
-    protected static native int write( long pointer, byte[] data, int offset, int size );
-    protected static native int close( long pointer );
-    protected static native void reset( long pointer );
-    protected static native int shutdown( long pointer );
+    protected static native int write( long snk_ptr, byte[] data, int offset, int size );
+    protected static native int splice( long snk_ptr, long src_ptr );
+    protected static native int close( long snk_ptr );
+    protected static native void reset( long snk_ptr );
+    protected static native int shutdown( long snk_ptr );
 }

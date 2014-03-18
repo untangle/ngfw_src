@@ -34,7 +34,7 @@ public class UDPSource extends Source
         this.listener = listener;
     }
     
-    protected Crumb get_event()
+    protected Crumb get_event( Sink unused )
     {
         PacketCrumb crumb;
         UDPPacket packet;

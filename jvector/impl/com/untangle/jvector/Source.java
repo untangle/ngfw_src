@@ -13,7 +13,7 @@ public abstract class Source
         return pointer;
     }
 
-    protected abstract Crumb get_event();
+    protected abstract Crumb get_event( Sink snk );
 
     protected abstract int shutdown();
 

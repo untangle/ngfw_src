@@ -20,6 +20,7 @@ typedef struct jvector_sink {
     sink_t snk;
     jobject this;
     mvpoll_key_t* key;
+    int pipefd[2]; /* used for splice */
     struct {
         jmethodID send_event;
         jmethodID shutdown;
@@ -31,7 +32,6 @@ typedef struct jvector_source {
     source_t src;
     jobject this;
     mvpoll_key_t* key;
-    
     struct {
         jmethodID get_event;
         jmethodID shutdown;

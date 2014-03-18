@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
 
 #include <libmvutil.h>
 #include <mvutil/debug.h>
@@ -139,6 +140,30 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
     
+    return ret;
+}
+
+/*
+ * Class:     TCPSource
+ * Method:    read
+ * Signature: (I[B)I
+ * 
+ * returns the number of bytes ready to be read in the socket
+ */
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_peek
+(JNIEnv *env, jclass _this, jlong pointer )
+{
+    int ret = 0;
+    int fd;
+
+    /* source_get_fd checks for NULL */
+    if (( fd = _source_get_fd( pointer )) < 0 ) {
+        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "_source_get_fd\n" );
+    }
+
+    if ( ioctl(fd, FIONREAD, &ret) < 0 )
+        perrlog("ioctl");
+
     return ret;
 }
 

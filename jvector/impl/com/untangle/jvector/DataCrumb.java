@@ -36,7 +36,6 @@ public class DataCrumb extends Crumb
     }
 
     public int    type()   { return TYPE_DATA; }
-
     public byte[] data()   { return data;   }
     public int    limit()  { return limit;  }
     public int    offset() { return offset; }
@@ -58,19 +57,20 @@ public class DataCrumb extends Crumb
     public void offset( int offset )
     {
         if ( offset > limit ) {
-            throw new IllegalArgumentException( "Setting offset(" + offset + ") passed the end of the " +
-                                                "data crumb(" + limit + ")" );
+            throw new IllegalArgumentException( "Setting offset(" + offset + ") passed the end of the " + "data crumb(" + limit + ")" );
         }
         
         this.offset = offset;        
     }
     
-    void   advance( int amount ) 
+    public void raze()
+    {
+        /* XXX What should go in here, C structure is freed automatically */
+    }
+
+    protected void advance( int amount ) 
     {
         offset( offset + amount );
     }
-
-    public void raze() {
-        /* XXX What should go in here, C structure is freed automatically */
-    }
+    
 }

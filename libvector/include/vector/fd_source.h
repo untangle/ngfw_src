@@ -5,6 +5,7 @@
 #define __FD_SOURCE_H_
 
 #include "source.h"
+#include "sink.h"
 
 typedef struct fd_source {
 
@@ -16,10 +17,10 @@ typedef struct fd_source {
     
 } fd_source_t;
 
-source_t* fd_source_create ( int fd );
-event_t*  fd_source_get_event ( source_t* src );
+source_t*     fd_source_create ( int fd );
+event_t*      fd_source_get_event ( source_t* src, sink_t* snk );
 mvpoll_key_t* fd_source_get_event_key ( source_t* src );
-int       fd_source_shutdown ( source_t* src );
-void      fd_source_raze ( source_t* src );
+int           fd_source_shutdown ( source_t* src );
+void          fd_source_raze ( source_t* src );
 
 #endif
