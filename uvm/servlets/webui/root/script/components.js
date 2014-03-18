@@ -653,6 +653,7 @@ Ung.Util = {
             data.push( [ key, name ] );
         }
         data.push( [ 250, "OpenVPN" ] );
+        data.push( [ 251, "L2TP" ] );
         
         if (wanMatchers) {
             data.unshift( ["wan",i18n._("Any WAN")] );
