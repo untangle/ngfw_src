@@ -118,19 +118,19 @@ public class WebFilterSettings implements Serializable
      * If true, enforces safe search on popular search engines.
      */
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
-    public void setEnforceSafeSearch( Boolean enforceSafeSearch ) { this.enforceSafeSearch = enforceSafeSearch; }
+    public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
     /**
      * If true, enforces safe search on popular search engines.
      */
     public Boolean getEnforceYoutubeForSchools() { return enforceYoutubeForSchools; }
-    public void setEnforceYoutubeForSchools( Boolean enforceYoutubeForSchools ) { this.enforceYoutubeForSchools = enforceYoutubeForSchools; }
+    public void setEnforceYoutubeForSchools( Boolean newValue ) { this.enforceYoutubeForSchools = newValue; }
 
     /**
      * If true, enforces safe search on popular search engines.
      */
     public String getYoutubeForSchoolsIdentifier() { return youtubeForSchoolsIdentifier; }
-    public void setYoutubeForSchoolsIdentifier( String youtubeForSchoolsIdentifier ) { this.youtubeForSchoolsIdentifier = youtubeForSchoolsIdentifier; }
+    public void setYoutubeForSchoolsIdentifier( String newValue ) { this.youtubeForSchoolsIdentifier = newValue; }
 
     /**
      * If true, ask for a password to unblock a site.
