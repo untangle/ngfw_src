@@ -654,7 +654,7 @@ public class AlertManagerImpl implements AlertManager
                     alertText += i18nUtil.tr(" fails to resolve categorization queries.");
 
                     alertList.add(alertText);
-                } else if ( t1-t0 > 300 ) {
+                } else if ( t1-t0 > 500 ) {
                     String alertText = "";
                     alertText += i18nUtil.tr("A DNS server responds slowly.");
                     alertText += " (";
