@@ -4911,9 +4911,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             port = "and "+port;
                         }
                         var script = [
-                            'intf_name='+intf+';',
-                            /*'pppoe_name=`/usr/share/untangle-net-alpaca/scripts/get_pppoe_name ${intf_name}`;',
-                            'if [ "${pppoe_name}" != "ppp.${intf_name}" ]; then intf_name=${pppoe_name}; fi;',*/
+                            'intf_name='+intf+';', // FIXME intf is not systemDev 
                             'tcpdump -i ${intf_name} -l -q -c 1024 -v -n ' + destination + ' '+port+' 2>&1 & echo "";',
                             'for t in `seq 1 ' + timeout + '`; do sleep 1;',
                             '  ps aux | grep -q " $! .*[t]cpdump -i";',
