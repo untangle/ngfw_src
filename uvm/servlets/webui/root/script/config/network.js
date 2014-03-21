@@ -427,7 +427,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     name: 'vrrpPriority'
                 }, {
-                    name: 'vrrpAddress'
+                    name: 'vrrpAliases'
                 }, {
                     name: 'javaClass'
                 }, 
@@ -1043,6 +1043,62 @@ if (!Ung.hasResource["Ung.Network"]) {
                     };
                 }
             });
+            this.gridInterfacesVrrpAliasesEditor = Ext.create('Ung.EditorGrid',{
+                name: 'VRRP Aliases',
+                height: 180,
+                width: 450,
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                dataIndex: 'vrrpAliases',
+                recordJavaClass: "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+                columnsDefaultSortable: false,
+                data: [],
+                emptyRow: {
+                    "staticAddress": "1.2.3.4",
+                    "staticPrefix": "24",
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias"
+                },
+                fields: [{
+                    name: 'staticAddress'
+                }, {
+                    name: 'staticPrefix'
+                }],
+                columns: [{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'staticAddress',
+                    width:200,
+                    editor : {
+                        xtype: 'textfield',
+                        vtype: 'ip4Address',
+                        allowBlank: false
+                    }
+                }, {
+                    header: this.i18n._("Netmask / Prefix"),
+                    dataIndex: 'staticPrefix',
+                    flex: 1,
+                    editor : {
+                        xtype: 'numberfield',
+                        minValue: 1,
+                        maxValue: 32,
+                        allowDecimals: false,
+                        allowBlank: false
+                    }
+                }],
+                setValue: function (value) {
+                    var data = [];
+                    if(value !== null && value.list !== null) {
+                        data=value.list;
+                    }
+                    this.reload({data:data});
+                },
+                getValue: function () {
+                    return {
+                        javaClass: "java.util.LinkedList",
+                        list: this.getPageList()
+                    };
+                }
+            });
             this.gridInterfacesDhcpOptionsEditor = Ext.create('Ung.EditorGrid',{
                 name: 'DHCP Options',
                 height: 180,
@@ -1412,6 +1468,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }, {
                         xtype: 'fieldset',
                         title: this.i18n._("IPv4 Aliases"),
+                        name: "v4AliasesContainer",
                         items: [this.gridInterfacesV4AliasesEditor]
                     }, {
                         xtype: 'fieldset',
@@ -1641,13 +1698,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         disableOnly: true,
                         width: 250
                     }, {
-                        xtype:'textfield',
-                        dataIndex: "vrrpAddress",
-                        fieldLabel: this.i18n._("VRRP Virtual Address"),
-                        vtype: "ip4Address",
-                        allowBlank: false,
-                        disableOnly: true,
-                        width: 350
+                        xtype: 'fieldset',
+                        title: this.i18n._("VRRP Aliases"),
+                        name: "vrrpAliasesContainer",
+                        items: [this.gridInterfacesVrrpAliasesEditor]
                     }]
                 }, {
                     xtype: "combo",
@@ -1720,7 +1774,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             vrrpEnabled: this.down('checkbox[dataIndex="vrrpEnabled"]'),
                             vrrpId: this.down('numberfield[dataIndex="vrrpId"]'),
                             vrrpPriority: this.down('numberfield[dataIndex="vrrpPriority"]'),
-                            vrrpAddress: this.down('textfield[dataIndex="vrrpAddress"]'),
+                            vrrpAliasesContainer: this.down('container[name="vrrpAliasesContainer"]'),
 
                             bridgedTo: this.down('combo[dataIndex="bridgedTo"]')
                             
@@ -1802,7 +1856,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             if ( this.cmps.vrrpEnabled.getValue() ) {
                                 this.cmps.vrrpId.status = true;
                                 this.cmps.vrrpPriority.status = true;
-                                this.cmps.vrrpAddress.status = true;
+                                this.cmps.vrrpAliasesContainer.status = true;
                             }
                         } else if ( this.cmps.v4ConfigType.getValue() == "AUTO" ) {
                             this.cmps.v4AutoAddressOverrideContainer.status = true;

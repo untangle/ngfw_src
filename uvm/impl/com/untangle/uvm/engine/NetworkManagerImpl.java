@@ -105,6 +105,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         else {
             checkForNewDevices( readSettings );
+            conversionVrrpAliasesIfNecessary( readSettings );
             
             this.networkSettings = readSettings;
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
@@ -527,6 +528,37 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
     
+    /**
+     * In 10.1 we had only one setting 'vrrpAddress'
+     * In 10.2 we have a list of vrrpAliases
+     * If vrrpAddress is non-null, create a new list with one entry and save it in vrrpAliases
+     */
+    private void conversionVrrpAliasesIfNecessary( NetworkSettings netSettings )
+    {
+        if ( netSettings == null )
+            return;
+        if ( netSettings.getInterfaces() == null )
+            return;
+
+        for ( InterfaceSettings intf : netSettings.getInterfaces() ) {
+            if ( intf.getVrrpAddress() != null ) {
+                InetAddress vrrpAddress = intf.getVrrpAddress();
+                // set the old value to null
+                intf.setVrrpAddress( null );
+                
+                // create the new list and set it
+                LinkedList<InterfaceSettings.InterfaceAlias> vrrpAliases = new LinkedList<InterfaceSettings.InterfaceAlias>();
+                InterfaceSettings.InterfaceAlias alias = new InterfaceSettings.InterfaceAlias();
+                alias.setStaticAddress( vrrpAddress );
+                alias.setStaticPrefix( 24 );
+                if ( intf.getV4StaticPrefix() != null )
+                    alias.setStaticPrefix( intf.getV4StaticPrefix() );
+                vrrpAliases.add( alias );
+                intf.setVrrpAliases( vrrpAliases );
+            }
+        }
+    }
+
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
