@@ -634,7 +634,15 @@ class NetworkTests(unittest2.TestCase):
         if (vrrpIP == None):
             raise unittest2.SkipTest("No IP found for VRRP")
         # Set VRRP values
-        netsettings['interfaces']['list'][i]['vrrpAddress'] = str(vrrpIP)
+        
+        netsettings['interfaces']['list'][i]['vrrpAliases'] = {
+            "javaClass": "java.util.LinkedList", 
+            "list": [{
+                    "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias", 
+                    "staticAddress": str(vrrpIP), 
+                    "staticPrefix": 24
+                    }]
+            }
         netsettings['interfaces']['list'][i]['vrrpEnabled'] = True
         netsettings['interfaces']['list'][i]['vrrpId'] = 2
         netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
