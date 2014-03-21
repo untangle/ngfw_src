@@ -4843,7 +4843,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
                                         [ 30, this.settingsCmp.i18n._( "30 seconds" )],
                                         [ 120, this.settingsCmp.i18n._( "120 seconds" )]];
-                        var interfaceStore = Ung.Util.getInterfaceList(false, false); 
+                        var interfaceStore = Ung.Util.getInterfaceListSystemDev(false, false, true); 
                         this.testTopToolbar = [this.destination = new Ext.form.TextField({
                             xtype : "textfield",
                             value : "any",

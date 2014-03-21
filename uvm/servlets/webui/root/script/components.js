@@ -642,18 +642,23 @@ Ung.Util = {
 
         return data;
     },
-    getInterfaceList: function( wanMatchers, anyMatcher ) {
+    getInterfaceListSystemDev: function( wanMatchers, anyMatcher, systemDev ) {
         var data = [];
         var networkSettings = main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
-            var key = intf.interfaceId;
+            var key = systemDev?intf.systemDev:intf.interfaceId;
             
             data.push( [ key, name ] );
         }
-        data.push( [ 250, "OpenVPN" ] );
-        data.push( [ 251, "L2TP" ] );
+        if (systemDev) {
+            data.push( [ "tun0", "OpenVPN" ] );
+            data.push( [ 251, "L2TP" ] );// FIXME 
+        } else {
+            data.push( [ 250, "OpenVPN" ] );
+            data.push( [ 251, "L2TP" ] );
+        }
         
         if (wanMatchers) {
             data.unshift( ["wan",i18n._("Any WAN")] );
@@ -664,6 +669,9 @@ Ung.Util = {
         }
 
         return data;
+    },
+    getInterfaceList: function( wanMatchers, anyMatcher){
+        return Ung.Util.getInterfaceListSystemDev( wanMatchers, anyMatcher, false);
     },
     getInterfaceAddressedList: function() {
         var data = [];
