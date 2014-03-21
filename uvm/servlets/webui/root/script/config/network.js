@@ -966,7 +966,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'staticPrefix',
                     flex: 1,
                     editor : {
-                        xtype: 'textfield',
+                        xtype: 'numberfield',
+                        minValue: 1,
+                        maxValue: 32,
+                        allowDecimals: false,
                         allowBlank: false
                     }
                 }],
@@ -1019,7 +1022,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'staticPrefix',
                     flex: 1,
                     editor : {
-                        xtype: 'textfield',
+                        xtype: 'numberfield',
+                        minValue: 1,
+                        maxValue: 128,
+                        allowDecimals: false,
                         allowBlank: false
                     }
                 }],
