@@ -7060,7 +7060,7 @@ Ext.define('Ung.RuleBuilder', {
             }, this)
         },{
             header: this.settingsCmp.i18n._("Type"),
-            width: 267,
+            width: 305,
             sortable: false,
             menuDisabled: true,
             dataIndex: "name",

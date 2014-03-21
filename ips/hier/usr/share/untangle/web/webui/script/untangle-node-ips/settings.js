@@ -85,13 +85,13 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name: 'Rules',
                     settingsCmp: this,
                     emptyRow: {
-                        "category": this.i18n._("[no category]"),
-                        "name": this.i18n._("[no name]"),
-                        "text": this.i18n._("[no signature]"),
+                        "category": "",
+                        "name": "",
+                        "text": "",
                         "sid": "0",
                         "live": true,
                         "log": true,
-                        "description": this.i18n._("[no description]")
+                        "description": ""
                     },
                     title: this.i18n._("Rules"),
                     recordJavaClass: "com.untangle.node.ips.IpsRule",
@@ -126,6 +126,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         dataIndex: 'category',
                         editor: {
                             xtype:'texfield',
+                            emptyText: this.i18n._("[enter category]"),
                             allowBlank: false
                         }
                     },
@@ -183,6 +184,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Category",
                         dataIndex: "category",
                         fieldLabel: this.i18n._("Category"),
+                        emptyText: this.i18n._("[enter category]"),
                         allowBlank: false,
                         width: 400
                     },
@@ -191,6 +193,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Signature",
                         dataIndex: "text",
                         fieldLabel: this.i18n._("Signature"),
+                        emptyText: this.i18n._("[enter signature]"),
                         allowBlank: false,
                         width: 450
                     },
@@ -199,6 +202,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Name",
                         dataIndex: "name",
                         fieldLabel: this.i18n._("Name"),
+                        emptyText: this.i18n._("[enter name]"),
                         allowBlank: false,
                         width: 300
                     },
@@ -227,6 +231,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Description",
                         dataIndex: "description",
                         fieldLabel: this.i18n._("Description"),
+                        emptyText: this.i18n._("[enter description]"),
                         allowBlank: false,
                         width: 500
                     }]
@@ -236,9 +241,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name: 'Variables',
                     settingsCmp: this,
                     emptyRow: {
-                        "variable": this.i18n._("[no name]"),
-                        "definition": this.i18n._("[no definition]"),
-                        "description": this.i18n._("[no description]")
+                        "variable": "",
+                        "definition": "",
+                        "description": ""
                     },
                     title: this.i18n._("Variables"),
                     recordJavaClass: "com.untangle.node.ips.IpsVariable",
@@ -261,6 +266,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         dataIndex: 'variable',
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter name]"),
                             allowBlank: false
                             }
                         },
@@ -271,6 +277,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         dataIndex: 'definition',
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter definition]"),
                             allowBlank: false
                         }
                     }, {
@@ -280,6 +287,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         flex:1,
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter description]"),
                             allowBlank: false
                         }
                     }],
@@ -290,6 +298,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Name",
                         dataIndex: "variable",
                         fieldLabel: this.i18n._("Name"),
+                        emptyText: this.i18n._("[enter name]"),
                         allowBlank: false,
                         width: 300
                     },
@@ -298,6 +307,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Pass",
                         dataIndex: "definition",
                         fieldLabel: this.i18n._("Pass"),
+                        emptyText: this.i18n._("[enter definition]"),
                         allowBlank: false,
                         width: 400
                     },
@@ -306,6 +316,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: "Description",
                         dataIndex: "description",
                         fieldLabel: this.i18n._("Description"),
+                        emptyText: this.i18n._("[enter description]"),
                         allowBlank: false,
                         width: 400
                     }]

@@ -192,7 +192,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         "ruleId": 0,
                         "enabled": true,
                         "capture": false,
-                        "description": this.i18n._("[no description]"),
+                        "description": "",
                         "javaClass": "com.untangle.node.capture.CaptureRule"
                     },
                     title: this.i18n._("Rules"),
@@ -251,6 +251,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         name: "Description",
                         dataIndex: "description",
                         fieldLabel: this.i18n._("Description"),
+                        emptyText: this.i18n._("[no description]"),
                         width: 500
                     },{
                         xtype:'fieldset',
@@ -326,7 +327,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                     "live": true,
                     "log": false,
                     "address": "0.0.0.0",
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.node.capture.PassedAddress"
                 },
                 title: this.i18n._(title),
@@ -366,6 +367,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         dataIndex: "address",
                         editor:{
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter address]"),
                             allowBlank: false
                         }
                     },
@@ -376,7 +378,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                         dataIndex: "description",
                         editor: {
                             xtype:'textfield',
-                            allowBlank:false
+                            emptyText: this.i18n._("[no description]")
                         }
                     }
                 ],

@@ -67,7 +67,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         "enabled": true,
                         "block": false,
                         "flag": false,
-                        "description": this.i18n._("[no description]"),
+                        "description": "",
                         "javaClass": "com.untangle.node.firewall.FirewallRule"
                     },
                     title: this.i18n._("Rules"),
@@ -134,6 +134,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         name: "Description",
                         dataIndex: "description",
                         fieldLabel: this.i18n._("Description"),
+                        emptyText: this.i18n._("[no description]"),
                         width: 500
                     }, {
                         xtype:'fieldset',
