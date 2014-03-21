@@ -782,6 +782,12 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException( intf1.getName() + " address conflict. " + intf1.getV4StaticAddress().getHostAddress() + " is configured multiple times.");
             }
             addrs.add( intf1.getV4StaticAddress() );
+
+            if (addrs.contains( intf1.getV4StaticGateway() )) {
+                throw new RuntimeException( intf1.getName() + " address conflict. " + intf1.getV4StaticAddress().getHostAddress() + " is configured multiple times.");
+            }
+            addrs.add( intf1.getV4StaticGateway() );
+
             for ( InterfaceSettings.InterfaceAlias alias : intf1.getV4Aliases() ) {
                 if (addrs.contains( alias.getStaticAddress() )) {
                     throw new RuntimeException( intf1.getName() + " address conflict. " + alias.getStaticAddress().getHostAddress() + " is configured multiple times.");
