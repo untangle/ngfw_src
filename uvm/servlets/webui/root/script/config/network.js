@@ -3212,6 +3212,19 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 },{
                     xtype: "checkbox",
+                    hidden: true,
+                    fieldLabel: this.i18n._("Enable Strict ARP mode"),
+                    labelStyle: 'width:150px',
+                    checked: this.settings.strictArpMode,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.strictArpMode = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: "checkbox",
                     fieldLabel: this.i18n._("DHCP Authoritative"),
                     labelStyle: 'width:150px',
                     checked: this.settings.dhcpAuthoritative,
