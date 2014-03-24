@@ -72,12 +72,12 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 paginated: false,
                 dataProperty: "patterns",
                 emptyRow: {
-                    "protocol": this.i18n._("[no protocol]"),
-                    "category": this.i18n._("[no category]"),
+                    "protocol": "",
+                    "category": "",
                     "log": false,
                     "blocked": false,
-                    "description": this.i18n._("[no description]"),
-                    "definition": this.i18n._("[no signature]")
+                    "description": "",
+                    "definition": ""
                 },
                 title: this.i18n._("Signatures"),
                 // the column is autoexpanded if the grid width permits
@@ -127,6 +127,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     dataIndex: 'protocol',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter protocol]"),
                         allowBlank:false
                     }
                 }, 
@@ -136,6 +137,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     dataIndex: 'category',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter category]"),
                         allowBlank:false
                     }
                 }, 
@@ -160,8 +162,8 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     flex: 1,
                     editor:{
                         xtype:'textfield',
-                        allowBlank: false
-                        }
+                        emptyText: this.i18n._("[no description]")
+                    }
                 }],
                 sortField: 'category',
                 columnsDefaultSortable: true,
@@ -171,6 +173,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name: "Protocol",
                     dataIndex: "protocol",
                     fieldLabel: this.i18n._("Protocol"),
+                    emptyText: this.i18n._("[enter protocol]"),
                     allowBlank: false,
                     width: 400
                 }, {
@@ -178,6 +181,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name: "Category",
                     dataIndex: "category",
                     fieldLabel: this.i18n._("Category"),
+                    emptyText: this.i18n._("[enter category]"),
                     allowBlank: false,
                     width: 400
                 }, 
@@ -198,6 +202,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 },
@@ -206,6 +211,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name: "Signature",
                     dataIndex: "definition",
                     fieldLabel: this.i18n._("Signature"),
+                    emptyText: this.i18n._("[enter signature]"),
                     allowBlank: false,
                     width: 400,
                     height: 60

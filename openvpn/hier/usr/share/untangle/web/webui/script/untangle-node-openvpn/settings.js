@@ -172,13 +172,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 style: "padding-bottom: 10px;",
                 name: "gridClientStatus",
                 settingsCmp: this,
-                emptyRow: {
-                    "address": "",
-                    "clientName": "",
-                    "start": "",
-                    "bytesRxTotal": "",
-                    "bytesTxTotal": ""
-                },
                 hasAdd: false,
                 hasEdit: false,
                 hasDelete: false,
@@ -255,12 +248,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 height: 300,
                 name: "gridServerStatus",
                 settingsCmp: this,
-                emptyRow: {
-                    "name": "",
-                    "connected": "",
-                    "bytesRead": "",
-                    "bytesWritten": ""
-                },
                 hasAdd: false,
                 hasEdit: false,
                 hasDelete: false,
@@ -462,7 +449,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
-                    "name": this.i18n._("newServer")
+                    "name": ""
                 },
                 title: this.i18n._("Remote Servers"),
                 recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteServer",
@@ -488,6 +475,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         flex:1,
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter server name]"),
                             allowBlank: false,
                             maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName'
@@ -509,6 +497,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             name: "Server name",
                             dataIndex: "name",
                             fieldLabel: this.i18n._("Server name"),
+                            emptyText: this.i18n._("[enter server name]"),
                             allowBlank: false,
                             maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName',
@@ -617,7 +606,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
-                    "name": this.i18n._("newClient"),
+                    "name": "",
                     "groupId": this.getDefaultGroupId(),
                     "address": null,
                     "export":false,
@@ -653,6 +642,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         flex:1,
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter client name]"),
                             allowBlank: false,
                             maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName'
@@ -701,6 +691,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             name: "Client Name",
                             dataIndex: "name",
                             fieldLabel: this.i18n._("Client Name"),
+                            emptyText: this.i18n._("[enter client name]"),
                             allowBlank: false,
                             maskRe: /[A-Za-z0-9-]/,
                             vtype: 'openvpnClientName',
@@ -776,7 +767,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
-                    "name": this.i18n._("[no name]"),
+                    "name": "",
                     "network": "192.168.1.0/24"
                 },
                 title: this.i18n._("Exported Networks"),
@@ -805,6 +796,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         dataIndex: 'name',
                         editor: {
                             xtype:'textfield',
+                            emptyText: this.i18n._("[enter export name]"),
                             allowBlank: false
                         }
                     }, {
@@ -830,6 +822,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: "Export name",
                     dataIndex: "name",
                     fieldLabel: this.i18n._("Export Name"),
+                    emptyText: this.i18n._("[enter export name]"),
                     allowBlank: false,
                     width: 300
                 }, {
@@ -856,7 +849,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 addAtTop: false,
                 emptyRow: {
                     "groupId": -1,
-                    "name": this.i18n._("[no name]"),
+                    "name": "",
                     "pushDns": false,
                     "fullTunnel": false
                 },
@@ -889,6 +882,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     flex:1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter group name]"),
                         allowBlank:false
                     }
                 },{
@@ -912,6 +906,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: "Group Name",
                     dataIndex: "name",
                     fieldLabel: this.i18n._("Group Name"),
+                    emptyText: this.i18n._("[enter group name]"),
                     allowBlank: false,
                     width: 300
                 }, {

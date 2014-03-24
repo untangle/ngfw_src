@@ -269,7 +269,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         height: 300,
                         emptyRow: {
                             javaClass: "com.untangle.node.reporting.ReportingUser",
-                            emailAddress: "reportrecipient@example.com",
+                            emailAddress: "",
                             emailSummaries: true,
                             onlineAccess: false,
                             password: null,
@@ -298,6 +298,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             editor: {
                                 xtype:'textfield',
                                 vtype: "email",
+                                emptyText: this.i18n._("[enter email address]"),
                                 allowBlank: false,
                                 blankText: this.i18n._("The email address cannot be blank.")
                             },
@@ -320,6 +321,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 xtype:'textfield',
                                 dataIndex: "emailAddress",
                                 fieldLabel: this.i18n._("Email Address (username)"),
+                                emptyText: this.i18n._("[enter email address]"),
                                 allowBlank: false,
                                 blankText: this.i18n._("The email address name cannot be blank."),
                                 width: 300
@@ -656,7 +658,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 emptyRow: {
                     javaClass: "com.untangle.node.reporting.ReportingUser",
                     "address": "1.2.3.4",
-                    "hostname": this.i18n._("[no name]")
+                    "hostname": ""
                 },
                 dataProperty: 'hostnameMap',
                 recordJavaClass: "com.untangle.node.reporting.ReportingHostnameMapEntry",
@@ -675,8 +677,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     width: 200,
                     dataIndex: 'address',
                     editor: {
+                        xtype:'textfield',
                         vtype: 'ipAddress',
-                        xtype:'textfield'
+                        emptyText: this.i18n._("[enter IP address]"),
+                        allowBlank: false
                     }
                 }, {
                     header: this.i18n._("Name"),
@@ -684,7 +688,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     dataIndex: 'hostname',
                     flex:1,
                     editor: {
-                        xtype:'textfield'
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter name]"),
+                        allowBlank: false
                     }
                 }],
                 columnsDefaultSortable: true,
@@ -695,6 +701,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: "Subnet",
                         dataIndex: "address",
                         fieldLabel: this.i18n._("IP Address"),
+                        emptyText: this.i18n._("[enter IP address]"),
                         vtype: 'ipAddress',
                         allowBlank: false,
                         width: 300
@@ -704,6 +711,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: "Name",
                         dataIndex: "hostname",
                         fieldLabel: this.i18n._("Name"),
+                        emptyText: this.i18n._("[enter name]"),
                         allowBlank: false,
                         width: 300
                     }]
