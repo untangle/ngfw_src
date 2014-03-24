@@ -654,7 +654,6 @@ Ung.Util = {
         }
         if (systemDev) {
             data.push( [ "tun0", "OpenVPN" ] );
-            data.push( [ 251, "L2TP" ] );// FIXME 
         } else {
             data.push( [ 250, "OpenVPN" ] );
             data.push( [ 251, "L2TP" ] );
