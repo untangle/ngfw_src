@@ -815,17 +815,21 @@ public class NetworkManagerImpl implements NetworkManager
             }
             addrs.add( intf1.getV4StaticAddress() );
 
-            if (addrs.contains( intf1.getV4StaticGateway() )) {
-                throw new RuntimeException( intf1.getName() + " address conflict. " + intf1.getV4StaticGateway().getHostAddress() + " is configured multiple times.");
-            }
-            addrs.add( intf1.getV4StaticGateway() );
-
             for ( InterfaceSettings.InterfaceAlias alias : intf1.getV4Aliases() ) {
                 if (addrs.contains( alias.getStaticAddress() )) {
                     throw new RuntimeException( intf1.getName() + " address conflict. " + alias.getStaticAddress().getHostAddress() + " is configured multiple times.");
                 }
                 addrs.add( alias.getStaticAddress() );
             }
+
+            if ( intf1.getIsWan() ) {
+                //only check the gateway if its a WAN
+                if (addrs.contains( intf1.getV4StaticGateway() )) {
+                    throw new RuntimeException( intf1.getName() + " address conflict. " + intf1.getV4StaticGateway().getHostAddress() + " is configured multiple times.");
+                }
+                addrs.add( intf1.getV4StaticGateway() );
+            }
+            
         }
 
         // Prevent users from choosing untangle.com (#7574)
