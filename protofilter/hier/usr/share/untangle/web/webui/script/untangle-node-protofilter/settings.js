@@ -27,19 +27,16 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 title: this.i18n._('Status'),
                 cls: 'ung-panel',
                 autoScroll: true,
-                defaults: {
-                    xtype: 'fieldset',
-                    buttonAlign: 'left'
-                },
                 items: [{
+                    xtype: 'fieldset',
                     title: this.i18n._('Status'),
                     cls: 'description',
                     html: Ext.String.format(this.i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
                 }, {
-                    title: this.i18n._(' '),
-                    labelWidth: 230,
+                    xtype: 'fieldset',
                     defaults: {
                         xtype: "textfield",
+                        labelWidth: 200,
                         disabled: true
                     },
                     items: [{
@@ -56,6 +53,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                         value: this.getRpcNode().getPatternsBlocked()
                     }]
                 }, {
+                    xtype: 'fieldset',
                     title: this.i18n._('Note'),
                     cls: 'description',
                     html: Ext.String.format(this.i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))

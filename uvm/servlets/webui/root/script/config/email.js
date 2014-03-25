@@ -434,7 +434,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                    }, this),
                                    animEl: 'elId',
                                    icon: Ext.MessageBox.QUESTION
-                                });                                
+                                });
                             } else {
                                 this.panelOutgoingServer.onEmailTest();
                             }
@@ -469,7 +469,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasEdit: false,
                 settingsCmp: this,
                 paginated: false,
-                anchor: "100% 48%",
+                flex: 1,
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "emailAddress": this.i18n._("[no email address]")
@@ -511,7 +511,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasDelete: false,
                 settingsCmp: this,
                 paginated: false,
-                anchor: "100% 48%",
+                flex: 1,
                 dataFn: this.getSafelistAdminView().getUserSafelistCounts,
                 /*testData: [
                     {id: 5, emailAddress: "aaa@aaa.com", count: 353},
@@ -600,7 +600,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 helpSource: 'email_safe_list',
                 parentId: this.getId(),
                 title: this.i18n._('Safe List'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [this.gridSafelistGlobal, this.gridSafelistUser]
             });

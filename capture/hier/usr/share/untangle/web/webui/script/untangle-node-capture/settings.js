@@ -66,13 +66,13 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 name: 'Status',
                 parentId: this.getId(),
                 title: this.i18n._('Status'),
-                layout: "anchor",
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Status'),
-                    height: 50,
+                    flex: 0,
                     html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
                  }]
             });
@@ -82,7 +82,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
 
         buildGridCaptiveStatus: function() {
             this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
-                anchor: '100% -90',
+                flex: 1,
                 name: "gridCaptiveStatus",
                 settingsCmp: this,
                 parentId: this.getId(),
@@ -173,16 +173,16 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 helpSource: 'captive_portal_capture_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Capture Rules'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Capture Rules'),
-                    height: 50,
+                    flex: 0,
                     html: this.i18n._("Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.")
                 },  this.gridCaptureRules= Ext.create('Ung.EditorGrid',{
-                    anchor: '100% -80',
+                    flex: 1,
                     name: 'Rules',
                     settingsCmp: this,
                     paginated: false,
@@ -302,15 +302,14 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._("Passed Hosts"),
-                layout: "anchor",
-                autoScroll: true,
+                layout: { type: 'vbox', align: 'stretch' },
                 border: false,
                 cls: "ung-panel",
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Passed Hosts'),
-                    height: 50,
+                    flex: 0,
                     html: this.i18n._("The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.")
                 }, this.gridPassedClients, this.gridPassedServers ]
             });
@@ -322,7 +321,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 tooltip: tooltip,
                 settingsCmp: this,
                 hasEdit: false,
-                anchor: "100% 45%",
+                flex: 1,
                 emptyRow: {
                     "live": true,
                     "log": false,

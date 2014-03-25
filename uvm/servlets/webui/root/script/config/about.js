@@ -102,18 +102,19 @@ if (!Ung.hasResource["Ung.About"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Licenses'),
                 cls: 'ung-panel',
-                layout: "anchor",
+                layout: { type: 'vbox', align: 'stretch' },
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Licenses'),
+                    flex: 0,
                     html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')
                  }, this.gridLicenses]
            });
         },
         buildGridLicenses: function() {
             this.gridLicenses = Ext.create('Ung.EditorGrid',{
-                anchor: '100% -60',
+                flex: 1,
                 name: "gridLicenses",
                 settingsCmp: this,
                 parentId: this.getId(),

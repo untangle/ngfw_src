@@ -2021,6 +2021,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Hostname'),
                 layout: 'anchor',
                 cls: 'ung-panel',
+                autoScroll: true,
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
@@ -2153,6 +2154,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Services'),
                 layout: 'anchor',
                 cls: 'ung-panel',
+                autoScroll: true,
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
@@ -3109,6 +3111,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Routes'),
                 autoScroll: true,
                 layout: "anchor",
+                reserveScrollbar: true,
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
@@ -3870,7 +3873,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // Filter Panel
         buildFilter: function() {
             this.gridForwardFilterRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% 48%',
+                flex: 2,
                 name: 'Forward Filter Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -3935,7 +3938,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: false
             });
             this.gridInputFilterRules = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% 48%',
+                flex: 3,
                 name: 'Input Filter Rules',
                 settingsCmp: this,
                 paginated: false,
@@ -4009,7 +4012,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_filter_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Filter Rules'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [this.gridForwardFilterRules, this.gridInputFilterRules]
             });
@@ -4462,6 +4465,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 name: 'Network Cards',
                 parentId: this.getId(),
                 settingsCmp: this,
+                header: false,
                 paginated: false,
                 hasAdd: false,
                 hasDelete: false,
@@ -4516,8 +4520,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_troubleshooting',
                 parentId: this.getId(),
                 title: this.i18n._('Troubleshooting'),
-                layout: 'anchor',
                 cls: 'ung-panel',
+                autoScroll: true,
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',

@@ -362,7 +362,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  },{
                                      xtype: 'numberfield',
                                      fieldLabel: this.i18n._('CPU Load Limit'),
-                                     labelStyle: 'width:130px',
+                                     labelWidth: 150,
                                      name: 'SMTP CPU Load Limit',
                                      value: this.settings.smtpConfig.loadLimit,
                                      allowDecimals: true,
@@ -381,7 +381,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  },{
                                      xtype: 'numberfield',
                                      fieldLabel: this.i18n._('Concurrent Scan Limit'),
-                                     labelStyle: 'width:130px',
+                                     labelWidth: 150,
                                      name: 'SMTP Concurrent Scan Limit',
                                      value: this.settings.smtpConfig.scanLimit,
                                      allowDecimals: false,
@@ -400,7 +400,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  },{
                                      xtype: 'numberfield',
                                      fieldLabel: this.i18n._('Message Size Limit'),
-                                     labelStyle: 'width:130px',
+                                     labelWidth: 150,
                                      name: 'SMTP Message Size Limit',
                                      value: this.settings.smtpConfig.msgSizeLimit,
                                      allowDecimals: false,

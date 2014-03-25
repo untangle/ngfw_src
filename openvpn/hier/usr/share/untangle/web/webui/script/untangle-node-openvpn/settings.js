@@ -168,7 +168,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         // active connections/sessions grip
         buildClientStatusGrid: function() {
             this.gridClientStatus = Ext.create('Ung.EditorGrid', {
-                height: 300,
+                flex: 1,
                 style: "padding-bottom: 10px;",
                 name: "gridClientStatus",
                 settingsCmp: this,
@@ -245,7 +245,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         // active connections/sessions grip
         buildServerStatusGrid: function() {
             this.gridServerStatus = Ext.create('Ung.EditorGrid', {
-                height: 300,
+                flex: 1,
                 name: "gridServerStatus",
                 settingsCmp: this,
                 hasAdd: false,
@@ -319,7 +319,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 helpSource: 'openvpn_status',
                 title: this.i18n._("Status"),
                 parentId: this.getId(),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 isDirty: function() {
                     return false;
@@ -328,11 +328,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Status'),
-                    items: [{
-                        html: "<i>" + statusDescription + "</i>",
-                        cls: 'description',
-                        border: false
-                    }]
+                    flex: 0,
+                    html: "<i>" + statusDescription + "</i>",
                 }, this.gridClientStatus, this.gridServerStatus]
             });
         },
@@ -445,7 +442,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: 'Remote Servers',
                 sortable: true,
                 paginated: false,
-                anchor: "100% 40%",
+                flex: 1,
                 style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
@@ -517,7 +514,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 border: false,
                 xtype: 'fieldset',
                 cls: 'description',
+                flex: 0,
                 items: [{
+                        xtype: 'container',
                         html: "<i>" + this.i18n._("Configure a new Remote Server connection") + "</i>",
                         cls: 'description',
                         border: false
@@ -569,17 +568,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 parentId: this.getId(),
                 title: this.i18n._('Client'),
                 helpSource: 'openvpn_client',
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
+                    flex: 0,
                     title: this.i18n._('Client'),
                     items: [{
+                        xtype: 'container',
                         html: "<i>" + this.i18n._("These settings configure how OpenVPN will connect to remote servers as a client.") + "</i>",
                         cls: 'description',
                         border: false
                     }, {
+                        xtype: 'container',
                         html: "<i>" + this.i18n._("Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>",
                         cls: 'description',
                         border: false
@@ -602,8 +604,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name: 'Remote Clients',
                 sortable: true,
                 paginated: false,
-                anchor: "100% 75%",
-                style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
                     "name": "",
@@ -763,8 +763,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // the total records is set from the base settings
                 sortable: true,
                 paginated: false,
-                anchor: "100% 75%",
-                style: "margin-bottom:10px;",
                 emptyRow: {
                     "enabled": true,
                     "name": "",
@@ -844,8 +842,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // the total records is set from the base settings
                 sortable: true,
                 paginated: false,
-                anchor: "100% 75%",
-                style: "margin-bottom:10px;",
                 addAtTop: false,
                 emptyRow: {
                     "groupId": -1,
@@ -1025,8 +1021,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 activeTab: 0,
                 deferredRender: false,
                 parentId: this.getId(),
-                height: 500,
                 flex: 1,
+                style: "margin: 0px 20px 5px 20px",
                 items: [ this.gridRemoteClients, this.gridGroups, this.gridExports ]
             });
 
@@ -1061,27 +1057,20 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 helpSource: 'openvpn_server',
                 title: this.i18n._("Server"),
                 parentId: this.getId(),
-
-                layout: "anchor",
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
-                autoScroll: true,
-                defaults: {
-                    anchor:"98%",
-                    xtype: 'fieldset',
-                    buttonAlign: 'left'
-                },
                 items: [{
                     xtype: 'fieldset',
                     cls: 'description',
                     title: this.i18n._('Server'),
+                    flex: 0,
                     items: [{
+                        xtype: 'container',
                         html: "<i>" + this.i18n._("These settings configure how OpenVPN will be a server for remote clients.") + "</i>",
                         cls: 'description',
+                        style: "margin-bottom:10px;",
                         border: false
-                    }]
-                }, {
-                    xtype: 'fieldset',
-                    items: [{
+                    }, {
                         xtype: 'textfield',
                         labelWidth: 160,
                         labelAlign:'left',
@@ -1148,7 +1137,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         hidden: true, /* HIDDEN */
                         labelWidth: 160,
                         labelAlign:'left',
-                        width:300,
+                        width: 300,
                         fieldLabel: this.i18n._('Port'),
                         name: 'Port',
                         value: this.getSettings().port,
@@ -1167,7 +1156,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         hidden: true, /* HIDDEN */
                         labelWidth: 160,
                         labelAlign:'left',
-                        width:300,
+                        width: 300,
                         fieldLabel: this.i18n._('Protocol'),
                         name: 'Protocol',
                         value: this.getSettings().protocol,
@@ -1204,7 +1193,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype: 'textfield',
                         labelWidth: 160,
                         labelAlign:'left',
-                        width:300,
+                        width: 300,
                         fieldLabel: this.i18n._('Address Space'),
                         name: 'Address Space',
                         value: this.getSettings().addressSpace,
@@ -1232,8 +1221,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }, this)
                             }
                         }
-                    }, this.tabPanel]
-                }]
+                    }]
+                }, this.tabPanel]
             });
         },
 

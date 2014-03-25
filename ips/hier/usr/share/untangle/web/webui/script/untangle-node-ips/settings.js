@@ -75,12 +75,11 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 helpSource: 'intrusion_prevention_rules',
                 parentId: this.getId(),
                 title: this.i18n._('Rules'),
-                autoScroll: true,
                 border: false,
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [this.gridRules = Ext.create('Ung.EditorGrid', {
-                    anchor: "100% 48%",
+                    flex: 1,
                     style: "margin-bottom:10px;",
                     name: 'Rules',
                     settingsCmp: this,
@@ -237,7 +236,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     }]
                 }),
                 this.gridVariables = Ext.create('Ung.EditorGrid', {
-                    anchor: "100% 48%",
+                    flex: 1,
                     name: 'Variables',
                     settingsCmp: this,
                     emptyRow: {

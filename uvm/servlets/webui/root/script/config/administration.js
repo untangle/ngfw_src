@@ -170,7 +170,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
 
             this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
-                anchor: "100% -260",
+                flex: 1,
                 settingsCmp: this,
                 title: this.i18n._("Admin Accounts"),
                 bodyStyle: 'padding-bottom:30px;',
@@ -312,7 +312,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 // private fields
                 parentId: this.getId(),
                 title: this.i18n._('Admin'),
-                layout: "anchor",
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [
                     this.gridAdminAccounts, {

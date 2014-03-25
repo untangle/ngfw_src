@@ -35,19 +35,17 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 title: this.i18n._('Status'),
                 name: 'Status',
                 helpSource: 'reports_status',
-                // layout: "form",
                 autoScroll: true,
                 cls: 'ung-panel',
                 items: [{
                     title: this.i18n._('Status'),
                     xtype: 'fieldset',
                     items: [{
+                        xtype: 'panel',
                         html: this.i18n._('Reports are automatically generated each night.') + "<br/>",
                         cls: 'description',
-                        border: false
-                    }, {
                         buttonAlign: 'center',
-                        footer: false,
+                        margin: '0 0 10 0',
                         border: false,
                         buttons: [{
                             xtype: 'button',
@@ -60,13 +58,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }, this)
                         }]
                     }, {
+                        xtype: 'panel',
                         html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
                             "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Real-time report generation may cause network slowness."),
                         cls: 'description',
-                        border: false
-                    }, {
                         buttonAlign: 'center',
-                        footer: false,
                         border: false,
                         buttons: [{
                             xtype: 'button',
