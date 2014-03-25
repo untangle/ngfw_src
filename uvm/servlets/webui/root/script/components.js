@@ -901,6 +901,7 @@ Ung.Util = {
         return map;
     },
     maxRowCount: 2147483647,
+    hideDangerous: true,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
     portFieldWidth: 70,

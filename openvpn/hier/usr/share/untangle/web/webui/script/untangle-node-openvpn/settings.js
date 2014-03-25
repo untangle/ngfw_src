@@ -1119,7 +1119,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'checkbox',
-                        hidden: true, /* HIDDEN */
+                        hidden: Ung.Util.hideDangerous,
                         labelWidth: 160,
                         name: 'Client To Client',
                         fieldLabel: this.i18n._('Client To Client Allowed'),
@@ -1133,8 +1133,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             }
                         }
                     }, {
-                        xtype: 'textfield',
-                        hidden: true, /* HIDDEN */
+                        xtype: 'numberfield',
+                        hidden: Ung.Util.hideDangerous,
                         labelWidth: 160,
                         labelAlign:'left',
                         width: 300,
@@ -1153,7 +1153,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'textfield',
-                        hidden: true, /* HIDDEN */
+                        hidden: Ung.Util.hideDangerous,
                         labelWidth: 160,
                         labelAlign:'left',
                         width: 300,
@@ -1162,7 +1162,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         value: this.getSettings().protocol,
                         id: 'openvpn_options_protocol',
                         allowBlank: false,
-                        vtype: "port",
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -1172,7 +1171,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'textfield',
-                        hidden: true, /* HIDDEN */
+                        hidden: Ung.Util.hideDangerous,
                         labelWidth: 160,
                         labelAlign:'left',
                         width:300,
@@ -1181,7 +1180,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         value: this.getSettings().cipher,
                         id: 'openvpn_options_cipher',
                         allowBlank: false,
-                        vtype: "port",
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -1209,7 +1207,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, {
                         xtype: 'checkbox',
-                        hidden: true, /* HIDDEN */
+                        hidden: Ung.Util.hideDangerous,
                         labelWidth: 160,
                         name: "NAT OpenVPN Traffic",
                         fieldLabel: this.i18n._("NAT All OpenVPN Traffic"),

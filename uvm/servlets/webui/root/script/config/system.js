@@ -536,6 +536,53 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }, this)
                             }
                         }
+                    },{
+                        xtype : "numberfield",
+                        hidden: Ung.Util.hideDangerous,
+                        fieldLabel : this.i18n._("SMTP timeout (seconds)"),
+                        name : "SMTP timeout",
+                        id: "system_protocolSettings_smtpTimeout",
+                        value : this.getSmtpNodeSettings().smtpTimeout/1000,
+                        width: 250,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,                        
+                        maxValue: 86400,
+                        listeners : {
+                            "change" : {
+                                fn : Ext.bind(function(elem, newValue) {
+                                    this.getSmtpNodeSettings().smtpTimeout = newValue*1000;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype : "radio",
+                        hidden: Ung.Util.hideDangerous,
+                        boxLabel : this.i18n._("Allow TLS encryption over SMTP."),
+                        hideLabel : true,
+                        name : "AllowTLS",
+                        checked : this.getSmtpNodeSettings().smtpAllowTLS,
+                        listeners : {
+                            "check" : {
+                                fn : Ext.bind(function(elem, checked) {
+                                    this.getSmtpNodeSettings().smtpAllowTLS = checked;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype : "radio",
+                        hidden: Ung.Util.hideDangerous,
+                        boxLabel : this.i18n._("Stop TLS encryption over SMTP."),
+                        hideLabel : true,
+                        name : "AllowTLS",
+                        checked : !this.getSmtpNodeSettings().smtpAllowTLS,
+                        listeners : {
+                            "check" : {
+                                fn : Ext.bind(function(elem, checked) {
+                                    this.getSmtpNodeSettings().smtpAllowTLS = !checked;
+                                }, this)
+                            }
+                        }
                     }]
                 });
             }

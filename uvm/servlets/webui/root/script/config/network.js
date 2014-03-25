@@ -3215,7 +3215,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     }
                 },{
                     xtype: "checkbox",
-                    hidden: true,
+                    hidden: Ung.Util.hideDangerous,
                     fieldLabel: this.i18n._("Enable Strict ARP mode"),
                     labelStyle: 'width:150px',
                     checked: this.settings.strictArpMode,
