@@ -58,14 +58,20 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
         return errlog(ERR_CRITICAL,"mailbox_init\n");
     }
     
-    /* client*/
-    netcap_sess->client_sock = client_sock;
-
-    /* server */
-    netcap_sess->server_sock = server_sock;
-
     netcap_sess->protocol = IPPROTO_TCP;
 
+    netcap_sess->client_sock = client_sock;
+    netcap_sess->server_sock = server_sock;
+
+    netcap_sess->nat_info.original.src_address = c_client_addr;
+    netcap_sess->nat_info.original.src_protocol_id = htons(c_client_port);
+    netcap_sess->nat_info.original.dst_address = c_server_addr;
+    netcap_sess->nat_info.original.dst_protocol_id = htons(c_server_port);
+    netcap_sess->nat_info.reply.dst_address = s_client_addr;
+    netcap_sess->nat_info.reply.dst_protocol_id = htons(s_client_port);
+    netcap_sess->nat_info.reply.src_address = s_server_addr;
+    netcap_sess->nat_info.reply.src_protocol_id = htons(s_server_port);
+    
     if (netcap_sess->client_sock > 0) {
         netcap_sess->cli_state = CONN_STATE_COMPLETE;
     } else {
@@ -190,7 +196,6 @@ int netcap_tcp_session_raze(int if_lock, netcap_session_t* netcap_sess)
 
     return err;
 }
-
 
 int netcap_tcp_session_close(netcap_session_t* netcap_sess)
 {
