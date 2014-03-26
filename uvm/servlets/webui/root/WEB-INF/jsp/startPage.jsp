@@ -26,12 +26,13 @@
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
-
+<%--
 <c:if test="${param['expert']==1}">
     <script type="text/javascript">
         Ung.Util.hideDangerous = false;
      </script>
 </c:if>
+--%>
 
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
