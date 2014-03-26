@@ -81,24 +81,14 @@ CREATE TABLE reports.openvpn_stats (
     rx_bytes bigint,
     tx_bytes bigint,
     remote_address inet,
+    pool_address inet,
     remote_port integer,
     client_name text,
     event_id bigserial
 )""")
 
-        sql_helper.add_column('reports', 'openvpn_stats', 'event_id', 'bigserial')
-        sql_helper.add_column('reports', 'openvpn_stats', 'start_time', 'timestamp without time zone')
-        sql_helper.add_column('reports', 'openvpn_stats', 'end_time', 'timestamp without time zone')
-        sql_helper.add_column('reports', 'openvpn_stats', 'remote_address', 'inet')
-        sql_helper.add_column('reports', 'openvpn_stats', 'remote_port', 'integer')
-        sql_helper.add_column('reports', 'openvpn_stats', 'client_name', 'text')
+        sql_helper.add_column('reports', 'openvpn_stats', 'pool_address', 'inet')
         
-        # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","openvpn_stats","event_id","integer","bigint");
-
-        # drop obsolete column
-        sql_helper.drop_column("reports","openvpn_stats","seconds")
-
         sql_helper.create_index("reports","openvpn_stats","event_id");
         sql_helper.create_index("reports","openvpn_stats","time_stamp");
 

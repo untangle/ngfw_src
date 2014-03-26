@@ -329,7 +329,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description',
                     title: this.i18n._('Status'),
                     flex: 0,
-                    html: "<i>" + statusDescription + "</i>",
+                    html: "<i>" + statusDescription + "</i>"
                 }, this.gridClientStatus, this.gridServerStatus]
             });
         },
@@ -352,6 +352,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name: 'client_name'
                 }, {
                     name: 'remote_address',
+                    sortType: Ung.SortTypes.asIp
+                }, {
+                    name: 'pool_address',
                     sortType: Ung.SortTypes.asIp
                 }, {
                     name: 'tx_bytes',
@@ -390,6 +393,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header: this.i18n._("Client Address"),
                     sortable: true,
                     dataIndex: 'remote_address'
+                }, {
+                    header: this.i18n._("Pool Address"),
+                    sortable: true,
+                    dataIndex: 'pool_address'
                 }, {
                     header: this.i18n._("KB Sent"),
                     width: 80,
