@@ -432,9 +432,6 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
                                        s_srv_addr, s_srv_port,
                                        cli_intf, srv_intf,
                                        syn->nfmark );
-    if ( sess == NULL ) {
-        return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
-    }
 
     /**
      * First, put the SYN into the session mailbox.
@@ -459,8 +456,13 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
      */
     tcp_msg_t* msg;
 
+    if ( netcap_sess == NULL ) {
+        debug( 2, "TCP: (%"PRIu64") Dropping SYN (Connection not found)\n", netcap_sess->session_id );
+        return netcap_pkt_action_raze( syn, NF_DROP );
+    }
+    
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE ) {
-        errlog( ERR_WARNING, "TCP: (%"PRIu64") Dropping SYN (Connection already complete)\n", netcap_sess->session_id );
+        debug( 2, "TCP: (%"PRIu64") Dropping SYN (Connection already complete)\n", netcap_sess->session_id );
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
 
@@ -577,8 +579,8 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                           
     
 #if 0
-    debug(2,"LOOKUP: (%s:%i ->",unet_next_inet_ntoa(cli_addr),cli_port);
-    debug_nodate(2," %s:%i) -> ",unet_next_inet_ntoa(srv_addr),srv_port);
+    debug(2,"LOOKUP: (%s:%i ->",unet_next_inet_ntoa(c_cli_addr),c_cli_port);
+    debug_nodate(2," %s:%i) -> ",unet_next_inet_ntoa(s_srv_addr),s_srv_port);
     if (sess)
         debug_nodate(2,"FOUND\n");
     else

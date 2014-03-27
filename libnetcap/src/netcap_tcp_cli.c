@@ -133,7 +133,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
     netcap_tcp_msg_raze( msg );
     msg = NULL;
 
-    debug( 6, "TCP: (%"PRIu64") Released SYN :: %s\n", netcap_sess->session_id, netcap_session_cli_tuple_print(netcap_sess));
+    debug( 4, "TCP: (%"PRIu64") Released SYN :: %s\n", netcap_sess->session_id, netcap_session_cli_tuple_print(netcap_sess));
     
     /* 
      * To test the ACCEPT_MSG replacement, do the following:
