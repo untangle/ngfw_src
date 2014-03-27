@@ -601,7 +601,8 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                       s_srv_addr, s_srv_port,                                      
                                       -1, -1,
                                       cli_intf, srv_intf );
-    sess->initial_mark = nfmark;
+
+    sess->initial_mark = nfmark & 0x0000ff00;
     
     if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, sess, IPPROTO_TCP,
                                         c_cli_addr, c_srv_addr,
