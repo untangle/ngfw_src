@@ -84,20 +84,10 @@ public class FirewallImpl extends NodeBase implements Firewall
                 return matchedRule.getBlock();
             }
         };
-
-    /**
-     * nodeInstanceCount stores the number of this node type initialized thus far
-     * nodeInstanceNum stores the number of this given node type
-     * This is done so each node of this type has a unique sequential identifier
-     */
-    private static int nodeInstanceCount = 0;
-    private final int  nodeInstanceNum;
     
     public FirewallImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
-
-        synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
 
         this.handler = new EventHandler(this);
 
@@ -307,11 +297,11 @@ public class FirewallImpl extends NodeBase implements Firewall
     {
         /**
          * set the new ID of each rule
-         * We use 1000*nodeInstanceNum as a starting point so rule IDs don't overlap with other firewall
+         * We use 100,000 * nodeId as a starting point so rule IDs don't overlap with other firewall
          *
          * Also set flag to true if rule is blocked
          */
-        int idx = (this.nodeInstanceNum * 1000);
+        int idx = this.getNodeSettings().getPolicyId().intValue() * 100000;
         for (FirewallRule rule : newSettings.getRules()) {
             rule.setRuleId(++idx);
 

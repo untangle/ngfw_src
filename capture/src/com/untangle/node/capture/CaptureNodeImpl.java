@@ -91,21 +91,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private EventLogQuery passEventQuery;
     private EventLogQuery captureEventQuery;
 
-    /**
-     * nodeInstanceCount stores the number of this node type initialized thus
-     * far nodeInstanceNum stores the number of this given node type This is
-     * done so each node of this type has a unique sequential identifier
-     */
-    private static int nodeInstanceCount = 0;
-    private final int nodeInstanceNum;
-
 // THIS IS FOR ECLIPSE - @formatter:off
 
     public CaptureNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
-
-        synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
@@ -314,7 +304,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private void saveNodeSettings(CaptureSettings argSettings)
     {
         // set a unique id for each capture rule
-        int idx = (this.nodeInstanceNum * 1000);
+        int idx = this.getNodeSettings().getPolicyId().intValue() * 100000;
         for (CaptureRule rule : argSettings.getCaptureRules())
             rule.setId(++idx);
 
