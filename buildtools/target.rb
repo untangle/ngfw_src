@@ -408,7 +408,8 @@ class JsLintTarget < Target
 
   def build()
     info "[jslint  ] #{@filename}"
-    Kernel.system("#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}")
+    command = "#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}"
+    raise "jslint failed" unless Kernel.system command
   end
 end
 
