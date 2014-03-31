@@ -660,9 +660,7 @@ public class OpenVpnManager
             iptablesScript.write("# Handle admin from tun0 (openvpn server)" + "\n");
             iptablesScript.write("if [ ! -z \"$ADDR\" ] ; then " + "\n");
             iptablesScript.write("\t${IPTABLES} -t nat -I port-forward-rules -p tcp -d $ADDR --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send to apache\" \n");
-            iptablesScript.write("\t${IPTABLES} -t nat -A port-forward-rules -p tcp -d $ADDR --destination-port 443 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" \n");
             iptablesScript.write("\t${IPTABLES} -t nat -I port-forward-rules -p tcp -d $ADDR --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" \n");
-            iptablesScript.write("\t${IPTABLES} -t nat -A port-forward-rules -p tcp -d $ADDR --destination-port 80 -j REDIRECT --to-ports 0 -m comment --comment \"Drop local HTTPS traffic that hasn't been handled earlier in chain\" \n");
             iptablesScript.write("fi" + "\n");
             iptablesScript.write("\n");
 
