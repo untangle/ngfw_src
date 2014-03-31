@@ -700,17 +700,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 Ung.Util.rpcExHandler(e);
             }
 
-            addressCount = 0;
             addressList = "";
+            addressList += hostName;
 
             for( x = 0 ; x < netSettings.interfaces.list.length ; x++)
             {
                 var intfSettings = netSettings.interfaces.list[x];
                 if (intfSettings.v4StaticAddress === null) { continue; }
                 if (intfSettings.v4StaticPrefix === null) { continue; }
-                if (addressCount != 0) addressList += ",";
+                addressList += ",";
                 addressList += intfSettings.v4StaticAddress;
-                addressCount++;
             }
 
             this.certGeneratorWindow = new Ext.Window({
