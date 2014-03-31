@@ -41,10 +41,10 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         '-'
                 ],
                 emptyRow: {
-                    "username": this.i18n._('[login]'),
-                    "firstName": this.i18n._('[firstName]'),
-                    "lastName": this.i18n._('[lastName]'),
-                    "email": this.i18n._('[email@example.com]'),
+                    "username": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "email": "",
                     "password": "",
                     "expirationTime": 0,
                     "javaClass": "com.untangle.uvm.LocalDirectoryUser"
@@ -80,6 +80,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     editor: {
                         xtype: 'textfield',
                         allowBlank: false,
+                        emptyText: this.i18n._('[enter login]'),
                         regex: /^[\w ]+$/,
                         regexText: this.i18n._("The field user/login ID can have only alphanumeric characters.")
                     }
@@ -89,6 +90,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     dataIndex: 'firstName',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._('[enter first name]'),
                         allowBlank: false
                     }
                 }, {
@@ -96,7 +98,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     width: 120,
                     dataIndex: 'lastName',
                     editor: {
-                        xtype: 'textfield'
+                        xtype: 'textfield',
+                        emptyText: this.i18n._('[last name]')
                     }                    
                 }, {
                     header: this.i18n._("email address"),
@@ -105,6 +108,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     flex:1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._('[email address]'),
                         vtype: 'email'
                     }
                 }, {
@@ -113,7 +117,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     dataIndex: 'password',
                     editor: {
                         xtype:'textfield',
-                        inputType:'password'
+                        inputType:'password',
+                        allowBlank: false
                     },
                     renderer: function(value, metadata, record) {
                         var result = "";
@@ -143,6 +148,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "User/Login ID",
                     dataIndex: "username",
                     fieldLabel: this.i18n._("User/Login ID"),
+                    emptyText: this.i18n._('[enter login]'),
                     allowBlank: false,
                     regex: /^[\w ]+$/,
                     regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
@@ -153,6 +159,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "First Name",
                     dataIndex: "firstName",
                     fieldLabel: this.i18n._("First Name"),
+                    emptyText: this.i18n._('[enter first name]'),
                     allowBlank: false,
                     width: 300
                 },
@@ -161,6 +168,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "Last Name",
                     dataIndex: "lastName",
                     fieldLabel: this.i18n._("Last Name"),
+                    emptyText: this.i18n._('[last name]'),
                     width: 300
                 },
                 {
@@ -168,6 +176,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "Email Address",
                     dataIndex: "email",
                     fieldLabel: this.i18n._("Email Address"),
+                    emptyText: this.i18n._('[email address]'),
                     vtype: 'email',
                     width: 300
                 },
@@ -177,6 +186,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: "Password",
                     dataIndex: "password",
                     fieldLabel: this.i18n._("Password"),
+                    allowBlank: false,
                     width: 300
                 },
                 {

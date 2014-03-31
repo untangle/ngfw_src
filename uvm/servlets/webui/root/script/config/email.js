@@ -212,6 +212,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         validateOnBlur: true,
                                         allowBlank: false,
                                         fieldLabel: this.i18n._('Email Address'),
+                                        emptyText: this.i18n._("[enter email]"),
                                         width: 380
                                     },{
                                         xtype: 'label',
@@ -392,6 +393,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype: 'textfield',
                         name: 'Email From Address',
                         id: 'email_fromAddress',
+                        emptyText: this.i18n._("[enter email]"),
                         vtype: 'email',
                         hideLabel: true,
                         allowBlank: false,
@@ -472,7 +474,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 flex: 1,
                 style: "margin-bottom:10px;",
                 emptyRow: {
-                    "emailAddress": this.i18n._("[no email address]")
+                    "emailAddress": ""
                 },
                 fields: [{
                     name: 'emailAddress'
@@ -490,8 +492,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name: "Email Address",
                     dataIndex: "emailAddress",
                     fieldLabel: this.i18n._("Email Address"),
+                    emptyText: this.i18n._("[enter email]"),
+                    vtype: 'email',
                     allowBlank: false,
-                    width: 300
+                    width: 400
                 }],
                 dataRoot: '',
                 dataFn: Ext.bind(function() { 
@@ -899,8 +903,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     height: 250,
                     paginated: false,
                     emptyRow: {
-                        "address": "email@example.com",
-                        "javaClass": "com.untangle.node.smtp.EmailAddressRule"
+                        "address": ""
                     },
                     recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
                     dataFn: Ext.bind(function() { 
@@ -915,7 +918,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         width: 400,
                         dataIndex: 'address',
                         editor: {
-                            xtype: 'textfield'
+                            xtype: 'textfield',
+                            emptyText: this.i18n._("[enter email address rule]"),
+                            allowBlank: false
                         }
                     }],
                     rowEditorInputLines: [{
@@ -923,12 +928,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name: "Address",
                         dataIndex: "address",
                         fieldLabel: this.i18n._("Address"),
+                        emptyText: this.i18n._("[enter email address rule]"),
                         allowBlank: false,
                         width: 450
                     }]
                 }), {
                     xtype: 'container',
-                    style: 'margin: 20px 0 5px 0',                    
+                    style: 'margin: 20px 0 5px 0',
                     border: false,
                     html: this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
                 },
@@ -939,9 +945,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     height: 250,
                     paginated: false,
                     emptyRow: {
-                        "address1": this.i18n._("distributionlistrecipient@example.com"),
-                        "address2": this.i18n._("quarantinelistowner@example.com"),
-                        "javaClass": "com.untangle.node.smtp.EmailAddressPairRule"
+                        "address1": "",
+                        "address2": ""
                     },
                     recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
                     dataFn: Ext.bind( function() { 
@@ -958,7 +963,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         width: 250,
                         dataIndex: 'address1',
                         editor: {
-                            xtype: 'textfield'
+                            xtype: 'textfield',
+                            emptyText: this.i18n._("distributionlistrecipient@example.com")
                         }
                     }, 
                     {
@@ -967,7 +973,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         dataIndex: 'address2',
                         flex:1,
                         editor: {
-                            xtype: 'textfield'
+                            xtype: 'textfield',
+                            emptyText: this.i18n._("quarantinelistowner@example.com")
                         }
                     }],
                     rowEditorLabelWidth: 160,
@@ -976,6 +983,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name: "Distribution List Address",
                         dataIndex: "address1",
                         fieldLabel: this.i18n._("Distribution List Address"),
+                        emptyText: this.i18n._("distributionlistrecipient@example.com"),
                         width: 450
                     },
                     {
@@ -983,6 +991,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name: "Send To Address",
                         dataIndex: "address2",
                         fieldLabel: this.i18n._("Send To Address"),
+                        emptyText: this.i18n._("quarantinelistowner@example.com"),
                         width: 450
                     }]
                 })]

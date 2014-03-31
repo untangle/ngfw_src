@@ -871,7 +871,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 emptyRow: {
                     "ruleId": -1,
                     "enabled": true,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "multiplier": -1,
                     "javaClass": "com.untangle.node.shield.ShieldRule"
                 },
@@ -909,7 +909,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }, {
                     header: this.i18n._("User Count"),
@@ -932,6 +932,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 }, {
                     xtype:'textfield',
                     dataIndex: "description",
+                    emptyText: this.i18n._("[no description]"),
                     fieldLabel: this.i18n._("Description"),
                     width: 500
                 }, {

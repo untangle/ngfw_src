@@ -179,9 +179,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name: 'gridAdminAccounts',
                 recordJavaClass: "com.untangle.uvm.AdminUserSettings",
                 emptyRow: {
-                    "username": this.i18n._("[no username]"),
-                    "description": this.i18n._("[no description]"),
-                    "emailAddress": this.i18n._("[no email]"),
+                    "username": "",
+                    "description": "",
+                    "emailAddress": "",
                     "password": null,
                     "passwordHashBase64": null
                 },
@@ -207,6 +207,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     field:{
                         xtype:'textfield',
                         allowBlank: false,
+                        emptyText: this.i18n._("[enter username]"),
                         blankText: this.i18n._("The username cannot be blank.")
                     }
                 }, {
@@ -216,7 +217,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     flex: 1,
                     editor:{
                         xtype:'textfield',
-                        allowBlank: false
+                        emptyText: this.i18n._("[no description]")
                     }
                 },{
                     header: this.i18n._("Email"),
@@ -224,10 +225,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     dataIndex: 'emailAddress',
                     editor: {
                         xtype:'textfield',
-                        allowBlank: false
+                        emptyText: this.i18n._("[no email]"),
+                        vtype: 'email'
                     }
-                }, changePasswordColumn
-                         ],
+                }, changePasswordColumn],
                 sortField: 'username',
                 columnsDefaultSortable: true,
                 plugins: [changePasswordColumn],
@@ -237,6 +238,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     name: "Username",
                     dataIndex: "username",
                     fieldLabel: this.i18n._("Username"),
+                    emptyText: this.i18n._("[enter username]"),
                     allowBlank: false,
                     blankText: this.i18n._("The username cannot be blank."),
                     width: 400
@@ -245,13 +247,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
-                    allowBlank: false,
+                    emptyText: this.i18n._("[no description]"),
                     width: 400
                 },{
                     xtype: "textfield",
                     name: "Email",
                     dataIndex: "emailAddress",
                     fieldLabel: this.i18n._("Email"),
+                    emptyText: this.i18n._("[no email]"),
+                    vtype: 'email',
                     width: 400
                 },{
                     xtype: "textfield",
