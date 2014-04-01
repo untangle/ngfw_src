@@ -955,10 +955,11 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columns: [{
                     header: this.i18n._("Address"),
                     dataIndex: 'staticAddress',
-                    width:200,
+                    width: 200,
                     editor : {
                         xtype: 'textfield',
                         vtype: 'ip4Address',
+                        emptyText: this.i18n._("[enter IPv4 address]"),
                         allowBlank: false
                     }
                 }, {
@@ -1015,6 +1016,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     editor : {
                         xtype: 'textfield',
                         vtype: 'ip6Address',
+                        emptyText: this.i18n._("[enter IPv6 address]"),
                         allowBlank: false
                     }
                 }, {
@@ -1070,6 +1072,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:200,
                     editor : {
                         xtype: 'textfield',
+                        emptyText: this.i18n._("[enter IPv4 address]"),
                         vtype: 'ip4Address',
                         allowBlank: false
                     }
@@ -1114,7 +1117,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 emptyRow: {
                     "enabled": true,
                     "value": "66,1.2.3.4",
-                    "description": "[no description]",
+                    "description": this.i18n._("[no description]"),
                     "javaClass": "com.untangle.uvm.network.DhcpOption"
                 },
                 fields: [{
@@ -1137,6 +1140,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter description]"),
                         allowBlank:false
                     }
                 }, {
@@ -1145,6 +1149,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width:200,
                     editor : {
                         xtype: 'textfield',
+                        emptyText: this.i18n._("[enter value]"),
                         allowBlank: false
                     }
                 }],
@@ -2235,8 +2240,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                 emptyRow: {
                     "ruleId": -1,
                     "enabled": true,
-                    "description": this.i18n._("[no description]"),
-                    "simple":false,
+                    "description": "",
+                    "simple": false,
                     "javaClass": "com.untangle.uvm.network.PortForwardRule"
                 },
                 addSimpleRuleHandler:function() {
@@ -2326,7 +2331,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }, {
                     header: this.i18n._("New Destination"),
@@ -2535,6 +2540,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'textfield',
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {   
                     xtype : 'fieldset',
@@ -2710,7 +2716,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "auto": true,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.uvm.network.NatRule"
                 },
                 title: this.i18n._("NAT Rules"),
@@ -2755,7 +2761,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 columnsDefaultSortable: false
@@ -2789,6 +2795,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {
                     xtype:'fieldset',
@@ -2854,7 +2861,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "bypass": true,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.uvm.network.BypassRule"
                 },
                 title: this.i18n._("Bypass Rules"),
@@ -2897,7 +2904,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }, {
                     xtype:'checkcolumn',
@@ -2937,6 +2944,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {
                     xtype:'fieldset',
@@ -2983,10 +2991,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                 settingsCmp: this,
                 emptyRow: {
                     "ruleId": -1,
-                    "network": "1.2.3.0",
+                    "network": "",
                     "prefix": 24,
                     "nextHop": "4.3.2.1",
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.uvm.network.StaticRoute"
                 },
                 title: this.i18n._("Static Routes"),
@@ -3034,7 +3042,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[enter description]"),
+                        allowBlank: false
                     }
                 }],
                 sortField: 'network',
@@ -3045,6 +3054,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: "[enter description]",
                     allowBlank: false,
                     width: 400
                 }, {
@@ -3052,8 +3062,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Network",
                     dataIndex: "network",
                     fieldLabel: this.i18n._("Network"),
+                    emptyText: this.i18n._("[1.2.3.0]"),
                     allowBlank: false,
-                    vtype:"ipAddress",
+                    vtype: "ipAddress",
                     width: 300
                 }, {
                     xtype: "combo",
@@ -3387,7 +3398,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 emptyRow: {
                     "ruleId": -1,
                     "enabled": true,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "priority": 1,
                     "javaClass": "com.untangle.uvm.network.QosRule"
                 },
@@ -3443,7 +3454,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 columnsDefaultSortable: false
@@ -3841,6 +3852,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype:'textfield',
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {
                     xtype:'fieldset',
@@ -3883,7 +3895,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "ruleId": -1,
                     "enabled": true,
                     "blocked": false,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.uvm.network.FilterRule"
                 },
                 title: this.i18n._("Forward Filter Rules"),
@@ -3926,7 +3938,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }, {
                     xtype:'checkcolumn',
@@ -3950,7 +3962,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "enabled": true,
                     "blocked": false,
                     "readOnly": null,
-                    "description": this.i18n._("[no description]"),
+                    "description": "",
                     "javaClass": "com.untangle.uvm.network.FilterRule"
                 },
                 title: this.i18n._("Input Filter Rules"),
@@ -3995,7 +4007,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }, {
                     xtype:'checkcolumn',
@@ -4029,6 +4041,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {
                     xtype:'fieldset',
@@ -4070,6 +4083,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 500
                 }, {
                     xtype:'fieldset',
@@ -4102,7 +4116,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         // DnsServer Panel
         buildDnsServer: function() {
             this.gridDnsStaticEntries = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% 48%',
+                flex: 1,
                 name: 'Static DNS Entries',
                 settingsCmp: this,
                 paginated: false,
@@ -4128,6 +4142,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'name',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter name]"),
                         allowBlank:false
                     }
                 },{
@@ -4136,13 +4151,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter address]"),
                         allowBlank: false,
                         vtype:"ipAddress"
                     }
                 }]
             });
             this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
-                anchor: '100% 48%',
+                flex: 1,
+                margin: '5 0 0 0',
                 name: 'Local DNS Servers',
                 settingsCmp: this,
                 paginated: false,
@@ -4168,6 +4185,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'domain',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter domain]"),
                         allowBlank:false
                     }
                 },{
@@ -4176,6 +4194,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter local server]"),
                         allowBlank: false,
                         vtype:"ipAddress"
                     }
@@ -4186,7 +4205,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 helpSource: 'network_dns_server',
                 parentId: this.getId(),
                 title: this.i18n._('DNS Server'),
-                layout: 'anchor',
+                layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
                 items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
             });
@@ -4223,6 +4242,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'macAddress',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter MAC address]"),
                         allowBlank:false
                     }
                 },{
@@ -4231,6 +4251,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter address]"),
                         allowBlank: false,
                         vtype:"ipAddress"
                     }
@@ -4240,6 +4261,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'description',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter description]"),
                         allowBlank:false
                     }
                 }],
