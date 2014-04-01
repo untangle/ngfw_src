@@ -447,10 +447,13 @@ class SmtpClientParser extends SmtpParser
                     for (InternetAddress ia : iaList)
                         ret.addAddress(AddressKind.TO, ia.getAddress(), ia.getPersonal());
                 }
-            } catch (AddressException e) {
+            } catch (Exception e) {
                 ret.addAddress(AddressKind.TO, "Illegal_address", "");
                 m_logger.error(e);
             }
+        } else {
+            //needed in order to show up in logs even if the headers do not contain "TO" 
+            ret.addAddress(AddressKind.TO, "None", "");
         }
         if (ccRcpts != null) {
             try {
@@ -459,19 +462,24 @@ class SmtpClientParser extends SmtpParser
                     for (InternetAddress ia : iaList)
                         ret.addAddress(AddressKind.CC, ia.getAddress(), ia.getPersonal());
                 }
-            } catch (AddressException e) {
+            } catch (Exception e) {
                 ret.addAddress(AddressKind.CC, "Illegal_address", "");
                 m_logger.error(e);
             }
         }
         try {
             // Drain FROM
-            InternetAddress ia = new InternetAddress(headers.getHeader(HeaderNames.FROM, ""));
-            ret.addAddress(AddressKind.FROM, ia.getAddress(), ia.getPersonal());
-        } catch (AddressException e) {
+            String from = headers.getHeader(HeaderNames.FROM, "");
+            if (from != null) {
+                InternetAddress ia = new InternetAddress(from);
+                ret.addAddress(AddressKind.FROM, ia.getAddress(), ia.getPersonal());
+            } else {
+                ret.addAddress(AddressKind.FROM, "None", "");
+            }
+        } catch (Exception e) {
             ret.addAddress(AddressKind.FROM, "Illegal_address", "");
             m_logger.error(e);
-        }
+        } 
         UvmContextFactory.context().logEvent(ret);
 
         // Add anyone from the transaction

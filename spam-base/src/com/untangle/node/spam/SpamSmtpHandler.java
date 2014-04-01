@@ -477,7 +477,7 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
     {
         try {
             return (InternetAddress) (msg.getFrom()[0]);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             return new InternetAddress();
         }
     }
