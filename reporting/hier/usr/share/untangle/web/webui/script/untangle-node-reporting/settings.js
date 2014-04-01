@@ -516,7 +516,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             value: this.getSettings().syslogHost,
                             allowBlank: false,
                             blankText: this.i18n._("A \"Host\" must be specified."),
-                            disabled: !this.getSettings().syslogEnabled
+                            disabled: !this.getSettings().syslogEnabled,
+                            validator: Ext.bind( function( value ){
+                                if( value == '127.0.0.1' ||
+                                    value == 'localhost' ){
+                                    return this.i18n._("Host cannot be localhost address.");
+                                }
+                                return true;
+                            }, this)
                         },{
                             xtype: 'numberfield',
                             fieldLabel: this.i18n._('Port'),
@@ -722,6 +729,29 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.getSettings().syslogProtocol = Ext.getCmp('reporting_syslog_protocol').getValue();
 
             handler.call(this, isApply);
+        },
+        validate: function(){
+            var invalidComponents = this.query("component[activeError]");
+            if( invalidComponents.length > 0 ){
+                var invalidFields = [];
+                for( var i = 0; i < invalidComponents.length; i++ ){
+                    invalidFields.push( 
+                        "<b>" +
+                        invalidComponents[i].fieldLabel +
+                        "</b>" +
+                        ": " +
+                        invalidComponents[i].activeErrors.join( ", ")
+                    );
+                }
+                Ext.MessageBox.alert(
+                    this.i18n._("Warning"),
+                    this.i18n._("One or more fields contain invalid values.  Settings cannot be saved until these problems are resolved.") +
+                    "<br><br>" +
+                    invalidFields.join( "<br>" )
+                );
+               return false; 
+            }
+            return true;
         }
     });
 }
