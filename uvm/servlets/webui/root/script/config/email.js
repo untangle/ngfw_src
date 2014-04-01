@@ -1006,6 +1006,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
+                paginated:false,
+                columnMenuDisabled: false,
+                features: [{ftype: "filters"}],
+                verticalScrollerType: 'paginggridscroller',
+                plugins: {
+                    ptype: 'bufferedrenderer',
+                    trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
+                    leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
+                },
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
@@ -1113,28 +1122,77 @@ if (!Ung.hasResource["Ung.Email"]) {
                         var date = new Date();
                         date.setTime( value );
                         return i18n.timestampFormat(value);
-                    }
+                    },
+                    filter: { type: 'datetime',
+                        dataIndex: 'quarantinedDate',
+                        date: {
+                            format: 'Y-m-d'
+                        },
+                        time: {
+                            format: 'H:i:s A',
+                            increment: 1
+                        },
+                        validateRecord : function (record) {
+                            var me = this, 
+                            key,
+                            pickerValue,
+                            val1 = record.get(me.dataIndex);
+                            
+                            var val = new Date(val1.time);
+                            if(!Ext.isDate(val)){
+                                return false;
+                            }
+                            val = val.getTime();
+
+                            for (key in me.fields) {
+                                if (me.fields[key].checked) {
+                                    pickerValue = me.getFieldValue(key).getTime();
+                                    if (key == 'before' && pickerValue <= val) {
+                                        return false;
+                                    }
+                                    if (key == 'after' && pickerValue >= val) {
+                                        return false;
+                                    }
+                                    if (key == 'on' && pickerValue != val) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                      }
                 }, {
                     header: this.i18n._("Sender"),
                     width: 180,
-                    dataIndex: 'sender'
+                    dataIndex: 'sender',
+                    filter: {
+                        type: 'string'
+                    }
                 }, {
                     header: this.i18n._("Subject"),
                     width: 150,
                     flex: 1,
-                    dataIndex: 'subject'
+                    dataIndex: 'subject',
+                    filter: {
+                        type: 'string'
+                    }
                 }, {
                     header: this.i18n._("Size (KB)"),
                     width: 85,
                     dataIndex: 'size',
                     renderer: function(value) {
                         return i18n.numberFormat((value /1024.0).toFixed(3));
+                    },
+                    filter: {
+                        type: 'numeric'
                     }
-                    
                 }, {
                     header: this.i18n._("Category"),
                     width: 85,
-                    dataIndex: 'quarantineCategory'
+                    dataIndex: 'quarantineCategory',
+                    filter: {
+                        type: 'string'
+                    }
                 }, {
                     header: this.i18n._("Detail"),
                     width: 85,
@@ -1149,6 +1207,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                             return i18n.numberFormat(parseFloat(detail).toFixed(3));
                         }
                         return detail;
+                    },
+                    filter: {
+                        type: 'numeric'
                     }
                 }],
                 sortField: 'quarantinedDate',
