@@ -497,8 +497,13 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
         InternetAddress[] addresses = addrList.toArray(new InternetAddress[addrList.size()]);
 
         InternetAddress from = getFromNoEx(msg);
-        return quarantine.quarantineMail(file, new MailSummary(from == null ? (tx.getFrom() == null ? "<>" : tx
-                .getFrom().getAddress()) : getFromNoEx(msg).getAddress(), getSubjectNoEx(msg), getQuarantineCategory(),
-                getQuarantineDetail(report), MIMEUtil.attachmentCount(msg), file.length()), addresses);
+        String sender;
+        if (from == null || from.getAddress() == null) {
+            sender = tx.getFrom() == null ? "<>" : tx.getFrom().getAddress();
+        } else {
+            sender = from.getAddress();
+        }
+        return quarantine.quarantineMail(file, new MailSummary(sender, getSubjectNoEx(msg), getQuarantineCategory(),
+            getQuarantineDetail(report), MIMEUtil.attachmentCount(msg), file.length()), addresses);
     }
 }

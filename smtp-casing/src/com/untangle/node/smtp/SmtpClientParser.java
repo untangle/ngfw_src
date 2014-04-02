@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.InternetHeaders;
 
@@ -424,6 +423,26 @@ class SmtpClientParser extends SmtpParser
         }
     }
 
+    private boolean addRecipientsFromHeader(String[] rcpts, MessageInfo ret, AddressKind recipientType)
+    {
+        boolean hasRecipient = false;
+        if (rcpts != null) {
+            try {
+                for (String addr : rcpts) {
+                    InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
+                    for (InternetAddress ia : iaList) {
+                        ret.addAddress(recipientType, ia.getAddress(), ia.getPersonal());
+                        hasRecipient = true;
+                    }
+                }
+            } catch (Exception e) {
+                ret.addAddress(recipientType, "Illegal_address", "");
+                m_logger.error(e);
+            }
+        }
+        return hasRecipient;
+    }
+    
     /**
      * Helper method to break-out the creation of a MessageInfo
      */
@@ -439,47 +458,23 @@ class SmtpClientParser extends SmtpParser
         // Drain all TO and CC
         String[] toRcpts = headers.getHeader(HeaderNames.TO);
         String[] ccRcpts = headers.getHeader(HeaderNames.CC);
-        
-        if (toRcpts != null) {
-            try {
-                for (String addr : toRcpts) {
-                    InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
-                    for (InternetAddress ia : iaList)
-                        ret.addAddress(AddressKind.TO, ia.getAddress(), ia.getPersonal());
-                }
-            } catch (Exception e) {
-                ret.addAddress(AddressKind.TO, "Illegal_address", "");
-                m_logger.error(e);
-            }
-        } else {
-            //needed in order to show up in logs even if the headers do not contain "TO" 
-            ret.addAddress(AddressKind.TO, "None", "");
-        }
-        if (ccRcpts != null) {
-            try {
-                for (String addr : ccRcpts) {
-                    InternetAddress[] iaList = InternetAddress.parseHeader(addr, false);
-                    for (InternetAddress ia : iaList)
-                        ret.addAddress(AddressKind.CC, ia.getAddress(), ia.getPersonal());
-                }
-            } catch (Exception e) {
-                ret.addAddress(AddressKind.CC, "Illegal_address", "");
-                m_logger.error(e);
-            }
-        }
+
+        boolean hasFrom = false;
+        boolean hasTo = addRecipientsFromHeader(toRcpts, ret, AddressKind.TO);
+        hasTo = hasTo || addRecipientsFromHeader(ccRcpts, ret, AddressKind.CC);
+
         try {
             // Drain FROM
             String from = headers.getHeader(HeaderNames.FROM, "");
             if (from != null) {
                 InternetAddress ia = new InternetAddress(from);
                 ret.addAddress(AddressKind.FROM, ia.getAddress(), ia.getPersonal());
-            } else {
-                ret.addAddress(AddressKind.FROM, "None", "");
+                hasFrom = true;
             }
         } catch (Exception e) {
             ret.addAddress(AddressKind.FROM, "Illegal_address", "");
             m_logger.error(e);
-        } 
+        }
         UvmContextFactory.context().logEvent(ret);
 
         // Add anyone from the transaction
@@ -490,6 +485,10 @@ class SmtpClientParser extends SmtpParser
             // Transfer the FROM
             if (smtpTx.getFrom() != null && !MIMEUtil.isNullAddress(smtpTx.getFrom())) {
                 ret.addAddress(AddressKind.ENVELOPE_FROM, smtpTx.getFrom().getAddress(), smtpTx.getFrom().getPersonal());
+                if (!hasFrom) {
+                    // needed in order to show up in logs even if the headers do not contain "FROM"
+                    ret.addAddress(AddressKind.FROM, smtpTx.getFrom().getAddress(), smtpTx.getFrom().getPersonal());
+                }
             }
             List<InternetAddress> txRcpts = smtpTx.getRecipients(false);
             for (InternetAddress addr : txRcpts) {
@@ -497,6 +496,10 @@ class SmtpClientParser extends SmtpParser
                     continue;
                 }
                 ret.addAddress(AddressKind.ENVELOPE_TO, addr.getAddress(), addr.getPersonal());
+                if (!hasTo) {
+                    // needed in order to show up in logs even if the headers do not contain "TO" or "CC"
+                    ret.addAddress(AddressKind.TO, addr.getAddress(), addr.getPersonal());
+                }
             }
         }
         return ret;
