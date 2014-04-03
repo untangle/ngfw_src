@@ -94,6 +94,8 @@ class RouterEventHandler extends AbstractEventHandler
                 request.setNewClientPort( port );
             }
         }
+
+        request.release();
     }
 
 
