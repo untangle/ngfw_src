@@ -695,7 +695,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             };
 
             try {
-                netSettings = main.getNetworkManager().getNetworkSettings();
+                netStatus = main.getNetworkManager().getInterfaceStatus();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -703,13 +703,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
             addressList = "";
             addressList += hostName;
 
-            for( x = 0 ; x < netSettings.interfaces.list.length ; x++)
+            for( x = 0 ; x < netStatus.list.length ; x++)
             {
-                var intfSettings = netSettings.interfaces.list[x];
-                if (intfSettings.v4StaticAddress === null) { continue; }
-                if (intfSettings.v4StaticPrefix === null) { continue; }
+                var netItem = netStatus.list[x];
+                if (netItem.v4Address === null) { continue; }
                 addressList += ",";
-                addressList += intfSettings.v4StaticAddress;
+                addressList += netItem.v4Address;
             }
 
             this.certGeneratorWindow = new Ext.Window({
