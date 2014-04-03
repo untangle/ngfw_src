@@ -12,6 +12,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         gridReportingUsers: null,
         gridHostnameMap: null,
         initComponent: function(container, position) {
+            this.buildPasswordValidator();
+
             this.buildStatus();
             this.buildGeneration();
             this.buildEmail();
@@ -28,6 +30,50 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.tabs.setActiveTab(this.panelStatus);
             this.clearDirty();
             this.callParent(arguments);
+        },
+
+        buildPasswordValidator: function(){
+            this.passwordValidator = function( fieldValue ){
+                // Get field container
+                var panel = this.up("panel");
+
+                // Get reporting container for access to i18n.
+                var thisReporting = this.up("window[name=untangle-node-reporting]");
+                if( thisReporting == null ){
+                    // rowEditorLine is not "properly" linked to parents for query.  Need to access
+                    // its grid and requery.
+                    thisReporting = panel.up("window").grid.up("window[name=untangle-node-reporting]");
+                }
+
+                // Walk fields looking for "_password_" and "_confirm_password_"
+                var suffix = this.id.substr( this.id.lastIndexOf("_") + 1 );
+                var fields = panel.query("textfield[id$="+suffix+"]");
+                var pwd = null;
+                var confirmPwd = null;
+                for( var i = 0; i < fields.length; i++ ){
+                    if( fields[i].id.match(/_confirm_password_/) ){
+                        confirmPwd = fields[i];
+                    }else if( fields[i].id.match(/_password_/) ){
+                        pwd = fields[i];
+                    }
+                } 
+                if(pwd.getValue() != confirmPwd.getValue() ){
+                    pwd.markInvalid();
+                    confirmPwd.markInvalid();
+                    return thisReporting.i18n._('Passwords do not match');
+                }
+                // validate password not empty if onlineAccess checked
+                var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + suffix );
+                if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
+                    return thisReporting.i18n._("A password must be set to enable Online Access!");
+                }
+                
+                pwd.clearInvalid();
+                confirmPwd.clearInvalid();
+                return true;
+            };
+            // }, 
+            // this);
         },
         // Status Panel
         buildStatus: function() {
@@ -227,7 +273,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             // Change the password for a user.
             var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
-                header: this.i18n._("change password"),
+                header: this.i18n._("Change Password"),
                 width: 130,
                 resizable: false,
                 iconClass: 'icon-edit-row',
@@ -321,20 +367,18 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 allowBlank: false,
                                 blankText: this.i18n._("The email address name cannot be blank."),
                                 width: 300
-                            },
-                            {
+                            },{
                                 xtype:'checkbox',
                                 dataIndex: "emailSummaries",
                                 fieldLabel: this.i18n._("Email Summaries"),
                                 width: 300
-                            },
-                            {
+                            },{
                                 xtype:'checkbox',
                                 dataIndex: "onlineAccess",
                                 id: "add_reporting_online_reports_" + fieldID,
                                 fieldLabel: this.i18n._("Online Access"),
                                 width: 300
-                            }, {
+                            },{
                                 xtype: 'container',
                                 layout: 'column',
                                 margin: '0 0 5 0',
@@ -348,7 +392,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                     fieldLabel: this.i18n._("Password"),
                                     width: 300,
                                     minLength: 3,
-                                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                                    validator: this.passwordValidator                    
                                 },{
                                     xtype: 'label',
                                     html: this.i18n._("(required for 'Online Access')"),
@@ -361,7 +406,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 dataIndex: "password",
                                 id: "add_reporting_confirm_password_" + fieldID,
                                 fieldLabel: this.i18n._("Confirm Password"),
-                                width: 300
+                                width: 300,
+                                validator: this.passwordValidator                    
                             }]
                     })]
                 },{
@@ -405,6 +451,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             /* Create the row editor for updating the password */
             this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
                 grid: this.gridReportingUsers,
+                ownerCt: this,
                 inputLines: [
                     {
                         xtype:'textfield',
@@ -415,7 +462,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel: this.i18n._("Password"),
                         width: 300,
                         minLength: 3,
-                        minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                        minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                        validator: this.passwordValidator
                     }, 
                     {
                         xtype:'textfield',
@@ -424,24 +472,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         dataIndex: "password",
                         id: "edit_reporting_confirm_password_"  + fieldID,
                         fieldLabel: this.i18n._("Confirm Password"),
-                        width: 300
-                    }],
-                validate: Ext.bind(function(items) {
-                    //validate password match
-                    var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
-                    var confirmPwd = Ext.getCmp("edit_reporting_confirm_password_" + fieldID);
-                    if(pwd.getValue() != confirmPwd.getValue()) {
-                        pwd.markInvalid();
-                        return this.i18n._('Passwords do not match');
-                    }
-                    // validate password not empty if onlineAccess checked
-                    var onlineAccess=Ext.getCmp("add_reporting_online_reports_" + fieldID);
-                    if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
-                        return this.i18n._("A password must be set to enable Online Access!");
-                    } else {
-                        return true;
-                    }
-                }, this)
+                        width: 300,
+                        validator: this.passwordValidator
+                    }]
             });
             this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePassword);
         },
@@ -720,6 +753,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
             });
         },
+
         beforeSave: function(isApply,handler) {
             this.getSettings().reportingUsers.list = this.gridReportingUsers.getPageList();
             this.getSettings().hostnameMap.list = this.gridHostnameMap.getPageList();
