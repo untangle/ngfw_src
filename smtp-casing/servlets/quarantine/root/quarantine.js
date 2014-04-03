@@ -1,5 +1,12 @@
 Ext.namespace('Ung');
 Ext.namespace('Ext.ux');
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/gray/tree/s.gif'; // The location of the blank pixel image
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', '/ext4/examples/ux');
+Ext.require([
+    'Ext.ux.data.PagingMemoryProxy',
+    'Ext.ux.grid.FiltersFeature'
+]);
 
 var testMode = false;
 /**
@@ -10,68 +17,6 @@ var testMode = false;
  * @constructor
  * @param {object} configObj
  */
-Ext.define('Ext.ux.toolbar.PagingOptions', {
-    extend: 'Ext.toolbar.Paging',
-
-    getPagingItems: function() {
-        var me = this,
-            pagingButtons = me.callParent();
-
-        if (!Ext.ModelManager.getModel('PageSize')) {
-            Ext.define('PageSize', {
-                extend: 'Ext.data.Model',
-                fields: [{ name: 'pagesize' , type: 'int'}]
-            });
-        }
-
-        if (!me.pageSizeOptions) {
-            me.pageSizeOptions = [
-                { pagesize: 25 },
-                { pagesize: 100 },
-                { pagesize: 1000 },
-                { pagesize: 10000 }
-            ];
-        }
-
-        pagingButtons.push({ xtype:'label', text:'Show '});
-        pagingButtons.push({
-            xtype          : 'combobox',
-            queryMode      : 'local',
-            triggerAction  : 'all',
-            displayField   : 'pagesize',
-            valueField     : 'pagesize',
-            width          : 100,
-            lazyRender     : true,
-            enableKeyEvents: true,
-            value          : me.pageSize,
-            forceSelection : me.forceSelection || false,
-            store: Ext.create('Ext.data.Store',{
-                model: 'PageSize',
-                data : me.pageSizeOptions
-            }),
-
-            listeners: {
-                select: function(thisField, value) {
-                    me.fireEvent('pagesizeselect', value[0].get('pagesize'));
-                },
-                keypress: function(thisField, eventObj) {
-                    if (eventObj.getKey() !== eventObj.ENTER) { return false; }
-                    me.fireEvent('pagesizeselect', thisField.getValue());
-                    return true;
-                }
-            }
-        });
-        pagingButtons.push({xtype:'label', text:' rows/page'});
-
-        return pagingButtons;
-    },
-
-    initComponent: function() {
-        var me = this;
-        me.callParent();
-        me.addEvents('pagesizeselect');
-    }
-});
 
 var quarantineTabPanel = null;
 var quarantine = null;
@@ -125,7 +70,7 @@ Ung.Quarantine.prototype = {
     store: null,
     selectionModel: null,
     grid: null,
-    pageSize: 25,
+    pageSize: null,
 
     releaseOrDelete: function( actionFn, actionStr ) {
         Ext.MessageBox.wait( actionStr , i18n._("Please wait"));
@@ -176,13 +121,6 @@ Ung.Quarantine.prototype = {
             var store=this.grid.getStore();
             store.getProxy().data=store.refresh();
             
-            if(store.currentPage>1) {
-                //reset page index if all records from the current page where deleted
-                var dataLength=store.getProxy().data.list.length;
-                if(store.currentPage > Math.ceil(dataLength/store.pageSize)) {
-                    store.currentPage=1;
-                }
-            }
             store.load();
 
             var message = this.getMessage( result );
@@ -286,14 +224,14 @@ Ext.define('Ung.QuarantineStore', {
         config.pageSize=config.quarantine.pageSize;
         config.proxy={
             model:'Ung.QuarantineModel',
-            type: 'pagingmemory',
+            type: 'memory',
             reader: {
                 type: 'json',
                 root:'list'
             }
         };
-        config.remoteSort=true;
-        config.remoteFilter=true;
+        config.remoteSort=false;
+        config.remoteFilter=false;
         config.data = this.refresh();
 
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
@@ -369,6 +307,14 @@ Ext.define('Ung.QuarantineGrid', {
     extend:'Ext.grid.Panel',
     enableColumnHide: false,
     enableColumnMove: false,
+    columnMenuDisabled: false,
+    features: [{ftype: "filters"}],
+    verticalScrollerType: 'paginggridscroller',
+    plugins: {
+        ptype: 'bufferedrenderer',
+        trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
+        leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
+    },
     constructor: function( config ) {
         this.quarantine = config.quarantine;
 
@@ -376,31 +322,38 @@ Ext.define('Ung.QuarantineGrid', {
             {
                 header: i18n._( "From" ),
                 dataIndex: 'sender',
-                menuDisabled: true,
-                width: 250
+                width: 250,
+                filter: {
+                    type: 'string'
+                }
             },{
                 header: "<div class='quarantine-attachment-header'>&nbsp</div>",
                 dataIndex: 'attachmentCount',
                 width: 60,
                 tooltip: i18n._( "Number of Attachments in the email." ),
-                menuDisabled: true,
-                align: 'center'
+                align: 'center',
+                filter: {
+                    type: 'numeric'
+                }
             },{
                 header: i18n._( "Score" ),
                 dataIndex: 'quarantineDetail',
                 width: 60,
-                menuDisabled: true,
-                align: 'center'
+                align: 'center',
+                filter: {
+                    type: 'numeric'
+                }
             },{
                 header: i18n._( "Subject" ),
                 dataIndex: 'truncatedSubject',
                 flex: 1,
-                menuDisabled: true,
-                width: 250
+                width: 250,
+                filter: {
+                    type: 'string'
+                }
             },{
                 header: i18n._( "Date" ),
                 dataIndex: 'internDate',
-                menuDisabled: true,
                 width: 135,
                 renderer: function( value ) {
                     var date = new Date();
@@ -408,25 +361,57 @@ Ext.define('Ung.QuarantineGrid', {
                     d = Ext.util.Format.date( date, 'm/d/Y' );
                     t = Ext.util.Format.date( date, 'g:i a' );
                     return d + ' ' + t;
-                }
+                },
+                filter: { type: 'datetime',
+                    dataIndex: 'internDate',
+                    date: {
+                        format: 'm/d/Y'
+                    },
+                    time: {
+                        format: 'g:i a',
+                        increment: 1
+                    },
+                    validateRecord : function (record) {
+                        var me = this, 
+                        key,
+                        pickerValue,
+                        val1 = record.get(me.dataIndex);
+                        
+                        var val = new Date(val1.time);
+                        if(!Ext.isDate(val)){
+                            return false;
+                        }
+                        val = val.getTime();
+
+                        for (key in me.fields) {
+                            if (me.fields[key].checked) {
+                                pickerValue = me.getFieldValue(key).getTime();
+                                if (key == 'before' && pickerValue <= val) {
+                                    return false;
+                                }
+                                if (key == 'after' && pickerValue >= val) {
+                                    return false;
+                                }
+                                if (key == 'on' && pickerValue != val) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                  }
             },{
                 header: i18n._( "Size (KB)" ),
                 dataIndex: 'size',
-                menuDisabled: true,
                 renderer: function( value ) {
                     return Math.round( (( value + 0.0 ) / 1024) * 10 ) / 10;
                 },
-                width: 60
+                width: 60,
+                filter: {
+                    type: 'numeric'
+                }
             }];
 
-        config.bbar = Ext.create('Ext.ux.toolbar.PagingOptions',{
-            pageSize: this.quarantine.pageSize,
-            store: this.quarantine.store,
-            displayInfo: true,
-            displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
-            emptyMsg: i18n._( 'No messages to display' )
-        });
-        config.bbar.addListener('pagesizeselect',Ext.bind(this.onPageSizeSelect, this));
         config.dockedItems= [{
             xtype: 'toolbar',
             dock: 'top',
@@ -439,12 +424,6 @@ Ext.define('Ung.QuarantineGrid', {
         config.selModel = this.quarantine.selectionModel;
 
         Ung.QuarantineGrid.superclass.constructor.apply(this, arguments);
-    },
-    onPageSizeSelect: function(value) {
-        quarantine.store.pageSize=value;
-        quarantine.pageSize=value;
-        quarantine.store.currentPage=1;
-        quarantine.store.load({params:{start:0, limit:value}});
     },
 
     trackMouseOver:false,

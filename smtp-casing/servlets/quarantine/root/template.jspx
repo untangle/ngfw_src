@@ -18,6 +18,8 @@
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css";
         @import "/ext4/examples/ux/css/CheckHeader.css";
+        @import "/ext4/examples/ux/grid/css/GridFilters.css";
+        @import "/ext4/examples/ux/grid/css/RangeMenu.css";
     </style>
 
     <uvm:skin src="user.css" name="${skinSettings.skinName}"/>
