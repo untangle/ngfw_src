@@ -653,6 +653,7 @@ public class AlertManagerImpl implements AlertManager
                     alertText += dnsServer + ")";
                     alertText += i18nUtil.tr(" fails to resolve categorization queries.");
 
+                    logger.warn("DNS Lookup failed [" + dnsServer + ",TXT]: " + query);
                     alertList.add(alertText);
                 } else if ( t1-t0 > 500 ) {
                     String alertText = "";
