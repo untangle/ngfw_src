@@ -12,7 +12,10 @@ public interface NetcapManager
     public int getSessionCount();
 
     /** Get the number of sessions from the SessionTable */
-    public int getSessionCount(short protocol);
+    public int getSessionCount( short protocol );
+
+    /** See if a addr:port binding is already in use by an existing session */
+    public boolean isTcpPortUsed( java.net.InetAddress addr, int port );
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher );

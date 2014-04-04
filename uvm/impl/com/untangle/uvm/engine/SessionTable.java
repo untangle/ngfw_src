@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -21,12 +22,15 @@ import com.untangle.uvm.vnet.PipelineConnector;
  */
 public class SessionTable
 {
-    /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
+
     private static final SessionTable INSTANCE = new SessionTable();
 
     private final Map<Vector,SessionGlobalState> activeSessions = new HashMap<Vector,SessionGlobalState>();
+    private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortsUsed = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
 
+    public static final short PROTO_TCP = 6;
+    
     /* Singleton */
     private SessionTable() {}
 
@@ -37,6 +41,18 @@ public class SessionTable
      */
     synchronized boolean put( Vector vector, SessionGlobalState session )
     {
+        if ( session.getProtocol() == PROTO_TCP ) {
+            int port = session.netcapSession().serverSide().client().port();
+            InetAddress addr = session.netcapSession().serverSide().client().host();
+            NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
+            if ( tcpPortsUsed.get( key ) != null ) {
+                logger.warn("Collision value in port availability map.");
+                // just continue, not much can be done about it here.
+            } else {
+                tcpPortsUsed.put( key, session );
+            }
+        }
+        
         return ( activeSessions.put( vector, session ) == null ) ? true : false;
     }
 
@@ -47,6 +63,20 @@ public class SessionTable
      */
     synchronized boolean remove( Vector vector )
     {
+        SessionGlobalState session = activeSessions.get( vector );
+        if ( session == null ) {
+            return false;
+        }
+
+        if ( session.getProtocol() == PROTO_TCP ) {
+            int port = session.netcapSession().serverSide().client().port();
+            InetAddress addr = session.netcapSession().serverSide().client().host();
+            NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
+            if ( tcpPortsUsed.remove( key ) == null ) {
+                logger.warn("Missing value in port availability map: " + addr + ":" + port );
+            }
+        }
+
         return ( activeSessions.remove( vector ) == null ) ? false : true;
     }
 
@@ -69,6 +99,16 @@ public class SessionTable
 
         return count;
     }
+
+    synchronized boolean isTcpPortUsed( InetAddress addr, int port )
+    {
+        NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
+        if ( tcpPortsUsed.get( key ) != null )
+            return true;
+        else
+            return false;
+    }
+    
     
     /**
      * This kills all active vectors, since this is synchronized, it pauses the creation
@@ -180,4 +220,42 @@ public class SessionTable
     {
         return INSTANCE;
     }
+
+    private class NatPortAvailabilityKey
+    {
+        public InetAddress addr;
+        public int port;
+
+        public NatPortAvailabilityKey( InetAddress addr, int port )
+        {
+            this.addr = addr;
+            this.port = port;
+        }
+
+        @Override
+        public boolean equals( Object o )
+        {
+            if ( o == null )
+                return false;
+            if ( ! ( o instanceof NatPortAvailabilityKey ) ) 
+                return false;
+
+            NatPortAvailabilityKey other = (NatPortAvailabilityKey) o;
+                
+            if ( this.port != other.port )
+                return false;
+
+            if ( this.addr != null && other.addr != null )
+                return this.addr.equals( other.addr );
+            else 
+                return ( this.addr == other.addr );
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return addr.hashCode() + port;
+        }
+    }
 }
+

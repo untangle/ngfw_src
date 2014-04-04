@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.engine;
 
+import java.net.InetAddress;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
@@ -205,4 +207,11 @@ public class NetcapManagerImpl implements NetcapManager
     {
         SessionTable.getInstance().shutdownMatches( matcher, ps );
     }
+
+    /** See if a addr:port binding is already in use by an existing session */
+    public boolean isTcpPortUsed( InetAddress addr, int port )
+    {
+        return SessionTable.getInstance().isTcpPortUsed( addr, port );
+    }
+    
 }

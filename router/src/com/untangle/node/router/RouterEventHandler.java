@@ -5,6 +5,7 @@ package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.util.Random;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -23,28 +24,21 @@ class RouterEventHandler extends AbstractEventHandler
     /* Router Node */
     private final RouterImpl node;
 
-    private int nextPort;
+    private Random rand;
     
+    public static final short PROTO_TCP = 6;
+
     /* Setup  */
     RouterEventHandler(RouterImpl node)
     {
         super(node);
-        this.nextPort = (new Random().nextInt(20000)) + 10000;
+        this.rand = new Random();
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
-        handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
-    }
-
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-    {
-        return;
-    }
-
-    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
-    {
+        IPNewSessionRequest request = event.sessionRequest();
         InetAddress origClientAddr = request.getOrigClientAddr();
         InetAddress newClientAddr = request.getNewClientAddr();
         InetAddress origServerAddr = request.getOrigServerAddr();
@@ -85,8 +79,8 @@ class RouterEventHandler extends AbstractEventHandler
              (origClientPort != newClientPort) ||
              (origServerPort != newServerPort) ){
 
-            if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
-                int port = getNextPort();
+            if( request.getProtocol() == PROTO_TCP && !origClientAddr.equals(newClientAddr)){
+                int port = getFreePort( newClientAddr );
 
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "Mangling server-side client port from " + origClientPort + " to " + port );
@@ -98,19 +92,32 @@ class RouterEventHandler extends AbstractEventHandler
         request.release();
     }
 
-
-    private int getNextPort()
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
-        /**
-         * FIXME
-         *
-         * This needs to be smarter.
-         * It needs to either check the currently used list, or maintain a currently used list to avoid conflicts
-         */
-        
-        if (nextPort > 50000)
-            nextPort = 10000;
 
-        return nextPort++;
+        IPNewSessionRequest request = event.sessionRequest();
+        request.release();
+        return;
+    }
+
+    private int getFreePort( InetAddress addr )
+    {
+        int port = rand.nextInt(40000) + 10000;
+
+        boolean used = UvmContextFactory.context().netcapManager().isTcpPortUsed( addr, port );
+        logger.warn("XXX checking: " + port + " = " + used);
+
+        for ( int i = 0; used && i < 100 ; i++ ) {
+            port++;
+            used = UvmContextFactory.context().netcapManager().isTcpPortUsed( addr, port );
+            logger.warn("XXX2 checking: " + port + " = " + used);
+        }
+        
+        if ( used ) {
+            logger.warn("Unable to find a free port: " + port);
+            // just use it anyway
+        }
+
+        return port;
     }
 }
