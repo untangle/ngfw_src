@@ -105,12 +105,10 @@ class RouterEventHandler extends AbstractEventHandler
         int port = rand.nextInt(40000) + 10000;
 
         boolean used = UvmContextFactory.context().netcapManager().isTcpPortUsed( addr, port );
-        logger.warn("XXX checking: " + port + " = " + used);
 
         for ( int i = 0; used && i < 100 ; i++ ) {
             port++;
             used = UvmContextFactory.context().netcapManager().isTcpPortUsed( addr, port );
-            logger.warn("XXX2 checking: " + port + " = " + used);
         }
         
         if ( used ) {
