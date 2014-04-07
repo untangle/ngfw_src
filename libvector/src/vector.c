@@ -814,7 +814,8 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
         }
 
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): HUP without a shutdown event (event NULL/%08x)\n", (uintptr_t) vec, key_type );
+            /* this happens semi-regularly. Do not print a warning. */
+            //errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): HUP without a shutdown event (event NULL/%08x)\n", (uintptr_t) vec, key_type );
         } else {
             /* this happens semi-regularly. Do not print a warning. */
             //errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): HUP without a shutdown event (event type: %08x/%08x)\n", (uintptr_t) vec, evt->type, key_type );
