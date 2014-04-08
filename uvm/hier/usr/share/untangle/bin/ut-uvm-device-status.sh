@@ -95,7 +95,7 @@ function getInterfaceStatus()
         VENDOR_ID="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
         VENDOR_ID_SHORT="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:.*/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
 
-        # read from vendor definition file
+        # read from vendor definition file (included in package pciutils)
         VENDOR=""
         if [ -f /usr/share/misc/$BUS.ids ] ; then
             VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
