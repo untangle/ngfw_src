@@ -96,9 +96,12 @@ function getInterfaceStatus()
         VENDOR_ID_SHORT="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:.*/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
 
         # read from vendor definition file
-        VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
-        if [ -z "$VENDOR" ] ; then
-            VENDOR="`awk \"/^${VENDOR_ID_SHORT}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+        VENDOR=""
+        if [ -f /usr/share/misc/$BUS.ids ] ; then
+            VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+            if [ -z "$VENDOR" ] ; then
+                VENDOR="`awk \"/^${VENDOR_ID_SHORT}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+            fi
         fi
 
         # strip whitespace
