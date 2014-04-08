@@ -115,7 +115,7 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
     private static String sql = "INSERT INTO reports.openvpn_stats " +
         "(time_stamp, start_time, end_time, rx_bytes, tx_bytes, remote_address, remote_port, pool_address, client_name) " +
         "values " +
-        "( ?, ?, ?, ?, ?, ?, ?, ? ) ";
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
