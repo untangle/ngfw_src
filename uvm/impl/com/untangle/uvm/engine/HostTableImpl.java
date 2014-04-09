@@ -34,7 +34,7 @@ import com.untangle.uvm.node.QuotaEvent;
 public class HostTableImpl implements HostTable
 {
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
-    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 5 * 60 * 1000; /* 5 minutes */
+    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 30 * 60 * 1000; /* 30 minutes */
 
     private final Logger logger = Logger.getLogger(getClass());
 
