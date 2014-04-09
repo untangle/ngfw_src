@@ -308,6 +308,77 @@ Ext.define('Ung.QuarantineSelectionModel', {
     }
 } );
 
+Ext.define("Ung.GlobalFiltersFeature", {
+    extend: "Ext.ux.grid.FiltersFeature",
+    encode: false,
+    local: true,
+    init: function (grid) {
+        Ext.applyIf(this,{
+            globalFilter: {
+                value: "",
+                caseSensitive: false
+                }
+        });
+        this.callParent(arguments);
+    },
+    getRecordFilter: function() {
+        var me = this;
+        var globalFilterFn = this.globalFilterFn;
+        var parentFn = Ext.ux.grid.FiltersFeature.prototype.getRecordFilter.call(this);
+        return function(record) {
+            return parentFn.call(me, record) && globalFilterFn.call(me, record);
+        };
+    },
+    updateGlobalFilter: function(value, caseSensitive) {
+        if(caseSensitive !== null) {
+            this.globalFilter.caseSensitive=caseSensitive;
+        }
+        if(!this.globalFilter.caseSensitive) {
+            value=value.toLowerCase();
+        }
+        this.globalFilter.value = value;
+            this.reload();
+    },
+    globalFilterFn: function(record) {
+        //TODO: 1) support regular exppressions
+        //2) provide option to search in displayed columns only
+            var inputValue = this.globalFilter.value,
+        caseSensitive = this.globalFilter.caseSensitive;
+        if(inputValue.length === 0) {
+            return true;
+        }
+        var fields = record.fields.items,
+        fLen   = record.fields.length,
+        f, val;
+
+        for (f = 0; f < fLen; f++) {
+            val = record.get(fields[f].name);
+            if(val == null) {
+                continue;
+            }
+            if(typeof val == 'boolean' || typeof val == 'number') {
+                val=val.toString();
+            } else if(typeof val == 'object') {
+                if(val.javaClass =="java.util.Date") {
+                    val = i18n.timestampFormat(val);
+                }
+            }
+            if(typeof val == 'string') {
+                if(caseSensitive) {
+                    if(val.indexOf(inputValue) > -1) {
+                        return true;
+                    }
+                } else {
+                    if(val.toLowerCase().indexOf(inputValue) > -1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+});
+
 Ext.define('Ung.QuarantineGrid', {
     extend:'Ext.grid.Panel',
     enableColumnHide: false,
@@ -423,12 +494,59 @@ Ext.define('Ung.QuarantineGrid', {
             items: [ this.quarantine.releaseButton,
                      this.quarantine.safelistButton,
                      this.quarantine.deleteButton]            
+        },{
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [i18n._('Filter:'), {
+                xtype: 'textfield',
+                name: 'searchField',
+                hideLabel: true,
+                width: 130,
+                listeners: {
+                    change: {
+                        fn: function() {
+                            this.filterFeature.updateGlobalFilter(this.searchField.getValue(), this.caseSensitive.getValue());
+                        },
+                        scope: this,
+                        buffer: 600
+                    }
+                }
+            }, {
+                xtype: 'checkbox',
+                name: 'caseSensitive',
+                hideLabel: true,
+                margin: '0 4px 0 4px',
+                boxLabel: i18n._('Case sensitive'),
+                handler: function() {
+                    this.filterFeature.updateGlobalFilter(this.searchField.getValue(),this.caseSensitive.getValue());
+                },
+                scope: this
+            }, {
+                xtype: 'button',
+                iconCls: 'icon-clear-filter',
+                text: i18n._('Clear Filters'),
+                tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
+                handler: Ext.bind(function () {
+                    this.searchField.setValue("");
+                    this.filters.clearFilters();
+                }, this) 
+            }]
         }];
 
+        config.features = this.features;
+        config.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
+        config.features.push(config.filterFeature);
+        
         config.store = this.quarantine.store;
         config.selModel = this.quarantine.selectionModel;
 
         Ung.QuarantineGrid.superclass.constructor.apply(this, arguments);
+    },
+    
+    initComponent: function() {
+    	this.callParent(arguments);
+        this.searchField=this.down('textfield[name=searchField]');
+        this.caseSensitive = this.down('checkbox[name=caseSensitive]');
     },
 
     trackMouseOver:false,
