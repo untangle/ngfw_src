@@ -233,11 +233,16 @@ Ext.define('Ung.QuarantineStore', {
         config.remoteSort=false;
         config.remoteFilter=false;
         config.data = this.refresh();
+        config.sortOnLoad = true;
+        config.sortRoot='data';
 
+        config.sorters={
+            property: 'internDate',
+            direction: "DESC"
+        },
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
         this.quarantine = config.quarantine;
     },
-
     refresh: function () {
         var dataFn = Ext.bind( function () {
         	var mails = quarantine.rpc.getInboxRecords(inboxDetails.token); 
