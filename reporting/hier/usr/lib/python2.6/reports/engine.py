@@ -175,12 +175,13 @@ class FactTable:
 
     def __insert_stmt(self):
         insert_strs = ['time_stamp','end_time_stamp']
+        group_strs = []
         if self.__detail_table == 'reports.sessions':
             select_strs = ["date_trunc('minute', min(%s))" % self.__time_column,"date_trunc('minute', max(end_time))"]
         else:
             select_strs = ["date_trunc('minute', min(%s))" % self.__time_column,"date_trunc('minute', max(%s))" % self.__time_column]
-        group_strs = []
-
+            group_strs = ["date_trunc('minute', %s)" % self.__time_column]
+            
         for c in self.__dimensions:
             insert_strs.append(c.name)
             select_strs.append(c.value_expression)
