@@ -226,7 +226,7 @@ basicConstraints=CA:FALSE
 # keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 
 # This will be displayed in Netscape's comment listbox.
-nsComment			= "Untangle HTTPS Inspector"
+nsComment			= "Untangle Certificate Authority"
 
 # PKIX recommendations harmless if included in all certificates.
 subjectKeyIdentifier=hash
@@ -277,7 +277,7 @@ basicConstraints=CA:FALSE
 # keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 
 # This will be displayed in Netscape's comment listbox.
-nsComment			= "Untangle HTTPS Inspector"
+nsComment			= "Untangle Certificate Authority"
 
 # PKIX recommendations harmless if included in all certificates.
 subjectKeyIdentifier=hash
@@ -416,7 +416,7 @@ basicConstraints=CA:FALSE
 # keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 
 # This will be displayed in Netscape's comment listbox.
-nsComment			= "Untangle HTTPS Inspector"
+nsComment			= "Untangle Certificate Authority"
 
 # PKIX recommendations harmless if included in all certificates.
 subjectKeyIdentifier=hash
