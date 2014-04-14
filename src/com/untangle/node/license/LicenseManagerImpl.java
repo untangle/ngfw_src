@@ -45,8 +45,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     
     private static final String EXPIRED = "expired";
 
-    /* update every 12 hours, leaves an hour window */
-    private static final long TIMER_DELAY = 1000 * 60 * 60 * 12;
+    /* update every 4 hours, leaves an hour window */
+    private static final long TIMER_DELAY = 1000 * 60 * 60 * 4;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -654,7 +654,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      */
     private int _getEstimatedNumDevices()
     {
-        return UvmContextFactory.context().hostTable().getMaxSize();
+        return UvmContextFactory.context().hostTable().getCurrentLicensedSize();
     }
 
     /**
