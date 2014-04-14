@@ -47,15 +47,22 @@ public class CaptureUserTable
         CaptureUserEntry local = new CaptureUserEntry(address, username, anonymous);
         userTable.put(address, local);
 
-        // for anonymous users clear the global capture username which
-        // shouldn't be required but always better safe than sorry
+        // For anonymous users clear the global capture username which
+        // shouldn't be required but always better safe than sorry.  We
+        // also set the captive portal flag to prevent the entry from being
+        // timed-out while active in our table.
         if (anonymous == true) {
-            UvmContextFactory.context().hostTable().getHostTableEntry(address, true).setUsernameCapture(null);
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
+            entry.setUsernameCapture(null);
+            entry.setCaptivePortal(true);
         }
 
-        // for all other users set the global capture username
+        // for all other users set the global capture username and also
+        // the captive portal flag so we don't get timed-out of the table
         else {
-            UvmContextFactory.context().hostTable().getHostTableEntry(address, true).setUsernameCapture(username);
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
+            entry.setUsernameCapture(username);
+            entry.setCaptivePortal(true);
         }
 
         return (local);
@@ -64,11 +71,14 @@ public class CaptureUserTable
     public boolean removeActiveUser(InetAddress address)
     {
         CaptureUserEntry user = userTable.get(address);
-        if (user == null)
-            return (false);
+        if (user == null) return (false);
         userTable.remove(address);
 
-        UvmContextFactory.context().hostTable().getHostTableEntry(address, true).setUsernameCapture(null);
+        // clear the capture username from the host table entry and turn
+        // of the captive portal flag so it knows we are all done 
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
+        entry.setUsernameCapture(null);
+        entry.setCaptivePortal(false);
         return (true);
     }
 
@@ -86,14 +96,12 @@ public class CaptureUserTable
 
             // if the ignoreCase flag is set we compare both as lowercase
             if (ignoreCase == true) {
-                if (username.toLowerCase().equals(item.getUserName().toLowerCase()) == true)
-                    return (item);
+                if (username.toLowerCase().equals(item.getUserName().toLowerCase()) == true) return (item);
             }
 
             // ignoreCase flag is not set so do a direct comparison
             else {
-                if (username.equals(item.getUserName()) == true)
-                    return (item);
+                if (username.equals(item.getUserName()) == true) return (item);
             }
         }
 

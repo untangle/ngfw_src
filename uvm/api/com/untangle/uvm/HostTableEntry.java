@@ -28,6 +28,7 @@ public class HostTableEntry implements Serializable, JSONString
     private String usernameAdConnector;
     private String usernameCapture;
 
+    private boolean captivePortal = false;
     private boolean penaltyBoxed = false;
     private long    penaltyBoxExitTime;
     private long    penaltyBoxEntryTime;
@@ -67,6 +68,9 @@ public class HostTableEntry implements Serializable, JSONString
 
     public String getUsernameCapture() { return this.usernameCapture; }
     public void setUsernameCapture( String newValue ) { this.usernameCapture = newValue; updateAccessTime(); }
+    
+    public boolean getCaptivePortal() { return this.captivePortal; }
+    public void setCaptivePortal( boolean newValue ) { this.captivePortal = newValue; updateAccessTime(); }
     
     public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
     public void setPenaltyBoxed( boolean newValue ) { this.penaltyBoxed = newValue; updateAccessTime(); }
