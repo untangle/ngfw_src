@@ -52,7 +52,7 @@ public class HostTableImpl implements HostTable
     private volatile Thread reverseLookupThread;
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
 
-    private int maxSize = 0;
+    private int maxLicensedSize = 0;
     
     protected HostTableImpl()
     {
@@ -416,9 +416,26 @@ public class HostTableImpl implements HostTable
         return this.hostTable.size();
     }
 
-    public int getMaxSize()
+    public int getCurrentLicensedSize()
     {
-        return this.maxSize;
+        int licenseSize = 0;
+
+        /**
+         * Only count hosts with getLastSessionTime() is > 0
+         * Meaning the UVM has processed sessions for that host
+         */
+        for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
+            HostTableEntry entry = i.next();
+            if (entry.getLastSessionTime() > 0)
+                licenseSize++;
+        }
+
+        return licenseSize;
+    }
+    
+    public int getMaxLicensedSize()
+    {
+        return this.maxLicensedSize;
     }
 
     public void clearTable()
@@ -448,8 +465,8 @@ public class HostTableImpl implements HostTable
                 realSize++;
         }
         
-        if (realSize > this.maxSize)
-            this.maxSize = realSize;
+        if (realSize > this.maxLicensedSize)
+            this.maxLicensedSize = realSize;
     }
 
     /**

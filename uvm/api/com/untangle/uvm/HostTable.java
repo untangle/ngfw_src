@@ -32,10 +32,15 @@ public interface HostTable
     HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
 
     /**
-     * return the largest size the table has ever been
+     * return the "license size" (the number of hosts applicable to licensing)
      */
-    int getMaxSize();
-        
+    int getCurrentLicensedSize();
+
+    /**
+     * return the largest license size the table has ever been
+     */
+    int getMaxLicensedSize();
+    
     /**
      * Save the specified entry for the specified addr
      * Will overwrite existing value

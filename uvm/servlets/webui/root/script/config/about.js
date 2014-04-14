@@ -25,13 +25,15 @@ if (!Ung.hasResource["Ung.About"]) {
             this.callParent(arguments);
         },
         buildServer: function() {
-            var serverUID, fullVersionAndRevision, kernelVersion, modificationState, rebootCount;
+            var serverUID, fullVersionAndRevision, kernelVersion, modificationState, rebootCount, licensedSized, maxLicensedSize;
             try {
                 serverUID = rpc.jsonrpc.UvmContext.getServerUID();
                 fullVersionAndRevision = rpc.adminManager.getFullVersionAndRevision();
                 kernelVersion = rpc.adminManager.getKernelVersion();
                 modificationState = rpc.adminManager.getModificationState();
                 rebootCount = rpc.adminManager.getRebootCount();
+                licensedSized = rpc.hostTable.getCurrentLicensedSize();
+                maxLicensedSize = rpc.hostTable.getMaxLicensedSize();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -68,7 +70,10 @@ if (!Ung.hasResource["Ung.About"]) {
                         value: this.i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
                             this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
                             this.i18n._('History') + ": " + modificationState + "\n" +
-                            this.i18n._('Reboots') + ": " + rebootCount
+                            this.i18n._('Reboots') + ": " + rebootCount + "\n" +
+                            this.i18n._('Current HostTable Size') + ": " + licensedSized + "\n" +
+                            this.i18n._('Max HostTable Size') + ": " + maxLicensedSize
+
                     }]
                 }]
             });
