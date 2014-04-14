@@ -46,6 +46,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "lastSessionTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
                             "usernameAdConnector": "uad"+ii,
+                            "captivePortal":(ii%2)==1,
                             "usernameCapture": "ucap"+(ii%50),
                             "penaltyBoxed":(ii%2)==1,
                             "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
@@ -55,7 +56,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "quotaIssueTime": 0,
                             "quotaExpirationTime": 0,
                             "httpUserAgent": (ii%3)?("MOZFirefox"+i):null,
-                            "httpUserAgentOs": (ii%4)?("Win"+ii):null,
+                            "httpUserAgentOs": (ii%4)?("Win"+ii):null
                         });
                     }
                 }
@@ -68,14 +69,14 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
         megaByteRenderer: function(bytes) {
             var units = ["bytes","Kbytes","Mbytes","Gbytes"];
             var units_itr = 0;
-            
+
             while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
                 bytes = bytes/1000;
                 units_itr++;
             }
-            
+
             bytes = Math.round(bytes*100)/100;
-            
+
             return "" + bytes + " " + units[units_itr];
         },
         getQuotaHosts: function() {
@@ -130,6 +131,8 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                 },{
                     name: "usernameAdConnector",
                     type: 'string'
+                },{
+                    name: "captivePortal"
                 },{
                     name: "usernameCapture",
                     type: 'string'
@@ -315,6 +318,16 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     }
                 },{
                     hidden: true,
+                    header: "Captive Portal" + " - " + this.i18n._("Authenticated"),
+                    dataIndex: "captivePortal",
+                    width: 100,
+                    filter: {
+                        type: 'boolean',
+                        yesText: 'true',
+                        noText: 'false'
+                    }
+                },{
+                    hidden: true,
                     header: "Captive Portal" + " - " + this.i18n._("Username"),
                     dataIndex: "usernameCapture",
                     width: 100,
@@ -389,10 +402,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             var id = Ext.id();
                             Ext.defer(function () {
                                 var button = Ext.widget('button', {
-                                    renderTo: id, 
-                                    text: this.i18n._("Release"), 
+                                    renderTo: id,
+                                    text: this.i18n._("Release"),
                                     width: 75,
-                                    handler: Ext.bind(function () { 
+                                    handler: Ext.bind(function () {
                                         Ext.MessageBox.wait(this.i18n._("Releasing host..."), this.i18n._("Please wait"));
                                         rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
                                             Ext.MessageBox.hide();
@@ -490,10 +503,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             var id = Ext.id();
                             Ext.defer(function () {
                                 var button = Ext.widget('button', {
-                                    renderTo: id, 
-                                    text: this.i18n._("Refill"), 
+                                    renderTo: id,
+                                    text: this.i18n._("Refill"),
                                     width: 75,
-                                    handler: Ext.bind(function () { 
+                                    handler: Ext.bind(function () {
                                         Ext.MessageBox.wait(this.i18n._("Refilling..."), this.i18n._("Please wait"));
                                         rpc.hostTable.refillQuota(Ext.bind(function(result,exception) {
                                             Ext.MessageBox.hide();
@@ -518,10 +531,10 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             var id = Ext.id();
                             Ext.defer(function () {
                                 var button = Ext.widget('button', {
-                                    renderTo: id, 
-                                    text: this.i18n._("Drop"), 
+                                    renderTo: id,
+                                    text: this.i18n._("Drop"),
                                     width: 75,
-                                    handler: Ext.bind(function () { 
+                                    handler: Ext.bind(function () {
                                         Ext.MessageBox.wait(this.i18n._("Removing Quota..."), this.i18n._("Please wait"));
                                         rpc.hostTable.removeQuota(Ext.bind(function(result,exception) {
                                             Ext.MessageBox.hide();
