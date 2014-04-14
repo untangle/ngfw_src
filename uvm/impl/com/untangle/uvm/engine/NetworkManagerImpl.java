@@ -794,6 +794,17 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
+         * Check for duplicate static DHCP reservations
+         */
+        LinkedList<String> entries = new LinkedList<String>();
+        for ( DhcpStaticEntry entry : networkSettings.getStaticDhcpEntries() ) {
+            if ( entries.contains( entry.getMacAddress() ) ) {
+                throw new RuntimeException( "Duplicate DHCP reservation: " + entry.getMacAddress() );
+            }
+            entries.add( entry.getMacAddress() );
+        }
+        
+        /**
          * Check that no IP is configured twice anywhere
          */
         List<InetAddress> addrs = new LinkedList<InetAddress>();
