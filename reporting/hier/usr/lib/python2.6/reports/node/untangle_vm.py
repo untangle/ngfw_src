@@ -355,8 +355,8 @@ class BandwidthUsage(Graph):
                               sum(throughput)/len(throughput),
                               N_('kB/s'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
-            lks.append(ks)
+            #ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
+            #lks.append(ks)
             ks = KeyStatistic(_('Data Transferred'), sum(throughput) * time_interval, N_('kB'))
             lks.append(ks)
 
