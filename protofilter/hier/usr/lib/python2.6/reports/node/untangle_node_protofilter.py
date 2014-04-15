@@ -31,8 +31,6 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
-from reports.distribute import distributeValues
-
 _ = reports.i18n_helper.get_translation('untangle-node-protofilter').lgettext
 
 class Protofilter(Node):
@@ -125,14 +123,7 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
 class DailyUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage', _('Usage'))
-        
-    @staticmethod
-    def protofilterDailyUsageDistributor(row, valueMap,current_date, chunks):
-        if current_date in valueMap:
-            valueMap[current_date] += row[2]/chunks
-        else:
-            valueMap[current_date] = row[2]/chunks;
-        
+
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
@@ -165,20 +156,15 @@ class DailyUsage(Graph):
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval,
-                                                 include_end_time = True)
+                                                 time_interval = time_interval)
             curs.execute(q, h)
 
             dates = []
             detections = []
-            valueMap = {}
             
             for r in curs.fetchall():
-                distributeValues(r,valueMap,time_interval, DailyUsage.protofilterDailyUsageDistributor)
-
-            for key in sorted(valueMap.keys()):
-                dates.append(key)
-                detections.append(valueMap[key])
+                dates.append(r[0])
+                detections.append(r[1])
 
             if not detections:
                 detections = [0,]
