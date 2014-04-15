@@ -155,7 +155,7 @@ class BandwidthUsage(Graph):
             elif user:
                 extra_where.append(("username = %(user)s" , { 'user' : user }))
 
-            time_interval = 60
+            time_interval = 3600
             q, h = sql_helper.get_averaged_query(sums, "reports.openvpn_stats",
                                                  start_date,
                                                  end_date,
