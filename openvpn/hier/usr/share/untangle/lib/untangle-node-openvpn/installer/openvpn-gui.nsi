@@ -36,7 +36,7 @@ SetCompressor lzma
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.3.2"
+!define OPENVPN_VERSION "2.3.3"
 !define GUI_VERSION "5.0.0"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
