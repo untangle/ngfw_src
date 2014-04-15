@@ -200,15 +200,36 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         _setSettings(newSettings);
     }
 
+    public List<GenericRule> getHttpFileExtensions()
+    {
+        return settings.getHttpFileExtensions();
+    }
+
     public void setHttpFileExtensions(List<GenericRule> fileExtensions)
     {
         settings.setHttpFileExtensions(fileExtensions);
         _setSettings(settings);
     }
 
-    public void setHttpMimeTypes(List<GenericRule> fileExtensions)
+    public List<GenericRule> getHttpMimeTypes()
     {
-        settings.setHttpMimeTypes(fileExtensions);
+        return settings.getHttpMimeTypes();
+    }
+
+    public void setHttpMimeTypes(List<GenericRule> mimeTypes)
+    {
+        settings.setHttpMimeTypes(mimeTypes);
+        _setSettings(settings);
+    }
+
+    public List<GenericRule> getPassSites()
+    {
+        return settings.getPassSites();
+    }
+
+    public void setPassSites(List<GenericRule> passSites)
+    {
+        settings.setPassSites(passSites);
         _setSettings(settings);
     }
 
@@ -304,6 +325,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     {
         VirusSettings vs = new VirusSettings();
         initMimeTypes(vs);
+        initPassSites(vs);
         initFileExtensions(vs);
 
         setSettings(vs);
@@ -315,6 +337,16 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         s.add(new GenericRule("message/*", "messages", "misc", null, true));
 
         vs.setHttpMimeTypes(s);
+    }
+
+    private void initPassSites(VirusSettings vs)
+    {
+        List<GenericRule> s = new LinkedList<GenericRule>();
+        s.add(new GenericRule(".*windowsupdate.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule(".*windowsupdate.microsoft.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule(".*update.microsoft.com", "Microsoft", "update", null, true));
+
+        vs.setPassSites(s);
     }
 
     private void initFileExtensions(VirusSettings vs)
@@ -390,6 +422,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
             logger.info("Loading Settings...");
 
             // UPDATE settings if necessary
+            if( readSettings.getPassSites().size() == 0 ){
+                 initPassSites( readSettings );
+            }
             
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());

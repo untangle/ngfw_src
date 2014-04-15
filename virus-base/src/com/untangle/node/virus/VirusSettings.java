@@ -28,6 +28,7 @@ public class VirusSettings implements Serializable
     
     private List<GenericRule> httpMimeTypes = new LinkedList<GenericRule>();
     private List<GenericRule> httpFileExtensions = new LinkedList<GenericRule>();
+    private List<GenericRule> passSites = new LinkedList<GenericRule>();
 
     // constructors -----------------------------------------------------------
 
@@ -49,6 +50,9 @@ public class VirusSettings implements Serializable
 
     public List<GenericRule> getHttpMimeTypes() { return httpMimeTypes; }
     public void setHttpMimeTypes(List<GenericRule> httpMimeTypes) { this.httpMimeTypes = httpMimeTypes; }
+
+    public List<GenericRule> getPassSites() { return passSites; }
+    public void setPassSites(List<GenericRule> passSites) { this.passSites = passSites; }
 
     public List<GenericRule> getHttpFileExtensions() { return httpFileExtensions; }
     public void setHttpFileExtensions(List<GenericRule> httpFileExtensions) { this.httpFileExtensions = httpFileExtensions; }

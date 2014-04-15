@@ -42,10 +42,6 @@ class VirusHttpHandler extends HttpStateMachine
     private final Logger logger = Logger.getLogger(getClass());
 
     private final VirusNodeImpl node;
-
-    private static final Pattern[] passlist = { Pattern.compile(".*windowsupdate.com"),
-                                                Pattern.compile(".*windowsupdate.microsoft.com"),
-                                                Pattern.compile(".*update.microsoft.com")};
     
     private boolean scan;
     private long bufferingStart;
@@ -425,11 +421,16 @@ class VirusHttpHandler extends HttpStateMachine
             return false;
         host = host.toLowerCase();
 
-        for ( Pattern pat : VirusHttpHandler.passlist ) {
-            if (pat.matcher( host ).matches())
-                return true;
+        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
+            GenericRule sr = i.next();
+            if (sr.getEnabled() ){
+                //&& sr.getString().equalsIgnoreCase(extension)) {
+                Pattern p = Pattern.compile(sr.getString());
+                if( p.matcher( host ).matches() ){
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 }

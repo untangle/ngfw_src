@@ -8,6 +8,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.net.InetAddress;
 
 import javax.activation.DataHandler;
 import javax.mail.Part;
@@ -28,6 +32,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.node.GenericRule;
+
 
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
@@ -95,7 +101,15 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
                 this.logger.debug("Skipping part which does not need to be scanned");
                 continue;
             }
-            VirusScannerResult scanResult = scanPart(part);
+
+            VirusScannerResult scanResult;
+            if( ignoredHost( getSession().sessionEvent().getSServerAddr() ) ||
+                ignoredHost( getSession().sessionEvent().getCClientAddr() ) ){
+                scanResult = VirusScannerResult.CLEAN;
+                logger.warn("Passed in SMTP");
+            }else{
+                scanResult = scanPart(part);
+            }
 
             if (scanResult == null) {
                 this.logger.warn("Scanning returned null (error already reported).  Skip "
@@ -191,7 +205,15 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
                 this.logger.debug("Skipping part which does not need to be scanned");
                 continue;
             }
-            VirusScannerResult scanResult = scanPart(part);
+
+            VirusScannerResult scanResult;
+            if( ignoredHost( getSession().sessionEvent().getSServerAddr() ) ||
+                ignoredHost( getSession().sessionEvent().getCClientAddr() ) ){
+                scanResult = VirusScannerResult.CLEAN;
+                logger.warn("Passed in SMTP");
+            }else{
+                scanResult = scanPart(part);
+            }
 
             if (scanResult == null) {
                 this.logger.warn("Scanning returned null (error already reported).  Skip "
@@ -298,4 +320,25 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
             return null;
         }
     }
+
+    private boolean ignoredHost( InetAddress host )
+    {
+        if (host == null)
+            return false;
+
+        for (Iterator<GenericRule> i = virusImpl.getSettings().getPassSites().iterator(); i.hasNext();) {
+            GenericRule sr = i.next();
+            if (sr.getEnabled() ){
+                Pattern p = Pattern.compile(sr.getString());
+                if( p.matcher( host.getHostName() ).matches() ){
+                    return true;
+                }
+                if( p.matcher( host.getHostAddress() ).matches() ){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

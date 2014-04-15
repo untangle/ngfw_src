@@ -17,14 +17,40 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
+            this.buildPassSites();
             this.buildWebEventLog();
             this.buildMailEventLog();
             this.buildFtpEventLog();
             
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridWebEventLog, this.gridMailEventLog, this.gridFtpEventLog]);
+            this.buildTabPanel([
+                this.panelWeb, 
+                this.panelEmail, 
+                this.panelFtp, 
+                this.panelPassSites,
+                this.gridWebEventLog, 
+                this.gridMailEventLog, 
+                this.gridFtpEventLog
+            ]);
             this.callParent(arguments);
         },
+
+        save: function( isApply ){
+            var settingsCmp = this;
+            for( var i = 0; i < this.tabs.items.items.length; i++ ){
+                var panel = this.tabs.items.items[i];
+                for( var j = 0; j < panel.items.items.length; j++ ){
+                    var cmp = panel.items.items[j];
+                    if( cmp.getList ){
+                        cmp.getList( function( saveList ){
+                            settingsCmp.settings[cmp.dataProperty] = saveList;
+                        }, true);
+                    }
+                }
+            }
+            this.callParent( arguments );
+        },
+
         // Web Panel
         buildWeb: function() {
             this.panelWeb = Ext.create('Ext.panel.Panel',{
@@ -35,6 +61,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 // private fields
                 winExtensions: null,
                 winMimeTypes: null,
+                winPassSites: null,
                 parentId: this.getId(),
 
                 title: this.i18n._('Web'),
@@ -74,7 +101,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                 this.panelWeb.onManageExtensions();
                             }, this)
                         }
-                    }, {
+                    },{
                         xtype:'fieldset',
                         items: {
                             xtype: 'button',
@@ -194,8 +221,63 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }
                     this.winMimeTypes.show();
                 },
+                onManagePassSites: function() {
+                    if (!this.winPassSites) {
+                        var settingsCmp = Ext.getCmp(this.parentId);
+                        settingsCmp.buildPassSites();
+                        this.winPassSites = Ext.create('Ung.ManageListWindow',{
+                            breadcrumbs: [{
+                                title: i18n._(rpc.currentPolicy.name),
+                                action: Ext.bind(function() {
+                                    Ung.Window.cancelAction(
+                                       this.gridPassSites.isDirty() || this.isDirty(),
+                                       Ext.bind(function() {
+                                            this.panelWeb.winPassSites.closeWindow();
+                                            this.closeWindow();
+                                       }, this)
+                                    );
+                                },settingsCmp)
+                            }, {
+                                title: settingsCmp.node.displayName,
+                                action: Ext.bind(function() {
+                                    this.panelWeb.winPassSites.cancelAction();
+                                },settingsCmp)
+                            }, {
+                                title: settingsCmp.i18n._("Web"),
+                                action: Ext.bind(function() {
+                                    this.panelWeb.winPassSites.cancelAction();
+                                },settingsCmp)
+                            }, {
+                                title: settingsCmp.i18n._("Pass Sites")
+                            }],
+                            grid: settingsCmp.gridPassSites,
+                            applyAction: function(callback) {
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                settingsCmp.gridPassSites.getList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setPassSites(Ext.bind(function(result, exception) {
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settings.passSites = result.passSites;
+                                            this.gridPassSites.clearDirty();
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }, this));
+                                    }, this), saveList);
+                                },settingsCmp));
+                            }
+                        });
+                    }
+                    this.winPassSites.show();
+                },
                 beforeDestroy: function() {
-                    Ext.destroy( this.winExtensions, this.winMimeTypes);
+                    Ext.destroy( 
+                        this.winExtensions, 
+                        this.winMimeTypes, 
+                        this.winPassSites
+                    );
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
             });
@@ -435,6 +517,94 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
                 }]
 
+            });
+        },
+        // Pass Sites
+        buildPassSites: function() {
+            this.gridPassSites = Ext.create('Ung.EditorGrid', {
+                name: 'Pass Sites',
+                settingsCmp: this,
+                emptyRow: {
+                    "string": "site",
+                    "enabled": true,
+                    "name": this.i18n._("[no description]")
+                },
+                flex: 1, 
+                title: this.i18n._("Pass Sites"),
+                recordJavaClass: "com.untangle.uvm.node.GenericRule",
+                dataProperty: "passSites",
+                fields: Ung.Util.getGenericRuleFields(this),
+                columns: [{
+                    header: this.i18n._("Site"),
+                    width: 200,
+                    dataIndex: 'string',
+                    editor:{
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },{
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Pass"),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width:55
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1,
+                    field: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                }],
+                sortField: 'string',
+                columnsDefaultSortable: true,
+                rowEditorInputLines: [{
+                    xtype:'textfield',
+                    name: "Site",
+                    dataIndex: "string",
+                    fieldLabel: this.i18n._("Site"),
+                    allowBlank: false,
+                    width: 400
+                },{    
+                    xtype:'checkbox',
+                    name: "Scan",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Pass")
+                },{
+                    xtype:'textarea',
+                    name: "Description",
+                    dataIndex: "description",
+                    fieldLabel: this.i18n._("Description"),
+                    width: 400,
+                    height: 60
+                }]
+            });
+
+            this.panelPassSites = Ext.create('Ext.panel.Panel',{
+                name: 'Pass Sites',
+                helpSource: this.helpSourceName + '_pass_sites',
+                parentId: this.getId(),
+                title: this.i18n._("Pass Sites"),
+                cls: 'ung-panel',
+                autoScroll: true,
+                defaults: {
+                    xtype: 'fieldset',
+                    buttonAlign: 'left'
+                },
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    cls: 'description',
+                    title: this.i18n . _("Pass Sites"),
+                    html: this.i18n . _("Don't scan traffic to the specified sites.  Use caution!"),
+                    style: "margin-bottom: 10px;"
+                },
+                    this.gridPassSites
+                ]
             });
         },
         // Event Log

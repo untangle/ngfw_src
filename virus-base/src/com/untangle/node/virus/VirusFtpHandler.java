@@ -12,6 +12,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +36,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-
+import com.untangle.uvm.node.GenericRule;
 /**
  * Handler for the FTP protocol.
  */
@@ -220,12 +224,17 @@ class VirusFtpHandler extends FtpStateMachine
 
         try {
             node.incrementScanCount();
-            result = node.getScanner().scanFile(file);
+            if( ignoredHost( getSession().sessionEvent().getSServerAddr() ) ){
+                result = VirusScannerResult.CLEAN;
+            }else{
+                result = node.getScanner().scanFile(file);                
+            }
         } catch (Exception exn) {
             // Should never happen
             throw new TokenException("could not scan TokenException", exn);
         }
 
+        // !!! only log if result was not isClean()
         /* XXX handle the case where result is null */
         String fileName = (String)getSession().globalAttachment(NodeSession.KEY_FTP_FILE_NAME);
         node.logEvent(new VirusFtpEvent(getSession().sessionEvent(), result, node.getName(), fileName));
@@ -299,5 +308,25 @@ class VirusFtpHandler extends FtpStateMachine
             return fileNamesByCtlSessionId.remove(ctlSessionId);
         }
         return null;
+    }
+
+    private boolean ignoredHost( InetAddress host )
+    {
+        if (host == null)
+            return false;
+
+        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
+            GenericRule sr = i.next();
+            if (sr.getEnabled() ){
+                Pattern p = Pattern.compile(sr.getString());
+                if( p.matcher( host.getHostName() ).matches() ){
+                    return true;
+                }
+                if( p.matcher( host.getHostAddress() ).matches() ){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
