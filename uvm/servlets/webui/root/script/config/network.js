@@ -214,6 +214,8 @@ if (!Ung.hasResource["Ung.Network"]) {
         panelPortForwardRules: null,
         panelNatRules: null,
         panelRoutes: null,
+        panelDnsServer: null,
+        panelDhcpServer: null,
         panelAdvanced: null,
         panelTroubleshooting: null,
 
@@ -255,11 +257,13 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.buildNatRules();
             this.buildBypassRules();
             this.buildRoutes();
+            this.buildDnsServer();
+            this.buildDhcpServer();
             this.buildAdvanced();
             this.buildTroubleshooting();
             
             // builds the tab panel with the tabs
-            this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelAdvanced, this.panelTroubleshooting ]);
+            this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelDnsServer, this.panelDhcpServer, this.panelAdvanced, this.panelTroubleshooting ]);
 
             // Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
             // in order to make the user save the valid settings when new WANs are added
@@ -3137,14 +3141,286 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, this.routeArea, this.routeButton]
             });
         },
+        // DnsServer Panel
+        buildDnsServer: function() {
+            this.gridDnsStaticEntries = Ext.create( 'Ung.EditorGrid', {
+                flex: 1,
+                name: 'Static DNS Entries',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "name": this.i18n._("[no name]"),
+                    "address": "1.2.3.4",
+                    "javaClass": "com.untangle.uvm.network.DnsStaticEntry"
+                },
+                title: this.i18n._("Static DNS Entries"),
+                recordJavaClass: "com.untangle.uvm.network.DnsStaticEntry",
+                dataExpression:'settings.dnsSettings.staticEntries.list',
+                fields: [{
+                    name: 'name'
+                }, {
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
+                }],
+                columnsDefaultSortable: true,
+                columns: [{
+                    header: this.i18n._("Name"),
+                    width: 200,
+                    dataIndex: 'name',
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter name]"),
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'address',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter address]"),
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                }]
+            });
+            this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
+                flex: 1,
+                margin: '5 0 0 0',
+                name: 'Local DNS Servers',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "domain": this.i18n._("[no domain]"),
+                    "localServer": "1.2.3.4",
+                    "javaClass": "com.untangle.uvm.network.DnsLocalServer"
+                },
+                title: this.i18n._("Local DNS Servers"),
+                recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
+                dataExpression:'settings.dnsSettings.localServers.list',
+                fields: [{
+                    name: 'domain'
+                }, {
+                    name: 'localServer',
+                    sortType: Ung.SortTypes.asIp
+                }],
+                columnsDefaultSortable: true,
+                columns: [{
+                    header: this.i18n._("Domain"),
+                    width: 200,
+                    dataIndex: 'domain',
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter domain]"),
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Local Server"),
+                    dataIndex: 'localServer',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter local server]"),
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                }]
+            });
+            this.panelDnsServer = Ext.create('Ext.panel.Panel',{
+                name: 'DnsServer',
+                helpSource: 'network_dns_server',
+                parentId: this.getId(),
+                title: this.i18n._('DNS Server'),
+                layout: { type: 'vbox', align: 'stretch' },
+                cls: 'ung-panel',
+                items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
+            });
+        },        
+        // DhcpServer Panel
+        buildDhcpServer: function() {
+            this.gridDhcpStaticEntries = Ext.create( 'Ung.EditorGrid', {
+                flex: 1,
+                name: 'Static DHCP Entries',
+                settingsCmp: this,
+                paginated: false,
+                hasEdit: false,
+                emptyRow: {
+                    "macAddress": "11:22:33:44:55:66",
+                    "address": "1.2.3.4",
+                    "description": this.i18n._("[no description]"),
+                    "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
+                },
+                title: this.i18n._("Static DHCP Entries"),
+                recordJavaClass: "com.untangle.uvm.network.DhcpStaticEntry",
+                dataExpression:'settings.staticDhcpEntries.list',
+                fields: [{
+                    name: 'macAddress'
+                }, {
+                    name: 'address',
+                    sortType: Ung.SortTypes.asIp
+                }, {
+                    name: 'description'
+                }],
+                columnsDefaultSortable: true,
+                columns: [{
+                    header: this.i18n._("MAC Address"),
+                    width: 200,
+                    dataIndex: 'macAddress',
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter MAC address]"),
+                        allowBlank:false
+                    }
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex: 'address',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter address]"),
+                        allowBlank: false,
+                        vtype:"ipAddress"
+                    }
+                },{
+                    header: this.i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: this.i18n._("[enter description]"),
+                        allowBlank:false
+                    }
+                }],
+                onAddStatic: function(rec) {
+                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), {
+                        "macAddress": rec.get("macAddress"),
+                        "address": rec.get("address"),
+                        "description": rec.get("hostname"),
+                        "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
+                    });
+                    record.set("internalId", this.genAddedId());
+                    this.stopEditing();
+                    this.getStore().insert(0, [record]);
+                    this.updateChangedData(record, "added");
+                }
+            });
+            
+            var addStaticColumn = Ext.create('Ext.grid.column.Action',{
+                header: this.i18n._("Add Static"),
+                width: 100,
+                iconCls: 'icon-add-inline-row',
+                init: function(grid) {
+                    this.grid = grid;
+                },
+                handler: function(view, rowIndex) {
+                    var record = view.getStore().getAt(rowIndex);
+                    // add static
+                    this.grid.settingsCmp.gridDhcpStaticEntries.onAddStatic(record);
+                }
+            });
+
+            this.gridCurrentDhcpLeases = Ext.create('Ung.EditorGrid',{
+                name: "gridCurrentDhcpLeases",
+                flex: 1,
+                settingsCmp: this,
+                parentId: this.getId(),
+                hasAdd: false,
+                hasEdit: false,
+                hasDelete: false,
+                columnsDefaultSortable: true,
+                title: this.i18n._("Current DHCP Leases"),
+                paginated: false,
+                bbar: Ext.create('Ext.toolbar.Toolbar', {
+                    items: [
+                        '-',
+                        {
+                            xtype: 'button',
+                            id: "refresh_"+this.getId(),
+                            text: this.i18n._('Refresh'),
+                            name: "Refresh",
+                            tooltip: this.i18n._('Refresh'),
+                            iconCls: 'icon-refresh',
+                            handler: function() {
+                                this.gridCurrentDhcpLeases.reload();
+                            },
+                            scope: this
+                        }
+                    ]
+                }),
+                dataRoot: null,
+                dataFn: function() {
+                    var leaseText;
+                    try {
+                        leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+
+                    var lines = leaseText.split("\n");
+                    var leases = [];
+                    for ( var i = 0 ; i < lines.length ; i++ ) {
+                        if ( lines[i] === null || lines[i] === "" ) continue;
+                        
+                        var lineparts = lines[i].split(/\s+/);
+                        leases.push( {
+                            date: lineparts[0],
+                            macAddress: lineparts[1],
+                            address: lineparts[2],
+                            hostname: lineparts[3],
+                            clientId: lineparts[4]
+                        } );
+                    }
+                    return leases;
+                },
+                fields: [{
+                    name: "date"
+                },{
+                    name: "macAddress"
+                },{
+                    name: "address",
+                    sortType: Ung.SortTypes.asIp
+                },{
+                    name: "hostname"
+                }],
+                columns: [{
+                    header: this.i18n._("MAC Address"),
+                    dataIndex:'macAddress',
+                    width: 150
+                },{
+                    header: this.i18n._("Address"),
+                    dataIndex:'address',
+                    width: 200
+                },{
+                    header: this.i18n._("Hostname"),
+                    dataIndex:'hostname',
+                    width: 200
+                },{
+                    header: this.i18n._("Expiration Time"),
+                    dataIndex:'date',
+                    width: 180,
+                    renderer: function(value) { return i18n.timestampFormat(value*1000); }
+                }, addStaticColumn],
+                plugins: [addStaticColumn]
+            });
+
+            this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
+                name: 'DhcpServer',
+                helpSource: 'network_dhcp_server',
+                parentId: this.getId(),
+                title: this.i18n._('DHCP Server'),
+                layout: { type: 'vbox', align: 'stretch' },
+                cls: 'ung-panel',
+                items: [ this.gridDhcpStaticEntries, this.gridCurrentDhcpLeases]
+            });
+        },        
         // Advanced Panel
         buildAdvanced: function() {
-
             this.buildOptions();
             this.buildQoS();
             this.buildFilter();
-            this.buildDnsServer();
-            this.buildDhcpServer();
+            this.buildDnsDhcp();
             this.buildNetworkCards();
 
             this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
@@ -3153,7 +3429,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 parentId: this.getId(),
                 autoHeight: true,
                 flex: 1,
-                items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsServer, this.panelDhcpServer, this.gridNetworkCards ]
+                items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsDhcp, this.gridNetworkCards ]
             });
             
             this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -3882,6 +4158,37 @@ if (!Ung.hasResource["Ung.Network"]) {
             }));
             this.gridQosWanBandwidth.updateTotalBandwidth();
         },
+        // DNS & DHCP
+        buildDnsDhcp: function (){
+            this.panelDnsDhcp = Ext.create('Ext.panel.Panel',{
+                name: 'DNS & DHCP',
+                helpSource: 'network_dhcp_server',
+                parentId: this.getId(),
+                title: this.i18n._('DNS & DHCP'),
+                autoScroll: true,
+                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
+                cls: 'ung-panel',
+                items: [{
+                     border: false,
+                     cls: 'description',
+                     html: "<br/><b>" + this.i18n._('Custom dnsmasq options.') + "</b><br/>" +
+                         "<font color=\"red\">" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
+                     style: "padding-bottom: 10px;"
+                 }, {
+                     xtype: "textarea",
+                     width : 397,
+                     flex: 1,
+                     value: this.settings.dnsmasqOptions,
+                     listeners: {
+                         "change": {
+                             fn: Ext.bind(function(elem, newValue) {
+                                 this.settings.dnsmasqOptions = newValue;
+                             }, this)
+                         }
+                     }
+                 }]
+            });
+        },
         // Filter Panel
         buildFilter: function() {
             this.gridForwardFilterRules = Ext.create( 'Ung.EditorGrid', {
@@ -4113,305 +4420,6 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }]
             }));
         },
-        // DnsServer Panel
-        buildDnsServer: function() {
-            this.gridDnsStaticEntries = Ext.create( 'Ung.EditorGrid', {
-                flex: 1,
-                name: 'Static DNS Entries',
-                settingsCmp: this,
-                paginated: false,
-                hasEdit: false,
-                emptyRow: {
-                    "name": this.i18n._("[no name]"),
-                    "address": "1.2.3.4",
-                    "javaClass": "com.untangle.uvm.network.DnsStaticEntry"
-                },
-                title: this.i18n._("Static DNS Entries"),
-                recordJavaClass: "com.untangle.uvm.network.DnsStaticEntry",
-                dataExpression:'settings.dnsSettings.staticEntries.list',
-                fields: [{
-                    name: 'name'
-                }, {
-                    name: 'address',
-                    sortType: Ung.SortTypes.asIp
-                }],
-                columnsDefaultSortable: true,
-                columns: [{
-                    header: this.i18n._("Name"),
-                    width: 200,
-                    dataIndex: 'name',
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter name]"),
-                        allowBlank:false
-                    }
-                },{
-                    header: this.i18n._("Address"),
-                    dataIndex: 'address',
-                    flex: 1,
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter address]"),
-                        allowBlank: false,
-                        vtype:"ipAddress"
-                    }
-                }]
-            });
-            this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
-                flex: 1,
-                margin: '5 0 0 0',
-                name: 'Local DNS Servers',
-                settingsCmp: this,
-                paginated: false,
-                hasEdit: false,
-                emptyRow: {
-                    "domain": this.i18n._("[no domain]"),
-                    "localServer": "1.2.3.4",
-                    "javaClass": "com.untangle.uvm.network.DnsLocalServer"
-                },
-                title: this.i18n._("Local DNS Servers"),
-                recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
-                dataExpression:'settings.dnsSettings.localServers.list',
-                fields: [{
-                    name: 'domain'
-                }, {
-                    name: 'localServer',
-                    sortType: Ung.SortTypes.asIp
-                }],
-                columnsDefaultSortable: true,
-                columns: [{
-                    header: this.i18n._("Domain"),
-                    width: 200,
-                    dataIndex: 'domain',
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter domain]"),
-                        allowBlank:false
-                    }
-                },{
-                    header: this.i18n._("Local Server"),
-                    dataIndex: 'localServer',
-                    flex: 1,
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter local server]"),
-                        allowBlank: false,
-                        vtype:"ipAddress"
-                    }
-                }]
-            });
-            this.panelDnsServer = Ext.create('Ext.panel.Panel',{
-                name: 'DnsServer',
-                helpSource: 'network_dns_server',
-                parentId: this.getId(),
-                title: this.i18n._('DNS Server'),
-                layout: { type: 'vbox', align: 'stretch' },
-                cls: 'ung-panel',
-                items: [ this.gridDnsStaticEntries, this.gridDnsLocalServers ]
-            });
-        },        
-        // DhcpServer Panel
-        buildDhcpServer: function() {
-            this.gridDhcpStaticEntries = Ext.create( 'Ung.EditorGrid', {
-                height: 200,
-                name: 'Static DHCP Entries',
-                settingsCmp: this,
-                paginated: false,
-                hasEdit: false,
-                emptyRow: {
-                    "macAddress": "11:22:33:44:55:66",
-                    "address": "1.2.3.4",
-                    "description": this.i18n._("[no description]"),
-                    "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
-                },
-                title: this.i18n._("Static DHCP Entries"),
-                recordJavaClass: "com.untangle.uvm.network.DhcpStaticEntry",
-                dataExpression:'settings.staticDhcpEntries.list',
-                fields: [{
-                    name: 'macAddress'
-                }, {
-                    name: 'address',
-                    sortType: Ung.SortTypes.asIp
-                }, {
-                    name: 'description'
-                }],
-                columnsDefaultSortable: true,
-                columns: [{
-                    header: this.i18n._("MAC Address"),
-                    width: 200,
-                    dataIndex: 'macAddress',
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter MAC address]"),
-                        allowBlank:false
-                    }
-                },{
-                    header: this.i18n._("Address"),
-                    dataIndex: 'address',
-                    flex: 1,
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter address]"),
-                        allowBlank: false,
-                        vtype:"ipAddress"
-                    }
-                },{
-                    header: this.i18n._("Description"),
-                    width: 200,
-                    dataIndex: 'description',
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter description]"),
-                        allowBlank:false
-                    }
-                }],
-                onAddStatic: function(rec) {
-                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), {
-                        "macAddress": rec.get("macAddress"),
-                        "address": rec.get("address"),
-                        "description": rec.get("hostname"),
-                        "javaClass": "com.untangle.uvm.network.DhcpStaticEntry"
-                    });
-                    record.set("internalId", this.genAddedId());
-                    this.stopEditing();
-                    this.getStore().insert(0, [record]);
-                    this.updateChangedData(record, "added");
-                }
-            });
-            
-            var addStaticColumn = Ext.create('Ext.grid.column.Action',{
-                header: this.i18n._("Add Static"),
-                width: 100,
-                iconCls: 'icon-add-inline-row',
-                init: function(grid) {
-                    this.grid = grid;
-                },
-                handler: function(view, rowIndex) {
-                    var record = view.getStore().getAt(rowIndex);
-                    // add static
-                    this.grid.settingsCmp.gridDhcpStaticEntries.onAddStatic(record);
-                }
-            });
-
-            
-            this.gridCurrentDhcpLeases = Ext.create('Ung.EditorGrid',{
-                name: "gridCurrentDhcpLeases",
-                height: 200,
-                settingsCmp: this,
-                parentId: this.getId(),
-                hasAdd: false,
-                hasEdit: false,
-                hasDelete: false,
-                columnsDefaultSortable: true,
-                title: this.i18n._("Current DHCP Leases"),
-                paginated: false,
-                bbar: Ext.create('Ext.toolbar.Toolbar', {
-                    items: [
-                        '-',
-                        {
-                            xtype: 'button',
-                            id: "refresh_"+this.getId(),
-                            text: this.i18n._('Refresh'),
-                            name: "Refresh",
-                            tooltip: this.i18n._('Refresh'),
-                            iconCls: 'icon-refresh',
-                            handler: function() {
-                                this.gridCurrentDhcpLeases.reload();
-                            },
-                            scope: this
-                        }
-                    ]
-                }),
-                dataRoot: null,
-                dataFn: function() {
-                    var leaseText;
-                    try {
-                        leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-
-                    var lines = leaseText.split("\n");
-                    var leases = [];
-                    for ( var i = 0 ; i < lines.length ; i++ ) {
-                        if ( lines[i] === null || lines[i] === "" ) continue;
-                        
-                        var lineparts = lines[i].split(/\s+/);
-                        leases.push( {
-                            date: lineparts[0],
-                            macAddress: lineparts[1],
-                            address: lineparts[2],
-                            hostname: lineparts[3],
-                            clientId: lineparts[4]
-                        } );
-                    }
-                    return leases;
-                },
-                fields: [{
-                    name: "date"
-                },{
-                    name: "macAddress"
-                },{
-                    name: "address",
-                    sortType: Ung.SortTypes.asIp
-                },{
-                    name: "hostname"
-                }],
-                columns: [{
-                    header: this.i18n._("MAC Address"),
-                    dataIndex:'macAddress',
-                    width: 150
-                },{
-                    header: this.i18n._("Address"),
-                    dataIndex:'address',
-                    width: 200
-                },{
-                    header: this.i18n._("Hostname"),
-                    dataIndex:'hostname',
-                    width: 200
-                },{
-                    header: this.i18n._("Expiration Time"),
-                    dataIndex:'date',
-                    width: 180,
-                    renderer: function(value) { return i18n.timestampFormat(value*1000); }
-                }, addStaticColumn],
-                plugins: [addStaticColumn]
-            });
-
-            this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
-                name: 'DhcpServer',
-                helpSource: 'network_dhcp_server',
-                parentId: this.getId(),
-                title: this.i18n._('DHCP Server'),
-                autoScroll: true,
-                layout: { type: 'vbox', pack: 'start', align: 'stretch' },
-                cls: 'ung-panel',
-                items: [ this.gridDhcpStaticEntries, {
-                             border: false,
-                             cls: 'description',
-                             style: "padding-bottom: 10px;"
-                         },
-                         this.gridCurrentDhcpLeases, {
-                             border: false,
-                             cls: 'description',
-                             html: "<br/><b>" + this.i18n._('Custom dnsmasq options.') + "</b><br/>" +
-                                 "<font color=\"red\">" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
-                             style: "padding-bottom: 10px;"
-                         }, {
-                             xtype: "textarea",
-                             width : 397,
-                             height : 140,                    
-                             value: this.settings.dnsmasqOptions,
-                             listeners: {
-                                 "change": {
-                                     fn: Ext.bind(function(elem, newValue) {
-                                         this.settings.dnsmasqOptions = newValue;
-                                     }, this)
-                                 }
-                             }
-                         }]
-            });
-        },        
         // NetworkCards Panel
         buildNetworkCards: function() {
             this.duplexStore = [
