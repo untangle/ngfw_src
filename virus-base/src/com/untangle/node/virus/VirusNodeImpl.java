@@ -342,9 +342,9 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private void initPassSites(VirusSettings vs)
     {
         List<GenericRule> s = new LinkedList<GenericRule>();
-        s.add(new GenericRule(".*windowsupdate.com", "Microsoft", "update", null, true));
-        s.add(new GenericRule(".*windowsupdate.microsoft.com", "Microsoft", "update", null, true));
-        s.add(new GenericRule(".*update.microsoft.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule("*windowsupdate.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule("*windowsupdate.microsoft.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule("*update.microsoft.com", "Microsoft", "update", null, true));
 
         vs.setPassSites(s);
     }

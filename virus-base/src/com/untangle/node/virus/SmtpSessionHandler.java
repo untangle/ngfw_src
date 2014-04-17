@@ -33,7 +33,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.node.GenericRule;
-
+import com.untangle.node.util.GlobUtil;
 
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
@@ -323,13 +323,20 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
 
     private boolean ignoredHost( InetAddress host )
     {
-        if (host == null)
+        if (host == null){
             return false;
+        }
+
+        Pattern p;
 
         for (Iterator<GenericRule> i = virusImpl.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
-                Pattern p = Pattern.compile(sr.getString());
+                p = (Pattern) sr.attachment();
+                if( null == p ){
+                    p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
+                    sr.attach( p );
+                }
                 if( p.matcher( host.getHostName() ).matches() ){
                     return true;
                 }

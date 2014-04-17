@@ -417,15 +417,20 @@ class VirusHttpHandler extends HttpStateMachine
 
     private boolean ignoredHost( String host )
     {
-        if (host == null)
+        if (host == null){
             return false;
+        }
         host = host.toLowerCase();
+        Pattern p;
 
         for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
-                //&& sr.getString().equalsIgnoreCase(extension)) {
-                Pattern p = Pattern.compile(sr.getString());
+                p = (Pattern) sr.attachment();
+                if( null == p ){
+                    p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
+                    sr.attach( p );
+                }
                 if( p.matcher( host ).matches() ){
                     return true;
                 }

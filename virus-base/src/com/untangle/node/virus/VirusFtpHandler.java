@@ -37,6 +37,7 @@ import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.node.GenericRule;
+import com.untangle.node.util.GlobUtil;
 /**
  * Handler for the FTP protocol.
  */
@@ -312,14 +313,19 @@ class VirusFtpHandler extends FtpStateMachine
 
     private boolean ignoredHost( InetAddress host )
     {
-        if (host == null)
+        if (host == null){
             return false;
-
+        }
+        Pattern p;
+        
         for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
-                Pattern p = Pattern.compile(sr.getString());
-                if( p.matcher( host.getHostName() ).matches() ){
+                p = (Pattern) sr.attachment();
+                if( null == p ){
+                    p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
+                    sr.attach( p );
+                }                if( p.matcher( host.getHostName() ).matches() ){
                     return true;
                 }
                 if( p.matcher( host.getHostAddress() ).matches() ){
