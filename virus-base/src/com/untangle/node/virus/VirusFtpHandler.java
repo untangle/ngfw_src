@@ -323,9 +323,14 @@ class VirusFtpHandler extends FtpStateMachine
             if (sr.getEnabled() ){
                 p = (Pattern) sr.attachment();
                 if( null == p ){
-                    p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
+                    try{
+                        p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
+                    }catch( Exception error ){
+                        logger.error("Unable to compile passSite="+sr.getString());
+                    }                    
                     sr.attach( p );
-                }                if( p.matcher( host.getHostName() ).matches() ){
+                }
+                if( p.matcher( host.getHostName() ).matches() ){
                     return true;
                 }
                 if( p.matcher( host.getHostAddress() ).matches() ){
