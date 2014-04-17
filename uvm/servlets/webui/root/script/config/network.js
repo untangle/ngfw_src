@@ -301,7 +301,10 @@ if (!Ung.hasResource["Ung.Network"]) {
                         return 'x-hide-display';
                     }
                 }
-            }); 
+            });
+            var duplexRenderer = Ext.bind(function(value) {
+                return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");
+            }, this);
             
             this.gridInterfaces = Ext.create('Ung.EditorGrid',{
                 flex: 1,
@@ -493,7 +496,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         } else if ( value == "MISSING" ) {
                             connectedStr = this.i18n._("missing");
                         }
-                        return "<div class='" + divClass + "'>" + connectedStr + "</div>";
+                        var title = record.get("mbit") + " " + duplexRenderer(record.get("duplex"));
+                        return "<div class='" + divClass + "' title='"+title+"'>" + connectedStr + "</div>";
                     }, this)
                 }, {
                     header: this.i18n._("Device"),
@@ -526,9 +530,20 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'imqDev',
                     width:80
                 }, {
+                    hidden: true,
+                    header: this.i18n._("Speed"),
+                    dataIndex: 'mbit',
+                    width: 90
+                }, {
+                    hidden: true,
+                    header: this.i18n._( "Duplex" ),
+                    dataIndex: 'duplex',
+                    width: 100,
+                    renderer: duplexRenderer
+                }, {
                     header: this.i18n._("Config"),
                     dataIndex: 'configType',
-                    width:100
+                    width: 100
                 }, {
                     header: this.i18n._("Current Address"),
                     dataIndex: 'v4Address',
@@ -804,9 +819,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 sortable: false,
                                 tdCls: 'ua-draggable',
                                 width: 100,
-                                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                                    return (value=="FULL_DUPLEX")?this.i18n._("full-duplex") : (value=="HALF_DUPLEX") ? this.i18n._("half-duplex") : this.i18n._("unknown");
-                                }, this)
+                                renderer: duplexRenderer
                             }, {
                                 header: this.i18n._( "Vendor" ),
                                 dataIndex: 'vendor',
