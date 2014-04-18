@@ -10,7 +10,7 @@ CHECK_ONLY="false"
 WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
-ACCEPTED_PREVIOUS_VERSION="10.1"
+ACCEPTED_PREVIOUS_VERSION="10.0|10.1"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
@@ -140,7 +140,9 @@ function expandFile()
     # Check that the version of the backup file is supported
     CURRENT_VERSION="`cat @PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
     BACKUP_VERSION="`cat $WORKING_DIR/$VERSION_FILE`"
-    if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ "$BACKUP_VERSION" != "$ACCEPTED_PREVIOUS_VERSION" ] ; then
+    echo $BACKUP_VERSION | grep -q '$ACCEPTED_PREVIOUS_VERSION'
+    PREV_VERSION_CHECK=$?
+    if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ $PREV_VERSION_CHECK != 0 ] ; then
         err "Backup file version not supported. ($BACKUP_VERSION)"
         return 1
     fi
