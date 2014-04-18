@@ -10,7 +10,7 @@ CHECK_ONLY="false"
 WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
-ACCEPTED_PREVIOUS_VERSION="10.0"
+ACCEPTED_PREVIOUS_VERSION="10.1"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
