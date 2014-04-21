@@ -128,7 +128,7 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
         pass
 
     subject = ('%s %s' % (company_name, length_name)) + ' ' + _('Report Summary') + ' ' + ('[%s]' % machine_name)
-    msgRoot['Subject'] = Header(subject, 'utf-8')
+    msgRoot['Subject'] = Header(subject, 'ascii')
     msgRoot['From'] = "%s" % Header(sender, 'ascii')
     msgRoot['To'] = "%s" % Header(receiver, 'ascii')
 
