@@ -215,9 +215,14 @@ public class JsonInterfaceImpl implements JsonInterface
         if (inboxRecords == null)
             return ActionResponse.EMPTY;
 
-        String[] sl = new String[addresses.length];
-        for (int c = 0; c < addresses.length; c++)
-            sl[c] = addresses[c].toLowerCase();
+        List<String> sl = new ArrayList<String>();
+        for (int c = 0; c < addresses.length; c++){
+            if (addresses[c] != null)
+                sl.add(addresses[c].toLowerCase());
+        }
+        
+        if ((sl.size() == 0) && (action != SAFELIST_ACTION.REPLACE))
+            return ActionResponse.EMPTY;
 
         String[] userSafelist = safelist.getSafelistContents(account);
         int currentSafelistSize = userSafelist.length;
@@ -225,7 +230,7 @@ public class JsonInterfaceImpl implements JsonInterface
         /* Add each of the entries. */
         switch (action) {
             case REPLACE:
-                userSafelist = safelist.replaceSafelist(account, sl);
+                userSafelist = safelist.replaceSafelist(account, sl.toArray(new String[0]));
                 break;
             case ADD:
                 for (String addr : sl)
@@ -244,6 +249,8 @@ public class JsonInterfaceImpl implements JsonInterface
         if (action != SAFELIST_ACTION.DELETE) {
             for (InboxRecord record : inboxRecords) {
                 for (String addr : addresses) {
+                    if (addr == null)
+                        continue;
                     if ( record.getMailSummary() == null )
                         continue;
                     if ( record.getMailSummary().getSender() == null )

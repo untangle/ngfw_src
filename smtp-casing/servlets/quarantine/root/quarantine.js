@@ -92,26 +92,78 @@ Ung.Quarantine.prototype = {
         }
         var selections = this.grid.getSelectionModel().getSelection();
         Ext.each(selections, function(item) {
-            addresses.push(item.data.sender);
+        	if(item.data.sender != null)
+        		addresses.push(item.data.sender);
         });
+        
         this.grid.getSelectionModel().deselectAll();
         this.grid.setDisabled( true );
         Ext.Function.defer(function() {
+        	if (addresses.length == 0){
+            	Ext.MessageBox.alert(i18n._("An error has occurred."), i18n._("No sender address to be added to safelist."));
+            	this.grid.setDisabled( false );
+            	return;
+            }
             this.rpc.safelist( Ext.bind(this.refreshTable, this ), inboxDetails.token, addresses );
         }, 1 ,this);
     },
 
-    refreshTable: function( result, exception ) {
-        Ext.MessageBox.hide();
-        if ( exception ) {
-            var message = exception.message;
-            if (message == null || message == "Unknown") {
-                message = i18n._("Please Try Again");
+    handleException: function(exception) {
+        if(exception) {
+            console.error("handleException:", exception);
+            if(exception.message == null) {
+                exception.message = "";
+            }
+            var message = null;
+            
+            /* handle connection lost */
+            if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+                /* handle connection lost (this happens on windows only for some reason) */
+                (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
+                /* special text for "method not found" and "Service Temporarily Unavailable" */
+                exception.message.indexOf("method not found") != -1 ||
+                exception.message.indexOf("Service Unavailable") != -1 ||
+                exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
+                exception.message.indexOf("This application is not currently available") != -1) {
+                message  = i18n._("The connection to the server has been lost.") + "<br/>";
+                message += i18n._("Press OK to return to the login page.") + "<br/>";
+                
+            }
+            /* worst case - just say something */
+            if (message == null) {
+                if ( exception && exception.message ) {
+                    message = i18n._("An error has occurred") + ":" + "<br/>"  + exception.message;
+                } else {
+                    message = i18n._("An error has occurred.");
+                }
             }
             
-            Ext.MessageBox.alert("Failed",message);
-            return;
+            var details = "";
+            if ( exception ) {
+                if ( exception.javaStack )
+                    exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+                if ( exception.name )
+                    details += "<b>" + i18n._("Exception name") +":</b> " + exception.name + "<br/><br/>";
+                if ( exception.code )
+                    details += "<b>" + i18n._("Exception code") +":</b> " + exception.code + "<br/><br/>";
+                if ( exception.message )
+                    details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( exception.javaStack )
+                    details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
+                if ( exception.stack ) 
+                    details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+                details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
+            }
+            Ext.MessageBox.alert(message, details);
+           
+            return true;
         }
+        return false;
+    },
+    refreshTable: function( result, exception ) {
+        Ext.MessageBox.hide();
+        
+        if(this.handleException(exception)) return;
 
         try {
             /* to refresh the buttons at the bottom */
