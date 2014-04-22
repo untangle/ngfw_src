@@ -4175,7 +4175,7 @@ if (!Ung.hasResource["Ung.Network"]) {
         buildDnsDhcp: function (){
             this.panelDnsDhcp = Ext.create('Ext.panel.Panel',{
                 name: 'DNS & DHCP',
-                helpSource: 'network_dhcp_server',
+                helpSource: 'network_dns_and_dhcp',
                 parentId: this.getId(),
                 title: this.i18n._('DNS & DHCP'),
                 autoScroll: true,
