@@ -585,6 +585,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.panelPassSites = Ext.create('Ext.panel.Panel',{
                 name: 'Pass Sites',
                 helpSource: this.helpSourceName + '_pass_sites',
+                //helpSource: 'virus_blocker_pass_sites',
+                //helpSource: 'virus_blocker_lite_pass_sites',
                 parentId: this.getId(),
                 title: this.i18n._("Pass Sites"),
                 cls: 'ung-panel',
@@ -600,7 +602,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 items: [{
                     cls: 'description',
                     title: this.i18n . _("Pass Sites"),
-                    html: this.i18n . _("Don't scan traffic to the specified sites.  Use caution!"),
+                    html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!"),
                     style: "margin-bottom: 10px;"
                 },
                     this.gridPassSites
