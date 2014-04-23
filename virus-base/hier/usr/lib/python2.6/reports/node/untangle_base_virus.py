@@ -39,8 +39,8 @@ from reports.sql_helper import print_timing
 _ = reports.i18n_helper.get_translation('untangle-base-virus').lgettext
 
 class VirusBaseNode(Node):
-    def __init__(self, node_name, vendor_name):
-        Node.__init__(self, node_name)
+    def __init__(self, node_name, title, vendor_name):
+        Node.__init__(self, node_name, title)
         self.__vendor_name = vendor_name
 
     def parents(self):

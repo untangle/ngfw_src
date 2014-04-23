@@ -4,6 +4,6 @@
         "name" : "untangle-casing-http",
         "displayName" : "HTTP Casing",
         "type" : "SERVICE",
-        "invisible" : True
+        "invisible" : "True"
 }
 

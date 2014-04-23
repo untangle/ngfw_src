@@ -34,7 +34,7 @@ _ = reports.i18n_helper.get_translation('untangle-node-ips').lgettext
 
 class Ips(Node):
     def __init__(self, node_name, title, vendor_name):
-        Node.__init__(self, node_name)
+        Node.__init__(self, node_name,'Intrusion Prevention')
 
         self.__title = title
         self.__vendor_name = vendor_name

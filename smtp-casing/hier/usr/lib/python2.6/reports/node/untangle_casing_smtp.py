@@ -13,7 +13,7 @@ from reports.sql_helper import print_timing
 
 class SmtpCasing(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-casing-smtp')
+        Node.__init__(self, 'untangle-casing-smtp', 'SMTP')
 
     def parents(self):
         return ['untangle-vm']

@@ -34,7 +34,7 @@ _ = reports.i18n_helper.get_translation('untangle-node-shield').lgettext
 
 class Shield(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-shield')
+        Node.__init__(self, 'untangle-node-shield','Shield')
 
     @print_timing
     def setup(self):

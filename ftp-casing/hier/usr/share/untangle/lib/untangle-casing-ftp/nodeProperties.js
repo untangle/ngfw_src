@@ -4,6 +4,6 @@
         "name" : "untangle-casing-ftp",
         "displayName" : "FTP Casing",
         "type" : "SERVICE",
-        "invisible" : True
+        "invisible" : "True"
 }
 

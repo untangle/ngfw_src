@@ -34,7 +34,7 @@ _ = reports.i18n_helper.get_translation('untangle-node-firewall').lgettext
 
 class Firewall(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-firewall')
+        Node.__init__(self, 'untangle-node-firewall','Firewall')
 
     @sql_helper.print_timing
     def setup(self):

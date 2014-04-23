@@ -65,9 +65,10 @@ def get_wan_ip():
     return "no.wan.found"
 
 class Node:
-    def __init__(self, name):
+    def __init__(self, name, title):
         self.__name = name
-        self.__display_title, self.__view_position = self.info()
+        self.__display_title = title
+        self.__view_position = self.get_view_position()
         
     def get_report(self):
         return None
@@ -102,28 +103,24 @@ class Node:
     def parents(self):
         return []
 
-    def info(self):
-        title = None
+    def get_view_position(self):
         view_position = None
 
-        stdout = commands.getoutput('apt-cache show ' + self.__name)
+        try:
+            filename = '@PREFIX@/usr/share/untangle/lib/%s/nodeProperties.js'%self.__name
+            if not os.path.isfile(filename):
+                return 1
 
-        for l in stdout.split("\n"):
-            if l == "":
-                break
-            m = re.search('Display-Name: (.*)', l)
-            if m:
-                title = m.group(1)
-            m = re.search('View-Position: ([0-9]*)', l)
-            if m:
-                view_position = int(m.group(1))
+            json_obj = json.loads(open(filename, 'r').read())
 
-        if not title: # somehow the apt-cache is empty
-            title = self.__name
-            view_position = 1
+            if json_obj.get('viewPosition') != None:
+                return int(json_obj.get('viewPosition'))
+
+        except Exception,e:
+            logger.error('could not find node properties for: %s' % self.__name, exc_info=True)
+
+        return 1
             
-        return (title, view_position)
-
 class FactTable:
     def __init__(self, name, detail_table, time_column, dimensions, measures):
         self.__name = name
@@ -291,8 +288,7 @@ def generate_reports(report_base, end_date, report_days):
                         mail_reports.append(report)
 
         except:
-            logger.error('could not generate reports for: %s' % node_name,
-                         exc_info=True)
+            logger.error('could not generate reports for: %s' % node_name, exc_info=True)
 
     __write_toc(report_base, date_base, 'top-level', top_level)
     __write_toc(report_base, date_base, 'user-drilldown', user_drilldown)

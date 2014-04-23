@@ -35,7 +35,7 @@ _ = reports.i18n_helper.get_translation('untangle-node-protofilter').lgettext
 
 class Protofilter(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-protofilter')
+        Node.__init__(self, 'untangle-node-protofilter','Application Control Lite')
 
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')

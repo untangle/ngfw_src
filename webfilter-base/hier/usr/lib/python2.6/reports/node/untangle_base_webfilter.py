@@ -36,9 +36,8 @@ def N_(message): return message
 
 class WebFilterBaseNode(Node):
     def __init__(self, node_name, title, short_name):
-        Node.__init__(self, node_name)
+        Node.__init__(self, node_name, title)
 
-        self.__title = title
         self.__short_name = short_name
 
     def parents(self):

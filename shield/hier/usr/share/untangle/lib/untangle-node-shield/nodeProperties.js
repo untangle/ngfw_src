@@ -4,7 +4,7 @@
         "name" : "untangle-node-shield",
         "displayName" : "Shield",
         "type" : "SERVICE",
-        "invisible" : True,
-        "autoLoad" : True
+        "invisible" : "True",
+        "autoLoad" : "True"
 }
 

@@ -4,6 +4,6 @@
         "name" : "untangle-casing-smtp",
         "displayName" : "SMTP Casing",
         "type" : "SERVICE",
-        "invisible" : True
+        "invisible" : "True"
 }
 
