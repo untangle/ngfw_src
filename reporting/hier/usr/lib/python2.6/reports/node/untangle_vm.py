@@ -39,7 +39,7 @@ def N_(message): return message
 
 class UvmNode(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-vm')
+        Node.__init__(self, 'untangle-vm', 'Untangle NGFW')
 
     @print_timing
     def setup(self):

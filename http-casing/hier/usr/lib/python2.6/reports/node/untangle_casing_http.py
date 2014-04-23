@@ -12,7 +12,7 @@ from reports.sql_helper import print_timing
 
 class HttpCasing(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-casing-http')
+        Node.__init__(self, 'untangle-casing-http', 'HTTP')
 
     def parents(self):
         return ['untangle-vm']

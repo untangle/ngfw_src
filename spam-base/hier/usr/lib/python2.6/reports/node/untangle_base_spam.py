@@ -36,7 +36,7 @@ class SpamBaseNode(Node):
     def __init__(self, node_name, title, short_name, vendor_name, spam_label,
                  ham_label, hourly_spam_rate_title, daily_spam_rate_title,
                  top_spammed_title):
-        Node.__init__(self, node_name)
+        Node.__init__(self, node_name, title)
 
         self.__title = title
         self.__short_name = short_name

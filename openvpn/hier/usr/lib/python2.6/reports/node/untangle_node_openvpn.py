@@ -33,7 +33,7 @@ def N_(message): return message
 
 class OpenVpn(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-openvpn')
+        Node.__init__(self, 'untangle-node-openvpn','OpenVPN')
 
     def setup(self):
         self.__create_openvpn_stats( )

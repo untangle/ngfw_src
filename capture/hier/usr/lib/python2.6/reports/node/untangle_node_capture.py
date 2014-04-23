@@ -51,7 +51,7 @@ def auto_incr(start_value=0, amount = 1):
 
 class Capture(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-node-capture')
+        Node.__init__(self, 'untangle-node-capture','Captive Portal')
 
     def setup(self):
         self.__make_capture_user_events_table()

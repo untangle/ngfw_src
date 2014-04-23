@@ -12,7 +12,7 @@ from reports.sql_helper import print_timing
 
 class FtpCasing(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-casing-ftp')
+        Node.__init__(self, 'untangle-casing-ftp', 'FTP')
 
     def parents(self):
         return ['untangle-vm']
