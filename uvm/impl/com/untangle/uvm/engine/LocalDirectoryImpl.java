@@ -239,6 +239,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             return;
         }
 
+        // update the chap-secrets file for L2TP
         updateChapSecrets(list);
         this.currentList = list;
     }
@@ -262,8 +263,11 @@ public class LocalDirectoryImpl implements LocalDirectory
             this.saveUsersList(new LinkedList<LocalDirectoryUser>());
         }
 
-        updateChapSecrets(users);
-        this.currentList = users;
+        // settings loaded so assign to currentList and write chap secrets
+        else {
+            updateChapSecrets(users);
+            this.currentList = users;
+        }
     }
 
     private void updateChapSecrets(LinkedList<LocalDirectoryUser> list)
@@ -300,7 +304,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         catch (Exception exn) {
-            logger.error("Unable to create L2TP chap-secrets file");
+            logger.error("Exception creating L2TP chap-secrets file", exn);
         }
     }
 
