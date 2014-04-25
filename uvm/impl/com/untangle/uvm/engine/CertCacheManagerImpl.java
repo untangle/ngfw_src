@@ -149,9 +149,8 @@ public class CertCacheManagerImpl implements CertCacheManager
         // we log and ignore all other exceptions
         catch (Exception exn) {
             String exmess = exn.getMessage();
-            if (exmess == null)
-                exmess = "unknown";
-            logger.warn("Exception fetching server certificate: " + exn.getMessage());
+            if (exmess == null) exmess = "unknown";
+            logger.warn("Exception(" + exmess + ") fetching server certificate from " + serverAddress);
         }
 
         // We were the first thread to prefetch this certificate so we have
