@@ -49,7 +49,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 Ung.Util.rpcExHandler(e);
             }
             if (this.oemName == "Untangle") {
-                this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
+                this.downloadLanguageHTML='<a href="http://pootle.untangle.com" target="_blank">' + i18n._("Download New Language Packs") + '</a>';
             } else {
                 this.downloadLanguageHTML='';
             }
