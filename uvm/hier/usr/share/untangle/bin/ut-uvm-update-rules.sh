@@ -121,11 +121,11 @@ insert_iptables_rules()
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
     # Redirect packets destined to non-local sockets to local
-    ${IPTABLES} -I PREROUTING 2 -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
+    ${IPTABLES} -I PREROUTING 2 -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
 
     # Route traffic tagged by previous rule to local
     ip rule del priority 100 >/dev/null 2>&1
-    ip rule add priority 100 fwmark 0xFB00/0xFF00 lookup 1000
+    ip rule add priority 100 fwmark 0xFE00/0xFF00 lookup 1000
     ip route add local 0.0.0.0/0 dev lo table 1000 >/dev/null 2>&1 # ignore error if exists
 
     # Unfortunately we have to give utun an address or the reinjection does not work
@@ -150,7 +150,7 @@ remove_iptables_rules()
     ${IPTABLES} -D OUTPUT -t mangle -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
-    ${IPTABLES} -D PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFB00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
+    ${IPTABLES} -D PREROUTING -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
 
     ip rule del priority 100 >/dev/null 2>&1
 }
