@@ -159,14 +159,6 @@ remove_iptables_rules()
     ip rule del priority 100 >/dev/null 2>&1
 }
 
-rules_already_present()
-{
-    # check two rules, if both exist, all rules probably exist
-    echo false
-    #iptables -t raw -nvL OUTPUT | grep -q NOTRACK && iptables -t tune -nvL OUTPUT | grep -q NFQUEUE && echo "true"
-}
-
-
 while getopts "r" opt; do
     case $opt in
         r) FORCE_REMOVE="true";;
@@ -181,14 +173,10 @@ if [ "$FORCE_REMOVE" = "true" ] ; then
 fi
 
 if [ "`is_uvm_running`x" = "truex" ] ; then
-    if [ "`rules_already_present`x" = "truex" ]; then
-        echo "[`date`] The untangle-vm is running. Rules already exist. Doing nothing. "
-    else
-        echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "
-        remove_iptables_rules # just in case
-        insert_iptables_rules
-        echo "[`date`] The untangle-vm is running. Inserting iptables rules ... done"
-    fi
+    echo "[`date`] The untangle-vm is running. Inserting iptables rules ... "
+    remove_iptables_rules # just in case
+    insert_iptables_rules
+    echo "[`date`] The untangle-vm is running. Inserting iptables rules ... done"
 else
   echo "[`date`] The untangle-vm is not running. Removing iptables rules ..."
   remove_iptables_rules
