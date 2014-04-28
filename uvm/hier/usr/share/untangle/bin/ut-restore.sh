@@ -140,7 +140,7 @@ function expandFile()
     # Check that the version of the backup file is supported
     CURRENT_VERSION="`cat @PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
     BACKUP_VERSION="`cat $WORKING_DIR/$VERSION_FILE`"
-    echo $BACKUP_VERSION | grep -q '$ACCEPTED_PREVIOUS_VERSION'
+    echo $BACKUP_VERSION | grep -qE "$ACCEPTED_PREVIOUS_VERSION"
     PREV_VERSION_CHECK=$?
     if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ $PREV_VERSION_CHECK != 0 ] ; then
         err "Backup file version not supported. ($BACKUP_VERSION)"
