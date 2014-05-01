@@ -14,9 +14,9 @@ public class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
         super( sessionGlobalState, connector, pe );
     }
 
-    public TCPNewSessionRequestImpl( NodeTCPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public TCPNewSessionRequestImpl( TCPNewSessionRequestImpl prevRequest, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( session, connector, pe, sessionGlobalState);
+        super( prevRequest, connector, pe, sessionGlobalState);
     }
 
     /**

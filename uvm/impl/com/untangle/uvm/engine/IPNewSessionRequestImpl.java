@@ -9,7 +9,6 @@ import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 
 public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
@@ -85,9 +84,9 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
      * Second way to create an IPNewSessionRequest:
      * Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( NodeSession session, PipelineConnectorImpl connector, SessionEvent sessionEvent, SessionGlobalState sessionGlobalState)
+    public IPNewSessionRequestImpl( IPNewSessionRequestImpl prevRequest, PipelineConnectorImpl connector, SessionEvent sessionEvent, SessionGlobalState sessionGlobalState)
     {
-        this.sessionGlobalState = ((NodeSessionImpl)session).sessionGlobalState();
+        this.sessionGlobalState = sessionGlobalState;
         this.pipelineConnector  = connector;
         this.sessionEvent = sessionEvent;
         
@@ -105,10 +104,10 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         /**
          * get the new tuple attributes from the previous session in case it was changed
          */
-        newClientAddr = session.getNewClientAddr();
-        newClientPort = session.getNewClientPort();
-        newServerAddr = session.getNewServerAddr();
-        newServerPort = session.getNewServerPort();
+        newClientAddr = prevRequest.getNewClientAddr();
+        newClientPort = prevRequest.getNewClientPort();
+        newServerAddr = prevRequest.getNewServerAddr();
+        newServerPort = prevRequest.getNewServerPort();
     }
 
     public PipelineConnectorImpl pipelineConnector()

@@ -195,41 +195,22 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSServerPort( serverSide.getServerPort() );
 
             int tupleHashCodeOriginal =
-                serverSide.getClientAddr().hashCode() + 
-                serverSide.getClientPort() + 
-                serverSide.getServerAddr().hashCode() + 
-                serverSide.getServerPort();
+                sessionEvent.getSClientAddr().hashCode() + 
+                sessionEvent.getSClientPort() + 
+                sessionEvent.getSServerAddr().hashCode() + 
+                sessionEvent.getSServerPort();
 
             /* log the session event */
-            UvmContextFactory.context().logEvent(sessionEvent);
-            
+            UvmContextFactory.context().logEvent( sessionEvent );
+
             /* Initialize all of the nodes, sending the request events to each in turn */
-            initNodes( sessionEvent );
-
-            /* Connect to the server */
-            serverActionCompleted = connectServerIfNecessary();
-
-            /* Now generate the server side since the nodes may have
-             * modified the sessionEvent (we can't do it until we connect
-             * to the server since that is what actually modifies the
-             * session global state. */
-            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
-                                               sessionGlobalState.getProtocol(),
-                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
-                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
-                                               netcapSession.serverSide().client().host(),
-                                               netcapSession.serverSide().server().host(),
-                                               netcapSession.serverSide().client().port(),
-                                               netcapSession.serverSide().server().port());
-
-            /* Connect to the client */
-            clientActionCompleted = connectClientIfNecessary();
+            initializeNodeSessions( sessionEvent );
 
             int tupleHashCodeNew =
-                serverSide.getClientAddr().hashCode() + 
-                serverSide.getClientPort() + 
-                serverSide.getServerAddr().hashCode() + 
-                serverSide.getServerPort();
+                sessionEvent.getSClientAddr().hashCode() + 
+                sessionEvent.getSClientPort() + 
+                sessionEvent.getSServerAddr().hashCode() + 
+                sessionEvent.getSServerPort();
 
             /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
             if (  tupleHashCodeOriginal != tupleHashCodeNew ) {
@@ -240,31 +221,43 @@ public abstract class NetcapHook implements Runnable
                                                                 serverSide.getServerAddr(),
                                                                 serverSide.getServerPort());
                 UvmContextFactory.context().logEvent(natEvent);
-
-                /* Re-set any attribute thats may have been changed by the node */
-                sessionEvent.setSClientAddr( serverSide.getClientAddr() );
-                sessionEvent.setSClientPort( serverSide.getClientPort() );
-                sessionEvent.setSServerAddr( serverSide.getServerAddr() );
-                sessionEvent.setSServerPort( serverSide.getServerPort() );
-                sessionEvent.setServerIntf( serverSide.getServerIntf() );
             }
+            
+            /* Connect to the server */
+            serverActionCompleted = connectServerIfNecessary( sessionEvent );
+
+            /* Now generate the server side since the nodes may have
+             * modified the sessionEvent (we can't do it until we connect
+             * to the server since that is what actually modifies the
+             * session global state. */
+            serverSide = new SessionTupleImpl( sessionGlobalState.id(),
+                                               sessionGlobalState.getProtocol(),
+                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
+                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
+                                               sessionEvent.getSClientAddr(),
+                                               sessionEvent.getSServerAddr(),
+                                               sessionEvent.getSClientPort(),
+                                               sessionEvent.getSServerPort());
+
+            /* Connect to the client */
+            clientActionCompleted = connectClientIfNecessary();
 
             /* Remove all non-vectored sessions, it is non-efficient
              * to iterate the session list twice, but the list is
              * typically small and this logic may get very complex
              * otherwise */
             for ( Iterator<NodeSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
-                NodeSessionImpl session = iter.next();
-                if ( !session.isVectored() ) {
-                    logger.debug( "Removing non-vectored session from the session list" + session );
+                NodeSessionImpl nodeSession = iter.next();
+                if ( !nodeSession.isVectored() ) {
+                    logger.debug( "Removing non-vectored nodeSession from the nodeSession list" + nodeSession );
                     iter.remove();
-                    /* Append to the released session list */
-                    releasedSessionList.add( session );
+                    /* Append to the released nodeSession list */
+                    releasedSessionList.add( nodeSession );
                 }
 
                 // Complete (if we completed both server and client)
                 if (serverActionCompleted && clientActionCompleted)
-                    session.complete();
+                    nodeSession.complete();
             }
 
             /* Only start vectoring if the session is alive */
@@ -382,43 +375,21 @@ public abstract class NetcapHook implements Runnable
     }
     
     /**
-     * Initialize each of the nodes for the new session.
-     */
-    private void initNodes( SessionEvent event )
-    {
-        for ( Iterator<PipelineConnectorImpl> iter = pipelineConnectors.iterator() ; iter.hasNext() ; ) {
-            PipelineConnectorImpl agent = iter.next();
-
-            if ( this.state == IPNewSessionRequestImpl.REQUESTED ) {
-                newSessionRequest( agent, iter, event );
-            } else {
-                /* NodeSession has been rejected or endpointed, remaining
-                 * nodes need not be informed 
-                 * Don't need to remove anything from the pipeline, it
-                 * is just used here iter.remove();
-                 */
-                break;
-            }
-        }
-    }
-
-    /**
      * Describe <code>connectServer</code> method here.
      *
      * @return a <code>boolean</code> true if the server was completed
      * OR we explicitly rejected
      */
-    private boolean connectServerIfNecessary()
+    private boolean connectServerIfNecessary( SessionEvent sessionEvent )
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequestImpl.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
-            if ( !serverComplete() ) {
-                /* ??? May want to send different codes, or something ??? */
+            boolean connected = serverComplete( sessionEvent );
+            if ( ! connected ) {
                 if ( vectorReset() ) {
-                    /* Forward the rejection type that was passed from
-                     * the server */
+                    /* Forward the rejection type that was passed from the server */
                     state        = IPNewSessionRequestImpl.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
                     serverActionCompleted = false;
@@ -741,7 +712,7 @@ public abstract class NetcapHook implements Runnable
      * the connection was succesful.
      * @return - True connection was succesful, false otherwise.
      */
-    protected abstract boolean serverComplete();
+    protected abstract boolean serverComplete( SessionEvent sessionEvent );
 
     /**
      * Complete the connection to the client, returning whether or not the
@@ -757,7 +728,7 @@ public abstract class NetcapHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe );
+    protected abstract void initializeNodeSessions( SessionEvent sessionEvent );
 
     protected abstract void raze();
 }
