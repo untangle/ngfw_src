@@ -24,13 +24,13 @@ public class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements
         this.tos    = netcapUDPSession.tos();
     }
     
-    public UDPNewSessionRequestImpl( NodeUDPSession session, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
+    public UDPNewSessionRequestImpl( UDPNewSessionRequestImpl prevRequest, PipelineConnectorImpl connector, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
-        super( session, connector, pe, sessionGlobalState );
+        super( prevRequest, connector, pe, sessionGlobalState );
 
         /* Grab the TTL and TOS from the last request */
-        this.ttl    = ((NodeUDPSessionImpl)session).ttl();
-        this.tos    = ((NodeUDPSessionImpl)session).tos();
+        this.ttl    = prevRequest.ttl();
+        this.tos    = prevRequest.tos();
     }
 
     /**

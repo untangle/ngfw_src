@@ -3,7 +3,8 @@
  */
 package com.untangle.jnetcap;
 
-public interface TCPEndpoints extends Endpoints {
+public interface TCPEndpoints extends Endpoints
+{
     public int fd();
 
     /**

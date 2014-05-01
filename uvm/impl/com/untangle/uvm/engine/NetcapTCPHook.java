@@ -60,7 +60,6 @@ public class NetcapTCPHook implements NetcapCallback
         protected boolean ifServerComplete = false;
         protected boolean ifClientComplete = false;
 
-        protected NodeTCPSession prevSession = null;
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
 
@@ -102,27 +101,12 @@ public class NetcapTCPHook implements NetcapCallback
             return serverSideListener;
         }
 
-        protected boolean serverComplete()
+        protected boolean serverComplete( SessionEvent sessionEvent )
         {
-            InetAddress clientAddr;
-            int clientPort;
-            InetAddress serverAddr;
-            int serverPort;
-
-            if ( sessionList.isEmpty()) {
-                clientAddr = netcapTCPSession.serverSide().client().host();
-                clientPort = netcapTCPSession.serverSide().client().port();
-
-                serverAddr = netcapTCPSession.serverSide().server().host();
-                serverPort = netcapTCPSession.serverSide().server().port();
-            } else {
-                /* Complete with the parameters from the last node */
-                NodeTCPSession session = (NodeTCPSession)sessionList.get( sessionList.size() - 1 );
-                clientAddr = session.getNewClientAddr();
-                clientPort = session.getNewClientPort();
-                serverAddr = session.getNewServerAddr();
-                serverPort = session.getNewServerPort();
-            }
+            InetAddress clientAddr = sessionEvent.getSClientAddr();
+            int clientPort = sessionEvent.getSClientPort();
+            InetAddress serverAddr = sessionEvent.getSServerAddr();
+            int serverPort = sessionEvent.getSServerPort();
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "TCP - Completing server connection: " + sessionGlobalState );
@@ -225,37 +209,42 @@ public class NetcapTCPHook implements NetcapCallback
             return new TCPSource( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent sessionEvent )
+        protected void initializeNodeSessions( SessionEvent sessionEvent )
         {
-            TCPNewSessionRequestImpl request;
+            TCPNewSessionRequestImpl prevRequest = null;
 
-            if ( prevSession == null ) {
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, sessionEvent );
-            } else {
-                request = new TCPNewSessionRequestImpl( prevSession, agent, sessionEvent, sessionGlobalState );
-            }
+            for ( PipelineConnectorImpl agent : pipelineConnectors ) {
+                if ( this.state != IPNewSessionRequestImpl.REQUESTED )
+                    break;
 
-            // newSession() returns null when rejecting the session
-            NodeTCPSession session = agent.getDispatcher().newSession( request );
-
-            try {
-                processSession( request, ((NodeTCPSessionImpl)session) );
-            } catch (IllegalStateException e) {
-                logger.warn(agent.toString() + " Exception: ", e);
-                throw e;
-            }
-        
-            if ( iter.hasNext()) {
-                /* Advance the previous session if the node requested or released the session */
-                if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
-                        ( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
-                    prevSession = session;
+                TCPNewSessionRequestImpl request;
+                if ( prevRequest == null ) {
+                    request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, sessionEvent );
+                } else {
+                    request = new TCPNewSessionRequestImpl( prevRequest, agent, sessionEvent, sessionGlobalState );
                 }
-            } else {
-                prevSession = null;
+
+                NodeTCPSession session = agent.getDispatcher().newSession( request );
+
+                try {
+                    processSession( request, ((NodeTCPSessionImpl)session) );
+                } catch (IllegalStateException e) {
+                    logger.warn(agent.toString() + " Exception: ", e);
+                    throw e;
+                }
+            
+                prevRequest = request;
+            }
+
+            /* update the session event in case any apps changed the metadata */
+            if ( prevRequest != null ) {
+                sessionEvent.setSClientAddr( prevRequest.getNewClientAddr() );
+                sessionEvent.setSClientPort( prevRequest.getNewClientPort() );
+                sessionEvent.setSServerAddr( prevRequest.getNewServerAddr() );
+                sessionEvent.setSServerPort( prevRequest.getNewServerPort() );
             }
         }
-
+        
         protected void raze()
         {
             netcapTCPSession.raze();

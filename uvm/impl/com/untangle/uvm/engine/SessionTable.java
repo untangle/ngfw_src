@@ -41,19 +41,21 @@ public class SessionTable
      */
     synchronized boolean put( Vector vector, SessionGlobalState session )
     {
-        if ( session.getProtocol() == PROTO_TCP ) {
+        boolean inserted = ( activeSessions.put( vector, session ) == null );
+
+        if ( inserted && session.getProtocol() == PROTO_TCP ) {
             int port = session.netcapSession().serverSide().client().port();
             InetAddress addr = session.netcapSession().serverSide().client().host();
             NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
             if ( tcpPortsUsed.get( key ) != null ) {
-                logger.warn("Collision value in port availability map.");
+                logger.warn("Collision value in port availability map: " + addr.getHostAddress() + ":" + port);
                 // just continue, not much can be done about it here.
             } else {
                 tcpPortsUsed.put( key, session );
             }
         }
         
-        return ( activeSessions.put( vector, session ) == null ) ? true : false;
+        return inserted;
     }
 
     /**
@@ -68,16 +70,18 @@ public class SessionTable
             return false;
         }
 
-        if ( session.getProtocol() == PROTO_TCP ) {
+        boolean removed = ( activeSessions.remove( vector ) != null );
+        
+        if ( removed && session.getProtocol() == PROTO_TCP ) {
             int port = session.netcapSession().serverSide().client().port();
             InetAddress addr = session.netcapSession().serverSide().client().host();
             NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
             if ( tcpPortsUsed.remove( key ) == null ) {
-                logger.warn("Missing value in port availability map: " + addr + ":" + port );
+                logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
             }
         }
 
-        return ( activeSessions.remove( vector ) == null ) ? false : true;
+        return removed;
     }
 
     /**

@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm.engine;
 
+import java.net.InetAddress;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
@@ -63,7 +64,7 @@ public class NetcapUDPHook implements NetcapCallback
         protected UDPAttributes serviceSideAttributes = null;
         protected UDPAttributes clientSideAttributes = null;
 
-        protected NodeUDPSession prevSession = null;
+        protected UDPNewSessionRequestImpl prevRequest = null;
 
         protected UDPNetcapHook( long id )
         {
@@ -105,35 +106,22 @@ public class NetcapUDPHook implements NetcapCallback
         /**
          * Complete the connection for the server side.  
          */
-        protected boolean serverComplete()
+        protected boolean serverComplete( SessionEvent sessionEvent )
         {
+            InetAddress clientAddr = sessionEvent.getSClientAddr();
+            int clientPort = sessionEvent.getSClientPort();
+            InetAddress serverAddr = sessionEvent.getSServerAddr();
+            int serverPort = sessionEvent.getSServerPort();
 
-            if ( sessionList.isEmpty()) {
-                /* No sessions, complete with the current session parameters */
-                serviceSideAttributes = new UDPAttributes( netcapUDPSession.serverSide() );
-            } else {
-                /* Setup the UDP parameters to use the parameters from the last session in the chain */
-                NodeUDPSession session = (NodeUDPSession)sessionList.get( sessionList.size() - 1 );
+            serviceSideAttributes = new UDPAttributes( clientAddr, clientPort, serverAddr, serverPort );
+            
+            //serviceSideAttributes.ttl( ((NodeUDPSessionImpl)session).ttl()); XXX
+            //serviceSideAttributes.tos( ((NodeUDPSessionImpl)session).tos()); XXX
 
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "UDP: Completing session:" );
-                    logger.debug( "Client: " + session.getNewClientAddr().getHostAddress() + ":" + session.getNewClientPort());
-                    logger.debug( "Server: " + session.getNewServerAddr().getHostAddress() + ":" + session.getNewServerPort());
-                }
-                
-                serviceSideAttributes = new UDPAttributes( session.getNewClientAddr(), session.getNewClientPort(), session.getNewServerAddr(), session.getNewServerPort());
-
-                serviceSideAttributes.ttl( ((NodeUDPSessionImpl)session).ttl());
-                serviceSideAttributes.tos( ((NodeUDPSessionImpl)session).tos());
-            }
-
-            /* Packets cannot go back out on the client interface */
             /* Setup the marking */
             serviceSideAttributes.isMarkEnabled( true );
-            
             int nfmark = clientSide.getClientIntf() + ( serverSide.getServerIntf() << 8 );
             serviceSideAttributes.mark( nfmark);
-
             serviceSideAttributes.lock();
 
             this.netcapUDPSession.setServerTraffic(serviceSideAttributes);
@@ -197,36 +185,39 @@ public class NetcapUDPHook implements NetcapCallback
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( PipelineConnectorImpl agent, Iterator<?> iter, SessionEvent pe )
+        protected void initializeNodeSessions( SessionEvent sessionEvent )
         {
-            UDPNewSessionRequestImpl request;
+            UDPNewSessionRequestImpl prevRequest = null;
 
-            if ( prevSession == null ) {
-                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
-            } else {
-                request = new UDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
-            }
+            for ( PipelineConnectorImpl agent : pipelineConnectors ) {
+                if ( this.state != IPNewSessionRequestImpl.REQUESTED )
+                    break;
 
-            NodeUDPSession session = agent.getDispatcher().newSession( request );
-
-            try {
-                processSession( request, ((NodeUDPSessionImpl)session) );
-            } catch (IllegalStateException e) {
-                logger.warn(agent.toString() + " Exception: ", e);
-                throw e;
-            }
-
-            if ( iter.hasNext()) {
-                /* Only advance the previous session if the node requested the session */
-                if (( request.state() == IPNewSessionRequestImpl.REQUESTED ) ||
-                    ( request.state() == IPNewSessionRequestImpl.RELEASED && session != null )) {
-                    logger.debug( "Passing new session data client: " + session.getNewClientAddr());
-                    prevSession = session;
+                UDPNewSessionRequestImpl request;
+                if ( prevRequest == null ) {
+                    request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, sessionEvent );
                 } else {
-                    logger.debug( "Reusing session data" );
+                    request = new UDPNewSessionRequestImpl( prevRequest, agent, sessionEvent, sessionGlobalState );
                 }
-            } else {
-                prevSession = null;
+
+                NodeUDPSession session = agent.getDispatcher().newSession( request );
+
+                try {
+                    processSession( request, ((NodeUDPSessionImpl)session) );
+                } catch (IllegalStateException e) {
+                    logger.warn(agent.toString() + " Exception: ", e);
+                    throw e;
+                }
+            
+                prevRequest = request;
+            }
+
+            /* update the session event in case any apps changed the metadata */
+            if ( prevRequest != null ) {
+                sessionEvent.setSClientAddr( prevRequest.getNewClientAddr() );
+                sessionEvent.setSClientPort( prevRequest.getNewClientPort() );
+                sessionEvent.setSServerAddr( prevRequest.getNewServerAddr() );
+                sessionEvent.setSServerPort( prevRequest.getNewServerPort() );
             }
         }
 
