@@ -724,7 +724,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                 tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
                             }, {
                                 header: this.i18n._( "Device" ),
-                                tooltip: this.i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
+                                tooltip: this.i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched." ),
                                 dataIndex: 'deviceName',
                                 sortable: false,
                                 width: 200,
