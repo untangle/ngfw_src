@@ -984,7 +984,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         dataIndex: "address1",
                         fieldLabel: this.i18n._("Distribution List Address"),
                         emptyText: this.i18n._("distributionlistrecipient@example.com"),
-                        width: 450
+                        width: 450,
+                        allowBlank: false
                     },
                     {
                         xtype: 'textfield',
@@ -992,7 +993,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         dataIndex: "address2",
                         fieldLabel: this.i18n._("Send To Address"),
                         emptyText: this.i18n._("quarantinelistowner@example.com"),
-                        width: 450
+                        width: 450,
+                        allowBlank: false
                     }]
                 })]
             });
