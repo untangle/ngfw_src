@@ -212,8 +212,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor: {
                         xtype:'textfield',
                         allowBlank: false,
-                        validator: this.urlValidator,
-                        blankText: this.i18n._("Invalid \"URL\" specified")
+                        validator: this.urlValidator
                     }
                 },{
                     xtype:'checkcolumn',
@@ -247,8 +246,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     fieldLabel: this.i18n._("Site"),
                     allowBlank: false,
                     width: 400,
-                    validator: this.urlValidator,
-                    blankText: this.i18n._("Invalid \"URL\" specified")
+                    validator: this.urlValidator
                 },{
                     xtype:'checkbox',
                     name: "Block",
@@ -565,8 +563,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor: {
                         xtype:'textfield',
                         allowBlank: false,
-                        validator: this.urlValidator,
-                        blankText: this.i18n._("Invalid \"URL\" specified")
+                        validator: this.urlValidator
                     }
                 },{
                     xtype:'checkcolumn',
@@ -593,8 +590,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     fieldLabel: this.i18n._("Site"),
                     allowBlank: false,
                     width: 400,
-                    validator: this.urlValidator,
-                    blankText: this.i18n._("Invalid \"URL\" specified")
+                    validator: this.urlValidator
                 },{
                     xtype:'checkbox',
                     name: "Pass",

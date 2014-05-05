@@ -5121,40 +5121,27 @@ Ext.define('Ung.RowEditorWindow', {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid: function() {
-        var validResult = this.isFormValidRecursive(this, 0);
-        if(validResult && this.validate!=null) {
-            validResult = this.validate(this.items);
-        }
-        if(validResult!==true) {
-            var errMsg = i18n._("The form is not valid!");
-            if(validResult!==false) {
-                errMsg = validResult;
+        var invalidComponents = this.query("component[activeError]");
+        if( invalidComponents.length > 0 ){
+            var invalidFields = [];
+            for( var i = 0; i < invalidComponents.length; i++ ){
+                invalidFields.push( 
+                    "<b>" +
+                    invalidComponents[i].fieldLabel +
+                    "</b>" +
+                    ": " +
+                    invalidComponents[i].activeErrors.join( ", ")
+                );
             }
-            Ext.MessageBox.alert(i18n._('Warning'), errMsg);
+            Ext.MessageBox.alert(
+                i18n._("Warning"),
+                i18n._("One or more fields contain invalid values.  Settings cannot be saved until these problems are resolved.") +
+                "<br><br>" +
+                invalidFields.join( "<br>" )
+            );
+            return false;
         }
-        return validResult;
-    },
-    isFormValidRecursive: function(component, depth) {
-        if (component == null) {
-            return true;
-        }
-        if(depth>30) {
-            console.log("Ung.RowEditorWindow.isFormValidRecursive depth>30");
-            return true;
-        }
-        if (component.dataIndex) {
-            return Ext.isFunction(component.isValid)?component.isValid():Ung.Util.isValid(component);
-        }
-        if (component.items) {
-            for (var i = 0; i < component.items.length; i++) {
-                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
-                var isValidItem = this.isFormValidRecursive( item, depth+1);
-                if(isValidItem !==true) {
-                    return isValidItem;
-                }
-            }
-        }
-        return true;
+        return true;              
     },
     isDirty: function() {
         return Ung.Util.isDirty(this.items);
