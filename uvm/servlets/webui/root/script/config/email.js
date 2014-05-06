@@ -964,7 +964,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         dataIndex: 'address1',
                         editor: {
                             xtype: 'textfield',
-                            emptyText: this.i18n._("distributionlistrecipient@example.com")
+                            emptyText: this.i18n._("distributionlistrecipient@example.com"),
+                            allowBlank: false
                         }
                     }, 
                     {
@@ -974,7 +975,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         flex:1,
                         editor: {
                             xtype: 'textfield',
-                            emptyText: this.i18n._("quarantinelistowner@example.com")
+                            emptyText: this.i18n._("quarantinelistowner@example.com"),
+                            vtype: 'email',
+                            allowBlank: false
                         }
                     }],
                     rowEditorLabelWidth: 160,
@@ -994,6 +997,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         fieldLabel: this.i18n._("Send To Address"),
                         emptyText: this.i18n._("quarantinelistowner@example.com"),
                         width: 450,
+                        vtype: 'email',
                         allowBlank: false
                     }]
                 })]
