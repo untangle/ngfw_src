@@ -4982,7 +4982,7 @@ Ext.define('Ung.RowEditorWindow', {
     grid: null,
     // input lines for standard input lines (text, checkbox, textarea, ..)
     inputLines: null,
-    // extra validate function for row editor
+    // // extra validate function for row editor
     validate: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
@@ -5062,6 +5062,7 @@ Ext.define('Ung.RowEditorWindow', {
             return;
         }
         if (component.dataIndex != null) {
+            component.reset();
             component.suspendEvents();
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
@@ -5121,18 +5122,23 @@ Ext.define('Ung.RowEditorWindow', {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid: function() {
-        var invalidComponents = this.query("component[activeError]");
-        if( invalidComponents.length > 0 ){
-            var invalidFields = [];
-            for( var i = 0; i < invalidComponents.length; i++ ){
-                invalidFields.push( 
-                    "<b>" +
-                    invalidComponents[i].fieldLabel +
-                    "</b>" +
-                    ": " +
-                    invalidComponents[i].activeErrors.join( ", ")
-                );
+        var components = this.query("component");
+        var invalidFields = [];
+        for( var i = 0; i < components.length; i++ ){
+            if( components[i].dataIndex ){
+                if( ( Ext.isFunction(components[i].isValid) ? components[i].isValid() : Ung.Util.isValid(components[i]) ) == false ){
+                    invalidFields.push( 
+                        "<b>" +
+                        components[i].fieldLabel +
+                        "</b>" +
+                        ": " +
+                        components[i].activeErrors.join( ", ")
+                    );
+
+                }
             }
+        }
+        if( invalidFields.length ){
             Ext.MessageBox.alert(
                 i18n._("Warning"),
                 i18n._("One or more fields contain invalid values.  Settings cannot be saved until these problems are resolved.") +
@@ -5141,7 +5147,7 @@ Ext.define('Ung.RowEditorWindow', {
             );
             return false;
         }
-        return true;              
+        return true;            
     },
     isDirty: function() {
         return Ung.Util.isDirty(this.items);
