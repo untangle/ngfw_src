@@ -5062,7 +5062,9 @@ Ext.define('Ung.RowEditorWindow', {
             return;
         }
         if (component.dataIndex != null) {
-            component.reset();
+            if( Ext.isFunction(component.reset ) ){
+                component.reset();
+            }
             component.suspendEvents();
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
