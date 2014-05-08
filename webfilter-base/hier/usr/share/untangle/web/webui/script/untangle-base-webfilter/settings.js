@@ -195,10 +195,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title: this.i18n._("Sites"),
                 settingsCmp: this,
                 emptyRow: {
-                    "string": this.i18n._("[no site]"),
+                    "string": "",
                     "blocked": true,
                     "flagged": true,
-                    "description": this.i18n._("[no description]")
+                    "description": ""
                 },
                 flex: 1,    
                 paginated: false,
@@ -211,6 +211,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter site]"),
                         allowBlank: false,
                         validator: this.urlValidator
                     }
@@ -234,7 +235,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'description',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -244,6 +245,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Site",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("Site"),
+                    emptyText: this.i18n._("[enter site]"),
                     allowBlank: false,
                     width: 400,
                     validator: this.urlValidator
@@ -263,8 +265,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
-                     height: 60
+                    height: 60
                 }]
             });
             
@@ -303,11 +306,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 name: 'File Types',
                 settingsCmp: this,
                 emptyRow: {
-                    "string": this.i18n._("[no extension]"),
+                    "string": "",
                     "blocked": true,
                     "flagged": true,
-                    "category": this.i18n._("[no category]"),
-                    "description": this.i18n._("[no description]")
+                    "category": "",
+                    "description": ""
                 },
                 title: this.i18n._("File Types"),
                 dataProperty: "blockedExtensions",
@@ -321,6 +324,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype: 'textfield',
+                        emptyText: this.i18n._("[enter extension]"),
                         allowBlank: false
                     }
                 },{
@@ -342,7 +346,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'category',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no category]")
                     }
                 },{
                     header: this.i18n._("Description"),
@@ -351,7 +355,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     flex:1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -362,6 +366,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "File Type",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("File Type"),
+                    emptyText: this.i18n._("[enter extension]"),
                     allowBlank: false,
                     width: 300
                 },{
@@ -380,12 +385,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Category",
                     dataIndex: "category",
                     fieldLabel: this.i18n._("Category"),
+                    emptyText: this.i18n._("[no category]"),
                     width: 300
                 },{
                     xtype:'textarea',
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
@@ -426,11 +433,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 paginated: false,
                 settingsCmp: this,
                 emptyRow: {
-                    "string": this.i18n._("[no mime type]"),
+                    "string": "",
                     "blocked": true,
                     "flagged": true,
-                    "category": this.i18n._("[no category]"),
-                    "description": this.i18n._("[no description]")
+                    "category": "",
+                    "description": ""
                 },
                 title: this.i18n._("MIME Types"),
                 recordJavaClass: "com.untangle.uvm.node.GenericRule",
@@ -443,6 +450,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter mime type]"),
                         allowBlank:false
                     }
                 },{ 
@@ -464,7 +472,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'category',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:true
+                        emptyText: this.i18n._("[no category]")
                     }
                 },{
                     header: this.i18n._("Description"),
@@ -473,7 +481,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'description',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -483,6 +491,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "MIME Type",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("MIME Type"),
+                    emptyText: this.i18n._("[enter mime type]"),
                     allowBlank: false,
                     width: 400
                 },{
@@ -501,12 +510,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Category",
                     dataIndex: "category",
                     fieldLabel: this.i18n._("Category"),
+                    emptyText: this.i18n._("[no category]"),
                     width: 300
                 },{
                     xtype:'textarea',
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
@@ -546,9 +557,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 name: 'Sites',
                 settingsCmp: this,
                 emptyRow: {
-                    "string": this.i18n._("[no site]"),
+                    "string": "",
                     "enabled": true,
-                    "description": this.i18n._("[no description]")
+                    "description": ""
                 },
                 paginated: false,                
                 flex: 1,    
@@ -562,6 +573,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter site]"),
                         allowBlank: false,
                         validator: this.urlValidator
                     }
@@ -578,7 +590,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'description',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -588,6 +600,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Site",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("Site"),
+                    emptyText: this.i18n._("[enter site]"),
                     allowBlank: false,
                     width: 400,
                     validator: this.urlValidator
@@ -601,6 +614,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
@@ -644,7 +658,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 emptyRow: {
                     "string": "1.2.3.4",
                     "enabled": true,
-                    "description": this.i18n._("[no description]")
+                    "description": ""
                 },
                 title: this.i18n._("Client IP addresses"),
                 dataProperty: "passedClients",
@@ -657,6 +671,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter IP address/range]"),
                         allowBlank:false
                     }
                 },{
@@ -672,7 +687,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: 'description',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -683,6 +698,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "IP address/range",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("IP address/range"),
+                    emptyText: this.i18n._("[enter IP address/range]"),
                     allowBlank: false,
                     width: 400
                 },{
@@ -695,6 +711,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]

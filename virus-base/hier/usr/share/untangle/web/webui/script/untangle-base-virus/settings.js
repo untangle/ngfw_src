@@ -288,9 +288,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 name: 'File Extensions',
                 settingsCmp: this,
                 emptyRow: {
-                    "string": "undefined type",
+                    "string": "",
                     "enabled": true,
-                    "name": this.i18n._("[no description]")
+                    "description": ""
                 },
                 title: this.i18n._("File Extensions"),
                 recordJavaClass: "com.untangle.uvm.node.GenericRule",
@@ -302,7 +302,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex: 'string',
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[enter file type]"),
+                        allowBlank: false
                     }
                 }, 
                 {
@@ -318,7 +319,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     flex: 1,
                     editor: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -329,6 +330,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: "File Type",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("File Type"),
+                    emptyText: this.i18n._("[enter file type]"),
                     allowBlank: false,
                     width: 400
                 },
@@ -343,6 +345,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
@@ -354,9 +357,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 name: 'MIME Types',
                 settingsCmp: this,
                 emptyRow: {
-                    "string": "undefined type",
+                    "string": "",
                     "enabled": true,
-                    "name": this.i18n._("[no description]")
+                    "description": ""
                 },
                 title: this.i18n._("MIME Types"),
                 recordJavaClass: "com.untangle.uvm.node.GenericRule",
@@ -368,6 +371,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex: 'string',
                     editor:{
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter MIME type]"),
                         allowBlank:false
                     }
                 }, {
@@ -383,6 +387,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     flex: 1,
                     field: {
                         xtype:'textfield',
+                        emptyText: this.i18n._("[no description]"),
                         allowBlank:false
                     }
                 }],
@@ -394,19 +399,20 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: "MIME Type",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("MIME Type"),
+                    emptyText: this.i18n._("[enter MIME type]"),
                     allowBlank: false,
                     width: 400
-                },
-                {    xtype:'checkbox',
+                }, {
+                    xtype:'checkbox',
                     name: "Scan",
                     dataIndex: "enabled",
                     fieldLabel: this.i18n._("Scan")
-                },
-                {
+                }, {
                     xtype:'textarea',
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
@@ -525,9 +531,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 name: 'Pass Sites',
                 settingsCmp: this,
                 emptyRow: {
-                    "string": "site",
+                    "string": "",
                     "enabled": true,
-                    "name": this.i18n._("[no description]")
+                    "description": ""
                 },
                 flex: 1, 
                 title: this.i18n._("Pass Sites"),
@@ -540,6 +546,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex: 'string',
                     editor:{
                         xtype:'textfield',
+                        emptyText: this.i18n._("[enter site]"),
                         allowBlank:false
                     }
                 },{
@@ -555,7 +562,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     flex: 1,
                     field: {
                         xtype:'textfield',
-                        allowBlank:false
+                        emptyText: this.i18n._("[no description]")
                     }
                 }],
                 sortField: 'string',
@@ -565,6 +572,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: "Site",
                     dataIndex: "string",
                     fieldLabel: this.i18n._("Site"),
+                    emptyText: this.i18n._("[enter site]"),
                     allowBlank: false,
                     width: 400
                 },{    
@@ -577,6 +585,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name: "Description",
                     dataIndex: "description",
                     fieldLabel: this.i18n._("Description"),
+                    emptyText: this.i18n._("[no description]"),
                     width: 400,
                     height: 60
                 }]
