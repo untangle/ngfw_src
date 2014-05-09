@@ -7318,11 +7318,11 @@ Ext.define('Ung.RuleBuilder', {
                     if(Ext.isEmpty(record.get("value"))) {
                         if(rule.allowBlank!==true) {
                             if(record.get("vtype")=='portMatcher') {
-                                return Ext.form.field.VTypes.portMatcherText;
+                                return rule.displayName + ": " + Ext.form.field.VTypes.portMatcherText;
                             } else if(record.get("vtype")=='ipMatcher') {
-                                return Ext.form.field.VTypes.ipMatcherText;
+                                return rule.displayName + ": " + Ext.form.field.VTypes.ipMatcherText;
                             } else {
-                                return rules.displayName + " " + i18n._("value is required.");
+                                return rule.displayName + ": " + i18n._("Value is required.");
                             }
                         }
                     }
