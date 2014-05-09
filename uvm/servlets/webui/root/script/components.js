@@ -5124,20 +5124,15 @@ Ext.define('Ung.RowEditorWindow', {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid: function() {
-        var components = this.query("component");
+        var components = this.query("component[dataIndex]");
         var invalidFields = [];
+        var validResult;
         for( var i = 0; i < components.length; i++ ){
-            if( components[i].dataIndex ){
-                if( ( Ext.isFunction(components[i].isValid) ? components[i].isValid() : Ung.Util.isValid(components[i]) ) == false ){
-                    invalidFields.push( 
-                        "<b>" +
-                        components[i].fieldLabel +
-                        "</b>" +
-                        ": " +
-                        components[i].activeErrors.join( ", ")
-                    );
-
-                }
+            if( ( validResult = ( Ext.isFunction(components[i].isValid) ? components[i].isValid() : Ung.Util.isValid(components[i]) ) ) != true ){
+                invalidFields.push( 
+                    ( components[i].fieldLabel ? "<b>" +components[i].fieldLabel + "</b>" + ": " : "" ) +
+                    ( components[i].activeErrors ? components[i].activeErrors.join( ", ") : validResult )
+                );
             }
         }
         if( invalidFields.length ){
