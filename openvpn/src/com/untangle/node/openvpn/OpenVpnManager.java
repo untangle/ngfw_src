@@ -636,6 +636,10 @@ public class OpenVpnManager
             iptablesScript.write("\t${IPTABLES} -t nat -D port-forward-rules -p tcp -d $ADDR --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" >/dev/null 2>&1 \n");
             iptablesScript.write("fi" + "\n");
             iptablesScript.write("\n");
+
+            iptablesScript.write("# delete old nat-reverse-filter rule" + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" >/dev/null 2>&1 \n");
+            iptablesScript.write("\n");
             
             iptablesScript.write("# allow traffic to openvpn daemon on WANs" + "\n");
             iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
@@ -664,6 +668,10 @@ public class OpenVpnManager
             iptablesScript.write("fi" + "\n");
             iptablesScript.write("\n");
 
+            iptablesScript.write("# insert nat-reverse-filter rule to allow openvpn to penetrate NATd networks " + "\n");
+            iptablesScript.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" \n");
+            iptablesScript.write("\n");
+            
             if ( settings.getNatOpenVpnTraffic() ) {
                 iptablesScript.write("# NAT traffic from openvpn interfaces" + "\n");
                 iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic\"" + "\n");
