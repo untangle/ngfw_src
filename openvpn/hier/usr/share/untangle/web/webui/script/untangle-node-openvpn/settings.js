@@ -560,7 +560,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                         });
                                     }, this),
                                     failure: Ext.bind(function( form, action ) {
-                                        Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( action.result.code ));
+                                        Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( "Import failure" ) + ": " + action.result.code);
                                     }, this)
                                 });
                                 
