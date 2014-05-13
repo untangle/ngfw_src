@@ -14,15 +14,13 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public final class LocalDirectoryUser implements Serializable, Comparable<LocalDirectoryUser>
 {
-    public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
-
     private String username;
 
     private String firstName;
     private String lastName;
     
-    private String email;
     private String password;
+    private String email;
     private String passwordShaHash;
     private String passwordMd5Hash;
     private String passwordBase64Hash;
@@ -36,17 +34,20 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
 
     public LocalDirectoryUser(String username, String firstName, String lastName, String email)
     {
-        this(username, firstName, lastName, email, null);
-    }
-
-    public LocalDirectoryUser(String username, String firstName, String lastName, String email, String password)
-    {
         this.firstName = makeNotNull(firstName);
         this.lastName = makeNotNull(lastName);
         setUsername(username);
         this.email = makeNotNull(email);
-        setPassword(password);
     }
+
+    // public LocalDirectoryUser(String username, String firstName, String lastName, String email, String password)
+    // {
+    //     this.firstName = makeNotNull(firstName);
+    //     this.lastName = makeNotNull(lastName);
+    //     setUsername(username);
+    //     this.email = makeNotNull(email);
+    //     setPassword(password);
+    // }
     
     /**
      * Get the username
@@ -118,6 +119,10 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
      * Note: This is often blanked out before saving the user,
      * but this field can be used when passing the object around before saving
      *
+     * DEPRECATED
+     * This is still here because old custom captive portal scripts
+     * set the password in the user before calling addUser
+     * 
      * @return the password or null
      */
     public String getPassword()
@@ -176,20 +181,12 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     }
 
     /**
-     * This clears the cleartext password (useful before saving)
-     * but maintains the hashes
-     */
-    public void removeCleartextPassword()
-    {
-        this.password = null;
-    }
-
-    /**
      * Gets the account expiration time
      *
      * @return expiration time in milliseconds expressing the difference between the current time and midnight, January 1, 1970 UTC.
      */
-    public long getExpirationTime() {
+    public long getExpirationTime()
+    {
         return expirationTime;
     }
 
@@ -198,7 +195,8 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
      *
      * @param expirationTime
      */
-    public void setExpirationTime(long expirationTime) {
+    public void setExpirationTime(long expirationTime)
+    {
         this.expirationTime = expirationTime;
     }
 

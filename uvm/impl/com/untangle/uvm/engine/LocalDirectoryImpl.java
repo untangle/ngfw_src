@@ -58,8 +58,8 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         for (LocalDirectoryUser user : this.currentList) {
             if (username.equals(user.getUsername())) {
-                if (password.equals(user.getPassword()) && !accountExpired(user))
-                    return true;
+                // if (password.equals(user.getPassword()) && !accountExpired(user))
+                //     return true;
                 String base64 = calculateBase64Hash(password);
                 if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user))
                     return true;
@@ -101,33 +101,11 @@ public class LocalDirectoryImpl implements LocalDirectory
                 usersSeen.add(user.getUsername());
 
             /**
-             * If password hasn't changed - copy the hashes from the previous
-             * settings We must do this because the UI does not send the same
-             * hashes back
+             * Set the other hashes has changed and we must recalculate the
              */
-            if (UNCHANGED_PASSWORD.equals(user.getPassword())) {
-                if (this.currentList != null) {
-                    for (LocalDirectoryUser currentUser : this.currentList) {
-                        if (currentUser.equals(user)) {
-                            user.setPasswordShaHash(currentUser.getPasswordShaHash());
-                            user.setPasswordMd5Hash(currentUser.getPasswordMd5Hash());
-                            user.setPasswordBase64Hash(currentUser.getPasswordBase64Hash());
-                        }
-                    }
-                }
-            }
-            /**
-             * Otherwise the password has changed and we must recalculate the
-             * hashes
-             */
-            else {
-                user.setPasswordShaHash(calculateShaHash(user.getPassword()));
-                user.setPasswordMd5Hash(calculateMd5Hash(user.getPassword()));
-                user.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
-            }
-
-            /* clear the cleartext before saving */
-            user.removeCleartextPassword();
+            String password = getPasswordFromBase64Hash( user.getPasswordBase64Hash() );
+            user.setPasswordShaHash(calculateShaHash( password ));
+            user.setPasswordMd5Hash(calculateMd5Hash( password ));
         }
 
         saveUsersList(users);
@@ -136,11 +114,10 @@ public class LocalDirectoryImpl implements LocalDirectory
     public void addUser(LocalDirectoryUser user)
     {
         LinkedList<LocalDirectoryUser> users = this.getUsers();
-        user.setPasswordShaHash(calculateShaHash(user.getPassword()));
-        user.setPasswordMd5Hash(calculateMd5Hash(user.getPassword()));
         user.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
-        user.removeCleartextPassword();
+        user.setPassword(""); //remove cleartext 
         users.add(user);
+        
         this.saveUsersList(users);
     }
 
@@ -163,37 +140,6 @@ public class LocalDirectoryImpl implements LocalDirectory
             }
         }
         return false;
-    }
-
-    public boolean updateUser(LocalDirectoryUser user)
-    {
-        LinkedList<LocalDirectoryUser> users = this.getUsers();
-        boolean retVal = false;
-        for (LocalDirectoryUser u : users) {
-            if (userNameMatch(u, user) || emailMatch(u, user)) {
-                if (user.getPassword() != null && !user.getPassword().equals(UNCHANGED_PASSWORD)) {
-                    u.setPasswordShaHash(calculateShaHash(user.getPassword()));
-                    u.setPasswordMd5Hash(calculateMd5Hash(user.getPassword()));
-                    u.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
-                    u.removeCleartextPassword();
-                }
-                if (user.getFirstName() != null && user.getFirstName().trim().length() > 0) {
-                    u.setFirstName(user.getFirstName());
-                }
-                if (user.getLastName() != null && user.getLastName().trim().length() > 0) {
-                    u.setLastName(user.getLastName());
-                }
-                if (user.getExpirationTime() > 0) {
-                    u.setExpirationTime(user.getExpirationTime());
-                }
-                retVal = true;
-                break;
-            }
-        }
-        if (retVal) {
-            this.saveUsersList(users);
-        }
-        return retVal;
     }
 
     public boolean userExpired(LocalDirectoryUser user)
@@ -320,11 +266,16 @@ public class LocalDirectoryImpl implements LocalDirectory
 
     private String calculateBase64Hash(String password)
     {
-        String hashString;
         byte[] digest = Base64.encodeBase64(password.getBytes());
         return new String(digest);
     }
 
+    private String getPasswordFromBase64Hash( String base64 )
+    {
+        byte[] pass = Base64.decodeBase64( base64.getBytes() );
+        return new String(pass);
+    }
+        
     private String calculateHash(String password, String hashAlgo)
     {
         try {
