@@ -109,6 +109,12 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+
+        /**
+         * In OpenVPN deploy the webapp on init instead of start
+         * because the webapp is needed for configuration while openvpn is off
+         */
+        deployWebApp();
     }
 
     @Override
@@ -116,8 +122,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     {
         super.preStart();
 
-        deployWebApp();
-        
         try {
             this.openVpnManager.configure( settings );
             this.openVpnManager.restart();
@@ -160,6 +164,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     @Override
     protected void postDestroy()
     {
+        unDeployWebApp();
+        
         // purge all settings files (but not the actual settings json file)
         UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/address-pool-assignments.txt" );
         UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/keys/*" );
