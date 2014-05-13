@@ -1025,7 +1025,7 @@ Ext.define('Ung.ReportDetails', {
                 dataIndex: 'title',
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
-                    return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                    return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                 },this)
             }],
             title:this.i18n._('Application List'),
@@ -1077,6 +1077,13 @@ Ext.define('Ung.ReportDetails', {
                     direction: "ASC"
                 },
                 data: data }),
+            listeners: {
+                "cellclick": {
+                    fn: Ext.bind(function( comp, td, cellIndex, record, tr, rowIndex, e, eOpts ) {
+                        reports['getTableOfContentsFor' + upperName](record.get('name'));
+                    },this)
+                }
+            },
             columns: [{
                 header: title,
                 width: 500,
@@ -1084,8 +1091,8 @@ Ext.define('Ung.ReportDetails', {
                 dataIndex: 'name',
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
-                    return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + value + '</a>';
-                },this)
+                    return '<a href="javascript:;">' + Ext.String.htmlEncode(value) + '</a>';
+                },this),
             }],
             title:listTitle,
             height: 500,
@@ -1315,13 +1322,13 @@ Ext.define('Ung.ReportDetails', {
                 renderer: Ext.bind(function(value, medata, record) {
                     var linkType = record.data.linkType;
                     if (linkType == "UserLink") {
-                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "HostLink") {
-                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "EmailLink") {
-                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "URLLink") {
-                        return '<a href="http://' + value + '" target="_new">' + value + '</a>';
+                        return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
                     } else {
                         return this.i18n._(value);
                     }
@@ -1455,7 +1462,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="' + value + '" target="_new">' + value + '</a>';
+                        return '<a href="' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 160;
@@ -1464,7 +1471,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 100;
@@ -1473,7 +1480,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 100;
@@ -1482,7 +1489,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 180;
@@ -1491,7 +1498,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="http://' + value + '" target="_new">' + value + '</a>';
+                        return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
             } else {
