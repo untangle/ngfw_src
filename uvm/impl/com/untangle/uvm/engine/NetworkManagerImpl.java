@@ -1349,6 +1349,17 @@ public class NetworkManagerImpl implements NetworkManager
     {
         List<BypassRule> rules = new LinkedList<BypassRule>();
 
+        BypassRule filterRuleDns = new BypassRule();
+        filterRuleDns.setEnabled( false );
+        filterRuleDns.setDescription( "Bypass DNS Sessions" );
+        filterRuleDns.setBypass( true );
+        List<BypassRuleMatcher> ruleDnsMatchers = new LinkedList<BypassRuleMatcher>();
+        BypassRuleMatcher ruleDnsMatcher1 = new BypassRuleMatcher();
+        ruleDnsMatcher1.setMatcherType(BypassRuleMatcher.MatcherType.DST_PORT);
+        ruleDnsMatcher1.setValue("53");
+        ruleDnsMatchers.add(ruleDnsMatcher1);
+        filterRuleDns.setMatchers( ruleDnsMatchers );
+        
         BypassRule filterRuleSip = new BypassRule();
         filterRuleSip.setEnabled( true );
         filterRuleSip.setDescription( "Bypass VoIP (SIP) Sessions" );
@@ -1386,6 +1397,7 @@ public class NetworkManagerImpl implements NetworkManager
         rulePptpMatchers.add(rulePptpMatcher2);
         filterRulePptp.setMatchers( rulePptpMatchers );
         
+        rules.add( filterRuleDns );
         rules.add( filterRuleSip );
         rules.add( filterRuleIax );
         rules.add( filterRulePptp );
