@@ -52,10 +52,11 @@ class NodeBuilder
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       buildEnv.hierTarget.register_dependency(cf)
 
-      # uncomment this to copy all python2.6 to python2.7 (for wheezy support)
-      # ms_python = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.6", FileList["#{home}/#{dirName}/hier/usr/lib/python2.6/**/*"], "#{node.distDirectory}/usr/lib/python2.7/")
-      # cf_python = CopyFiles.new(node, ms_python, 'python2.7', buildEnv.filterset)
-      # buildEnv.hierTarget.register_dependency(cf_python)
+      # FIXME: we also probably need to s/python2.6/python2.7/ in
+      # #{node.distDirectory}/usr/lib/python2.7/
+      ms_python = MoveSpec.new("#{home}/#{dirName}/hier/usr/lib/python2.6", FileList["#{home}/#{dirName}/hier/usr/lib/python2.6/**/*"], "#{node.distDirectory}/usr/lib/python2.7/")
+      cf_python = CopyFiles.new(node, ms_python, 'python2.7', buildEnv.filterset)
+      buildEnv.hierTarget.register_dependency(cf_python)
     end
 
     jsFiles = FileList["#{home}/#{dirName}/hier/usr/share/untangle/web/webui/**/*.js"]
