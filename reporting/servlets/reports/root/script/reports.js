@@ -1077,13 +1077,6 @@ Ext.define('Ung.ReportDetails', {
                     direction: "ASC"
                 },
                 data: data }),
-            listeners: {
-                "cellclick": {
-                    fn: Ext.bind(function( comp, td, cellIndex, record, tr, rowIndex, e, eOpts ) {
-                        reports['getTableOfContentsFor' + upperName](record.get('name'));
-                    },this)
-                }
-            },
             columns: [{
                 header: title,
                 width: 500,
@@ -1091,7 +1084,7 @@ Ext.define('Ung.ReportDetails', {
                 dataIndex: 'name',
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
-                    return '<a href="javascript:;">' + Ext.String.htmlEncode(value) + '</a>';
+                    return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                 },this),
             }],
             title:listTitle,

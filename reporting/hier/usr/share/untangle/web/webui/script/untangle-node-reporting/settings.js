@@ -726,6 +726,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     editor: {
                         xtype:'textfield',
                         emptyText: this.i18n._("[enter name]"),
+                        regex: /^[^'"]+$/,
+                        regexText: this.i18n._("Quotes and double quotes are not allowed"),
                         allowBlank: false
                     }
                 }],
@@ -748,6 +750,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         dataIndex: "hostname",
                         fieldLabel: this.i18n._("Name"),
                         emptyText: this.i18n._("[enter name]"),
+                        regex: /^[^'"]+$/,
+                        regexText: this.i18n._("Quotes and double quotes are not allowed"),
                         allowBlank: false,
                         width: 300
                     }]
