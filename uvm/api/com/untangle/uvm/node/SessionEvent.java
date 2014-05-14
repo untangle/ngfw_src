@@ -127,7 +127,6 @@ public class SessionEvent extends LogEvent
     public String getHostname() { return hostname; }
     public void setHostname(String hostname) { this.hostname = hostname; }
     
-    /* This doesn't really belong here */
     public String getProtocolName()
     {
         switch (protocol) {
