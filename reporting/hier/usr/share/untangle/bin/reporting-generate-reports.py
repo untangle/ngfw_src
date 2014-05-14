@@ -24,7 +24,7 @@ Options:
 
 ## main
 PREFIX = '@PREFIX@'
-REPORTS_PYTHON_DIR = '%s/usr/lib/python2.6' % PREFIX
+REPORTS_PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 LOCKFILE = "/var/run/untangle-reports.pid"

@@ -3,7 +3,7 @@ import sys
 import getopt
 import signal
 import os
-sys.path.insert(0, '@PREFIX@/usr/lib/python2.6/')
+sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 import unittest2
 import uvm
