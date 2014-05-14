@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * This stores the global system-wide state for a given session
@@ -24,12 +25,14 @@ public class SessionGlobalState
 
     protected final long id;
     protected final short protocol;
-    protected String user; 
 
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
 
     protected final NetcapHook netcapHook;
+
+    protected String user; 
+    protected SessionEvent sessionEvent = null;
 
     /**
      * This is the global list of attachments for this session
@@ -71,16 +74,12 @@ public class SessionGlobalState
         return protocol;
     }
 
-    public String user()
-    {
-        return user;
-    }
+    public String user() { return this.user; }
+    public void setUser( String newValue ) { this.user = newValue; }
 
-    public void setUser(String user)
-    {
-        this.user = user;
-    }
-
+    public SessionEvent getSessionEvent() { return this.sessionEvent; }
+    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
+    
     public NetcapSession netcapSession()
     {
         return netcapSession;
@@ -96,7 +95,6 @@ public class SessionGlobalState
 
     /**
      * Retrieve the netcap UDP Session.  If this is not a UDP session, this will throw an exception.
-     * XXX Probably better executed with two subclasses.
      */
     public NetcapUDPSession netcapUDPSession()
     {

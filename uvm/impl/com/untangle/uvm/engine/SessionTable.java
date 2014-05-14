@@ -39,7 +39,7 @@ public class SessionTable
      * @param  vector - The vector to add.
      * @return - True if the item did not already exist
      */
-    synchronized boolean put( Vector vector, SessionGlobalState session )
+    protected synchronized boolean put( Vector vector, SessionGlobalState session )
     {
         boolean inserted = ( activeSessions.put( vector, session ) == null );
 
@@ -63,7 +63,7 @@ public class SessionTable
      * @param  vector - The vector to remove.
      * @return - True if the item was removed, false if it wasn't in the set.
      */
-    synchronized boolean remove( Vector vector )
+    protected synchronized boolean remove( Vector vector )
     {
         SessionGlobalState session = activeSessions.get( vector );
         if ( session == null ) {
@@ -87,12 +87,12 @@ public class SessionTable
     /**
      * Get the number of vectors remaining
      */
-    synchronized int count()
+    protected synchronized int count()
     {
         return activeSessions.size();
     }
 
-    synchronized int count( short protocol )
+    protected synchronized int count( short protocol )
     {
         int count = 0;
         
@@ -104,7 +104,7 @@ public class SessionTable
         return count;
     }
 
-    synchronized boolean isTcpPortUsed( InetAddress addr, int port )
+    protected synchronized boolean isTcpPortUsed( InetAddress addr, int port )
     {
         NatPortAvailabilityKey key = new NatPortAvailabilityKey( addr, port );
         if ( tcpPortsUsed.get( key ) != null )
@@ -112,7 +112,6 @@ public class SessionTable
         else
             return false;
     }
-    
     
     /**
      * This kills all active vectors, since this is synchronized, it pauses the creation
@@ -137,87 +136,81 @@ public class SessionTable
         return new LinkedList<SessionGlobalState>(this.activeSessions.values());
     }
     
-    synchronized void shutdownMatches( SessionMatcher matcher )
+    protected void shutdownMatches( SessionMatcher matcher )
     {
-        boolean isDebugEnabled = logger.isDebugEnabled();
-
-        logger.debug( "shutdownMatches() called" );
-
-        if ( activeSessions.isEmpty()) return;
-
-        /**
-         * Iterate through all sessions and reset matching sessions
-         */
-        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
-            Map.Entry<Vector,SessionGlobalState> e = iter.next();
-            boolean isMatch;
-
-            SessionGlobalState session = e.getValue();
-            Vector vector  = e.getKey();
-            NetcapHook netcapHook = session.netcapHook();
-
-            isMatch = matcher.isMatch( netcapHook.policyId, netcapHook.clientSide.getProtocol(),
-                                       netcapHook.clientSide.getClientIntf(), netcapHook.serverSide.getServerIntf(),
-                                       netcapHook.clientSide.getClientAddr(), netcapHook.serverSide.getServerAddr(),
-                                       netcapHook.clientSide.getClientPort(), netcapHook.serverSide.getServerPort(),
-                                       session.getAttachments() );
-
-            logger.debug( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
-            if ( isMatch ) {
-                logger.info( "shutdownMatches(): Shutdown  session: " + session + " id: " + session.id() + " matched: " + isMatch );
-                vector.shutdown();
-            }
-        }
+        shutdownMatches( matcher, null );
     }
 
-    synchronized void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
+    protected void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
     {
-        boolean isDebugEnabled = logger.isDebugEnabled();
-
-        logger.info( "shutdownMatches() called" );
+        LinkedList<Vector> shutdownList = new LinkedList<Vector>();
+        logger.info( "shutdownMatches() called." );
 
         if ( activeSessions.isEmpty()) return;
 
         /**
-         * Build the list of agents associated with this pipespec
-         */
-        List<PipelineConnector> pipelineConnectors = ps.getPipelineConnectors();
-        
-        /**
          * Iterate through all sessions and reset matching sessions
          */
-        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
-            Map.Entry<Vector,SessionGlobalState> e = iter.next();
-            boolean isMatch;
+        synchronized( this ) {
+            for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
+                Map.Entry<Vector,SessionGlobalState> e = iter.next();
+                boolean isMatch;
 
-            SessionGlobalState session = e.getValue();
-            Vector vector  = e.getKey();
-            NetcapHook netcapHook = session.netcapHook();
+                SessionGlobalState session = e.getValue();
+                Vector vector  = e.getKey();
+                NetcapHook netcapHook = session.netcapHook();
 
-            /**
-             * Only process sessions involving the specified pipespec and associated connectors
-             */
-            if (session.getPipelineConnectors() == null)
-                continue;
-            boolean matchesOne = false;
-            for ( PipelineConnector conn : pipelineConnectors )
-                if ( session.getPipelineConnectors().contains(conn) )
-                    matchesOne = true;
-            if (!matchesOne)
-                continue;
+                /**
+                 * Only process sessions involving the specified pipespec and associated connectors
+                 */
+                if ( ps != null && ps.getPipelineConnectors() != null ) {
+                    boolean matchesOne = false;
+                    for ( PipelineConnector conn : ps.getPipelineConnectors() )
+                        if ( session.getPipelineConnectors().contains(conn) )
+                            matchesOne = true;
+                    if (!matchesOne)
+                        continue;
+                }
+                
+                com.untangle.uvm.node.SessionEvent sessionEvent = session.getSessionEvent();
+                if ( sessionEvent == null )
+                    continue;
+                
+                isMatch = matcher.isMatch( sessionEvent.getPolicyId(), sessionEvent.getProtocol(),
+                                           sessionEvent.getClientIntf(), sessionEvent.getServerIntf(),
+                                           sessionEvent.getCClientAddr(), sessionEvent.getSServerAddr(),
+                                           sessionEvent.getCClientPort(), sessionEvent.getSServerPort(),
+                                           session.getAttachments() );
 
-            isMatch = matcher.isMatch( netcapHook.policyId, netcapHook.clientSide.getProtocol(),
-                                       netcapHook.clientSide.getClientIntf(), netcapHook.serverSide.getServerIntf(),
-                                       netcapHook.clientSide.getClientAddr(), netcapHook.serverSide.getServerAddr(),
-                                       netcapHook.clientSide.getClientPort(), netcapHook.serverSide.getServerPort(),
-                                       session.getAttachments() );
-
-            logger.info( "shutdownMatches(): Tested    session: " + session + " id: " + session.id() + " matched: " + isMatch );
-            if ( isMatch ) {
-                logger.info( "shutdownMatches(): Shutdown  session: " + session + " id: " + session.id() + " matched: " + isMatch );
-                vector.shutdown();
+                logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
+                              sessionEvent.getProtocolName() + "| "  +
+                              sessionEvent.getCClientAddr().getHostAddress() + ":" + 
+                              sessionEvent.getCClientPort() + " -> " +
+                              sessionEvent.getSServerAddr().getHostAddress() + ":" +
+                              sessionEvent.getSServerPort() + 
+                              " matched: " + isMatch );
+                if ( isMatch ) {
+                    logger.info( "shutdownMatches(): Shutdown  session[" + session.id() + "]: " +
+                                 sessionEvent.getProtocolName() + "| "  +
+                                 sessionEvent.getCClientAddr().getHostAddress() + ":" + 
+                                 sessionEvent.getCClientPort() + " -> " +
+                                 sessionEvent.getSServerAddr().getHostAddress() + ":" +
+                                 sessionEvent.getSServerPort());
+                    shutdownList.add(vector);
+                }
             }
         }
+
+        for ( Vector vector : shutdownList ) {
+            try {
+                vector.shutdown();
+            }
+            catch (Exception e) {
+                logger.warn( "Exception killing session", e );
+            }
+        }
+
+        logger.info( "shutdownMatches() done." );
     }
     
     public static SessionTable getInstance()

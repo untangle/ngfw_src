@@ -184,7 +184,7 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setServerIntf( clientSide.getServerIntf() );
             sessionEvent.setUsername( username );
             sessionEvent.setHostname( hostname );
-            sessionEvent.setPolicyId(policyId);
+            sessionEvent.setPolicyId( policyId );
             sessionEvent.setCClientAddr( clientSide.getClientAddr() );
             sessionEvent.setCClientPort( clientSide.getClientPort() );
             sessionEvent.setCServerAddr( clientSide.getServerAddr() );
@@ -194,6 +194,8 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSServerAddr( serverSide.getServerAddr() );
             sessionEvent.setSServerPort( serverSide.getServerPort() );
 
+            sessionGlobalState.setSessionEvent( sessionEvent );
+            
             int tupleHashCodeOriginal =
                 sessionEvent.getSClientAddr().hashCode() + 
                 sessionEvent.getSClientPort() + 
