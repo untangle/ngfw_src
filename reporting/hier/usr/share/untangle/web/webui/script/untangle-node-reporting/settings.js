@@ -339,7 +339,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             width: 200,
                             editor: {
                                 xtype:'textfield',
-                                vtype: "email",
+                                vtype: 'email',
                                 emptyText: this.i18n._("[enter email address]"),
                                 allowBlank: false,
                                 blankText: this.i18n._("The email address cannot be blank.")
@@ -363,6 +363,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 xtype:'textfield',
                                 dataIndex: "emailAddress",
                                 fieldLabel: this.i18n._("Email Address (username)"),
+                                vtype: 'email',
                                 emptyText: this.i18n._("[enter email address]"),
                                 allowBlank: false,
                                 blankText: this.i18n._("The email address name cannot be blank."),
