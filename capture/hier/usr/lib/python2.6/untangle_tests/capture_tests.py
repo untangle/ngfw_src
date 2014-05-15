@@ -6,6 +6,7 @@ import os
 import re
 import socket
 import subprocess
+import base64
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -59,7 +60,7 @@ def createLocalDirectoryUser():
             'lastName': '[lastName]', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
             'expirationTime': 0, 
-            'password': 'passwd', 
+            'passwordBase64Hash': base64.b64encode('passwd'), 
             'email': 'test20@example.com'
             },]
     }
