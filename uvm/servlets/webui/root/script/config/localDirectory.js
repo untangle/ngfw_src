@@ -24,7 +24,6 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 name: 'Local Users',
                 helpSource: 'local_directory_local_users',
                 title: this.i18n._('Local Users'),
-                hasImportExport: false, /* password not actually in grid - cant export */
                 settingsCmp: this,
                 height: 500,
                 paginated: false,
@@ -46,18 +45,12 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     "lastName": "",
                     "email": "",
                     "password": "",
+                    "passwordBase64Hash": "",
                     "expirationTime": 0,
                     "javaClass": "com.untangle.uvm.LocalDirectoryUser"
                 },
                 recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
-                dataFn:Ext.bind( function() {
-                    var storeData=main.getLocalDirectory().getUsers().list;
-                    for(var i=0; i<storeData.length; i++) {
-                        storeData[i].password = "***UNCHANGED***";
-                    }
-                    return storeData;
-                }, this),            
-                dataRoot: null,
+                dataFn: main.getLocalDirectory().getUsers,
                 fields: [{
                     name: 'username'
                 }, {
@@ -70,6 +63,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     name: 'password'
                 },{
                     name: 'expirationTime'
+                },{
+                    name: 'passwordBase64Hash'
                 },{
                     name: 'javaClass'
                 }],
@@ -100,7 +95,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     editor: {
                         xtype: 'textfield',
                         emptyText: this.i18n._('[last name]')
-                    }                    
+                    }
                 }, {
                     header: this.i18n._("email address"),
                     width: 250,
@@ -113,20 +108,23 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     }
                 }, {
                     header: this.i18n._("password"),
-                    width: 150,
+                    width: 180,
                     dataIndex: 'password',
                     editor: {
                         xtype:'textfield',
                         inputType:'password',
                         allowBlank: false
                     },
-                    renderer: function(value, metadata, record) {
+                    renderer: Ext.bind(function(value, metadata, record) {
+                        if(value.length == 0 && record.get("passwordBase64Hash").length > 0) {
+                            return "*** "+this.i18n._("Unchanged")+" ***";
+                        }
                         var result = "";
                         for(var i=0; value != null && i<value.length; i++) {
                             result = result + "*";
                         }
                         return result;
-                    }
+                    },this)
                 },
                 {
                     header: this.i18n._("expiration time"),
@@ -141,126 +139,143 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     },this)
                 }],
                 sortField: 'username',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "User/Login ID",
-                    dataIndex: "username",
-                    fieldLabel: this.i18n._("User/Login ID"),
-                    emptyText: this.i18n._('[enter login]'),
-                    allowBlank: false,
-                    regex: /^[\w ]+$/,
-                    regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
-                    width: 300
-                }, 
-                {
-                    xtype:'textfield',
-                    name: "First Name",
-                    dataIndex: "firstName",
-                    fieldLabel: this.i18n._("First Name"),
-                    emptyText: this.i18n._('[enter first name]'),
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    name: "Last Name",
-                    dataIndex: "lastName",
-                    fieldLabel: this.i18n._("Last Name"),
-                    emptyText: this.i18n._('[last name]'),
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    name: "Email Address",
-                    dataIndex: "email",
-                    fieldLabel: this.i18n._("Email Address"),
-                    emptyText: this.i18n._('[email address]'),
-                    vtype: 'email',
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    inputType: 'password',
-                    name: "Password",
-                    dataIndex: "password",
-                    fieldLabel: this.i18n._("Password"),
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'container',
-                    layout: {
-                        type: 'hbox',
-                        align: 'stretch'
-                    },
-                    dataIndex:'expirationTime',
-                    setValue:function(value) {
-                        if ( value == 0) {
-                            this.down("[name='expirationTime']").setVisible(false);
-                            this.down("[name='neverExpire']").setValue(true);
-                            this.down("[name='expirationTime']").setValue(new Date(0));
-                        } else {
-                            this.down("[name='neverExpire']").setValue(false);
-                            this.down("[name='expirationTime']").setVisible(true);
-                            this.down("[name='expirationTime']").setValue(value);
-                        }
-                    },
-                    getValue: function() {
-                        var neverExpired =this.down("[name='neverExpire']").getValue();
-                        if ( neverExpired) {
-                            return 0;
-                        }
-                        return this.down("[name='expirationTime']").getValue();
-                    },
-                    items:[{
-                        xtype:'checkbox',
-                        name:'neverExpire',
-                        fieldLabel: this.i18n._("Expiration Time"),
-                        boxLabel:this.i18n._('Never'),
-                        listeners: {
-                            "change": Ext.bind(function (elem,checked) { 
-                                var expirationCtl = this.gridUsers.rowEditor.down("[name='expirationTime']");
-                                expirationCtl.setVisible(!checked);
-                                if ( checked) {
-                                    expirationCtl.setValue(new Date(0));
-                                } else {
-                                    var v = expirationCtl.getValue();
-                                    if ( v == 0) {
-                                        expirationCtl.setValue(new Date());
-                                    }
-                                }
-                            },this)
-                        },
-                        width:180
-                    },
-                    {
-                        xtype:'xdatetime',
-                        name: "expirationTime"
-                    }]
-                }]
+                columnsDefaultSortable: true
             });
+            this.gridUsers.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+                inputLines: [{
+                     xtype:'textfield',
+                     name: "User/Login ID",
+                     dataIndex: "username",
+                     fieldLabel: this.i18n._("User/Login ID"),
+                     emptyText: this.i18n._('[enter login]'),
+                     allowBlank: false,
+                     regex: /^[\w ]+$/,
+                     regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
+                     width: 300
+                 }, 
+                 {
+                     xtype:'textfield',
+                     name: "First Name",
+                     dataIndex: "firstName",
+                     fieldLabel: this.i18n._("First Name"),
+                     emptyText: this.i18n._('[enter first name]'),
+                     allowBlank: false,
+                     width: 300
+                 },
+                 {
+                     xtype:'textfield',
+                     name: "Last Name",
+                     dataIndex: "lastName",
+                     fieldLabel: this.i18n._("Last Name"),
+                     emptyText: this.i18n._('[last name]'),
+                     width: 300
+                 },
+                 {
+                     xtype:'textfield',
+                     name: "Email Address",
+                     dataIndex: "email",
+                     fieldLabel: this.i18n._("Email Address"),
+                     emptyText: this.i18n._('[email address]'),
+                     vtype: 'email',
+                     width: 300
+                 },
+                 {
+                     xtype: 'container',
+                     layout: 'column',
+                     margin: '0 0 5 0',
+                     items: [{
+                         xtype:'textfield',
+                         inputType: 'password',
+                         name: "Password",
+                         dataIndex: "password",
+                         fieldLabel: this.i18n._("Password"),
+                         allowBlank: false,
+                         width: 300
+                     },{
+                         xtype: 'label',
+                         name: 'passwordInfo',
+                         html: this.i18n._("(leave empty to keep the current password unchanged)"),
+                         cls: 'boxlabel'
+                     }]
+                 },
+                 {
+                     xtype:'container',
+                     layout: {
+                         type: 'hbox',
+                         align: 'stretch'
+                     },
+                     dataIndex:'expirationTime',
+                     setValue:function(value) {
+                         if ( value == 0) {
+                             this.down("[name='expirationTime']").setVisible(false);
+                             this.down("[name='neverExpire']").setValue(true);
+                             this.down("[name='expirationTime']").setValue(new Date(0));
+                         } else {
+                             this.down("[name='neverExpire']").setValue(false);
+                             this.down("[name='expirationTime']").setVisible(true);
+                             this.down("[name='expirationTime']").setValue(value);
+                         }
+                     },
+                     getValue: function() {
+                         var neverExpired =this.down("[name='neverExpire']").getValue();
+                         if ( neverExpired) {
+                             return 0;
+                         }
+                         return this.down("[name='expirationTime']").getValue();
+                     },
+                     items:[{
+                         xtype:'checkbox',
+                         name:'neverExpire',
+                         fieldLabel: this.i18n._("Expiration Time"),
+                         boxLabel:this.i18n._('Never'),
+                         listeners: {
+                             "change": Ext.bind(function (elem,checked) { 
+                                 var expirationCtl = this.gridUsers.rowEditor.down("[name='expirationTime']");
+                                 expirationCtl.setVisible(!checked);
+                                 if ( checked) {
+                                     expirationCtl.setValue(new Date(0));
+                                 } else {
+                                     var v = expirationCtl.getValue();
+                                     if ( v == 0) {
+                                         expirationCtl.setValue(new Date());
+                                     }
+                                 }
+                             },this)
+                         },
+                         width:180
+                     },
+                     {
+                         xtype:'xdatetime',
+                         name: "expirationTime"
+                     }]
+                 }],
+                 populate: function(record, addMode) {
+                     this.down('textfield[dataIndex="password"]').allowBlank = (record.get("passwordBase64Hash").length > 0);
+                     this.down('label[name="passwordInfo"]').setVisible(record.get("passwordBase64Hash").length > 0);
+                     Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
+                 }
+            }));
 
         },
         validate: function() {
             //validate local directory users
             var listUsers = this.gridUsers.getPageList();
-            var mapUsers = {};
+            var mapUsers = {}, user;
             for(var i=0; i<listUsers.length;i++) {
+                user = listUsers[i];
                 // verify that the login name is not duplicated
-                if(mapUsers[listUsers[i].username]) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[i].username, i+1),
+                if(mapUsers[user.username]) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), user.username, i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
                         }, this) 
                     );
                     return false;
                 }
-                mapUsers[listUsers[i].username]=true;
+                mapUsers[user.username]=true;
                 
                 // login name contains no forward slash character
-                if (listUsers[i].username.indexOf("/") != -1) {
+                if (user.username.indexOf("/") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
@@ -269,7 +284,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     return false;
                 }
                 // first name contains no spaces
-                if (listUsers[i].firstName.indexOf(" ") != -1) {
+                if (user.firstName.indexOf(" ") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
@@ -278,7 +293,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     return false;
                 }
                 // last name contains no spaces
-                if (listUsers[i].lastName.indexOf(" ") != -1) {
+                if (user.lastName.indexOf(" ") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The last name at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
@@ -287,7 +302,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     return false;
                 }
                 // the password is at least one character
-                if (listUsers[i].password.length == 0) {
+                if (user.passwordBase64Hash.length == 0 && user.password.length == 0) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
@@ -296,7 +311,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     return false;
                 }
                 // the password contains no spaces
-                if (listUsers[i].password.indexOf(" ") != -1) {
+                if (user.password.indexOf(" ") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
                         Ext.bind(function () {
                             this.tabs.setActiveTab(this.gridUsers);
@@ -308,6 +323,14 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             return true;
         },
         save: function (isApply) {
+            // Calculate passwordBase64Hash for changed passwords and remove cleartext password before saving
+            var listUsers = this.gridUsers.getPageList();
+            for(var i=0; i<listUsers.length;i++) {
+                if(listUsers[i].password.length > 0) {
+                    listUsers[i].passwordBase64Hash = Ung.Util.btoa(listUsers[i].password);
+                    listUsers[i].password = "";
+                }
+            }
             main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
@@ -316,7 +339,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 } else {
                     this.clearDirty();
                 }
-            }, this), {javaClass:"java.util.LinkedList",list:this.gridUsers.getPageList()});
+            }, this), {javaClass:"java.util.LinkedList",list: listUsers});
         },
         cleanupExpiredUsers:function() {
             if ( this.isDirty()) {
