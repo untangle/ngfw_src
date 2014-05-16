@@ -7260,33 +7260,18 @@ Ext.define('Ung.RuleBuilder', {
             break;
           case "text":
             var new_value=valObj.value;
-            if(new_value!=null) {
-                new_value.replace("::","");
-                new_value.replace("&&","");
-            }
-            switch (record.get('vtype')) {
-              case "portMatcher": 
-                if ( !Ext.form.field.VTypes.portMatcher(new_value)) {
-                        valObj.value='';
-                    valObj.select();
-                    valObj.setAttribute('style','border:1px #C30000 solid');
-                } else {
-                    valObj.removeAttribute('style');
-                    record.data.value=new_value;
-                }
-                break;
-              case "ipMatcher": 
-                if ( !Ext.form.field.VTypes.ipMatcher(new_value)) {
+            var vtype = record.get('vtype');
+            if(!Ext.isEmpty(vtype)) {
+                new_value = new_value.replace(/ /g,"");
+                if ( !Ext.form.field.VTypes[vtype](new_value)) {
                     valObj.value='';
                     valObj.select();
                     valObj.setAttribute('style','border:1px #C30000 solid');
                 } else {
                     valObj.removeAttribute('style');
+                    valObj.value=new_value;
                     record.data.value=new_value;
                 }
-                break;
-            default:
-                record.data.value=new_value;
             }
             break;
         }
