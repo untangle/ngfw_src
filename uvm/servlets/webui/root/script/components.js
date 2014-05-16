@@ -2826,8 +2826,8 @@ Ext.define("Ung.GridEventLogBase", {
                             }
                             return true;
                         }
-                    }
-                };
+                    };
+                }
             }
             if( col.stateId === undefined ){
                 col.stateId = col.dataIndex;
@@ -5025,8 +5025,6 @@ Ext.define('Ung.RowEditorWindow', {
     grid: null,
     // input lines for standard input lines (text, checkbox, textarea, ..)
     inputLines: null,
-    // extra validate function for row editor
-    validate: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
     // the record currently edit
