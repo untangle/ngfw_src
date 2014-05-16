@@ -71,8 +71,8 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"),
                                                    "SELECT * from reports.http_events " +
-                                                   "WHERE " + nodeName + "_blocked IS NOT NULL " +
-                                                   "AND policy_id = :policyId " +
+                                                   "WHERE " + 
+                                                   "policy_id = :policyId " +
                                                    "ORDER BY time_stamp DESC");
         this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Events"),
                                                    "SELECT * from reports.http_events " +
