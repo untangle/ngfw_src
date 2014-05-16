@@ -27,6 +27,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             });
             rpc.systemManager.upgradesAvailable(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
+                if(!this || !this.isVisible()) {
+                    return;
+                }
                 checkUpgradesProgressbar.reset();
                 checkUpgradesProgressbar.hide();
                 var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + ' </font></i>' :
@@ -60,9 +63,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     return;
                 }
                 var text=Ext.String.format(i18n._("Package: {0} of {1}<br/>Speed: {2}"),
-                                           result.downloadCurrentFileCount,
-                                           result.downloadTotalFileCount,
-                                           result.downloadCurrentFileRate);
+                           result.downloadCurrentFileCount,
+                           result.downloadTotalFileCount,
+                           result.downloadCurrentFileRate);
                 if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=this.msgTitle) {
                     Ext.MessageBox.progress(this.msgTitle, text);
                 }

@@ -4446,23 +4446,22 @@ Ext.define('Ung.Window', {
         this.setPosition(main.contentLeftWidth, 0);
         this.setSize(objSize);
     },
-
     // to override if needed
     isDirty: function() {
         return false;
     },
-        cancelAction: function(handler) {
-            if (this.isDirty()) {
-                Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-                                       Ext.bind(function(btn) {
-                                           if (btn == 'yes') {
-                                               this.closeWindow(handler);
-                                           }
-                                       }, this));
-            } else {
-                this.closeWindow(handler);
-            }
-        },
+    cancelAction: function(handler) {
+        if (this.isDirty()) {
+            Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
+               Ext.bind(function(btn) {
+                   if (btn == 'yes') {
+                       this.closeWindow(handler);
+                   }
+               }, this));
+        } else {
+            this.closeWindow(handler);
+        }
+    },
     close: function() {
         //Need to override default Ext.Window method to fix issue #10238
         if (this.fireEvent('beforeclose', this) !== false) {
@@ -4482,11 +4481,11 @@ Ext.define('Ung.Window', {
 Ung.Window.cancelAction = function(dirty, closeWinFn) {
     if (dirty) {
         Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
-                               function(btn) {
-                                   if (btn == 'yes') {
-                                       closeWinFn();
-                                   }
-                               });
+        function(btn) {
+            if (btn == 'yes') {
+                closeWinFn();
+            }
+        });
     } else {
         closeWinFn();
     }
@@ -4602,9 +4601,9 @@ Ext.define("Ung.SettingsWin", {
             }
             return;
         }
-            if(!this.validate()) {
-                return;
-            }
+        if(!this.validate()) {
+            return;
+        }
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
         if(Ext.isFunction(this.beforeSave)) {
             this.beforeSave(isApply, this.save);
