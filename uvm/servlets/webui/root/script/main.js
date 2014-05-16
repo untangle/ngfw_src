@@ -27,7 +27,7 @@ Ext.define("Ung.Main", {
     firstTimeRun: null,
     policyNodeWidget:null,
     initialScreenAlreadyShown: false,
-    
+
     // init function
     constructor: function(config) {
         Ext.apply(this, config);
@@ -69,7 +69,7 @@ Ext.define("Ung.Main", {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        
+
         i18n=new Ung.I18N({"map":rpc.translations});
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
@@ -176,7 +176,7 @@ Ext.define("Ung.Main", {
                             main.openHelp(null);
                         }
                     }, {
-                        name: 'MyAccount',                       
+                        name: 'MyAccount',
                         iconCls: 'icon-myaccount',
                         text: i18n._('My Account'),
                         tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
@@ -223,11 +223,10 @@ Ext.define("Ung.Main", {
             query = query + "&" + "version=" + fullVersion;
             query = query + "&" + "webui=true";
             query = query + "&" + "lang=" + language;
-            
+
             rpc.about = query;
         }
         return rpc.about;
-        
     },
     openLegal: function( topic ) {
         var baseUrl;
@@ -274,7 +273,7 @@ Ext.define("Ung.Main", {
     closeIframe: function() {
         if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
             this.iframeWin.closeWindow();
-        } 
+        }
         this.reloadLicenses();
     },
 
@@ -306,7 +305,7 @@ Ext.define("Ung.Main", {
         var email = /^(")?(?:[^\."])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,63}$/;
         Ext.apply(Ext.form.VTypes, {
             email: function (v) {
-                return email.test(v);  
+                return email.test(v);
             },
             ipMatcher: function(val) {
                 if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
@@ -363,7 +362,7 @@ Ext.define("Ung.Main", {
                 return true;
             },
             cidrBlockListText: i18n._('Must be a comma seperated list of networks in CIDR format.') + ' ' + '(192.168.123.0/24,1.2.3.4/24)',
-            
+
             portMatcher: function(val) {
                 switch(val) {
                   case 'any':
@@ -420,9 +419,8 @@ Ext.define("Ung.Main", {
         rpc.systemManager.upgrade(Ext.bind(function(result, exception) {
             // the upgrade will shut down the untangle-vm so often this returns an exception
             // either way show a wait dialog...
-            
+
             Ext.MessageBox.hide();
-            
             var applyingUpgradesWindow=Ext.create('Ext.window.MessageBox', {
                 minProgressWidth: 360
             });
@@ -437,7 +435,7 @@ Ext.define("Ung.Main", {
                 fn: function() {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
                     if(main.configWin!=null && main.configWin.isVisible()) {
-                        main.configWin.closeWindow();    
+                        main.configWin.closeWindow();
                     }
                     applyingUpgradesWindow.hide();
                     Ext.MessageBox.hide();
@@ -464,7 +462,7 @@ Ext.define("Ung.Main", {
         }
         return rpc.networkManager;
     },
-    
+
     getLoggingManager: function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             try {
@@ -512,7 +510,7 @@ Ext.define("Ung.Main", {
         }
         return rpc.oemManager;
     },
-    
+
     getLicenseManager: function(forceReload) {
         // default functionality is to reload license manager as it might change in uvm
         if (typeof forceReload === 'undefined') {
@@ -559,7 +557,7 @@ Ext.define("Ung.Main", {
         }
         return rpc.mailSender;
     },
-    
+
     getNetworkSettings: function(forceReload) {
         if (forceReload || rpc.networkSettings === undefined) {
             try {
@@ -643,7 +641,7 @@ Ext.define("Ung.Main", {
         this.nodes=[];
         var i;
         var node;
-        
+
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
@@ -668,7 +666,7 @@ Ext.define("Ung.Main", {
         }
         if(this.target) {
             //Open target if specified
-            //target usage in the query string: 
+            //target usage in the query string:
             //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
             //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
             //monitor.[sessions|hosts](.<tabName>)
@@ -725,7 +723,7 @@ Ext.define("Ung.Main", {
                 parentRackDisplay.show();
                 parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+": " + parentRackName;
             }
-            
+
             main.buildApps();
             main.buildNodes();
         }, this);
@@ -802,9 +800,9 @@ Ext.define("Ung.Main", {
     reloadLicenses: function() {
         main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
             // do not pop-up license managerexceptions because they happen when offline
-            // if(Ung.Util.handleException(exception)) return; 
+            // if(Ung.Util.handleException(exception)) return;
             if (exception) return;
-            
+
             var callback = Ext.bind(function(result,exception) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.rackView=result;
@@ -834,7 +832,7 @@ Ext.define("Ung.Main", {
             appItem.hide();
             return;
         }
-        
+
         Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
         main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
@@ -962,7 +960,6 @@ Ext.define("Ung.Main", {
                                   i18n._("Internet Explorer 8 and prior are not supported for administration.") + "<br/>" +
                                   i18n._("Please upgrade to a newer browser.") );
         }
-        
     },
     checkForAlerts: function (handler) {
         //check for upgrades
@@ -1004,7 +1001,6 @@ Ext.define("Ung.Main", {
                 }]
             });
             this.alertToolTip.render(Ext.getBody());
-            
         }, this,[handler],true));
     },
     openConfig: function(configItem) {
@@ -1082,13 +1078,12 @@ Ext.define("Ung.Main", {
         var tid = main.nodes[index].nodeId;
         var nodeUI = (tid != null) ? Ext.getCmp('node_'+tid): null;
         main.nodes.splice(index, 1);
-        
         if(nodeUI) {
             Ext.destroy(nodeUI);
             return true;
         }
         return false;
-    }, 
+    },
     getNode: function(nodeName, nodePolicyId) {
         var cp = rpc.currentPolicy.policyId ,np = null;
         if(main.nodes) {
@@ -1109,16 +1104,11 @@ Ext.define("Ung.Main", {
         var cp = rpc.currentPolicy.policyId;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicyId==null) {
-                    cp = null;
-                } else {
-                    cp = main.nodes[i].nodeSettings.policyId;
-                }
-            
+                cp = (nodePolicyId==null) ? null : main.nodes[i].nodeSettings.policyId;
                 if (node.name === main.nodes[i].name) {
                     if(nodePolicyId!=cp) {
                         //parent found
-                        return main.removeNode(i); 
+                        return main.removeNode(i);
                     }
                 }
             }
@@ -1253,29 +1243,24 @@ Ext.define("Ung.Main", {
             main.policyNodeWidget.loadSettings();
         }
     },
-    
     // change current policy
     changeRack: function () {
         Ext.getCmp('rack-select').setText(this.text);
         rpc.currentPolicy=rpc.policies[this.index];
         main.loadRackView();
     },
-
     getParentName: function( parentId ) {
         if( parentId == null ) {
             return i18n._("None");
         }
-
         if ( rpc.policies === null ) {
             return i18n._("None");
         }
-        
         for ( var c = 0 ; c < rpc.policies.length ; c++ ) {
             if ( rpc.policies[c].policyId == parentId ) {
                 return rpc.policies[c].name;
             }
         }
-        
         return i18n._("None");
     },
     /**
@@ -1310,13 +1295,13 @@ Ext.define("Ung.Main", {
     },
     /**
      *  Prepares the uvm to display the welcome screen
-     */      
+     */
     showWelcomeScreen: function () {
         if(this.welcomeScreenAlreadShown) {
             return;
         }
         this.welcomeScreenAlreadShown = true;
-        
+
         //Test if box is online (store is available)
         Ext.MessageBox.wait(i18n._("Determining Connectivity..."), i18n._("Please wait"));
 
@@ -1335,7 +1320,7 @@ Ext.define("Ung.Main", {
     },
     /**
      *  Hides the welcome screen
-     */         
+     */
     hideWelcomeScreen: function() {
         main.closeIframe();
     },
@@ -1393,14 +1378,13 @@ Ext.define("Ung.Main", {
                         appsToInstall.shift();
                         var completeFn = Ext.bind( fn, this, [appsToInstall] ); // function to install remaining apps
                         var app = Ung.AppItem.getApp(name);
-                        if ( app ) 
+                        if ( app ) {
                             app.installNode( completeFn );
-                        else
+                        } else {
                             completeFn();
+                        }
                     };
-
                     fn( apps );
-                    
                     popup.close();
                 }, this)
             },{

@@ -22,7 +22,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildDatabase();
 
             // only show DB settings if set to something other than localhost
-            if (this.getSettings().dbHost != "localhost") { 
+            if (this.getSettings().dbHost != "localhost") {
                 this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelDatabase]);
             } else {
                 this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
@@ -32,19 +32,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.callParent(arguments);
         },
 
-        buildPasswordValidator: function(){
+        buildPasswordValidator: function() {
+            var thisReporting = this;
             this.passwordValidator = function( fieldValue ){
                 // Get field container
                 var panel = this.up("panel");
-
-                // Get reporting container for access to i18n.
-                var thisReporting = this.up("window[name=untangle-node-reporting]");
-                if( thisReporting == null ){
-                    // rowEditorLine is not "properly" linked to parents for query.  Need to access
-                    // its grid and requery.
-                    thisReporting = panel.up("window").grid.up("window[name=untangle-node-reporting]");
-                }
-
                 // Walk fields looking for "_password_" and "_confirm_password_"
                 var suffix = this.id.substr( this.id.lastIndexOf("_") + 1 );
                 var fields = panel.query("textfield[id$="+suffix+"]");
@@ -56,7 +48,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }else if( fields[i].id.match(/_password_/) ){
                         pwd = fields[i];
                     }
-                } 
+                }
                 if(pwd.getValue() != confirmPwd.getValue() ){
                     pwd.markInvalid();
                     confirmPwd.markInvalid();
@@ -67,13 +59,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
                     return thisReporting.i18n._("A password must be set to enable Online Access!");
                 }
-                
                 pwd.clearInvalid();
                 confirmPwd.clearInvalid();
                 return true;
             };
-            // }, 
-            // this);
         },
         // Status Panel
         buildStatus: function() {
@@ -221,6 +210,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         width: 90,
                         hideLabel: true,
                         value: generationTime,
+                        toValidate: true,
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, newValue) {
@@ -249,6 +239,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: 'Data Retention days',
                         id: 'reporting_daysToKeepDB',
                         value: this.getSettings().dbRetention,
+                        toValidate: true,
                         labelWidth: 150,
                         labelAlign: 'right',
                         width: 200,
@@ -351,65 +342,64 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             dataIndex: "emailSummaries",
                             width: 100,
                             resizable: false
-                        }, { 
+                        }, {
                             xtype:'checkcolumn',
                             header: this.i18n._("Online Access"),
                             dataIndex: "onlineAccess",
                             width: 100,
                             resizable: false
                         }, changePasswordColumn ],
-                        rowEditorInputLines: [
-                            {
-                                xtype:'textfield',
-                                dataIndex: "emailAddress",
-                                fieldLabel: this.i18n._("Email Address (username)"),
-                                vtype: 'email',
-                                emptyText: this.i18n._("[enter email address]"),
-                                allowBlank: false,
-                                blankText: this.i18n._("The email address name cannot be blank."),
-                                width: 300
-                            },{
-                                xtype:'checkbox',
-                                dataIndex: "emailSummaries",
-                                fieldLabel: this.i18n._("Email Summaries"),
-                                width: 300
-                            },{
-                                xtype:'checkbox',
-                                dataIndex: "onlineAccess",
-                                id: "add_reporting_online_reports_" + fieldID,
-                                fieldLabel: this.i18n._("Online Access"),
-                                width: 300
-                            },{
-                                xtype: 'container',
-                                layout: 'column',
-                                margin: '0 0 5 0',
-                                items: [{
-                                    xtype:'textfield',
-                                    inputType: "password",
-                                    name: "Password",
-                                    dataIndex: "password",
-                                    id: "add_reporting_user_password_" + fieldID,
-                                    msgTarget: "title",
-                                    fieldLabel: this.i18n._("Password"),
-                                    width: 300,
-                                    minLength: 3,
-                                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
-                                    validator: this.passwordValidator                    
-                                },{
-                                    xtype: 'label',
-                                    html: this.i18n._("(required for 'Online Access')"),
-                                    cls: 'boxlabel'
-                                }]
-                            }, {
+                        rowEditorInputLines: [{
+                            xtype:'textfield',
+                            dataIndex: "emailAddress",
+                            fieldLabel: this.i18n._("Email Address (username)"),
+                            vtype: 'email',
+                            emptyText: this.i18n._("[enter email address]"),
+                            allowBlank: false,
+                            blankText: this.i18n._("The email address name cannot be blank."),
+                            width: 300
+                        },{
+                            xtype:'checkbox',
+                            dataIndex: "emailSummaries",
+                            fieldLabel: this.i18n._("Email Summaries"),
+                            width: 300
+                        },{
+                            xtype:'checkbox',
+                            dataIndex: "onlineAccess",
+                            id: "add_reporting_online_reports_" + fieldID,
+                            fieldLabel: this.i18n._("Online Access"),
+                            width: 300
+                        },{
+                            xtype: 'container',
+                            layout: 'column',
+                            margin: '0 0 5 0',
+                            items: [{
                                 xtype:'textfield',
                                 inputType: "password",
-                                name: "Confirm Password",
+                                name: "Password",
                                 dataIndex: "password",
-                                id: "add_reporting_confirm_password_" + fieldID,
-                                fieldLabel: this.i18n._("Confirm Password"),
+                                id: "add_reporting_user_password_" + fieldID,
+                                msgTarget: "title",
+                                fieldLabel: this.i18n._("Password"),
                                 width: 300,
-                                validator: this.passwordValidator                    
+                                minLength: 3,
+                                minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                                validator: this.passwordValidator
+                            },{
+                                xtype: 'label',
+                                html: this.i18n._("(required for 'Online Access')"),
+                                cls: 'boxlabel'
                             }]
+                        }, {
+                            xtype:'textfield',
+                            inputType: "password",
+                            name: "Confirm Password",
+                            dataIndex: "password",
+                            id: "add_reporting_confirm_password_" + fieldID,
+                            fieldLabel: this.i18n._("Confirm Password"),
+                            width: 300,
+                            validator: this.passwordValidator
+                        }]
                     })]
                 },{
                     title: this.i18n._("Email Attachment Settings"),
@@ -432,6 +422,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         name: 'Attachement size limit',
                         id: 'reporting_attachment_size_limit',
                         value: this.getSettings().attachmentSizeLimit,
+                        toValidate: true,
                         labelWidth: 150,
                         labelAlign:'right',
                         width: 200,
@@ -453,29 +444,28 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
                 grid: this.gridReportingUsers,
                 ownerCt: this,
-                inputLines: [
-                    {
-                        xtype:'textfield',
-                        inputType: "password",
-                        name: "Password",
-                        dataIndex: "password",
-                        id: "edit_reporting_user_password_"  + fieldID,
-                        fieldLabel: this.i18n._("Password"),
-                        width: 300,
-                        minLength: 3,
-                        minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
-                        validator: this.passwordValidator
-                    }, 
-                    {
-                        xtype:'textfield',
-                        inputType: "password",
-                        name: "Confirm Password",
-                        dataIndex: "password",
-                        id: "edit_reporting_confirm_password_"  + fieldID,
-                        fieldLabel: this.i18n._("Confirm Password"),
-                        width: 300,
-                        validator: this.passwordValidator
-                    }]
+                inputLines: [{
+                    xtype:'textfield',
+                    inputType: "password",
+                    name: "Password",
+                    dataIndex: "password",
+                    id: "edit_reporting_user_password_"  + fieldID,
+                    fieldLabel: this.i18n._("Password"),
+                    width: 300,
+                    minLength: 3,
+                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                    validator: this.passwordValidator
+                },
+                {
+                    xtype:'textfield',
+                    inputType: "password",
+                    name: "Confirm Password",
+                    dataIndex: "password",
+                    id: "edit_reporting_confirm_password_"  + fieldID,
+                    fieldLabel: this.i18n._("Confirm Password"),
+                    width: 300,
+                    validator: this.passwordValidator
+                }]
             });
             this.gridReportingUsers.subCmps.push(this.gridReportingUsers.rowEditorChangePassword);
         },
@@ -548,6 +538,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             itemCls: 'left-indent-1',
                             id: 'reporting_syslog_host',
                             value: this.getSettings().syslogHost,
+                            toValidate: true,
                             allowBlank: false,
                             blankText: this.i18n._("A \"Host\" must be specified."),
                             disabled: !this.getSettings().syslogEnabled,
@@ -566,6 +557,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             itemCls: 'left-indent-1',
                             id: 'reporting_syslog_port',
                             value: this.getSettings().syslogPort,
+                            toValidate: true,
                             allowDecimals: false,
                             minValue: 0,
                             allowBlank: false,
@@ -744,7 +736,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         vtype: 'ipAddress',
                         allowBlank: false,
                         width: 300
-                    }, 
+                    },
                     {
                         xtype:'textfield',
                         name: "Name",
@@ -758,7 +750,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
             });
         },
-
         beforeSave: function(isApply,handler) {
             this.getSettings().reportingUsers.list = this.gridReportingUsers.getPageList();
             this.getSettings().hostnameMap.list = this.gridHostnameMap.getPageList();
@@ -769,28 +760,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             handler.call(this, isApply);
         },
-        validate: function(){
-            var invalidComponents = this.query("component[activeError]");
-            if( invalidComponents.length > 0 ){
-                var invalidFields = [];
-                for( var i = 0; i < invalidComponents.length; i++ ){
-                    invalidFields.push( 
-                        "<b>" +
-                        invalidComponents[i].fieldLabel +
-                        "</b>" +
-                        ": " +
-                        invalidComponents[i].activeErrors.join( ", ")
-                    );
-                }
-                Ext.MessageBox.alert(
-                    this.i18n._("Warning"),
-                    this.i18n._("One or more fields contain invalid values.  Settings cannot be saved until these problems are resolved.") +
-                    "<br><br>" +
-                    invalidFields.join( "<br>" )
-                );
-               return false; 
-            }
-            return true;
+        validate: function () {
+            var components = this.query("component[toValidate]");
+            return this.validateComponents(components);
         }
     });
 }
