@@ -168,7 +168,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.grid.rowEditorChangePass.show();
                 }
             });
-
+            var thisReporting = this;
+            var passwordValidator = function (fieldValue) {
+              //validate password match
+                var panel = this.up("panel");
+                var pwd = panel.down('textfield[name="password"]');
+                var confirmPwd = panel.down('textfield[name="confirmPassword"]');
+                if(pwd.getValue() != confirmPwd.getValue()) {
+                    pwd.markInvalid();
+                    return thisReporting.i18n._('Passwords do not match');
+                }
+                pwd.clearInvalid();
+                confirmPwd.clearInvalid();
+                return true;
+            }
             this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
                 flex: 1,
                 settingsCmp: this,
@@ -286,26 +299,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     fieldLabel: this.i18n._("Password"),
                     width: 400,
                     minLength: 3,
-                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
+                    minLengthText: Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3),
+                    validator: passwordValidator
                 }, {
                     xtype: "textfield",
                     inputType: 'password',
                     name: "confirmPassword",
                     dataIndex: "password",
                     fieldLabel: this.i18n._("Confirm Password"),
-                    width: 400
-                }],
-                validate: Ext.bind(function(items) {
-                    //validate password match
-                    var pwd = this.gridAdminAccounts.rowEditorChangePass.down('textfield[name="password"]');
-                    var confirmPwd = this.gridAdminAccounts.rowEditorChangePass.down('textfield[name="confirmPassword"]');
-                    if(pwd.getValue() != confirmPwd.getValue()) {
-                        pwd.markInvalid();
-                        return this.i18n._('Passwords do not match');
-                    } else {
-                        return true;
-                    }
-                }, this)
+                    width: 400,
+                    validator: passwordValidator
+                }]
             });
 
             this.gridAdminAccounts.subCmps.push(this.gridAdminAccounts.rowEditorChangePass);
