@@ -181,7 +181,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 pwd.clearInvalid();
                 confirmPwd.clearInvalid();
                 return true;
-            }
+            };
             this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
                 flex: 1,
                 settingsCmp: this,
