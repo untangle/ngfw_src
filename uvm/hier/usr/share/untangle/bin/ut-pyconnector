@@ -134,7 +134,11 @@ def run_cmd(cmd_str):
      debug("Received: %s" % cmd_str.strip(), 2)
      global uvm
      if uvm == None:
-          uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
+          try:
+               uvm = Uvm().getUvmContext( hostname="127.0.0.1", username=None, password=None, timeout=30 )
+          except Exception,e:
+               uvm = None
+               debug("Exception: %s" % e)
      try:
           result = eval(cmd_str.strip())
           return str(result)
