@@ -25,7 +25,7 @@ fi
 # set pyconnector to start at boot
 if [ -x "/etc/init.d/untangle-pyconnector" ]; then
     update-rc.d untangle-pyconnector defaults 95 5 >/dev/null 
-    ourInit untangle-pyconnector start >/dev/null 2>&1
+    ourInit untangle-pyconnector restart >/dev/null 2>&1
 fi
 
 ## Nuke the work directory for the servlets.
