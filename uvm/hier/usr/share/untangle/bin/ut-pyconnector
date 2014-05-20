@@ -234,7 +234,7 @@ def parse_args():
                usage()
                sys.exit(0)
           elif k == '-l' or k == '--log':
-               logfile = open(v,"w")
+               logfile = open(v,"a")
                sys.stdout = logfile
                sys.stderr = logfile
           elif k == '-s' or k == '--server':
