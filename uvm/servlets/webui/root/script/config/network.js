@@ -4780,7 +4780,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var port = this.port.getValue();
                         var script=['echo 1 | netcat -q 0 -v -w 15 ' + destination + ' ' + port +';',
                             'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
-                        return ["/bin/sh","-c", script.join("")];
+                        return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
@@ -4856,7 +4856,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         var protocol = "-" + this.protocol.getValue();
                         var script = ['traceroute' + ' ' + protocol + ' ' + destination + ' ;',
                           'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
-                        return ["/bin/sh","-c", script.join("")];
+                        return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
@@ -4921,7 +4921,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     getCommand: function() {
                         var url = this.url.getValue();
                         var script = ['wget --output-document=/dev/null ' + ' ' + url + ' ;'];
-                        return ["/bin/sh","-c", script.join("")];
+                        return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {

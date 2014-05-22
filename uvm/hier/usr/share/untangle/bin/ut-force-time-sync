@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # stop the daemon first
 if [ -x /etc/init.d/ntp ] ; then

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -ne 4 ]; then
     echo "usage $0 po.zip work hades internal"

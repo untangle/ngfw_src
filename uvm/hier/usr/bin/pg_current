@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # This is a simple helper script because I got tired of launching psql and querying to see what the current active queries were

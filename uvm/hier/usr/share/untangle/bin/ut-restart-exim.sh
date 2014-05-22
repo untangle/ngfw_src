@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # update configuration
 /usr/sbin/update-exim4.conf

@@ -217,7 +217,7 @@ public class SystemManagerImpl implements SystemManager
             try {
                 logger.info( "Downloading " + url );
 
-                // String[] strs = {"/bin/sh", "-c", "wget -c --progress=dot -P /var/cache/apt/archives/ " + url};
+                // String[] strs = {"/bin/bash", "-c", "wget -c --progress=dot -P /var/cache/apt/archives/ " + url};
                 // ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( strs );
                 ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( "wget -c --progress=dot -P /var/cache/apt/archives/ " + url );
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 THIS_MONTH_REBOOTS="`last -f /var/log/wtmp reboot | grep '^reboot' | wc -l`"
 THIS_MONTH_CRASHS="`last -f /var/log/wtmp | grep 'crash' | wc -l`"
