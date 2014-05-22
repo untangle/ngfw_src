@@ -2939,9 +2939,13 @@ Ext.define("Ung.GridEventLogBase", {
             this.refreshNextChunkCallback(null);
         }
 
-        this.setLoading(i18n._('Fetching Events...'));
         this.reader = result;
-        this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
+        if(this.reader) {
+            this.setLoading(i18n._('Fetching Events...'));
+            this.reader.getNextChunk(Ext.bind(this.refreshNextChunkCallback, this), 1000);
+        } else {
+            this.refreshNextChunkCallback(null);
+        }
     },
     listeners: {
         "activate": {

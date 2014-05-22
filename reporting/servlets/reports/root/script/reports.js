@@ -5,7 +5,9 @@ var reports = null;
 var testMode = false;
 
 JSONRpcClient.toplevel_ex_handler = function (ex) {
-    Ung.Util.handleTimeout(ex);
+    if (!Ung.Util.handleTimeout(exception)) {
+        Ext.MessageBox.alert("Failed", exception.message);
+    }
 };
 JSONRpcClient.max_req_active = 10;
 
@@ -22,10 +24,7 @@ Ung.Util = {
     loadScript: function(sScriptSrc, handler) {
         var error=null;
         try {
-            if(window.XMLHttpRequest)
-                var req = new XMLHttpRequest();
-            else
-                var req = new ActiveXObject("Microsoft.XMLHTTP");
+            var req = (window.XMLHttpRequest)? (new XMLHttpRequest()): (new ActiveXObject("Microsoft.XMLHTTP"));
             req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
             req.send(null);
             if( window.execScript)
@@ -51,7 +50,7 @@ Ung.Util = {
                     
                     Ext.MessageBox.alert("Failed", message);
                     return;
-                };
+                }
                 var moduleMap=result.map;
                 Ung.i18nModuleInstances[appName] = new Ung.ModuleI18N({
                         "map" : i18n.map,
@@ -319,15 +318,9 @@ Ext.define('Ung.Reports', {
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        reports.getApplicationData(reports.selectedApplication, reports.numDays);     
+        reports.getApplicationData(reports.selectedApplication, reports.numDays);
         if ( this.drillType != null && this.drillType.length > 0 && this.drillValue != null && this.drillValue.length > 0) {
-            if ( this.drillType=='host') {
-                reports.getApplicationDataForHost(reports.selectedApplication,this.drillValue);
-            } else if ( this.drillType =='user') {
-                reports.getApplicationDataForUser(reports.selectedApplication,this.drillValue);
-            } else if ( this.drillType =='email') {
-                reports.getApplicationDataForEmail(reports.selectedApplication,this.drillValue);
-            }
+            reports.getDrilldownApplicationData(this.drillType, reports.selectedApplication,this.drillValue);
         }
     },
     startApplication: function() {
@@ -469,7 +462,7 @@ Ext.define('Ung.Reports', {
                             qsDate = p.date;
                             if (qsDate) {
                                 dp = qsDate.split('-');
-                                d = new Date(parseInt(dp[0]), parseInt(dp[1]) - 1, parseInt(dp[2]));
+                                d = new Date(parseInt(dp[0], 10), parseInt(dp[1], 10) - 1, parseInt(dp[2], 10));
                                                         
                                 reports.changeDate({
                                     javaClass: 'java.util.Date',
@@ -798,8 +791,8 @@ Ext.define('Ung.Reports', {
         }
         rpc.applicationData=result;
         reports.breadcrumbs.push({ text: this.selectedNode.data.text,
-                                   handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays])
-                                 });
+            handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays])
+        });
     
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
@@ -844,46 +837,41 @@ Ext.define('Ung.Reports', {
              }
         );    
     },
-    getDrilldownTableOfContents: function(fnName, type, value) {
+    getDrilldownTableOfContents: function(type, value) {
+        var fnMap = {
+            'user': 'getTableOfContentsForUser',
+            'host': 'getTableOfContentsForHost',
+            'email': 'getTableOfContentsForEmail'
+        };
+        var fnName= fnMap[type];
         rpc.drilldownType = type;
         rpc.drilldownValue = value;
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
-             if (exception) {
-                 var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
-                 if(exception.message){
-                     if (!Ung.Util.handleTimeout(exception)) {
-                         Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
-                     }
-                 }else{
-                     Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
-                 }
-             }
-             rpc.applicationData=result;
-             reports.breadcrumbs.push({
-                 text: value +" "+i18n._("Reports"),
-                handler: Ext.bind(this.getDrilldownTableOfContents,this, [fnName, type, value]),
+            if (exception) {
+                if (!Ung.Util.handleTimeout(exception)) {
+                    Ext.MessageBox.alert("Failed", exception.message);
+                }
+                return;
+            }
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({
+                text: value +" "+i18n._("Reports"),
+                handler: Ext.bind(this.getDrilldownTableOfContents,this, [type, value]),
                 drilldownType: rpc.drilldownType,
                 drilldownValue: rpc.drilldownValue
-             });
-             this.reportDetails.buildReportDetails(); // XXX take to correct page
-             reports.progressBar.hide();
-         },this), reports.reportsDate, reports.numDays, value);
+            });
+            this.reportDetails.buildReportDetails(); // XXX take to correct page
+            reports.progressBar.hide();
+        },this), reports.reportsDate, reports.numDays, value);
     },
-
-    getTableOfContentsForUser: function(user) {
-        return this.getDrilldownTableOfContents('getTableOfContentsForUser', 'user', user);
-    },
-
-    getTableOfContentsForHost: function(host) {
-        return this.getDrilldownTableOfContents('getTableOfContentsForHost', 'host', host);
-    },
-
-    getTableOfContentsForEmail: function(email) {
-        return this.getDrilldownTableOfContents('getTableOfContentsForEmail', 'email', email);
-    },
-
-    getDrilldownApplicationData: function(fnName, app, type, value) {
+    getDrilldownApplicationData: function(type, app, value) {
+        var fnMap = {
+            'user': 'getApplicationDataForUser',
+            'host': 'getApplicationDataForHost',
+            'email': 'getApplicationDataForEmail'
+        };
+        var fnName= fnMap[type];
         rpc.drilldownType = type;
         rpc.drilldownValue = value;
         this.selectedApplication = app;
@@ -900,28 +888,17 @@ Ext.define('Ung.Reports', {
                return;
             }      
             rpc.applicationData=result;
-            reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
-                                       handler: Ext.bind(this[fnName],this,[app, value]),
-                                      drilldownType: rpc.drilldownType,
-                                      drilldownValue: rpc.drilldownValue
-                                     });
+            reports.breadcrumbs.push({ 
+                text: i18n.sprintf("%s: %s reports ",
+                value, this.appNames[app]),
+                handler: Ext.bind(this.getDrilldownApplicationData, this, [type, app, value]),
+                drilldownType: rpc.drilldownType,
+                drilldownValue: rpc.drilldownValue
+            });
             this.reportDetails.buildReportDetails(); // XXX take to correct page
             reports.progressBar.hide();
         },this), reports.reportsDate, reports.numDays, app, value);
     },
-
-    getApplicationDataForUser: function(app, user) {
-        this.getDrilldownApplicationData('getApplicationDataForUser', app, 'user', user);
-    },
-
-    getApplicationDataForHost: function(app, host) {
-        this.getDrilldownApplicationData('getApplicationDataForHost', app, 'host', host);
-    },
-
-    getApplicationDataForEmail: function(app, email) {
-        this.getDrilldownApplicationData('getApplicationDataForEmail', app, 'email', email);
-    },
-
     openBreadcrumb: function(breadcrumbIndex) {
         if (this.breadcrumbs.length>breadcrumbIndex) {
             var breadcrumb = this.breadcrumbs[breadcrumbIndex];
@@ -995,24 +972,20 @@ Ext.define('Ung.ReportDetails', {
     },
 
     buildDrilldownTableOfContents: function(type) {
-        var upperName = type.substring(0,1).toUpperCase() + type.substr(1);
-
-        var data = [];
-        var i = 0;
-        var list = rpc.applicationData.applications.list;
-
-        for (i=0; i<list.length; i++) {
-            data.push([list[i].javaClass,list[i].name,list[i].title]);
-        }
-
         return Ext.create('Ext.grid.Panel',{
-            store: Ext.create('Ext.data.ArrayStore', {
+            store: Ext.create('Ext.data.Store', {
+                data: rpc.applicationData.applications.list,
                 fields: [
                     { name: 'javaClass' },
                     { name: 'name' },
                     { name: 'title' }
                 ],
-                data: data
+                proxy: {
+                    type: 'memory',
+                    reader: {
+                        type: 'json'
+                    }
+                }
             }),
             border:0,
             defaults:{
@@ -1025,7 +998,7 @@ Ext.define('Ung.ReportDetails', {
                 dataIndex: 'title',
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
-                    return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                    return '<a href="javascript:reports.getDrilldownApplicationData(\'' + type + '\', \'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                 },this)
             }],
             title:this.i18n._('Application List'),
@@ -1051,32 +1024,30 @@ Ext.define('Ung.ReportDetails', {
 
     buildDrilldownList: function(type, title, listTitle) {
         var pluralName = type + 's';
-        var upperName = type.substring(0,1).toUpperCase() + type.substr(1);
-
-        var data = [];
-        var i = 0;
-
-        for(i=0;i<reports.tableOfContents[pluralName].list.length;i++){
-            data.push([reports.tableOfContents[pluralName].list[i].javaClass,
-                       reports.tableOfContents[pluralName].list[i].name,null]);
-        }
-
+        var data = reports.tableOfContents[pluralName].list;
         return Ext.create('Ext.grid.Panel',{
             border:0,
             defaults: {
                 border:0
             },
-            store: Ext.create('Ext.data.ArrayStore',{
+            store: Ext.create('Ext.data.Store', {
+                data: data,
                 fields: [
-                    {name: 'javaClass'},
-                    {name: 'name'},
-                    {name: 'linkType'} //this is not used currently
+                    { name: 'javaClass' },
+                    { name: 'name' },
+                    { name: 'linkType' }
                 ],
                 sorters: {
                     property: "name",
                     direction: "ASC"
                 },
-                data: data }),
+                proxy: {
+                    type: 'memory',
+                    reader: {
+                        type: 'json'
+                    }
+                }
+            }),
             columns: [{
                 header: title,
                 width: 500,
@@ -1084,7 +1055,7 @@ Ext.define('Ung.ReportDetails', {
                 dataIndex: 'name',
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
-                    return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                    return '<a href="javascript:reports.getDrilldownTableOfContents(\''+ type + '\', \''+ value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                 },this),
             }],
             title:listTitle,
@@ -1315,11 +1286,11 @@ Ext.define('Ung.ReportDetails', {
                 renderer: Ext.bind(function(value, medata, record) {
                     var linkType = record.data.linkType;
                     if (linkType == "UserLink") {
-                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'user\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "HostLink") {
-                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'host\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "EmailLink") {
-                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'email\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     } else if (linkType == "URLLink") {
                         return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
                     } else {
@@ -1389,7 +1360,9 @@ Ext.define('Ung.ReportDetails', {
                     style: 'padding: 0px 0px 0px 0px;',
                     iconCls:'export-excel',
                     text: i18n._('Export Data'),
-                    handler: new Function("window.open('" + summaryItem.csvUrl + "');")
+                    handler: function () { 
+                        window.open(summaryItem.csvUrl);
+                    }
                 }],
                 header: false,
                 stripeRows: true,
@@ -1464,7 +1437,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'user\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 100;
@@ -1473,7 +1446,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'host\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 100;
@@ -1482,7 +1455,7 @@ Ext.define('Ung.ReportDetails', {
                     if (!value) {
                         return i18n._('None');
                     } else {
-                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        return '<a href="javascript:reports.getDrilldownApplicationData(\'email\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
                     }
                 };
                 col.width = 180;
