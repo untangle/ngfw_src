@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# used for 10.3 upgrade path, at the bottom of this file
+oldVersion=$2
+
 ourInit() {
 if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
   invoke-rc.d $1 $2
@@ -57,5 +60,10 @@ killall monit-wrapper.sh
 killall monit
 sed -i '/monit-wrapper/d' /etc/inittab ; init q
 rm -f /var/log/uvm/monit.*
+
+# 10.3 upgrade (Closes: #11853)
+if dpkg --compare-versions "$oldVersion" le 10.3~ ; then
+  /usr/share/untangle-netd/bin/sync-settings.py -vv
+fi
 
 exit 0
