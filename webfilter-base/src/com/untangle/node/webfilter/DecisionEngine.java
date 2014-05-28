@@ -31,6 +31,9 @@ import com.untangle.uvm.node.UrlMatcher;
  */
 public abstract class DecisionEngine
 {
+    static final Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
+
+
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
@@ -147,7 +150,15 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if ( checkUnblockedSites( host, uri, clientIp ) ) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "unblocked", node.getName());
+            String bestCategoryStr = null;
+            GenericRule bestCategory = checkCategory(sess, clientIp, host, port, requestLine);
+            if (bestCategory != null)
+                bestCategoryStr = bestCategory.getName();
+            if ( bestCategoryStr == null ) {
+                bestCategoryStr = I18nUtil.tr("Unblocked", i18nMap);
+            }
+
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategoryStr, node.getName());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
             return null;
@@ -160,8 +171,7 @@ public abstract class DecisionEngine
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.logEvent(hbe);
 
-                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), I18nUtil.tr("host name is an IP address ({0})", host, i18nMap), clientIp, node.getNodeTitle());
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -180,7 +190,6 @@ public abstract class DecisionEngine
                 isFlagged = true;
                 reason = Reason.BLOCK_URL;
             }
-            
         } 
         
         // Check Extensions
@@ -228,7 +237,6 @@ public abstract class DecisionEngine
              * If the site was blocked return the nonce
              */
             if (bestCategory.getBlocked()) {
-                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
                 String blockReason = I18nUtil.tr(bestCategory.getName(), i18nMap) + " - " + I18nUtil.tr(bestCategory.getDescription(), i18nMap);
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), blockReason, clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
@@ -240,7 +248,7 @@ public abstract class DecisionEngine
         // No category was found (this should happen rarely as most will return an "Uncategorized" category)
         // Since nothing matched, just log it and return null to allow the visit
 
-        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, isFlagged, reason, "None", node.getName());
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, isFlagged, reason, I18nUtil.tr("None", i18nMap), node.getName());
         node.logEvent(hbe);
         return null;
     }
@@ -283,10 +291,7 @@ public abstract class DecisionEngine
             logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
 
-            Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
-                                                                 I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
-                                                                 clientIp, node.getNodeTitle());
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), "Mime-Type" + contentType, clientIp, node.getNodeTitle());
             return node.generateNonce(bd);
         } else if (rule != null && rule.getFlagged()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getName());
