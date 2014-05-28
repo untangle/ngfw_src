@@ -102,7 +102,7 @@ except Exception,e:
     debian_distro='squeeze'
 
 # last two bytes in UID have special meaning 
-platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8' }
+platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9' }
 versions = { 'hardware':'1', 'iso':'2' }
 
 # generate UID (mostly random bytes)
