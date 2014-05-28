@@ -1040,6 +1040,7 @@ class WebFilterDetailUnblock(DetailSection):
             rv.append(ColumnDesc('username', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('url', _('Url'), 'URL'),
+               ColumnDesc('%s_category' % self.__short_name, _('Category')),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
 
@@ -1094,7 +1095,7 @@ class WebFilterDetailAll(DetailSection):
                ColumnDesc('%s_flagged' % self.__short_name, _('Flagged')),
                ColumnDesc('%s_blocked' % self.__short_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
-               ColumnDesc('c_server_addr', _('Server Ip')),
+               ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
