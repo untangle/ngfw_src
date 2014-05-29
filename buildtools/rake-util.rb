@@ -197,7 +197,7 @@ class JavaCompiler
     ensureDirectory(dest)
     src = File.expand_path(jt.jar_file)
 
-    if File.exist?(src):
+    if File.exist?(src) then
       info "[unjar   ] #{src} => #{dest}"
       wd = Dir.pwd
       Dir.chdir(dest)
@@ -226,12 +226,12 @@ class JavaCompiler
     raise "java #{classname} failed" unless
       oldout = $stdout.dup
       olderr = $stderr.dup
-      if silent:
+      if silent then
         $stdout.reopen("/dev/null", "w")
         $stderr.reopen("/dev/null", "w")
       end
       Kernel.system(JavaCommand, "-cp", cp, classname, *args)
-      if silent:
+      if silent then
         $stdout.reopen(oldout)
         $stderr.reopen(olderr)
       end
