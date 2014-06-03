@@ -262,6 +262,16 @@ class FirewallTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
+    # verify protocol UDP rule works
+    def test_047_blockProtocolUDP(self):
+        nukeRules();
+        appendRule( createDualMatcherRule("PROTOCOL","UDP", "DST_PORT", 53) );
+        result = clientControl.runCommand("host test.untangle.com 4.2.2.1 >/dev/null 2>&1")
+        assert (result != 0)
+        # Use TCP version of DNS lookup.
+        result = clientControl.runCommand("host -T test.untangle.com 4.2.2.1 >/dev/null 2>&1")
+        assert (result == 0)
+
     # verify src intf any rule works
     def test_050_blockDstIntfAny(self):
         nukeRules();
