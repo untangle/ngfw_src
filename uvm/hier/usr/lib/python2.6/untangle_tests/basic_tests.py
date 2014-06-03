@@ -72,9 +72,9 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client can pass UDP
     def test_20_clientCanPassUDP(self):
-        result = clientControl.runCommand("host cnn.com 8.8.8.8 > /dev/null")
+        result = clientControl.runCommand("host cnn.com 8.8.8.8 > /dev/null 2>&1")
         assert (result == 0)
-        result = clientControl.runCommand("host google.com 8.8.8.8 > /dev/null")
+        result = clientControl.runCommand("host google.com 8.8.8.8 > /dev/null 2>&1")
         assert (result == 0)
 
     # verify client is online
