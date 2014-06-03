@@ -802,15 +802,15 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
     /* This must be a shutdown event */
     if (( evt == NULL ) || !event_is_shutdown( evt->type )) {
         mvpoll_key_t* key;
-        int key_type;
+        //int key_type;
 
         /* This check guarantees that a NULL key is not dereferenced */
         if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
             /* This check just guarantees that the a NULL key is not dereferenced */
             errlog( ERR_WARNING, "VECTOR(0x%016"PRIxPTR"): Null key\n", (uintptr_t) vec );
-            key_type = 0xDEAD;
+            //key_type = 0xDEAD;
         } else {
-            key_type = key->type;
+            //key_type = key->type;
         }
 
         if (evt == NULL) {
@@ -1492,7 +1492,7 @@ static int  _mvpoll_keystub_sub_events ( vector_t* vec, mvpoll_key_t* key, int e
  */
 static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* prefix )
 {
-    int i,len;
+    int i;
     list_node_t* step;
     
     if (!chain) 
@@ -1500,8 +1500,6 @@ static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* pr
 
     if ( debug_level > debug_get_mylevel())
         return 0;
-    
-    len = list_length(chain);
 
     debug(debug_level,"%s: Chain: 0x%016"PRIxPTR"\n", prefix, (uintptr_t)chain);
     for (i=0, step = list_head(chain) ; step ; i++, step = list_node_next(step)) {
