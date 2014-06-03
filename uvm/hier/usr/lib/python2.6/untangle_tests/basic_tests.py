@@ -70,10 +70,14 @@ class TestEnvironmentTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://google.com/")
         assert (result == 0)
 
+    # verify client can pass UDP
+    def test_20_clientCanPassUDP(self):
+        result = clientControl.runCommand("host cnn.com 8.8.8.8 > /dev/null")
+        assert (result == 0)
+        result = clientControl.runCommand("host google.com 8.8.8.8 > /dev/null")
+        assert (result == 0)
+
     # verify client is online
-    def test_15_clientNotRunningOpenvpn(self):
+    def test_30_clientNotRunningOpenvpn(self):
         result = clientControl.runCommand("pidof openvpn >/dev/null")
         assert (result != 0)
-
-
-
