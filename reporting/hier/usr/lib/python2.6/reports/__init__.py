@@ -372,6 +372,19 @@ class DetailSection(Section):
                    ]
         return columns
     
+    def get_http_query_columns(self, host=None, user=None, email=None):
+        columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+                   ColumnDesc('c_client_addr', _('Client')),
+                   ColumnDesc('username', _('Username')),
+                   ColumnDesc('host', _('Host')),
+                   ColumnDesc('hostname', _('Hostname')),
+                   ColumnDesc('uri', _('Uri')),
+                   ColumnDesc('term', _('Term')),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
+                   ]
+        return columns
+    
     def get_email_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
                    ColumnDesc('c_client_addr', _('Client')),

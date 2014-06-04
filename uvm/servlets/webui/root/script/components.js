@@ -3817,6 +3817,102 @@ Ung.CustomEventLog = {
         });
         return grid;
     },
+    buildHttpQueryEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+        var grid = Ext.create('Ung.GridEventLog',{
+            name: nameParam,
+            settingsCmp: settingsCmpParam,
+            helpSource: helpSourceParam,
+            eventQueriesFn: eventQueriesFnParam,
+            title: titleParam,
+            fields: [{
+                name: 'time_stamp',
+                sortType: Ung.SortTypes.asTimestamp
+            }, {
+                name: 'c_client_addr',
+                sortType: Ung.SortTypes.asIp
+            }, {
+                name: 'username'
+            }, {
+                name: 'hostname'
+            }, {
+                name: 'c_server_addr',
+                sortType: Ung.SortTypes.asIp
+            }, {
+                name: 's_server_port',
+                sortType: 'asInt'
+            }, {
+                name: 'host'
+            }, {
+                name: 'uri'
+            }, {
+                name: 'term'
+            }],
+            columns: [{
+                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                header: i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('hostname') < 0,
+                header: i18n._("Hostname"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'hostname'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
+                header: i18n._("Client"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_client_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('username') < 0,
+                header: i18n._("Username"),
+                width: Ung.Util.usernameFieldWidth,
+                sortable: true,
+                dataIndex: 'username'
+            }, {
+                hidden: visibleColumnsParam.indexOf('host') < 0,
+                header: i18n._("Host"),
+                width: Ung.Util.hostnameFieldWidth,
+                sortable: true,
+                dataIndex: 'host'
+            }, {
+                hidden: visibleColumnsParam.indexOf('uri') < 0,
+                header: i18n._("Uri"),
+                flex:1,
+                width: Ung.Util.uriFieldWidth,
+                sortable: true,
+                dataIndex: 'uri'
+            }, {
+                hidden: visibleColumnsParam.indexOf('term') < 0,
+                header: i18n._("Query Term"),
+                flex:1,
+                width: Ung.Util.uriFieldWidth,
+                sortable: true,
+                dataIndex: 'term'
+            }, {
+                hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
+                header: i18n._("Server"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'c_server_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('s_server_port') < 0,
+                header: i18n._("Server Port"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 's_server_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }]
+        });
+        return grid;
+    },
     buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
         var grid = Ext.create('Ung.GridEventLog',{
             name: nameParam,

@@ -364,6 +364,10 @@ public abstract class DecisionEngine
         unblockedDomains.clear();
     }
 
+    /**
+     *
+     */
+    public WebFilterBase getNode(){ return this.node; }
 
     /**
      * checkUnblockedSites checks the host+uri against the current unblocks for clientIp

@@ -30,6 +30,9 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
+from reports.log import *
+logger = getLogger(__name__)
+
 _ = reports.i18n_helper.get_translation('untangle-base-webfilter').lgettext
 
 def N_(message): return message
@@ -63,33 +66,48 @@ class WebFilterBaseNode(Node):
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
-    def get_report(self):
+    def get_report(self, summariesAppend = None, detailsAppend = None ):
+        if summariesAppend is None:
+            summariesAppend = []
+        if detailsAppend is None:
+            detailsAppend = []
+
         sections = []
 
-        s = SummarySection('summary', _('Summary Report'),
-                           [WebHighlight(self.name, self.__short_name),
-                            DailyWebUsage(self.__short_name),
-                            TotalWebUsage(self.__short_name),
-                            TopTenWebBrowsingHostsByHits(self.__short_name),
-                            TopTenWebBrowsingHostsBySize(self.__short_name),
-                            TopTenWebBrowsingUsersByHits(self.__short_name),
-                            TopTenWebBrowsingUsersBySize(self.__short_name),
-                            TopTenWebPolicyViolationsByHits(self.__short_name),
-                            TopTenWebBlockedPolicyViolationsByHits(self.__short_name),
-                            TopTenWebsitesByHits(self.__short_name),
-                            TopTenWebsitesBySize(self.__short_name),
-                            TopTenWebPolicyViolatorsByHits(self.__short_name),
-                            TopTenWebPolicyViolatorsADByHits(self.__short_name),
-                            TopTenPolicyViolations(self.__short_name),
-                            TopTenBlockedPolicyViolations(self.__short_name)])
+        summaryReports = [
+            WebHighlight(self.name, self.__short_name),
+            DailyWebUsage(self.__short_name),
+            TotalWebUsage(self.__short_name),
+            TopTenWebBrowsingHostsByHits(self.__short_name),
+            TopTenWebBrowsingHostsBySize(self.__short_name),
+            TopTenWebBrowsingUsersByHits(self.__short_name),
+            TopTenWebBrowsingUsersBySize(self.__short_name),
+            TopTenWebPolicyViolationsByHits(self.__short_name),
+            TopTenWebBlockedPolicyViolationsByHits(self.__short_name),
+            TopTenWebsitesByHits(self.__short_name),
+            TopTenWebsitesBySize(self.__short_name),
+            TopTenWebPolicyViolatorsByHits(self.__short_name),
+            TopTenWebPolicyViolatorsADByHits(self.__short_name),
+            TopTenPolicyViolations(self.__short_name),
+            TopTenBlockedPolicyViolations(self.__short_name)
+            ];
+        summaryReports.extend( summariesAppend )
+
+        s = SummarySection(
+                'summary', 
+                _('Summary Report'),
+                summaryReports 
+            );
+
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__short_name))
         sections.append(WebFilterDetailAll(self.__short_name))
         sections.append(WebFilterDetailDomains(self.__short_name))
 
-        if self.__short_name == 'sitefilter':
-            sections.append(WebFilterDetailUnblock(self.__short_name))
+        if len( detailsAppend ):
+            for detail in detailsAppend:
+                sections.append( detail )
 
         return Report(self, sections)
 
@@ -1009,58 +1027,6 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
 AND (%s_flagged OR %s_blocked)
 """ % (DateFromMx(start_date), DateFromMx(end_date),
        self.__short_name, self.__short_name)
-
-        if host:
-            sql += " AND hostname = %s" % QuotedString(host)
-        if user:
-            sql += " AND username = %s" % QuotedString(user)
-
-        return sql + " ORDER BY time_stamp DESC"
-
-class WebFilterDetailUnblock(DetailSection):
-    def __init__(self, node_name):
-        DetailSection.__init__(self, 'unblocks', _('Unblock Events'))
-
-        self.__short_name = node_name
-
-    def get_columns(self, host=None, user=None, email=None):
-        if email:
-            return None
-
-        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
-
-        if host:
-            rv.append(ColumnDesc('hostname', _('Client')))
-        else:
-            rv.append(ColumnDesc('hostname', _('Client'), 'HostLink'))
-
-        if user:
-            rv.append(ColumnDesc('username', _('User')))
-        else:
-            rv.append(ColumnDesc('username', _('User'), 'UserLink'))
-
-        rv += [ColumnDesc('url', _('Url'), 'URL'),
-               ColumnDesc('%s_category' % self.__short_name, _('Category')),
-               ColumnDesc('s_server_addr', _('Server Ip')),
-               ColumnDesc('c_client_addr', _('Client Ip'))]
-
-        return rv
-    
-    def get_all_columns(self, host=None, user=None, email=None):
-        return self.get_http_columns(host, user, email)
-
-    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        if email:
-            return None
-
-        sql = """\
-SELECT *,
-       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri AS url
-FROM reports.http_events
-WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
-AND %s_category = 'unblocked'
-""" % (DateFromMx(start_date), DateFromMx(end_date),
-       self.__short_name)
 
         if host:
             sql += " AND hostname = %s" % QuotedString(host)
