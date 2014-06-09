@@ -491,9 +491,7 @@ public class SystemManagerImpl implements SystemManager
             daysOfWeek = settings.getAutoUpgradeDays().getCronString();
         }
             
-        
-        // write the cron file for nightly runs
-        // FIXME dayfield
+        // write the cron file for upgrades
         String conf = settings.getAutoUpgradeMinute() + " " + settings.getAutoUpgradeHour() + " * * " + daysOfWeek + CRON_STRING;
         BufferedWriter out = null;
         try {
