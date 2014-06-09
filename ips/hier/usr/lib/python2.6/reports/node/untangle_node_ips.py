@@ -265,8 +265,10 @@ class IpsDetail(DetailSection):
         rv = rv + [ColumnDesc('ips_ruleid', _('Rule ID')),
                    ColumnDesc('ips_description', _('Description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
+                   ColumnDesc('c_client_addr', _('Client')),
+                   ColumnDesc('c_client_port', _('Client Port')),
                    ColumnDesc('s_server_addr', _('Server')),
-                   ColumnDesc('s_server_port', _('Port'))]
+                   ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
 
