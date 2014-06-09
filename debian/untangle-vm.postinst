@@ -61,6 +61,11 @@ killall monit
 sed -i '/monit-wrapper/d' /etc/inittab ; init q
 rm -f /var/log/uvm/monit.*
 
+# 10.2 auto upgrade bug fix (#11876)
+if [ "`/usr/share/untangle/bin/ut-settings-reader.py uvm system autoUpgrade`" == "False" ] ; then 
+    /bin/rm -f /etc/cron.d/untangle-upgrade
+fi
+
 # 10.3 upgrade (Closes: #11853)
 if dpkg --compare-versions "$oldVersion" le 10.3~ ; then
   /usr/share/untangle-netd/bin/sync-settings.py -vv

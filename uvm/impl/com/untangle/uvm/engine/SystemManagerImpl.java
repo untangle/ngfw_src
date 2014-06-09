@@ -138,10 +138,12 @@ public class SystemManagerImpl implements SystemManager
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date, write it
          */
-        if ( !settings.getAutoUpgrade() && CRON_FILE.exists() )
-            UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
-        else
+        if ( settings.getAutoUpgrade() ) {
             writeCronFile();
+        } else {
+            if ( CRON_FILE.exists() )
+                UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
+        }
     }
 
     /**
