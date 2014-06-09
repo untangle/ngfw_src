@@ -58,4 +58,9 @@ killall monit
 sed -i '/monit-wrapper/d' /etc/inittab ; init q
 rm -f /var/log/uvm/monit.*
 
+# 10.2 auto upgrade bug fix (#11876)
+if [ "`/usr/share/untangle/bin/ut-settings-reader.py uvm system autoUpgrade`" == "False" ] ; then 
+    /bin/rm -f /etc/cron.d/untangle-upgrade
+fi
+
 exit 0
