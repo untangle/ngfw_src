@@ -1839,8 +1839,10 @@ Ung.MetricManager = {
             // update system stats
             main.systemStats.update(result.systemStats);
             // upgrade node metrics
+            var i;
             for (i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                
                 if (nodeCmp && nodeCmp.isRunning()) {
                     nodeCmp.metrics = result.metrics[main.nodes[i].nodeId];
                     nodeCmp.updateMetrics();
@@ -3803,13 +3805,13 @@ Ung.CustomEventLog = {
                 dataIndex: 'adblocker_cookie_ident'
             }, {
                 hidden: visibleColumnsParam.indexOf('clam_name') < 0,
-                header: i18n._("Virus Name (Clam)"),
+                header: i18n._("Virus Name (Virus Blocker Lite)"),
                 width: 140,
                 sortable: true,
                 dataIndex: 'clam_name'
             }, {
                 hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
-                header: i18n._("Virus Name (Commtouchav)"),
+                header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
                 dataIndex: 'commtouchav_name'
@@ -3960,6 +3962,8 @@ Ung.CustomEventLog = {
             }, {
                 name: 'spamassassin_score'
             }, {
+                name: 'spamassassin_tests_string'
+            }, {
                 name:  'commtouchas_action',
                 type: 'string',
                 convert: Ext.bind( function(value, rec ) {
@@ -3968,6 +3972,8 @@ Ung.CustomEventLog = {
             }, {
                 name: 'commtouchas_score'
             }, {
+                name: 'commtouchas_tests_string'
+            }, {
                 name:  'phish_action',
                 type: 'string',
                 convert: Ext.bind( function(value, rec ) {
@@ -3975,6 +3981,8 @@ Ung.CustomEventLog = {
                 }, this)
             }, {
                 name: 'phish_score'
+            }, {
+                name: 'phish_tests_string'
             }],
             columns: [{
                 hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -4011,13 +4019,13 @@ Ung.CustomEventLog = {
                 dataIndex: 's_server_addr'
             }, {
                 hidden: visibleColumnsParam.indexOf('clam_name') < 0,
-                header: i18n._("Virus Name (Clam)"),
+                header: i18n._("Virus Name (Virus Blocker Lite)"),
                 width: 140,
                 sortable: true,
                 dataIndex: 'clam_name'
             }, {
                 hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
-                header: i18n._("Virus Name (Commtouchav)"),
+                header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
                 dataIndex: 'commtouchav_name'
@@ -4042,13 +4050,13 @@ Ung.CustomEventLog = {
                 dataIndex: 'subject'
             }, {
                 hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
-                header: i18n._("Action (Spamassassin)"),
+                header: i18n._("Action (Spam Blocker Lite)"),
                 width: 125,
                 sortable: true,
                 dataIndex: 'spamassassin_action'
             }, {
                 hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
-                header: i18n._("Spam score (Spamassassin)"),
+                header: i18n._("Spam Score (Spam Blocker Lite)"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'spamassassin_score',
@@ -4056,14 +4064,20 @@ Ung.CustomEventLog = {
                     type: 'numeric'
                 }
             }, {
+                hidden: visibleColumnsParam.indexOf('spamassassin_tests_string') < 0,
+                header: i18n._("Detail (Spam Blocker Lite)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'spamassassin_tests_string'
+            }, {
                 hidden: visibleColumnsParam.indexOf('commtouchas_action') < 0,
-                header: i18n._("Action (Commtouchas)"),
+                header: i18n._("Action (Spam Blocker)"),
                 width: 125,
                 sortable: true,
                 dataIndex: 'commtouchas_action'
             }, {
                 hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
-                header: i18n._("Spam score (Commtouchas)"),
+                header: i18n._("Spam Score (Spam Blocker)"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'commtouchas_score',
@@ -4071,11 +4085,23 @@ Ung.CustomEventLog = {
                     type: 'numeric'
                 }
             }, {
+                hidden: visibleColumnsParam.indexOf('commtouchas_tests_string') < 0,
+                header: i18n._("Detail (Spam Blocker)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'commtouchas_tests_string'
+            }, {
                 hidden: visibleColumnsParam.indexOf('phish_action') < 0,
-                header: i18n._("Action (Phish)"),
+                header: i18n._("Action (Phish Blocker)"),
                 width: 125,
                 sortable: true,
                 dataIndex: 'phish_action'
+            }, {
+                hidden: visibleColumnsParam.indexOf('phish_tests_string') < 0,
+                header: i18n._("Detail (Phish Blocker)"),
+                width: 125,
+                sortable: true,
+                dataIndex: 'phish_tests_string'
             }]
         });
         return grid;

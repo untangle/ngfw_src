@@ -35,12 +35,13 @@ public class SpamLogEvent extends LogEvent
     private boolean isSpam;
     private SpamMessageAction action;
     private String vendorName;
+    private String testsString;
 
     // constructors -----------------------------------------------------------
 
     public SpamLogEvent() { }
 
-    public SpamLogEvent(MessageInfo messageInfo, float score, boolean isSpam, SpamMessageAction action, String vendorName)
+    public SpamLogEvent(MessageInfo messageInfo, float score, boolean isSpam, SpamMessageAction action, String vendorName, String testsString)
     {
         this.messageInfo = messageInfo;
         this.messageId = messageInfo.getMessageId();
@@ -48,6 +49,7 @@ public class SpamLogEvent extends LogEvent
         this.isSpam = isSpam;
         this.action = action;
         this.vendorName = vendorName;
+        this.testsString = testsString;
     }
 
     public String getSender()
@@ -111,38 +113,44 @@ public class SpamLogEvent extends LogEvent
      * The message id
      */
     public Long getMessageId() { return messageId; }
-    public void setMessageId( Long id ) { this.messageId = id; }
+    public void setMessageId( Long newValue ) { this.messageId = newValue; }
 
     /**
      * Associate e-mail message info with event.
      */
     public MessageInfo getMessageInfo() { return messageInfo; }
-    public void setMessageInfo( MessageInfo info ) { this.messageInfo = info; }
+    public void setMessageInfo( MessageInfo newValue ) { this.messageInfo = newValue; }
     
     /**
      * Spam scan score.
      */
     public float getScore() { return score; }
-    public void setScore( float score ) { this.score = score; }
+    public void setScore( float newValue ) { this.score = newValue; }
 
     /**
      * Was it declared spam?
      */
     public boolean isSpam() { return isSpam; }
-    public void setSpam( boolean isSpam ) { this.isSpam = isSpam; }
+    public void setSpam( boolean newValue ) { this.isSpam = newValue; }
 
     /**
      * The action taken
      */
     public SpamMessageAction getAction() { return action; }
-    public void setAction(SpamMessageAction action) { this.action = action; }
+    public void setAction( SpamMessageAction newValue ) { this.action = newValue; }
 
     /**
      * Spam scanner vendor.
      */
     public String getVendorName() { return vendorName; }
-    public void setVendorName(String vendorName) { this.vendorName = vendorName; }
+    public void setVendorName( String newValue ) { this.vendorName = newValue; }
 
+    /**
+     * The list of tests hit (represented in a single string)
+     */
+    public String getTestsString() { return testsString; }
+    public void setTestsString( String newValue ) { this.testsString = newValue; }
+    
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
@@ -174,6 +182,7 @@ public class SpamLogEvent extends LogEvent
             "SET " +
             prefix + "_is_spam = ?, " +
             prefix + "_score = ?, " + 
+            prefix + "_tests_string = ?, " +
             prefix + "_action = ? " +
             "WHERE " +
             "msg_id = ? ";
@@ -182,6 +191,7 @@ public class SpamLogEvent extends LogEvent
         i=0;
         pstmt.setBoolean(++i, isSpam());
         pstmt.setFloat(++i, getScore());
+        pstmt.setString(++i, getTestsString());
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
@@ -190,6 +200,7 @@ public class SpamLogEvent extends LogEvent
             "SET " +
             prefix + "_is_spam = ?, " +
             prefix + "_score = ?, " +
+            prefix + "_tests_string = ?, " +
             prefix + "_action = ? " +
             "WHERE " +
             "msg_id = ? ";
@@ -197,6 +208,7 @@ public class SpamLogEvent extends LogEvent
         i=0;
         pstmt.setBoolean(++i, isSpam());
         pstmt.setFloat(++i, getScore());
+        pstmt.setString(++i, getTestsString());
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);

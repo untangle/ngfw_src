@@ -404,9 +404,17 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
      */
     private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action)
     {
+        String testsString = "";
+        boolean first = true;
+        for ( ReportItem ri : report.getItems() ) {
+            if (!first)
+                testsString += " ";
+            else
+                first = false;
+            testsString +=  ri.getCategory() + "[" + ri.getScore() + "]";
+        }
 
-        SpamLogEvent spamEvent = new SpamLogEvent(msgInfo, report.getScore(), report.isSpam(), action, spamImpl
-                .getScanner().getVendorName());
+        SpamLogEvent spamEvent = new SpamLogEvent(msgInfo, report.getScore(), report.isSpam(), action, spamImpl.getScanner().getVendorName(), testsString);
         spamImpl.logEvent(spamEvent);
     }
 

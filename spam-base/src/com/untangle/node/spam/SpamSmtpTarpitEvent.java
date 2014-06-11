@@ -19,6 +19,7 @@ public class SpamSmtpTarpitEvent extends LogEvent
     private String hostname;
     private InetAddress ipAddr;
     private String vendorName;
+    private String testsString;
 
     // constructors -----------------------------------------------------------
 

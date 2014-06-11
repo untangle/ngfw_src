@@ -433,8 +433,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         buildEventLog: function() {
             this.gridEventLog = Ung.CustomEventLog.buildMailEventLog (this, 'EventLog', i18n._('Event Log'), 
                     'spam_blocker_event_log', 
-                    ['time_stamp','c_client_addr','s_server_addr','subject','addr','sender',this.getRpcNode().getVendor() + '_score',
-                     this.getRpcNode().getVendor() + '_action'], 
+                    ['time_stamp','c_client_addr','s_server_addr','subject','addr','sender',
+                     this.getRpcNode().getVendor() + '_score',
+                     this.getRpcNode().getVendor() + '_action',
+                     this.getRpcNode().getVendor() + '_tests_string'], 
                     this.getRpcNode().getEventQueries);
         },
         // Dnsbl Event Log

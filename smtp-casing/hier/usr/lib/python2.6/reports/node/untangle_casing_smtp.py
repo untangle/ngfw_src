@@ -83,11 +83,14 @@ CREATE TABLE reports.mail_addrs (
     spamassassin_score real,
     spamassassin_is_spam boolean,
     spamassassin_action character,
+    spamassassin_tests_string text,
     commtouchas_score real,
     commtouchas_is_spam boolean,
     commtouchas_action character,
+    commtouchas_tests_string text,
     phish_score real,
     phish_is_spam boolean,
+    phish_tests_string text,
     phish_action character,
     commtouchav_clean boolean,
     commtouchav_name text)""")
@@ -109,12 +112,15 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.add_column('reports', 'mail_addrs', 'clam_name', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_score', 'real')
         sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'spamassassin_action', 'character')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_score', 'real')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchas_action', 'character')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_addrs', 'phish_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_clean', 'boolean')
         sql_helper.add_column('reports', 'mail_addrs', 'commtouchav_name', 'text')
@@ -198,12 +204,15 @@ CREATE TABLE reports.mail_msgs (
     clam_name text,
     spamassassin_score real,
     spamassassin_is_spam boolean,
+    spamassassin_tests_string text,
     spamassassin_action character,
     commtouchas_score real,
     commtouchas_is_spam boolean,
+    commtouchas_tests_string text,
     commtouchas_action character,
     phish_score real,
     phish_is_spam boolean,
+    phish_tests_string text,
     phish_action character,
     commtouchav_clean boolean,
     commtouchav_name text)""")
@@ -225,12 +234,15 @@ CREATE TABLE reports.mail_msgs (
         sql_helper.add_column('reports', 'mail_msgs', 'clam_name', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_score', 'real')
         sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_action', 'character')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_score', 'real')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchas_action', 'character')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'mail_msgs', 'phish_tests_string', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_clean', 'boolean')
         sql_helper.add_column('reports', 'mail_msgs', 'commtouchav_name', 'text')

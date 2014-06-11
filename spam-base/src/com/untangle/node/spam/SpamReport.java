@@ -52,13 +52,15 @@ public class SpamReport implements TemplateValues
 
     // constructors -----------------------------------------------------------
 
-    public SpamReport(List<ReportItem> items, float score, float threshold) {
+    public SpamReport(List<ReportItem> items, float score, float threshold)
+    {
         this.items = new LinkedList<ReportItem>(items);
         this.score = score;
         this.threshold = threshold;
     }
 
-    public SpamReport(List<ReportItem> items, float threshold) {
+    public SpamReport(List<ReportItem> items, float threshold)
+    {
         this.items = new LinkedList<ReportItem>(items);
         this.threshold = threshold;
 
@@ -95,21 +97,6 @@ public class SpamReport implements TemplateValues
         }
         return null;
     }
-
-    /**
-     * @depricated
-     */
-    /*
-     * public Rfc822Header rewriteHeader(Rfc822Header h) { if (isSpam()) { logger.debug("isSpam, rewriting header");
-     * String subject = h.getSubject(); subject = "[SPAM] " + (null == subject ? "" : subject); h.setSubject(subject); }
-     * else { logger.debug("not spam, not rewriting"); }
-     * 
-     * try { h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO"); } catch (IllegalFieldException exn) { throw new
-     * IllegalStateException("should never happen"); }
-     * 
-     * 
-     * return h; }
-     */
 
     public boolean isSpam()
     {
