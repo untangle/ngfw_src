@@ -95,12 +95,17 @@ static int _netcap_init()
     if ( strstr(utsn.release,"2.6.26") != NULL) {
         return perrlog( "Unsupported kernel: 2.6.26\n" );
     }
-    else if ( strstr(utsn.release,"2.6.32") != NULL) {
+    else if ( strstr(utsn.release,"2.6.32") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 22;
         ip_sendnfmark = 24;
     }
-    else if ( strstr(utsn.release,"3.0.35") != NULL) {
+    else if ( strstr(utsn.release,"3.0.35") != NULL ) {
+        ip_transparent = 19;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
+    }
+    else if ( strstr(utsn.release,"3.2.0") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
