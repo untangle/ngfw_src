@@ -185,6 +185,7 @@ class PhishTests(unittest2.TestCase):
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
         assert(events['list'][0]['phish_action'] == 'D')
+        
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
