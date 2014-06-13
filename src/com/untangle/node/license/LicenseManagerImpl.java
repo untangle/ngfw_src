@@ -543,6 +543,14 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         long now = (System.currentTimeMillis()/1000);
 
+        // versions v1,v2,v3 all works the same
+        // any other version is unknown
+        if ( license.getKeyVersion() < 1 || license.getKeyVersion() > 3 ) {
+            logger.warn( "Unknown key version: " + license.getKeyVersion() );
+            license.setStatus("Invalid (Invalid Key Version)");
+            return false;
+        }
+
         /* check if the license hasn't started yet (start date in future) */
         if (license.getStart() > now) {
             logger.warn( "The license: " + license + " isn't valid yet (" + license.getStart() + " > " + now + ")");
@@ -564,36 +572,25 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             return false;
         }
         
-        /* verify md5 */
-        if (license.getKeyVersion() == 1) {
-            //$string = "".$version.$uid.$name.$type.$start.$end."the meaning of life is 42";
-            String input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
-            //logger.info("KEY Input: " + input);
-    
-            MessageDigest md;
-            try {
-                md = MessageDigest.getInstance("MD5");
-            } catch (java.security.NoSuchAlgorithmException e) {
-                logger.warn( "Unknown Algorith MD5", e);
-                license.setStatus("Invalid (Invalid Algorithm)");
-                return false;
-            }
-            
-            byte[] digest = md.digest(input.getBytes());
-
-            String output = _toHex(digest);
-            //logger.info("KEY Output: " + output);
-            //logger.info("KEY Expect: " + license.getKey());
-
-            if (!license.getKey().equals(output)) {
-                logger.warn( "Invalid key: " + output );
-                license.setStatus("Invalid (Invalid Key)");
-                return false;
-            }
+        //$string = "".$version.$uid.$name.$type.$start.$end."the meaning of life is 42";
+        String input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
+        //logger.info("KEY Input: " + input);
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (java.security.NoSuchAlgorithmException e) {
+            logger.warn( "Unknown Algorith MD5", e);
+            license.setStatus("Invalid (Invalid Algorithm)");
+            return false;
         }
-        else {
-            logger.warn( "Unknown key version: " + license.getKeyVersion() );
-            license.setStatus("Invalid (Invalid Key Version)");
+        byte[] digest = md.digest(input.getBytes());
+        String output = _toHex(digest);
+        //logger.info("KEY Output: " + output);
+        //logger.info("KEY Expect: " + license.getKey());
+
+        if (!license.getKey().equals(output)) {
+            logger.warn( "Invalid key: " + output );
+            license.setStatus("Invalid (Invalid Key)");
             return false;
         }
 
