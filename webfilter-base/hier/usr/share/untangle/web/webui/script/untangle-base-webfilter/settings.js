@@ -672,6 +672,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor: {
                         xtype:'textfield',
                         emptyText: this.i18n._("[enter IP address/range]"),
+                        vtype:"ipMatcher",
                         allowBlank:false
                     }
                 },{
@@ -699,6 +700,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex: "string",
                     fieldLabel: this.i18n._("IP address/range"),
                     emptyText: this.i18n._("[enter IP address/range]"),
+                    vtype:"ipMatcher",
                     allowBlank: false,
                     width: 400
                 },{
