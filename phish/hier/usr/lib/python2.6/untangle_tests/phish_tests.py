@@ -103,7 +103,7 @@ class PhishTests(unittest2.TestCase):
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
-    def test_020_smtpPhishTest(self):
+    def test_020_smtpQuarantinedPhishTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         nodeData['smtpConfig']['scanWanMail'] = True
@@ -116,9 +116,10 @@ class PhishTests(unittest2.TestCase):
         ip_address_testuntangle = match.group()
 
         sendPhishMail()
+        flushEvents()
         query = None;
         for q in node.getEventQueries():
-            if q['name'] == 'Quarantined Events': query = q;
+            if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         # print events['list'][0]
@@ -127,8 +128,63 @@ class PhishTests(unittest2.TestCase):
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['phish_action'] == 'Q')
             
+    def test_030_smtpMarkPhishTest(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
+        nodeData['smtpConfig']['scanWanMail'] = True
+        nodeData['smtpConfig']['strength'] = 20
+        nodeData['smtpConfig']['msgAction'] = "MARK"
+        node.setSettings(nodeData)
+        checkForMailSender()
+        # Get the IP address of test.untangle.com
+        result = clientControl.runCommand("host "+smtpServerHost, True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_testuntangle = match.group()
 
+        sendPhishMail()
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Phish Events': query = q                
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        # print events['list'][0]
+        # Verify Quarantined events occurred..
+        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
+        assert(events['list'][0]['s_server_port'] == 25)
+        assert(events['list'][0]['addr'] == 'qa@example.com')
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['phish_action'] == 'M')
+
+    def test_040_smtpDropPhishTest(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
+        nodeData['smtpConfig']['scanWanMail'] = True
+        nodeData['smtpConfig']['strength'] = 20
+        nodeData['smtpConfig']['msgAction'] = "DROP"
+        node.setSettings(nodeData)
+        checkForMailSender()
+        # Get the IP address of test.untangle.com
+        result = clientControl.runCommand("host "+smtpServerHost, True)
+        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        ip_address_testuntangle = match.group()
+
+        sendPhishMail()
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Phish Events': query = q                
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        # print events['list'][0]
+        # Verify Quarantined events occurred..
+        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
+        assert(events['list'][0]['s_server_port'] == 25)
+        assert(events['list'][0]['addr'] == 'qa@example.com')
+        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
+        assert(events['list'][0]['phish_action'] == 'D')
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
