@@ -133,48 +133,80 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
 
     int snk_fd = snk->key->data.fd;
     int src_fd = src->key->data.fd;
-
-    int max_write = 4096;
     int result;
 
-    if ( snk->pipefd[0] == 0 ) {
-        result = pipe( snk->pipefd );
-        if ( result < 0 ) {
-            perrlog("pipe");
-            if ( snk->pipefd[0] > 0 ) {
-                if ( close( snk->pipefd[0] ) < 0 )
-                    perrlog("close");
-            }
-            if ( snk->pipefd[1] > 0 ) {
-                if ( close( snk->pipefd[1] ) < 0 )
-                    perrlog("close");
-            }
-            return -1;
-        }
-    }
-
     /**
-     * write to the pipe
+     * OK, splice seems to cause weird issues and it has no measurable benefit.
+     * It seems to work great, however when running in bridge mode it causes weird
+     * delays is some applications.
+     * This is bizarre because I have no idea how splice cares about whether the traffic
+     * is going out a bridged interface or not - its just a socket.
+     * However, after extensive testing using "TeamViewer" it appears that splices causes
+     * random and sometimes long delays. As such I'm replacing with a regular read/write for now.
      */
-    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, 0 );
-    if ( num_bytes < 0 ) {
-        return perrlog("splice");
+
+    int max_size = 8096;
+    char buf[max_size];
+    int num_bytes;
+    if ( (num_bytes = read( src_fd, buf, max_size )) < 0 ) {
+        return perrlog("read");
     }
-    if ( num_bytes == 0 ) {
-        return errlog( ERR_CRITICAL, "socket closed on splice.\n" );
-    }
-    
     int bytes_remaining = num_bytes;
     while ( bytes_remaining > 0 ) {
-        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, num_bytes, 0 );
+        result = write( snk_fd, buf, bytes_remaining );
         if ( result < 0 ) {
-            return perrlog("splice");
+            return perrlog("write");
         }
 
         bytes_remaining -= result;
     }
 
     return num_bytes;
+
+    /**
+     * Splice implementation - disabled!
+     */
+
+    /* if ( snk->pipefd[0] == 0 ) { */
+    /*     result = pipe( snk->pipefd ); */
+    /*     if ( result < 0 ) { */
+    /*         perrlog("pipe"); */
+    /*         if ( snk->pipefd[0] > 0 ) { */
+    /*             if ( close( snk->pipefd[0] ) < 0 ) */
+    /*                 perrlog("close"); */
+    /*         } */
+    /*         if ( snk->pipefd[1] > 0 ) { */
+    /*             if ( close( snk->pipefd[1] ) < 0 ) */
+    /*                 perrlog("close"); */
+    /*         } */
+    /*         return -1; */
+    /*     } */
+    /* } */
+
+    /* /\** */
+    /*  * write to the pipe */
+    /*  *\/ */
+    /* int max_write = 4096; */
+    /* int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, 0 ); */
+
+    /* if ( num_bytes < 0 ) { */
+    /*     return perrlog("splice"); */
+    /* } */
+    /* if ( num_bytes == 0 ) { */
+    /*     return errlog( ERR_CRITICAL, "socket closed on splice.\n" ); */
+    /* } */
+    
+    /* int bytes_remaining = num_bytes; */
+    /* while ( bytes_remaining > 0 ) { */
+    /*     result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, 0 ); */
+    /*     if ( result < 0 ) { */
+    /*         return perrlog("splice"); */
+    /*     } */
+
+    /*     bytes_remaining -= result; */
+    /* } */
+
+    /* return num_bytes; */
 }
 
 /*
