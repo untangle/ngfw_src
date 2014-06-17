@@ -105,11 +105,11 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( isVectored ) {
             this.isVectored           = true;
 
-            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
-            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
+            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() + " client side");
+            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() + " client side");
 
-            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
-            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
+            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() + " server side");
+            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() + " server side");
         } else {
             this.isVectored           = false;
 
