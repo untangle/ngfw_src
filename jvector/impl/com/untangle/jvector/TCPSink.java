@@ -28,8 +28,8 @@ public class TCPSink extends Sink
     @SuppressWarnings("fallthrough")
     protected int send_event( Crumb crumb )
     {
-        if ( Vector.isDebugEnabled())
-            Vector.logDebug( "send_event(" + this + "): crumb " + crumb );
+        // if ( Vector.isDebugEnabled())
+        //     Vector.logDebug( "send_event(" + this + "): crumb " + crumb );
 
         switch ( crumb.type() ) {
         case Crumb.TYPE_DATA:
@@ -40,11 +40,16 @@ public class TCPSink extends Sink
             }
 
         case Crumb.TYPE_RESET:
-            Vector.logDebug( "Writing a reset crumb" );
+            if ( Vector.isDebugEnabled()) {
+                Vector.logDebug( "jvector: " + this + ": wrote reset.");
+            }
             reset( pointer );
 
             // fallthrough
         case Crumb.TYPE_SHUTDOWN:
+            if ( Vector.isDebugEnabled()) {
+                Vector.logDebug( "jvector: " + this + ": wrote shutdown.");
+            }
             return Vector.ACTION_SHUTDOWN;
             
         default:
