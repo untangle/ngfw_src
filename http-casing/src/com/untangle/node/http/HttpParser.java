@@ -123,16 +123,14 @@ public class HttpParser extends AbstractParser
                     if (b.hasRemaining() && completeLine(b)) {
                         ByteBuffer d = b.duplicate();
                         byte b1 = d.get();
-                        if (LF == b1
-                            || d.hasRemaining() && CR == b1 && LF == d.get()) {
+                        if ( LF == b1 || d.hasRemaining() && CR == b1 && LF == d.get() ) {
                             b = null;
                             done = true;
                         } else {
                             state = FIRST_LINE_STATE;
                         }
                     } else if (b.remaining() > maxRequestLine) {
-                        throw new ParseException("URI length exceeded: "
-                                                 + AsciiCharBuffer.wrap(b));
+                        throw new ParseException("HTTP request length exceeded: " + AsciiCharBuffer.wrap(b));
                     } else {
                         if (b.capacity() < maxRequestLine) {
                             ByteBuffer r = ByteBuffer.allocate(maxRequestLine);
@@ -513,9 +511,7 @@ public class HttpParser extends AbstractParser
                 return new ParseResult(l, null);
             default:
                 // I think we want to release in most circumstances
-                throw new ParseException("in state: " + state
-                                         + " data trapped in read buffer: "
-                                         + b.remaining());
+                throw new ParseException("in state: " + state + " data trapped in read buffer: " + b.remaining());
             }
         }
 
@@ -539,8 +535,7 @@ public class HttpParser extends AbstractParser
             return null;
 
         case CONTENT_LENGTH_BODY_STATE:
-            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: "
-                        + contentLength);
+            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: " + contentLength);
             return endMarkerStreamer();
 
         case CHUNK_LENGTH_STATE:
@@ -548,8 +543,7 @@ public class HttpParser extends AbstractParser
             return endMarkerStreamer();
 
         case CHUNK_BODY_STATE:
-            logger.warn("endSession in CHUNK_BODY_STATE, length: "
-                        + contentLength);
+            logger.warn("endSession in CHUNK_BODY_STATE, length: " + contentLength);
             return endMarkerStreamer();
 
         case CHUNK_END_STATE:
