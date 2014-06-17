@@ -105,11 +105,11 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( isVectored ) {
             this.isVectored           = true;
 
-            clientIncomingSocketQueue = new IncomingSocketQueue();
-            clientOutgoingSocketQueue = new OutgoingSocketQueue();
+            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
+            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
 
-            serverIncomingSocketQueue = new IncomingSocketQueue();
-            serverOutgoingSocketQueue = new OutgoingSocketQueue();
+            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
+            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getNodeSettings().getNodeName() );
         } else {
             this.isVectored           = false;
 
@@ -469,8 +469,6 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( vector == null || vector.isRazed() )
             return;
         
-
-        
         if ( clientIncomingSocketQueue != null &&
              serverOutgoingSocketQueue != null && 
              !clientIncomingSocketQueue.isRazed() &&
@@ -486,7 +484,6 @@ public abstract class NodeSessionImpl implements NodeSession
 
             vector.compress( serverIncomingSocketQueue, clientOutgoingSocketQueue );
         }
-
     }
 
     public boolean released()
