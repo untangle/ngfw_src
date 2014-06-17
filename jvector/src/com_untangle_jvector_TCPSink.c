@@ -164,7 +164,8 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     return num_bytes;
 
     /**
-     * Splice implementation - disabled!
+     * Splice implementation - disabled
+     * disable the use of splice optimization for now (bug #11885)
      */
 
     /* if ( snk->pipefd[0] == 0 ) { */
