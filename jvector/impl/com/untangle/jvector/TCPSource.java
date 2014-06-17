@@ -62,21 +62,28 @@ public class TCPSource extends Source
         switch( ret ) {
         case READ_RESET:
             crumb = ResetCrumb.getInstance();
-            break;
-
-        case 0:
-            crumb = ShutdownCrumb.getInstance();
+            if ( Vector.isDebugEnabled()) {
+                Vector.logDebug( "jvector: " + this + ": read reset.");
+            }
             break;
             
+        case 0:
+            crumb = ShutdownCrumb.getInstance();
+            if ( Vector.isDebugEnabled()) {
+                Vector.logDebug( "jvector: " + this + ": read shutdown.");
+            }
+            break;
+
         default:
             /* Notify listeners that data was received */
             if ( listener != null ) listener.dataEvent( this, ret );
-
             crumb = new DataCrumb( data, ret );
+            if ( Vector.isDebugEnabled()) {
+                Vector.logDebug( "jvector: " + this + ": read " + ret + " bytes.");
+            }
+            break;
+
         }
-        
-        if ( Vector.isDebugEnabled())
-            Vector.logDebug( "get_event(" + this + "): crumb " + crumb );
 
         return crumb;
     }

@@ -41,9 +41,12 @@ public class OutgoingSocketQueue extends Source
     /* Max events is the capacity of the outgoing socket queue */
     private int maxEvents = 1;
 
-    public OutgoingSocketQueue()
+    private String debugString = "";
+
+    public OutgoingSocketQueue( String debugString )
     {
-        pointer = create();
+        this.pointer = create();
+        this.debugString = debugString;
     }
 
     protected Crumb get_event( Sink unused )
@@ -59,14 +62,13 @@ public class OutgoingSocketQueue extends Source
         Crumb crumb = eventList.remove( 0 );
         callListenersRemove();
 
-        if ( Vector.isDebugEnabled()) {
-            if ( crumb.isData()) {
-                Vector.logDebug( "get_event data crumb(" + this + "): " + crumb +
-                                 ", limit: " + ((DataCrumb)crumb).limit());
-            } else {
-                Vector.logDebug( "get_event crumb(" + this + "): " + crumb );
-            }
-        }
+        // if ( Vector.isDebugEnabled()) {
+        //     if ( crumb.isData()) {
+        //         Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read " + ((DataCrumb)crumb).limit() + " bytes." );
+        //     } else {
+        //         Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read crumb. ");
+        //     }
+        // }
 
         if ( crumb.isShutdown()) {
             isRelaySideClosed = true;
@@ -85,10 +87,9 @@ public class OutgoingSocketQueue extends Source
     {
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
-                Vector.logDebug( "Write data crumb(" + this + "): " + crumb +
-                                 ", limit: " + ((DataCrumb)crumb).limit());
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": wrote " + ((DataCrumb)crumb).limit() + " bytes." );
             } else {
-                Vector.logDebug( "Write crumb(" + this + "): " + crumb );
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": wrote crumb. ");
             }
         }
         if ( crumb.isShutdown()) {

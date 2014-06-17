@@ -79,6 +79,10 @@ public class TCPSink extends Sink
         
         numWritten = write( pointer, crumb.data(), offset, size );
 
+        if ( Vector.isDebugEnabled()) {
+            Vector.logDebug( "jvector: " + this + ": wrote " + numWritten + " bytes.");
+        }
+        
         if ( numWritten < 0 ) {
             if ( numWritten != WRITE_RETURN_IGNORE ) {
                 Vector.logError( "TCP: Unable to write crumb" );

@@ -53,13 +53,16 @@ public class IncomingSocketQueue extends Sink
     // Current crumb to read out
     private Crumb currentCrumb;
 
+    private String debugString = "";
+    
     // List of listeners
     private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
 
-    public IncomingSocketQueue()
+    public IncomingSocketQueue( String debugString )
     {
         /* The pointer is from the sink */
         this.pointer = create();
+        this.debugString = debugString;
     }
 
     public Crumb read()
@@ -79,10 +82,9 @@ public class IncomingSocketQueue extends Sink
 
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
-                Vector.logDebug( "Read data crumb(" + this + "): " + crumb +
-                                 ", limit: " + ((DataCrumb)crumb).limit());
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read " + ((DataCrumb)crumb).limit() + " bytes." );
             } else {
-                Vector.logDebug( "Read crumb(" + this + "): " + crumb );
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read crumb." );
             }
         }
 
