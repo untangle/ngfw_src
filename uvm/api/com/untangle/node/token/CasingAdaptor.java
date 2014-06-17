@@ -342,7 +342,14 @@ public class CasingAdaptor extends CasingBase
                 } else if (message != null && message.contains("expected")) {
                     logger.info("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("data trapped")) {
-                    logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints);
+                    logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints, exn);
+                    // "data trapped" means that we've already buffered data, and have no discovered its probably not
+                    // a protocol we can understand.
+                    // Since we've already buffered data we need to reset the bytebuffer to send the data we've already buffered
+                    // to do se reset the position to zero, and the the limit to the current position.
+                    // Bug #11886 for more details
+                    dup.limit(dup.position());
+                    dup.position(0);
                 } else if (message != null && message.contains("buf limit exceeded")) {
                     logger.info("Protocol parse exception (buf limit exceeded). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("header exceeds")) {
@@ -383,8 +390,7 @@ public class CasingAdaptor extends CasingBase
             for (Token t : results) {
                 Long key = pipeline.attach(t);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("SAVED object: " + t + " with key: " + key
-                                 + " on pipeline: " + pipeline);
+                    logger.debug("SAVED object: " + t + " with key: " + key + " on pipeline: " + pipeline);
                 }
                 bb.putLong(key);
             }
@@ -394,16 +400,12 @@ public class CasingAdaptor extends CasingBase
 
             if (s2c) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to server, read buffer: "
-                                 + pr.getReadBuffer()
-                                 + "  to client: " + r[0]);
+                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + r[0]);
                 }
                 return new TCPChunkResult(r, null, pr.getReadBuffer());
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to client, read buffer: "
-                                 + pr.getReadBuffer()
-                                 + "  to server: " + r[0]);
+                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + r[0]);
                 }
                 return new TCPChunkResult(null, r, pr.getReadBuffer());
             }
