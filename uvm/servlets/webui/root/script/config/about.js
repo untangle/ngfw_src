@@ -163,6 +163,8 @@ if (!Ung.hasResource["Ung.About"]) {
                 },{
                     name: "end"
                 },{
+                    name: "seats"
+                },{
                     name: "valid"
                 },{
                     name: "status"
@@ -191,6 +193,10 @@ if (!Ung.hasResource["Ung.About"]) {
                     dataIndex: "end",
                     width: 240,
                     renderer: function(value) { return new Date(value*1000); }
+                },{
+                    header: this.i18n._("Seats"),
+                    dataIndex: "seats",
+                    width: 50
                 },{
                     header: this.i18n._("Valid"),
                     dataIndex: "valid",
