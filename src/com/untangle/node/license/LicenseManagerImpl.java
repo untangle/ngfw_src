@@ -543,14 +543,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         long now = (System.currentTimeMillis()/1000);
 
-        // versions v1,v2,v3 all works the same
-        // any other version is unknown
-        if ( license.getKeyVersion() < 1 || license.getKeyVersion() > 3 ) {
-            logger.warn( "Unknown key version: " + license.getKeyVersion() );
-            license.setStatus("Invalid (Invalid Key Version)");
-            return false;
-        }
-
         /* check if the license hasn't started yet (start date in future) */
         if (license.getStart() > now) {
             logger.warn( "The license: " + license + " isn't valid yet (" + license.getStart() + " > " + now + ")");
@@ -571,10 +563,20 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             license.setStatus("Invalid (UID Mismatch)"); /* XXX i18n */
             return false;
         }
-        
-        //$string = "".$version.$uid.$name.$type.$start.$end."the meaning of life is 42";
-        String input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
+
+        String input = null;
+        if ( license.getKeyVersion() == 1 )
+            input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
+        else if ( license.getKeyVersion() == 3 )
+            input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + license.getSeats() + "the meaning of life is 42";
+        else {
+            // versions v1,v3 are supported. v2 is for ICC
+            // any other version is unknown
+            license.setStatus("Invalid (Invalid Key Version)");
+            return false;
+        }
         //logger.info("KEY Input: " + input);
+
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
