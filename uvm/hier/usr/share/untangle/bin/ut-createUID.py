@@ -85,7 +85,7 @@ if os.path.exists( UID_FILENAME ):
     sys.exit(1)
 
 # find debian version
-debian_distro='squeeze'
+debian_distro='wheezy'
 try:
     debian_version_file = open( "/etc/debian_version", "r+" )
     ver = debian_version_file.read()
@@ -94,12 +94,10 @@ try:
     elif re.match(r'^7\.*',ver) != None:
         debian_distro='wheezy'
     else:
-        print "Unknown debian Version %s. Assuming \"squeeze\"" % ver.strip()
-        debian_distro='squeeze'
+        print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
 except Exception,e:
     traceback.print_exc()
-    print "Exception finding debian Version. Assuming \"squeeze\""
-    debian_distro='squeeze'
+    print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
 
 # last two bytes in UID have special meaning 
 platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9' }
