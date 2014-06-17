@@ -59,12 +59,15 @@ public class License implements Serializable
     /** the version of the key signing algorithm used */
     private int keyVersion;
 
+    /** The licensed number of seats */
+    private int seats;
+
     /** This stores the computed validity state of this license */
     private Boolean valid;
 
     /** This stores the human-readable form of the status */
     private String status;
-    
+
     public License()
     {
         this.valid = Boolean.FALSE;
@@ -101,111 +104,61 @@ public class License implements Serializable
     /**
      * Returns the unique identifier of the product of this license
      */
-    public String getName()
-    {
-        return this.name;
-    }
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
+    public String getName() { return this.name; }
+    public void setName( String newValue ) { this.name = newValue; }
 
     /**
      * Returns the unique identifier of the product of this license
      */
-    public String getUID()
-    {
-        return this.uid;
-    }
-    
-    public void setUID( String uid )
-    {
-        this.uid = uid;
-    }
+    public String getUID() { return this.uid; }
+    public void setUID( String newValue ) { this.uid = newValue; }
     
     /**
      * Returns the human readable name of the product of this license
      */
-    public String getDisplayName()
-    {
-        return this.displayName;
-    }
-
-    public void setDisplayName( String displayName )
-    {
-        this.displayName = displayName;
-    }
+    public String getDisplayName() { return this.displayName; }
+    public void setDisplayName( String newValue ) { this.displayName = newValue; }
 
     /**
      * Get the type of license.  This would be used for a
      * descriptive name of the license, like 30 Day Trial, Academic,
      * Professional, etc.
      */
-    public String getType()
-    {
-        return this.type;
-    }
-
-    public void setType( String type )
-    {
-        this.type = type;
-    }
+    public String getType() { return this.type; }
+    public void setType( String newValue ) { this.type = newValue; }
     
     /**
      * Get the end of the license, milliseconds.  Stored as a long to
      * insure database timezone changes don't freak it out.
      */
-    public long getStart()
-    {
-        return this.start;
-    }
-
-    public void setStart( long start )
-    {
-        this.start = start;
-    }
+    public long getStart() { return this.start; }
+    public void setStart( long newValue ) { this.start = newValue; }
     
     /**
      * Get the end of the license, milliseconds.  Stored as a long to
      * insure database timezone changes don't freak it out.
      */
-    public long getEnd()
-    {
-        return this.end;
-    }
-
-    public void setEnd( long end )
-    {
-        this.end = end;
-    }
+    public long getEnd() { return this.end; }
+    public void setEnd( long newValue ) { this.end = newValue; }
     
     /**
      * Set the key for this license.
      */
-    public String getKey()
-    {
-        return this.key;
-    }
-
-    public void setKey( String key )
-    {
-        this.key = key;
-    }
+    public String getKey() { return this.key; }
+    public void setKey( String newValue ) { this.key = newValue; }
     
     /**
      * Set the key version for this license.
      */
-    public int getKeyVersion()
-    {
-        return this.keyVersion;
-    }
+    public int getKeyVersion() { return this.keyVersion; }
+    public void setKeyVersion( int newValue ) { this.keyVersion = newValue; }
 
-    public void setKeyVersion( int keyVersion )
-    {
-        this.keyVersion = keyVersion;
-    }
-        
+    /**
+     * Set the key version for this license.
+     */
+    public int getSeats() { return this.seats; }
+    public void setSeats( int newValue ) { this.seats = newValue; }
+    
     /**
      * Returns the valid state
      * This is a transient value - it is set (or reset) on settings load
