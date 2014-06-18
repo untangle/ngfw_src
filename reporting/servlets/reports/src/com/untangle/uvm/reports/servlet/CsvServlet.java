@@ -26,8 +26,7 @@ public class CsvServlet extends HttpServlet
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        DownloadHandler handler = UvmContextFactory.context().servletFileManager()
-                .getDownloadHandler(ReportingNodeImpl.REPORTS_EVENT_LOG_DOWNLOAD_HANDLER);
+        DownloadHandler handler = UvmContextFactory.context().servletFileManager().getDownloadHandler(ReportingNodeImpl.REPORTS_EVENT_LOG_DOWNLOAD_HANDLER);
 
         if (handler == null) {
             logger.error("Unable to handle an download of type: " + ReportingNodeImpl.REPORTS_EVENT_LOG_DOWNLOAD_HANDLER);

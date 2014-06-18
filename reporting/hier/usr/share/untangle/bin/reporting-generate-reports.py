@@ -219,25 +219,27 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 ## main
 total_start_time = time.time()
 
-running = False
-for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
-     if re.search(r'untangle-node-reporting.+RUNNING', instance):
-          running = True
-          break
-
-if not running and not create_schemas:
-     logger.error("Reports node is not installed or not running, exiting.")
-     sys.exit(0)
+try:
+     sql_helper.create_schema(sql_helper.SCHEMA);
+except Exception:
+     pass
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
 if create_schemas and report_lengths == []:
      report_lengths = [1]
-     
-try:
-     sql_helper.create_schema(sql_helper.SCHEMA);
-except Exception:
-     pass
+
+running = False
+for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE, stderr=PIPE).communicate()[0].split('\n'):
+     if re.search(r'untangle-node-reporting.+RUNNING', instance):
+          running = True
+          break
+
+if not running:
+     if not create_schemas:
+          # only print this if create schemas wasn't specified
+          logger.error("Reports node is not installed or not running, exiting.")
+     sys.exit(0)
 
 try:
      sql_helper.create_table("reports","report_data_days","""\
