@@ -89,7 +89,7 @@ public class OutgoingSocketQueue extends Source
             if ( crumb.isData()) {
                 Vector.logDebug( "jvector: [" + debugString + "] " + this + ": wrote " + ((DataCrumb)crumb).limit() + " bytes." );
             } else {
-                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": wrote crumb. ");
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": wrote crumb. " + crumb.getClass() + ".");
             }
         }
         if ( crumb.isShutdown()) {

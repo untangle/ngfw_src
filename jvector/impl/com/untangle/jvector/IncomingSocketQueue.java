@@ -84,7 +84,7 @@ public class IncomingSocketQueue extends Sink
             if ( crumb.isData()) {
                 Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read " + ((DataCrumb)crumb).limit() + " bytes." );
             } else {
-                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read crumb." );
+                Vector.logDebug( "jvector: [" + debugString + "] " + this + ": read crumb " + crumb.getClass() + "." );
             }
         }
 
