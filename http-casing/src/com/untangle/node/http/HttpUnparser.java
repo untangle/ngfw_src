@@ -49,6 +49,7 @@ class HttpUnparser extends AbstractUnparser
     {
         super(session, clientSide);
         this.httpCasing = httpCasing;
+        this.sessStr = "HttpUnparser" + (clientSide ? " client-side " : " server-side ");
     }
 
     public TCPStreamer endSession() { return null; }
@@ -111,8 +112,7 @@ class HttpUnparser extends AbstractUnparser
         HttpMethod method = rl.getMethod();
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " request-line"
-                         + sessStr + " Unparser got method: " + method);
+            logger.debug(sessStr + " request-line" + sessStr + " Unparser got method: " + method);
         }
 
         httpCasing.queueRequest(rl);
@@ -172,8 +172,7 @@ class HttpUnparser extends AbstractUnparser
             buf.flip();
             break;
         default:
-            throw new IllegalStateException
-                ("transferEncoding: " + transferEncoding);
+            throw new IllegalStateException("transferEncoding: " + transferEncoding);
         }
 
         if (outputQueue.isEmpty()) {
@@ -197,8 +196,7 @@ class HttpUnparser extends AbstractUnparser
         }
 
         if (outputQueue.isEmpty()) {
-            return new UnparseResult(null == buf ? BYTE_BUFFER_PROTO
-                                     : new ByteBuffer[] { buf });
+            return new UnparseResult(null == buf ? BYTE_BUFFER_PROTO : new ByteBuffer[] { buf });
         } else {
             if (null != buf) {
                 queueOutput(buf);
