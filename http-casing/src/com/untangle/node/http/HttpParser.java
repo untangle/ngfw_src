@@ -112,333 +112,344 @@ public class HttpParser extends AbstractParser
         boolean done = false;
         while (!done) {
             switch (state) {
-            case PRE_FIRST_LINE_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in PRE_FIRST_LINE_STATE");
-                    }
-
-                    lengthCounter = 0;
-
-                    if (b.hasRemaining() && completeLine(b)) {
-                        ByteBuffer d = b.duplicate();
-                        byte b1 = d.get();
-                        if (LF == b1
-                            || d.hasRemaining() && CR == b1 && LF == d.get()) {
-                            b = null;
-                            done = true;
-                        } else {
-                            state = FIRST_LINE_STATE;
-                        }
-                    } else if (b.remaining() > maxRequestLine) {
-                        throw new ParseException("URI length exceeded: "
-                                                 + AsciiCharBuffer.wrap(b));
-                    } else {
-                        if (b.capacity() < maxRequestLine) {
-                            ByteBuffer r = ByteBuffer.allocate(maxRequestLine);
-                            r.put(b);
-                            b = r;
-                        } else {
-                            b.compact();
-                        }
-                        done = true;
-                    }
-
-                    break;
+            case PRE_FIRST_LINE_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in PRE_FIRST_LINE_STATE");
                 }
-            case FIRST_LINE_STATE:
-                {
-                    // Initialize the buffer, we'll need it until
-                    // we're done with HEADER state.
-                    this.buf = new byte[maxUri];
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in FIRST_LINE_STATE");
-                    }
+                lengthCounter = 0;
+                    
+                // Once we have three bytes we look to see if we are on the
+                // client side and working with a valid request method.
+                // See bug #11886 for more details 
+                if ((clientSide) && (b.limit() >= 3)) {
+                    String leader = new String(b.array(),0,3);
 
-                    if (completeLine(b)) {
-                        tokenList.add(firstLine(b));
-
-                        state = ACCUMULATE_HEADER_STATE;
-                    } else {
-                        b.compact();
-                        done = true;
-                    }
-                    break;
-                }
-            case ACCUMULATE_HEADER_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
-                    }
-
-                    if (!completeHeader(b)) {
-                        if (b.capacity() < maxHeader) {
-                            ByteBuffer nb = ByteBuffer.allocate(maxHeader + 2);
-                            nb.put(b);
-                            nb.flip();
-                            b = nb;
-                        } else if (b.remaining() >= maxHeader) {
-                            String msg = "header exceeds " + maxHeader
-                                + ":\n" + AsciiCharBuffer.wrap(b);
-                            if (blockLongHeaders) {
-                                logger.warn(msg);
-                                // XXX send error page instead
-                                session.shutdownClient();
-                                session.shutdownServer();
-                                return new ParseResult();
-                            } else {
-                                // allow session to be released, or not
-                                throw new ParseException(msg);
-                            }
-                        }
-
-                        b.compact();
-
-                        done = true;
-                    } else {
-                        state = HEADER_STATE;
-                    }
-                    break;
-                }
-            case HEADER_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in HEADER_STATE");
-                    }
-                    header = header(b);
-                    tokenList.add(header);
-
-                    // Done with buf now
-                    this.buf = null;
-
-                    assert !b.hasRemaining();
-
-                    if (!clientSide) {
-                        if (null != requestLineToken) {
-                            HttpMethod method = requestLineToken.getMethod();
-                            if (HttpMethod.HEAD == method) {
-                                transferEncoding = NO_BODY;
-                            }
-                        }
-                    } else {
-                        /* This is saved internally and used later with getRequestEvent */
-                        HttpRequestEvent evt = new HttpRequestEvent(requestLineToken.getRequestLine(), header.getValue("host"), lengthCounter);
-                    }
-
-                    if (NO_BODY == transferEncoding) {
-                        state = END_MARKER_STATE;
-                    } else if (CLOSE_ENCODING == transferEncoding) {
-                        lineBuffering(false);
-                        b = null;
-                        state = CLOSED_BODY_STATE;
-                        done = true;
-                    } else if (CHUNKED_ENCODING == transferEncoding) {
-                        lineBuffering(true);
-                        b = null;
-                        state = CHUNK_LENGTH_STATE;
-                        done = true;
-                    } else if (CONTENT_LENGTH_ENCODING == transferEncoding) {
-                        lineBuffering(false);
-                        assert !b.hasRemaining();
-
-                        if (0 < contentLength) {
-                            readLimit(contentLength);
-                            b = null;
-                            state = CONTENT_LENGTH_BODY_STATE;
-                            done = true;
-                        } else {
-                            state = END_MARKER_STATE;
-                        }
-                    } else {
-                        assert false;
-                    }
-                    break;
-                }
-            case CLOSED_BODY_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in CLOSED_BODY_STATE!");
-                    }
-                    tokenList.add(closedBody(b));
-                    b = null;
-                    done = true;
-                    break;
-                }
-            case CONTENT_LENGTH_BODY_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
-                    }
-                    tokenList.add(chunk(b));
-                    if (0 == contentLength) {
-                        b = null;
-                        // XXX handle trailer
-                        state = END_MARKER_STATE;
-                    } else {
-                        readLimit(contentLength);
-                        b = null;
-                        done = true;
-                    }
-                    break;
-                }
-            case CHUNK_LENGTH_STATE:
-                // chunk-size     = 1*HEX
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in CHUNK_LENGTH_STATE");
-                    }
-                    if (!completeLine(b)) {
-                        b.compact();
-                        done = true;
+                    switch(leader) {
+                    case "GET":     // GET
+                    case "HEA":     // HEAD
+                    case "POS":     // POST
+                    case "OPT":     // OPTIONS
+                    case "PUT":     // PUT
+                    case "DEL":     // DELETE
+                    case "TRA":     // TRACE
+                    case "CON":     // CONNECT
+                    case "NON":     // NON-STANDARD
+                        // these look like valid HTTP requests
                         break;
-                    }
 
-                    contentLength = chunkLength(b);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "CHUNK contentLength = "
-                                     + contentLength);
+                    default:
+                        // this does not look like HTTP
+                        throw new ParseException("HTTP request invalid method: " + AsciiCharBuffer.wrap(b));                            
                     }
-                    if (0 == contentLength) {
-                        b = null;
-                        state = LAST_CHUNK_STATE;
-                    } else {
-                        lineBuffering(false);
-                        assert !b.hasRemaining();
-
-                        readLimit(contentLength);
-                        b = null;
-
-                        state = CHUNK_BODY_STATE;
-                    }
-                    done = true;
-                    break;
                 }
-            case CHUNK_BODY_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in CHUNKED_BODY_STATE");
-                    }
 
-                    tokenList.add(chunk(b));
-
-                    if (0 == contentLength) {
-                        lineBuffering(true);
+                if (b.hasRemaining() && completeLine(b)) {
+                    ByteBuffer d = b.duplicate();
+                    byte b1 = d.get();
+                    if ( LF == b1 || d.hasRemaining() && CR == b1 && LF == d.get() ) {
                         b = null;
-                        state = CHUNK_END_STATE;
-                    } else {
-                        readLimit(contentLength);
-                        b = null;
-                    }
-
-                    done = true;
-                    break;
-                }
-            case CHUNK_END_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in END_CHUNK_STATE");
-                    }
-
-                    if (!completeLine(b)) {
-                        b.compact();
                         done = true;
-                        break;
+                    } else {
+                        state = FIRST_LINE_STATE;
                     }
-
-                    eatCrLf(b);
-                    assert !b.hasRemaining();
-
-                    b = null;
-                    done = true;
-
-                    state = CHUNK_LENGTH_STATE;
-                    break;
-                }
-            case LAST_CHUNK_STATE:
-                // last-chunk     = 1*("0") [ chunk-extension ] CRLF
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in LAST_CHUNK_STATE");
-                    }
-
-                    if (!completeLine(b)) {
+                } else if (b.remaining() > maxRequestLine) {
+                    throw new ParseException("HTTP request length exceeded: " + AsciiCharBuffer.wrap(b));
+                } else {
+                    if (b.capacity() < maxRequestLine) {
+                        ByteBuffer r = ByteBuffer.allocate(maxRequestLine);
+                        r.put(b);
+                        b = r;
+                    } else {
                         b.compact();
-                        done = true;
-                        break;
+                    }
+                    done = true;
+                }
+
+                break;
+            }
+            case FIRST_LINE_STATE: {
+                // Initialize the buffer, we'll need it until
+                // we're done with HEADER state.
+                this.buf = new byte[maxUri];
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in FIRST_LINE_STATE");
+                }
+
+                if (completeLine(b)) {
+                    tokenList.add(firstLine(b));
+
+                    state = ACCUMULATE_HEADER_STATE;
+                } else {
+                    b.compact();
+                    done = true;
+                }
+                break;
+            }
+            case ACCUMULATE_HEADER_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
+                }
+
+                if (!completeHeader(b)) {
+                    if (b.capacity() < maxHeader) {
+                        ByteBuffer nb = ByteBuffer.allocate(maxHeader + 2);
+                        nb.put(b);
+                        nb.flip();
+                        b = nb;
+                    } else if (b.remaining() >= maxHeader) {
+                        String msg = "header exceeds " + maxHeader + ":\n" + AsciiCharBuffer.wrap(b);
+                        if (blockLongHeaders) {
+                            logger.warn(msg);
+                            // XXX send error page instead
+                            session.shutdownClient();
+                            session.shutdownServer();
+                            return new ParseResult();
+                        } else {
+                            // allow session to be released, or not
+                            throw new ParseException(msg);
+                        }
                     }
 
-                    eatCrLf(b);
+                    b.compact();
 
-                    assert !b.hasRemaining();
+                    done = true;
+                } else {
+                    state = HEADER_STATE;
+                }
+                break;
+            }
+            case HEADER_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in HEADER_STATE");
+                }
+                header = header(b);
+                tokenList.add(header);
 
-                    b = null;
+                // Done with buf now
+                this.buf = null;
 
+                assert !b.hasRemaining();
+
+                if (!clientSide) {
+                    if (null != requestLineToken) {
+                        HttpMethod method = requestLineToken.getMethod();
+                        if (HttpMethod.HEAD == method) {
+                            transferEncoding = NO_BODY;
+                        }
+                    }
+                } else {
+                    /* This is saved internally and used later with getRequestEvent */
+                    HttpRequestEvent evt = new HttpRequestEvent(requestLineToken.getRequestLine(), header.getValue("host"), lengthCounter);
+                }
+
+                if (NO_BODY == transferEncoding) {
                     state = END_MARKER_STATE;
-                    break;
-                }
-            case END_MARKER_STATE:
-                {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(sessStr + "in END_MARKER_STATE");
-                    }
-                    EndMarker endMarker = EndMarker.MARKER;
-                    tokenList.add(endMarker);
+                } else if (CLOSE_ENCODING == transferEncoding) {
+                    lineBuffering(false);
+                    b = null;
+                    state = CLOSED_BODY_STATE;
+                    done = true;
+                } else if (CHUNKED_ENCODING == transferEncoding) {
                     lineBuffering(true);
                     b = null;
-                    state = PRE_FIRST_LINE_STATE;
+                    state = CHUNK_LENGTH_STATE;
+                    done = true;
+                } else if (CONTENT_LENGTH_ENCODING == transferEncoding) {
+                    lineBuffering(false);
+                    assert !b.hasRemaining();
 
-                    if (!clientSide) {
-                        String contentType = header.getValue("content-type");
-                        String mimeType = null == contentType ? null : MimeType.getType(contentType);
-
-                        RequestLine rl = null == requestLineToken ? null : requestLineToken.getRequestLine();
-
-                        if (null != rl) {
-                            HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, lengthCounter);
-
-                            casing.getNode().logEvent(evt);
-                        }
+                    if (0 < contentLength) {
+                        readLimit(contentLength);
+                        b = null;
+                        state = CONTENT_LENGTH_BODY_STATE;
+                        done = true;
                     } else {
-                        HttpRequestEvent evt = requestLineToken.getRequestLine().getHttpRequestEvent();
-                        evt.setContentLength(lengthCounter);
-
-                        if (evt.getRequestUri() == null) {
-                            logger.warn("null request for: " + getSession().sessionEvent());
-                        }
-
-                        casing.getNode().logEvent(evt);
-                        
-                        /**
-                         * Update host table with header info
-                         * if an entry already exists for this host
-                         */
-                        InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
-                        String agentString = header.getValue("user-agent");
-                        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-                        if (clientAddr != null && agentString != null && entry != null ) {
-                            UserAgentString uas = new UserAgentString(agentString);
-                            long setDate = entry.getHttpUserAgentSetDate();
-                            
-                            /**
-                             * If the current agent string is null
-                             * or if its not null it was set more than 60 seconds ago
-                             * set the agent string and agent string information
-                             */
-                            if ( entry.getHttpUserAgent() == null || setDate == 0 ||
-                                 ( System.currentTimeMillis() > setDate + (60*1000) ) ) {
-                                entry.setHttpUserAgent( agentString );
-                                entry.setHttpUserAgentOs( uas.getOsInfo() );
-                                entry.setHttpUserAgentSetDate( System.currentTimeMillis() );
-                            }
-                        }
+                        state = END_MARKER_STATE;
                     }
-
-                    // Free up header storage
-                    header = null;
+                } else {
+                    assert false;
+                }
+                break;
+            }
+            case CLOSED_BODY_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in CLOSED_BODY_STATE!");
+                }
+                tokenList.add(closedBody(b));
+                b = null;
+                done = true;
+                break;
+            }
+            case CONTENT_LENGTH_BODY_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
+                }
+                tokenList.add(chunk(b));
+                if (0 == contentLength) {
+                    b = null;
+                    // XXX handle trailer
+                    state = END_MARKER_STATE;
+                } else {
+                    readLimit(contentLength);
+                    b = null;
+                    done = true;
+                }
+                break;
+            }
+            case CHUNK_LENGTH_STATE: {
+                // chunk-size     = 1*HEX
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in CHUNK_LENGTH_STATE");
+                }
+                if (!completeLine(b)) {
+                    b.compact();
                     done = true;
                     break;
                 }
+
+                contentLength = chunkLength(b);
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "CHUNK contentLength = "
+                                 + contentLength);
+                }
+                if (0 == contentLength) {
+                    b = null;
+                    state = LAST_CHUNK_STATE;
+                } else {
+                    lineBuffering(false);
+                    assert !b.hasRemaining();
+
+                    readLimit(contentLength);
+                    b = null;
+
+                    state = CHUNK_BODY_STATE;
+                }
+                done = true;
+                break;
+            }
+            case CHUNK_BODY_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in CHUNKED_BODY_STATE");
+                }
+
+                tokenList.add(chunk(b));
+
+                if (0 == contentLength) {
+                    lineBuffering(true);
+                    b = null;
+                    state = CHUNK_END_STATE;
+                } else {
+                    readLimit(contentLength);
+                    b = null;
+                }
+
+                done = true;
+                break;
+            }
+            case CHUNK_END_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in END_CHUNK_STATE");
+                }
+
+                if (!completeLine(b)) {
+                    b.compact();
+                    done = true;
+                    break;
+                }
+
+                eatCrLf(b);
+                assert !b.hasRemaining();
+
+                b = null;
+                done = true;
+
+                state = CHUNK_LENGTH_STATE;
+                break;
+            }
+            case LAST_CHUNK_STATE: {
+                // last-chunk     = 1*("0") [ chunk-extension ] CRLF
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in LAST_CHUNK_STATE");
+                }
+
+                if (!completeLine(b)) {
+                    b.compact();
+                    done = true;
+                    break;
+                }
+
+                eatCrLf(b);
+
+                assert !b.hasRemaining();
+
+                b = null;
+
+                state = END_MARKER_STATE;
+                break;
+            }
+            case END_MARKER_STATE: {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "in END_MARKER_STATE");
+                }
+                EndMarker endMarker = EndMarker.MARKER;
+                tokenList.add(endMarker);
+                lineBuffering(true);
+                b = null;
+                state = PRE_FIRST_LINE_STATE;
+
+                if (!clientSide) {
+                    String contentType = header.getValue("content-type");
+                    String mimeType = null == contentType ? null : MimeType.getType(contentType);
+
+                    RequestLine rl = null == requestLineToken ? null : requestLineToken.getRequestLine();
+
+                    if (null != rl) {
+                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, lengthCounter);
+
+                        casing.getNode().logEvent(evt);
+                    }
+                } else {
+                    HttpRequestEvent evt = requestLineToken.getRequestLine().getHttpRequestEvent();
+                    evt.setContentLength(lengthCounter);
+
+                    if (evt.getRequestUri() == null) {
+                        logger.warn("null request for: " + getSession().sessionEvent());
+                    }
+
+                    casing.getNode().logEvent(evt);
+
+                    /**
+                     * Update host table with header info
+                     * if an entry already exists for this host
+                     */
+                    InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
+                    String agentString = header.getValue("user-agent");
+                    HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                    if (clientAddr != null && agentString != null && entry != null ) {
+                        UserAgentString uas = new UserAgentString(agentString);
+                        long setDate = entry.getHttpUserAgentSetDate();
+
+                        /**
+                         * If the current agent string is null
+                         * or if its not null it was set more than 60 seconds ago
+                         * set the agent string and agent string information
+                         */
+                        if ( entry.getHttpUserAgent() == null || setDate == 0 ||
+                             ( System.currentTimeMillis() > setDate + (60*1000) ) ) {
+                            entry.setHttpUserAgent( agentString );
+                            entry.setHttpUserAgentOs( uas.getOsInfo() );
+                            entry.setHttpUserAgentSetDate( System.currentTimeMillis() );
+                        }
+                    }
+                }
+
+                // Free up header storage
+                header = null;
+                done = true;
+                break;
+            }
             default:
                 assert false;
             }
@@ -513,9 +524,7 @@ public class HttpParser extends AbstractParser
                 return new ParseResult(l, null);
             default:
                 // I think we want to release in most circumstances
-                throw new ParseException("in state: " + state
-                                         + " data trapped in read buffer: "
-                                         + b.remaining());
+                throw new ParseException("in state: " + state + " data trapped in read buffer: " + b.remaining());
             }
         }
 
@@ -539,8 +548,7 @@ public class HttpParser extends AbstractParser
             return null;
 
         case CONTENT_LENGTH_BODY_STATE:
-            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: "
-                        + contentLength);
+            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: " + contentLength);
             return endMarkerStreamer();
 
         case CHUNK_LENGTH_STATE:
@@ -548,8 +556,7 @@ public class HttpParser extends AbstractParser
             return endMarkerStreamer();
 
         case CHUNK_BODY_STATE:
-            logger.warn("endSession in CHUNK_BODY_STATE, length: "
-                        + contentLength);
+            logger.warn("endSession in CHUNK_BODY_STATE, length: " + contentLength);
             return endMarkerStreamer();
 
         case CHUNK_END_STATE:
@@ -1079,21 +1086,20 @@ public class HttpParser extends AbstractParser
 
     private TokenStreamer endMarkerStreamer()
     {
-        return new TokenStreamer()
+        return new TokenStreamer() {
+            private boolean sent = false;
+
+            public boolean closeWhenDone() { return true; }
+
+            public Token nextToken()
             {
-                private boolean sent = false;
-
-                public boolean closeWhenDone() { return true; }
-
-                public Token nextToken()
-                {
-                    if (sent) {
-                        return null;
-                    } else {
-                        sent = true;
-                        return EndMarker.MARKER;
-                    }
+                if (sent) {
+                    return null;
+                } else {
+                    sent = true;
+                    return EndMarker.MARKER;
                 }
-            };
+            }
+        };
     }
 }

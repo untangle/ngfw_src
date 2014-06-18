@@ -347,8 +347,10 @@ public class CasingAdaptor extends CasingBase
                     logger.info("Protocol parse exception (buf limit exceeded). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("header exceeds")) {
                     logger.info("Protocol parse exception (header exceeds). Releasing session: " + sessionEndpoints);
-                } else if (message != null && message.contains("URI length exceeded")) {
-                    logger.info("Protocol parse exception (URI length exceeded). Releasing session: " + sessionEndpoints);
+                } else if (message != null && message.contains("length exceeded")) {
+                    logger.info("Protocol parse exception (request length exceeded). Releasing session: " + sessionEndpoints);
+                } else if (message != null && message.contains("invalid method")) {
+                    logger.info("Protocol parse exception (invalid request method). Releasing session: " + sessionEndpoints);                    
                 } else {
                     logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
