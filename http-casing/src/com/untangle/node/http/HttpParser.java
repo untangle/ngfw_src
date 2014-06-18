@@ -119,6 +119,37 @@ public class HttpParser extends AbstractParser
                     }
 
                     lengthCounter = 0;
+                    
+                    // Once we have three bytes we look to see if we are on the
+                    // client side and working with a valid request method.
+                    // See bug #11886 for more details 
+                    if ((clientSide) && (b.limit() >= 3))
+                    {
+                        String leader = new String(b.array(),0,3);
+                        boolean validMethod = false;
+
+                        switch(leader)
+                        {
+                        case "GET":     // GET
+                        case "HEA":     // HEAD
+                        case "POS":     // POST
+                        case "OPT":     // OPTIONS
+                        case "PUT":     // PUT
+                        case "DEL":     // DELETE
+                        case "TRA":     // TRACE
+                        case "CON":     // CONNECT
+                        case "NON":     // NON-STANDARD
+                            validMethod = true;
+                            break;
+                        default:
+                            validMethod = false;
+                        }
+                        
+                        if (validMethod == false)
+                        {
+                            throw new ParseException("HTTP request invalid method: " + AsciiCharBuffer.wrap(b));                            
+                        }
+                    }
 
                     if (b.hasRemaining() && completeLine(b)) {
                         ByteBuffer d = b.duplicate();
@@ -406,7 +437,7 @@ public class HttpParser extends AbstractParser
                         }
 
                         casing.getNode().logEvent(evt);
-                        
+
                         /**
                          * Update host table with header info
                          * if an entry already exists for this host
@@ -417,7 +448,7 @@ public class HttpParser extends AbstractParser
                         if (clientAddr != null && agentString != null && entry != null ) {
                             UserAgentString uas = new UserAgentString(agentString);
                             long setDate = entry.getHttpUserAgentSetDate();
-                            
+
                             /**
                              * If the current agent string is null
                              * or if its not null it was set more than 60 seconds ago
