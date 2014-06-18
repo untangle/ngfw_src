@@ -1277,7 +1277,8 @@ Ext.define("Ung.Main", {
         var size = main.viewport.getSize();
         var centerSize = Ext.getCmp('center').getSize();
         var centerPosition = Ext.getCmp('center').getPosition();
-
+        var scale = .9;
+        
         if ( centerSize.width < 850 ) {
             scale = 1.00; // if we are in a low resolution, use the whole rack screen
             position[0] = centerPosition[0];
