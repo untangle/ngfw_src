@@ -1278,12 +1278,19 @@ Ext.define("Ung.Main", {
         var centerSize = Ext.getCmp('center').getSize();
         var centerPosition = Ext.getCmp('center').getPosition();
 
-        position[0] = centerPosition[0]+Math.round(centerSize.width/20);
-        position[1] = centerPosition[1]+Math.round(centerSize.height/20);
+        if ( centerSize.width < 850 ) {
+            scale = 1.00; // if we are in a low resolution, use the whole rack screen
+            position[0] = centerPosition[0];
+            position[1] = centerPosition[1];
+        } else {
+            scale = 0.90; // use 90% of the screen for the popup
+            position[0] = centerPosition[0]+Math.round(centerSize.width/20);
+            position[1] = centerPosition[1]+Math.round(centerSize.height/20);
+        }
 
         iframeWin.show();
 
-        iframeWin.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});
+        iframeWin.setSize({width:centerSize.width*scale,height:centerSize.height*scale});
         iframeWin.setPosition(position[0],position[1]);
         iframeWin.setTitle(title);
 
