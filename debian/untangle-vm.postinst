@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# used for 10.3 upgrade path, at the bottom of this file
+# used for 11.0 upgrade path, at the bottom of this file
 oldVersion=$2
 
 ourInit() {
@@ -66,8 +66,8 @@ if [ "`/usr/share/untangle/bin/ut-settings-reader.py uvm system autoUpgrade`" ==
     /bin/rm -f /etc/cron.d/untangle-upgrade
 fi
 
-# 10.3 upgrade (Closes: #11853)
-if dpkg --compare-versions "$oldVersion" le 10.3~ ; then
+# 11.0 upgrade (Closes: #11853)
+if dpkg --compare-versions "$oldVersion" le 11.0~ ; then
   /usr/share/untangle-netd/bin/sync-settings.py -vv
 fi
 
