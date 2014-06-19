@@ -307,7 +307,7 @@ int        netcap_sesstable_remove ( int if_lock, netcap_session_t* netcap_sess 
 int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netcap_sess )
 {
     netcap_endpoints_t* cli_endpoints;
-    netcap_endpoints_t* srv_endpoints;
+    //netcap_endpoints_t* srv_endpoints;
 
     if ( netcap_sess == NULL ) {
         return errlogargs();
@@ -327,7 +327,7 @@ int        netcap_sesstable_remove_session ( int if_lock, netcap_session_t* netc
 
     /* Remove the forward tuple */
     cli_endpoints = &netcap_sess->cli;
-    srv_endpoints = &netcap_sess->srv;
+    //srv_endpoints = &netcap_sess->srv;
 
     if ( _netcap_sesstable_remove_tuple( netcap_sess->protocol,
                                          cli_endpoints->cli.host.s_addr, cli_endpoints->srv.host.s_addr,
