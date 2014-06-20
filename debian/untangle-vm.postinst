@@ -71,4 +71,8 @@ if dpkg --compare-versions "$oldVersion" le 11.0~ ; then
   /usr/share/untangle-netd/bin/sync-settings.py -vv
 fi
 
+# 11.0 remove obsolete files
+rm -rf /etc/untangle/monit.d
+rm -f /etc/untangle/monit-to-restart
+
 exit 0
