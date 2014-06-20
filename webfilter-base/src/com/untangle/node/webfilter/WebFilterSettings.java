@@ -39,7 +39,7 @@ public class WebFilterSettings implements Serializable
     private Boolean enforceYoutubeForSchools = false;
     private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
-    private Boolean passReferers = false;
+    private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
     private String restrictGoogleAppsDomain = "";
     
