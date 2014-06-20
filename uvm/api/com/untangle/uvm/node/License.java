@@ -85,6 +85,7 @@ public class License implements Serializable
         this.keyVersion = orig.keyVersion;
         this.valid = orig.valid;
         this.status = orig.status;
+        this.seats = orig.seats;
     }
     
     public License( String name, String uid, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid, String status )
@@ -158,7 +159,7 @@ public class License implements Serializable
      */
     public int getSeats() { return this.seats; }
     public void setSeats( int newValue ) { this.seats = newValue; }
-    
+
     /**
      * Returns the valid state
      * This is a transient value - it is set (or reset) on settings load
