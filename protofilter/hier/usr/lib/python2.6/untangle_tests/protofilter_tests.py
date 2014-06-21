@@ -155,6 +155,64 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "FTP" )            
         assert(events['list'][0]['protofilter_blocked'] == True )            
 
+    def test_050_testDNsUDpPatternLog(self):
+        nukepatterns()
+        
+        addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
+                    protocol="DNS", 
+                    blocked=False,
+                    category="Web", 
+                    description="Domain Name System")
+        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8 >/dev/null 2>&1")
+        assert (result == 0)
+        time.sleep(3);
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        print ("Event:" + 
+               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
+               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
+               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
+               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
+               " now: " + str(datetime.datetime.now())) 
+        
+        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
+        assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
+        assert(events['list'][0]['protofilter_blocked'] == False )            
+
+    def test_060_testDNsUDpPatternBlock(self):
+        nukepatterns()
+        
+        addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
+                    protocol="DNS", 
+                    blocked=True,
+                    category="Web", 
+                    description="Domain Name System")
+        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8 >/dev/null 2>&1")
+        assert (result != 0)
+        time.sleep(3);
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        print ("Event:" + 
+               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
+               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
+               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
+               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
+               " now: " + str(datetime.datetime.now())) 
+        
+        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
+        assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
+        assert(events['list'][0]['protofilter_blocked'] == True )            
+
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
