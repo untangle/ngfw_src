@@ -130,7 +130,7 @@ class SmtpServerUnparser extends SmtpUnparser
         if (token instanceof CompleteMIMEToken) {
             m_logger.debug("Send CompleteMIMEToken to server");
             getSessionTracker().beginMsgTransmission();
-            return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer(getPipeline(), true, getSession()));
+            return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer( true, getSession() ));
         }
         // -----------------------------------------------------------
         if (token instanceof ContinuedMIMEToken) {

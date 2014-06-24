@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -47,17 +46,14 @@ public class MIMETCPStreamer implements TCPStreamer
      * 
      * @param msg
      *            the MIMEMessage
-     * @param pipeline
-     *            the pipeline (for creating temp files)
      * @param readChunkSz
      *            the size of the read buffer for the file
      * @param disposeWhenComplete
      *            if true, the MIMEMessage's {@link com.untangle.node.smtp.mime.MIMEPart#dispose dispose} method will be
      *            called when streaming is complete or an error is encountered.
      */
-    public MIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, final Pipeline pipeline, int readChunkSz,
-            boolean disposeWhenComplete, NodeTCPSession session) {
-
+    public MIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, int readChunkSz, boolean disposeWhenComplete, NodeTCPSession session)
+    {
         m_msg = msg;
         m_chunkSz = readChunkSz;
         m_disposeWhenComplete = disposeWhenComplete;

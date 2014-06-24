@@ -18,7 +18,6 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 
 /**
  * Base class for the SmtpClient/ServerParser
@@ -28,7 +27,6 @@ abstract class SmtpParser extends AbstractParser
 
     private final Logger logger = Logger.getLogger(SmtpParser.class);
 
-    private final Pipeline pipeline;
     private final SmtpCasing casing;
     private boolean passthru = false;
 
@@ -47,7 +45,6 @@ abstract class SmtpParser extends AbstractParser
 
         super(session, clientSide);
         casing = parent;
-        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.casingSessionTracker = casingSessionTracker;
     }
 
@@ -59,11 +56,6 @@ abstract class SmtpParser extends AbstractParser
     public CasingSessionTracker getSessionTracker()
     {
         return casingSessionTracker;
-    }
-
-    public Pipeline getPipeline()
-    {
-        return pipeline;
     }
 
     /**

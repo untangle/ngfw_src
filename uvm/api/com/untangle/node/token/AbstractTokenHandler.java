@@ -4,7 +4,6 @@
 package com.untangle.node.token;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -13,19 +12,16 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 public abstract class AbstractTokenHandler implements TokenHandler
 {
     private final NodeTCPSession session;
-    private final Pipeline pipeline;
-
-    // constructors -----------------------------------------------------------
 
     protected AbstractTokenHandler(NodeTCPSession session)
     {
         this.session = session;
-        this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
     }
 
-    // TokenHandler methods ---------------------------------------------------
-
-    public void handleTimer() throws TokenException { }
+    public void handleTimer() throws TokenException
+    {
+        // do nothing
+    }
 
     public void handleClientFin() throws TokenException
     {
@@ -42,17 +38,13 @@ public abstract class AbstractTokenHandler implements TokenHandler
         return TokenResult.NONE;
     }
 
-    public void handleFinalized() throws TokenException { }
-
-    // protected methods ------------------------------------------------------
+    public void handleFinalized() throws TokenException
+    {
+        // do nothing
+    }
 
     protected NodeTCPSession getSession()
     {
         return session;
-    }
-
-    protected Pipeline getPipeline()
-    {
-        return pipeline;
     }
 }

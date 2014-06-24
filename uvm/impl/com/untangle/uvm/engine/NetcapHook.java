@@ -319,7 +319,6 @@ public abstract class NetcapHook implements Runnable
         }
 
         try {
-            /* Let the pipeline foundry know */
             if (clientSide != null) {
                 SessionStatsEvent statEvent = new SessionStatsEvent(sessionEvent);
                 statEvent.setC2pBytes(sessionGlobalState.clientSideListener().rxBytes);
@@ -331,12 +330,9 @@ public abstract class NetcapHook implements Runnable
                 statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
                 statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
                 UvmContextFactory.context().logEvent( statEvent );
-
-                /* log and destroy the session */
-                pipelineFoundry.removePipeline( sessionGlobalState.id() );
             }
 
-            /* Remove the vector from the vectron table */
+            /* Remove the vector from the active sessions table */
             /* You must remove the vector before razing, or else the
              * vector may receive a message(eg shutdown) from another
              * thread */
@@ -503,19 +499,9 @@ public abstract class NetcapHook implements Runnable
                 relayList.add( c2sInputRelay );
                 relayList.add( s2cOutputRelay );
 
-                // if ( prevSession != null ) {
-                //     // the previous session's c2s output relay is the same as this sessions c2s input relay
-                //     prevSession.c2sOutputRelay = c2sInputRelay;
-                //     // the previous session's s2c input relay is the same as this sessions s2c output relay
-                //     prevSession.s2cInputRelay = s2cOutputRelay;
-                // }
-
                 if ( session == null )
                     break;
                 
-                // session.c2sInputRelay  = c2sInputRelay;
-                // session.s2cOutputRelay = s2cOutputRelay;
-
                 prevSource = session.serverOutgoingSocketQueue();
                 prevSink = session.serverIncomingSocketQueue();
                 prevSession = session;

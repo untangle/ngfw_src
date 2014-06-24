@@ -472,7 +472,7 @@ public class Dispatcher
 
     void dispatchTimer(IPSessionEvent event)
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.ipsession();
+        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "Timer", session.id());
         if ( sessionEventListener == null || session.released() )
             releasedHandler.handleTimer(event);

@@ -7,8 +7,8 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Adapts a TokenStreamer to a TCPStreamer.
@@ -18,13 +18,13 @@ public class TokenStreamerAdaptor implements TCPStreamer
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Pipeline pipeline;
     private final TokenStreamer streamer;
-
-    public TokenStreamerAdaptor(Pipeline pipeline, TokenStreamer streamer)
+    private final NodeTCPSession session;
+    
+    public TokenStreamerAdaptor( TokenStreamer streamer, NodeTCPSession session )
     {
-        this.pipeline = pipeline;
         this.streamer = streamer;
+        this.session = session;
     }
 
     // TCPStreamer methods ----------------------------------------------------
@@ -44,7 +44,10 @@ public class TokenStreamerAdaptor implements TCPStreamer
         } else {
             // XXX factor out token writing
             ByteBuffer buf = ByteBuffer.allocate(8);
-            Long key = pipeline.attach(tok);
+
+            Long key = session.getUniqueGlobalAttachmentKey();
+            session.globalAttach( key, tok );
+
             logger.debug("streaming tok: " + tok + " with key: " + key);
             buf.putLong(key);
             buf.flip();

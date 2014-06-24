@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
@@ -42,15 +40,8 @@ public class CasingAdaptor extends CasingBase
         NodeTCPSession session = e.session();
 
         Casing casing = casingFactory.casing( session, clientSide );
-        Pipeline pipeline = pipeFoundry.getPipeline( session.id() );
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("new session setting: " + pipeline + " for: " + session.id());
-        }
-
-        // addCasing( session, casing, pipeline );
-
-        session.attach( new Attachment(casing, pipeline) );
+        session.attach( casing );
         
         if (clientSide) {
             session.serverReadLimit( TOKEN_SIZE );
@@ -132,14 +123,13 @@ public class CasingAdaptor extends CasingBase
     {
         TCPStreamer tcpStream = null;
 
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
-        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
+        NodeTCPSession s = e.session();
+        Casing casing = (Casing)e.session().attachment();
 
         if (clientSide) {
             TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                tcpStream = new TokenStreamerAdaptor( pipeline, tokSt );
+                tcpStream = new TokenStreamerAdaptor( tokSt, s );
             }
         } else {
             tcpStream = casing.unparser().endSession();
@@ -157,16 +147,15 @@ public class CasingAdaptor extends CasingBase
     {
         TCPStreamer ts = null;
 
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
-        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
+        NodeTCPSession s = e.session();
+        Casing casing = (Casing)e.session().attachment();
 
         if (clientSide) {
             ts = casing.unparser().endSession();
         } else {
             TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                ts = new TokenStreamerAdaptor( pipeline, tokSt );
+                ts = new TokenStreamerAdaptor( tokSt, s );
             }
         }
 
@@ -183,14 +172,14 @@ public class CasingAdaptor extends CasingBase
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + e.session().id());
         }
-        finalize( e.ipsession() );
+        finalize( e.session() );
     }
 
     @Override
     public void handleTimer(IPSessionEvent e)
     {
-        NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
+        NodeTCPSession s = (NodeTCPSession)e.session();
+        Casing casing = (Casing)e.session().attachment();
 
         Parser p = casing.parser();
         p.handleTimer();
@@ -221,14 +210,14 @@ public class CasingAdaptor extends CasingBase
             return;
         }
 
-        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
-        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
+        Casing casing = (Casing)e.session().attachment();
 
         Long key = new Long(b.getLong());
-        Token tok = (Token)pipeline.detach(key);
+        Token tok = (Token) session.globalAttachment( key );
+        session.globalAttach( key, null ); // remove key
 
         if (logger.isDebugEnabled()) {
-            logger.debug("RETRIEVED object: " + tok + " with key: " + key + " on pipeline: " + pipeline);
+            logger.debug("RETRIEVED object: " + tok + " with key: " + key );
         }
 
         b.limit(TOKEN_SIZE);
@@ -320,8 +309,7 @@ public class CasingAdaptor extends CasingBase
     private void parse(TCPChunkEvent e, boolean s2c, boolean last)
     {
         NodeTCPSession session = e.session();
-        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
-        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
+        Casing casing = (Casing)e.session().attachment();
 
         ParseResult pr;
         ByteBuffer buf = e.chunk();
@@ -390,7 +378,7 @@ public class CasingAdaptor extends CasingBase
 
         if (pr.isStreamer()) {
             TokenStreamer tokSt = pr.getTokenStreamer();
-            TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+            TCPStreamer ts = new TokenStreamerAdaptor(tokSt, session);
             if (s2c) {
                 session.beginClientStream(ts);
                 session.setServerBuffer( pr.getReadBuffer() );
@@ -403,14 +391,13 @@ public class CasingAdaptor extends CasingBase
         } else {
             List<Token> results = pr.getResults();
 
-            // XXX add magic:
             ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.size());
 
-            // XXX add magic:
             for (Token t : results) {
-                Long key = pipeline.attach(t);
+                Long key = session.getUniqueGlobalAttachmentKey();
+                session.globalAttach(key, t);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("SAVED object: " + t + " with key: " + key + " on pipeline: " + pipeline);
+                    logger.debug("SAVED object: " + t + " with key: " + key );
                 }
                 bb.putLong(key);
             }
@@ -442,23 +429,9 @@ public class CasingAdaptor extends CasingBase
 
     private void finalize( NodeSession sess )
     {
-        Casing casing = ((Attachment)sess.attachment()).casing;
+        Casing casing = (Casing)sess.attachment();;
 
         casing.parser().handleFinalized();
         casing.unparser().handleFinalized();
-        //removeCasingDesc( sess );
     }
-
-    protected static class Attachment
-    {
-        final Casing casing;
-        final Pipeline pipeline;
-
-        Attachment(Casing casing, Pipeline pipeline)
-        {
-            this.casing = casing;
-            this.pipeline = pipeline;
-        }
-    }
-
 }

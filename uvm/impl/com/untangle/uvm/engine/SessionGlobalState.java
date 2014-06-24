@@ -38,8 +38,11 @@ public class SessionGlobalState
      * This is the global list of attachments for this session
      * It is used by various parts of the platform and apps to store metadata about the session
      */
-    protected HashMap<String,Object> attachments;
+    protected HashMap<String,Object> stringAttachments;
+    protected HashMap<Long,Object> longAttachments;
 
+    protected int attachId = 0;
+    
     /**
      * Stores a list of the original agents/pipelinespecs processing this session
      * Note: Even if a node/agent releases a session it will still be in this list
@@ -61,7 +64,8 @@ public class SessionGlobalState
         this.clientSideListener = clientSideListener;
         this.serverSideListener = serverSideListener;
 
-        this.attachments = new HashMap<String,Object>();
+        this.stringAttachments = new HashMap<String,Object>();
+        this.longAttachments = new HashMap<Long,Object>();
     }
 
     public long id()
@@ -129,16 +133,36 @@ public class SessionGlobalState
     public Object attach(String key, Object attachment)
     {
         logger.debug("globalAttach( " + key + " , " + attachment + " )");
-        return this.attachments.put(key,attachment);
+        return this.stringAttachments.put(key,attachment);
     }
 
     public Object attachment(String key)
     {
-        return this.attachments.get(key);
+        return this.stringAttachments.get(key);
     }
 
     public Map<String,Object> getAttachments()
     {
-        return this.attachments;
+        return this.stringAttachments;
     }
+
+    public Object attach(Long key, Object attachment)
+    {
+        logger.debug("globalAttach( " + key + " , " + attachment + " )");
+        return this.longAttachments.put(key,attachment);
+    }
+
+    public Object attachment(Long key)
+    {
+        return this.longAttachments.get(key);
+    }
+
+    public Long getUniqueGlobalAttachmentKey()
+    {
+        synchronized ( this ) {
+            return new Long(++attachId);
+        }
+    }
+    
+    
 }

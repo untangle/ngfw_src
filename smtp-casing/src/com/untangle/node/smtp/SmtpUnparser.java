@@ -13,7 +13,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -21,29 +20,22 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
  */
 abstract class SmtpUnparser extends AbstractUnparser
 {
-
-    private final Pipeline pipeline;
     private final SmtpCasing casing;
     private final Logger logger = Logger.getLogger(SmtpUnparser.class);
     private boolean passthru = false;
 
     private CasingSessionTracker casingSessionTracker;
 
-    protected SmtpUnparser(NodeTCPSession session, boolean clientSide, SmtpCasing casing, CasingSessionTracker tracker) {
+    protected SmtpUnparser(NodeTCPSession session, boolean clientSide, SmtpCasing casing, CasingSessionTracker tracker)
+    {
         super(session, clientSide);
         this.casing = casing;
-        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         casingSessionTracker = tracker;
     }
 
     public SmtpCasing getCasing()
     {
         return casing;
-    }
-
-    public Pipeline getPipeline()
-    {
-        return pipeline;
     }
 
     /**

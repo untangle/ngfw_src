@@ -12,13 +12,12 @@ import com.untangle.uvm.vnet.PipelineConnector;
 @SuppressWarnings("serial")
 public class IPSessionEvent extends SessionEvent
 {
-
     public IPSessionEvent(PipelineConnector pipelineConnector, NodeSession session)
     {
         super(pipelineConnector, session);
     }
 
-    public NodeSession ipsession()
+    public NodeSession session()
     {
         return (NodeSession)getSource();
     }

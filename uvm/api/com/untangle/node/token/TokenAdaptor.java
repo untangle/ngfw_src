@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
@@ -35,9 +33,6 @@ public class TokenAdaptor extends AbstractEventHandler
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
     private final TokenHandlerFactory handlerFactory;
-    private final Map<NodeSession,HandlerDesc> handlers = new ConcurrentHashMap<NodeSession,HandlerDesc>();
-
-    private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
 
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
@@ -56,32 +51,30 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPNewSession(TCPSessionEvent e)
     {
-        NodeTCPSession s = e.session();
-        TokenHandler h = handlerFactory.tokenHandler(s);
-        Pipeline pipeline = pipeFoundry.getPipeline(s.id());
-        addHandler(s, h, pipeline);
-        logger.debug("new session, s: " + s + " h: " + h);
-
-        s.clientReadBufferSize(TOKEN_SIZE);
-        s.clientLineBuffering(false);
-        s.serverReadBufferSize(TOKEN_SIZE);
-        s.serverLineBuffering(false);
+        NodeTCPSession session = e.session();
+        TokenHandler handler = handlerFactory.tokenHandler( session );
+        session.attach( handler );
+        
+        session.clientReadBufferSize(TOKEN_SIZE);
+        session.clientLineBuffering(false);
+        session.serverReadBufferSize(TOKEN_SIZE);
+        session.serverLineBuffering(false);
         // (read limits are automatically set to the buffer size)
     }
 
     @Override
     public void handleTCPServerChunk(TCPChunkEvent e)
     {
-        HandlerDesc handlerDesc = getHandlerDesc(e.session());
-        handleToken(handlerDesc, e, true);
+        TokenHandler handler = (TokenHandler) e.session().attachment();
+        handleToken( handler, e, true );
         return;
     }
 
     @Override
     public void handleTCPClientChunk(TCPChunkEvent e)
     {
-        HandlerDesc handlerDesc = getHandlerDesc(e.session());
-        handleToken(handlerDesc, e, false);
+        TokenHandler handler = (TokenHandler) e.session().attachment();
+        handleToken( handler, e, false );
         return;
     }
 
@@ -89,10 +82,10 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPClientFIN(TCPSessionEvent e)
     {
         NodeTCPSession session = e.session();
-        HandlerDesc handlerDesc = getHandlerDesc(session);
+        TokenHandler handler = (TokenHandler) e.session().attachment();
 
         try {
-            handlerDesc.handler.handleClientFin();
+            handler.handleClientFin();
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -104,10 +97,10 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPServerFIN(TCPSessionEvent e)
     {
         NodeTCPSession session = e.session();
-        HandlerDesc handlerDesc = getHandlerDesc(session);
+        TokenHandler handler = (TokenHandler) e.session().attachment();
 
         try {
-            handlerDesc.handler.handleServerFin();
+            handler.handleServerFin();
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -127,17 +120,17 @@ public class TokenAdaptor extends AbstractEventHandler
 
     private void finalize( NodeTCPSession sess )
     {
-        HandlerDesc handlerDesc = getHandlerDesc( sess );
+        TokenHandler handler = (TokenHandler) sess.attachment();
 
         try {
-            handlerDesc.handler.handleFinalized();
+            handler.handleFinalized();
         } catch ( Exception exn ) {
             logger.warn("Exception. resetting connection", exn);
             sess.resetClient();
             sess.resetServer();
         }
 
-        removeHandler( sess );
+        sess.attach( null ); // remove tokenHandler reference
     }
     // UDP events -------------------------------------------------------------
 
@@ -186,63 +179,19 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTimer(IPSessionEvent e)
     {
-        TokenHandler th = getHandler(e.ipsession());
+        TokenHandler handler = (TokenHandler) e.session().attachment();
+
         try {
-            th.handleTimer();
+            handler.handleTimer();
         } catch (TokenException exn) {
             logger.warn("exception in timer, no action taken", exn);
         }
     }
 
-    // HandlerDesc utils ------------------------------------------------------
-
-    private static class HandlerDesc
-    {
-        final TokenHandler handler;
-        final Pipeline pipeline;
-
-        HandlerDesc(TokenHandler handler, Pipeline pipeline)
-        {
-            this.handler = handler;
-            this.pipeline = pipeline;
-        }
-    }
-
-    private void addHandler(NodeSession session, TokenHandler handler, Pipeline pipeline)
-    {
-        handlers.put(session, new HandlerDesc(handler, pipeline));
-    }
-
-    private HandlerDesc getHandlerDesc(NodeSession session)
-    {
-        HandlerDesc handlerDesc = handlers.get(session);
-        return handlerDesc;
-    }
-
-    private TokenHandler getHandler(NodeSession session)
-    {
-        HandlerDesc handlerDesc = handlers.get(session);
-        return handlerDesc.handler;
-    }
-
-    @SuppressWarnings("unused")
-    private Pipeline getPipeline(NodeSession session)
-    {
-        HandlerDesc handlerDesc = handlers.get(session);
-        return handlerDesc.pipeline;
-    }
-
-    private void removeHandler(NodeSession session)
-    {
-        handlers.remove(session);
-    }
-
     // private methods --------------------------------------------------------
 
-    private void handleToken(HandlerDesc handlerDesc, TCPChunkEvent e, boolean s2c)
+    private void handleToken(TokenHandler handler, TCPChunkEvent e, boolean s2c)
     {
-        TokenHandler handler = handlerDesc.handler;
-        Pipeline pipeline = handlerDesc.pipeline;
         NodeTCPSession session = e.session();
         ByteBuffer b = e.chunk();
 
@@ -261,13 +210,15 @@ public class TokenAdaptor extends AbstractEventHandler
 
         Long key = new Long(b.getLong());
 
-        Token token = (Token)pipeline.detach(key);
+        Token token = (Token) session.globalAttachment( key );
+        session.globalAttach( key, null ); // remove attachment
+        
         if (logger.isDebugEnabled())
             logger.debug("RETRIEVED object " + token + " with key: " + key);
 
         TokenResult tr;
         try {
-            tr = doToken(session, s2c, pipeline, handler, token);
+            tr = doToken(session, s2c, handler, token);
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -280,21 +231,21 @@ public class TokenAdaptor extends AbstractEventHandler
             if (tr.s2cStreamer() != null) {
                 logger.debug("beginning client stream");
                 TokenStreamer tokSt = tr.s2cStreamer();
-                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                TCPStreamer ts = new TokenStreamerAdaptor( tokSt, session );
                 session.beginClientStream(ts);
             } else {
                 logger.debug("beginning server stream");
                 TokenStreamer tokSt = tr.c2sStreamer();
-                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                TCPStreamer ts = new TokenStreamerAdaptor( tokSt, session );
                 session.beginServerStream(ts);
             }
             // just means nothing extra to send before beginning stream.
             return;
         } else {
             logger.debug("processing s2c tokens");
-            ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline, session, true);
+            ByteBuffer[] cr = processResults(tr.s2cTokens(), session, true);
             logger.debug("processing c2s tokens");
-            ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline, session, false);
+            ByteBuffer[] sr = processResults(tr.c2sTokens(), session, false);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("returning results: ");
@@ -312,7 +263,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    public TokenResult doToken(NodeTCPSession session, boolean s2c, Pipeline pipeline, TokenHandler handler, Token token)
+    public TokenResult doToken(NodeTCPSession session, boolean s2c, TokenHandler handler, Token token)
         throws TokenException
     {
         if (token instanceof Release) {
@@ -365,7 +316,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    private ByteBuffer[] processResults(Token[] results, Pipeline pipeline, NodeSession session, boolean s2c)
+    private ByteBuffer[] processResults(Token[] results, NodeSession session, boolean s2c)
     {
         // XXX factor out token writing
         ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.length);
@@ -373,7 +324,9 @@ public class TokenAdaptor extends AbstractEventHandler
         for (Token tok : results) {
             if (null == tok) { continue; }
 
-            Long key = pipeline.attach(tok);
+            Long key = session.getUniqueGlobalAttachmentKey();
+            session.globalAttach( key, tok );
+            
             if (logger.isDebugEnabled())
                 logger.debug("SAVED object " + tok + " with key: " + key);
 

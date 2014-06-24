@@ -107,7 +107,7 @@ public class CasingCoupler extends CasingBase
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + e.session().id());
         }
-        Casing c = (Casing) e.ipsession().attachment();
+        Casing c = (Casing) e.session().attachment();
 
         // the casing may have already been shutdown so we only need to
         // call the finalized stuff if it still exists 
@@ -122,9 +122,9 @@ public class CasingCoupler extends CasingBase
     @Override
     public void handleTimer(IPSessionEvent e)
     {
-        NodeTCPSession s = (NodeTCPSession) e.ipsession();
+        NodeTCPSession s = (NodeTCPSession) e.session();
 
-        Casing c = (Casing) e.ipsession().attachment();
+        Casing c = (Casing) e.session().attachment();
         Parser p = c.parser();
         p.handleTimer();
         // XXX unparser doesnt get one, does it need it?
@@ -135,7 +135,7 @@ public class CasingCoupler extends CasingBase
     private void streamParse(TCPChunkEvent e, boolean s2c)
     {
         NodeTCPSession session = e.session();
-        Casing casing = (Casing) e.ipsession().attachment();
+        Casing casing = (Casing) e.session().attachment();
         Parser parser = casing.parser();
 
         try {
@@ -153,7 +153,7 @@ public class CasingCoupler extends CasingBase
     private void streamUnparse(TCPChunkEvent e, boolean s2c)
     {
         NodeTCPSession session = e.session();
-        Casing casing = (Casing) e.ipsession().attachment();
+        Casing casing = (Casing) e.session().attachment();
         Unparser unparser = casing.unparser();
 
         try {

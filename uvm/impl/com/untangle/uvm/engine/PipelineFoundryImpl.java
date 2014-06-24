@@ -1,4 +1,3 @@
-
 /**
  * $Id$
  */
@@ -29,7 +28,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.CasingPipeSpec;
@@ -69,11 +67,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * It can register a hint so the pipeline foundry will treat the session accordingly
      */
     private final Map<InetSocketAddress, Fitting> fittingHints = new ConcurrentHashMap<InetSocketAddress, Fitting>();
-
-    /**
-     * This is a list of all current existing pipelines/sessions
-     */
-    private final Map<Long, PipelineImpl> pipelines = new ConcurrentHashMap<Long, PipelineImpl>();
 
     /**
      * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
@@ -172,9 +165,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         nodeList += "]";
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sessionId, pipelineConnectorList);
-        pipelines.put(sessionId, pipeline);
-
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
             logger.debug("session_id: " + sessionId +
@@ -187,18 +177,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         return pipelineConnectorList;
-    }
-
-    /**
-     * Remove the given session/pipeline from the current global list
-     */
-    public void removePipeline( long sessionId )
-    {
-        PipelineImpl pipeline = pipelines.remove( sessionId );
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("removed: " + pipeline + " for: " + sessionId);
-        }
     }
 
     /**
@@ -265,15 +243,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         fittingHints.put(socketAddress, fitting);
     }
 
-    /**
-     * Get a pipeline by sessionId
-     * Returns null if not found
-     */
-    public Pipeline getPipeline(long sessionId)
-    {
-        return pipelines.get(sessionId);
-    }
-    
     /**
      * Remove all of the cached results
      */

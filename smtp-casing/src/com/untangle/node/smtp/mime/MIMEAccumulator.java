@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -174,7 +173,8 @@ public class MIMEAccumulator
      * @param pipeline
      *            the pipeline (for creating a temp file).
      */
-    public MIMEAccumulator(Pipeline pipeline, NodeTCPSession session) throws IOException {
+    public MIMEAccumulator( NodeTCPSession session ) throws IOException
+    {
         m_logger.debug("Opening temp file to buffer MIME");
         try {
             m_file = File.createTempFile("MIMEAccumulator-", null);

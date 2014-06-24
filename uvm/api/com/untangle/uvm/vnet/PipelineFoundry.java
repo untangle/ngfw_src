@@ -28,6 +28,4 @@ public interface PipelineFoundry
     void clearCache();
 
     void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
-
-    Pipeline getPipeline( long sessionId );
 }

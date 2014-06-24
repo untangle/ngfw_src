@@ -16,7 +16,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -42,7 +41,6 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         super(session);
         
         this.session = session;
-        Pipeline p = getPipeline();
         clientFitting = session.pipelineConnector().getInputFitting();
         serverFitting = session.pipelineConnector().getOutputFitting();
     }

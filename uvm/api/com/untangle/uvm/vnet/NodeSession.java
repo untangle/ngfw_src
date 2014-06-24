@@ -78,7 +78,7 @@ public interface NodeSession extends SessionTuple
     Object globalAttach(String key, Object ob);
 
     /**
-     * Retrieves the current attachment.
+     * Retrieves an attachment from the global session attachment table
      *
      * @param key The string key; may be <tt>null</tt>
      * 
@@ -87,6 +87,25 @@ public interface NodeSession extends SessionTuple
      */
     Object globalAttachment(String key);
 
+    /**
+     * Similar to globalAttachment(String) but with a Long key.
+     */
+    Object globalAttachment(Long key);
+    
+    
+    /**
+     * Similar to globalAttach(String,Object) but with a Long key.
+     */
+    Object globalAttach(Long key, Object ob);
+
+
+    /**
+     * Provides a unique long key based on a globally iterated
+     * synchronized value.
+     */
+    Long getUniqueGlobalAttachmentKey();
+
+    
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
      * All sessions have a unique id assigned by Netcap.  This will eventually, of course,

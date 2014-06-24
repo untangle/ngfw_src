@@ -92,8 +92,6 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected volatile Object attachment = null;
 
-    protected int attachId = 0;
-
     protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
     {
         this.dispatcher = dispatcher;
@@ -175,18 +173,26 @@ public abstract class NodeSessionImpl implements NodeSession
         return this.sessionGlobalState().attachment(key);
     }
 
-    // public Long getUniqueGlobalAttachmentKey()
-    // {
-    //     synchronized ( sessionGlobalState ) {
-    //         return new Long(++attachId);
-    //     }
-    // }
-
     public Map<String,Object> getAttachments()
     {
         return this.sessionGlobalState().getAttachments();
     }
 
+    public Object globalAttach(Long key, Object ob)
+    {
+        return this.sessionGlobalState().attach(key,ob);
+    }
+
+    public Object globalAttachment(Long key)
+    {
+        return this.sessionGlobalState().attachment(key);
+    }
+
+    public Long getUniqueGlobalAttachmentKey()
+    {
+        return this.sessionGlobalState().getUniqueGlobalAttachmentKey();
+    }
+    
     public SessionGlobalState sessionGlobalState()
     {
         return sessionGlobalState;

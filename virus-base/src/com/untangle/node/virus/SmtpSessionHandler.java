@@ -31,7 +31,6 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.node.util.GlobUtil;
 
@@ -43,7 +42,6 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
     private static final String MOD_SUB_TEMPLATE = "[VIRUS] $MIMEMessage:SUBJECT$";
 
     private final Logger logger = Logger.getLogger(SmtpSessionHandler.class);
-    private final Pipeline pipeline;
 
     private final VirusNodeImpl virusImpl;
 
@@ -53,7 +51,6 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         super(session, Integer.MAX_VALUE, maxClientWait, maxSvrWait, true, impl.getSettings().getScanSmtp());
 
         this.virusImpl = impl;
-        this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
     

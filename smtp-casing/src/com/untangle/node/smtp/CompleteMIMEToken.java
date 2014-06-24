@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.mime.MIMETCPStreamer;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -52,36 +51,31 @@ public class CompleteMIMEToken extends MetadataToken
     /**
      * Get a TokenStreamer for the contents of this MIME Message (unstuffed)
      * 
-     * @param pipeline
-     *            the pipeline (needed for the Streamer stuff)
-     * 
      * @return the TokenStreamer
      */
-    public TCPStreamer toUnstuffedTCPStreamer(Pipeline pipeline, boolean disposeWhenComplete, NodeTCPSession session)
+    public TCPStreamer toUnstuffedTCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
     {
         m_logger.debug("About to return a new MIMETCPStreamer");
-        return createMIMETCPStreamer(pipeline, disposeWhenComplete, session);
+        return createMIMETCPStreamer( disposeWhenComplete, session );
     }
 
     /**
      * Get a TokenStreamer for the contents of this MIME Message
      * 
-     * @param pipeline
-     *            the pipeline (needed for the Streamer stuff)
      * @return the TokenStreamer
      */
-    public TCPStreamer toStuffedTCPStreamer(Pipeline pipeline, boolean disposeWhenComplete, NodeTCPSession session)
+    public TCPStreamer toStuffedTCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
     {
         m_logger.debug("About to return a new StuffingMIMETCPStreamer");
-        return new StuffingMIMETCPStreamer(getMessage(), m_msgInfo, pipeline, disposeWhenComplete, session);
+        return new StuffingMIMETCPStreamer(getMessage(), m_msgInfo, disposeWhenComplete, session);
     }
 
     /**
      * Method for subclasses to create a streamer.
      */
-    protected MIMETCPStreamer createMIMETCPStreamer(Pipeline pipeline, boolean disposeWhenComplete, NodeTCPSession session)
+    protected MIMETCPStreamer createMIMETCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
     {
-        return new MIMETCPStreamer(getMessage(), m_msgInfo, pipeline, CHUNK_SZ, disposeWhenComplete, session);
+        return new MIMETCPStreamer(getMessage(), m_msgInfo, CHUNK_SZ, disposeWhenComplete, session);
     }
 
     private class StuffingMIMETCPStreamer extends MIMETCPStreamer
@@ -92,8 +86,9 @@ public class CompleteMIMEToken extends MetadataToken
         private ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
         private boolean m_readLast = false;
 
-        StuffingMIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, final Pipeline pipeline, boolean disposeWhenComplete, NodeTCPSession session) {
-            super(msg, messageInfo, pipeline, 0, disposeWhenComplete, session);
+        StuffingMIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, boolean disposeWhenComplete, NodeTCPSession session)
+        {
+            super(msg, messageInfo, 0, disposeWhenComplete, session);
             m_logger.debug("Created Complete MIME message streamer (Stuffing)");
         }
 

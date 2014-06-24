@@ -33,7 +33,6 @@ import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.node.GenericRule;
@@ -242,9 +241,8 @@ class VirusFtpHandler extends FtpStateMachine
 
         if (result.isClean()) {
             node.incrementPassCount();
-            Pipeline p = getPipeline();
             TokenStreamer tokSt = new FileChunkStreamer(file, inChannel, null, EndMarker.MARKER, true);
-            return new TokenStreamerAdaptor(p, tokSt);
+            return new TokenStreamerAdaptor( tokSt, getSession() );
         } else {
             node.incrementBlockCount();
             // Todo: Quarantine (for now, don't delete the file) XXX
