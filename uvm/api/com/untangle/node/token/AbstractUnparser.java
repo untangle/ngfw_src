@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 
 /**
  * Abstract base class for <code>Unparser</code>s.
@@ -26,8 +25,7 @@ public abstract class AbstractUnparser implements Unparser
 
         String name = getClass().getName();
 
-        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":"
-            + session.id() + ">";
+        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":" + session.id() + ">";
     }
 
     // Unparser methods -------------------------------------------------------
@@ -44,7 +42,7 @@ public abstract class AbstractUnparser implements Unparser
         throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
     }
 
-    public TCPChunkResult unparse(TCPChunkEvent event) throws UnparseException
+    public void unparse(TCPChunkEvent event) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }

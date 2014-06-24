@@ -4,7 +4,6 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -46,10 +45,10 @@ public abstract class AbstractEventHandler implements SessionEventListener
         /* ignore */
     }
 
-    public IPDataResult handleTCPClientDataEnd(TCPChunkEvent event)
+    public void handleTCPClientDataEnd(TCPChunkEvent event)
     {
         /* ignore */
-        return null;
+        return;
     }
 
     public void handleTCPClientFIN(TCPSessionEvent event)
@@ -60,10 +59,10 @@ public abstract class AbstractEventHandler implements SessionEventListener
         sess.shutdownServer();
     }
 
-    public IPDataResult handleTCPServerDataEnd(TCPChunkEvent event)
+    public void handleTCPServerDataEnd(TCPChunkEvent event)
     {
         /* ignore */
-        return null;
+        return;
     }
 
     public void handleTCPServerFIN(TCPSessionEvent event)
@@ -98,38 +97,36 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
     }
 
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk(TCPChunkEvent event)
     {
         NodeTCPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
         if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            return IPDataResult.PASS_THROUGH;
-        else
-            return IPDataResult.DO_NOT_PASS;
+            session.sendDataToServer( event.data() );
+        return;
     }
 
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
+    public void handleTCPServerChunk(TCPChunkEvent event)
     {
         NodeTCPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
         if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            return IPDataResult.PASS_THROUGH;
-        else
-            return IPDataResult.DO_NOT_PASS;
+            session.sendDataToClient( event.data() );
+        return;
     }
 
-    public IPDataResult handleTCPServerWritable(TCPSessionEvent event)
+    public void handleTCPServerWritable(TCPSessionEvent event)
     {
         // Default writes nothing more.
-        return IPDataResult.SEND_NOTHING;
+        return;
     }
 
-    public IPDataResult handleTCPClientWritable(TCPSessionEvent event)
+    public void handleTCPClientWritable(TCPSessionEvent event)
     {
         // Default writes nothing more.
-        return IPDataResult.SEND_NOTHING;
+        return;
     }
 
 

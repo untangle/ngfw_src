@@ -15,7 +15,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
@@ -76,16 +75,20 @@ public class EventHandler extends AbstractEventHandler
         sess.attach(sessInfo);
     }
 
-    public IPDataResult handleTCPClientChunk (TCPChunkEvent e)
+    public void handleTCPClientChunk (TCPChunkEvent e)
     {
-        _handleChunk(e, e.session(), false);
-        return IPDataResult.PASS_THROUGH;
+        NodeTCPSession sess = e.session();
+        _handleChunk(e, sess, true);
+        sess.sendDataToServer( e.data() );
+        return;
     }
 
-    public IPDataResult handleTCPServerChunk (TCPChunkEvent e)
+    public void handleTCPServerChunk (TCPChunkEvent e)
     {
-        _handleChunk(e, e.session(), true);
-        return IPDataResult.PASS_THROUGH;
+        NodeTCPSession sess = e.session();
+        _handleChunk(e, sess, true);
+        sess.sendDataToClient( e.data() );
+        return;
     }
 
     public void handleUDPClientPacket (UDPPacketEvent e) 
@@ -126,7 +129,7 @@ public class EventHandler extends AbstractEventHandler
 
     private void _handleChunk (IPDataEvent event, NodeSession sess, boolean server)
     {
-        ByteBuffer chunk = event.data();
+        ByteBuffer chunk = event.data().duplicate();
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
 
         int chunkBytes = chunk.remaining();

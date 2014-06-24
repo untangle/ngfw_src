@@ -43,7 +43,7 @@ public class FtpClientParser extends AbstractParser
         lineBuffering(true);
 
         Pipeline p = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
-        fitting = p.getClientFitting(session.pipelineConnector());
+        fitting = session.pipelineConnector().getInputFitting();
     }
 
     // Parser methods ---------------------------------------------------------

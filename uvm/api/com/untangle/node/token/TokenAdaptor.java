@@ -18,10 +18,8 @@ import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -72,17 +70,19 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
+    public void handleTCPServerChunk(TCPChunkEvent e)
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
-        return handleToken(handlerDesc, e, true);
+        handleToken(handlerDesc, e, true);
+        return;
     }
 
     @Override
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
+    public void handleTCPClientChunk(TCPChunkEvent e)
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
-        return handleToken(handlerDesc, e, false);
+        handleToken(handlerDesc, e, false);
+        return;
     }
 
     @Override
@@ -239,11 +239,11 @@ public class TokenAdaptor extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private IPDataResult handleToken(HandlerDesc handlerDesc, TCPChunkEvent e, boolean s2c)
+    private void handleToken(HandlerDesc handlerDesc, TCPChunkEvent e, boolean s2c)
     {
         TokenHandler handler = handlerDesc.handler;
         Pipeline pipeline = handlerDesc.pipeline;
-
+        NodeTCPSession session = e.session();
         ByteBuffer b = e.chunk();
 
         if (b.remaining() < TOKEN_SIZE) {
@@ -251,7 +251,12 @@ public class TokenAdaptor extends AbstractEventHandler
             b.compact();
             b.limit(TOKEN_SIZE);
             logger.debug("returning buffer, for more: " + b);
-            return new TCPChunkResult(BYTE_BUFFER_PROTO, BYTE_BUFFER_PROTO, b);
+
+            if ( s2c )
+                session.setServerBuffer( b );
+            else
+                session.setClientBuffer( b );
+            return;
         }
 
         Long key = new Long(b.getLong());
@@ -260,8 +265,6 @@ public class TokenAdaptor extends AbstractEventHandler
         if (logger.isDebugEnabled())
             logger.debug("RETRIEVED object " + token + " with key: " + key);
 
-        NodeTCPSession session = e.session();
-
         TokenResult tr;
         try {
             tr = doToken(session, s2c, pipeline, handler, token);
@@ -269,7 +272,7 @@ public class TokenAdaptor extends AbstractEventHandler
             logger.warn("resetting connection", exn);
             session.resetClient();
             session.resetServer();
-            return IPDataResult.DO_NOT_PASS;
+            return;
         }
 
         // XXX ugly:
@@ -286,14 +289,12 @@ public class TokenAdaptor extends AbstractEventHandler
                 session.beginServerStream(ts);
             }
             // just means nothing extra to send before beginning stream.
-            return IPDataResult.SEND_NOTHING;
+            return;
         } else {
             logger.debug("processing s2c tokens");
-            ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline, session,
-                                             true);
-            logger.debug("processing c2s");
-            ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline, session,
-                                             false);
+            ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline, session, true);
+            logger.debug("processing c2s tokens");
+            ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline, session, false);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("returning results: ");
@@ -305,7 +306,9 @@ public class TokenAdaptor extends AbstractEventHandler
                 }
             }
 
-            return new TCPChunkResult(cr, sr, null);
+            session.sendDataToClient( cr );
+            session.sendDataToServer( sr );
+            return;
         }
     }
 

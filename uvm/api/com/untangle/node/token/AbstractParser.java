@@ -6,7 +6,6 @@ package com.untangle.node.token;
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 
 /**
  * Abstract base class for parsers.
@@ -25,8 +24,7 @@ public abstract class AbstractParser implements Parser
 
         String name = getClass().getName();
 
-        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":"
-            + session.id() + ">";
+        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":" + session.id() + ">";
     }
 
     // Parser methods ---------------------------------------------------------
@@ -43,7 +41,7 @@ public abstract class AbstractParser implements Parser
         throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
     }
 
-    public TCPChunkResult parse(TCPChunkEvent event) throws ParseException
+    public void parse(TCPChunkEvent event) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
     }

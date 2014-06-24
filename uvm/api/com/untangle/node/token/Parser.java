@@ -5,7 +5,6 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 
 /**
  * Parses a stream of bytes into tokens.
@@ -29,7 +28,7 @@ public interface Parser
      * @return the ByteBuffer to return
      * @throws ParseException
      */
-    TCPChunkResult parse(TCPChunkEvent event) throws ParseException;
+    void parse(TCPChunkEvent event) throws ParseException;
 
     /**
      * Called with last data from the read buffer on session close.

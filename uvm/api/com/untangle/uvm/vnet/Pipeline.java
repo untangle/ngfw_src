@@ -14,6 +14,6 @@ public interface Pipeline
     Long attach(Object o);
     Object getAttachment(Long key);
     Object detach(Long key);
-    Fitting getClientFitting(PipelineConnector pipelineConnector);
-    Fitting getServerFitting(PipelineConnector pipelineConnector);
+    // Fitting getClientFitting(PipelineConnector pipelineConnector);
+    // Fitting getServerFitting(PipelineConnector pipelineConnector);
 }

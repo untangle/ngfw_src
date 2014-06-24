@@ -45,12 +45,12 @@ public interface SessionEventListener extends java.util.EventListener
     /**
      * Called when data arrives from the client side
      */
-    IPDataResult handleTCPClientChunk(TCPChunkEvent event);
+    void handleTCPClientChunk(TCPChunkEvent event);
 
     /**
      * Called when data arrives from the server side
      */
-    IPDataResult handleTCPServerChunk(TCPChunkEvent event);
+    void handleTCPServerChunk(TCPChunkEvent event);
 
     /**
      * <code>handleTCPServerWritable</code> is called when the write queue to the server has
@@ -58,10 +58,10 @@ public interface SessionEventListener extends java.util.EventListener
      * to write some more bytes.
      *
      * @param event a <code>TCPSessionEvent</code> value
-     * @return an <code>IPDataResult</code> value
+     * @return an <code>void</code> value
      * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPServerWritable(TCPSessionEvent event);
+    void handleTCPServerWritable(TCPSessionEvent event);
 
     /**
      * <code>handleTCPClientWritable</code> is called when the write queue to the client has
@@ -69,10 +69,10 @@ public interface SessionEventListener extends java.util.EventListener
      * to write some more bytes.
      *
      * @param event a <code>TCPSessionEvent</code> value
-     * @return an <code>IPDataResult</code> value
+     * @return an <code>void</code> value
      * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPClientWritable(TCPSessionEvent event);
+    void handleTCPClientWritable(TCPSessionEvent event);
 
     /**
      * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -80,12 +80,12 @@ public interface SessionEventListener extends java.util.EventListener
      * 
      * The function may return null, which means to do nothing.
      * 
-     * If the function returns an IPDataResult, the bufsToClient and bufsToServer are added to the
+     * If the function returns an void, the bufsToClient and bufsToServer are added to the
      * respective outgoing queues.  The readBuffer is ignored.
      *
      * handleTCPClientFIN is called just after this.
      */
-    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event);
+    void handleTCPClientDataEnd(TCPChunkEvent event);
 
     /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
@@ -108,12 +108,12 @@ public interface SessionEventListener extends java.util.EventListener
      * 
      * The function may return null, which means to do nothing.
      * 
-     * If the function returns an IPDataResult, the bufsToServer and bufsToServer are added to the
+     * If the function returns an void, the bufsToServer and bufsToServer are added to the
      * respective outgoing queues.  The readBuffer is ignored.
      *
      * handleTCPServerFIN is called just after this.
      */
-    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event);
+    void handleTCPServerDataEnd(TCPChunkEvent event);
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from
@@ -239,7 +239,6 @@ public interface SessionEventListener extends java.util.EventListener
      * to write some more packets.
      *
      * @param event a <code>UDPSessionEvent</code> value
-     * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
     void handleUDPServerWritable(UDPSessionEvent event);
@@ -250,7 +249,6 @@ public interface SessionEventListener extends java.util.EventListener
      * to write some more packets.
      *
      * @param event a <code>UDPSessionEvent</code> value
-     * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
     void handleUDPClientWritable(UDPSessionEvent event);

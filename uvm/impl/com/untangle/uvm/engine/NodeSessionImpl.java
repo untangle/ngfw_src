@@ -92,6 +92,8 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected volatile Object attachment = null;
 
+    protected int attachId = 0;
+
     protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
     {
         this.dispatcher = dispatcher;
@@ -119,8 +121,6 @@ public abstract class NodeSessionImpl implements NodeSession
             serverIncomingSocketQueue = null;
             serverOutgoingSocketQueue = null;
         }
-
-        this.logger = this.pipelineConnector.sessionLogger();
 
         this.stats = new NodeSessionStats();
         this.protocol      = request.getProtocol();
@@ -174,6 +174,13 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         return this.sessionGlobalState().attachment(key);
     }
+
+    // public Long getUniqueGlobalAttachmentKey()
+    // {
+    //     synchronized ( sessionGlobalState ) {
+    //         return new Long(++attachId);
+    //     }
+    // }
 
     public Map<String,Object> getAttachments()
     {
@@ -865,6 +872,32 @@ public abstract class NodeSessionImpl implements NodeSession
         }
     }
 
+    /*
+     * the simulateClientData and simulateServerData functions
+     * allow injecting data directly at the client and server
+     * session endpoints.  They do this by adding the argumented data to the
+     * incoming socket queue so that it can be processed exactly as if the data
+     * had been received across the network directly from the client or server.
+     * These functions were added specifically to allow the client and server
+     * sides of the https-casing to pass messages back and forth without the data
+     * passing through all the other nodes subscribed to HTTP tokens.
+     */
+    public void simulateClientData(ByteBuffer data)
+    {
+        byte local[] = new byte[data.limit()];
+        data.get(local,0,data.limit());
+        DataCrumb crumb = new DataCrumb(local);
+        clientIncomingSocketQueue().send_event(crumb);
+    }
+
+    public void simulateServerData(ByteBuffer data)
+    {
+        byte local[] = new byte[data.limit()];
+        data.get(local,0,data.limit());
+        DataCrumb crumb = new DataCrumb(data.array(),data.limit());
+        serverIncomingSocketQueue().send_event(crumb);
+    }
+
     public short getProtocol() { return protocol; }
     public int getClientIntf() { return clientIntf; }
     public int getServerIntf() { return serverIntf; }
@@ -1115,31 +1148,5 @@ public abstract class NodeSessionImpl implements NodeSession
                 throw new IllegalStateException( "Invalid socket queue: " + out );
             }
         }
-    }
-
-/*
- * These functions allow injecting data directly at the client and server
- * session endpoints.  They do this by adding the argumented data to the
- * incoming socket queue so that it can be processed exactly as if the data
- * had been received across the network directly from the client or server.
- * These functions were added specifically to allow the client and server
- * sides of the https-casing to pass messages back and forth without the data
- * passing through all the other nodes subscribed to HTTP tokens.
- */
-
-    public void simulateClientData(ByteBuffer data)
-    {
-        byte local[] = new byte[data.limit()];
-        data.get(local,0,data.limit());
-        DataCrumb crumb = new DataCrumb(local);
-        clientIncomingSocketQueue().send_event(crumb);
-    }
-
-    public void simulateServerData(ByteBuffer data)
-    {
-        byte local[] = new byte[data.limit()];
-        data.get(local,0,data.limit());
-        DataCrumb crumb = new DataCrumb(data.array(),data.limit());
-        serverIncomingSocketQueue().send_event(crumb);
     }
 }

@@ -5,7 +5,6 @@ package com.untangle.node.token;
 
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 import java.nio.ByteBuffer;
 
 /**
@@ -30,7 +29,7 @@ public interface Unparser
      * @return UnparseResult containing unparsed content of the chunk
      * @exception UnparseException on unparse error.
      */
-    TCPChunkResult unparse(TCPChunkEvent event) throws UnparseException;
+    void unparse(TCPChunkEvent event) throws UnparseException;
 
     /**
      * Called when a session is being released. The unparser should

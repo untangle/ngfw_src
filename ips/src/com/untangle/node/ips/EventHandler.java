@@ -7,7 +7,6 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -69,16 +68,16 @@ public class EventHandler extends AbstractEventHandler
         ipsEngine.processFinalized(session, protocol);
     }
 
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk(TCPChunkEvent event)
     {
         ipsEngine.handleChunk(event, event.session(), false);
-        return IPDataResult.PASS_THROUGH;
+        super.handleTCPClientChunk( event );
     }
 
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
+    public void handleTCPServerChunk(TCPChunkEvent event)
     {
         ipsEngine.handleChunk(event, event.session(), true);
-        return IPDataResult.PASS_THROUGH;
+        super.handleTCPServerChunk( event );
     }
 
     public void handleUDPClientPacket(UDPPacketEvent event)

@@ -17,10 +17,8 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
@@ -56,8 +54,6 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         this.readLimit = new long[] { clientReadBufferSize, serverReadBufferSize };
 
         PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
-
-        logger = pipelineConnector.sessionLoggerTCP();
     }
 
     public int serverReadBufferSize()
@@ -128,13 +124,17 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     public void release()
     {
-        // Since we're releasing, make things as fast as possible.
+        /**
+         * Since we're releasing, make things as fast as possible for any last bits of data
+         * that come through.
+         */
         clientLineBuffering(false);
         serverLineBuffering(false);
-        readBufferSize[CLIENT] = 8192; // XXX
-        readBufferSize[SERVER] = 8192; // XXX
+        readBufferSize[CLIENT] = 8192;
+        readBufferSize[SERVER] = 8192;
         readLimit[CLIENT] = readBufferSize[CLIENT];
         readLimit[SERVER] = readBufferSize[SERVER];
+
         super.release();
     }
 
@@ -247,6 +247,76 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         beginStream(SERVER, streamer);
     }
 
+    public void sendDataToServer( ByteBuffer[] bufs2send )
+    {
+        sendData( SERVER, bufs2send );
+    }
+
+    public void sendDataToClient( ByteBuffer[] bufs2send )
+    {
+        sendData( CLIENT, bufs2send );
+    }
+
+    public void sendData( int side, ByteBuffer[] bufs2send )
+    {
+        if ( bufs2send == null || bufs2send.length == 0 )
+            return;
+        for (int i = 0; i < bufs2send.length; i++)
+            sendData(side, bufs2send[i]);
+    }
+
+    public void sendDataToServer( ByteBuffer buf2send )
+    {
+        sendData( SERVER, buf2send );
+    }
+
+    public void sendDataToClient( ByteBuffer buf2send )
+    {
+        sendData( CLIENT, buf2send );
+    }
+    
+    public void sendData( int side, ByteBuffer buf2send )
+    {
+        byte[] array;
+        int offset = buf2send.position();
+        int size = buf2send.remaining();
+        if (size <= 0) {
+            // if (logger.isInfoEnabled())
+            //     logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
+            //                 buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
+            //                 buf2send.arrayOffset(), new Exception());
+            return;
+        }
+
+        if (buf2send.hasArray()) {
+            array = buf2send.array();
+            offset += buf2send.arrayOffset();
+        } else {
+            logger.warn("out-of-heap byte buffer, had to copy");
+            array = new byte[buf2send.remaining()];
+            buf2send.get(array);
+            buf2send.position(offset);
+            offset = 0;
+        }
+        DataCrumb crumb = new DataCrumb(array, offset, offset + size);
+        addCrumb(side, crumb);
+    }
+    
+    public void setClientBuffer( ByteBuffer buf )
+    {
+        setBuffer( CLIENT, buf );
+    }
+    
+    public void setServerBuffer( ByteBuffer buf )
+    {
+        setBuffer( SERVER, buf );
+    }
+
+    public void setBuffer( int side, ByteBuffer buf )
+    {
+        readBuf[side] = buf;
+    }
+    
     protected void beginStream(int side, TCPStreamer s)
     {
         if (streamer != null) {
@@ -316,7 +386,6 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     }
 
     protected void addStreamBuf(int side, IPStreamer ipStreamer)
-        
     {
         TCPStreamer streamer = (TCPStreamer)ipStreamer;
 
@@ -329,61 +398,20 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             return;
         }
 
-        addBuf(side, buf2send);
+        sendData(side, buf2send);
 
         if (logger.isDebugEnabled())
             logger.debug("streamed " + buf2send.remaining() + " to " + sideName);
-    }
-
-    private void addBufs(int side, ByteBuffer[] new2send)
-    {
-        if (new2send == null || new2send.length == 0)
-            return;
-        for (int i = 0; i < new2send.length; i++)
-            addBuf(side, new2send[i]);
-    }
-
-    private void addBuf(int side, ByteBuffer buf2send)
-    {
-        byte[] array;
-        int offset = buf2send.position();
-        int size = buf2send.remaining();
-        if (size <= 0) {
-            if (logger.isInfoEnabled())
-                logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
-                            buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
-                            buf2send.arrayOffset());
-            return;
-        }
-
-        if (buf2send.hasArray()) {
-            array = buf2send.array();
-            offset += buf2send.arrayOffset();
-        } else {
-            logger.warn("out-of-heap byte buffer, had to copy");
-            array = new byte[buf2send.remaining()];
-            buf2send.get(array);
-            buf2send.position(offset);
-            offset = 0;
-        }
-        DataCrumb crumb = new DataCrumb(array, offset, offset + size);
-        addCrumb(side, crumb);
     }
 
     protected void sendWritableEvent(int side)
     {
         TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
 
-        IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent) : dispatcher.dispatchTCPServerWritable(wevent);
-        
-        if (result == IPDataResult.SEND_NOTHING)
-            // Optimization
-            return;
-        if (result.readBuffer() != null)
-            // Not allowed
-            logger.warn("Ignoring readBuffer returned from writable event");
-        addBufs(CLIENT, result.bufsToClient());
-        addBufs(SERVER, result.bufsToServer());
+        if (side == CLIENT)
+            dispatcher.dispatchTCPClientWritable(wevent);
+        else
+            dispatcher.dispatchTCPServerWritable(wevent);
     }
 
     protected void sendCompleteEvent()
@@ -394,24 +422,14 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     }
 
     protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
-        
     {
         // First give the node a chance to do something...
-        IPDataResult result;
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
         TCPChunkEvent cevent = new TCPChunkEvent(pipelineConnector, this, dataBuf);
         if (side == CLIENT)
-            result = dispatcher.dispatchTCPClientDataEnd(cevent);
+            dispatcher.dispatchTCPClientDataEnd(cevent);
         else
-            result = dispatcher.dispatchTCPServerDataEnd(cevent);
-
-        if (result != null) {
-            if (result.readBuffer() != null)
-                // Not allowed
-                logger.warn("Ignoring readBuffer returned from FIN event");
-            addBufs(CLIENT, result.bufsToClient());
-            addBufs(SERVER, result.bufsToServer());
-        }
+            dispatcher.dispatchTCPServerDataEnd(cevent);
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
         TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
@@ -439,7 +457,6 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     // Handles the actual reading from the client
     protected int tryReadInt(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        
     {
         int numRead = 0;
         boolean gotLine = false;
@@ -448,11 +465,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         if (readBuf[side] == null) {
             // Defer the creation of the buffer until we are sure we need it.
         } else if (!readBuf[side].hasRemaining()) {
-            // This isn't really supposed to happen XXX
+            // This isn't supposed to happen.
             // We need to kill the session to keep it from spinning.
-            logger.error("read with full read buffer (" + readBuf[side].position() + "," +
-                         readBuf[side].limit() + "," + readBuf[side].capacity() +
-                         ", killing session");
+            logger.error("read with full read buffer (" + readBuf[side].position() + "," + readBuf[side].limit() + "," + readBuf[side].capacity() + ", killing session");
             readBuf[side] = null;
             killSession();
             return numRead;
@@ -501,17 +516,14 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
                 logger.warn("Zero length TCP crumb read");
                 in.read();  // Consume the crumb
                 return numRead;
-            } else if (readBuf[side] == null &&
-                       (dcoffset != 0 || dcsize > readLimit[side] || dccap < readLimit[side] || lineMode)) {
+            } else if (readBuf[side] == null && (dcoffset != 0 || dcsize > readLimit[side] || dccap < readLimit[side] || lineMode)) {
                 if (logger.isDebugEnabled()) {
                     if (dcoffset != 0)
                         logger.debug("Creating readbuf because dcoffset = " + dcoffset);
                     else if (dcsize > readLimit[side])
-                        logger.debug("Creating readbuf because dcsize = " + dcsize + " but readLimit = " +
-                                     readLimit[side]);
+                        logger.debug("Creating readbuf because dcsize = " + dcsize + " but readLimit = " + readLimit[side]);
                     else if (dccap < readLimit[side])
-                        logger.debug("Creating readbuf because dccap = " + dccap + " but readLimit = " +
-                                     readLimit[side]);
+                        logger.debug("Creating readbuf because dccap = " + dccap + " but readLimit = " + readLimit[side]);
                     else if (lineMode)
                         logger.debug("Creating readbuf because lineMode");
                 }
@@ -561,8 +573,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             }
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("read " + numRead + " size chunk from " + sideName);
+        }
 
         stats.readData(side, numRead);
 
@@ -570,36 +583,18 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
         // We duplicate the buffer so that the event handler can mess up
         // the position/mark/limit as desired.
-        ByteBuffer userBuf;
-        /*
-          if (readOnly())
-          userBuf = readBuf[side].asReadOnlyBuffer();
-          else
-        */
-        userBuf = readBuf[side].duplicate();
+        ByteBuffer userBuf = readBuf[side].duplicate();
         userBuf.flip();
-        IPDataResult result;
         TCPChunkEvent event = new TCPChunkEvent(pipelineConnector, this, userBuf);
 
-        if (side == CLIENT)
-            result = dispatcher.dispatchTCPClientChunk(event);
-        else
-            result = dispatcher.dispatchTCPServerChunk(event);
-        if (/* readOnly() || */ result == IPDataResult.PASS_THROUGH) {
-            readBuf[side].flip();
-            // Write it to the other side.
-            addBuf(1 - side, readBuf[side]);
-            readBuf[side] = null;
-        } else if (result == TCPChunkResult.READ_MORE_NO_WRITE) {
-            // Check for full here. XX
-
-            // (re)Save the buffer for later.
+        // automatically clear readBuf before calling app
+        readBuf[side] = null;
+        
+        if (side == CLIENT) {
+            dispatcher.dispatchTCPClientChunk(event);
         } else {
-            addBufs(CLIENT, result.bufsToClient());
-            addBufs(SERVER, result.bufsToServer());
-            readBuf[side] = result.readBuffer();
+            dispatcher.dispatchTCPServerChunk(event);
         }
-        // XXX also needs to work if readbuf same as before?
 
         return numRead;
     }

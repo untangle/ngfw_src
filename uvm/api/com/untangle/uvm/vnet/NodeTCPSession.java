@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.vnet;
 
+import java.nio.ByteBuffer;
+
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -18,14 +20,18 @@ public interface NodeTCPSession extends NodeSession
 
     static final int TCP_MAX_CHUNK_SIZE = 65536;
 
-    // Tells VNet to give a TCPClientReadableEvent with at most one line in the buffer.  (or
-    // to the buffer limit if no end-of-line comes before that happens)
-    // The end of line character(s) are left in the buffer.
+    /**
+     * Tells VNet to give a TCPClientReadableEvent with at most one line in the buffer.  (or
+     * to the buffer limit if no end-of-line comes before that happens)
+     * The end of line character(s) are left in the buffer.
+     */
     void clientLineBuffering(boolean oneLine);
 
-    // Tells VNet to give a TCPServerReadableEvent with at most one line in the buffer.  (or
-    // to the buffer limit if no end-of-line comes before that happens)
-    // The end of line character(s) are left in the buffer.
+    /**
+     * Tells VNet to give a TCPServerReadableEvent with at most one line in the buffer.  (or
+     * to the buffer limit if no end-of-line comes before that happens)
+     * The end of line character(s) are left in the buffer.
+     */
     void serverLineBuffering(boolean oneLine);
 
     /**
@@ -62,9 +68,10 @@ public interface NodeTCPSession extends NodeSession
      */
     void serverReadBufferSize(int numBytes);
 
-    // To tell Vnet to give a TCPClientReadableEvent with at most this
-    // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
-    // to the client read buffer size.
+    /** To tell Vnet to give a TCPClientReadableEvent with at most this
+     * many bytes in the buffer, adjust this. There is a system maximum.  Defaults
+     * to the client read buffer size.
+     */
     long clientReadLimit();
 
     /**
@@ -75,9 +82,10 @@ public interface NodeTCPSession extends NodeSession
      */
     void clientReadLimit(long numBytes);
 
-    // To tell VNet to give a TCPServerReadableEvent with at most this
-    // many bytes in the buffer, adjust this. There is a system maximum.  Defaults
-    // to the server read buffer size.
+    /** To tell VNet to give a TCPServerReadableEvent with at most this
+     * many bytes in the buffer, adjust this. There is a system maximum.  Defaults
+     * to the server read buffer size.
+     */
     long serverReadLimit();
 
     /**
@@ -165,4 +173,55 @@ public interface NodeTCPSession extends NodeSession
      */
     public void attachTempFile(String filePath);
 
+    /**
+     * Queue the provided buffers to be sent to the server
+     */
+    public void sendDataToServer( ByteBuffer[] bufs2send );
+
+    /**
+     * Queue the provided buffers to be sent to the client
+     */
+    public void sendDataToClient( ByteBuffer[] bufs2send );
+
+    /**
+     * Queue the provided buffers to be sent to the client or server
+     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     */
+    public void sendData( int side, ByteBuffer[] bufs2send );
+
+    /**
+     * Queue the provided buffer to be sent to the server
+     */
+    public void sendDataToServer( ByteBuffer buf2send );
+
+    /**
+     * Queue the provided buffer to be sent to the client
+     */
+    public void sendDataToClient( ByteBuffer buf2send );
+    
+    /**
+     * Queue the provided buffer to be sent to the client or server
+     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     */
+    public void sendData( int side, ByteBuffer buf2send );
+
+    /**
+     * Set the client-side receive buffer to the provided buffer
+     * When data is next received from the client it will put data
+     * into the receive buffer starting at position up to limit
+     */
+    public void setClientBuffer( ByteBuffer buf );
+    
+    /**
+     * Set the server-side receive buffer to the provided buffer
+     * When data is next received from the server it will put data
+     * into the receive buffer starting at position up to limit
+     */
+    public void setServerBuffer( ByteBuffer buf );
+
+    /**
+     * Set the client or server receive buffer to the provided buffer
+     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     */
+    public void setBuffer( int side, ByteBuffer buf );
 }

@@ -73,13 +73,13 @@ public class PipelineImpl implements Pipeline
         return attachments.remove(key);
     }
 
-    public Fitting getClientFitting(PipelineConnector pipelineConnector)
-    {
-        return pipelineConnector.getInputFitting();
-    }
+    // public Fitting getClientFitting(PipelineConnector pipelineConnector)
+    // {
+    //     return pipelineConnector.getInputFitting();
+    // }
 
-    public Fitting getServerFitting(PipelineConnector pipelineConnector)
-    {
-        return pipelineConnector.getOutputFitting();
-    }
+    // public Fitting getServerFitting(PipelineConnector pipelineConnector)
+    // {
+    //     return pipelineConnector.getOutputFitting();
+    // }
 }

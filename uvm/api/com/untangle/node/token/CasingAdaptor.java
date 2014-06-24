@@ -17,10 +17,8 @@ import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
@@ -50,8 +48,10 @@ public class CasingAdaptor extends CasingBase
             logger.debug("new session setting: " + pipeline + " for: " + session.id());
         }
 
-        addCasing( session, casing, pipeline );
+        // addCasing( session, casing, pipeline );
 
+        session.attach( new Attachment(casing, pipeline) );
+        
         if (clientSide) {
             session.serverReadLimit( TOKEN_SIZE );
         } else {
@@ -60,52 +60,57 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
+    public void handleTCPClientChunk(TCPChunkEvent e)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("handling client chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
-            return parse(e, false, false);
+            parse(e, false, false);
+            return;
         } else {
-            return unparse(e, false);
+            unparse(e, false);
+            return;
         }
     }
 
     @Override
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
+    public void handleTCPServerChunk(TCPChunkEvent e)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("handling server chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
-            return unparse(e, true);
+            unparse(e, true);
+            return;
         } else {
-            return parse(e, true, false);
+            parse(e, true, false);
+            return;
         }
     }
 
     @Override
-    public IPDataResult handleTCPClientDataEnd(TCPChunkEvent e)
+    public void handleTCPClientDataEnd(TCPChunkEvent e)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("handling client chunk, session: " + e.session().id());
         }
 
         if (clientSide) {
-            return parse(e, false, true);
+            parse(e, false, true);
+            return;
         } else {
             if (e.chunk().hasRemaining()) {
                 logger.warn("should not happen: unparse TCPClientDataEnd");
             }
-            return null;
+            return;
         }
     }
 
     @Override
-    public IPDataResult handleTCPServerDataEnd(TCPChunkEvent e)
+    public void handleTCPServerDataEnd(TCPChunkEvent e)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("handling server chunk, session: " + e.session().id());
@@ -115,9 +120,10 @@ public class CasingAdaptor extends CasingBase
             if (e.chunk().hasRemaining()) {
                 logger.warn("should not happen: unparse TCPClientDataEnd");
             }
-            return null;
+            return;
         } else {
-            return parse(e, true, true);
+            parse(e, true, true);
+            return;
         }
     }
 
@@ -127,15 +133,16 @@ public class CasingAdaptor extends CasingBase
         TCPStreamer tcpStream = null;
 
         NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing c = getCasing(s);
+        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
+        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
 
         if (clientSide) {
-            TokenStreamer tokSt = c.parser().endSession();
+            TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                tcpStream = new TokenStreamerAdaptor(getPipeline(s), tokSt);
+                tcpStream = new TokenStreamerAdaptor( pipeline, tokSt );
             }
         } else {
-            tcpStream = c.unparser().endSession();
+            tcpStream = casing.unparser().endSession();
         }
 
         if (null != tcpStream) {
@@ -151,14 +158,15 @@ public class CasingAdaptor extends CasingBase
         TCPStreamer ts = null;
 
         NodeTCPSession s = (NodeTCPSession)e.ipsession();
-        Casing c = getCasing(s);
+        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
+        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
 
         if (clientSide) {
-            ts = c.unparser().endSession();
+            ts = casing.unparser().endSession();
         } else {
-            TokenStreamer tokSt = c.parser().endSession();
+            TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                ts = new TokenStreamerAdaptor(getPipeline(s), tokSt);
+                ts = new TokenStreamerAdaptor( pipeline, tokSt );
             }
         }
 
@@ -182,17 +190,19 @@ public class CasingAdaptor extends CasingBase
     public void handleTimer(IPSessionEvent e)
     {
         NodeTCPSession s = (NodeTCPSession)e.ipsession();
+        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
 
-        Parser p = getCasing(s).parser();
+        Parser p = casing.parser();
         p.handleTimer();
         // XXX unparser doesnt get one, does it need it?
     }
 
     // private methods --------------------------------------------------------
 
-    private IPDataResult unparse(TCPChunkEvent e, boolean s2c)
+    private void unparse(TCPChunkEvent e, boolean s2c)
     {
         ByteBuffer b = e.chunk();
+        NodeTCPSession session = e.session();
 
         assert b.remaining() <= TOKEN_SIZE;
 
@@ -203,20 +213,22 @@ public class CasingAdaptor extends CasingBase
             if (logger.isDebugEnabled()) {
                 logger.debug("unparse returning buffer, for more: " + b);
             }
-            return new TCPChunkResult(null, null, b);
+            if ( s2c )
+                session.setServerBuffer( b );
+            else
+                session.setClientBuffer( b );
+
+            return;
         }
 
-        NodeTCPSession s = e.session();
-        CasingDesc casingDesc = getCasingDesc(s);
-        Casing casing = casingDesc.casing;
-        Pipeline pipeline = casingDesc.pipeline;
+        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
+        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
 
         Long key = new Long(b.getLong());
         Token tok = (Token)pipeline.detach(key);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("RETRIEVED object: " + tok + " with key: " + key
-                         + " on pipeline: " + pipeline);
+            logger.debug("RETRIEVED object: " + tok + " with key: " + key + " on pipeline: " + pipeline);
         }
 
         b.limit(TOKEN_SIZE);
@@ -225,31 +237,32 @@ public class CasingAdaptor extends CasingBase
 
         UnparseResult ur;
         try {
-            ur = unparseToken(s, casing, tok);
+            ur = unparseToken(session, casing, tok);
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
                 // XXX We don't have a good handle on this
-                s.resetClient();
-                s.resetServer();
+                session.resetClient();
+                session.resetServer();
             } else {
                 // XXX We don't have a good handle on this
-                s.shutdownServer();
-                s.resetClient();
+                session.shutdownServer();
+                session.resetClient();
             }
             logger.debug("returning DO_NOT_PASS");
 
-            return IPDataResult.DO_NOT_PASS;
+            return;
         }
 
         if (ur.isStreamer()) {
             TCPStreamer ts = ur.getTcpStreamer();
             if (s2c) {
-                s.beginClientStream(ts);
+                session.beginClientStream(ts);
             } else {
-                s.beginServerStream(ts);
+                session.beginServerStream(ts);
             }
-            return new TCPChunkResult(null, null, null);
+
+            return;
         } else {
             if (s2c) {
                 logger.debug("unparse result to client");
@@ -259,7 +272,9 @@ public class CasingAdaptor extends CasingBase
                         logger.debug("  to client: " + r[i]);
                     }
                 }
-                return new TCPChunkResult(r, null, null);
+                
+                session.sendDataToClient( r );
+                return;
             } else {
                 logger.debug("unparse result to server");
                 ByteBuffer[] r = ur.result();
@@ -268,12 +283,13 @@ public class CasingAdaptor extends CasingBase
                         logger.debug("  to server: " + r[i]);
                     }
                 }
-                return new TCPChunkResult(null, r, null);
+                session.sendDataToServer( r );
+                return;
             }
         }
     }
 
-    private UnparseResult unparseToken(NodeTCPSession s, Casing c, Token token)
+    private UnparseResult unparseToken(NodeTCPSession session, Casing c, Token token)
         throws UnparseException
     {
         Unparser u = c.unparser();
@@ -281,8 +297,8 @@ public class CasingAdaptor extends CasingBase
         if (token instanceof Release) {
             Release release = (Release)token;
 
-            finalize( s );
-            s.release();
+            finalize( session );
+            session.release();
 
             UnparseResult ur = u.releaseFlush();
             if (ur.isStreamer()) {
@@ -301,12 +317,11 @@ public class CasingAdaptor extends CasingBase
         }
     }
 
-    private IPDataResult parse(TCPChunkEvent e, boolean s2c, boolean last)
+    private void parse(TCPChunkEvent e, boolean s2c, boolean last)
     {
-        NodeTCPSession s = e.session();
-        CasingDesc casingDesc = getCasingDesc(s);
-        Casing casing = casingDesc.casing;
-        Pipeline pipeline = casingDesc.pipeline;
+        NodeTCPSession session = e.session();
+        Casing casing = ((Attachment)e.ipsession().attachment()).casing;
+        Pipeline pipeline = ((Attachment)e.ipsession().attachment()).pipeline;
 
         ParseResult pr;
         ByteBuffer buf = e.chunk();
@@ -321,9 +336,9 @@ public class CasingAdaptor extends CasingBase
         } catch (Throwable exn) {
             if (releaseParseExceptions) {
                 String sessionEndpoints = "[" +
-                    s.getProtocol() + " : " + 
-                    s.getClientAddr() + ":" + s.getClientPort() + " -> " +
-                    s.getServerAddr() + ":" + s.getServerPort() + "]";
+                    session.getProtocol() + " : " + 
+                    session.getClientAddr() + ":" + session.getClientPort() + " -> " +
+                    session.getServerAddr() + ":" + session.getServerPort() + "]";
 
                 /**
                  * Some Special handling for semi-common parse exceptions
@@ -362,14 +377,14 @@ public class CasingAdaptor extends CasingBase
                     logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
                 
-                finalize( s );
-                s.release();
+                finalize( session );
+                session.release();
 
                 pr = new ParseResult(new Release(dup));
             } else {
-                s.shutdownServer();
-                s.shutdownClient();
-                return IPDataResult.DO_NOT_PASS;
+                session.shutdownServer();
+                session.shutdownClient();
+                return;
             }
         }
 
@@ -377,11 +392,14 @@ public class CasingAdaptor extends CasingBase
             TokenStreamer tokSt = pr.getTokenStreamer();
             TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
             if (s2c) {
-                s.beginClientStream(ts);
+                session.beginClientStream(ts);
+                session.setServerBuffer( pr.getReadBuffer() );
             } else {
-                s.beginServerStream(ts);
+                session.beginServerStream(ts);
+                session.setClientBuffer( pr.getReadBuffer() );
             }
-            return new TCPChunkResult(null, null, pr.getReadBuffer());
+
+            return;
         } else {
             List<Token> results = pr.getResults();
 
@@ -404,21 +422,43 @@ public class CasingAdaptor extends CasingBase
                 if (logger.isDebugEnabled()) {
                     logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + r[0]);
                 }
-                return new TCPChunkResult(r, null, pr.getReadBuffer());
+
+                session.sendDataToClient( r );
+                session.setServerBuffer( pr.getReadBuffer() );
+
+                return;
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + r[0]);
                 }
-                return new TCPChunkResult(null, r, pr.getReadBuffer());
+
+                session.sendDataToServer( r );
+                session.setClientBuffer( pr.getReadBuffer() );
+
+                return;
             }
         }
     }
 
     private void finalize( NodeSession sess )
     {
-        Casing c = getCasing( sess );
-        c.parser().handleFinalized();
-        c.unparser().handleFinalized();
-        removeCasingDesc( sess );
+        Casing casing = ((Attachment)sess.attachment()).casing;
+
+        casing.parser().handleFinalized();
+        casing.unparser().handleFinalized();
+        //removeCasingDesc( sess );
     }
+
+    protected static class Attachment
+    {
+        final Casing casing;
+        final Pipeline pipeline;
+
+        Attachment(Casing casing, Pipeline pipeline)
+        {
+            this.casing = casing;
+            this.pipeline = pipeline;
+        }
+    }
+
 }

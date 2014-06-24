@@ -1,5 +1,5 @@
 /**
- * $Id$
+d
  */
 package com.untangle.node.token;
 
@@ -26,7 +26,7 @@ public class CasingBase extends AbstractEventHandler
     protected final boolean clientSide;
     protected volatile boolean releaseParseExceptions;
 
-    protected final Map<NodeSession,CasingDesc> casings = new ConcurrentHashMap<NodeSession,CasingDesc>();
+    // protected final Map<NodeSession,CasingDesc> casings = new ConcurrentHashMap<NodeSession,CasingDesc>();
     protected final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
     protected final Logger logger = Logger.getLogger(CasingBase.class);
 
@@ -52,44 +52,44 @@ public class CasingBase extends AbstractEventHandler
 
     // CasingDesc utils -------------------------------------------------------
 
-    protected static class CasingDesc
-    {
-        final Casing casing;
-        final Pipeline pipeline;
+    // protected static class CasingDesc
+    // {
+    //     final Casing casing;
+    //     final Pipeline pipeline;
 
-        CasingDesc(Casing casing, Pipeline pipeline)
-        {
-            this.casing = casing;
-            this.pipeline = pipeline;
-        }
-    }
+    //     CasingDesc(Casing casing, Pipeline pipeline)
+    //     {
+    //         this.casing = casing;
+    //         this.pipeline = pipeline;
+    //     }
+    // }
 
-    protected void addCasing(NodeSession session, Casing casing, Pipeline pipeline)
-    {
-        casings.put(session, new CasingDesc(casing, pipeline));
-    }
+    // protected void addCasing(NodeSession session, Casing casing, Pipeline pipeline)
+    // {
+    //     casings.put(session, new CasingDesc(casing, pipeline));
+    // }
 
-    protected CasingDesc getCasingDesc(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        return casingDesc;
-    }
+    // protected CasingDesc getCasingDesc(NodeSession session)
+    // {
+    //     CasingDesc casingDesc = casings.get(session);
+    //     return casingDesc;
+    // }
 
-    protected Casing getCasing(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        if (casingDesc == null) return(null);
-        return casingDesc.casing;
-    }
+    // protected Casing getCasing(NodeSession session)
+    // {
+    //     CasingDesc casingDesc = casings.get(session);
+    //     if (casingDesc == null) return(null);
+    //     return casingDesc.casing;
+    // }
 
-    protected Pipeline getPipeline(NodeSession session)
-    {
-        CasingDesc casingDesc = casings.get(session);
-        return casingDesc.pipeline;
-    }
+    // protected Pipeline getPipeline(NodeSession session)
+    // {
+    //     CasingDesc casingDesc = casings.get(session);
+    //     return casingDesc.pipeline;
+    // }
 
-    protected void removeCasingDesc(NodeSession session)
-    {
-        casings.remove(session);
-    }
+    // protected void removeCasingDesc(NodeSession session)
+    // {
+    //     casings.remove(session);
+    // }
 }

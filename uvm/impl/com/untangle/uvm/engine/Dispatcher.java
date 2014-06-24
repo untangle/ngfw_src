@@ -25,7 +25,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -153,7 +152,7 @@ public class Dispatcher
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
- 
+
     public NodeUDPSession newSession( UDPNewSessionRequestImpl request )
     {
         try {
@@ -265,47 +264,47 @@ public class Dispatcher
             sessionEventListener.handleUDPNewSession(event);
     }
 
-    IPDataResult dispatchTCPClientChunk(TCPChunkEvent event)
+    void dispatchTCPClientChunk(TCPChunkEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
         if ( sessionEventListener == null || session.released() ) {
-            return releasedHandler.handleTCPClientChunk(event);
+            releasedHandler.handleTCPClientChunk(event);
         } else {
-            return sessionEventListener.handleTCPClientChunk(event);
+            sessionEventListener.handleTCPClientChunk(event);
         }
     }
 
-    IPDataResult dispatchTCPServerChunk(TCPChunkEvent event)
+    void dispatchTCPServerChunk(TCPChunkEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
         if ( sessionEventListener == null || session.released() ) {
-            return releasedHandler.handleTCPServerChunk(event);
+            releasedHandler.handleTCPServerChunk(event);
         } else {
-            return sessionEventListener.handleTCPServerChunk(event);
+            sessionEventListener.handleTCPServerChunk(event);
         }
     }
 
-    IPDataResult dispatchTCPClientWritable(TCPSessionEvent event)
+    void dispatchTCPClientWritable(TCPSessionEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
-            return releasedHandler.handleTCPClientWritable(event);
+            releasedHandler.handleTCPClientWritable(event);
         } else {
-            return  sessionEventListener.handleTCPClientWritable(event);
+            sessionEventListener.handleTCPClientWritable(event);
         }
     }
 
-    IPDataResult dispatchTCPServerWritable(TCPSessionEvent event)
+    void dispatchTCPServerWritable(TCPSessionEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
-            return releasedHandler.handleTCPServerWritable(event);
+            releasedHandler.handleTCPServerWritable(event);
         } else {
-            return  sessionEventListener.handleTCPServerWritable(event);
+            sessionEventListener.handleTCPServerWritable(event);
         }
     }
 
@@ -331,14 +330,14 @@ public class Dispatcher
         }
     }
 
-    IPDataResult dispatchTCPClientDataEnd(TCPChunkEvent event)
+    void dispatchTCPClientDataEnd(TCPChunkEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
-            return releasedHandler.handleTCPClientDataEnd(event);
+            releasedHandler.handleTCPClientDataEnd(event);
         else
-            return sessionEventListener.handleTCPClientDataEnd(event);
+            sessionEventListener.handleTCPClientDataEnd(event);
     }
 
     void dispatchTCPClientFIN(TCPSessionEvent event)
@@ -351,14 +350,14 @@ public class Dispatcher
             sessionEventListener.handleTCPClientFIN(event);
     }
 
-    IPDataResult dispatchTCPServerDataEnd(TCPChunkEvent event)
+    void dispatchTCPServerDataEnd(TCPChunkEvent event)
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
-            return releasedHandler.handleTCPServerDataEnd(event);
+            releasedHandler.handleTCPServerDataEnd(event);
         else
-            return sessionEventListener.handleTCPServerDataEnd(event);
+            sessionEventListener.handleTCPServerDataEnd(event);
     }
 
     void dispatchTCPServerFIN(TCPSessionEvent event)

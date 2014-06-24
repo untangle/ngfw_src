@@ -20,8 +20,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPChunkResult;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;
@@ -68,14 +66,14 @@ public class CaptureSSLEngine
 
     // ------------------------------------------------------------------------
 
-    public TCPChunkResult handleClientData(NodeTCPSession session, ByteBuffer buff)
+    public void handleClientData(NodeTCPSession session, ByteBuffer buff)
     {
         this.session = session;
-        TCPChunkResult result = null;
+        boolean success = false;
 
         // pass the data to the client data worker function
         try {
-            result = clientDataWorker(buff);
+            success = clientDataWorker(buff);
         }
 
         // catch any exceptions
@@ -84,29 +82,28 @@ public class CaptureSSLEngine
         }
 
         // null result means something went haywire
-        if (result == null) {
+        if ( ! success ) {
             logger.warn("Received null return from clientDataWorker");
             session.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
             session.release();
-            result = new TCPChunkResult(null, null, null);
         }
 
-        return (result);
+        return;
     }
 
     // ------------------------------------------------------------------------
 
-    private TCPChunkResult clientDataWorker(ByteBuffer data) throws Exception
+    private boolean clientDataWorker(ByteBuffer data) throws Exception
     {
         ByteBuffer target = ByteBuffer.allocate(32768);
-        TCPChunkResult bucket = null;
+        boolean done = false;
         HandshakeStatus status;
 
         logger.debug("PARAM_BUFFER = " + data.toString());
 
-        while (bucket == null) {
+        while ( ! done ) {
             status = sslEngine.getHandshakeStatus();
             logger.debug("STATUS = " + status);
 
@@ -114,11 +111,11 @@ public class CaptureSSLEngine
             // of these to become true during handshake so we just return
             if (sslEngine.isInboundDone()) {
                 logger.debug("Unexpected isInboundDone() == TRUE");
-                return (null);
+                return false;
             }
             if (sslEngine.isOutboundDone()) {
                 logger.debug("Unexpected isOutboundDone() == TRUE");
-                return (null);
+                return false;
             }
 
             switch (status)
@@ -127,46 +124,41 @@ public class CaptureSSLEngine
             // a call to wrap or unwrap but we include it to be complete
             case FINISHED:
                 logger.error("Unexpected FINISHED in dataHandler loop");
-                return (null);
+                return false;
 
                 // handle outstanding tasks during handshake
             case NEED_TASK:
-                bucket = doNeedTask(data);
+                done = doNeedTask(data);
                 break;
 
             // handle unwrap during handshake
             case NEED_UNWRAP:
-                bucket = doNeedUnwrap(data, target);
+                done = doNeedUnwrap(data, target);
                 break;
 
             // handle wrap during handshake
             case NEED_WRAP:
-                bucket = doNeedWrap(data, target);
+                done = doNeedWrap(data, target);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                bucket = doNotHandshaking(data, target);
+                done = doNotHandshaking(data, target);
                 break;
 
             // should never happen but we handle just to be safe
             default:
                 logger.error("Unknown SSLEngine status in dataHandler loop");
-                return (null);
+                return false;
             }
         }
 
-        // bucket was filled so return it now
-        if (bucket.chunksToClient() != null)
-            logger.debug("C_CHUNK = " + bucket.chunksToClient()[0].toString());
-        if (bucket.chunksToServer() != null)
-            logger.debug("S_CHUNK = " + bucket.chunksToServer()[0].toString());
-        return (bucket);
+        return done;
     }
 
     // ------------------------------------------------------------------------
 
-    private TCPChunkResult doNeedTask(ByteBuffer data) throws Exception
+    private boolean doNeedTask(ByteBuffer data) throws Exception
     {
         Runnable runnable;
 
@@ -175,12 +167,12 @@ public class CaptureSSLEngine
             logger.debug("EXEC_TASK " + runnable.toString());
             runnable.run();
         }
-        return (null);
+        return false;
     }
 
     // ------------------------------------------------------------------------
 
-    private TCPChunkResult doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
 
@@ -194,7 +186,8 @@ public class CaptureSSLEngine
             // compact the receive buffer and hand it back for more
             data.compact();
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
-            return new TCPChunkResult(null, null, data);
+            session.setClientBuffer( data );
+            return true;
         }
 
         // check for engine problems
@@ -203,12 +196,12 @@ public class CaptureSSLEngine
 
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
-            return (null);
+            return false;
 
         // the unwrap call shouldn't produce data during handshake and if
         // that is the case we return null here allowing the loop to continue
         if (result.bytesProduced() == 0)
-            return (null);
+            return false;
 
         // unwrap calls during handshake should never produce data
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
@@ -216,7 +209,7 @@ public class CaptureSSLEngine
 
     // ------------------------------------------------------------------------
 
-    private TCPChunkResult doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
 
@@ -230,22 +223,23 @@ public class CaptureSSLEngine
 
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP)
-            return (null);
+            return false;
 
         // if the wrap call didn't produce any data return null
         if (result.bytesProduced() == 0)
-            return (null);
+            return false;
 
         // the wrap call produced some data so return it to the client
         target.flip();
         ByteBuffer array[] = new ByteBuffer[1];
         array[0] = target;
-        return new TCPChunkResult(array, null, null);
+        session.sendDataToClient( array );
+        return true;
     }
 
     // ------------------------------------------------------------------------
 
-    private TCPChunkResult doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result = null;
         String vector = new String();
@@ -266,7 +260,7 @@ public class CaptureSSLEngine
         // if unwrap doesn't produce any data then we are handshaking and 
         // must return null to let the handshake process continue
         if (result.bytesProduced() == 0)
-            return (null);
+            return false;
 
         // when unwrap finally returns some data it will be the client request
         String request = new String(target.array(), 0, target.position());
@@ -297,7 +291,7 @@ public class CaptureSSLEngine
             session.resetClient();
             session.resetServer();
             session.release();
-            return new TCPChunkResult(null, null, null);
+            return true;
         }
 
         // now that we've parsed the client request we create the redirect
@@ -340,7 +334,8 @@ public class CaptureSSLEngine
         ByteBuffer array[] = new ByteBuffer[1];
         obuff.flip();
         array[0] = obuff;
-        return new TCPChunkResult(array, null, null);
+        session.sendDataToClient( array );
+        return true;
     }
 
     private TrustManager trust_all_certificates = new X509TrustManager()

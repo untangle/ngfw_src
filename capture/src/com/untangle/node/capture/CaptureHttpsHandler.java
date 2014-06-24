@@ -8,7 +8,6 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
@@ -48,10 +47,10 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, engine);
     }
 
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk(TCPChunkEvent event)
     {
         // get the SSL engine attached to the session
         CaptureSSLEngine engine = (CaptureSSLEngine) event.session().globalAttachment(NodeSession.KEY_CAPTURE_SSL_ENGINE);
-        return (engine.handleClientData(event.session(), event.data()));
+        engine.handleClientData(event.session(), event.data());
     }
 }
