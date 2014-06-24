@@ -42,15 +42,12 @@ def sendTestmessage():
        print "Error: unable to send email"
        return 0
 
-def checkForMailSender():
-    result = clientControl.runCommand("test -f mailsender.py")
-    result_phish = clientControl.runCommand("test -d phish-mail")
-    if result or result_phish:
-        # print "file not found"
-        results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
-        # print "Results from getting mailpkg.tar <%s>" % results
-        results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
-        # print "Results from untaring mailpkg.tar <%s>" % results
+def getLatestMailSender():
+    clientControl.runCommand("rm mailpkg.tar* >/dev/null 2>&1") # remove all previous mail packages
+    results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    # print "Results from getting mailpkg.tar <%s>" % results
+    results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
+    # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendPhishMail():
     results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180 >/dev/null 2>&1")
@@ -88,7 +85,7 @@ class PhishTests(unittest2.TestCase):
                 canRelay = sendTestmessage()
             except Exception,e:
                 canRelay = False
-            checkForMailSender()
+            getLatestMailSender()
             flushEvents()
             # flush quarantine.
             curQuarantine = nodeSP.getQuarantineMaintenenceView()
@@ -109,7 +106,6 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['strength'] = 20
         node.setSettings(nodeData)
-        checkForMailSender()
         # Get the IP address of test.untangle.com
         result = clientControl.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
@@ -122,6 +118,7 @@ class PhishTests(unittest2.TestCase):
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events['list'][0])
         # print events['list'][0]
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
@@ -137,7 +134,6 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 20
         nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
-        checkForMailSender()
         # Get the IP address of test.untangle.com
         result = clientControl.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
@@ -165,7 +161,6 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 20
         nodeData['smtpConfig']['msgAction'] = "DROP"
         node.setSettings(nodeData)
-        checkForMailSender()
         # Get the IP address of test.untangle.com
         result = clientControl.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
