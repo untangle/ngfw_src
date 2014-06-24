@@ -60,7 +60,7 @@ public class License implements Serializable
     private int keyVersion;
 
     /** The licensed number of seats */
-    private int seats;
+    private Integer seats = null;
 
     /** This stores the computed validity state of this license */
     private Boolean valid;
@@ -158,7 +158,7 @@ public class License implements Serializable
      * Set the key version for this license.
      */
     public int getSeats() { return this.seats; }
-    public void setSeats( int newValue ) { this.seats = newValue; }
+    public void setSeats( Integer newValue ) { this.seats = newValue; }
 
     /**
      * Returns the valid state
