@@ -14,10 +14,10 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 public class UnparseResult
 {
     public static final UnparseResult NONE;
-    private static final ByteBuffer[] BYTE_BUFFER_PROTO;
+    private static final ByteBuffer[] EMPTY;
 
     static {
-        BYTE_BUFFER_PROTO = new ByteBuffer[0];
+        EMPTY = new ByteBuffer[0];
         NONE = new UnparseResult();
     }
 
@@ -28,7 +28,7 @@ public class UnparseResult
     // XXX make List<ByteBuffer> when no XDoclet
     public UnparseResult(ByteBuffer[] result)
     {
-        this.result = null == result ? BYTE_BUFFER_PROTO : result;
+        this.result = null == result ? EMPTY : result;
         this.tcpStreamer = null;
     }
 
@@ -40,13 +40,13 @@ public class UnparseResult
 
     public UnparseResult(TCPStreamer tcpStreamer)
     {
-        this.result = BYTE_BUFFER_PROTO;
+        this.result = EMPTY;
         this.tcpStreamer = tcpStreamer;
     }
 
     private UnparseResult()
     {
-        this.result = BYTE_BUFFER_PROTO;
+        this.result = EMPTY;
         this.tcpStreamer = null;
     }
 

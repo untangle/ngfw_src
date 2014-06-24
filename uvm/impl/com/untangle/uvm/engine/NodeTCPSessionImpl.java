@@ -281,10 +281,10 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         int offset = buf2send.position();
         int size = buf2send.remaining();
         if (size <= 0) {
-            // if (logger.isInfoEnabled())
-            //     logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
-            //                 buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
-            //                 buf2send.arrayOffset(), new Exception());
+            if (logger.isInfoEnabled())
+                // logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
+                //             buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
+                //             buf2send.arrayOffset(), new Exception());
             return;
         }
 

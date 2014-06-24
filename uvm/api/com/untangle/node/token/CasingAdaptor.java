@@ -190,29 +190,26 @@ public class CasingAdaptor extends CasingBase
 
     private void unparse(TCPChunkEvent e, boolean s2c)
     {
-        ByteBuffer b = e.chunk();
+        ByteBuffer chunk = e.chunk();
         NodeTCPSession session = e.session();
 
-        assert b.remaining() <= TOKEN_SIZE;
-
-        if (b.remaining() < TOKEN_SIZE) {
+        if (chunk.remaining() < TOKEN_SIZE) {
             // read limit 2
-            b.compact();
-            b.limit(TOKEN_SIZE);
+            chunk.compact();
+            chunk.limit(TOKEN_SIZE);
             if (logger.isDebugEnabled()) {
-                logger.debug("unparse returning buffer, for more: " + b);
+                logger.debug("unparse returning buffer, for more: " + chunk);
             }
             if ( s2c )
-                session.setServerBuffer( b );
+                session.setServerBuffer( chunk );
             else
-                session.setClientBuffer( b );
-
+                session.setClientBuffer( chunk );
             return;
         }
 
         Casing casing = (Casing)e.session().attachment();
 
-        Long key = new Long(b.getLong());
+        Long key = new Long(chunk.getLong());
         Token tok = (Token) session.globalAttachment( key );
         session.globalAttach( key, null ); // remove key
 
@@ -220,9 +217,7 @@ public class CasingAdaptor extends CasingBase
             logger.debug("RETRIEVED object: " + tok + " with key: " + key );
         }
 
-        b.limit(TOKEN_SIZE);
-
-        assert !b.hasRemaining();
+        chunk.limit(TOKEN_SIZE);
 
         UnparseResult ur;
         try {
@@ -255,24 +250,26 @@ public class CasingAdaptor extends CasingBase
         } else {
             if (s2c) {
                 logger.debug("unparse result to client");
-                ByteBuffer[] r = ur.result();
+                ByteBuffer[] result = ur.result();
                 if (logger.isDebugEnabled()) {
-                    for (int i = 0; null != null && i < r.length; i++) {
-                        logger.debug("  to client: " + r[i]);
+                    for (int i = 0; result != null && i < result.length; i++) {
+                        logger.debug("  to client: " + result[i]);
                     }
                 }
-                
-                session.sendDataToClient( r );
+
+                if (result.length > 0)
+                    session.sendDataToClient( result );
                 return;
             } else {
                 logger.debug("unparse result to server");
-                ByteBuffer[] r = ur.result();
+                ByteBuffer[] result = ur.result();
                 if (logger.isDebugEnabled()) {
-                    for (int i = 0; null != r && i < r.length; i++) {
-                        logger.debug("  to server: " + r[i]);
+                    for (int i = 0; result != null && i < result.length; i++) {
+                        logger.debug("  to server: " + result[i]);
                     }
                 }
-                session.sendDataToServer( r );
+                if (result.length > 0)
+                    session.sendDataToServer( result );
                 return;
             }
         }
@@ -403,27 +400,24 @@ public class CasingAdaptor extends CasingBase
             }
             bb.flip();
 
-            ByteBuffer[] r = new ByteBuffer[] { bb };
-
             if (s2c) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + r[0]);
+                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + bb);
                 }
 
-                session.sendDataToClient( r );
+                if ( results.size() > 0 )
+                    session.sendDataToClient( bb );
                 session.setServerBuffer( pr.getReadBuffer() );
-
-                return;
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + r[0]);
+                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + bb);
                 }
 
-                session.sendDataToServer( r );
+                if ( results.size() > 0 )
+                    session.sendDataToServer( bb );
                 session.setClientBuffer( pr.getReadBuffer() );
-
-                return;
             }
+            return;
         }
     }
 
