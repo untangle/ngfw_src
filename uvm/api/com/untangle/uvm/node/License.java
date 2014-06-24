@@ -157,7 +157,7 @@ public class License implements Serializable
     /**
      * Set the key version for this license.
      */
-    public int getSeats() { return this.seats; }
+    public Integer getSeats() { return this.seats; }
     public void setSeats( Integer newValue ) { this.seats = newValue; }
 
     /**
