@@ -235,10 +235,9 @@ for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE, stde
           running = True
           break
 
-if not running:
-     if not create_schemas:
-          # only print this if create schemas wasn't specified
-          logger.error("Reports node is not installed or not running, exiting.")
+if not running and not create_schemas:
+     # only print this if create schemas wasn't specified
+     logger.error("Reports node is not installed or not running, exiting.")
      sys.exit(0)
 
 try:
