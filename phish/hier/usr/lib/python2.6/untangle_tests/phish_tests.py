@@ -104,7 +104,7 @@ class PhishTests(unittest2.TestCase):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 20
+        nodeData['smtpConfig']['strength'] = 5
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
         result = clientControl.runCommand("host "+smtpServerHost, True)
@@ -131,7 +131,7 @@ class PhishTests(unittest2.TestCase):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 20
+        nodeData['smtpConfig']['strength'] = 5
         nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
@@ -158,7 +158,7 @@ class PhishTests(unittest2.TestCase):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 20
+        nodeData['smtpConfig']['strength'] = 5
         nodeData['smtpConfig']['msgAction'] = "DROP"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
