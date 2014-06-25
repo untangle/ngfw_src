@@ -897,44 +897,65 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return;
             }
 
-            // set certFunction to invoke the correct cert manager function depending on the type of cert being created
-            if (certMode === "ROOT") certFunction = main.getCertificateManager().generateCertificateAuthority;
-            if (certMode === "SERVER") certFunction = main.getCertificateManager().generateServerCertificate;
-
-            certFunction(Ext.bind(function(result)
+            // for ROOT mode we just throw up a success dialog and refresh the display
+            if (certMode === "ROOT")
             {
+            certFunction = main.getCertificateManager().generateCertificateAuthority;
+
+                certFunction(Ext.bind(function(result)
+                {
+                this.certGeneratorWindow.close();
+                refreshDisplay = this.updateCertificateDisplay();
+
+                    if (result)
+                    {
+                    Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate Authority generation successfully completed. Click OK to continue."), refreshDisplay);
+                    }
+                    else
+                    {
+                    Ext.MessageBox.alert(i18n._("Failure"), this.i18n._("Error during Certificate Authority generation.  Click OK to continue."), refreshDisplay);
+                    }
+
+                }, this), certSubject, altNames);
+            }
+
+            // deal with restarting apache when creating a new server certificate
+            if (certMode === "SERVER")
+            {
+            certFunction = main.getCertificateManager().generateServerCertificate;
+
+                certFunction(Ext.bind(function(result)
+                {
                 this.certGeneratorWindow.close();
 
-                if (result)
-                {
-                // stop the metric manager so we don't get a session timeout error
-                Ung.MetricManager.stop();
+                    if (result)
+                    {
+                    // stop the metric manager so we don't get a session timeout error
+                    Ung.MetricManager.stop();
 
-                var restartWindow=Ext.create('Ext.window.MessageBox', {
-                minProgressWidth: 360
-                });
+                    // create a restart window
+                    var restartWindow = Ext.create('Ext.window.MessageBox', { minProgressWidth: 360 });
 
-                // the cert manager will reload apache to activate the new cert
-                // so we show a please wait message and then click to continue
-                restartWindow.wait(i18n._("Generating server certificate and restarting web server..."), i18n._("Please Wait"),
-                {
-                interval: 1000,
-                increment: 15,
-                duration: 15000,
-                scope: this,
-                fn: function()
-                {
-                    restartWindow.hide();
-                    Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate generation successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
+                    // the cert manager will reload apache to activate the new cert
+                    // so we show a please wait message and then click to continue
+                    restartWindow.wait(i18n._("Generating server certificate and restarting web server..."), i18n._("Please Wait"), {
+                        interval: 1000,
+                        increment: 15,
+                        duration: 15000,
+                        scope: this,
+                        fn: function() {
+                            restartWindow.hide();
+                            Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate generation successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
+                            }
+                        });
                     }
-                });
 
-                }
-                else
-                {
-                    Ext.MessageBox.alert(i18n._("Failure"), this.i18n._("Error during certificate generation"));
-                }
-            }, this), certSubject, altNames);
+                    else
+                    {
+                        Ext.MessageBox.alert(i18n._("Failure"), this.i18n._("Error during certificate generation."));
+                    }
+                }, this), certSubject, altNames);
+            }
         },
 
         handleCertificateUpload: function() {
@@ -994,6 +1015,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         {
             var prova = Ext.getCmp("upload_signed_cert_form");
             var fileText = prova.items.get(0);
+            var form = prova.getForm();
 
             if (fileText.getValue().length === 0)
             {
@@ -1001,14 +1023,29 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 return false;
             }
 
-            var form = prova.getForm();
             form.submit({
-                waitMsg: this.i18n._("Uploading certificate..."),
                 success: function(form, action) {
                     popup.close();
-                    Ext.MessageBox.alert(i18n._("Success"), action.result.msg);
-                    master.updateCertificateDisplay();
+
+                    Ung.MetricManager.stop();
+
+                    // create a restart window
+                    var restartWindow = Ext.create('Ext.window.MessageBox', { minProgressWidth: 360 });
+
+                    // the cert manager will reload apache to activate the new cert
+                    // so we show a please wait message and then click to continue
+                    restartWindow.wait(i18n._("Uploading server certificate and restarting web server..."), i18n._("Please Wait"), {
+                        interval: 1000,
+                        increment: 15,
+                        duration: 15000,
+                        scope: this,
+                        fn: function() {
+                            restartWindow.hide();
+                            Ext.MessageBox.alert(i18n._("Success"), i18n._("Certificate upload successfully completed. Click OK to return to the main page."), Ung.Util.goToStartPage);
+                            }
+                        });
                     },
+
                 failure: function(form, action) {
                     popup.close();
                     Ext.MessageBox.alert(i18n._("Failure"), action.result.msg);
