@@ -14,10 +14,10 @@ SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.
 # we have to define and export them since they are referenced
 # in parts of our ut-openssl.cnf file.
 UT_ROOT_PATH="/usr/share/untangle/settings/untangle-certificates"
-UT_ROOT_MODE="CA_onehost"
+UT_EXT_MODE="reqext_nil"
 UT_SAN_LIST="empty"
 export UT_ROOT_PATH
-export UT_ROOT_MODE
+export UT_EXT_MODE
 export UT_SAN_LIST
 
 # We use /dev/urandom because it does not block and because all of the security
@@ -77,3 +77,4 @@ $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_
 
 # only root should have access to the key
 chmod 600 $UT_ROOT_PATH/untangle.key
+
