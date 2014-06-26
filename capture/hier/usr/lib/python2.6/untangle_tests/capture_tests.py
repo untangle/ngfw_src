@@ -268,6 +268,13 @@ class CaptureTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_025a.out")
         assert (search == 0)
         
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_025b.log -O /tmp/capture_test_025b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_025b.out")
+        assert (search == 0)
+
     def test_030_captureLocalDirLogin(self):
         global node, nodeData
         # Create local directory user 'test20'
@@ -281,7 +288,7 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_025.out http://test.untangle.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://test.untangle.com/")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
@@ -317,36 +324,36 @@ class CaptureTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # check that basic captive page is shown
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030.log -O /tmp/capture_test_030.out http://test.untangle.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035.log -O /tmp/capture_test_035.out http://test.untangle.com/")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
+        search = clientControl.runCommand("grep -q 'username and password' /tmp/capture_test_035.out")
         assert (search == 0)
 
         # check if AD login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = clientControl.runCommand("wget -a /tmp/capture_test_030a.log -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = clientControl.runCommand("wget -a /tmp/capture_test_035a.log -O /tmp/capture_test_035a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
 
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030b.log -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035b.log -O /tmp/capture_test_035b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_035b.out")
         assert (search == 0)
 
         # check extend ascii in login and password 
-        result = clientControl.runCommand("wget -a /tmp/capture_test_030c.log -O /tmp/capture_test_030c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = clientControl.runCommand("wget -a /tmp/capture_test_035c.log -O /tmp/capture_test_035c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030c.out")
+        search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030d.log -O /tmp/capture_test_030d.out http://" + captureIP + "/capture/logout")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035d.log -O /tmp/capture_test_035d.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030d.out")
+        search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_035d.out")
         assert (search == 0)
 
     def test_040_captureRadiusLogin(self):
