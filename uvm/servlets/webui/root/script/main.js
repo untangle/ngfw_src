@@ -718,10 +718,11 @@ Ext.define("Ung.Main", {
             var parentRackDisplay = Ext.get('parent-rack-container');
 
             if (parentRackName === "None") {
+                parentRackDisplay.dom.innerHTML = "";
                 parentRackDisplay.hide();
             } else {
                 parentRackDisplay.show();
-                parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+": " + parentRackName;
+                parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+":<br/>" + parentRackName;
             }
 
             main.buildApps();

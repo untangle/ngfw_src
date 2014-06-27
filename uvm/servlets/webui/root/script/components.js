@@ -1910,12 +1910,14 @@ Ext.define("Ung.SystemStats", {
         this.getEl().addCls("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:70px;left:103px;" onclick="main.showSessions()">'+i18n._("Sessions")+'</div>',
-            '<div class="label" style="width:70px;left:173px;">'+i18n._("CPU Load")+'</div>',
-            '<div class="label" style="width:75px;left:250px;">'+i18n._("Memory")+'</div>',
+            '<div class="label" style="width:70px;left:91px;" onclick="main.showSessions()">'+i18n._("Sessions")+'</div>',
+            '<div class="label" style="width:60px;left:149px;" onclick="main.showHosts()">'+i18n._("Hosts")+'</div>',
+            '<div class="label" style="width:70px;left:198px;">'+i18n._("CPU Load")+'</div>',
+            '<div class="label" style="width:75px;left:273px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx-value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx-value"></div></div></div>',
             '<div class="sessions" onclick="main.showSessions()"></div>',
+            '<div class="hosts" onclick="main.showHosts()"></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
             '<div class="disk"><div name="disk_value"></div></div>'
@@ -1958,7 +1960,21 @@ Ext.define("Ung.SystemStats", {
             html: sessionsArr.join('')
         });
 
-            // cpu tooltip
+        //FIXME: hosts tooltip
+        var hostsArr=[
+            '<div class="title">'+i18n._("Total Hosts:")+'</div>',
+            '<div class="values"><span name="totalHosts"></span></div>',
+        ];
+        this.hostsToolTip= Ext.create('Ext.tip.ToolTip',{
+            target: this.getEl().down("div[class=hosts]"),
+            dismissDelay: 0,
+            hideDelay: 1000,
+            width: 330,
+            cls: 'extended-stats',
+            renderTo: Ext.getBody(),
+            html: hostsArr.join('')
+        });
+        // cpu tooltip
         var cpuArr=[
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
@@ -1980,7 +1996,7 @@ Ext.define("Ung.SystemStats", {
             html: cpuArr.join('')
         });
 
-            // memory tooltip
+        // memory tooltip
         var memoryArr=[
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
             '<div class="values"><span name="memory_total"></span> MB</div>',
@@ -2024,9 +2040,12 @@ Ext.define("Ung.SystemStats", {
 
     },
     update: function(stats) {
-            var toolTipEl;
+        var toolTipEl;
         var sessionsText = '<font color="#55BA47">' + stats.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
+        //FIXME: implement hosts text
+        var hostsText = '<font color="#55BA47">' + "0" + "</font>";
+        this.getEl().down("div[class=hosts]").dom.innerHTML=hostsText;
         this.getEl().down("div[class=cpu]").dom.innerHTML=stats.oneMinuteLoadAvg;
         var oneMinuteLoadAvg = stats.oneMinuteLoadAvg;
         var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.numCpus;
@@ -2061,6 +2080,12 @@ Ext.define("Ung.SystemStats", {
             toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.uvmTCPSessions;
             toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.uvmUDPSessions;
         }
+        //FIXME: show hosts infos
+        if(this.hostsToolTip.rendered) {
+            toolTipEl=this.hostsToolTip.getEl();
+            toolTipEl.down("span[name=totalHosts]").dom.innerHTML="0";//FIXME:=stats.hosts;
+        }
+
         if(this.cpuToolTip.rendered) {
             toolTipEl=this.cpuToolTip.getEl();
             toolTipEl.down("span[name=num_cpus]").dom.innerHTML=stats.numCpus;
