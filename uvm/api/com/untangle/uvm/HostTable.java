@@ -135,6 +135,11 @@ public interface HostTable
      * Clear the entire table (used by tests)
      */
     void clearTable();
+
+    /**
+     * Get the current size of the table
+     */
+    int getCurrentSize();
     
     /**
      * A penalty box listener is a hook called when hosts enter or exit the penalty box

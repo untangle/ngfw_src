@@ -391,11 +391,13 @@ public class MetricManagerImpl implements MetricManager
             long rxBytes0 = 0, rxBytes1 = 0;
             long txBytes0 = 0, txBytes1 = 0;
 
-            NetcapManager am = UvmContextImpl.getInstance().netcapManager();
+            NetcapManager nm = UvmContextImpl.getInstance().netcapManager();
 
-            m.put("uvmSessions",am.getSessionCount());
-            m.put("uvmTCPSessions",am.getSessionCount(SessionTuple.PROTO_TCP));
-            m.put("uvmUDPSessions",am.getSessionCount(SessionTuple.PROTO_UDP));
+            m.put("uvmSessions",nm.getSessionCount());
+            m.put("uvmTCPSessions",nm.getSessionCount(SessionTuple.PROTO_TCP));
+            m.put("uvmUDPSessions",nm.getSessionCount(SessionTuple.PROTO_UDP));
+
+            m.put( "hosts", UvmContextImpl.getInstance().hostTable().getCurrentSize() );
             
             long currentTime = System.currentTimeMillis();
 

@@ -1960,10 +1960,10 @@ Ext.define("Ung.SystemStats", {
             html: sessionsArr.join('')
         });
 
-        //FIXME: hosts tooltip
+        // hosts tooltip
         var hostsArr=[
             '<div class="title">'+i18n._("Total Hosts:")+'</div>',
-            '<div class="values"><span name="totalHosts"></span></div>',
+            '<div class="values"><span name="totalHosts"></span></div>'
         ];
         this.hostsToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=hosts]"),
@@ -2043,8 +2043,7 @@ Ext.define("Ung.SystemStats", {
         var toolTipEl;
         var sessionsText = '<font color="#55BA47">' + stats.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
-        //FIXME: implement hosts text
-        var hostsText = '<font color="#55BA47">' + "0" + "</font>";
+        var hostsText = '<font color="#55BA47">' + stats.hosts + "</font>";
         this.getEl().down("div[class=hosts]").dom.innerHTML=hostsText;
         this.getEl().down("div[class=cpu]").dom.innerHTML=stats.oneMinuteLoadAvg;
         var oneMinuteLoadAvg = stats.oneMinuteLoadAvg;
@@ -2080,10 +2079,9 @@ Ext.define("Ung.SystemStats", {
             toolTipEl.down("span[name=uvmTCPSessions]").dom.innerHTML=stats.uvmTCPSessions;
             toolTipEl.down("span[name=uvmUDPSessions]").dom.innerHTML=stats.uvmUDPSessions;
         }
-        //FIXME: show hosts infos
         if(this.hostsToolTip.rendered) {
             toolTipEl=this.hostsToolTip.getEl();
-            toolTipEl.down("span[name=totalHosts]").dom.innerHTML="0";//FIXME:=stats.hosts;
+            toolTipEl.down("span[name=totalHosts]").dom.innerHTML=stats.hosts;
         }
 
         if(this.cpuToolTip.rendered) {
