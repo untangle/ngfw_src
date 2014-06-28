@@ -90,5 +90,30 @@ class UvmTests(unittest2.TestCase):
 
         assert(True)
 
+    def test_020_aboutInfo(self):
+        uid =  uvmContext.getServerUID()
+        match = re.search(r'\w{4}-\w{4}-\w{4}.\w{4}', uid)
+        assert(match)
+
+        version = uvmContext.adminManager().getFullVersionAndRevision()
+        match = re.search(r'\d{1,2}\.\d\.\d\~svn\d{8}r\d{5}main-\w{5,8}',version)
+        assert(match)
+
+        kernel = uvmContext.adminManager().getKernelVersion()
+        match = re.search(r'\d\.\d\.\d-\d-untangle-\w{3,7}', kernel)
+        assert(match)
+
+        reboot_count = uvmContext.adminManager().getRebootCount()
+        match = re.search(r'\d{1,2}', reboot_count)
+        assert(match)
+
+        num_hosts = str(uvmContext.hostTable().getCurrentLicensedSize())
+        match = re.search(r'\d{1,2}', num_hosts)
+        assert(match)
+
+        max_num_hosts = str(uvmContext.hostTable().getMaxLicensedSize())
+        match = re.search(r'\d{1,2}', max_num_hosts)
+        assert(match)
+
 
 TestDict.registerNode("uvm", UvmTests)
