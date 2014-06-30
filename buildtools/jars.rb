@@ -63,11 +63,6 @@ class Jars
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget("commons-logging-1.1.3.jar")] +  TomcatLogging)
 
-    ## XmlRpc Jars
-    const_set(:XmlRpc, [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
-                        Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
-                        Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ])
-
     ## GUIJars
     const_set(:JFreeChart, [ Jars.downloadTarget('jfreechart-1.0.13/lib/jfreechart-1.0.13.jar'),
                             Jars.downloadTarget('jfreechart-1.0.13/lib/jcommon-1.0.16.jar')])
