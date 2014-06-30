@@ -23,7 +23,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import org.w3c.dom.Document;
@@ -271,8 +270,10 @@ public class SkinManagerImpl implements SkinManager
         if (processedSkinFolders.contains(dir)){
             return;
         }
-        if (dir.exists()) {
-            FileUtils.cleanDirectory(dir);
+        if ( dir.exists() ) {
+            // this is somewhat dangerous, so only do it if dir looks non empty
+            if ( dir.getAbsolutePath().length() > 3 )
+                UvmContextFactory.context().execManager().exec("rm -rf " + dir.getAbsolutePath() + "/*");
         } else {
             if (!dir.mkdirs()) {
                 logger.error("Error creating skin folder: " + dir );

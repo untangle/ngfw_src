@@ -5,8 +5,8 @@ logging-log4j: used in the untangle-vm (logging)
 velocity: used in templates for quarantine email
 commons-fileupload: ??
 commons-io: ??
-commons-httpclient: ??
-commons-codec: ??
+commons-httpclient: settings manager (uvm)
+commons-codec: base64 encoding (uvm & apps)
 slf4j: logging
 python-jsonrpc: used by ucli
 dnsjava: used in the untangle-vm
