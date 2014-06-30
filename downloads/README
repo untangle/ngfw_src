@@ -7,7 +7,6 @@ commons-fileupload: ??
 commons-io: ??
 commons-httpclient: ??
 commons-codec: ??
-xmlrpc: used by UI/uvm
 slf4j: logging
 python-jsonrpc: used by ucli
 dnsjava: used in the untangle-vm

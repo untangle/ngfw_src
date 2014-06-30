@@ -99,7 +99,7 @@ class Jars
     const_set(:Base, Jars.makeGroup(Log4j, Postgres,
                                    JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
-                                   HttpClient, XmlRpc,
+                                   HttpClient, 
                                    Jstl, Json, Jabsorb, Slf4j, DnsJava,
                                    JFreeChart, Ant))
 
