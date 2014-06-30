@@ -3,8 +3,7 @@ apache-tomcat: used in the untangle-vm (servlets)
 jfreechart: used in reports
 logging-log4j: used in the untangle-vm (logging)
 velocity: used in templates for quarantine email
-commons-fileupload: ??
-commons-io: ??
+commons-fileupload: file upload (uvm & servlets)
 commons-httpclient: settings manager (uvm)
 commons-codec: base64 encoding (uvm & apps)
 slf4j: logging
