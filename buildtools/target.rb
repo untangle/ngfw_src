@@ -1,7 +1,7 @@
 # -*-ruby-*-
 # $Id$
 
-require 'gettext/utils'
+require 'gettext/tools'
 
 class Target
   attr_reader :package, :dependencies

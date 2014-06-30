@@ -2,7 +2,7 @@
 # $Id$
 
 require 'find'
-require 'ftools'
+require 'fileutils'
 require 'set'
 require 'tempfile'
 require 'thread'
