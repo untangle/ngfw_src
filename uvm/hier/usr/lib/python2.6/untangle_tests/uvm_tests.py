@@ -28,8 +28,15 @@ uvmContext = Uvm().getUvmContext()
 systemProperties = SystemProperties()
 clientControl = ClientControl()
 defaultRackId = 1
-orig_netsettings = None
+origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+
+def getLatestMailPkg():
+    clientControl.runCommand("rm mailpkg.tar* >/dev/null 2>&1") # remove all previous mail packages
+    results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    # print "Results from getting mailpkg.tar <%s>" % results
+    results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
+    # print "Results from untaring mailpkg.tar <%s>" % results
 
 class UvmTests(unittest2.TestCase):
 
@@ -41,13 +48,17 @@ class UvmTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    @staticmethod
+    def nodeNameSpamCase():
+        return "untangle-casing-smtp"
+
     def setUp(self):
         pass
 
     def test_010_clientIsOnline(self):
         # save original network settings
-        global orig_netsettings
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        global origMailsettings
+        origMailsettings = uvmContext.mailSender().getSettings()
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
@@ -115,5 +126,30 @@ class UvmTests(unittest2.TestCase):
         match = re.search(r'\d{1,2}', max_num_hosts)
         assert(match)
 
+    def test_030_testSMTPSettings(self):
+        # Test mail setting in config -> email -> outgoing server
+        unittest2.SkipTest('This test cannot save SMTP setting yet')
+        getLatestMailPkg();
+        # remove previous smtp log file
+        clientControl.runCommand("rm test_030_testSMTPSettings.log >/dev/null 2>&1")
+        # Start mail sink
+        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg  >/dev/null 2>&1")
+        newMailsettings = origMailsettings
+        newMailsettings['smtpHost'] = ClientControl.hostIP
+        newMailsettings['smtpPort'] = "6800"
+        newMailsettings['useMxRecords'] = False
+
+        uvmContext.mailSender().setSettings(newMailsettings)
+        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
+        uvmContext.setSmtpNodeSettingsWithoutSafelists()
+        uvmContext.mailSender().sendTestMessage("test@example.com")
+        time.sleep(4)
+
+        # Kill mail sink
+        clientControl.runCommand("pkill python >/dev/null 2>&1")
+        uvmContext.mailSender().setSettings(origMailsettings)
+        origMailsettings2 = uvmContext.mailSender().getSettings()
+        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' test_030_testSMTPSettings.log >/dev/null 2>&1")
+        assert(result)
 
 TestDict.registerNode("uvm", UvmTests)
