@@ -4,7 +4,7 @@
 class CCompilerEnv
   ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
   Defines = case ARCH
-            when "/(armhf|amd64)/"
+            when /(armhf|amd64)/
               "-fPIC -O -D_GNU_SOURCE -D_REENTRANT"
             else
               "-O -D_GNU_SOURCE -D_REENTRANT"
