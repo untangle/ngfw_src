@@ -78,7 +78,14 @@ include Debug
 class BuildEnv
   ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
   #JVM = (ARCH == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
-  JVM = (ARCH == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "j2sdk1.7-oracle"
+  JVM = case ARCH
+    when "armel"
+    "jdk-7-oracle-arm-vfp-sflt"
+    when "armhf"
+    "jdk-7-oracle-arm-vfp-hflt"
+    else
+    "j2sdk1.7-oracle"
+  end
   JAVA_HOME = "/usr/lib/jvm/#{JVM}"
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
