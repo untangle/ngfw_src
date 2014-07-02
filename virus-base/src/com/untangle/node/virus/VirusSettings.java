@@ -24,7 +24,8 @@ public class VirusSettings implements Serializable
     private boolean scanFtp = true;
     private boolean scanSmtp = true;
 
-    private String smtpAction= "remove" ; /* "pass" "remove" or "block" */
+    private String  smtpAction= "remove" ; /* "pass" "remove" or "block" */
+    private boolean smtpAllowTls = true;
     
     private List<GenericRule> httpMimeTypes = new LinkedList<GenericRule>();
     private List<GenericRule> httpFileExtensions = new LinkedList<GenericRule>();
@@ -48,6 +49,9 @@ public class VirusSettings implements Serializable
     public String getSmtpAction() { return smtpAction; }
     public void setSmtpAction(String smtpAction) { this.smtpAction = smtpAction; }
 
+    public boolean getSmtpAllowTls() { return smtpAllowTls; }
+    public void setSmtpAllowTls( boolean newValue ) { this.smtpAllowTls = newValue; }
+
     public List<GenericRule> getHttpMimeTypes() { return httpMimeTypes; }
     public void setHttpMimeTypes(List<GenericRule> httpMimeTypes) { this.httpMimeTypes = httpMimeTypes; }
 
@@ -56,6 +60,7 @@ public class VirusSettings implements Serializable
 
     public List<GenericRule> getHttpFileExtensions() { return httpFileExtensions; }
     public void setHttpFileExtensions(List<GenericRule> httpFileExtensions) { this.httpFileExtensions = httpFileExtensions; }
+
 
     public String toJSONString()
     {

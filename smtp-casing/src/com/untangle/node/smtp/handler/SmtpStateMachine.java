@@ -37,21 +37,17 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
 {
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
-    private static final String[] DEF_ALLOWED_COMMANDS = { "DATA", "HELP", "HELO", "EHLO", "RCPT", "MAIL", "EXPN",
-            "QUIT", "RSET", "VRFY", "NOOP", "AUTH" };
+    private static final String[] DEFAULT_ALLOWED_COMMANDS = { "DATA", "HELP", "HELO", "EHLO", "RCPT", "MAIL", "EXPN",
+                                                               "QUIT", "RSET", "VRFY", "NOOP", "AUTH", "STARTTLS" };
 
-    private static final String[] DEF_ALLOWED_EXTENSIONS = { "DATA", "HELP", "HELO", "EHLO", "RCPT", "MAIL", "EXPN",
-            "QUIT", "RSET", "VRFY", "NOOP", "SIZE", "DSN", "DELIVERBY", "AUTH", "AUTH=LOGIN", "OK" };
+    private static final String[] DEFAULT_ALLOWED_EXTENSIONS = { "DATA", "HELP", "HELO", "EHLO", "RCPT", "MAIL", "EXPN",
+                                                                 "QUIT", "RSET", "VRFY", "NOOP", "SIZE", "DSN", "DELIVERBY",
+                                                                 "AUTH", "AUTH=LOGIN", "OK", "STARTTLS" };
 
     private final Logger logger = Logger.getLogger(SmtpStateMachine.class);
 
     private SmtpTransactionHandler smtpTransactionHandler;
-
     private List<OutstandingRequest> outstandingRequests;
-
-    private Set<String> allowedCommandsSet;
-
-    private String[] allowedExtensionsLC;
 
     private long clientTimestamp;
     private long serverTimestamp;
@@ -73,8 +69,8 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     private final boolean isBufferAndTrickle;
     private String heloName = null;
 
-    public SmtpStateMachine(NodeTCPSession session, int giveUpSz, long maxClientWait, long maxServerWait,
-            boolean isBufferAndTrickle, boolean scanningEnabled) {
+    public SmtpStateMachine(NodeTCPSession session, int giveUpSz, long maxClientWait, long maxServerWait, boolean isBufferAndTrickle, boolean scanningEnabled)
+    {
         super(session);
         this.giveupSz = giveUpSz;
         this.maxClientWait = maxClientWait <= 0 ? Integer.MAX_VALUE : maxClientWait;
@@ -86,15 +82,6 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
 
         // Build-out request queue
         outstandingRequests = new LinkedList<OutstandingRequest>();
-
-        allowedCommandsSet = new HashSet<String>();
-        for (String command : DEF_ALLOWED_COMMANDS) {
-            allowedCommandsSet.add(command.toLowerCase());
-        }
-        allowedExtensionsLC = new String[DEF_ALLOWED_EXTENSIONS.length];
-        for (int i = 0; i < DEF_ALLOWED_EXTENSIONS.length; i++) {
-            allowedExtensionsLC[i] = DEF_ALLOWED_EXTENSIONS[i].toLowerCase().trim();
-        }
 
         // The first message passed for SMTP is actualy from the server.
         // Place a Response handler into the OutstandingRequest queue to handle this and call our SessionHandler with
@@ -353,6 +340,38 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         }
     }
 
+    /**
+     * returns true if the SMTP extension (advertisement) is allowed
+     * can be overridden to customize supported extensions
+     */
+    protected boolean isAllowedExtension( String extension )
+    {
+        // Thread safety
+        String str = extension.toUpperCase();
+        for ( String permitted : DEFAULT_ALLOWED_EXTENSIONS ) {
+            if ( permitted.equals( str ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * returns true if the SMTP command is allowed
+     * can be overridden to customize supported commands
+     */
+    protected boolean isAllowedCommand( String command )
+    {
+        // Thread safety
+        String str = command.toUpperCase();
+        for ( String permitted : DEFAULT_ALLOWED_COMMANDS ) {
+            if ( permitted.equals( str ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /********************************************************************************************/
 
     /**
@@ -393,7 +412,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
 
         for (int i = 1; i < respLines.length; i++) {
             String verb = getCapabilitiesLineVerb(respLines[i]);
-            if (isAllowedExtension(verb)) {
+            if ( isAllowedExtension( verb ) ) {
                 logger.debug("Allowing ESMTP response line \"" + respLines[i] + "\" to go to client");
                 finalList.add(respLines[i]);
             } else {
@@ -403,22 +422,6 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
 
         String[] newRespLines = finalList.toArray(new String[finalList.size()]);
         return new Response(resp.getCode(), newRespLines);
-    }
-
-    /**
-     * Scans the allowed extension list for the presence of "extensionName"
-     */
-    private boolean isAllowedExtension(String extensionName)
-    {
-        // Thread safety
-        String[] allowedExtensionsLC = this.allowedExtensionsLC;
-        extensionName = extensionName.toLowerCase();
-        for (String permitted : allowedExtensionsLC) {
-            if (extensionName.equals(permitted)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -437,15 +440,12 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     private void handleCommand(TokenResultBuilder resultBuilder, Command cmd)
     {
 
-        logger.debug("Received Command \"" + cmd.getCmdString() + "\"" + " of type \"" + cmd.getClass().getName()
-                + "\"");
+        logger.debug("Received Command \"" + cmd.getCmdString() + "\"" + " of type \"" + cmd.getClass().getName() + "\"");
         List<Response> immediateActions = new LinkedList<Response>();
 
         // Check for allowed commands
-        String cmdStrLower = cmd.getCmdString().toLowerCase();
-        if ((!(cmd instanceof UnparsableCommand)) && !allowedCommandsSet.contains(cmdStrLower)) {
-            logger.warn("Enqueuing negative response to " + "non-allowed command \"" + cmd.getCmdString() + "\"" + " ("
-                    + cmd.getArgString() + ")");
+        if ((!(cmd instanceof UnparsableCommand)) && !isAllowedCommand( cmd.getCmdString() )) {
+            logger.warn("Enqueuing negative response to " + "non-allowed command \"" + cmd.getCmdString() + "\"" + " (" + cmd.getArgString() + ")");
             appendSyntheticResponse(new Response(500, "Syntax error, command unrecognized"), immediateActions);
             if (immediateActions.size() > 0) {
                 processSynths(immediateActions, resultBuilder);
@@ -456,15 +456,14 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         // Check for "EHLO" and "HELO"
         if (cmd.getType() == CommandType.EHLO) {
             logger.debug("Enqueuing private response handler to EHLO command so unknown extensions can be disabled");
-            sendCommandToServer(cmd, new ResponseCompletion()
-            {
-                @Override
-                public void handleResponse(Response resp, TokenResultBuilder ts)
-                {
-                    logger.debug("Processing response to EHLO Command");
-                    sendResponseToClient(fixupEHLOResponse(resp), ts);
-                }
-            }, resultBuilder);
+            sendCommandToServer(cmd, new ResponseCompletion() {
+                    @Override
+                    public void handleResponse(Response resp, TokenResultBuilder ts)
+                    {
+                        logger.debug("Processing response to EHLO Command");
+                        sendResponseToClient(fixupEHLOResponse(resp), ts);
+                    }
+                }, resultBuilder);
             heloName = cmd.getArgString();
             followup(immediateActions, resultBuilder);
             return;

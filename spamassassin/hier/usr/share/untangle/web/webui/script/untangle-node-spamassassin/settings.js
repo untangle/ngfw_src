@@ -360,6 +360,19 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                          }
                                      }
                                  },{
+                                     xtype: 'checkbox',
+                                     name: 'Allow and ignore TLS sessions',
+                                     boxLabel: this.i18n._('Allow and ignore TLS sessions'),
+                                     hideLabel: true,
+                                     checked: this.settings.smtpConfig.allowTls,
+                                     listeners: {
+                                         "change": {
+                                             fn: Ext.bind(function(elem, newValue) {
+                                                 this.settings.smtpConfig.allowTls = newValue;
+                                             }, this)
+                                         }
+                                     }
+                                 },{
                                      xtype: 'numberfield',
                                      fieldLabel: this.i18n._('CPU Load Limit'),
                                      labelWidth: 150,

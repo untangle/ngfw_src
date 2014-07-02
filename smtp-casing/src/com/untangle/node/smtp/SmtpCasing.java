@@ -26,7 +26,8 @@ public class SmtpCasing implements Casing
 
     // constructors -----------------------------------------------------------
 
-    public SmtpCasing(NodeTCPSession session, boolean clientSide) {
+    public SmtpCasing(NodeTCPSession session, boolean clientSide)
+    {
         if (logger.isEnabledFor(Level.DEBUG)) {
             logger.debug("Creating " + (clientSide ? "client" : "server") + " SMTP Casing.  Client: "
                     + session.getClientAddr() + "(" + Integer.toString(session.getClientIntf()) + "), " + "Server: "
@@ -34,10 +35,8 @@ public class SmtpCasing implements Casing
         }
 
         casingSessionTracker = new CasingSessionTracker();
-        parser = (clientSide ? new SmtpClientParser(session, this, casingSessionTracker) : new SmtpServerParser(
-                session, this, casingSessionTracker));
-        unparser = (clientSide ? new SmtpClientUnparser(session, this, casingSessionTracker) : new SmtpServerUnparser(
-                session, this, casingSessionTracker));
+        parser = (clientSide ? new SmtpClientParser(session, this, casingSessionTracker) : new SmtpServerParser(session, this, casingSessionTracker));
+        unparser = (clientSide ? new SmtpClientUnparser(session, this, casingSessionTracker) : new SmtpServerUnparser(session, this, casingSessionTracker));
     }
 
     // Casing methods ---------------------------------------------------------

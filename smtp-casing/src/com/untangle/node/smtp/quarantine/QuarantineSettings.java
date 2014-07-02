@@ -24,12 +24,12 @@ public class QuarantineSettings implements Serializable
     private long maxIdleInbox = 4L * WEEK;
     private String secretKey;
     private byte[] binaryKey;
+    private boolean sendDailyDigests = true;
     private int digestHOD;// Hour Of Day
     private int digestMOD;// Minute Of Day
     private long maxQuarantineSz;
     private LinkedList<EmailAddressPairRule> addressRemaps;
     private LinkedList<EmailAddressRule> allowedAddressPatterns;
-    private boolean sendDailyDigests = true;
 
     /**
      * Get the list of {@link EmailAddressRule} objects, defining the address patterns for-which this server will
@@ -94,22 +94,6 @@ public class QuarantineSettings implements Serializable
             remaps = new LinkedList<EmailAddressPairRule>();
         }
         addressRemaps = new LinkedList<EmailAddressPairRule>(remaps);
-    }
-
-    public long getMaxQuarantineTotalSz()
-    {
-        return maxQuarantineSz;
-    }
-
-    /**
-     * Set the total size (in bytes) that the quarantine is permitted to consume on disk.
-     * 
-     * @param max
-     *            the max size
-     */
-    public void setMaxQuarantineTotalSz(long max)
-    {
-        maxQuarantineSz = max;
     }
 
     /**

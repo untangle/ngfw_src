@@ -57,8 +57,8 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
 
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
-    public SpamSmtpHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl,
-            SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist) {
+    public SpamSmtpHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, SpamNodeImpl impl, SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist)
+    {
         super(session, config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false, config.getScan());
 
         this.spamImpl = impl;
@@ -383,6 +383,27 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
         }
     }
 
+    @Override
+    protected boolean isAllowedExtension( String extension )
+    {
+        // Thread safety
+        String str = extension.toUpperCase();
+        if ( "STARTTLS".equals( str ) ) 
+            return config.getAllowTls();
+        else
+            return super.isAllowedExtension( extension );
+    }
+
+    @Override
+    protected boolean isAllowedCommand( String command )
+    {
+        String str = command.toUpperCase();
+        if ( "STARTTLS".equals( str ) )
+            return config.getAllowTls();
+        else
+            return super.isAllowedCommand( command );
+    }
+    
     private void markHeaders(MimeMessage msg, SpamReport report)
     {
         if (config.getAddSpamHeaders()) {

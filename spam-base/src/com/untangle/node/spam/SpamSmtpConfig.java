@@ -23,6 +23,7 @@ public class SpamSmtpConfig
     public static final float DEFAULT_LIMIT_LOAD = 7.0f;
     public static final int DEFAULT_LIMIT_SCANS = 15;
     public static final boolean DEFAULT_SCAN_WAN_MAIL = false;
+    public static final boolean DEFAULT_ALLOW_TLS = false;
 
     // // Help for the UI follows.
     // public static final int LOW_STRENGTH = 50;
@@ -46,7 +47,8 @@ public class SpamSmtpConfig
     private float limit_load = DEFAULT_LIMIT_LOAD;
     private int limit_scans = DEFAULT_LIMIT_SCANS;
     private boolean scan_wan_mail = DEFAULT_SCAN_WAN_MAIL;
-
+    private boolean allowTls = DEFAULT_ALLOW_TLS;
+    
     public SpamSmtpConfig() { }
 
     public SpamSmtpConfig(boolean bScan,
@@ -61,7 +63,8 @@ public class SpamSmtpConfig
                           int tarpit_timeout,
                           float limit_load,
                           int limit_scans,
-                          boolean scan_wan_mail)
+                          boolean scan_wan_mail,
+                          boolean allowTls)
     {
         this.bScan = bScan;
         this.strength = strength;
@@ -73,9 +76,10 @@ public class SpamSmtpConfig
         this.msgAction = msgAction;
         this.tarpit = tarpit;
         this.tarpit_timeout = tarpit_timeout;
-        this.scan_wan_mail = scan_wan_mail;
         this.limit_load = limit_load;
         this.limit_scans = limit_scans;
+        this.scan_wan_mail = scan_wan_mail;
+        this.allowTls = allowTls;
     }
 
     /**
@@ -185,4 +189,14 @@ public class SpamSmtpConfig
      */
     public boolean getScanWanMail() { return scan_wan_mail; }
     public void setScanWanMail( boolean newValue ) { this.scan_wan_mail = newValue; }
+
+    /**
+     * allowTls: a boolean specifying whether or not to allow TLS sessions to bypass
+     * scanning. if false, TLS is blocked. if true, TLS is allowed and will be unscanned
+     *
+     * @return boolean value
+     */
+    public boolean getAllowTls() { return allowTls; }
+    public void setAllowTls( boolean newValue ) { this.allowTls = newValue; }
+    
 }

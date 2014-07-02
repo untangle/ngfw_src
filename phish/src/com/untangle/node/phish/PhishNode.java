@@ -95,8 +95,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         PhishSettings tmpSpamSettings = new PhishSettings();
         configureSpamSettings(tmpSpamSettings);
-        tmpSpamSettings.getSmtpConfig().setBlockSuperSpam(false);
-
+        tmpSpamSettings.getSmtpConfig().setBlockSuperSpam(false); // no such thing as 'super' phish
+        tmpSpamSettings.getSmtpConfig().setAllowTls(true); // allow TLS in phishing by default
+        
         setSettings(tmpSpamSettings);
         initSpamDnsblList(tmpSpamSettings);
     }

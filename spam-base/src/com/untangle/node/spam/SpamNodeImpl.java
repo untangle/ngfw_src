@@ -184,18 +184,19 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     protected void configureSpamSettings(SpamSettings tmpSpamSettings)
     {
         tmpSpamSettings.setSmtpConfig(new SpamSmtpConfig(true,
-                SpamMessageAction.QUARANTINE,
-                SpamSmtpConfig.DEFAULT_STRENGTH,
-                SpamSmtpConfig.DEFAULT_ADD_SPAM_HEADERS,
-                SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
-                SpamSmtpConfig.DEFAULT_SUPER_STRENGTH,
-                SpamSmtpConfig.DEFAULT_FAIL_CLOSED,
-                SpamSmtpConfig.DEFAULT_HEADER_NAME,
-                SpamSmtpConfig.DEFAULT_TARPIT,
-                SpamSmtpConfig.DEFAULT_TARPIT_TIMEOUT,
-                SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
-                SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
-                SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL ));
+                                                         SpamMessageAction.QUARANTINE,
+                                                         SpamSmtpConfig.DEFAULT_STRENGTH,
+                                                         SpamSmtpConfig.DEFAULT_ADD_SPAM_HEADERS,
+                                                         SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
+                                                         SpamSmtpConfig.DEFAULT_SUPER_STRENGTH,
+                                                         SpamSmtpConfig.DEFAULT_FAIL_CLOSED,
+                                                         SpamSmtpConfig.DEFAULT_HEADER_NAME,
+                                                         SpamSmtpConfig.DEFAULT_TARPIT,
+                                                         SpamSmtpConfig.DEFAULT_TARPIT_TIMEOUT,
+                                                         SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
+                                                         SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
+                                                         SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL,
+                                                         SpamSmtpConfig.DEFAULT_ALLOW_TLS));
     }
 
     public SpamSettings getSettings()

@@ -179,8 +179,7 @@ class SmtpClientParser extends SmtpParser
                         }
 
                         if (cmd.getType() == CommandType.STARTTLS) {
-                            m_logger.debug("Enqueue observer for response to STARTTLS, "
-                                    + "to go into passthru if accepted");
+                            m_logger.debug("Enqueue observer for response to STARTTLS, " + "to go into passthru if accepted");
                             getSessionTracker().commandReceived(cmd, new TLSResponseCallback());
                         } else if (cmd.getType() == CommandType.DATA) {
                             m_logger.debug("entering data transmission (DATA)");
@@ -389,7 +388,8 @@ class SmtpClientParser extends SmtpParser
 
         private String m_offendingCommand;
 
-        CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
+        CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine)
+        {
             m_offendingCommand = ASCIIUtil.bbToString(bufWithOffendingLine);
         }
 

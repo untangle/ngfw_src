@@ -40,8 +40,8 @@ abstract class SmtpParser extends AbstractParser
      * @param clientSide
      *            true if this is a client-side casing
      */
-    protected SmtpParser(NodeTCPSession session, boolean clientSide, SmtpCasing parent,
-            CasingSessionTracker casingSessionTracker) {
+    protected SmtpParser(NodeTCPSession session, boolean clientSide, SmtpCasing parent, CasingSessionTracker casingSessionTracker)
+    {
 
         super(session, clientSide);
         casing = parent;

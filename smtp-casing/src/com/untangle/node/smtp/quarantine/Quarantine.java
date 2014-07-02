@@ -183,26 +183,9 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         }
     }
 
-    // --QuarantineNodeView--
     @Override
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients)
     {
-        // Check for out-of-space condition
-        if (this.store.getTotalSize() > this.settings.getMaxQuarantineTotalSz()) {
-            // TODO bscott Shouldn't we at least once take a SWAG at
-            // pruning the store? It should reduce the size by ~1/14th
-            // in a default configuration.
-            logger.warn("Quarantine size of " + this.store.getTotalSize() + " exceeds max of "
-                    + this.settings.getMaxQuarantineTotalSz());
-            return false;
-        }
-
-        // If we do not have an internal IP, then don't even bother quarantining
-        if (UvmContextFactory.context().systemManager().getPublicUrl() == null) {
-            logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
-            return false;
-        }
-
         // Test against our list of stuff we are permitted to quarantine for
         for (InternetAddress eAddr : recipients) {
             if (eAddr == null || MIMEUtil.isNullAddress(eAddr)) {

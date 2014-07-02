@@ -32,7 +32,8 @@ public class SpamSmtpFactory implements TokenHandlerFactory
         m_spamImpl = impl;
     }
 
-    public TokenHandler tokenHandler(NodeTCPSession session) {
+    public TokenHandler tokenHandler(NodeTCPSession session)
+    {
         SpamSettings spamSettings = m_spamImpl.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 

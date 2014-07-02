@@ -99,10 +99,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         SmtpNodeSettings ns = new SmtpNodeSettings();
         ns.setSmtpEnabled(true);
         ns.setSmtpTimeout(1000 * 60 * 4);
-        ns.setSmtpAllowTLS(false);
 
         QuarantineSettings qs = new QuarantineSettings();
-        qs.setMaxQuarantineTotalSz(10 * ONE_GB); // 10GB
         qs.setDigestHourOfDay(6); // 6 am
         qs.setDigestMinuteOfDay(0); // 6 am
         byte[] binaryKey = new byte[4];

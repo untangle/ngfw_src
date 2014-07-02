@@ -47,7 +47,8 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
 
     private final WrappedMessageGenerator generator;
 
-    public SmtpSessionHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl) {
+    public SmtpSessionHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl)
+    {
         super(session, Integer.MAX_VALUE, maxClientWait, maxSvrWait, true, impl.getSettings().getScanSmtp());
 
         this.virusImpl = impl;
@@ -249,6 +250,27 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         }
         this.virusImpl.incrementPassCount();
         return BlockOrPassResult.PASS;
+    }
+
+    @Override
+    protected boolean isAllowedExtension( String extension )
+    {
+        // Thread safety
+        String str = extension.toUpperCase();
+        if ( "STARTTLS".equals( str ) ) 
+            return virusImpl.getSettings().getSmtpAllowTls();
+        else
+            return super.isAllowedExtension( extension );
+    }
+
+    @Override
+    protected boolean isAllowedCommand( String command )
+    {
+        String str = command.toUpperCase();
+        if ( "STARTTLS".equals( str ) )
+            return virusImpl.getSettings().getSmtpAllowTls();
+        else
+            return super.isAllowedCommand( command );
     }
 
     /**
