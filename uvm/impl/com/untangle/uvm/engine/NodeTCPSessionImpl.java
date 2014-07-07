@@ -19,7 +19,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -346,14 +345,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         streamer = null;
     }
 
-
     protected boolean isSideDieing(int side, IncomingSocketQueue in)
     {
         return (in.containsReset());
     }
 
     protected void sideDieing(int side)
-        
     {
         sendRSTEvent(side);
     }
@@ -406,19 +403,15 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     protected void sendWritableEvent(int side)
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
-
         if (side == CLIENT)
-            dispatcher.dispatchTCPClientWritable(wevent);
+            dispatcher.dispatchTCPClientWritable( this );
         else
-            dispatcher.dispatchTCPServerWritable(wevent);
+            dispatcher.dispatchTCPServerWritable( this );
     }
 
     protected void sendCompleteEvent()
-        
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
-        dispatcher.dispatchTCPComplete(wevent);
+        dispatcher.dispatchTCPComplete( this );
     }
 
     protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
@@ -432,25 +425,21 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             dispatcher.dispatchTCPServerDataEnd(cevent);
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
-        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
-            dispatcher.dispatchTCPClientFIN(wevent);
+            dispatcher.dispatchTCPClientFIN( this );
         else
-            dispatcher.dispatchTCPServerFIN(wevent);
+            dispatcher.dispatchTCPServerFIN( this );
     }
 
     protected void sendRSTEvent(int side)
-        
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
-            dispatcher.dispatchTCPClientRST(wevent);
+            dispatcher.dispatchTCPClientRST( this );
         else
-            dispatcher.dispatchTCPServerRST(wevent);
+            dispatcher.dispatchTCPServerRST( this );
     }
 
     protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        
     {
         tryReadInt(side, in, warnIfUnable);
     }
@@ -609,8 +598,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected void closeFinal()
     {
         try {
-            TCPSessionEvent wevent = new TCPSessionEvent(pipelineConnector, this);
-            dispatcher.dispatchTCPFinalized(wevent);
+            dispatcher.dispatchTCPFinalized( this );
         } catch (Exception x) {
             logger.warn("Exception in Finalized", x);
         }

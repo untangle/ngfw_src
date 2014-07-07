@@ -18,9 +18,7 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -33,24 +31,24 @@ class EventHandler extends AbstractEventHandler
     /* Firewall Node */
     private final FirewallImpl node;
 
-    public EventHandler(FirewallImpl node)
+    public EventHandler( FirewallImpl node )
     {
         super(node);
 
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
-    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
+    private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         boolean block = false;
         boolean flag = false;

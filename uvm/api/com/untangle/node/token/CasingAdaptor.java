@@ -16,7 +16,6 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -34,10 +33,8 @@ public class CasingAdaptor extends CasingBase
     // SessionEventListener methods -------------------------------------------
 
     @Override
-    public void handleTCPNewSession(TCPSessionEvent e)
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        NodeTCPSession session = e.session();
-
         Casing casing = casingFactory.casing( session, clientSide );
 
         session.attach( casing );
@@ -118,60 +115,58 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public void handleTCPClientFIN(TCPSessionEvent e)
+    public void handleTCPClientFIN( NodeTCPSession session )
     {
         TCPStreamer tcpStream = null;
 
-        NodeTCPSession s = e.session();
-        Casing casing = (Casing)e.session().attachment();
+        Casing casing = (Casing)session.attachment();
 
         if (clientSide) {
             TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                tcpStream = new TokenStreamerAdaptor( tokSt, s );
+                tcpStream = new TokenStreamerAdaptor( tokSt, session );
             }
         } else {
             tcpStream = casing.unparser().endSession();
         }
 
         if (null != tcpStream) {
-            s.beginServerStream(tcpStream);
+            session.beginServerStream(tcpStream);
         } else {
-            s.shutdownServer();
+            session.shutdownServer();
         }
     }
 
     @Override
-    public void handleTCPServerFIN(TCPSessionEvent e)
+    public void handleTCPServerFIN( NodeTCPSession session )
     {
         TCPStreamer ts = null;
 
-        NodeTCPSession s = e.session();
-        Casing casing = (Casing)e.session().attachment();
+        Casing casing = (Casing)session.attachment();
 
         if (clientSide) {
             ts = casing.unparser().endSession();
         } else {
             TokenStreamer tokSt = casing.parser().endSession();
             if (null != tokSt) {
-                ts = new TokenStreamerAdaptor( tokSt, s );
+                ts = new TokenStreamerAdaptor( tokSt, session );
             }
         }
 
         if (null != ts) {
-            s.beginClientStream(ts);
+            session.beginClientStream(ts);
         } else {
-            s.shutdownClient();
+            session.shutdownClient();
         }
     }
 
     @Override
-    public void handleTCPFinalized(TCPSessionEvent e) 
+    public void handleTCPFinalized( NodeTCPSession session ) 
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("finalizing " + e.session().id());
+            logger.debug("finalizing " + session.id());
         }
-        finalize( e.session() );
+        finalize( session );
     }
 
     @Override

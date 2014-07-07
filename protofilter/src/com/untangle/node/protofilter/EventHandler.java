@@ -15,9 +15,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
@@ -52,29 +50,25 @@ public class EventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSession (TCPSessionEvent event)
+    public void handleTCPNewSession ( NodeTCPSession session )
     {
-        NodeTCPSession sess = event.session();
-
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sess.attach(sessInfo);
+        session.attach(sessInfo);
     }
 
-    public void handleUDPNewSession (UDPSessionEvent event)
+    public void handleUDPNewSession ( NodeUDPSession session )
     {
-        NodeUDPSession sess = event.session();
-
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sess.attach(sessInfo);
+        session.attach(sessInfo);
     }
 
-    public void handleTCPClientChunk (TCPChunkEvent e)
+    public void handleTCPClientChunk ( TCPChunkEvent e )
     {
         NodeTCPSession sess = e.session();
         _handleChunk( e.data().duplicate(), sess, true );
@@ -82,7 +76,7 @@ public class EventHandler extends AbstractEventHandler
         return;
     }
 
-    public void handleTCPServerChunk (TCPChunkEvent e)
+    public void handleTCPServerChunk ( TCPChunkEvent e )
     {
         NodeTCPSession sess = e.session();
         _handleChunk( e.data().duplicate(), sess, true );
@@ -90,7 +84,7 @@ public class EventHandler extends AbstractEventHandler
         return;
     }
 
-    public void handleUDPClientPacket (UDPPacketEvent e) 
+    public void handleUDPClientPacket ( UDPPacketEvent e ) 
     {
         NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -98,7 +92,7 @@ public class EventHandler extends AbstractEventHandler
         sess.sendServerPacket(packet, e.header());
     }
 
-    public void handleUDPServerPacket (UDPPacketEvent e) 
+    public void handleUDPServerPacket ( UDPPacketEvent e ) 
     {
         NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -106,27 +100,27 @@ public class EventHandler extends AbstractEventHandler
         sess.sendClientPacket(packet, e.header());
     }
 
-    public void patternSet (Set<ProtoFilterPattern> patternSet)
+    public void patternSet ( Set<ProtoFilterPattern> patternSet )
     {
         _patternSet = patternSet;
     }
 
-    public void chunkLimit (int chunkLimit)
+    public void chunkLimit ( int chunkLimit )
     {
         _chunkLimit = chunkLimit;
     }
 
-    public void byteLimit (int byteLimit)
+    public void byteLimit ( int byteLimit )
     {
         _byteLimit  = byteLimit;
     }
 
-    public void stripZeros (boolean stripZeros)
+    public void stripZeros ( boolean stripZeros )
     {
         _stripZeros = stripZeros;
     }
 
-    private void _handleChunk (ByteBuffer chunk, NodeSession sess, boolean server)
+    private void _handleChunk ( ByteBuffer chunk, NodeSession sess, boolean server )
     {
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
 
@@ -257,7 +251,7 @@ public class EventHandler extends AbstractEventHandler
         }
     }
 
-    private ProtoFilterPattern _findMatch (SessionInfo sessInfo, NodeSession sess, boolean server)
+    private ProtoFilterPattern _findMatch ( SessionInfo sessInfo, NodeSession sess, boolean server )
     {
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
@@ -274,7 +268,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     // Only works with non-direct ByteBuffers.  Ignores mark.
-    private AsciiCharBuffer ensureRoomFor(AsciiCharBuffer abuf, int bytesToAdd)
+    private AsciiCharBuffer ensureRoomFor( AsciiCharBuffer abuf, int bytesToAdd )
     {
         if (abuf.remaining() < bytesToAdd) {
             ByteBuffer buf = abuf.getWrappedBuffer();

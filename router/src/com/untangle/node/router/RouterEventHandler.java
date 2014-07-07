@@ -12,9 +12,7 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import org.apache.log4j.Logger;
 
 class RouterEventHandler extends AbstractEventHandler
@@ -29,7 +27,7 @@ class RouterEventHandler extends AbstractEventHandler
     public static final short PROTO_TCP = 6;
 
     /* Setup  */
-    RouterEventHandler(RouterImpl node)
+    RouterEventHandler( RouterImpl node )
     {
         super(node);
         this.rand = new Random();
@@ -92,7 +90,7 @@ class RouterEventHandler extends AbstractEventHandler
         request.release();
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
     {
 
         IPNewSessionRequest request = event.sessionRequest();

@@ -10,12 +10,9 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-//import com.untangle.uvm.vnet.Pipeline;
-//import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 public class CasingCoupler extends CasingBase
@@ -28,10 +25,8 @@ public class CasingCoupler extends CasingBase
     // SessionEventListener methods -------------------------------------------
 
     @Override
-    public void handleTCPNewSession(TCPSessionEvent e)
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        NodeTCPSession session = e.session();
-
         Casing casing = casingFactory.casing(session, clientSide);
         //Pipeline pipeline = pipeFoundry.getPipeline(session.id());
 
@@ -101,12 +96,12 @@ public class CasingCoupler extends CasingBase
     }
 
     @Override
-    public void handleTCPFinalized(TCPSessionEvent e)
+    public void handleTCPFinalized( NodeTCPSession session )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("finalizing " + e.session().id());
+            logger.debug("finalizing " + session.id());
         }
-        Casing c = (Casing) e.session().attachment();
+        Casing c = (Casing) session.attachment();
 
         // the casing may have already been shutdown so we only need to
         // call the finalized stuff if it still exists 

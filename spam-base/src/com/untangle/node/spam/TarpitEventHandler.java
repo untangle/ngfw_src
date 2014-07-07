@@ -9,7 +9,6 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 
 class TarpitEventHandler extends AbstractEventHandler
 {
@@ -18,7 +17,7 @@ class TarpitEventHandler extends AbstractEventHandler
     private SpamNodeImpl spamImpl;
     private DnsblChecker dnsblChecker;
     
-    TarpitEventHandler(SpamNodeImpl spamImpl)
+    TarpitEventHandler( SpamNodeImpl spamImpl )
     {
         super(spamImpl);
 
@@ -26,7 +25,7 @@ class TarpitEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
         SpamSettings spamSettings = spamImpl.getSettings();

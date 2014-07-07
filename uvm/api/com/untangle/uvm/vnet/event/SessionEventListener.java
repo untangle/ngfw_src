@@ -4,6 +4,8 @@
 package com.untangle.uvm.vnet.event;
 
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 
 /**
  * The listener interface for receiving Vnet events.
@@ -40,9 +42,9 @@ public interface SessionEventListener extends java.util.EventListener
      * too late to reject or modify the session.  (Of course the session may
      * still be closed at any time)
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      */
-    void handleTCPNewSession(TCPSessionEvent event);
+    void handleTCPNewSession( NodeTCPSession session );
 
     /**
      * Called when data arrives from the client side
@@ -59,22 +61,22 @@ public interface SessionEventListener extends java.util.EventListener
      * first gone empty.  This is an edge-triggered event that gives the node a chance
      * to write some more bytes.
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      * @return an <code>void</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPServerWritable(TCPSessionEvent event);
+    void handleTCPServerWritable( NodeTCPSession session );
 
     /**
      * <code>handleTCPClientWritable</code> is called when the write queue to the client has
      * first gone empty.  This is an edge-triggered event that gives the node a chance
      * to write some more bytes.
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      * @return an <code>void</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPClientWritable(TCPSessionEvent event);
+    void handleTCPClientWritable( NodeTCPSession session );
 
     /**
      * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -99,10 +101,10 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * This is called just after handleTcpClientDataEnd.
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPClientFIN(TCPSessionEvent event);
+    void handleTCPClientFIN( NodeTCPSession session );
 
     /**
      * <code>handleTCPServerDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -127,10 +129,10 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * This is called just after handleTcpServerDataEnd.
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPServerFIN(TCPSessionEvent event);
+    void handleTCPServerFIN( NodeTCPSession session );
 
     /**
      * <code>handleTCPClientRST</code> is called when the first RST (Reset) is read from
@@ -142,9 +144,9 @@ public interface SessionEventListener extends java.util.EventListener
      * the client without waiting for a response (FIN or RST)) from the client.  So there
      * is no need to pass through a second reset as there is with shutdown.
      *
-     * @param event a <code>TCPSessionEvent</code> giving the session
+     * @param event a <code>NodeTCPSession</code> giving the session
      */
-    void handleTCPClientRST(TCPSessionEvent event);
+    void handleTCPClientRST( NodeTCPSession session );
 
     /**
      * <code>handleTCPServerReset</code> is called when the first RST (Reset) is read from
@@ -156,9 +158,9 @@ public interface SessionEventListener extends java.util.EventListener
      * the server without waiting for a response (FIN or RST)) from the server.  So there
      * is no need to pass through a second reset as there is with shutdown.
      *
-     * @param event a <code>TCPSessionEvent</code> giving the session
+     * @param event a <code>NodeTCPSession</code> giving the session
      */
-    void handleTCPServerRST(TCPSessionEvent event);
+    void handleTCPServerRST( NodeTCPSession session );
 
     /**
      * As a convenience, <code>handleTCPFinalized</code> is called once both
@@ -173,9 +175,9 @@ public interface SessionEventListener extends java.util.EventListener
      *  1) If the session is released at NewSession time, it is never Finalized
      *  2) If the session is released at a later time, it is never Finalized
      *
-     * @param event a <code>TCPSessionEvent</code> giving the session
+     * @param event a <code>NodeTCPSession</code> giving the session
      */
-    void handleTCPFinalized(TCPSessionEvent event);
+    void handleTCPFinalized( NodeTCPSession session );
 
     /**
      * <code>handleTCPComplete</code> is delivered when a session completed on both sides
@@ -183,10 +185,10 @@ public interface SessionEventListener extends java.util.EventListener
      * It is delivered just after the pipeline endpoints have been registered
      * but before vectoring has begun.
      *
-     * @param event a <code>TCPSessionEvent</code> value
+     * @param event a <code>NodeTCPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPComplete(TCPSessionEvent event);
+    void handleTCPComplete( NodeTCPSession session );
 
     /**
      * UDP
@@ -210,9 +212,9 @@ public interface SessionEventListener extends java.util.EventListener
      * too late to reject or modify the session.  (Of course the session may
      * still be closed/released at any time)
      *
-     * @param event a <code>UDPSessionEvent</code> value
+     * @param event a <code>NodeUDPSession</code> value
      */
-    void handleUDPNewSession(UDPSessionEvent event);
+    void handleUDPNewSession( NodeUDPSession session );
 
     /**
      * Called before the session is established (when we get the initial packet).
@@ -227,33 +229,33 @@ public interface SessionEventListener extends java.util.EventListener
      * Similar to a FIN event, but its just a timeout event, not actually
      * something received from the client
      */
-    void handleUDPClientExpired(UDPSessionEvent event);
+    void handleUDPClientExpired( NodeUDPSession session );
 
     /**
      * Similar to a FIN event, but its just a timeout event, not actually
      * something received from the server
      */
-    void handleUDPServerExpired(UDPSessionEvent event);
+    void handleUDPServerExpired( NodeUDPSession session );
 
     /**
      * <code>handleUDPServerWritable</code> is called when the write queue to the server has
      * first gone empty.  This is an edge-triggered event that gives the node a chance
      * to write some more packets.
      *
-     * @param event a <code>UDPSessionEvent</code> value
+     * @param event a <code>NodeUDPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPServerWritable(UDPSessionEvent event);
+    void handleUDPServerWritable( NodeUDPSession session );
 
     /**
      * <code>handleUDPClientWritable</code> is called when the write queue to the client has
      * first gone empty.  This is an edge-triggered event that gives the node a chance
      * to write some more packets.
      *
-     * @param event a <code>UDPSessionEvent</code> value
+     * @param event a <code>NodeUDPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPClientWritable(UDPSessionEvent event);
+    void handleUDPClientWritable( NodeUDPSession session );
 
     /**
      * <code>handleUDPFinalized</code> is called once both the client and server have
@@ -268,9 +270,9 @@ public interface SessionEventListener extends java.util.EventListener
      *     are closed at that time), or at whatever later time (now that we're back
      *     in NORMAL mode) both sides have closed.
      *
-     * @param event a <code>UDPSessionEvent</code> giving the session
+     * @param event a <code>NodeUDPSession</code> giving the session
      */
-    void handleUDPFinalized(UDPSessionEvent event);
+    void handleUDPFinalized( NodeUDPSession session );
 
     /**
      * <code>handleUDPComplete</code> is delivered when a session is completed on both sides
@@ -279,9 +281,9 @@ public interface SessionEventListener extends java.util.EventListener
      * It is delivered just after the pipeline endpoints have been registered
      * but before vectoring has begun.
      *
-     * @param event a <code>UDPSessionEvent</code> value
+     * @param event a <code>NodeUDPSession</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPComplete(UDPSessionEvent event);
+    void handleUDPComplete( NodeUDPSession session );
 }
 

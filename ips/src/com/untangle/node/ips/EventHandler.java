@@ -6,46 +6,47 @@ package com.untangle.node.ips;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 public class EventHandler extends AbstractEventHandler
 {
     private IpsDetectionEngine ipsEngine;
 
-    public EventHandler(IpsNodeImpl node) {
+    public EventHandler( IpsNodeImpl node )
+    {
         super(node);
         ipsEngine = node.getEngine();
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
-    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
+    private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         ipsEngine.processNewSessionRequest(request, protocol);
     }
 
-    public void handleTCPNewSession(TCPSessionEvent event)
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        handleNewSession(event.session(), Protocol.TCP);
+        handleNewSession( session, Protocol.TCP );
     }
 
-    public void handleUDPNewSession(UDPSessionEvent event)
+    public void handleUDPNewSession( NodeUDPSession session )
     {
-        handleNewSession(event.session(), Protocol.UDP);
+        handleNewSession( session, Protocol.UDP);
     }
 
     private void handleNewSession(NodeSession session, Protocol protocol)
@@ -53,40 +54,40 @@ public class EventHandler extends AbstractEventHandler
         ipsEngine.processNewSession(session, protocol);
     }
 
-    public void handleTCPFinalized(TCPSessionEvent event)
+    public void handleTCPFinalized( NodeTCPSession session )
     {
-        handleFinalized(event.session(), Protocol.TCP);
+        handleFinalized( session, Protocol.TCP );
     }
 
-    public void handleUDPFinalized(UDPSessionEvent event)
+    public void handleUDPFinalized( NodeUDPSession session )
     {
-        handleFinalized(event.session(), Protocol.UDP);
+        handleFinalized( session, Protocol.UDP );
     }
 
-    private void handleFinalized(NodeSession session, Protocol protocol)
+    private void handleFinalized( NodeSession session, Protocol protocol )
     {
-        ipsEngine.processFinalized(session, protocol);
+        ipsEngine.processFinalized( session, protocol );
     }
 
-    public void handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk( TCPChunkEvent event )
     {
         ipsEngine.handleChunk( event.data(), event.session(), false );
         super.handleTCPClientChunk( event );
     }
 
-    public void handleTCPServerChunk(TCPChunkEvent event)
+    public void handleTCPServerChunk( TCPChunkEvent event )
     {
         ipsEngine.handleChunk( event.data(), event.session(), true );
         super.handleTCPServerChunk( event );
     }
 
-    public void handleUDPClientPacket(UDPPacketEvent event)
+    public void handleUDPClientPacket( UDPPacketEvent event )
     {
         ipsEngine.handleChunk( event.data(), event.session(), false );
         super.handleUDPClientPacket(event);
     }
 
-    public void handleUDPServerPacket(UDPPacketEvent event)
+    public void handleUDPServerPacket( UDPPacketEvent event )
     {
         ipsEngine.handleChunk( event.data(), event.session(), true );
         super.handleUDPServerPacket(event);

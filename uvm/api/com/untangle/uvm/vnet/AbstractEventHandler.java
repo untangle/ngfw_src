@@ -7,11 +7,8 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
-import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides
@@ -39,7 +36,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         /* accept */
     }
 
-    public void handleTCPNewSession(TCPSessionEvent event)
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         /* ignore */
     }
@@ -50,12 +47,11 @@ public abstract class AbstractEventHandler implements SessionEventListener
         return;
     }
 
-    public void handleTCPClientFIN(TCPSessionEvent event)
+    public void handleTCPClientFIN( NodeTCPSession session )
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeTCPSession sess = event.session();
-        sess.shutdownServer();
+        session.shutdownServer();
     }
 
     public void handleTCPServerDataEnd(TCPChunkEvent event)
@@ -64,35 +60,32 @@ public abstract class AbstractEventHandler implements SessionEventListener
         return;
     }
 
-    public void handleTCPServerFIN(TCPSessionEvent event)
+    public void handleTCPServerFIN( NodeTCPSession session )
     {
         // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeTCPSession sess = event.session();
-        sess.shutdownClient();
+        session.shutdownClient();
     }
 
-    public void handleTCPClientRST(TCPSessionEvent event)
+    public void handleTCPClientRST( NodeTCPSession session )
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeTCPSession sess = event.session();
-        sess.resetServer();
+        session.resetServer();
     }
 
-    public void handleTCPServerRST(TCPSessionEvent event)
+    public void handleTCPServerRST( NodeTCPSession session )
     {
         // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeTCPSession sess = event.session();
-        sess.resetClient();
+        session.resetClient();
     }
 
-    public void handleTCPFinalized(TCPSessionEvent event)
+    public void handleTCPFinalized( NodeTCPSession session )
     {
     }
 
-    public void handleTCPComplete(TCPSessionEvent event)
+    public void handleTCPComplete( NodeTCPSession session )
     {
     }
 
@@ -116,13 +109,13 @@ public abstract class AbstractEventHandler implements SessionEventListener
         return;
     }
 
-    public void handleTCPServerWritable(TCPSessionEvent event)
+    public void handleTCPServerWritable( NodeTCPSession session )
     {
         // Default writes nothing more.
         return;
     }
 
-    public void handleTCPClientWritable(TCPSessionEvent event)
+    public void handleTCPClientWritable( NodeTCPSession session )
     {
         // Default writes nothing more.
         return;
@@ -137,48 +130,46 @@ public abstract class AbstractEventHandler implements SessionEventListener
         /* accept */
     }
 
-    public void handleUDPNewSession(UDPSessionEvent event)
+    public void handleUDPNewSession( NodeUDPSession session )
     {
         /* ignore */
     }
 
-    public void handleUDPClientExpired(UDPSessionEvent event)
+    public void handleUDPClientExpired( NodeUDPSession session )
     {
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
         // Another possibility would be to hit them all at once.  Just
         // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeUDPSession sess = event.session();
-        sess.expireServer();
+        session.expireServer();
     }
 
-    public void handleUDPServerExpired(UDPSessionEvent event)
+    public void handleUDPServerExpired( NodeUDPSession session )
     {
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
         // Another possibility would be to hit them all at once.  Just
         // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
-        NodeUDPSession sess = event.session();
-        sess.expireClient();
+        session.expireClient();
     }
 
-    public void handleUDPServerWritable(UDPSessionEvent event)
+    public void handleUDPServerWritable( NodeUDPSession session )
     {
         // Default writes nothing more.
     }
 
-    public void handleUDPClientWritable(UDPSessionEvent event)
+    public void handleUDPClientWritable( NodeUDPSession session )
     {
         // Default writes nothing more.
     }
 
-    public void handleUDPFinalized(UDPSessionEvent event)
+    public void handleUDPFinalized( NodeUDPSession session )
     {
     }
 
-    public void handleUDPComplete(UDPSessionEvent event)
+    public void handleUDPComplete( NodeUDPSession session )
     {
     }
 

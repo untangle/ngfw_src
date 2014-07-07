@@ -20,9 +20,7 @@ import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPStreamer;
-import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * This is the primary implementation class for UDP live sessions.
@@ -239,26 +237,23 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
     protected void sendWritableEvent(int side)
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
-            dispatcher.dispatchUDPClientWritable(wevent);
+            dispatcher.dispatchUDPClientWritable( this );
         else
-            dispatcher.dispatchUDPServerWritable(wevent);
+            dispatcher.dispatchUDPServerWritable( this );
     }
 
     protected void sendCompleteEvent()
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
-        dispatcher.dispatchUDPComplete(wevent);
+        dispatcher.dispatchUDPComplete( this );
     }
 
     protected void sendExpiredEvent(int side)
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
         if (side == CLIENT)
-            dispatcher.dispatchUDPClientExpired(wevent);
+            dispatcher.dispatchUDPClientExpired( this );
         else
-            dispatcher.dispatchUDPServerExpired(wevent);
+            dispatcher.dispatchUDPServerExpired( this );
     }
 
     // Handles the actual reading from the client
@@ -347,8 +342,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     protected void closeFinal()
     {
         try {
-            UDPSessionEvent wevent = new UDPSessionEvent(pipelineConnector, this);
-            dispatcher.dispatchUDPFinalized(wevent);
+            dispatcher.dispatchUDPFinalized( this );
         } catch (Exception x) {
             logger.warn("Exception in Finalized", x);
         }

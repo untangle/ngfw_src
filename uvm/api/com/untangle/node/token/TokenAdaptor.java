@@ -16,13 +16,12 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * Adapts a Token session's underlying byte-stream a <code>TokenHandler</code>.
@@ -48,9 +47,8 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession(TCPSessionEvent e)
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        NodeTCPSession session = e.session();
         TokenHandler handler = handlerFactory.tokenHandler( session );
         session.attach( handler );
         
@@ -78,10 +76,9 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientFIN(TCPSessionEvent e)
+    public void handleTCPClientFIN( NodeTCPSession session )
     {
-        NodeTCPSession session = e.session();
-        TokenHandler handler = (TokenHandler) e.session().attachment();
+        TokenHandler handler = (TokenHandler) session.attachment();
 
         try {
             handler.handleClientFin();
@@ -93,10 +90,9 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerFIN(TCPSessionEvent e)
+    public void handleTCPServerFIN( NodeTCPSession session )
     {
-        NodeTCPSession session = e.session();
-        TokenHandler handler = (TokenHandler) e.session().attachment();
+        TokenHandler handler = (TokenHandler) session.attachment();
 
         try {
             handler.handleServerFin();
@@ -108,13 +104,11 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(TCPSessionEvent e) 
+    public void handleTCPFinalized( NodeTCPSession session ) 
     {
-        NodeTCPSession sess = e.session();
-
-        finalize( sess );
+        finalize( session );
         
-        super.handleTCPFinalized(e);
+        super.handleTCPFinalized( session );
     }
 
     private void finalize( NodeTCPSession sess )
@@ -140,7 +134,7 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPNewSession(UDPSessionEvent e) 
+    public void handleUDPNewSession( NodeUDPSession session ) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
@@ -158,19 +152,19 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPClientExpired(UDPSessionEvent e) 
+    public void handleUDPClientExpired( NodeUDPSession session ) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPServerExpired(UDPSessionEvent e) 
+    public void handleUDPServerExpired( NodeUDPSession session ) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPFinalized(UDPSessionEvent e) 
+    public void handleUDPFinalized( NodeUDPSession session ) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }

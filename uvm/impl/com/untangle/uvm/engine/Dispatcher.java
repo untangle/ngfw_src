@@ -26,13 +26,10 @@ import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
-import com.untangle.uvm.vnet.event.UDPErrorEvent;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * One dispatcher per PipelineConnector.  This where all the new session logic
@@ -243,27 +240,25 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPNewSession(TCPSessionEvent event)
+    void dispatchTCPNewSession( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPNewSession", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPNewSession(event);
+            releasedHandler.handleTCPNewSession( session );
         else
-            sessionEventListener.handleTCPNewSession(event);
+            sessionEventListener.handleTCPNewSession( session );
     }
 
-    void dispatchUDPNewSession(UDPSessionEvent event)
+    void dispatchUDPNewSession( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPNewSession", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPNewSession(event);
+            releasedHandler.handleUDPNewSession( session );
         else
-            sessionEventListener.handleUDPNewSession(event);
+            sessionEventListener.handleUDPNewSession( session );
     }
 
-    void dispatchTCPClientChunk(TCPChunkEvent event)
+    void dispatchTCPClientChunk( TCPChunkEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
@@ -274,7 +269,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPServerChunk(TCPChunkEvent event)
+    void dispatchTCPServerChunk( TCPChunkEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
@@ -285,29 +280,27 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPClientWritable(TCPSessionEvent event)
+    void dispatchTCPClientWritable( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPClientWritable(event);
+            releasedHandler.handleTCPClientWritable( session );
         } else {
-            sessionEventListener.handleTCPClientWritable(event);
+            sessionEventListener.handleTCPClientWritable( session );
         }
     }
 
-    void dispatchTCPServerWritable(TCPSessionEvent event)
+    void dispatchTCPServerWritable( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPServerWritable(event);
+            releasedHandler.handleTCPServerWritable( session );
         } else {
-            sessionEventListener.handleTCPServerWritable(event);
+            sessionEventListener.handleTCPServerWritable( session );
         }
     }
 
-    void dispatchUDPClientPacket(UDPPacketEvent event)
+    void dispatchUDPClientPacket( UDPPacketEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
@@ -318,7 +311,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchUDPServerPacket(UDPPacketEvent event)
+    void dispatchUDPServerPacket( UDPPacketEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
@@ -329,7 +322,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPClientDataEnd(TCPChunkEvent event)
+    void dispatchTCPClientDataEnd( TCPChunkEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
@@ -339,17 +332,16 @@ public class Dispatcher
             sessionEventListener.handleTCPClientDataEnd(event);
     }
 
-    void dispatchTCPClientFIN(TCPSessionEvent event)
+    void dispatchTCPClientFIN( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientFIN", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPClientFIN(event);
+            releasedHandler.handleTCPClientFIN( session );
         else
-            sessionEventListener.handleTCPClientFIN(event);
+            sessionEventListener.handleTCPClientFIN( session );
     }
 
-    void dispatchTCPServerDataEnd(TCPChunkEvent event)
+    void dispatchTCPServerDataEnd( TCPChunkEvent event )
     {
         NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
@@ -359,114 +351,103 @@ public class Dispatcher
             sessionEventListener.handleTCPServerDataEnd(event);
     }
 
-    void dispatchTCPServerFIN(TCPSessionEvent event)
+    void dispatchTCPServerFIN( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerFIN", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPServerFIN(event);
+            releasedHandler.handleTCPServerFIN( session );
         else
-            sessionEventListener.handleTCPServerFIN(event);
+            sessionEventListener.handleTCPServerFIN( session );
     }
 
-    void dispatchTCPClientRST(TCPSessionEvent event)
+    void dispatchTCPClientRST( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientRST", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPClientRST(event);
+            releasedHandler.handleTCPClientRST( session );
         else
-            sessionEventListener.handleTCPClientRST(event);
+            sessionEventListener.handleTCPClientRST( session );
     }
 
-    void dispatchTCPServerRST(TCPSessionEvent event)
+    void dispatchTCPServerRST( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerRST", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPServerRST(event);
+            releasedHandler.handleTCPServerRST( session );
         else
-            sessionEventListener.handleTCPServerRST(event);
+            sessionEventListener.handleTCPServerRST( session );
     }
 
-    void dispatchTCPFinalized(TCPSessionEvent event)
+    void dispatchTCPFinalized( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPFinalized", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPFinalized(event);
+            releasedHandler.handleTCPFinalized( session );
         else
-            sessionEventListener.handleTCPFinalized(event);
+            sessionEventListener.handleTCPFinalized( session );
     }
 
-    void dispatchTCPComplete(TCPSessionEvent event)
+    void dispatchTCPComplete( NodeTCPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPComplete", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPComplete(event);
+            releasedHandler.handleTCPComplete( session );
         else
-            sessionEventListener.handleTCPComplete(event);
+            sessionEventListener.handleTCPComplete( session );
     }
 
-    void dispatchUDPClientExpired(UDPSessionEvent event)
+    void dispatchUDPClientExpired( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientExpired", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPClientExpired(event);
+            releasedHandler.handleUDPClientExpired( session );
         else
-            sessionEventListener.handleUDPClientExpired(event);
+            sessionEventListener.handleUDPClientExpired( session );
     }
 
-    void dispatchUDPServerExpired(UDPSessionEvent event)
+    void dispatchUDPServerExpired( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerExpired", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPServerExpired(event);
+            releasedHandler.handleUDPServerExpired( session );
         else
-            sessionEventListener.handleUDPServerExpired(event);
+            sessionEventListener.handleUDPServerExpired( session );
     }
 
-    void dispatchUDPClientWritable(UDPSessionEvent event)
+    void dispatchUDPClientWritable( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientWritable", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPClientWritable(event);
+            releasedHandler.handleUDPClientWritable( session );
         else
-            sessionEventListener.handleUDPClientWritable(event);
+            sessionEventListener.handleUDPClientWritable( session );
     }
 
-    void dispatchUDPServerWritable(UDPSessionEvent event)
+    void dispatchUDPServerWritable( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerWritable", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPServerWritable(event);
+            releasedHandler.handleUDPServerWritable( session );
         else
-            sessionEventListener.handleUDPServerWritable(event);
+            sessionEventListener.handleUDPServerWritable( session );
     }
 
-    void dispatchUDPFinalized(UDPSessionEvent event)
+    void dispatchUDPFinalized( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPFinalized", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPFinalized(event);
+            releasedHandler.handleUDPFinalized( session );
         else
-            sessionEventListener.handleUDPFinalized(event);
+            sessionEventListener.handleUDPFinalized( session );
     }
 
-    void dispatchUDPComplete(UDPSessionEvent event)
+    void dispatchUDPComplete( NodeUDPSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "UDPComplete", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleUDPComplete(event);
+            releasedHandler.handleUDPComplete( session );
         else
-            sessionEventListener.handleUDPComplete(event);
+            sessionEventListener.handleUDPComplete( session );
     }
 
     void dispatchTimer( NodeSessionImpl session )
@@ -523,8 +504,7 @@ public class Dispatcher
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
-                TCPSessionEvent tevent = new TCPSessionEvent(pipelineConnector, session);
-                dispatchTCPNewSession(tevent);
+                dispatchTCPNewSession( session );
             }
 
             // Finally add it to our set of owned sessions.
@@ -585,8 +565,7 @@ public class Dispatcher
             if (request.state() == IPNewSessionRequestImpl.RELEASED) {
                 session.release();
             } else {
-                UDPSessionEvent tevent = new UDPSessionEvent(pipelineConnector, session);
-                dispatchUDPNewSession(tevent);
+                dispatchUDPNewSession( session );
             }
 
             // Finally add it to our set of owned sessions.

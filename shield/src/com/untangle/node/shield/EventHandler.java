@@ -18,9 +18,7 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 class EventHandler extends AbstractEventHandler
 {

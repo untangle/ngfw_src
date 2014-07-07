@@ -8,9 +8,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -27,7 +25,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(getClass());
     private CaptureNodeImpl node = null;
 
-    public CaptureTrafficHandler(CaptureNodeImpl node)
+    public CaptureTrafficHandler( CaptureNodeImpl node )
     {
         super(node);
         this.node = node;
@@ -36,7 +34,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     // TCP stuff --------------------------------------------------
 
     @Override
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
     {
         TCPNewSessionRequest sessreq = event.sessionRequest();
 
@@ -114,7 +112,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     // UDP stuff --------------------------------------------------
 
     @Override
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
     {
         IPNewSessionRequest sessreq = event.sessionRequest();
 
@@ -179,7 +177,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPClientPacket(UDPPacketEvent event)
+    public void handleUDPClientPacket( UDPPacketEvent event )
     {
         NodeUDPSession session = event.session();
         DNSPacket packet = new DNSPacket();
