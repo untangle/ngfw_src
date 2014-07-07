@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,6 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSessionStats;
-import com.untangle.uvm.vnet.event.IPDataEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.LoadAvg;
 
@@ -252,7 +252,7 @@ public class IpsDetectionEngine
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, NodeSession session, boolean isFromServer)
+    public void handleChunk( ByteBuffer chunk, NodeSession session, boolean isFromServer )
     {
         try {
             long startTime = System.currentTimeMillis();
@@ -266,7 +266,7 @@ public class IpsDetectionEngine
                 return;
             }
             
-            info.setEvent(event);
+            info.setData( chunk );
             info.setFlow(isFromServer);
 
             boolean result;

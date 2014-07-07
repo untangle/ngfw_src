@@ -13,7 +13,7 @@ import com.untangle.uvm.vnet.NodeUDPSession;
  * UDP packet event -- packet received.
  */
 @SuppressWarnings("serial")
-public class UDPPacketEvent extends UDPSessionEvent implements IPDataEvent
+public class UDPPacketEvent extends UDPSessionEvent
 {
     private ByteBuffer packetBuffer;
     private IPPacketHeader header;

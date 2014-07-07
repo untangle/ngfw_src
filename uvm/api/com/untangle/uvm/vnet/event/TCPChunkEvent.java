@@ -12,7 +12,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * TCP data event -- chunk of bytes received.
  */
 @SuppressWarnings("serial")
-public class TCPChunkEvent extends TCPSessionEvent implements IPDataEvent
+public class TCPChunkEvent extends TCPSessionEvent
 {
     private ByteBuffer readBuffer;
 

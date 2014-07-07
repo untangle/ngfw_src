@@ -14,7 +14,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.IPDataEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
@@ -78,7 +77,7 @@ public class EventHandler extends AbstractEventHandler
     public void handleTCPClientChunk (TCPChunkEvent e)
     {
         NodeTCPSession sess = e.session();
-        _handleChunk(e, sess, true);
+        _handleChunk( e.data().duplicate(), sess, true );
         sess.sendDataToServer( e.data() );
         return;
     }
@@ -86,7 +85,7 @@ public class EventHandler extends AbstractEventHandler
     public void handleTCPServerChunk (TCPChunkEvent e)
     {
         NodeTCPSession sess = e.session();
-        _handleChunk(e, sess, true);
+        _handleChunk( e.data().duplicate(), sess, true );
         sess.sendDataToClient( e.data() );
         return;
     }
@@ -95,7 +94,7 @@ public class EventHandler extends AbstractEventHandler
     {
         NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
-        _handleChunk(e, e.session(), false);
+        _handleChunk( e.data().duplicate(), e.session(), false );
         sess.sendServerPacket(packet, e.header());
     }
 
@@ -103,7 +102,7 @@ public class EventHandler extends AbstractEventHandler
     {
         NodeUDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
-        _handleChunk(e, e.session(), true);
+        _handleChunk( e.data().duplicate(), e.session(), true );
         sess.sendClientPacket(packet, e.header());
     }
 
@@ -127,9 +126,8 @@ public class EventHandler extends AbstractEventHandler
         _stripZeros = stripZeros;
     }
 
-    private void _handleChunk (IPDataEvent event, NodeSession sess, boolean server)
+    private void _handleChunk (ByteBuffer chunk, NodeSession sess, boolean server)
     {
-        ByteBuffer chunk = event.data().duplicate();
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
 
         int chunkBytes = chunk.remaining();

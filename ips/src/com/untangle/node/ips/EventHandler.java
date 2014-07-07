@@ -70,25 +70,25 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleTCPClientChunk(TCPChunkEvent event)
     {
-        ipsEngine.handleChunk(event, event.session(), false);
+        ipsEngine.handleChunk( event.data(), event.session(), false );
         super.handleTCPClientChunk( event );
     }
 
     public void handleTCPServerChunk(TCPChunkEvent event)
     {
-        ipsEngine.handleChunk(event, event.session(), true);
+        ipsEngine.handleChunk( event.data(), event.session(), true );
         super.handleTCPServerChunk( event );
     }
 
     public void handleUDPClientPacket(UDPPacketEvent event)
     {
-        ipsEngine.handleChunk(event, event.session(),false);
+        ipsEngine.handleChunk( event.data(), event.session(), false );
         super.handleUDPClientPacket(event);
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
     {
-        ipsEngine.handleChunk(event, event.session(),true);
+        ipsEngine.handleChunk( event.data(), event.session(), true );
         super.handleUDPServerPacket(event);
     }
 

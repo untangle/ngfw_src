@@ -3,10 +3,11 @@
  */
 package com.untangle.node.ips.options;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.node.ips.IpsSessionInfo;
-import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class DsizeOption extends IpsOption
 {
@@ -54,8 +55,8 @@ public class DsizeOption extends IpsOption
     //XXX - check negation flag?
     public boolean run(IpsSessionInfo sessionInfo)
     {
-        IPDataEvent event = sessionInfo.getEvent();
-        int size = event.data().remaining();
+        ByteBuffer data = sessionInfo.getData();
+        int size = data.remaining();
         if(min <= size && max >= size)
             return true;
         return false;

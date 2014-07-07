@@ -124,7 +124,7 @@ class ContentOption extends IpsOption
 
     public boolean run(IpsSessionInfo sessionInfo)
     {
-        ByteBuffer eventData = sessionInfo.getEvent().data();
+        ByteBuffer eventData = sessionInfo.getData();
         AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);
         CharacterIterator iter = new AsciiCharBufferCharacterIterator(data);
 

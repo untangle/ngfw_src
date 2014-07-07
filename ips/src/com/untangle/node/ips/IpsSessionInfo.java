@@ -4,11 +4,11 @@
 package com.untangle.node.ips;
 
 import java.util.Set;
+import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class IpsSessionInfo
 {
@@ -17,7 +17,7 @@ public class IpsSessionInfo
 
     private Set<IpsRuleSignature> c2sSignatures;
     private Set<IpsRuleSignature> s2cSignatures;
-    private IPDataEvent event;
+    private ByteBuffer data;
     private String uriPath;
     private boolean isServer;
 
@@ -53,14 +53,14 @@ public class IpsSessionInfo
         return session;
     }
 
-    public void setEvent(IPDataEvent event)
+    public void setData( ByteBuffer newValue )
     {
-        this.event = event;
+        this.data = newValue;
     }
 
-    public IPDataEvent getEvent()
+    public ByteBuffer getData()
     {
-        return event;
+        return data;
     }
 
     public void setFlow(boolean isServer)

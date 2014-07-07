@@ -73,8 +73,7 @@ public class PcreOption extends IpsOption
 
     public boolean run(IpsSessionInfo sessionInfo)
     {
-        ByteBuffer eventData = sessionInfo.getEvent().data();
-
+        ByteBuffer eventData = sessionInfo.getData();
         //  if(pcrePattern == null) {
         //      System.out.println("pcrePattern is null\n\n"+getSignature());
         //      return false;
