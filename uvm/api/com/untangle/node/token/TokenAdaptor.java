@@ -16,7 +16,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -177,9 +176,9 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTimer(IPSessionEvent e)
+    public void handleTimer( NodeSession sess )
     {
-        TokenHandler handler = (TokenHandler) e.session().attachment();
+        TokenHandler handler = (TokenHandler) sess.attachment();
 
         try {
             handler.handleTimer();

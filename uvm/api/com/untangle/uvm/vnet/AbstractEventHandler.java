@@ -4,7 +4,6 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
@@ -27,7 +26,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         this.node = (NodeBase)node;
     }
 
-    public void handleTimer(IPSessionEvent event)
+    public void handleTimer( NodeSession session )
     {
     }
 
@@ -128,7 +127,6 @@ public abstract class AbstractEventHandler implements SessionEventListener
         // Default writes nothing more.
         return;
     }
-
 
     //////////////////////////////////////////////////////////////////////
     // UDP

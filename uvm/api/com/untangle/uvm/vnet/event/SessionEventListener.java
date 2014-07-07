@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.vnet.event;
 
+import com.untangle.uvm.vnet.NodeSession;
+
 /**
  * The listener interface for receiving Vnet events.
  *
@@ -17,7 +19,7 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * @param event a <code>IPSessionEvent</code> giving which session the timer expired for
      */
-    void handleTimer(IPSessionEvent event);
+    void handleTimer( NodeSession session );
 
     /**
      * TCP

@@ -10,17 +10,25 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  * New TCP session request event
  */
 @SuppressWarnings("serial")
-public class TCPNewSessionRequestEvent extends PipelineConnectorEvent
+public class TCPNewSessionRequestEvent
 {
+    private TCPNewSessionRequest sessionRequest;
+    private PipelineConnector pipelineConnector;
     
     public TCPNewSessionRequestEvent(PipelineConnector pipelineConnector, TCPNewSessionRequest sessionRequest)
     {
-        super(pipelineConnector, sessionRequest);
+        this.pipelineConnector = pipelineConnector;
+        this.sessionRequest = sessionRequest;
+    }
+
+    public PipelineConnector pipelineConnector()
+    {
+        return pipelineConnector;
     }
 
     public TCPNewSessionRequest sessionRequest()
     {
-        return (TCPNewSessionRequest)getSource();
+        return sessionRequest;
     }
 
 }

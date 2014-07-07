@@ -10,16 +10,24 @@ import com.untangle.uvm.vnet.NodeUDPSession;
  * Base class for all UDP live session events
  */
 @SuppressWarnings("serial")
-public class UDPSessionEvent extends IPSessionEvent
+public class UDPSessionEvent
 {
-    
-    public UDPSessionEvent(PipelineConnector pipelineConnector, NodeUDPSession session)
+    private PipelineConnector pipelineConnector;
+    private NodeUDPSession session;
+        
+    public UDPSessionEvent( PipelineConnector pipelineConnector, NodeUDPSession session )
     {
-        super(pipelineConnector, session);
+        this.pipelineConnector = pipelineConnector;
+        this.session = session;
     }
 
     public NodeUDPSession session()
     {
-        return (NodeUDPSession)getSource();
+        return session;
+    }
+
+    public PipelineConnector pipelineConnector()
+    {
+        return pipelineConnector;
     }
 }

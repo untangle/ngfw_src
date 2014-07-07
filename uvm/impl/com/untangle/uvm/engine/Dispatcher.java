@@ -25,7 +25,6 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
@@ -470,14 +469,13 @@ public class Dispatcher
             sessionEventListener.handleUDPComplete(event);
     }
 
-    void dispatchTimer(IPSessionEvent event)
+    void dispatchTimer( NodeSessionImpl session )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "Timer", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTimer(event);
+            releasedHandler.handleTimer( session );
         else
-            sessionEventListener.handleTimer(event);
+            sessionEventListener.handleTimer( session );
     }
 
     private NodeTCPSession newSessionInternal( TCPNewSessionRequestImpl request )

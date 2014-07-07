@@ -14,7 +14,6 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 //import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -120,11 +119,9 @@ public class CasingCoupler extends CasingBase
     }
 
     @Override
-    public void handleTimer(IPSessionEvent e)
+    public void handleTimer( NodeSession sess )
     {
-        NodeTCPSession s = (NodeTCPSession) e.session();
-
-        Casing c = (Casing) e.session().attachment();
+        Casing c = (Casing) sess.attachment();
         Parser p = c.parser();
         p.handleTimer();
         // XXX unparser doesnt get one, does it need it?

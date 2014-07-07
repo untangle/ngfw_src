@@ -15,7 +15,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -176,10 +175,9 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public void handleTimer(IPSessionEvent e)
+    public void handleTimer( NodeSession sess )
     {
-        NodeTCPSession s = (NodeTCPSession)e.session();
-        Casing casing = (Casing)e.session().attachment();
+        Casing casing = (Casing) sess.attachment();
 
         Parser p = casing.parser();
         p.handleTimer();
