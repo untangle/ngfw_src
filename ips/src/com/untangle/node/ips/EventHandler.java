@@ -3,16 +3,17 @@
  */
 package com.untangle.node.ips;
 
+import java.nio.ByteBuffer;
+
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 
 public class EventHandler extends AbstractEventHandler
 {
@@ -69,28 +70,28 @@ public class EventHandler extends AbstractEventHandler
         ipsEngine.processFinalized( session, protocol );
     }
 
-    public void handleTCPClientChunk( TCPChunkEvent event )
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data  )
     {
-        ipsEngine.handleChunk( event.data(), event.session(), false );
-        super.handleTCPClientChunk( event );
+        ipsEngine.handleChunk( data, session, false );
+        super.handleTCPClientChunk( session, data );
     }
 
-    public void handleTCPServerChunk( TCPChunkEvent event )
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data  )
     {
-        ipsEngine.handleChunk( event.data(), event.session(), true );
-        super.handleTCPServerChunk( event );
+        ipsEngine.handleChunk( data, session, true );
+        super.handleTCPServerChunk( session, data );
     }
 
-    public void handleUDPClientPacket( UDPPacketEvent event )
+    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        ipsEngine.handleChunk( event.data(), event.session(), false );
-        super.handleUDPClientPacket(event);
+        ipsEngine.handleChunk( data, session, false );
+        super.handleUDPClientPacket( session, data, header );
     }
 
-    public void handleUDPServerPacket( UDPPacketEvent event )
+    public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        ipsEngine.handleChunk( event.data(), event.session(), true );
-        super.handleUDPServerPacket(event);
+        ipsEngine.handleChunk( data, session, true );
+        super.handleUDPServerPacket( session, data, header );
     }
 
 }

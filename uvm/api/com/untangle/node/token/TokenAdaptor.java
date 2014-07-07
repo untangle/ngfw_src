@@ -17,11 +17,10 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 
 /**
  * Adapts a Token session's underlying byte-stream a <code>TokenHandler</code>.
@@ -60,18 +59,18 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk(TCPChunkEvent e)
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
-        TokenHandler handler = (TokenHandler) e.session().attachment();
-        handleToken( handler, e, true );
+        TokenHandler handler = (TokenHandler) session.attachment();
+        handleToken( handler, session, data, true );
         return;
     }
 
     @Override
-    public void handleTCPClientChunk(TCPChunkEvent e)
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
-        TokenHandler handler = (TokenHandler) e.session().attachment();
-        handleToken( handler, e, false );
+        TokenHandler handler = (TokenHandler) session.attachment();
+        handleToken( handler, session, data, false );
         return;
     }
 
@@ -140,13 +139,13 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPClientPacket(UDPPacketEvent e)
+    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPServerPacket(UDPPacketEvent e)
+    public void handleUDPServerPacket(  NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
@@ -183,10 +182,9 @@ public class TokenAdaptor extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private void handleToken(TokenHandler handler, TCPChunkEvent e, boolean s2c)
+    private void handleToken(TokenHandler handler, NodeTCPSession session, ByteBuffer data, boolean s2c)
     {
-        NodeTCPSession session = e.session();
-        ByteBuffer b = e.chunk();
+        ByteBuffer b = data;
 
         if (b.remaining() < TOKEN_SIZE) {
             // read limit to token size

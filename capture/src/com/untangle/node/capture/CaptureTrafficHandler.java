@@ -9,12 +9,12 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
@@ -177,15 +177,14 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPClientPacket( UDPPacketEvent event )
+    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        NodeUDPSession session = event.session();
         DNSPacket packet = new DNSPacket();
         ByteBuffer response = null;
         InetAddress addr = null;
 
         // extract the DNS query from the client packet
-        packet.ExtractQuery(event.data().array(), event.data().limit());
+        packet.ExtractQuery(data.array(), data.limit());
         logger.debug(packet.queryString());
 
         // this handler will only see UDP packets with a target port
@@ -214,7 +213,7 @@ public class CaptureTrafficHandler extends AbstractEventHandler
         }
 
         // send the packet to the client
-        session.sendClientPacket(response, event.header());
+        session.sendClientPacket( response, header );
         logger.debug(packet.replyString());
     }
 }

@@ -14,8 +14,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.IPPacketHeader;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
@@ -68,36 +67,30 @@ public class EventHandler extends AbstractEventHandler
         session.attach(sessInfo);
     }
 
-    public void handleTCPClientChunk ( TCPChunkEvent e )
+    public void handleTCPClientChunk ( NodeTCPSession session, ByteBuffer data )
     {
-        NodeTCPSession sess = e.session();
-        _handleChunk( e.data().duplicate(), sess, true );
-        sess.sendDataToServer( e.data() );
+        _handleChunk( data, session, true );
+        session.sendDataToServer( data );
         return;
     }
 
-    public void handleTCPServerChunk ( TCPChunkEvent e )
+    public void handleTCPServerChunk ( NodeTCPSession session, ByteBuffer data )
     {
-        NodeTCPSession sess = e.session();
-        _handleChunk( e.data().duplicate(), sess, true );
-        sess.sendDataToClient( e.data() );
+        _handleChunk( data.duplicate(), session, true );
+        session.sendDataToClient( data );
         return;
     }
 
-    public void handleUDPClientPacket ( UDPPacketEvent e ) 
+    public void handleUDPClientPacket ( NodeUDPSession session, ByteBuffer data, IPPacketHeader header ) 
     {
-        NodeUDPSession sess = e.session();
-        ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
-        _handleChunk( e.data().duplicate(), e.session(), false );
-        sess.sendServerPacket(packet, e.header());
+        _handleChunk( data.duplicate(), session, false );
+        session.sendServerPacket( data, header );
     }
 
-    public void handleUDPServerPacket ( UDPPacketEvent e ) 
+    public void handleUDPServerPacket ( NodeUDPSession session, ByteBuffer data, IPPacketHeader header ) 
     {
-        NodeUDPSession sess = e.session();
-        ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
-        _handleChunk( e.data().duplicate(), e.session(), true );
-        sess.sendClientPacket(packet, e.header());
+        _handleChunk( data.duplicate(), session, true );
+        session.sendClientPacket( data, header );
     }
 
     public void patternSet ( Set<ProtoFilterPattern> patternSet )

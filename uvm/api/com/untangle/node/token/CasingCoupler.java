@@ -12,7 +12,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 public class CasingCoupler extends CasingBase
@@ -40,58 +39,58 @@ public class CasingCoupler extends CasingBase
     }
 
     @Override
-    public void handleTCPClientChunk(TCPChunkEvent e)
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id());
+            logger.debug("handling client chunk, session: " + session.id());
         }
 
         if (clientSide)
-            streamParse(e, false);
+            streamParse( session, data, false );
         else
-            streamUnparse(e, false);
+            streamUnparse( session, data, false );
         return;
     }
 
     @Override
-    public void handleTCPServerChunk(TCPChunkEvent e)
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id());
+            logger.debug("handling server chunk, session: " + session.id());
         }
 
         if (clientSide)
-            streamUnparse(e, true);
+            streamUnparse( session, data, true );
         else
-            streamParse(e, true);
+            streamParse( session, data, true );
         return;
     }
 
     @Override
-    public void handleTCPClientDataEnd(TCPChunkEvent e)
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id());
+            logger.debug("handling client chunk, session: " + session.id());
         }
 
         if (clientSide) 
-            streamParse(e, false);
+            streamParse( session, data, false );
         else
-            streamUnparse(e, false);
+            streamUnparse( session, data, false );
         return;
     }
 
     @Override
-    public void handleTCPServerDataEnd(TCPChunkEvent e)
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id());
+            logger.debug("handling server chunk, session: " + session.id());
         }
 
         if (clientSide)
-            streamUnparse(e, true);
+            streamUnparse( session, data, true );
         else
-            streamParse(e, true);
+            streamParse( session, data, true);
         return;
     }
 
@@ -110,7 +109,7 @@ public class CasingCoupler extends CasingBase
             c.unparser().handleFinalized();
         }
 
-        //removeCasingDesc(e.session());
+        //removeCasingDesc(session);
     }
 
     @Override
@@ -124,14 +123,13 @@ public class CasingCoupler extends CasingBase
 
     // private methods --------------------------------------------------------
 
-    private void streamParse(TCPChunkEvent e, boolean s2c)
+    private void streamParse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
-        NodeTCPSession session = e.session();
-        Casing casing = (Casing) e.session().attachment();
+        Casing casing = (Casing) session.attachment();
         Parser parser = casing.parser();
 
         try {
-            parser.parse(e);
+            parser.parse( session, data );
         }
 
         catch (Exception exn) {
@@ -142,14 +140,13 @@ public class CasingCoupler extends CasingBase
         return;
     }
 
-    private void streamUnparse(TCPChunkEvent e, boolean s2c)
+    private void streamUnparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
-        NodeTCPSession session = e.session();
-        Casing casing = (Casing) e.session().attachment();
+        Casing casing = (Casing) session.attachment();
         Unparser unparser = casing.unparser();
 
         try {
-            unparser.unparse(e);
+            unparser.unparse( session, data );
         }
 
         catch (Exception exn) {

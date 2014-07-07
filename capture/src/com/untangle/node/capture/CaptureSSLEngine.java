@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.UvmContextFactory;

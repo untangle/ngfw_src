@@ -4,7 +4,8 @@
 package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
+
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
  * Parses a stream of bytes into tokens.
@@ -19,16 +20,15 @@ public interface Parser
      * @return the ParseResult.
      * @exception ParseException if a parse error occurs.
      */
-    ParseResult parse(ByteBuffer chunk) throws ParseException;
+    ParseResult parse( ByteBuffer chunk ) throws ParseException;
 
     /**
      * Used for casings that expect byte stream on both sides
      *
      * @param event the TCPChunkEvent received
-     * @return the ByteBuffer to return
      * @throws ParseException
      */
-    void parse(TCPChunkEvent event) throws ParseException;
+    void parse( NodeTCPSession session, ByteBuffer data ) throws ParseException;
 
     /**
      * Called with last data from the read buffer on session close.
@@ -37,7 +37,7 @@ public interface Parser
      * @return the ParseResult.
      * @exception ParseException if a parse error occurs.
      */
-    ParseResult parseEnd(ByteBuffer chunk) throws ParseException;
+    ParseResult parseEnd( ByteBuffer chunk ) throws ParseException;
 
     /**
      * On FIN, allows the parser to stream out any final data.

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -25,11 +26,10 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 
 /**
  * One dispatcher per PipelineConnector.  This where all the new session logic
@@ -258,25 +258,23 @@ public class Dispatcher
             sessionEventListener.handleUDPNewSession( session );
     }
 
-    void dispatchTCPClientChunk( TCPChunkEvent event )
+    void dispatchTCPClientChunk( NodeTCPSessionImpl session, ByteBuffer data )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
-        elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
+        elog(Level.DEBUG, "TCPClientChunk", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPClientChunk(event);
+            releasedHandler.handleTCPClientChunk( session, data );
         } else {
-            sessionEventListener.handleTCPClientChunk(event);
+            sessionEventListener.handleTCPClientChunk( session, data );
         }
     }
 
-    void dispatchTCPServerChunk( TCPChunkEvent event )
+    void dispatchTCPServerChunk( NodeTCPSessionImpl session, ByteBuffer data )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
-        elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
+        elog(Level.DEBUG, "TCPServerChunk", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPServerChunk(event);
+            releasedHandler.handleTCPServerChunk( session, data );
         } else {
-            sessionEventListener.handleTCPServerChunk(event);
+            sessionEventListener.handleTCPServerChunk( session, data );
         }
     }
 
@@ -300,36 +298,33 @@ public class Dispatcher
         }
     }
 
-    void dispatchUDPClientPacket( UDPPacketEvent event )
+    void dispatchUDPClientPacket( NodeUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
-        elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
+        elog(Level.DEBUG, "UDPClientPacket", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleUDPClientPacket(event);
+            releasedHandler.handleUDPClientPacket( session, data, header );
         } else {
-            sessionEventListener.handleUDPClientPacket(event);
+            sessionEventListener.handleUDPClientPacket( session, data, header );
         }
     }
 
-    void dispatchUDPServerPacket( UDPPacketEvent event )
+    void dispatchUDPServerPacket( NodeUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
-        elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
+        elog(Level.DEBUG, "UDPServerPacket", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleUDPServerPacket(event);
+            releasedHandler.handleUDPServerPacket( session, data, header );
         } else {
-            sessionEventListener.handleUDPServerPacket(event);
+            sessionEventListener.handleUDPServerPacket( session, data, header );
         }
     }
 
-    void dispatchTCPClientDataEnd( TCPChunkEvent event )
+    void dispatchTCPClientDataEnd( NodeTCPSessionImpl session, ByteBuffer data )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPClientDataEnd(event);
+            releasedHandler.handleTCPClientDataEnd( session, data );
         else
-            sessionEventListener.handleTCPClientDataEnd(event);
+            sessionEventListener.handleTCPClientDataEnd( session, data );
     }
 
     void dispatchTCPClientFIN( NodeTCPSessionImpl session )
@@ -341,14 +336,13 @@ public class Dispatcher
             sessionEventListener.handleTCPClientFIN( session );
     }
 
-    void dispatchTCPServerDataEnd( TCPChunkEvent event )
+    void dispatchTCPServerDataEnd( NodeTCPSessionImpl session, ByteBuffer data )
     {
-        NodeSessionImpl session = (NodeSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
-            releasedHandler.handleTCPServerDataEnd(event);
+            releasedHandler.handleTCPServerDataEnd( session, data );
         else
-            sessionEventListener.handleTCPServerDataEnd(event);
+            sessionEventListener.handleTCPServerDataEnd( session, data );
     }
 
     void dispatchTCPServerFIN( NodeTCPSessionImpl session )

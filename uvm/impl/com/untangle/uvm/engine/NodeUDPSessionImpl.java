@@ -20,7 +20,6 @@ import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.event.IPStreamer;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 
 /**
  * This is the primary implementation class for UDP live sessions.
@@ -322,11 +321,10 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
-        UDPPacketEvent event = new UDPPacketEvent(pipelineConnector, this, pbuf, pheader);
         if (side == CLIENT)
-            dispatcher.dispatchUDPClientPacket(event);
+            dispatcher.dispatchUDPClientPacket( this, pbuf, pheader );
         else
-            dispatcher.dispatchUDPServerPacket(event);
+            dispatcher.dispatchUDPServerPacket( this, pbuf, pheader );
 
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from node's packet handler.

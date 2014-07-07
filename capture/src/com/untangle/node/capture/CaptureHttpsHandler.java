@@ -4,13 +4,14 @@
 
 package com.untangle.node.capture;
 
+import java.nio.ByteBuffer;
 import java.net.InetAddress;
 
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
@@ -47,10 +48,10 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, engine);
     }
 
-    public void handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
         // get the SSL engine attached to the session
-        CaptureSSLEngine engine = (CaptureSSLEngine) event.session().globalAttachment(NodeSession.KEY_CAPTURE_SSL_ENGINE);
-        engine.handleClientData(event.session(), event.data());
+        CaptureSSLEngine engine = (CaptureSSLEngine) session.globalAttachment(NodeSession.KEY_CAPTURE_SSL_ENGINE);
+        engine.handleClientData( session, data );
     }
 }

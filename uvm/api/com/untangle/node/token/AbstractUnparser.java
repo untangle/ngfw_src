@@ -6,7 +6,6 @@ package com.untangle.node.token;
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 
 /**
  * Abstract base class for <code>Unparser</code>s.
@@ -42,7 +41,7 @@ public abstract class AbstractUnparser implements Unparser
         throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
     }
 
-    public void unparse(TCPChunkEvent event) throws UnparseException
+    public void unparse( NodeTCPSession session, ByteBuffer data ) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }

@@ -18,7 +18,6 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.event.IPStreamer;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -418,11 +417,10 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     {
         // First give the node a chance to do something...
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
-        TCPChunkEvent cevent = new TCPChunkEvent(pipelineConnector, this, dataBuf);
         if (side == CLIENT)
-            dispatcher.dispatchTCPClientDataEnd(cevent);
+            dispatcher.dispatchTCPClientDataEnd( this, dataBuf );
         else
-            dispatcher.dispatchTCPServerDataEnd(cevent);
+            dispatcher.dispatchTCPServerDataEnd( this, dataBuf );
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
         if (side == CLIENT)
@@ -574,15 +572,14 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         // the position/mark/limit as desired.
         ByteBuffer userBuf = readBuf[side].duplicate();
         userBuf.flip();
-        TCPChunkEvent event = new TCPChunkEvent(pipelineConnector, this, userBuf);
 
         // automatically clear readBuf before calling app
         readBuf[side] = null;
         
         if (side == CLIENT) {
-            dispatcher.dispatchTCPClientChunk(event);
+            dispatcher.dispatchTCPClientChunk( this, userBuf );
         } else {
-            dispatcher.dispatchTCPServerChunk(event);
+            dispatcher.dispatchTCPServerChunk( this, userBuf );
         }
 
         return numRead;

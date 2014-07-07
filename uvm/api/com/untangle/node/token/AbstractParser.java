@@ -5,7 +5,6 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 
 /**
  * Abstract base class for parsers.
@@ -41,7 +40,7 @@ public abstract class AbstractParser implements Parser
         throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
     }
 
-    public void parse(TCPChunkEvent event) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
     }

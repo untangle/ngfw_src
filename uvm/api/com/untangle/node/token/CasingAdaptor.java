@@ -15,7 +15,6 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
@@ -47,49 +46,49 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public void handleTCPClientChunk(TCPChunkEvent e)
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id());
+            logger.debug("handling client chunk, session: " + session.id());
         }
 
         if (clientSide) {
-            parse(e, false, false);
+            parse( session, data, false, false );
             return;
         } else {
-            unparse(e, false);
+            unparse( session, data, false );
             return;
         }
     }
 
     @Override
-    public void handleTCPServerChunk(TCPChunkEvent e)
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id());
+            logger.debug("handling server chunk, session: " + session.id());
         }
 
         if (clientSide) {
-            unparse(e, true);
+            unparse( session, data, true );
             return;
         } else {
-            parse(e, true, false);
+            parse( session, data, true, false );
             return;
         }
     }
 
     @Override
-    public void handleTCPClientDataEnd(TCPChunkEvent e)
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling client chunk, session: " + e.session().id());
+            logger.debug("handling client chunk, session: " + session.id());
         }
 
         if (clientSide) {
-            parse(e, false, true);
+            parse( session, data, false, true);
             return;
         } else {
-            if (e.chunk().hasRemaining()) {
+            if ( data.hasRemaining() ) {
                 logger.warn("should not happen: unparse TCPClientDataEnd");
             }
             return;
@@ -97,19 +96,19 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public void handleTCPServerDataEnd(TCPChunkEvent e)
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("handling server chunk, session: " + e.session().id());
+            logger.debug("handling server chunk, session: " + session.id());
         }
 
         if (clientSide) {
-            if (e.chunk().hasRemaining()) {
+            if ( data.hasRemaining() ) {
                 logger.warn("should not happen: unparse TCPClientDataEnd");
             }
             return;
         } else {
-            parse(e, true, true);
+            parse( session, data, true, true );
             return;
         }
     }
@@ -181,10 +180,9 @@ public class CasingAdaptor extends CasingBase
 
     // private methods --------------------------------------------------------
 
-    private void unparse(TCPChunkEvent e, boolean s2c)
+    private void unparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
-        ByteBuffer chunk = e.chunk();
-        NodeTCPSession session = e.session();
+        ByteBuffer chunk = data;
 
         if (chunk.remaining() < TOKEN_SIZE) {
             // read limit 2
@@ -200,7 +198,7 @@ public class CasingAdaptor extends CasingBase
             return;
         }
 
-        Casing casing = (Casing)e.session().attachment();
+        Casing casing = (Casing)session.attachment();
 
         Long key = new Long(chunk.getLong());
         Token tok = (Token) session.globalAttachment( key );
@@ -296,13 +294,12 @@ public class CasingAdaptor extends CasingBase
         }
     }
 
-    private void parse(TCPChunkEvent e, boolean s2c, boolean last)
+    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
-        NodeTCPSession session = e.session();
-        Casing casing = (Casing)e.session().attachment();
+        Casing casing = (Casing)session.attachment();
 
         ParseResult pr;
-        ByteBuffer buf = e.chunk();
+        ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
         Parser p = casing.parser();
         try {

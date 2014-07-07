@@ -3,9 +3,12 @@
  */
 package com.untangle.uvm.vnet.event;
 
+import java.nio.ByteBuffer;
+
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.IPPacketHeader;
 
 /**
  * The listener interface for receiving Vnet events.
@@ -49,12 +52,12 @@ public interface SessionEventListener extends java.util.EventListener
     /**
      * Called when data arrives from the client side
      */
-    void handleTCPClientChunk(TCPChunkEvent event);
+    void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data );
 
     /**
      * Called when data arrives from the server side
      */
-    void handleTCPServerChunk(TCPChunkEvent event);
+    void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data );
 
     /**
      * <code>handleTCPServerWritable</code> is called when the write queue to the server has
@@ -89,7 +92,7 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * handleTCPClientFIN is called just after this.
      */
-    void handleTCPClientDataEnd(TCPChunkEvent event);
+    void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data );
 
     /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
@@ -117,7 +120,7 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * handleTCPServerFIN is called just after this.
      */
-    void handleTCPServerDataEnd(TCPChunkEvent event);
+    void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data );
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from
@@ -198,13 +201,13 @@ public interface SessionEventListener extends java.util.EventListener
      * Note that the Packet handlers are not, in general, free to mess with the event's packet
      * position/limit, as these will be used by the default handler when sending out the packet.
      */
-    void handleUDPClientPacket(UDPPacketEvent event);
+    void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header );
     
     /**
      * Note that the Packet handlers are not, in general, free to mess with the event's packet
      * position/limit, as these will be used by the default handler when sending out the packet.
      */
-    void handleUDPServerPacket(UDPPacketEvent event);
+    void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header );
 
     /**
      * Called after the session is established (after the new session request

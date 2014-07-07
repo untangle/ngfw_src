@@ -3,12 +3,12 @@
  */
 package com.untangle.uvm.vnet;
 
+import java.nio.ByteBuffer;
+
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPPacketEvent;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides
@@ -41,7 +41,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         /* ignore */
     }
 
-    public void handleTCPClientDataEnd(TCPChunkEvent event)
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         /* ignore */
         return;
@@ -54,7 +54,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
         session.shutdownServer();
     }
 
-    public void handleTCPServerDataEnd(TCPChunkEvent event)
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
     {
         /* ignore */
         return;
@@ -89,23 +89,21 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
     }
 
-    public void handleTCPClientChunk(TCPChunkEvent event)
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
-        NodeTCPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
         if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendDataToServer( event.data() );
+            session.sendDataToServer( data );
         return;
     }
 
-    public void handleTCPServerChunk(TCPChunkEvent event)
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
-        NodeTCPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
         if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendDataToClient( event.data() );
+            session.sendDataToClient( data );
         return;
     }
 
@@ -173,22 +171,20 @@ public abstract class AbstractEventHandler implements SessionEventListener
     {
     }
 
-    public void handleUDPClientPacket(UDPPacketEvent event)
+    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        NodeUDPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
         if (serverState == NodeSession.OPEN)
-            session.sendServerPacket(event.packet(), event.header());
+            session.sendServerPacket( data, header );
     }
 
-    public void handleUDPServerPacket(UDPPacketEvent event)
+    public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        NodeUDPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
         if (clientState == NodeSession.OPEN)
-            session.sendClientPacket(event.packet(), event.header());
+            session.sendClientPacket( data, header );
     }
 
 }
