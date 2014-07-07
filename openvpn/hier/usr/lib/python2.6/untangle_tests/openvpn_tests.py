@@ -18,6 +18,7 @@ clientControl = ClientControl()
 nodeData = None
 node = None
 vpnClientName = "atsclient"
+vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
@@ -69,17 +70,22 @@ class OpenVpnTests(unittest2.TestCase):
         return "untangle-node-openvpn"
 
     @staticmethod
+    def nodeWebName():
+        return "untangle-node-sitefilter"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
         
     def setUp(self):
-        global node, nodeData, vpnHostResult, vpnClientResult, vpnServerResult
+        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             node.start()
+            nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
             vpnHostResult = subprocess.call(["ping","-c","1",qaHostVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             vpnClientResult = subprocess.call(["ping","-c","1",qaClientVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             serverVPNIP = uvmContext.networkManager().getFirstWanAddress()
@@ -135,7 +141,8 @@ class OpenVpnTests(unittest2.TestCase):
             raise unittest2.SkipTest("No paried VPN client available")
         nodeData = node.getSettings()
         nodeData["serverEnabled"]=True
-        siteName = nodeData['siteName']  
+        siteName = nodeData['siteName']
+        nodeData['remoteClients']['list'][:] = []  
         nodeData['remoteClients']['list'].append(setUpClient())
         node.setSettings(nodeData)
         clientLink = node.getClientDistributionDownloadLink(vpnClientName,"zip")
@@ -156,7 +163,8 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ clientControl.hostIP +" >/dev/null 2>&1\"")
         
         listOfClients = node.getActiveClients()
-        # print "address " + listOfClients['list'][0]['address']
+        print "address " + listOfClients['list'][0]['address']
+        print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
 
         host_result = clientControl.runCommand("host test.untangle.com", True)
         # print "host_result <%s>" % host_result
@@ -190,9 +198,70 @@ class OpenVpnTests(unittest2.TestCase):
         assert(events['list'][0]['remote_address'] == qaClientVPN)
         assert(events['list'][0]['client_name'] == vpnClientName)
         
+    def test_050_createClientVPNFullTunnel(self):
+        global nodeData, vpnServerResult, vpnClientResult
+        if (vpnClientResult != 0 or vpnServerResult != 0):
+            raise unittest2.SkipTest("No paried VPN client available")
+        nodeData = node.getSettings()
+        nodeData["serverEnabled"]=True
+        siteName = nodeData['siteName']  
+        nodeData['remoteClients']['list'][:] = []  
+        nodeData['remoteClients']['list'].append(setUpClient(vpn_name=vpnFullClientName))
+        nodeData['groups']['list'][0]['fullTunnel'] = True
+        node.setSettings(nodeData)
+        clientLink = node.getClientDistributionDownloadLink(vpnFullClientName,"zip")
+        # print clientLink
+
+        # download client config file
+        result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
+        assert (result == 0)
+        # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
+        os.system("scp -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
+        # Connect openvpn from the PC to the Untangle server.
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
+        timeout = 50
+        ping_result = 0
+        while not ping_result and timeout > 0:
+            time.sleep(1)
+            timeout -= 1
+            ping_result = os.system("ping -c 1 " + qaClientVPN + " >/dev/null 2>&1")
+        time.sleep(5) # wait for vpn tunnel to form 
+        flushEvents()
+        listOfClients = node.getActiveClients()
+        vpn_address = listOfClients['list'][0]['poolAddress']
+
+        # ping the test host behind the Untangle from the remote testbox
+        print "vpn address " + vpn_address
+        timeout = 50
+        result1 = 1
+        while result1 and timeout > 0:
+            time.sleep(1)
+            timeout -= 1
+            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l >/dev/null 2>&1\"")
+        result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + ">/dev/null 2>&1\"")
+        # print "look for block page"
+        webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\"")
+        # print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
+
+        # stop the vpn tunnel on remote box
+        nodeData['remoteClients']['list'][:] = []  
+        node.setSettings(nodeData)
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i @PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"nohup sudo pkill openvpn >/dev/null 2>&1 \"")
+        time.sleep(5) # wait for vpn tunnel to go down 
+        # print ("result " + str(result) + " webresult " + str(webresult))
+        assert(listOfClients['list'][0]['address'] == qaClientVPN)
+        assert(result1==0)
+        assert(result2==0)
+        assert(webresult==0)
+
+
     def test_999_finalTearDown(self):
         global node
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
         node = None
 
 TestDict.registerNode("openvpn", OpenVpnTests)
