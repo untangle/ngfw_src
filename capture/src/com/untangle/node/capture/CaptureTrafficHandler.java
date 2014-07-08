@@ -7,8 +7,8 @@ package com.untangle.node.capture;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -34,10 +34,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     // TCP stuff --------------------------------------------------
 
     @Override
-    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessreq )
     {
-        TCPNewSessionRequest sessreq = event.sessionRequest();
-
         // first we look for and ignore all traffic on port 80 since
         // the http handler will take care of all that
         if (sessreq.getNewServerPort() == 80) {
@@ -112,10 +110,8 @@ public class CaptureTrafficHandler extends AbstractEventHandler
     // UDP stuff --------------------------------------------------
 
     @Override
-    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessreq )
     {
-        IPNewSessionRequest sessreq = event.sessionRequest();
-
         // first check is to see if the user is already authenticated
         if (node.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);

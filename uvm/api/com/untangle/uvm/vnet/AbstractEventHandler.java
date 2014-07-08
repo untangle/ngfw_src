@@ -7,8 +7,6 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides
@@ -31,7 +29,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     // TCP
     //////////////////////////////////////////////////////////////////////
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
         /* accept */
     }
@@ -123,7 +121,7 @@ public abstract class AbstractEventHandler implements SessionEventListener
     // UDP
     //////////////////////////////////////////////////////////////////////
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
         /* accept */
     }

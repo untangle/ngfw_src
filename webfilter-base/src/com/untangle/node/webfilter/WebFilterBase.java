@@ -28,7 +28,6 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
  * The base implementation of the Web Filter.

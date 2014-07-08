@@ -5,15 +5,17 @@ package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.util.Random;
+
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import org.apache.log4j.Logger;
 
 class RouterEventHandler extends AbstractEventHandler
 {
@@ -34,9 +36,8 @@ class RouterEventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest request )
     {
-        IPNewSessionRequest request = event.sessionRequest();
         InetAddress origClientAddr = request.getOrigClientAddr();
         InetAddress newClientAddr = request.getNewClientAddr();
         InetAddress origServerAddr = request.getOrigServerAddr();
@@ -90,10 +91,8 @@ class RouterEventHandler extends AbstractEventHandler
         request.release();
     }
 
-    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest request )
     {
-
-        IPNewSessionRequest request = event.sessionRequest();
         request.release();
         return;
     }

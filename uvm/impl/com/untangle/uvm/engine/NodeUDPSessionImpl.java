@@ -213,25 +213,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
     protected void addStreamBuf(int side, IPStreamer ipStreamer)
     {
-
-        /* Not Yet supported
-           UDPStreamer streamer = (UDPStreamer)ipStreamer;
-
-           String sideName = (side == CLIENT ? "client" : "server");
-
-           ByteBuffer packet2send = streamer.nextPacket();
-           if (packet2send == null) {
-           logger.debug("end of stream");
-           streamer = null;
-           return;
-           }
-
-           // Ug. XXX
-           addBuf(side, packet2send);
-
-           if (logger.isDebugEnabled())
-           logger.debug("streamed " + packet2send.remaining() + " to " + sideName);
-        */
+        logger.error("addStreamBuf() not implemented for UDP", new Exception());
     }
 
     protected void sendWritableEvent(int side)

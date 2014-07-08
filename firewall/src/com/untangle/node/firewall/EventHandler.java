@@ -17,8 +17,7 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -38,14 +37,14 @@ class EventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
-        handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
+        handleNewSessionRequest( sessionRequest, Protocol.TCP );
     }
 
-    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
-        handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
+        handleNewSessionRequest( sessionRequest, Protocol.UDP );
     }
 
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )

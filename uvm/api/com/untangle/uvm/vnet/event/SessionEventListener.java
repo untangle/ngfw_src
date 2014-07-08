@@ -7,7 +7,9 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.IPPacketHeader;
 
 /**
@@ -37,7 +39,7 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
      */
-    void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) ;
+    void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest );
 
     /**
      * Called after the session is established (after the three way handshake
@@ -226,7 +228,7 @@ public interface SessionEventListener extends java.util.EventListener
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
      */
-    void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) ;
+    void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest );
 
     /**
      * Similar to a FIN event, but its just a timeout event, not actually

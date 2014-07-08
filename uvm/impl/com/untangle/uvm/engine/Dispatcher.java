@@ -28,8 +28,8 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 /**
  * One dispatcher per PipelineConnector.  This where all the new session logic
@@ -220,23 +220,23 @@ public class Dispatcher
 
     //////////////////////////////////////////////////////////////////
 
-    void dispatchTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    void dispatchTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
-        elog(Level.DEBUG, "TCPNewSessionRequest", event.sessionRequest().id());
+        elog(Level.DEBUG, "TCPNewSessionRequest", sessionRequest.id());
         if ( sessionEventListener == null ) {
-            releasedHandler.handleTCPNewSessionRequest(event);
+            releasedHandler.handleTCPNewSessionRequest( sessionRequest );
         } else {
-            sessionEventListener.handleTCPNewSessionRequest(event);
+            sessionEventListener.handleTCPNewSessionRequest( sessionRequest );
         }
     }
 
-    void dispatchUDPNewSessionRequest( UDPNewSessionRequestEvent event )
+    void dispatchUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
-        elog(Level.DEBUG, "UDPNewSessionRequest", event.sessionRequest().id());
+        elog(Level.DEBUG, "UDPNewSessionRequest", sessionRequest.id());
         if ( sessionEventListener == null ) {
-            releasedHandler.handleUDPNewSessionRequest(event);
+            releasedHandler.handleUDPNewSessionRequest( sessionRequest );
         } else {
-            sessionEventListener.handleUDPNewSessionRequest(event);
+            sessionEventListener.handleUDPNewSessionRequest( sessionRequest );
         }
     }
 
@@ -465,8 +465,7 @@ public class Dispatcher
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending TCP new session request event");
-            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(pipelineConnector, request);
-            dispatchTCPNewSessionRequest(revent);
+            dispatchTCPNewSessionRequest( request );
 
             // Check the session only if it was not rejected.
             switch (request.state()) {
@@ -525,8 +524,7 @@ public class Dispatcher
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent( pipelineConnector, request );
-            dispatchUDPNewSessionRequest(revent);
+            dispatchUDPNewSessionRequest( request );
 
             // Check the session only if it was not rejected.
             switch (request.state()) {

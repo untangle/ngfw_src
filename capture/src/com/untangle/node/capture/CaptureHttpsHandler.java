@@ -7,7 +7,7 @@ package com.untangle.node.capture;
 import java.nio.ByteBuffer;
 import java.net.InetAddress;
 
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
@@ -26,10 +26,8 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessreq )
     {
-        TCPNewSessionRequest sessreq = event.sessionRequest();
-
         // look for our special attachment
         InetAddress special = (InetAddress) sessreq.globalAttachment(NodeSession.KEY_CAPTURE_REDIRECT);
 

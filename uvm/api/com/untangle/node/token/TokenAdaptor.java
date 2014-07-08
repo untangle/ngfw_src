@@ -16,11 +16,11 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 
 /**
  * Adapts a Token session's underlying byte-stream a <code>TokenHandler</code>.
@@ -40,9 +40,9 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent e)
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
-        handlerFactory.handleNewSessionRequest(e.sessionRequest());
+        handlerFactory.handleNewSessionRequest( sessionRequest );
     }
 
     @Override
@@ -127,7 +127,7 @@ public class TokenAdaptor extends AbstractEventHandler
     // UDP events -------------------------------------------------------------
 
     @Override
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent e)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
         throw new UnsupportedOperationException("UDP not supported");
     }

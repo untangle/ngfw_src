@@ -12,8 +12,8 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
@@ -29,16 +29,16 @@ class EventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
         
     {
-        handleNewSessionRequest( event.sessionRequest());
+        handleNewSessionRequest( sessionRequest );
     }
 
-    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
+    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
         
     {
-        handleNewSessionRequest( event.sessionRequest());
+        handleNewSessionRequest( sessionRequest );
     }
 
     private void handleNewSessionRequest( IPNewSessionRequest request )
