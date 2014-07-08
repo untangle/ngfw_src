@@ -11,8 +11,10 @@ from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
 from untangle_tests import TestDict
+from untangle_tests import SystemProperties
 
 uvmContext = Uvm().getUvmContext()
+systemProperties = SystemProperties()
 defaultRackId = 1
 clientControl = ClientControl()
 nodeData = None
