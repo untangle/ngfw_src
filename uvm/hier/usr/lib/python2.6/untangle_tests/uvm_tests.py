@@ -128,7 +128,7 @@ class UvmTests(unittest2.TestCase):
 
     def test_030_testSMTPSettings(self):
         # Test mail setting in config -> email -> outgoing server
-        unittest2.SkipTest('This test cannot save SMTP setting yet')
+        raise unittest2.SkipTest('This test cannot save SMTP setting yet')
         getLatestMailPkg();
         # remove previous smtp log file
         clientControl.runCommand("rm test_030_testSMTPSettings.log >/dev/null 2>&1")
