@@ -69,7 +69,7 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleTCPClientChunk ( NodeTCPSession session, ByteBuffer data )
     {
-        _handleChunk( data, session, true );
+        _handleChunk( data.duplicate(), session, true );
         session.sendDataToServer( data );
         return;
     }
@@ -136,8 +136,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Got #" + chunkCount + " chunk from " + (server ? "server" : "client") + " of size " +
-                         chunkBytes + ", writing " + bytesToWrite + " of that");
+            logger.debug("Got #" + chunkCount + " chunk from " + (server ? "server" : "client") + " of size " + chunkBytes + ", writing " + bytesToWrite + " of that");
         }
 
         if (buf == null) {
@@ -168,8 +167,7 @@ public class EventHandler extends AbstractEventHandler
         bufferSize += written;
         chunkCount++;
         if (logger.isDebugEnabled()) {
-            logger.debug("Wrote " + written + " bytes to buffer, now have " + bufferSize + " with capacity " +
-                         buf.capacity());
+            logger.debug("Wrote " + written + " bytes to buffer, now have " + bufferSize + " with capacity " + buf.capacity());
         }
 
         /**
