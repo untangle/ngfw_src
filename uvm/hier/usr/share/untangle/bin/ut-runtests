@@ -3,14 +3,14 @@ import sys
 import getopt
 import signal
 import os
-sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+sys.path.insert(0, '/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 import unittest2
 import uvm
 import untangle_tests
 from   untangle_tests import *
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.6/untangle_tests'):
+for f in os.listdir('/usr/lib/python2.6/untangle_tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
         __import__('untangle_tests.%s' % m)
@@ -203,7 +203,7 @@ for testName in parser.testsToExclude:
 while True:
     rc = 0
     total = 0
-    skipc = 0
+    skiptotal = 0
 
     for node in parser.testsToRun:
         if node == "environment":
@@ -215,6 +215,7 @@ while True:
         errors, skipc, subTotal = runTestSuite(testClz)
         rc += errors
         total += subTotal
+        skiptotal += skipc
 
     if not parser.repeat:
         break
@@ -225,7 +226,7 @@ if reportsNode != None:
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
-print "%s passed, %s skipped, %s failed" % (total-rc-skipc, skipc, rc)
+print "%s passed, %s skipped, %s failed" % (total-rc-skipc, skiptotal, rc)
 print "More details found in %s" % parser.logfile
 
 exit(rc)
