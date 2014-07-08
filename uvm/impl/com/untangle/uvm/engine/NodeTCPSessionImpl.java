@@ -17,8 +17,8 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.IPStreamer;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.IPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * This is the primary implementation class for TCP live sessions.

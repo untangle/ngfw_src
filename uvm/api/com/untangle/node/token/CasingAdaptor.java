@@ -15,7 +15,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Adapts a Token session's underlying byte-stream a <code>Casing</code>.

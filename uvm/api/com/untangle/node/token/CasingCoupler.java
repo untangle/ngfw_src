@@ -12,7 +12,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 public class CasingCoupler extends CasingBase
 {

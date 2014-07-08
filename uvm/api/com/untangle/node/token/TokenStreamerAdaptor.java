@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**

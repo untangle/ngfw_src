@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
-import com.untangle.uvm.vnet.event.IPStreamer;
+import com.untangle.uvm.vnet.IPStreamer;
 
 /**
  * This is the primary implementation class for UDP live sessions.

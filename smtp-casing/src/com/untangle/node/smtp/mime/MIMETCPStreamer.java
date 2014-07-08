@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Class which acts as a TCPStreamer, using the contents of a MIMEMessage. Users should not directly have to use this

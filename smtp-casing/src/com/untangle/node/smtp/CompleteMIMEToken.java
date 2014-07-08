@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.mime.MIMETCPStreamer;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Class representing a Complete MIME message. This will be issued if an upstream Node has buffered a complete message.

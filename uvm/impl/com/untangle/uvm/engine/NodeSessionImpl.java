@@ -22,7 +22,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.NodeSessionStats;
-import com.untangle.uvm.vnet.event.IPStreamer;
+import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;

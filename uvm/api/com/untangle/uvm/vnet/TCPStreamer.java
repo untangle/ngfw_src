@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.vnet.event;
+package com.untangle.uvm.vnet;
 
 import java.nio.ByteBuffer;
 

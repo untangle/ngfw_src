@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.event.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventListener;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.

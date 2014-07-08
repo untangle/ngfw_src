@@ -5,7 +5,7 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Abstract base class for <code>Unparser</code>s.

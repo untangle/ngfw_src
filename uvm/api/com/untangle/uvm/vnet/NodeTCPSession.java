@@ -5,7 +5,7 @@ package com.untangle.uvm.vnet;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * A TCPSession is the most specific interface for VNet TCP sessions

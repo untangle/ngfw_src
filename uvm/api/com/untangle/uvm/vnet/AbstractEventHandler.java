@@ -6,7 +6,7 @@ package com.untangle.uvm.vnet;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.event.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventListener;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides

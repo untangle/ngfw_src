@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.token.MetadataToken;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Token reprsenting the Begining of a MIME message. The {@link #getMIMEAccumulator MIMEAccumulator} member may have

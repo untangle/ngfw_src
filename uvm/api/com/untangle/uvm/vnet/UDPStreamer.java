@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.vnet.event;
+package com.untangle.uvm.vnet;
 
 /**
  * Streamer for UDP sessions (not yet implemented)

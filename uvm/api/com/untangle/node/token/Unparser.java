@@ -6,7 +6,7 @@ package com.untangle.node.token;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * An Unparser nodes tokens into bytes.
@@ -51,7 +51,7 @@ public interface Unparser
 
     /**
      * Called when both client and server sides
-     * {@link com.untangle.uvm.vnet.event.SessionEventListener#handleTCPFinalized are shutdown}
+     * {@link com.untangle.uvm.vnet.SessionEventListener#handleTCPFinalized are shutdown}
      */
     void handleFinalized();
 }

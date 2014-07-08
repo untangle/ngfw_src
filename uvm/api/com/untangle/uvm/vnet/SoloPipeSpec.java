@@ -14,7 +14,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.event.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventListener;
 
 /**
  * <code>PipeSpec</code> for a regular Node.

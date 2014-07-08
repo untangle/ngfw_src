@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.event.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventListener;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.

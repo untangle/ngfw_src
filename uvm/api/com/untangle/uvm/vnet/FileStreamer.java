@@ -9,7 +9,7 @@ import java.nio.channels.FileChannel;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * Streams a File out as a TCP stream.
