@@ -159,9 +159,26 @@ public class MailSenderImpl implements MailSender
         return settings;
     }
 
-    public void setSettings(final MailSettings settings)
+    public void setSettings(final MailSettings newSettings)
     {
-        this._setSettings( settings );
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(MailSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "mail.js", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.syncConfigFiles();
     }
 
     public void syncConfigFiles()
@@ -344,7 +361,7 @@ public class MailSenderImpl implements MailSender
             // since it might result in having 2 processes trying to access the same email)
             String what = UvmContextFactory.context().execManager().execOutput("exiwhat");
             int countDown = 20;
-            while (what.contains(logId) && countDown > 0){
+            while (what == null || what.contains(logId) && countDown > 0){
                 Thread.sleep(1000);
                 what = UvmContextFactory.context().execManager().execOutput("exiwhat");
                 countDown --;
@@ -494,7 +511,7 @@ public class MailSenderImpl implements MailSender
             }
             
             // restart exim
-            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM + " >/dev/null 2>&1 & " );
+            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM );
         }
     }
 
@@ -1013,27 +1030,4 @@ public class MailSenderImpl implements MailSender
         } catch ( Exception ex ) {
         }
     }
-
-    private void _setSettings( MailSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        try {
-            settingsManager.save(MailSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "mail.js", newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        this.syncConfigFiles();
-    }
-    
 }
