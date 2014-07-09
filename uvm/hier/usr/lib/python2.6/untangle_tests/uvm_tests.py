@@ -56,9 +56,6 @@ class UvmTests(unittest2.TestCase):
         pass
 
     def test_010_clientIsOnline(self):
-        # save original network settings
-        global origMailsettings
-        origMailsettings = uvmContext.mailSender().getSettings()
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         assert (result == 0)
 
@@ -128,28 +125,36 @@ class UvmTests(unittest2.TestCase):
 
     def test_030_testSMTPSettings(self):
         # Test mail setting in config -> email -> outgoing server
-        raise unittest2.SkipTest('This test cannot save SMTP setting yet')
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpamCase())):
+            print "smtp case present"
+        else:
+            print "smtp not present"
+            uvmContext.nodeManager().instantiate(self.nodeNameSpamCase(), 1)
+        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
+        origNodeDataSP = nodeSP.getSmtpNodeSettings()
+        origMailsettings = uvmContext.mailSender().getSettings()
+        # print nodeDataSP
         getLatestMailPkg();
         # remove previous smtp log file
         clientControl.runCommand("rm test_030_testSMTPSettings.log >/dev/null 2>&1")
         # Start mail sink
         clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg  >/dev/null 2>&1")
-        newMailsettings = origMailsettings
+        newMailsettings = origMailsettings.copy()
         newMailsettings['smtpHost'] = ClientControl.hostIP
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['useMxRecords'] = False
 
         uvmContext.mailSender().setSettings(newMailsettings)
-        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
-        uvmContext.setSmtpNodeSettingsWithoutSafelists()
+        nodeDataSP = nodeSP.getSmtpNodeSettings()
+        nodeSP.setSmtpNodeSettingsWithoutSafelists(nodeDataSP)
         uvmContext.mailSender().sendTestMessage("test@example.com")
-        time.sleep(4)
+        time.sleep(5)
 
         # Kill mail sink
         clientControl.runCommand("pkill python >/dev/null 2>&1")
         uvmContext.mailSender().setSettings(origMailsettings)
-        origMailsettings2 = uvmContext.mailSender().getSettings()
+        nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
         result = clientControl.runCommand("grep -q 'Untangle Server Test Message' test_030_testSMTPSettings.log >/dev/null 2>&1")
-        assert(result)
+        assert(result==0)
 
 TestDict.registerNode("uvm", UvmTests)
