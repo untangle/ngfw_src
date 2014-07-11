@@ -511,7 +511,9 @@ public class MailSenderImpl implements MailSender
             }
             
             // restart exim
-            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM );
+            // run it in the background because this runs whenever networking is saved
+            // and this takes several seconds
+            UvmContextFactory.context().execManager().exec( EXIM_CMD_RESTART_EXIM +  " & " );
         }
     }
 
