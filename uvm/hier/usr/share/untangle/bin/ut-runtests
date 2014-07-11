@@ -226,7 +226,7 @@ if reportsNode != None:
     uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
-print "%s passed, %s skipped, %s failed" % (total-rc-skipc, skiptotal, rc)
+print "%s passed, %s skipped, %s failed" % (total-rc-skiptotal, skiptotal, rc)
 print "More details found in %s" % parser.logfile
 
 exit(rc)
