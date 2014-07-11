@@ -42,16 +42,43 @@ def parse_line(line):
         dict['orig_dst']       = parse_segment(line_parts[idx]); idx=idx+1;
         dict['orig_src_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
         dict['orig_dst_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['orig_packets']   = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['orig_bytes']     = int(parse_segment(line_parts[idx])); idx=idx+1;
+
+        # some kernels are missing the fields orig_packets, orig_bytes, reply_packets, reply_bytes
+        # if there is an exception assume they aren't there
+        try: 
+            dict['orig_packets'] = 0
+            dict['orig_packets'] = int(parse_segment(line_parts[idx])); 
+            idx=idx+1;
+        except Exception,e:
+            pass
+        
+        try:
+            dict['orig_bytes'] = 0
+            dict['orig_bytes'] = int(parse_segment(line_parts[idx])); 
+            idx=idx+1;
+        except Exception,e:
+            pass
+
         # skip UNREPLIED
         if line_parts[idx] == "[UNREPLIED]": idx=idx+1
         dict['reply_src']      = parse_segment(line_parts[idx]); idx=idx+1;
         dict['reply_dst']      = parse_segment(line_parts[idx]); idx=idx+1;
         dict['reply_src_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
         dict['reply_dst_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['reply_packets']  = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['reply_bytes']    = int(parse_segment(line_parts[idx])); idx=idx+1;
+
+        try:
+            dict['reply_packets'] = 0
+            dict['reply_packets'] = int(parse_segment(line_parts[idx])); 
+            idx=idx+1;
+        except Exception,e:
+            pass
+        try:
+            dict['reply_bytes'] = 0
+            dict['reply_bytes'] = int(parse_segment(line_parts[idx])); 
+            idx=idx+1;
+        except Exception,e:
+            pass
+
         # skip ASSURED
         if line_parts[idx] == "[ASSURED]": idx=idx+1
         dict['mark']           = int(parse_segment(line_parts[idx])); idx=idx+1;
@@ -62,8 +89,8 @@ def parse_line(line):
         
         return dict
     except Exception,e:
-        #print "Exception:"
-        #print e
+        print "Exception:"
+        print e
         return None
 
 
@@ -73,6 +100,7 @@ ip_conntrack_file = open("/proc/net/ip_conntrack")
 
 first=True
 for line in ip_conntrack_file.readlines():
+
     # ignore all 127.0.0.1 traffic
     if "127.0.0.1" in line:
         continue
