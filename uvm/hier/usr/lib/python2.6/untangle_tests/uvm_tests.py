@@ -145,6 +145,8 @@ class UvmTests(unittest2.TestCase):
         newMailsettings['useMxRecords'] = False
 
         uvmContext.mailSender().setSettings(newMailsettings)
+        time.sleep(10) # give it time for exim to restart
+
         nodeDataSP = nodeSP.getSmtpNodeSettings()
         nodeSP.setSmtpNodeSettingsWithoutSafelists(nodeDataSP)
         uvmContext.mailSender().sendTestMessage("test@example.com")
