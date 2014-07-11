@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
-import com.untangle.jvector.ObjectCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
@@ -60,7 +59,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         return (int)readBufferSize[SERVER];
     }
 
-    public void serverReadBufferSize( int numBytes )
+    public void serverReadBufferSize(int numBytes)
     {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
@@ -74,7 +73,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         return (int)readBufferSize[CLIENT];
     }
 
-    public void clientReadBufferSize( int numBytes )
+    public void clientReadBufferSize(int numBytes)
     {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
@@ -88,7 +87,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         return readLimit[SERVER];
     }
 
-    public void serverReadLimit( long numBytes )
+    public void serverReadLimit(long numBytes)
     {
         if (numBytes > readBufferSize[SERVER])
             numBytes = readBufferSize[SERVER];
@@ -102,7 +101,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         return readLimit[CLIENT];
     }
 
-    public void clientReadLimit( long numBytes )
+    public void clientReadLimit(long numBytes)
     {
         if (numBytes > readBufferSize[CLIENT])
             numBytes = readBufferSize[CLIENT];
@@ -111,12 +110,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readLimit[CLIENT] = numBytes;
     }
 
-    public void clientLineBuffering( boolean oneLine )
+    public void clientLineBuffering(boolean oneLine)
     {
         lineBuffering[CLIENT] = oneLine;
     }
 
-    public void serverLineBuffering( boolean oneLine )
+    public void serverLineBuffering(boolean oneLine)
     {
         lineBuffering[SERVER] = oneLine;
     }
@@ -170,7 +169,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         shutdownSide(SERVER, serverOutgoingSocketQueue(), false);
     }
 
-    public void shutdownServer( boolean force )
+    public void shutdownServer(boolean force)
     {
         shutdownSide(SERVER, serverOutgoingSocketQueue(), force);
     }
@@ -180,12 +179,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         shutdownSide(CLIENT, clientOutgoingSocketQueue(), false);
     }
 
-    public void shutdownClient( boolean force )
+    public void shutdownClient(boolean force)
     {
         shutdownSide(CLIENT, clientOutgoingSocketQueue(), force);
     }
 
-    private void shutdownSide( int side, OutgoingSocketQueue out, boolean force )
+    private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
     {
         if (out != null) {
             if (crumbs2write[side] != null && !force) {
@@ -196,6 +195,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             }
             Crumb crumb = ShutdownCrumb.getInstance(force);
             boolean success = out.write(crumb);
+            assert success;
         }
     }
 
@@ -207,6 +207,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         if (oursout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = oursout.write(crumb);
+            assert success;
         }
 
         // Reset the incoming socket queue
@@ -225,6 +226,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         if (ourcout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = ourcout.write(crumb);
+            assert success;
         }
 
         if ( ourcin != null )
@@ -233,12 +235,12 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         // Will result in client's outgoing and incoming socket queue being set to null 
     }
 
-    public void beginClientStream( TCPStreamer streamer )
+    public void beginClientStream(TCPStreamer streamer)
     {
         beginStream(CLIENT, streamer);
     }
 
-    public void beginServerStream( TCPStreamer streamer )
+    public void beginServerStream(TCPStreamer streamer)
     {
         beginStream(SERVER, streamer);
     }
@@ -313,7 +315,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readBuf[side] = buf;
     }
     
-    protected void beginStream( int side, TCPStreamer s )
+    protected void beginStream(int side, TCPStreamer s)
     {
         if (streamer != null) {
             String message = "Already streaming";
@@ -342,71 +344,63 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         streamer = null;
     }
 
-    protected boolean isSideDieing( int side, IncomingSocketQueue in )
+    protected boolean isSideDieing(int side, IncomingSocketQueue in)
     {
         return (in.containsReset());
     }
 
-    protected void sideDieing( int side )
+    protected void sideDieing(int side)
     {
         sendRSTEvent(side);
     }
 
-    protected void tryWrite( int side, OutgoingSocketQueue out )
+    protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
+        
     {
         String sideName = (side == CLIENT ? "client" : "server");
-        if (out == null) {
-            throw new RuntimeException("Invalid arguments");
-        }
+        assert out != null;
         if (out.isFull()) {
-            logger.warn("tryWrite to full outgoing queue");
+            if (warnIfUnable)
+                logger.warn("tryWrite to full outgoing queue");
+            else
+                logger.debug("tryWrite to full outgoing queue");
         } else {
+            // Old busted comment:
+            // We know it's a data crumb since there can be nothing else
+            // enqueued for TCP.
+            // New hotness comment:
+            // It can be a shutdown crumb as well as a data crumb.
             Crumb crumb2send = getNextCrumb2Send(side);
-            if (crumb2send == null)
-                throw new RuntimeException("Missing crumb");
+            assert crumb2send != null;
             int numWritten = sendCrumb(crumb2send, out);
+
+            stats.wroteData(side, numWritten);
 
             if (logger.isDebugEnabled())
                 logger.debug("wrote " + numWritten + " to " + sideName);
         }
     }
 
-    protected void addStreamBuf( int side, IPStreamer ipStreamer )
+    protected void addStreamBuf(int side, IPStreamer ipStreamer)
     {
         TCPStreamer streamer = (TCPStreamer)ipStreamer;
 
         String sideName = (side == CLIENT ? "client" : "server");
 
-
-        Object obj = streamer.nextChunk();
-        if ( obj instanceof ByteBuffer ) {
-            ByteBuffer buf2send = (ByteBuffer) obj; 
-            if ( buf2send == null ) {
-                logger.debug("end of stream");
-                endStream();
-                return;
-            }
-
-            sendData( side, buf2send );
-
-            if (logger.isDebugEnabled())
-                logger.debug("streamed " + buf2send.remaining() + " to " + sideName);
-        } else {
-            Object obj2send = obj;
-            if ( obj2send == null ) {
-                logger.debug("end of stream");
-                endStream();
-                return;
-            }
-
-            sendObject( side, obj2send );
-
-            if (logger.isDebugEnabled())
-                logger.debug("streamed " + obj2send + " to " + sideName);
+        ByteBuffer buf2send = streamer.nextChunk();
+        if (buf2send == null) {
+            logger.debug("end of stream");
+            endStream();
+            return;
         }
+
+        sendData(side, buf2send);
+
+        if (logger.isDebugEnabled())
+            logger.debug("streamed " + buf2send.remaining() + " to " + sideName);
     }
 
-    protected void sendWritableEvent( int side )
+    protected void sendWritableEvent(int side)
     {
         if (side == CLIENT)
             dispatcher.dispatchTCPClientWritable( this );
@@ -419,7 +413,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         dispatcher.dispatchTCPComplete( this );
     }
 
-    protected void sendFINEvent( int side, ByteBuffer existingReadBuf )
+    protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
     {
         // First give the node a chance to do something...
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
@@ -435,7 +429,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             dispatcher.dispatchTCPServerFIN( this );
     }
 
-    protected void sendRSTEvent( int side )
+    protected void sendRSTEvent(int side)
     {
         if (side == CLIENT)
             dispatcher.dispatchTCPClientRST( this );
@@ -443,7 +437,13 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             dispatcher.dispatchTCPServerRST( this );
     }
 
-    protected void handleRead( int side, IncomingSocketQueue in )
+    protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
+    {
+        tryReadInt(side, in, warnIfUnable);
+    }
+
+    // Handles the actual reading from the client
+    protected int tryReadInt(int side, IncomingSocketQueue in, boolean warnIfUnable)
     {
         int numRead = 0;
         boolean gotLine = false;
@@ -457,19 +457,20 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             logger.error("read with full read buffer (" + readBuf[side].position() + "," + readBuf[side].limit() + "," + readBuf[side].capacity() + ", killing session");
             readBuf[side] = null;
             killSession();
-            return;
+            return numRead;
         }
 
-        if (in == null) {
-            throw new RuntimeException("Invalid arguments");
-        }
-        
         boolean lineMode = lineBuffering[side];
+        // Currently we have no special handling for \r. XXX
 
         if (!lineMode || !gotLine) {
+            assert in != null;
             if (in.isEmpty()) {
-                logger.warn("tryRead from empty incoming queue");
-                return;
+                if (warnIfUnable)
+                    logger.warn("tryRead from empty incoming queue");
+                else
+                    logger.debug("tryRead from empty incoming queue");
+                return numRead;
             }
 
             Crumb crumb = in.peek();
@@ -479,145 +480,91 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
                 sendFINEvent(side, readBuf[side]);
                 in.read();
                 readBuf[side] = null;
-                return;
-            case Crumb.TYPE_DATA:
-                readDataCrumb( side, in );
-                return;
-            case Crumb.TYPE_OBJECT:
-                readObjectCrumb( side, in );
-                return;
+                return numRead;
             case Crumb.TYPE_RESET:
             default:
                 // Should never happen.
                 logger.debug("read crumb " + crumb.type());
                 in.read();
-                throw new RuntimeException( "Invalid crumb type" + crumb.type() );
+                assert false;
+                break;
+            case Crumb.TYPE_DATA:
+                break;
             }
-        }
+            // Wrap a byte buffer around the data.
+            DataCrumb dc = (DataCrumb)crumb;
+            byte[] dcdata = dc.data();
+            int dclimit = dc.limit();
+            int dccap = dcdata.length;
+            int dcoffset = dc.offset();
+            int dcsize = dclimit - dcoffset;
 
-        return;
-    }
-
-    private void readObjectCrumb( int side, IncomingSocketQueue in )
-    {
-        if (in == null) {
-            throw new RuntimeException("Invalid arguments");
-        }
-
-        String sideName = (side == CLIENT ? "client" : "server");
-        Crumb crumb = in.read();  // Consume the crumb
-        boolean lineMode = lineBuffering[side];
-
-        if ( ! ( crumb instanceof ObjectCrumb ) ) {
-            throw new RuntimeException("Wrong crumb type");
-        }
-        ObjectCrumb objectCrumb = (ObjectCrumb) crumb;
-        
-        /**
-         * if in lineMode then the app is clearly expecting data
-         * this would lead to unexpected results, so just throw an exception.
-         */
-        if ( lineMode ) {
-            throw new RuntimeException("Object received while in line-mode buffering state.");
-        }
-
-        /**
-         * if there is data in the readbuf then the app is expecting data
-         * this would lead to unexpected results, so just throw an exception.
-         */
-        if ( readBuf[side] != null && readBuf[side].position() > 0 ) {
-            throw new RuntimeException("Object received while in data is in read buffer.");
-        }
-
-        if (side == CLIENT) {
-            dispatcher.dispatchTCPClientObject( this, objectCrumb.getObject() );
-        } else {
-            dispatcher.dispatchTCPServerObject( this, objectCrumb.getObject() );
-        }
-        
-        return; 
-    }
-
-    private void readDataCrumb( int side, IncomingSocketQueue in )
-    {
-        if (in == null) {
-            throw new RuntimeException("Invalid arguments");
-        }
-
-        int numRead = 0;
-        String sideName = (side == CLIENT ? "client" : "server");
-        Crumb crumb = in.peek();
-        DataCrumb dc = (DataCrumb)crumb;
-        byte[] dcdata = dc.data();
-        int dclimit = dc.limit();
-        int dccap = dcdata.length;
-        int dcoffset = dc.offset();
-        int dcsize = dclimit - dcoffset;
-        boolean lineMode = lineBuffering[side];
-
-        if (dcoffset >= dclimit) {
-            logger.warn("Zero length TCP crumb read");
-            in.read();  // Consume the crumb
-            return;
-        } else if (readBuf[side] == null && (dcoffset != 0 || dcsize > readLimit[side] || dccap < readLimit[side] || lineMode)) {
-            if (logger.isDebugEnabled()) {
-                if (dcoffset != 0)
-                    logger.debug("Creating readbuf because dcoffset = " + dcoffset);
-                else if (dcsize > readLimit[side])
-                    logger.debug("Creating readbuf because dcsize = " + dcsize + " but readLimit = " + readLimit[side]);
-                else if (dccap < readLimit[side])
-                    logger.debug("Creating readbuf because dccap = " + dccap + " but readLimit = " + readLimit[side]);
-                else if (lineMode)
-                    logger.debug("Creating readbuf because lineMode");
+            if (dcoffset >= dclimit) {
+                logger.warn("Zero length TCP crumb read");
+                in.read();  // Consume the crumb
+                return numRead;
+            } else if (readBuf[side] == null && (dcoffset != 0 || dcsize > readLimit[side] || dccap < readLimit[side] || lineMode)) {
+                if (logger.isDebugEnabled()) {
+                    if (dcoffset != 0)
+                        logger.debug("Creating readbuf because dcoffset = " + dcoffset);
+                    else if (dcsize > readLimit[side])
+                        logger.debug("Creating readbuf because dcsize = " + dcsize + " but readLimit = " + readLimit[side]);
+                    else if (dccap < readLimit[side])
+                        logger.debug("Creating readbuf because dccap = " + dccap + " but readLimit = " + readLimit[side]);
+                    else if (lineMode)
+                        logger.debug("Creating readbuf because lineMode");
+                }
+                readBuf[side] = ByteBuffer.allocate((int)readBufferSize[side]);
+                readBuf[side].limit((int)readLimit[side]); //TODO: check the safety of this conversion
             }
-            readBuf[side] = ByteBuffer.allocate((int)readBufferSize[side]);
-            readBuf[side].limit((int)readLimit[side]);
-        }
-        if (readBuf[side] != null) {
-            logger.debug("putting into existing readbuf");
-            // We have to put the crumb into the buffer, using the overflow if necessary.
-            int s = dcsize;
-            if (s > readBuf[side].remaining())
-                s = readBuf[side].remaining();
-            int i = 0;
-            if (lineMode) {
-                // Have to do the copy one char at a time.
-                while (i < s) {
-                    byte c = dcdata[dcoffset + i++];
-                    numRead++;
-                    readBuf[side].put(c);
-                    if (c == '\n')
-                        break;
+            if (readBuf[side] != null) {
+                logger.debug("putting into existing readbuf");
+                // We have to put the crumb into the buffer, using the overflow if necessary.
+                int s = dcsize;
+                if (s > readBuf[side].remaining())
+                    s = readBuf[side].remaining();
+                int i = 0;
+                if (lineMode) {
+                    // Have to do the copy one char at a time.
+                    while (i < s) {
+                        byte c = dcdata[dcoffset + i++];
+                        numRead++;
+                        readBuf[side].put(c);
+                        if (c == '\n')
+                            break;
+                    }
+                } else {
+                    readBuf[side].put(dcdata, dcoffset, s);
+                    i = s;
+                    numRead += s;
+                }
+                if (i < dcsize) {
+                    // We have to adjust the crumb and leave it there as an overflow.
+                    // 'i' now means 'eolPosition', or 'last char I want in there'
+                    dc.offset(dcoffset + i);
+                    if (logger.isDebugEnabled())
+                        logger.debug("Leaving " + (dcsize - i) + " bytes in the " + sideName +
+                                     " incoming queue");
+                } else {
+                    in.read();  // Consume the crumb
+                    if (logger.isDebugEnabled())
+                        logger.debug("Removing incoming crumb for " + sideName);
                 }
             } else {
-                readBuf[side].put(dcdata, dcoffset, s);
-                i = s;
-                numRead += s;
-            }
-            if (i < dcsize) {
-                // We have to adjust the crumb and leave it there as an overflow.
-                // 'i' now means 'eolPosition', or 'last char I want in there'
-                dc.offset(dcoffset + i);
-                if (logger.isDebugEnabled())
-                    logger.debug("Leaving " + (dcsize - i) + " bytes in the " + sideName +
-                                 " incoming queue");
-            } else {
                 in.read();  // Consume the crumb
-                if (logger.isDebugEnabled())
-                    logger.debug("Removing incoming crumb for " + sideName);
+                logger.debug("using jvector buf as new readbuf");
+                readBuf[side] = ByteBuffer.wrap(dcdata, 0, dcsize);
+                readBuf[side].position(dcsize);
+                readBuf[side].limit((int)readLimit[side]); //TODO: check the safety of this conversion
+                numRead = dcsize;
             }
-        } else {
-            in.read();  // Consume the crumb
-            logger.debug("using jvector buf as new readbuf");
-            readBuf[side] = ByteBuffer.wrap(dcdata, 0, dcsize);
-            readBuf[side].position(dcsize);
-            readBuf[side].limit((int)readLimit[side]); //TODO: check the safety of this conversion
-            numRead = dcsize;
         }
 
         if (logger.isDebugEnabled()) {
             logger.debug("read " + numRead + " size chunk from " + sideName);
         }
+
+        stats.readData(side, numRead);
 
         // We have received bytes.  Give them to the user.
 
@@ -635,10 +582,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             dispatcher.dispatchTCPServerChunk( this, userBuf );
         }
 
-        return;
-
+        return numRead;
     }
-    
+
     @Override
     protected String idForMDC()
     {

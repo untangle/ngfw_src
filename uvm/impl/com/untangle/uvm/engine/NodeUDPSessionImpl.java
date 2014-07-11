@@ -16,6 +16,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.IPStreamer;
@@ -188,16 +189,21 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         addCrumb(side, crumb);
     }
 
-    protected void tryWrite(int side, OutgoingSocketQueue out )
+    protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
     {
         assert out != null;
         if (out.isFull()) {
-            logger.warn("tryWrite to full outgoing queue");
+            if (warnIfUnable)
+                logger.warn("tryWrite to full outgoing queue");
+            else
+                logger.debug("tryWrite to full outgoing queue");
         } else {
             Crumb nc = getNextCrumb2Send(side);
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
             int numWritten = sendCrumb(packet2send, out);
+
+            stats.wroteData(side, numWritten);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("wrote " + numWritten + " to " + side);
@@ -232,13 +238,16 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     }
 
     // Handles the actual reading from the client
-    protected void handleRead(int side, IncomingSocketQueue in )
+    protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
     {
         int numRead = 0;
 
         assert in != null;
         if (in.isEmpty()) {
-            logger.warn("tryReadClient from empty incoming queue");
+            if (warnIfUnable)
+                logger.warn("tryReadClient from empty incoming queue");
+            else
+                logger.debug("tryReadClient from empty incoming queue");
             return;
         }
 
@@ -285,6 +294,8 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         if (logger.isDebugEnabled())
             logger.debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
 
+        stats.readData(side, numRead);
+
         // We have received bytes.  Give them to the user.
 
         // We no longer duplicate the buffer so that the event handler can mess up
@@ -299,7 +310,6 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from node's packet handler.
-        return;
     }
 
     @Override

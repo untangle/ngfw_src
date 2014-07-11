@@ -21,11 +21,11 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
-import com.untangle.jvector.ObjectCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
@@ -67,6 +67,8 @@ public abstract class NodeSessionImpl implements NodeSession
     protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;
+
+    protected final NodeSessionStats stats;
 
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;
@@ -118,6 +120,7 @@ public abstract class NodeSessionImpl implements NodeSession
             serverOutgoingSocketQueue = null;
         }
 
+        this.stats = new NodeSessionStats();
         this.protocol      = request.getProtocol();
 
         this.clientIntf    = request.getClientIntf();
@@ -185,10 +188,10 @@ public abstract class NodeSessionImpl implements NodeSession
         return this.sessionGlobalState().attachment(key);
     }
 
-    // public Long getUniqueGlobalAttachmentKey()
-    // {
-    //     return this.sessionGlobalState().getUniqueGlobalAttachmentKey();
-    // }
+    public Long getUniqueGlobalAttachmentKey()
+    {
+        return this.sessionGlobalState().getUniqueGlobalAttachmentKey();
+    }
     
     public SessionGlobalState sessionGlobalState()
     {
@@ -459,6 +462,11 @@ public abstract class NodeSessionImpl implements NodeSession
         return sessionEvent.getPolicyId();
     }
 
+    public NodeSessionStats stats()
+    {
+        return stats;
+    }
+
     public SessionEvent sessionEvent()
     {
         return sessionEvent;
@@ -508,40 +516,24 @@ public abstract class NodeSessionImpl implements NodeSession
         // mpipe.cancelTimer(this);
     }
 
-    public void sendObjectToClient( Object obj )
+    protected Crumb getNextCrumb2Send(int side)
     {
-        sendObject( CLIENT, obj );
+        List<Crumb> crumbs = crumbs2write[side];
+        assert crumbs != null;
+        Crumb result = crumbs.get(0);
+        assert result != null;
+        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
+        // assert result.remaining() > 0 : "Cannot send zero length buffer";
+        int len = crumbs.size() - 1;
+        if (len == 0) {
+            // Check if we sent em all, and if so remove the array.
+            crumbs2write[side] = null;
+        } else {
+            crumbs.remove(0);
+        }
+        return result;
     }
 
-    public void sendObjectToServer( Object obj )
-    {
-        sendObject( SERVER, obj );
-    }
-
-    public void sendObject( int side, Object obj )
-    {
-        ObjectCrumb crumb = new ObjectCrumb( obj );
-        addCrumb(side, crumb);
-    }
-
-    public void sendObjectsToClient( Object[] objs )
-    {
-        sendObjects( CLIENT, objs );
-    }
-
-    public void sendObjectsToServer( Object[] objs )
-    {
-        sendObjects( SERVER, objs );
-    }
-    
-    public void sendObjects( int side, Object[] objs )
-    {
-        if ( objs == null || objs.length == 0 )
-            return;
-        for (int i = 0; i < objs.length; i++)
-            sendObject(side, objs[i]);
-    }
-    
     protected void addCrumb(int side, Crumb buf)
     {
         if (buf == null)
@@ -581,24 +573,6 @@ public abstract class NodeSessionImpl implements NodeSession
         return size;
     }
 
-    protected Crumb getNextCrumb2Send(int side)
-    {
-        List<Crumb> crumbs = crumbs2write[side];
-        assert crumbs != null;
-        Crumb result = crumbs.get(0);
-        assert result != null;
-        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
-        // assert result.remaining() > 0 : "Cannot send zero length buffer";
-        int len = crumbs.size() - 1;
-        if (len == 0) {
-            // Check if we sent em all, and if so remove the array.
-            crumbs2write[side] = null;
-        } else {
-            crumbs.remove(0);
-        }
-        return result;
-    }
-    
     public void complete()
     {
         try {
@@ -879,7 +853,7 @@ public abstract class NodeSessionImpl implements NodeSession
             assert streamer == null : "readEvent when streaming";;
 
             if (ourout == null || (crumbs2write[1 - side] == null && ourout.isEmpty())) {
-                handleRead(side, in );
+                tryRead(side, in, true);
                 doWrite(side, otherout);
                 doWrite(1 - side, ourout);
                 if (streamer != null) {
@@ -1037,7 +1011,7 @@ public abstract class NodeSessionImpl implements NodeSession
             if (crumbs2write[side] != null) {
                 // Do this first, before checking streamer, so we
                 // drain out any remaining buffer.
-                tryWrite( side, out );
+                tryWrite(side, out, true);
                 didSomething = true;
             } else if (streamer != null) {
                 IPStreamer s = streamer[side];
@@ -1045,7 +1019,7 @@ public abstract class NodeSessionImpl implements NodeSession
                     // It's the right one.
                     addStreamBuf(side, s);
                     if (crumbs2write[side] != null) {
-                        tryWrite( side, out );
+                        tryWrite(side, out, true);
                         didSomething = true;
                     }
                 }
@@ -1062,19 +1036,19 @@ public abstract class NodeSessionImpl implements NodeSession
      * @param in an <code>IncomingSocketQueue</code> value
      * @return a <code>boolean</code> value
      */
-    abstract protected boolean isSideDieing( int side, IncomingSocketQueue in );
+    abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
 
-    abstract protected void sideDieing( int side ) ;
+    abstract protected void sideDieing(int side) ;
 
-    abstract protected void sendWritableEvent( int side ) ;
+    abstract protected void sendWritableEvent(int side) ;
 
     abstract protected void sendCompleteEvent() ;
 
-    abstract protected void tryWrite( int side, OutgoingSocketQueue out );
+    abstract protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable);
 
-    abstract protected void addStreamBuf( int side, IPStreamer streamer );
+    abstract protected void addStreamBuf(int side, IPStreamer streamer);
 
-    abstract protected void handleRead( int side, IncomingSocketQueue in );
+    abstract protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable);
 
     abstract protected String idForMDC();
 

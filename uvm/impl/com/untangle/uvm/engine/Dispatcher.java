@@ -23,6 +23,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
@@ -274,26 +275,6 @@ public class Dispatcher
             releasedHandler.handleTCPServerChunk( session, data );
         } else {
             sessionEventListener.handleTCPServerChunk( session, data );
-        }
-    }
-    
-    void dispatchTCPClientObject( NodeTCPSessionImpl session, Object obj )
-    {
-        elog(Level.DEBUG, "TCPClientObject", session.id());
-        if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPClientObject( session, obj );
-        } else {
-            sessionEventListener.handleTCPClientObject( session, obj );
-        }
-    }
-    
-    void dispatchTCPServerObject( NodeTCPSessionImpl session, Object obj )
-    {
-        elog(Level.DEBUG, "TCPServerObject", session.id());
-        if ( sessionEventListener == null || session.released() ) {
-            releasedHandler.handleTCPServerObject( session, obj );
-        } else {
-            sessionEventListener.handleTCPServerObject( session, obj );
         }
     }
 
