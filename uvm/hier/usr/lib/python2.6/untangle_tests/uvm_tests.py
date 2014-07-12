@@ -6,6 +6,7 @@ import sys
 import re
 import urllib2
 import time
+import copy
 reload(sys)
 sys.setdefaultencoding("utf-8")
 import re
@@ -139,7 +140,7 @@ class UvmTests(unittest2.TestCase):
         clientControl.runCommand("rm -f test_030_testSMTPSettings.log")
         # Start mail sink
         clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg  >/dev/null 2>&1")
-        newMailsettings = origMailsettings.copy()
+        newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = ClientControl.hostIP
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['useMxRecords'] = False
