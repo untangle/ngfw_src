@@ -3,14 +3,15 @@ import sys
 import getopt
 import signal
 import os
-sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+import time
+sys.path.insert(0, '/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 import unittest2
 import uvm
 import untangle_tests
 from   untangle_tests import *
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.6/untangle_tests'):
+for f in os.listdir('/usr/lib/python2.6/untangle_tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
         __import__('untangle_tests.%s' % m)
@@ -29,6 +30,7 @@ class ArgumentParser(object):
         self.internalIntfId = 2
         self.testsToRun = ['all']
         self.testsToExclude = []
+        self.timedTests = False
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -63,6 +65,9 @@ class ArgumentParser(object):
     def set_internalIntfId( self, arg ):
         self.internalIntfId = arg
 
+    def set_timedTests( self, arg ):
+        self.timedTests = True
+
     def parse_args( self ):
         handlers = {
             '-h' : self.set_hostIP,
@@ -75,11 +80,11 @@ class ArgumentParser(object):
             '-t' : self.set_testsToRun,
             '-e' : self.set_testsToExclude,
             '-d' : self.set_externalIntfId,
-            '-s' : self.set_internalIntfId
+            '-x' : self.set_timedTests,
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqr')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqrx')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -103,6 +108,7 @@ def printUsage():
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
     -r         : repeat test indefinitely (or until failure if -q is specified)
+    -x         : time testsuite and display elapsed seconds
 """ % sys.argv[0] )
 
 def signal_handler(signal, frame):
@@ -122,6 +128,8 @@ def runTestSuite(suite):
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     rc = 0
     skipc = 0  # number of skipped tests.
+    if (parser.timedTests):
+        start_time = time.time()
     total = len([t for t in tests])
     for test in tests:
 
@@ -146,7 +154,11 @@ def runTestSuite(suite):
             skipc += 1
         else:
             print "Test success : %s " % test._testMethodName
-    print "== Testing %s ==" % suite.nodeName()
+    if (parser.timedTests):
+        elapsed_time = time.time() - start_time
+        print "== Testing %s in %d secs ==" % (suite.nodeName(),elapsed_time)
+    else:
+        print "== Testing %s ==" % suite.nodeName()
     return rc, skipc, total
 
 # Verify the test enviroment is setup correctly
