@@ -11,7 +11,7 @@ import uvm
 import untangle_tests
 from   untangle_tests import *
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.6/untangle_tests'):
+for f in os.listdir('@PREFIX@/usr/lib/python2.7/untangle_tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
         __import__('untangle_tests.%s' % m)
@@ -31,6 +31,7 @@ class ArgumentParser(object):
         self.testsToRun = ['all']
         self.testsToExclude = []
         self.timedTests = False
+        self.quickTestsOnly = False
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -68,6 +69,9 @@ class ArgumentParser(object):
     def set_timedTests( self, arg ):
         self.timedTests = True
 
+    def set_quickTestsOnly( self, arg ):
+        self.quickTestsOnly = True
+
     def parse_args( self ):
         handlers = {
             '-h' : self.set_hostIP,
@@ -81,10 +85,11 @@ class ArgumentParser(object):
             '-e' : self.set_testsToExclude,
             '-d' : self.set_externalIntfId,
             '-x' : self.set_timedTests,
+            '-z' : self.set_quickTestsOnly,
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqrx')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqrxz')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -109,6 +114,7 @@ def printUsage():
     -q         : quit on first failure
     -r         : repeat test indefinitely (or until failure if -q is specified)
     -x         : time testsuite and display elapsed seconds
+    -z         : skip lengthly test suites
 """ % sys.argv[0] )
 
 def signal_handler(signal, frame):
