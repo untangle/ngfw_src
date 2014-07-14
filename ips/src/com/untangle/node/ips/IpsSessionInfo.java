@@ -25,7 +25,8 @@ public class IpsSessionInfo
     public int start;
     public int end;
     public int indexOfLastMatch;
-
+    private int chunkCount = 0;
+    
     public IpsSessionInfo(IpsNodeImpl ips, NodeSession session,
                           Set<IpsRuleSignature> c2sSignatures,
                           Set<IpsRuleSignature> s2cSignatures)
@@ -71,6 +72,16 @@ public class IpsSessionInfo
     public boolean isServer()
     {
         return isServer;
+    }
+
+    public int getChunkCount()
+    {
+        return chunkCount;
+    }
+
+    public void iterateChunkCount()
+    {
+        this.chunkCount++;
     }
 
     public boolean processC2SSignatures()

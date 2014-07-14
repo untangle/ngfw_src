@@ -62,6 +62,16 @@ public interface SessionEventListener extends java.util.EventListener
     void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data );
 
     /**
+     * Called an object arrives from the client side
+     */
+    void handleTCPClientObject( NodeTCPSession session, Object obj );
+
+    /**
+     * Called an object arrives from the server side
+     */
+    void handleTCPServerObject( NodeTCPSession session, Object obj );
+    
+    /**
      * <code>handleTCPServerWritable</code> is called when the write queue to the server has
      * first gone empty.  This is an edge-triggered event that gives the node a chance
      * to write some more bytes.

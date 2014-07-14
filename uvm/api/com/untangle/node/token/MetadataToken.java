@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 /**
  * Token that represents metadata about the stream rather than content.
- *
  */
 public class MetadataToken implements Token
 {

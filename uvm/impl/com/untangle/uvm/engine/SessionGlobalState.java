@@ -41,8 +41,6 @@ public class SessionGlobalState
     protected HashMap<String,Object> stringAttachments;
     protected HashMap<Long,Object> longAttachments;
 
-    protected int attachId = 0;
-    
     /**
      * Stores a list of the original agents/pipelinespecs processing this session
      * Note: Even if a node/agent releases a session it will still be in this list
@@ -156,13 +154,4 @@ public class SessionGlobalState
     {
         return this.longAttachments.get(key);
     }
-
-    public Long getUniqueGlobalAttachmentKey()
-    {
-        synchronized ( this ) {
-            return new Long(++attachId);
-        }
-    }
-    
-    
 }

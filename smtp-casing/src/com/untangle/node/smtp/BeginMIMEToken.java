@@ -22,7 +22,8 @@ public class BeginMIMEToken extends MetadataToken
     private MIMEAccumulator m_accumulator;
     private MessageInfo m_messageInfo;
 
-    public BeginMIMEToken(MIMEAccumulator accumulator, MessageInfo messageInfo) {
+    public BeginMIMEToken(MIMEAccumulator accumulator, MessageInfo messageInfo)
+    {
         m_accumulator = accumulator;
         m_messageInfo = messageInfo;
     }
@@ -44,16 +45,6 @@ public class BeginMIMEToken extends MetadataToken
     }
 
     /**
-     * Get a TCPStreamer for the initial contents of this message, without byte stuffing.
-     * 
-     * @return the TCPStreamer
-     */
-//    public TCPStreamer toUnstuffedTCPStreamer()
-//    {
-//        return m_accumulator.toTCPStreamer();
-//    }
-
-    /**
      * Get a TokenStreamer for the initial contents of this message
      * 
      * @param byteStuffer
@@ -72,27 +63,28 @@ public class BeginMIMEToken extends MetadataToken
     private class ByteBtuffingTCPStreamer implements TCPStreamer
     {
 
-        private final TCPStreamer m_wrappedStreamer;
-        private final ByteBufferByteStuffer m_bbbs;
+        private final TCPStreamer wrappedStreamer;
+        private final ByteBufferByteStuffer bbbs;
 
-        ByteBtuffingTCPStreamer(TCPStreamer wrapped, ByteBufferByteStuffer bbbs) {
-            m_wrappedStreamer = wrapped;
-            m_bbbs = bbbs;
+        ByteBtuffingTCPStreamer(TCPStreamer wrapped, ByteBufferByteStuffer bbbs)
+        {
+            this.wrappedStreamer = wrapped;
+            this.bbbs = bbbs;
         }
 
         @Override
         public boolean closeWhenDone()
         {
-            return m_wrappedStreamer.closeWhenDone();
+            return wrappedStreamer.closeWhenDone();
         }
 
         @Override
         public ByteBuffer nextChunk()
         {
-            ByteBuffer next = m_wrappedStreamer.nextChunk();
+            ByteBuffer next = (ByteBuffer) wrappedStreamer.nextChunk();
             if (next != null) {
-                ByteBuffer ret = ByteBuffer.allocate(next.remaining() + (m_bbbs.getLeftoverCount() * 2));
-                m_bbbs.transfer(next, ret);
+                ByteBuffer ret = ByteBuffer.allocate(next.remaining() + (bbbs.getLeftoverCount() * 2));
+                bbbs.transfer(next, ret);
                 return ret;
             }
             return next;

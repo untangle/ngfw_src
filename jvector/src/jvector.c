@@ -615,6 +615,7 @@ static event_t*          _source_get_event    ( source_t* src, sink_t* snk )
     case com_untangle_jvector_Crumb_TYPE_SHUTDOWN: event_type |= EVENT_SHUTDOWN_MASK;       /*fallthrough*/
 
     case com_untangle_jvector_Crumb_TYPE_UDP_PACKET: /*fallthrough*/
+    case com_untangle_jvector_Crumb_TYPE_OBJECT: /*fallthrough*/
     case com_untangle_jvector_Crumb_TYPE_DATA:
         if (( jv_event = jvector_event_create()) == NULL )
             return errlog_null( ERR_CRITICAL, "jvector_event_create\n" );

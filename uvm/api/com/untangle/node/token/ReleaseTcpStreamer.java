@@ -29,20 +29,20 @@ class ReleaseTcpStreamer implements TCPStreamer
         return true;
     }
 
-    public ByteBuffer nextChunk()
+    public Object nextChunk()
     {
         if (released) {
             return null;
         } else if (null == streamer) {
             released = true;
-            return release.getBytes();
+            return release;
         } else {
-            ByteBuffer bb = streamer.nextChunk();
-            if (null == bb) {
+            Object obj = streamer.nextChunk();
+            if ( obj == null ) {
                 released = true;
-                return release.getBytes();
+                return release;
             } else {
-                return bb;
+                return obj;
             }
         }
     }

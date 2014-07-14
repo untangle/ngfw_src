@@ -92,20 +92,11 @@ public interface NodeSession extends SessionTuple
      */
     Object globalAttachment(Long key);
     
-    
     /**
      * Similar to globalAttach(String,Object) but with a Long key.
      */
     Object globalAttach(Long key, Object ob);
 
-
-    /**
-     * Provides a unique long key based on a globally iterated
-     * synchronized value.
-     */
-    Long getUniqueGlobalAttachmentKey();
-
-    
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
      * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
@@ -339,9 +330,16 @@ public interface NodeSession extends SessionTuple
     byte clientState();
     byte serverState();
 
-    NodeSessionStats stats();
-
     void simulateClientData(ByteBuffer data);
     void simulateServerData(ByteBuffer data);
+
+    void sendObjectToClient( Object obj );
+    void sendObjectToServer( Object obj );
+    void sendObject( int side, Object obj );
+
+    void sendObjectsToClient( Object[] obj );
+    void sendObjectsToServer( Object[] obj );
+    void sendObjects( int side, Object[] obj );
+    
 }
 

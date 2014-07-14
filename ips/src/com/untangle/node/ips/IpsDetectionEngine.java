@@ -17,7 +17,6 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.NodeSessionStats;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.LoadAvg;
 
@@ -257,18 +256,19 @@ public class IpsDetectionEngine
         try {
             long startTime = System.currentTimeMillis();
 
-            NodeSessionStats stats = session.stats();
-    
             IpsSessionInfo info = sessionInfoMap.get(session.id());
+            
             if ( info == null ) {
                 logger.warn("Missing IpsSessionInfo: " + session);
                 session.release();
                 return;
             }
-            
+
+            info.iterateChunkCount();
             info.setData( chunk );
             info.setFlow(isFromServer);
-
+            int numChunks = info.getChunkCount();
+            
             boolean result;
             if(isFromServer)
                 result = info.processS2CSignatures();
@@ -277,7 +277,7 @@ public class IpsDetectionEngine
 
             if (!result) {
                 int maxChunks = node.getSettings().getMaxChunks();
-                if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
+                if (numChunks > maxChunks) {
                     sessionInfoMap.remove(session.id());
                     session.release();
                 }

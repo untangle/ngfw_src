@@ -3,8 +3,6 @@
  */
 package com.untangle.node.token;
 
-import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
-
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,30 +48,37 @@ public class TokenAdaptor extends AbstractEventHandler
     {
         TokenHandler handler = handlerFactory.tokenHandler( session );
         session.attach( handler );
-        
-        session.clientReadBufferSize(TOKEN_SIZE);
-        session.clientLineBuffering(false);
-        session.serverReadBufferSize(TOKEN_SIZE);
-        session.serverLineBuffering(false);
-        // (read limits are automatically set to the buffer size)
     }
 
     @Override
     public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
+        throw new UnsupportedOperationException("data not supported." + data.remaining());
+    }
+    
+    @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        throw new UnsupportedOperationException("data not supported." + data.remaining());
+    }
+
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
         TokenHandler handler = (TokenHandler) session.attachment();
-        handleToken( handler, session, data, true );
+        handleToken( handler, session, obj, true );
         return;
     }
 
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
         TokenHandler handler = (TokenHandler) session.attachment();
-        handleToken( handler, session, data, false );
+        handleToken( handler, session, obj, false );
         return;
     }
-
+    
+    
     @Override
     public void handleTCPClientFIN( NodeTCPSession session )
     {
@@ -182,31 +187,10 @@ public class TokenAdaptor extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private void handleToken(TokenHandler handler, NodeTCPSession session, ByteBuffer data, boolean s2c)
+    private void handleToken(TokenHandler handler, NodeTCPSession session, Object obj, boolean s2c)
     {
-        ByteBuffer b = data;
-
-        if (b.remaining() < TOKEN_SIZE) {
-            // read limit to token size
-            b.compact();
-            b.limit(TOKEN_SIZE);
-            logger.debug("returning buffer, for more: " + b);
-
-            if ( s2c )
-                session.setServerBuffer( b );
-            else
-                session.setClientBuffer( b );
-            return;
-        }
-
-        Long key = new Long(b.getLong());
-
-        Token token = (Token) session.globalAttachment( key );
-        session.globalAttach( key, null ); // remove attachment
+        Token token = (Token) obj;
         
-        if (logger.isDebugEnabled())
-            logger.debug("RETRIEVED object " + token + " with key: " + key);
-
         TokenResult tr;
         try {
             tr = doToken(session, s2c, handler, token);
@@ -233,23 +217,26 @@ public class TokenAdaptor extends AbstractEventHandler
             // just means nothing extra to send before beginning stream.
             return;
         } else {
-            logger.debug("processing s2c tokens");
-            ByteBuffer[] cr = processResults(tr.s2cTokens(), session, true);
-            logger.debug("processing c2s tokens");
-            ByteBuffer[] sr = processResults(tr.c2sTokens(), session, false);
+            
+            // logger.debug("processing s2c tokens");
+            // results = tr.s2cTokens();
+            // //ByteBuffer[] cr = processResults(tr.s2cTokens(), session, true);
+            // logger.debug("processing c2s tokens");
+            // results = tr.c2sTokens();
+            //ByteBuffer[] sr = processResults(tr.c2sTokens(), session, false);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("returning results: ");
-                for (int i = 0; null != cr && i < cr.length; i++) {
-                    logger.debug("  to client: " + cr[i]);
-                }
-                for (int i = 0; null != sr && i < sr.length; i++) {
-                    logger.debug("  to server: " + sr[i]);
-                }
-            }
+            // if (logger.isDebugEnabled()) {
+            //     logger.debug("returning results: ");
+            //     for (int i = 0; null != cr && i < cr.length; i++) {
+            //         logger.debug("  to client: " + cr[i]);
+            //     }
+            //     for (int i = 0; null != sr && i < sr.length; i++) {
+            //         logger.debug("  to server: " + sr[i]);
+            //     }
+            // }
 
-            session.sendDataToClient( cr );
-            session.sendDataToServer( sr );
+            session.sendObjectsToClient( tr.s2cTokens() );
+            session.sendObjectsToServer( tr.c2sTokens() );
             return;
         }
     }
@@ -305,27 +292,6 @@ public class TokenAdaptor extends AbstractEventHandler
                 return handler.handleClientToken(token);
             }
         }
-    }
-
-    private ByteBuffer[] processResults(Token[] results, NodeSession session, boolean s2c)
-    {
-        // XXX factor out token writing
-        ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.length);
-
-        for (Token tok : results) {
-            if (null == tok) { continue; }
-
-            Long key = session.getUniqueGlobalAttachmentKey();
-            session.globalAttach( key, tok );
-            
-            if (logger.isDebugEnabled())
-                logger.debug("SAVED object " + tok + " with key: " + key);
-
-            bb.putLong(key);
-        }
-        bb.flip();
-
-        return 0 == bb.remaining() ? null : new ByteBuffer[] { bb };
     }
 }
 

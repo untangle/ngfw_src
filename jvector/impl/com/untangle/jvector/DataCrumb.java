@@ -65,7 +65,7 @@ public class DataCrumb extends Crumb
     
     public void raze()
     {
-        /* XXX What should go in here, C structure is freed automatically */
+        /* Nothing to do here, C structure is freed automatically */
     }
 
     protected void advance( int amount ) 

@@ -22,8 +22,6 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class CasingAdaptor extends CasingBase
 {
-    static final int TOKEN_SIZE = 8;
-
     public CasingAdaptor(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
     {
         super(node,casingFactory,clientSide,releaseParseExceptions);
@@ -37,12 +35,6 @@ public class CasingAdaptor extends CasingBase
         Casing casing = casingFactory.casing( session, clientSide );
 
         session.attach( casing );
-        
-        if (clientSide) {
-            session.serverReadLimit( TOKEN_SIZE );
-        } else {
-            session.clientReadLimit( TOKEN_SIZE );
-        }
     }
 
     @Override
@@ -56,8 +48,8 @@ public class CasingAdaptor extends CasingBase
             parse( session, data, false, false );
             return;
         } else {
-            unparse( session, data, false );
-            return;
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
         }
     }
 
@@ -69,14 +61,46 @@ public class CasingAdaptor extends CasingBase
         }
 
         if (clientSide) {
-            unparse( session, data, true );
-            return;
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
         } else {
             parse( session, data, true, false );
             return;
         }
     }
 
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling client object, session: " + session.id());
+        }
+
+        if (clientSide) {
+            logger.warn("Received object but expected data.");
+            throw new RuntimeException("Received object but expected data.");
+        } else {
+            unparse( session, obj, false );
+            return;
+        }
+    }
+    
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling server object, session: " + session.id());
+        }
+
+        if (clientSide) {
+            unparse( session, obj, true );
+            return;
+        } else {
+            logger.warn("Received object but expected data.");
+            throw new RuntimeException("Received object but expected data.");
+        }
+    }
+    
     @Override
     public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
     {
@@ -89,7 +113,8 @@ public class CasingAdaptor extends CasingBase
             return;
         } else {
             if ( data.hasRemaining() ) {
-                logger.warn("should not happen: unparse TCPClientDataEnd");
+                logger.warn("Received data when expect object");
+                throw new RuntimeException("Received data when expect object");
             }
             return;
         }
@@ -104,9 +129,9 @@ public class CasingAdaptor extends CasingBase
 
         if (clientSide) {
             if ( data.hasRemaining() ) {
-                logger.warn("should not happen: unparse TCPClientDataEnd");
+                logger.warn("Received data when expect object");
+                throw new RuntimeException("Received data when expect object");
             }
-            return;
         } else {
             parse( session, data, true, true );
             return;
@@ -180,36 +205,11 @@ public class CasingAdaptor extends CasingBase
 
     // private methods --------------------------------------------------------
 
-    private void unparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
+    private void unparse( NodeTCPSession session, Object obj, boolean s2c )
     {
-        ByteBuffer chunk = data;
-
-        if (chunk.remaining() < TOKEN_SIZE) {
-            // read limit 2
-            chunk.compact();
-            chunk.limit(TOKEN_SIZE);
-            if (logger.isDebugEnabled()) {
-                logger.debug("unparse returning buffer, for more: " + chunk);
-            }
-            if ( s2c )
-                session.setServerBuffer( chunk );
-            else
-                session.setClientBuffer( chunk );
-            return;
-        }
-
         Casing casing = (Casing)session.attachment();
 
-        Long key = new Long(chunk.getLong());
-        Token tok = (Token) session.globalAttachment( key );
-        session.globalAttach( key, null ); // remove key
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("RETRIEVED object: " + tok + " with key: " + key );
-        }
-
-        chunk.limit(TOKEN_SIZE);
-
+        Token tok = (Token) obj;
         UnparseResult ur;
         try {
             ur = unparseToken(session, casing, tok);
@@ -248,8 +248,9 @@ public class CasingAdaptor extends CasingBase
                     }
                 }
 
-                if (result.length > 0)
+                if (result.length > 0) {
                     session.sendDataToClient( result );
+                }
                 return;
             } else {
                 logger.debug("unparse result to server");
@@ -259,8 +260,9 @@ public class CasingAdaptor extends CasingBase
                         logger.debug("  to server: " + result[i]);
                     }
                 }
-                if (result.length > 0)
+                if (result.length > 0) {
                     session.sendDataToServer( result );
+                }
                 return;
             }
         }
@@ -279,8 +281,7 @@ public class CasingAdaptor extends CasingBase
 
             UnparseResult ur = u.releaseFlush();
             if (ur.isStreamer()) {
-                TCPStreamer ts = new ReleaseTcpStreamer
-                    (ur.getTcpStreamer(), release);
+                TCPStreamer ts = new ReleaseTcpStreamer(ur.getTcpStreamer(), release);
                 return new UnparseResult(ts);
             } else {
                 ByteBuffer[] orig = ur.result();
@@ -378,33 +379,25 @@ public class CasingAdaptor extends CasingBase
         } else {
             List<Token> results = pr.getResults();
 
-            ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.size());
-
-            for (Token t : results) {
-                Long key = session.getUniqueGlobalAttachmentKey();
-                session.globalAttach(key, t);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("SAVED object: " + t + " with key: " + key );
-                }
-                bb.putLong(key);
-            }
-            bb.flip();
-
             if (s2c) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + bb);
+                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + results);
                 }
 
-                if ( results.size() > 0 )
-                    session.sendDataToClient( bb );
+                if ( results.size() > 0 ) {
+                    Token[] arr = results.toArray( new Token[results.size()] );
+                    session.sendObjectsToClient( arr );
+                }
                 session.setServerBuffer( pr.getReadBuffer() );
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + bb);
+                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + results);
                 }
 
-                if ( results.size() > 0 )
-                    session.sendDataToServer( bb );
+                if ( results.size() > 0 ) {
+                    Token[] arr = results.toArray( new Token[results.size()] );
+                    session.sendObjectsToServer( arr );
+                }
                 session.setClientBuffer( pr.getReadBuffer() );
             }
             return;

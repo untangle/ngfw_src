@@ -105,6 +105,24 @@ public abstract class AbstractEventHandler implements SessionEventListener
         return;
     }
 
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        byte serverState = session.serverState();
+        // Default just sends the bytes onwards if the output is open.
+        if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
+            session.sendObjectToServer( obj );
+        return;
+    }
+
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        byte clientState = session.clientState();
+        // Default just sends the bytes onwards if the output is open.
+        if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
+            session.sendObjectToClient( obj );
+        return;
+    }
+    
     public void handleTCPServerWritable( NodeTCPSession session )
     {
         // Default writes nothing more.
