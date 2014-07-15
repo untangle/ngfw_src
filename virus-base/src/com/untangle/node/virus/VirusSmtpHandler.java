@@ -19,6 +19,8 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.node.smtp.MailExport;
+import com.untangle.node.smtp.MailExportFactory;
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
@@ -37,29 +39,43 @@ import com.untangle.node.util.GlobUtil;
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
  */
-public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTranslator
+public class VirusSmtpHandler extends SmtpStateMachine implements TemplateTranslator
 {
     private static final String MOD_SUB_TEMPLATE = "[VIRUS] $MIMEMessage:SUBJECT$";
 
-    private final Logger logger = Logger.getLogger(SmtpSessionHandler.class);
+    private final Logger logger = Logger.getLogger(VirusSmtpHandler.class);
 
-    private final VirusNodeImpl virusImpl;
+    private final VirusNodeImpl node;
 
+    private final long timeout;
+    
     private final WrappedMessageGenerator generator;
 
-    public SmtpSessionHandler(NodeTCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl)
+    public VirusSmtpHandler( VirusNodeImpl node )
     {
-        super(session, Integer.MAX_VALUE, maxClientWait, maxSvrWait, true, impl.getSettings().getScanSmtp());
+        super();
 
-        this.virusImpl = impl;
+        this.node = node;
+
+        MailExport mailExport = MailExportFactory.factory().getExport();
+        this.timeout = mailExport.getExportSettings().getSmtpTimeout();
+        
         this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
     
     @Override
+    public boolean getScanningEnabled( NodeTCPSession session ) { return node.getSettings().getScanSmtp(); }
+    @Override
+    public long getMaxServerWait( NodeTCPSession session ) { return timeout; }
+    @Override
+    public long getMaxClientWait( NodeTCPSession session ) { return timeout; }
+    @Override
+    public int getGiveUpSz( NodeTCPSession session ) { return Integer.MAX_VALUE; }
+
+    @Override
     public String getTranslatedBodyTemplate()
     {
-        Map<String, String> i18nMap = UvmContextFactory.context().languageManager()
-            .getTranslations("untangle-casing-smtp");
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-smtp");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String bodyTemplate = i18nUtil.tr("The attached message from")
                               + " $MIMEMessage:FROM$\r\n" + i18nUtil.tr("was found to contain the virus")
@@ -75,10 +91,10 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
     }
 
     @Override
-    public ScannedMessageResult blockPassOrModify(MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo )
     {
         this.logger.debug("[handleMessageCanBlock] called");
-        this.virusImpl.incrementScanCount();
+        this.node.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getCandidateParts(msg);
         if (this.logger.isDebugEnabled()) {
@@ -92,7 +108,7 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         VirusScannerResult scanResultForWrap = null;
 
         String actionTaken = "pass";
-        String configuredAction = virusImpl.getSettings().getSmtpAction();
+        String configuredAction = node.getSettings().getSmtpAction();
 
         for (Part part : candidateParts) {
             if (!MIMEUtil.shouldScan(part)) {
@@ -101,12 +117,12 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
             }
 
             VirusScannerResult scanResult;
-            if( ignoredHost( getSession().sessionEvent().getSServerAddr() ) ||
-                ignoredHost( getSession().sessionEvent().getCClientAddr() ) ){
+            if( ignoredHost( session.sessionEvent().getSServerAddr() ) ||
+                ignoredHost( session.sessionEvent().getCClientAddr() ) ){
                 scanResult = VirusScannerResult.CLEAN;
                 logger.warn("Passed in SMTP");
             }else{
-                scanResult = scanPart(part);
+                scanResult = scanPart( session, part );
             }
 
             if (scanResult == null) {
@@ -120,8 +136,8 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
                 actionTaken = configuredAction;
 
             // Make log report
-            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.virusImpl.getName());
-            this.virusImpl.logEvent(event);
+            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.node.getName());
+            this.node.logEvent(event);
 
             if (scanResult.isClean()) {
                 this.logger.debug("Part clean");
@@ -158,33 +174,33 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         if (foundVirus) {
             if ("block".equals(configuredAction)) {
                 this.logger.debug("Returning BLOCK as-per policy");
-                this.virusImpl.incrementBlockCount();
+                this.node.incrementBlockCount();
                 return new ScannedMessageResult(BlockOrPassResult.DROP);
             } else if ("remove".equals(configuredAction)) {
                 this.logger.debug("REMOVE (wrap) message");
                 MimeMessage wrappedMsg = this.generator.wrap(msg, tx, scanResultForWrap);
-                this.virusImpl.incrementRemoveCount();
+                this.node.incrementRemoveCount();
                 return new ScannedMessageResult(wrappedMsg);
             } else {
                 this.logger.debug("Passing infected message (as-per policy)");
-                this.virusImpl.incrementPassedInfectedMessageCount();
+                this.node.incrementPassedInfectedMessageCount();
             }
         }
-        this.virusImpl.incrementPassCount();
+        this.node.incrementPassCount();
         return new ScannedMessageResult(BlockOrPassResult.PASS);
     }
 
     @Override
-    public BlockOrPassResult blockOrPass(MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
     {
         this.logger.debug("[handleMessageCanNotBlock]");
-        this.virusImpl.incrementScanCount();
+        this.node.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getCandidateParts(msg);
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Message has: " + candidateParts.size() + " scannable parts");
         }
-        String action = this.virusImpl.getSettings().getSmtpAction();
+        String action = this.node.getSettings().getSmtpAction();
 
         // Check for the impossible-to-satisfy action of "REMOVE"
         if ("remove".equals(action)) {
@@ -205,12 +221,12 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
             }
 
             VirusScannerResult scanResult;
-            if( ignoredHost( getSession().sessionEvent().getSServerAddr() ) ||
-                ignoredHost( getSession().sessionEvent().getCClientAddr() ) ){
+            if( ignoredHost( session.sessionEvent().getSServerAddr() ) ||
+                ignoredHost( session.sessionEvent().getCClientAddr() ) ){
                 scanResult = VirusScannerResult.CLEAN;
                 logger.warn("Passed in SMTP");
             }else{
-                scanResult = scanPart(part);
+                scanResult = scanPart( session, part );
             }
 
             if (scanResult == null) {
@@ -230,8 +246,8 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
 
                 // Make log report
                 VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, scanResult.isClean() ? "pass" : action,
-                        this.virusImpl.getName());
-                this.virusImpl.logEvent(event);
+                        this.node.getName());
+                this.node.logEvent(event);
 
                 if ("pass".equals(action)) {
                     this.logger.debug("Passing infected part as-per policy");
@@ -244,11 +260,11 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         if (foundVirus) {
             if ("block".equals(action)) {
                 this.logger.debug("Blocking mail as-per policy");
-                this.virusImpl.incrementBlockCount();
+                this.node.incrementBlockCount();
                 return BlockOrPassResult.DROP;
             }
         }
-        this.virusImpl.incrementPassCount();
+        this.node.incrementPassCount();
         return BlockOrPassResult.PASS;
     }
 
@@ -258,7 +274,7 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         // Thread safety
         String str = extension.toUpperCase();
         if ( "STARTTLS".equals( str ) ) 
-            return virusImpl.getSettings().getSmtpAllowTls();
+            return node.getSettings().getSmtpAllowTls();
         else
             return super.isAllowedExtension( extension );
     }
@@ -268,7 +284,7 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
     {
         String str = command.toUpperCase();
         if ( "STARTTLS".equals( str ) )
-            return virusImpl.getSettings().getSmtpAllowTls();
+            return node.getSettings().getSmtpAllowTls();
         else
             return super.isAllowedCommand( command );
     }
@@ -276,19 +292,19 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
     /**
      * Returns null if there was an error.
      */
-    private VirusScannerResult scanPart(Part part)
+    private VirusScannerResult scanPart( NodeTCPSession session, Part part )
     {
         // Get the part as a file
         File f = null;
         try {
-            f = partToFile(part);
+            f = partToFile( session, part );
         } catch (Exception ex) {
             this.logger.error("Exception writing MIME part to file", ex);
             return null;
         }
         // Call VirusScanner
         try {
-            VirusScannerResult result = this.virusImpl.getScanner().scanFile(f);
+            VirusScannerResult result = this.node.getScanner().scanFile(f);
             if (result == null || result == VirusScannerResult.ERROR) {
                 this.logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
                 return null;
@@ -305,14 +321,14 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
         }
     }
 
-    private File partToFile(Part part)
+    private File partToFile( NodeTCPSession session, Part part )
     {
         File ret = null;
         FileOutputStream fOut = null;
         try {
             ret = File.createTempFile("MimePart-", null);
             if (ret != null)
-                getSession().attachTempFile(ret.getAbsolutePath());
+                session.attachTempFile(ret.getAbsolutePath());
             fOut = new FileOutputStream(ret);
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
@@ -348,7 +364,7 @@ public class SmtpSessionHandler extends SmtpStateMachine implements TemplateTran
 
         Pattern p;
 
-        for (Iterator<GenericRule> i = virusImpl.getSettings().getPassSites().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
                 p = (Pattern) sr.attachment();

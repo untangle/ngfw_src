@@ -50,6 +50,7 @@ public interface NodeSession extends SessionTuple
      *          <tt>null</tt>
      */
     Object attach(Object ob);
+    Object attach(String key, Object ob);
 
     /**
      * Retrieves the current attachment.
@@ -58,7 +59,8 @@ public interface NodeSession extends SessionTuple
      *          <tt>null</tt> if there is no attachment
      */
     Object attachment();
-
+    Object attachment(String key);
+    
     /**
      * Attaches the given object to this session
      * This is visible and modifiable by all Nodes
@@ -87,15 +89,15 @@ public interface NodeSession extends SessionTuple
      */
     Object globalAttachment(String key);
 
-    /**
-     * Similar to globalAttachment(String) but with a Long key.
-     */
-    Object globalAttachment(Long key);
+    // /**
+    //  * Similar to globalAttachment(String) but with a Long key.
+    //  */
+    // Object globalAttachment(Long key);
     
-    /**
-     * Similar to globalAttach(String,Object) but with a Long key.
-     */
-    Object globalAttach(Long key, Object ob);
+    // /**
+    //  * Similar to globalAttach(String,Object) but with a Long key.
+    //  */
+    // Object globalAttach(Long key, Object ob);
 
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.

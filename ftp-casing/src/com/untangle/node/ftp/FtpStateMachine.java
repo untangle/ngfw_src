@@ -24,10 +24,10 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public abstract class FtpStateMachine extends AbstractTokenHandler
 {
-    private final Fitting clientFitting;
-    private final Fitting serverFitting;
+    //private final Fitting clientFitting;
+    //private final Fitting serverFitting;
 
-    public final NodeTCPSession session;
+    // public final NodeTCPSession session;
     /**
      * Used to obtain the control session that opened the data session on the
      * given port.
@@ -36,52 +36,52 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     
     // constructors -----------------------------------------------------------
 
-    protected FtpStateMachine(NodeTCPSession session)
+    protected FtpStateMachine()
     {
-        super(session);
-        
-        this.session = session;
-        clientFitting = session.pipelineConnector().getInputFitting();
-        serverFitting = session.pipelineConnector().getOutputFitting();
+        // this.session = session;
+        // clientFitting = session.pipelineConnector().getInputFitting();
+        // serverFitting = session.pipelineConnector().getOutputFitting();
     }
 
     // protected methods ------------------------------------------------------
 
-    protected TokenResult doCommand(FtpCommand command) throws TokenException
+    protected TokenResult doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         return new TokenResult(null, new Token[] { command });
     }
 
-    protected TokenResult doReply(FtpReply reply) throws TokenException
+    protected TokenResult doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
         return new TokenResult(new Token[] { reply }, null);
     }
 
-    protected TokenResult doClientData(Chunk c) throws TokenException
+    protected TokenResult doClientData( NodeTCPSession session, Chunk c ) throws TokenException
     {
         return new TokenResult(null, new Token[] { c });
     }
 
-    protected void doClientDataEnd() throws TokenException { }
+    protected void doClientDataEnd( NodeTCPSession session ) throws TokenException { }
 
-    protected TokenResult doServerData(Chunk c) throws TokenException
+    protected TokenResult doServerData( NodeTCPSession session, Chunk c ) throws TokenException
     {
         return new TokenResult(new Token[] { c }, null);
     }
 
-    protected void doServerDataEnd() throws TokenException { }
+    protected void doServerDataEnd( NodeTCPSession session ) throws TokenException { }
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(Token token) throws TokenException
+    public TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException
     {
+        Fitting clientFitting = session.pipelineConnector().getInputFitting();
+
         if (Fitting.FTP_CTL_TOKENS == clientFitting) {
-            return doCommand((FtpCommand)token);
+            return doCommand( session, (FtpCommand)token );
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
             if (token instanceof EndMarker) {
                 return new TokenResult(null, new Token[] { EndMarker.MARKER });
             } else if (token instanceof Chunk) {
-                return doClientData((Chunk)token);
+                return doClientData( session, (Chunk)token );
             } else {
                 throw new TokenException("bad token: " + token);
             }
@@ -90,15 +90,17 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public TokenResult handleServerToken(Token token) throws TokenException
+    public TokenResult handleServerToken( NodeTCPSession session, Token token ) throws TokenException
     {
+        Fitting serverFitting = session.pipelineConnector().getOutputFitting();
+
         if (Fitting.FTP_CTL_TOKENS == serverFitting) {
-            return doReply((FtpReply)token);
+            return doReply( session, (FtpReply)token );
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
             if (token instanceof EndMarker) {
                 return new TokenResult(new Token[] { EndMarker.MARKER }, null);
             } else if (token instanceof Chunk) {
-                return doServerData((Chunk)token);
+                return doServerData( session, (Chunk)token );
             } else {
                 throw new TokenException("bad token: " + token);
             }
@@ -108,15 +110,15 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public void handleClientFin() throws TokenException
+    public void handleClientFin( NodeTCPSession session ) throws TokenException
     {
-        doClientDataEnd();
+        doClientDataEnd( session );
     }
 
     @Override
-    public void handleServerFin() throws TokenException
+    public void handleServerFin( NodeTCPSession session ) throws TokenException
     {
-        doServerDataEnd();
+        doServerDataEnd( session );
     }
     
     /**

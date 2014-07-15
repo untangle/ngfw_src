@@ -30,24 +30,23 @@ public class CaptureHttpHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    CaptureHttpHandler(NodeTCPSession session, CaptureNodeImpl node)
+    CaptureHttpHandler( CaptureNodeImpl node )
     {
-        super(session);
+        super();
         this.node = node;
     }
 
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected Header doRequestHeader(Header requestHeader)
+    protected Header doRequestHeader( NodeTCPSession session, Header requestHeader )
     {
         Token[] response = null;
-        NodeTCPSession session = getSession();
 
         // first check to see if the user is already authenticated
         if (node.isClientAuthenticated(session.getClientAddr()) == true) {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
-            releaseRequest();
+            releaseRequest( session );
             return (requestHeader);
         }
 
@@ -61,7 +60,7 @@ public class CaptureHttpHandler extends HttpStateMachine
             }
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
-            releaseRequest();
+            releaseRequest( session );
             return (requestHeader);
         }
 
@@ -71,7 +70,7 @@ public class CaptureHttpHandler extends HttpStateMachine
         // by default we allow traffic so if there is no rule pass the traffic
         if (rule == null) {
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
-            releaseRequest();
+            releaseRequest( session );
             return (requestHeader);
         }
 
@@ -81,15 +80,15 @@ public class CaptureHttpHandler extends HttpStateMachine
             node.logEvent(logevt);
 
             node.incrementBlinger(CaptureNode.BlingerType.SESSALLOW, 1);
-            releaseRequest();
+            releaseRequest( session );
             return (requestHeader);
         }
 
-        String method = getRequestLine().getMethod().toString();
-        String uri = getRequestLine().getRequestUri().toString();
+        String method = getRequestLine( session ).getMethod().toString();
+        String uri = getRequestLine( session ).getRequestUri().toString();
 
         // look for a host in the request line
-        String host = getRequestLine().getRequestUri().getHost();
+        String host = getRequestLine( session ).getRequestUri().getHost();
 
         // if not found there look in the request header
         if (host == null)
@@ -97,7 +96,7 @@ public class CaptureHttpHandler extends HttpStateMachine
 
         // if still not found then just use the IP address of the server
         if (host == null)
-            host = getSession().getServerAddr().getHostAddress().toString();
+            host = session.getServerAddr().getHostAddress().toString();
 
         host = host.toLowerCase();
 
@@ -118,47 +117,47 @@ public class CaptureHttpHandler extends HttpStateMachine
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
         node.logEvent(logevt);
         node.incrementBlinger(CaptureNode.BlingerType.SESSBLOCK, 1);
-        blockRequest(response);
+        blockRequest( session, response );
         return requestHeader;
     }
 
     @Override
-    protected Chunk doRequestBody(Chunk chunk) throws TokenException
+    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd() throws TokenException
+    protected void doRequestBodyEnd( NodeTCPSession session ) throws TokenException
     {
     }
 
     @Override
-    protected Header doResponseHeader(Header header)
+    protected Header doResponseHeader( NodeTCPSession session, Header header )
     {
-        releaseResponse();
+        releaseResponse( session );
         return header;
     }
 
     @Override
-    protected Chunk doResponseBody(Chunk chunk) throws TokenException
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
         return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd() throws TokenException
+    protected void doResponseBodyEnd( NodeTCPSession session ) throws TokenException
     {
     }
 
     @Override
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine) throws TokenException
+    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine ) throws TokenException
     {
         return requestLine;
     }
 
     @Override
-    protected StatusLine doStatusLine(StatusLine statusLine) throws TokenException
+    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine ) throws TokenException
     {
         return statusLine;
     }

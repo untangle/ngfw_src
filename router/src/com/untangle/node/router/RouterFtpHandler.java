@@ -26,11 +26,6 @@ class RouterFtpHandler extends FtpStateMachine
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl node;
     private final RouterSessionManager sessionManager;
-    private RouterSessionData sessionData;
-
-    private boolean receivedPortCommand                = false;
-    private SessionRedirect portCommandSessionRedirect = null;
-    private SessionRedirectKey portCommandKey          = null;
 
     private final static int portStart = 10000 + (int)(Math.random()*3000);
     private final static int portRange = 5000;
@@ -38,13 +33,14 @@ class RouterFtpHandler extends FtpStateMachine
     
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
-    RouterFtpHandler( NodeTCPSession session, RouterImpl node )
+    RouterFtpHandler( RouterImpl node )
     {
-        super(session);
-
         this.node = node;
         this.sessionManager = node.getSessionManager();
+    }
 
+    public void handleNewSession( NodeTCPSession session )
+    {
         /**
          * Remove redirect if this session is the redirected session
          */
@@ -61,17 +57,16 @@ class RouterFtpHandler extends FtpStateMachine
             node.getSessionManager().registerSession( session );
         }
         
-        /* Lazily set session data since the other event handler can
-         * run before or after this event handler */
-        this.sessionData = null;
     }
 
+    
     @Override
-    protected TokenResult doCommand( FtpCommand command ) throws TokenException
+    protected TokenResult doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         FtpFunction function = command.getFunction();
 
-        if ( !updateSessionData()) {
+        RouterSessionData sessionData = getSessionData( session );
+        if ( sessionData == null ) {
             if (logger.isDebugEnabled()) {
                 logger.debug( "doCommand: Ignoring unmodified session" );
             }
@@ -83,18 +78,18 @@ class RouterFtpHandler extends FtpStateMachine
         }
 
         /* Ignore the previous port command */
-        receivedPortCommand        = false;
-        portCommandSessionRedirect = null;
-        portCommandKey             = null;
+        sessionData.receivedPortCommand        = false;
+        sessionData.portCommandSessionRedirect = null;
+        sessionData.portCommandKey             = null;
 
         if ( function == FtpFunction.PASV ) {
-            return pasvCommand( command );
+            return pasvCommand( session, command );
         } else if ( function == FtpFunction.PORT ) {
-            return portCommand( command );
+            return portCommand( session, command );
         } else if ( function == FtpFunction.EPSV ) { 
-            return epsvCommand( command );
+            return epsvCommand( session, command );
         } else if ( function == FtpFunction.EPRT ) {
-            return eprtCommand( command );
+            return eprtCommand( session, command );
         }
 
         if (logger.isDebugEnabled()) {
@@ -105,11 +100,12 @@ class RouterFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected TokenResult doReply( FtpReply reply ) throws TokenException
+    protected TokenResult doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
         int replyCode = reply.getReplyCode();
 
-        if ( !updateSessionData()) {
+        RouterSessionData sessionData = getSessionData( session );
+        if ( sessionData == null ) {
             logger.debug( "doReply: Ignoring unmodified session" );
             return new TokenResult( new Token[] { reply }, null );
         }
@@ -118,25 +114,27 @@ class RouterFtpHandler extends FtpStateMachine
             logger.debug( "Received reply: " + reply );
         }
 
-        if ( receivedPortCommand && replyCode == 200 && portCommandKey != null &&
-             portCommandSessionRedirect != null ) {
+        if ( sessionData.receivedPortCommand &&
+             replyCode == 200 &&
+             sessionData.portCommandKey != null &&
+             sessionData.portCommandSessionRedirect != null ) {
             /* Now enable the session redirect */
-            sessionManager.registerSessionRedirect( sessionData, portCommandKey, portCommandSessionRedirect );
+            sessionManager.registerSessionRedirect( sessionData, sessionData.portCommandKey, sessionData.portCommandSessionRedirect );
         } else {
             switch ( replyCode ) {
             case FtpReply.PASV:
-                return pasvReply( reply );
+                return pasvReply( session, reply );
 
             case FtpReply.EPSV:
-                return epsvReply( reply );
+                return epsvReply( session, reply );
 
             default:
             }
         }
 
-        receivedPortCommand = false;
-        portCommandSessionRedirect = null;
-        portCommandKey             = null;
+        sessionData.receivedPortCommand = false;
+        sessionData.portCommandSessionRedirect = null;
+        sessionData.portCommandKey             = null;
 
         if (logger.isDebugEnabled()) {
             logger.debug( "Passing reply: " + reply );
@@ -145,34 +143,35 @@ class RouterFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected void doClientDataEnd() throws TokenException
+    protected void doClientDataEnd( NodeTCPSession session ) throws TokenException
     {
-        getSession().shutdownServer();
+        session.shutdownServer();
     }
 
     @Override
-    protected void doServerDataEnd() throws TokenException
+    protected void doServerDataEnd( NodeTCPSession session ) throws TokenException
     {
-        getSession().shutdownClient();
+        session.shutdownClient();
     }
 
     @Override
-    public void handleFinalized() throws TokenException
+    public void handleFinalized( NodeTCPSession session ) throws TokenException
     {
-        node.getSessionManager().releaseSession( this.session );
+        node.getSessionManager().releaseSession( session );
     }
 
-    private TokenResult portCommand( FtpCommand command ) throws TokenException
+    private TokenResult portCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
-        return handlePortCommand( command );
+        return handlePortCommand( session, command );
     }
 
     /* Handle a port command, this is the helper for both extended and normal commands */
-    private TokenResult handlePortCommand( FtpCommand command ) throws TokenException
+    private TokenResult handlePortCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         InetSocketAddress addr;
 
-        if ( !updateSessionData()) {
+        RouterSessionData sessionData = getSessionData( session );
+        if ( sessionData == null ) {
             logger.debug( "hanglePortCommand: Ignoring unmodified session" );
             return new TokenResult( null, new Token[] { command } );
         }
@@ -198,22 +197,22 @@ class RouterFtpHandler extends FtpStateMachine
          * Indicate that a port command has been received, don't create the session redirect until
          * the server accepts the port command
          */
-        receivedPortCommand        = true;
-        portCommandSessionRedirect = null;
-        portCommandKey             = null;
+        sessionData.receivedPortCommand        = true;
+        sessionData.portCommandSessionRedirect = null;
+        sessionData.portCommandKey             = null;
 
         if ( sessionData.isClientRedirect()) {
             int port = getNextPort( );
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
-            portCommandKey = new SessionRedirectKey( Protocol.TCP, sessionData.modifiedClientAddr(), port );
+            sessionData.portCommandKey = new SessionRedirectKey( Protocol.TCP, sessionData.modifiedClientAddr(), port );
 
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
-            portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
+            sessionData.portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
                                                               sessionData.originalClientAddr(), addr.getPort(),
                                                               port, sessionData.modifiedClientAddr(),
-                                                              portCommandKey );
+                                                              sessionData.portCommandKey );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );
             if (logger.isDebugEnabled()) {
@@ -242,22 +241,23 @@ class RouterFtpHandler extends FtpStateMachine
         return new TokenResult( null, new Token[] { command } );
     }
 
-    private TokenResult eprtCommand( FtpCommand command ) throws TokenException
+    private TokenResult eprtCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         logger.debug( "Handling extended port command" );
-        return handlePortCommand( command );
+        return handlePortCommand( session, command );
     }
     
-    private TokenResult pasvCommand( FtpCommand command ) throws TokenException
+    private TokenResult pasvCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         return new TokenResult( null, new Token[] { command } );
     }
 
-    private TokenResult pasvReply( FtpReply reply ) throws TokenException
+    private TokenResult pasvReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
         InetSocketAddress addr;
 
-        if ( !updateSessionData()) {
+        RouterSessionData sessionData = getSessionData( session );
+        if ( sessionData == null ) {
             logger.debug( "Ignoring unmodified session" );
             return new TokenResult( new Token[] { reply }, null );
         }
@@ -299,13 +299,19 @@ class RouterFtpHandler extends FtpStateMachine
         return new TokenResult( new Token[] { reply }, null );
     }
 
-    private TokenResult epsvCommand( FtpCommand command ) throws TokenException
+    private TokenResult epsvCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         return new TokenResult( null, new Token[] { command } );
     }
 
-    private TokenResult epsvReply( FtpReply reply ) throws TokenException
+    private TokenResult epsvReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
+        RouterSessionData sessionData = getSessionData( session );
+        if ( sessionData == null ) {
+            logger.debug( "Ignoring unmodified session" );
+            throw new TokenException( "Missing session data");
+        }
+        
         InetSocketAddress addr;
         try {
             addr = reply.getSocketAddress();
@@ -332,14 +338,17 @@ class RouterFtpHandler extends FtpStateMachine
         return new TokenResult( new Token[] { FtpEpsvReply.makeEpsvReply( addr ) }, null );
     }
 
-    private boolean updateSessionData()
+    private RouterSessionData getSessionData( NodeTCPSession session )
     {
+        RouterSessionData sessionData = (RouterSessionData) session.attachment();
+        
         if ( sessionData == null ) {
-            /* Get the information the nat node is tracking about the session */
-            sessionData = sessionManager.getSessionData( getSession());
+            /* Get the information the router node is tracking about the session */
+            sessionData = sessionManager.getSessionData( session );
+            session.attach( sessionData );
         }
 
-        return ( sessionData != null );
+        return sessionData;
     }
 
     private synchronized int getNextPort()

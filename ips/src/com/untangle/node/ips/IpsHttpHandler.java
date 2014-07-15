@@ -14,52 +14,51 @@ class IpsHttpHandler extends HttpStateMachine {
 
     private IpsDetectionEngine engine;
 
-    IpsHttpHandler(NodeTCPSession session, IpsNodeImpl node)
+    protected IpsHttpHandler( IpsNodeImpl node )
     {
-        super(session);
         engine = node.getEngine();
     }
 
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
+    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine)
     {
-        IpsSessionInfo info = engine.getSessionInfo(getSession());
+        IpsSessionInfo info = engine.getSessionInfo( session );
         if (info != null) {
             // Null is no longer unusual, it happens whenever we've released the
             // session from the byte pipe.
             String path = requestLine.getRequestUri().normalize().getPath();
             info.setUriPath(path);
         }
-        releaseRequest();
+        releaseRequest( session );
         return requestLine;
     }
 
-    protected Header doRequestHeader(Header requestHeader)
+    protected Header doRequestHeader( NodeTCPSession session, Header requestHeader )
     {
         return requestHeader;
     }
 
-    protected void doRequestBodyEnd() { }
+    protected void doRequestBodyEnd( NodeTCPSession session ) { }
 
-    protected void doResponseBodyEnd() { }
+    protected void doResponseBodyEnd( NodeTCPSession session ) { }
 
-    protected Chunk doResponseBody(Chunk chunk)
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
     {
         return chunk;
     }
 
-    protected Header doResponseHeader(Header header)
+    protected Header doResponseHeader( NodeTCPSession session, Header header )
     {
         return header;
     }
 
-    protected Chunk doRequestBody(Chunk chunk)
+    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
     {
         return chunk;
     }
 
-    protected StatusLine doStatusLine(StatusLine statusLine)
+    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
     {
-        releaseResponse();
+        releaseResponse( session );
         return statusLine;
     }
 }

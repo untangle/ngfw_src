@@ -505,8 +505,9 @@ public class Dispatcher
 
             // Create the session, client and server channels
             NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
-            
-            session.attach(request.attachment());
+
+            request.copyAttachments( session );
+            //session.attach(request.attachment());
 
             // Send the new session event.  
             if (logger.isDebugEnabled())

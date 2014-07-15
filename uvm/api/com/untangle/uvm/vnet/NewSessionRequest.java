@@ -42,6 +42,7 @@ public interface NewSessionRequest
      *          otherwise <tt>null</tt>
      */
     Object attach(Object ob);
+    Object attach(String key, Object ob);
 
     /**
      * Retrieves the current attachment.  </p>
@@ -50,6 +51,7 @@ public interface NewSessionRequest
      *          or <tt>null</tt> if there is no attachment
      */
     Object attachment();
+    Object attachment(String key);
 
     /**
      * Attaches the given object to this session

@@ -24,18 +24,17 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
    
     private static WrappedMessageGenerator msgGenerator;
     
-    protected PhishSmtpHandler( NodeTCPSession session, long maxClientWait, long maxSvrWait,
-                                PhishNode impl, SpamSmtpConfig config, QuarantineNodeView quarantine, SafelistNodeView safelist)
+    protected PhishSmtpHandler( PhishNode node )
     {
-        super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
+        super( node );
+
         PhishSmtpHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,getTranslatedBodyTemplate(), this);
     }
     
     @Override
     public String getTranslatedBodyTemplate()
     {
-        Map<String, String> i18nMap = UvmContextFactory.context().languageManager()
-            .getTranslations("untangle-casing-smtp");
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-smtp");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String bodyTemplate = i18nUtil.tr("The attached message from")
                               + " $MIMEMessage:FROM$\r\n"

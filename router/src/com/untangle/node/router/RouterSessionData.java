@@ -26,6 +26,10 @@ class RouterSessionData
     private final int         modifiedServerPort;
 
     private final List<SessionRedirect> redirectList = new LinkedList<SessionRedirect>();
+
+    protected boolean receivedPortCommand                = false;
+    protected SessionRedirect portCommandSessionRedirect = null;
+    protected SessionRedirectKey portCommandKey          = null;
     
     protected RouterSessionData( InetAddress oClientAddr, int oClientPort, InetAddress mClientAddr, int mClientPort,
                                  InetAddress oServerAddr, int oServerPort, InetAddress mServerAddr, int mServerPort )

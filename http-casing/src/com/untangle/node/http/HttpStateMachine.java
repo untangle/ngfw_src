@@ -33,6 +33,8 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String SESSION_STATE_KEY = "HTTP-session-state";
+
     protected enum ClientState {
         REQ_START_STATE,
         REQ_LINE_STATE,
@@ -61,286 +63,310 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         RESPONSE
     }
 
-    private final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
+    private class HttpSessionState
+    {
+        protected final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
 
-    private final List<Token[]> outstandingResponses = new LinkedList<Token[]>();
+        protected final List<Token[]> outstandingResponses = new LinkedList<Token[]>();
 
-    private final List<Token> requestQueue = new ArrayList<Token>();
-    private final List<Token> responseQueue = new ArrayList<Token>();
-    private final Map<RequestLineToken, String> hosts = new HashMap<RequestLineToken, String>();
+        protected final List<Token> requestQueue = new ArrayList<Token>();
+        protected final List<Token> responseQueue = new ArrayList<Token>();
+        protected final Map<RequestLineToken, String> hosts = new HashMap<RequestLineToken, String>();
 
-    private ClientState clientState = ClientState.REQ_START_STATE;
-    private ServerState serverState = ServerState.RESP_START_STATE;
+        protected ClientState clientState = ClientState.REQ_START_STATE;
+        protected ServerState serverState = ServerState.RESP_START_STATE;
 
-    private Mode requestMode = Mode.QUEUEING;
-    private Mode responseMode = Mode.QUEUEING;
-    private Task task = Task.NONE;
+        protected Mode requestMode = Mode.QUEUEING;
+        protected Mode responseMode = Mode.QUEUEING;
+        protected Task task = Task.NONE;
 
-    private RequestLineToken requestLineToken;
-    private RequestLineToken responseRequest;
-    private StatusLine statusLine;
+        protected RequestLineToken requestLineToken;
+        protected RequestLineToken responseRequest;
+        protected StatusLine statusLine;
 
-    private Token[] requestResponse = null;
-    private Token[] responseResponse = null;
+        protected Token[] requestResponse = null;
+        protected Token[] responseResponse = null;
 
-    private TokenStreamer preStreamer = null;
-    private TokenStreamer postStreamer = null;
+        protected TokenStreamer preStreamer = null;
+        protected TokenStreamer postStreamer = null;
 
-    private boolean requestPersistent;
-    private boolean responsePersistent;
-
-    private final NodeTCPSession session;
+        protected boolean requestPersistent;
+        protected boolean responsePersistent;
+    }
 
     // constructors -----------------------------------------------------------
 
-    protected HttpStateMachine(NodeTCPSession session)
+    protected HttpStateMachine()
     {
-        super(session);
-        this.session = session;
+        super();
     }
 
     // protected abstract methods ---------------------------------------------
 
-    // XXX the default impls should pass through?
-
-    protected abstract RequestLineToken doRequestLine(RequestLineToken rl)
+    protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl )
         throws TokenException;
-    protected abstract Header doRequestHeader(Header h)
+    protected abstract Header doRequestHeader( NodeTCPSession session, Header h )
         throws TokenException;
-    protected abstract Chunk doRequestBody(Chunk c)
+    protected abstract Chunk doRequestBody( NodeTCPSession session, Chunk c )
         throws TokenException;
-    protected abstract void doRequestBodyEnd()
+    protected abstract void doRequestBodyEnd( NodeTCPSession session )
         throws TokenException;
 
-    protected abstract StatusLine doStatusLine(StatusLine sl)
+    protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl )
         throws TokenException;
-    protected abstract Header doResponseHeader(Header h)
+    protected abstract Header doResponseHeader( NodeTCPSession session, Header h )
         throws TokenException;
-    protected abstract Chunk doResponseBody(Chunk c)
+    protected abstract Chunk doResponseBody( NodeTCPSession session, Chunk c )
         throws TokenException;
-    protected abstract void doResponseBodyEnd()
+    protected abstract void doResponseBodyEnd( NodeTCPSession session )
         throws TokenException;
 
     // protected methods ------------------------------------------------------
 
-    protected ClientState getClientState()
+    protected ClientState getClientState( NodeTCPSession session )
     {
-        return clientState;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.clientState;
     }
 
-    protected ServerState getServerState()
+    protected ServerState getServerState( NodeTCPSession session )
     {
-        return serverState;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.serverState;
     }
 
-    protected RequestLineToken getRequestLine()
+    protected RequestLineToken getRequestLine( NodeTCPSession session )
     {
-        return requestLineToken;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.requestLineToken;
     }
 
-    protected RequestLineToken getResponseRequest()
+    protected RequestLineToken getResponseRequest( NodeTCPSession session )
     {
-        return responseRequest;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.responseRequest;
     }
 
-    protected StatusLine getStatusLine()
+    protected StatusLine getStatusLine( NodeTCPSession session )
     {
-        return statusLine;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.statusLine;
     }
 
-    protected String getResponseHost()
+    protected String getResponseHost( NodeTCPSession session )
     {
-        return hosts.get(responseRequest);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.hosts.get( state.responseRequest );
     }
 
-    protected boolean isRequestPersistent()
+    protected boolean isRequestPersistent( NodeTCPSession session )
     {
-        return requestPersistent;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.requestPersistent;
     }
 
-    protected boolean isResponsePersistent()
+    protected boolean isResponsePersistent( NodeTCPSession session )
     {
-        return responsePersistent;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.responsePersistent;
     }
 
-    protected Mode getRequestMode()
+    protected Mode getRequestMode( NodeTCPSession session )
     {
-        return requestMode;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.requestMode;
     }
 
-    protected Mode getResponseMode()
+    protected Mode getResponseMode( NodeTCPSession session )
     {
-        return responseMode;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.responseMode;
     }
 
-    protected void releaseRequest()
+    protected void releaseRequest( NodeTCPSession session )
     {
-        if (Task.REQUEST != task) {
-            throw new IllegalStateException("releaseRequest in: " + task);
-        } else if (Mode.QUEUEING != requestMode) {
-            throw new IllegalStateException("releaseRequest in: " + requestMode);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        if ( state.task != Task.REQUEST ) {
+            throw new IllegalStateException("releaseRequest in: " + state.task);
+        } else if ( state.requestMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("releaseRequest in: " + state.requestMode);
         }
 
-        requestMode = Mode.RELEASED;
+        state.requestMode = Mode.RELEASED;
     }
 
-    protected void preStream(TokenStreamer preStreamer)
+    protected void preStream( NodeTCPSession session, TokenStreamer preStreamer )
     {
-        switch (task) {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        switch ( state.task ) {
         case REQUEST:
-            if (Mode.RELEASED != requestMode) {
-                throw new IllegalStateException("preStream in: " + requestMode);
-            } else if (ClientState.REQ_BODY_STATE != clientState
-                       && ClientState.REQ_BODY_END_STATE != clientState) {
-                throw new IllegalStateException("preStream in: " + clientState);
+            if ( state.requestMode != Mode.RELEASED ) {
+                throw new IllegalStateException("preStream in: " + state.requestMode);
+            } else if ( ClientState.REQ_BODY_STATE != state.clientState && ClientState.REQ_BODY_END_STATE != state.clientState ) {
+                throw new IllegalStateException("preStream in: " + state.clientState);
             } else {
-                this.preStreamer = preStreamer;
+                state.preStreamer = preStreamer;
             }
             break;
 
         case RESPONSE:
-            if (Mode.RELEASED != responseMode) {
-                throw new IllegalStateException("preStream in: " + responseMode);
-            } else if (ServerState.RESP_BODY_STATE != serverState
-                       && ServerState.RESP_BODY_END_STATE != serverState) {
-                throw new IllegalStateException("preStream in: " + serverState);
+            if ( state.responseMode != Mode.RELEASED ) {
+                throw new IllegalStateException("preStream in: " + state.responseMode);
+            } else if ( ServerState.RESP_BODY_STATE != state.serverState && ServerState.RESP_BODY_END_STATE != state.serverState ) {
+                throw new IllegalStateException("preStream in: " + state.serverState);
             } else {
-                this.preStreamer = preStreamer;
+                state.preStreamer = preStreamer;
             }
             break;
 
         case NONE:
-            throw new IllegalStateException("stream in: " + task);
+            throw new IllegalStateException("stream in: " + state.task);
 
         default:
             throw new IllegalStateException("programmer malfunction");
         }
     }
 
-    protected void postStream(TokenStreamer postStreamer)
+    protected void postStream( NodeTCPSession session, TokenStreamer postStreamer )
     {
-        switch (task) {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        switch ( state.task ) {
         case REQUEST:
-            if (Mode.RELEASED != requestMode) {
-                throw new IllegalStateException("postStream in: " + requestMode);
-            } else if (ClientState.REQ_HEADER_STATE != clientState
-                       && ClientState.REQ_BODY_STATE != clientState) {
-                throw new IllegalStateException("postStream in: " + clientState);
+            if ( state.requestMode != Mode.RELEASED ) {
+                throw new IllegalStateException("postStream in: " + state.requestMode);
+            } else if ( ClientState.REQ_HEADER_STATE != state.clientState && ClientState.REQ_BODY_STATE != state.clientState ) {
+                throw new IllegalStateException("postStream in: " + state.clientState);
             } else {
-                this.postStreamer = postStreamer;
+                state.postStreamer = postStreamer;
             }
             break;
 
         case RESPONSE:
-            if (Mode.RELEASED != responseMode) {
-                throw new IllegalStateException("postStream in: " + responseMode);
-            } else if (ServerState.RESP_HEADER_STATE != serverState
-                       && ServerState.RESP_BODY_STATE != serverState) {
-                throw new IllegalStateException("postStream in: " + serverState);
+            if ( state.responseMode != Mode.RELEASED ) {
+                throw new IllegalStateException("postStream in: " + state.responseMode);
+            } else if ( ServerState.RESP_HEADER_STATE != state.serverState && ServerState.RESP_BODY_STATE != state.serverState ) {
+                throw new IllegalStateException("postStream in: " + state.serverState);
             } else {
-                this.postStreamer = postStreamer;
+                state.postStreamer = postStreamer;
             }
             break;
 
         case NONE:
-            throw new IllegalStateException("stream in: " + task);
+            throw new IllegalStateException("stream in: " + state.task);
 
         default:
             throw new IllegalStateException("programmer malfunction");
         }
     }
 
-    protected void blockRequest(Token[] response)
+    protected void blockRequest( NodeTCPSession session, Token[] response)
     {
-        if (Task.REQUEST != task) {
-            throw new IllegalStateException("blockRequest in: " + task);
-        } else if (Mode.QUEUEING != requestMode) {
-            throw new IllegalStateException("blockRequest in: " + requestMode);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        if ( state.task != Task.REQUEST ) {
+            throw new IllegalStateException("blockRequest in: " + state.task);
+        } else if ( state.requestMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("blockRequest in: " + state.requestMode);
         }
 
-        requestMode = Mode.BLOCKED;
-        requestResponse = response;
+        state.requestMode = Mode.BLOCKED;
+        state.requestResponse = response;
     }
 
-    protected void releaseResponse()
+    protected void releaseResponse( NodeTCPSession session )
     {
-        if (Task.RESPONSE != task) {
-            throw new IllegalStateException("releaseResponse in: " + task);
-        } else if (Mode.QUEUEING != responseMode) {
-            throw new IllegalStateException("releaseResponse in: " + responseMode);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        if ( state.task != Task.RESPONSE ) {
+            throw new IllegalStateException("releaseResponse in: " + state.task);
+        } else if ( state.responseMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("releaseResponse in: " + state.responseMode);
         }
 
-        responseMode = Mode.RELEASED;
+        state.responseMode = Mode.RELEASED;
     }
 
-    protected void blockResponse(Token[] response)
+    protected void blockResponse( NodeTCPSession session, Token[] response )
     {
-        if (Task.RESPONSE != task) {
-            throw new IllegalStateException("blockResponse in: " + task);
-        } else if (Mode.QUEUEING != responseMode) {
-            throw new IllegalStateException("blockResponse in: " + responseMode);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        if ( state.task != Task.RESPONSE ) {
+            throw new IllegalStateException("blockResponse in: " + state.task);
+        } else if ( state.responseMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("blockResponse in: " + state.responseMode);
         }
 
-        responseMode = Mode.BLOCKED;
-        responseResponse = response;
+        state.responseMode = Mode.BLOCKED;
+        state.responseResponse = response;
     }
-
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(Token token) throws TokenException
+    @Override
+    public void handleNewSession( NodeTCPSession session )
     {
+        HttpSessionState state = new HttpSessionState();
+        session.attach( SESSION_STATE_KEY, state );
+    }
+    
+    @Override
+    public TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         TokenResult tr;
 
-        task = Task.REQUEST;
+        state.task = Task.REQUEST;
         try {
-            tr = doHandleClientToken(token);
+            tr = doHandleClientToken( session, token );
 
-            if (null != preStreamer || null != postStreamer) {
+            if ( state.preStreamer != null || state.postStreamer != null ) {
                 Token[] s2cToks = tr.s2cTokens();
                 TokenStreamer s2c = new ArrayTokenStreamer(s2cToks, false);
 
                 List<TokenStreamer> l = new ArrayList<TokenStreamer>(3);
-                if (null != preStreamer) {
-                    l.add(preStreamer);
+                if ( state.preStreamer != null ) {
+                    l.add( state.preStreamer );
                 }
                 Token[] c2sToks = tr.c2sTokens();
                 TokenStreamer c2sAts = new ArrayTokenStreamer(c2sToks, false);
                 l.add(c2sAts);
-                if (null != postStreamer) {
-                    l.add(postStreamer);
+                if ( state.postStreamer != null ) {
+                    l.add( state.postStreamer );
                 }
                 TokenStreamer c2s = new SeriesTokenStreamer(l);
 
                 tr = new TokenResult(s2c, c2s);
             }
         } finally {
-            task = Task.NONE;
-            preStreamer = postStreamer = null;
+            state.task = Task.NONE;
+            state.preStreamer = state.postStreamer = null;
         }
 
         return tr;
     }
 
-    public TokenResult handleServerToken(Token token) throws TokenException
+    public TokenResult handleServerToken( NodeTCPSession session, Token token ) throws TokenException
     {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         TokenResult tr;
 
-        task = Task.RESPONSE;
+        state.task = Task.RESPONSE;
         try {
-            tr = doHandleServerToken(token);
+            tr = doHandleServerToken( session, token);
 
-            if (null != preStreamer || null != postStreamer) {
+            if ( state.preStreamer != null  || state.postStreamer != null ) {
                 List<TokenStreamer> l = new ArrayList<TokenStreamer>(3);
-                if (null != preStreamer) {
-                    l.add(preStreamer);
+                if ( state.preStreamer != null ) {
+                    l.add( state.preStreamer );
                 }
 
                 Token[] s2cToks = tr.s2cTokens();
                 TokenStreamer s2cAts = new ArrayTokenStreamer(s2cToks, false);
                 l.add(s2cAts);
-                if (null != postStreamer) {
-                    l.add(postStreamer);
+                if ( state.postStreamer != null ) {
+                    l.add( state.postStreamer );
                 }
 
                 TokenStreamer s2c = new SeriesTokenStreamer(l);
@@ -351,60 +377,59 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 tr = new TokenResult(s2c, c2s);
             }
         } finally {
-            task = Task.NONE;
-            preStreamer = postStreamer = null;
+            state.task = Task.NONE;
+            state.preStreamer = state.postStreamer = null;
         }
 
         return tr;
     }
 
     @Override
-    public TokenResult releaseFlush()
+    public TokenResult releaseFlush( NodeTCPSession session )
     {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
         // XXX we do not even attempt to deal with outstanding block pages
-        Token[] req = new Token[requestQueue.size()];
-        req = requestQueue.toArray(req);
-        Token[] resp = new Token[responseQueue.size()];
-        resp = responseQueue.toArray(resp);
+        Token[] req = new Token[state.requestQueue.size()];
+        req = state.requestQueue.toArray(req);
+        Token[] resp = new Token[state.responseQueue.size()];
+        resp = state.responseQueue.toArray(resp);
         return new TokenResult(resp, req);
     }
 
     // private methods --------------------------------------------------------
 
     @SuppressWarnings("fallthrough")
-    private TokenResult doHandleClientToken(Token token) throws TokenException
+    private TokenResult doHandleClientToken( NodeTCPSession session, Token token ) throws TokenException
     {
-        clientState = nextClientState(token);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        state.clientState = nextClientState( state.clientState, token );
 
-        switch (clientState) {
+        switch (state.clientState) {
         case REQ_LINE_STATE:
-            requestMode = Mode.QUEUEING;
-            requestLineToken = (RequestLineToken)token;
-            requestLineToken = doRequestLine(requestLineToken);
+            state.requestMode = Mode.QUEUEING;
+            state.requestLineToken = (RequestLineToken)token;
+            state.requestLineToken = doRequestLine( session, state.requestLineToken );
 
-            switch (requestMode) {
+            switch ( state.requestMode ) {
             case QUEUEING:
-                requestQueue.add(requestLineToken);
+                state.requestQueue.add( state.requestLineToken );
                 return TokenResult.NONE;
 
             case RELEASED:
-                assert 0 == requestQueue.size();
-
-                requests.add(requestLineToken);
-                outstandingResponses.add(null);
-                return new TokenResult(null, new Token[] { requestLineToken } );
+                state.requests.add( state.requestLineToken );
+                state.outstandingResponses.add(null);
+                return new TokenResult(null, new Token[] { state.requestLineToken } );
 
             case BLOCKED:
-                assert 0 == requestQueue.size();
-
-                if (0 == requests.size()) {
-                    TokenResult tr = new TokenResult(requestResponse, null);
-                    requestResponse = null;
+                if ( state.requests.size() == 0 ) {
+                    TokenResult tr = new TokenResult( state.requestResponse, null );
+                    state.requestResponse = null;
                     return tr;
                 } else {
-                    requests.add(requestLineToken);
-                    outstandingResponses.add(requestResponse);
-                    requestResponse = null;
+                    state.requests.add( state.requestLineToken );
+                    state.outstandingResponses.add( state.requestResponse );
+                    state.requestResponse = null;
                     return TokenResult.NONE;
                 }
 
@@ -413,50 +438,50 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case REQ_HEADER_STATE:
-            if (Mode.BLOCKED != requestMode) {
+            if ( state.requestMode != Mode.BLOCKED ) {
                 Header h = (Header)token;
-                requestPersistent = isPersistent(h);
-                Mode preMode = requestMode;
-                h = doRequestHeader(h);
+                state.requestPersistent = isPersistent(h);
+                Mode preMode = state.requestMode;
+                h = doRequestHeader( session, h );
 
                 String host = h.getValue("host");
-                hosts.put(requestLineToken, host);
+                state.hosts.put( state.requestLineToken, host );
 
                 /**
                  * Attach metadata
                  */
-                this.session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
-                String uri = getRequestLine().getRequestUri().normalize().getPath();
-                this.session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
-                this.session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
+                session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
+                String uri = getRequestLine( session ).getRequestUri().normalize().getPath();
+                session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
+                session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
 
-                switch (requestMode) {
+                switch ( state.requestMode ) {
                 case QUEUEING:
-                    requestQueue.add(h);
+                    state.requestQueue.add(h);
                     return TokenResult.NONE;
 
                 case RELEASED:
-                    requestQueue.add(h);
-                    Token[] toks = new Token[requestQueue.size()];
-                    toks = requestQueue.toArray(toks);
-                    requestQueue.clear();
-                    if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(null);
+                    state.requestQueue.add(h);
+                    Token[] toks = new Token[ state.requestQueue.size() ];
+                    toks = state.requestQueue.toArray(toks);
+                    state.requestQueue.clear();
+                    if ( preMode == Mode.QUEUEING ) {
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
 
                 case BLOCKED:
-                    requestQueue.clear();
+                    state.requestQueue.clear();
 
-                    if (0 == requests.size()) {
-                        TokenResult tr = new TokenResult(requestResponse, null);
-                        requestResponse = null;
+                    if ( state.requests.size() == 0 ) {
+                        TokenResult tr = new TokenResult(state.requestResponse, null);
+                        state.requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(requestResponse);
-                        requestResponse = null;
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add( state.requestResponse );
+                        state.requestResponse = null;
                         return TokenResult.NONE;
                     }
 
@@ -468,42 +493,42 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case REQ_BODY_STATE:
-            if (Mode.BLOCKED != requestMode) {
-                Chunk c = (Chunk)token;
-                Mode preMode = requestMode;
-                c = doRequestBody(c);
+            if ( state.requestMode != Mode.BLOCKED ) {
+                Chunk c = (Chunk) token;
+                Mode preMode = state.requestMode;
+                c = doRequestBody( session, c );
 
-                switch (requestMode) {
+                switch ( state.requestMode ) {
                 case QUEUEING:
-                    if (null != c && Chunk.EMPTY != c) {
-                        requestQueue.add(c);
+                    if ( c != null && c != Chunk.EMPTY ) {
+                        state.requestQueue.add(c);
                     }
                     return TokenResult.NONE;
 
                 case RELEASED:
-                    if (null != c && Chunk.EMPTY != c) {
-                        requestQueue.add(c);
+                    if ( c != null  && c != Chunk.EMPTY ) {
+                        state.requestQueue.add(c);
                     }
-                    Token[] toks = new Token[requestQueue.size()];
-                    toks = requestQueue.toArray(toks);
-                    requestQueue.clear();
-                    if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(null);
+                    Token[] toks = new Token[ state.requestQueue.size() ];
+                    toks = state.requestQueue.toArray(toks);
+                    state.requestQueue.clear();
+                    if ( preMode == Mode.QUEUEING ) {
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
 
                 case BLOCKED:
-                    requestQueue.clear();
+                    state.requestQueue.clear();
 
-                    if (0 == requests.size()) {
-                        TokenResult tr = new TokenResult(requestResponse, null);
-                        requestResponse = null;
+                    if ( state.requests.size() == 0 ) {
+                        TokenResult tr = new TokenResult( state.requestResponse, null );
+                        state.requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(requestResponse);
-                        requestResponse = null;
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add( state.requestResponse );
+                        state.requestResponse = null;
                         return TokenResult.NONE;
                     }
 
@@ -516,40 +541,40 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case REQ_BODY_END_STATE:
-            if (Mode.BLOCKED != requestMode) {
-                Mode preMode = requestMode;
-                doRequestBodyEnd();
+            if ( state.requestMode != Mode.BLOCKED ) {
+                Mode preMode = state.requestMode;
+                doRequestBodyEnd( session );
 
-                switch (requestMode) {
+                switch ( state.requestMode ) {
                 case QUEUEING:
                     logger.error("queueing after EndMarker, release request");
-                    releaseRequest();
+                    releaseRequest( session );
                     /* fall through */
 
                 case RELEASED:
-                    doRequestBodyEnd();
+                    doRequestBodyEnd( session );
 
-                    requestQueue.add(EndMarker.MARKER);
-                    Token[] toks = new Token[requestQueue.size()];
-                    toks = requestQueue.toArray(toks);
-                    requestQueue.clear();
-                    if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(null);
+                    state.requestQueue.add(EndMarker.MARKER);
+                    Token[] toks = new Token[ state.requestQueue.size() ];
+                    toks = state.requestQueue.toArray(toks);
+                    state.requestQueue.clear();
+                    if ( preMode == Mode.QUEUEING ) {
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
 
                 case BLOCKED:
-                    requestQueue.clear();
+                    state.requestQueue.clear();
 
-                    if (0 == requests.size()) {
-                        TokenResult tr = new TokenResult(requestResponse, null);
-                        requestResponse = null;
+                    if ( state.requests.size() == 0 ) {
+                        TokenResult tr = new TokenResult( state.requestResponse, null );
+                        state.requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLineToken);
-                        outstandingResponses.add(requestResponse);
-                        requestResponse = null;
+                        state.requests.add( state.requestLineToken );
+                        state.outstandingResponses.add( state.requestResponse );
+                        state.requestResponse = null;
                         return TokenResult.NONE;
                     }
 
@@ -566,46 +591,49 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     }
 
     @SuppressWarnings("fallthrough")
-    private TokenResult doHandleServerToken(Token token) throws TokenException
+    private TokenResult doHandleServerToken( NodeTCPSession session, Token token ) throws TokenException
     {
-        serverState = nextServerState(token);
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+        state.serverState = nextServerState( state.serverState, token );
 
-        switch (serverState) {
+        switch ( state.serverState ) {
         case RESP_STATUS_LINE_STATE:
-            responseMode = Mode.QUEUEING;
+            state.responseMode = Mode.QUEUEING;
 
-            statusLine = (StatusLine)token;
-            int sc = statusLine.getStatusCode();
-            if (100 != sc && 408 != sc) { /* not continue or request timed out */
-                if (0 == requests.size()) {
-                    if (4 != sc / 100) {
+            state.statusLine = (StatusLine)token;
+            int sc = state.statusLine.getStatusCode();
+            if ( sc != 100 && sc != 408 ) { /* not continue or request timed out */
+                if ( state.requests.size() == 0 ) {
+                    if ( sc / 100 != 4 ) {
                         logger.warn("requests is empty, code: " + sc);
                     }
                 } else {
-                    responseRequest = requests.remove(0);
-                    responseResponse = outstandingResponses.remove(0);
+                    state.responseRequest = state.requests.remove(0);
+                    state.responseResponse = state.outstandingResponses.remove(0);
                 }
             }
 
-            if (null == responseResponse) {
-                statusLine = doStatusLine(statusLine);
+            if ( state.responseResponse == null ) {
+                state.statusLine = doStatusLine( session, state.statusLine );
             }
 
-            switch (responseMode) {
+            switch ( state.responseMode ) {
             case QUEUEING:
-                responseQueue.add(statusLine);
+                state.responseQueue.add( state.statusLine );
                 return TokenResult.NONE;
 
             case RELEASED:
-                assert 0 == responseQueue.size();
+                if ( state.responseQueue.size() == 0 )
+                    logger.warn("Invalid respones queue size.");
 
-                return new TokenResult(new Token[] { statusLine }, null);
+                return new TokenResult(new Token[] { state.statusLine }, null);
 
             case BLOCKED:
-                assert 0 == responseQueue.size();
+                if ( state.responseQueue.size() == 0 )
+                    logger.warn("Invalid respones queue size.");
 
-                TokenResult tr = new TokenResult(responseResponse, null);
-                responseResponse = null;
+                TokenResult tr = new TokenResult( state.responseResponse, null );
+                state.responseResponse = null;
                 return tr;
 
             default:
@@ -613,43 +641,43 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case RESP_HEADER_STATE:
-            if (Mode.BLOCKED != responseMode) {
+            if ( state.responseMode != Mode.BLOCKED ) {
                 Header h = (Header)token;
-                responsePersistent = isPersistent(h);
+                state.responsePersistent = isPersistent(h);
 
                 /**
                  * Attach metadata
                  */
                 String contentType = h.getValue("content-type");
                 if (contentType != null) {
-                    this.session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                    session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
                 }
                 String contentLength = h.getValue("content-length");
                 if (contentLength != null) {
                     try {
                         Long contentLengthLong = Long.parseLong(contentLength);
-                        this.session.globalAttach(NodeSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
+                        session.globalAttach(NodeSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
                     } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
                 }
 
-                h = doResponseHeader(h);
+                h = doResponseHeader( session, h );
 
-                switch (responseMode) {
+                switch ( state.responseMode ) {
                 case QUEUEING:
-                    responseQueue.add(h);
+                    state.responseQueue.add(h);
                     return TokenResult.NONE;
 
                 case RELEASED:
-                    responseQueue.add(h);
-                    Token[] toks = new Token[responseQueue.size()];
-                    toks = responseQueue.toArray(toks);
-                    responseQueue.clear();
+                    state.responseQueue.add(h);
+                    Token[] toks = new Token[ state.responseQueue.size() ];
+                    toks = state.responseQueue.toArray(toks);
+                    state.responseQueue.clear();
                     return new TokenResult(toks, null);
 
                 case BLOCKED:
-                    responseQueue.clear();
-                    TokenResult tr = new TokenResult(responseResponse, null);
-                    responseResponse = null;
+                    state.responseQueue.clear();
+                    TokenResult tr = new TokenResult( state.responseResponse, null);
+                    state.responseResponse = null;
                     return tr;
 
                 default:
@@ -660,30 +688,30 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case RESP_BODY_STATE:
-            if (Mode.BLOCKED != responseMode) {
+            if ( state.responseMode != Mode.BLOCKED ) {
                 Chunk c = (Chunk)token;
-                c = doResponseBody(c);
+                c = doResponseBody( session, c );
 
-                switch (responseMode) {
+                switch ( state.responseMode ) {
                 case QUEUEING:
                     if (null != c && Chunk.EMPTY != c) {
-                        responseQueue.add(c);
+                        state.responseQueue.add(c);
                     }
                     return TokenResult.NONE;
 
                 case RELEASED:
                     if (null != c && Chunk.EMPTY != c) {
-                        responseQueue.add(c);
+                        state.responseQueue.add(c);
                     }
-                    Token[] toks = new Token[responseQueue.size()];
-                    toks = responseQueue.toArray(toks);
-                    responseQueue.clear();
+                    Token[] toks = new Token[ state.responseQueue.size() ];
+                    toks = state.responseQueue.toArray(toks);
+                    state.responseQueue.clear();
                     return new TokenResult(toks, null);
 
                 case BLOCKED:
-                    responseQueue.clear();
-                    TokenResult tr = new TokenResult(responseResponse, null);
-                    responseResponse = null;
+                    state.responseQueue.clear();
+                    TokenResult tr = new TokenResult( state.responseResponse, null );
+                    state.responseResponse = null;
                     return tr;
 
                 default:
@@ -694,31 +722,31 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
 
         case RESP_BODY_END_STATE:
-            if (Mode.BLOCKED != responseMode) {
+            if ( state.responseMode != Mode.BLOCKED ) {
                 EndMarker em = (EndMarker)token;
 
-                doResponseBodyEnd();
-                if (100 != statusLine.getStatusCode()) {
-                    hosts.remove(responseRequest);
+                doResponseBodyEnd( session );
+                if ( state.statusLine.getStatusCode() != 100 ) {
+                    state.hosts.remove( state.responseRequest );
                 }
 
-                switch (responseMode) {
+                switch ( state.responseMode ) {
                 case QUEUEING:
                     logger.warn("queueing after EndMarker, release repsonse");
-                    releaseResponse();
+                    releaseResponse( session );
                     /* fall through */
 
                 case RELEASED:
-                    responseQueue.add(em);
-                    Token[] toks = new Token[responseQueue.size()];
-                    toks = responseQueue.toArray(toks);
-                    responseQueue.clear();
+                    state.responseQueue.add(em);
+                    Token[] toks = new Token[ state.responseQueue.size() ];
+                    toks = state.responseQueue.toArray(toks);
+                    state.responseQueue.clear();
                     return new TokenResult(toks, null);
 
                 case BLOCKED:
-                    responseQueue.clear();
-                    TokenResult tr = new TokenResult(responseResponse, null);
-                    responseResponse = null;
+                    state.responseQueue.clear();
+                    TokenResult tr = new TokenResult( state.responseResponse, null );
+                    state.responseResponse = null;
                     return tr;
 
                 default:
@@ -734,9 +762,9 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
-    private ClientState nextClientState(Object o)
+    private ClientState nextClientState( ClientState clientState, Object o )
     {
-        switch (clientState) {
+        switch ( clientState ) {
         case REQ_START_STATE:
             return ClientState.REQ_LINE_STATE;
 
@@ -765,9 +793,9 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
-    private ServerState nextServerState(Object o)
+    private ServerState nextServerState( ServerState serverState, Object o)
     {
-        switch (serverState) {
+        switch ( serverState ) {
         case RESP_START_STATE:
             return ServerState.RESP_STATUS_LINE_STATE;
 

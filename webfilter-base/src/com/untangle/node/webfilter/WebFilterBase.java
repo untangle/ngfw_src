@@ -44,9 +44,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final Logger logger = Logger.getLogger(getClass());
     
-    protected final WebFilterFactory factory = new WebFilterFactory(this);
-
-    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("web-filter", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
+    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("web-filter", this, new TokenAdaptor( this, new WebFilterHandler( this ) ), Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
     protected final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
     protected final WebFilterReplacementGenerator replacementGenerator;

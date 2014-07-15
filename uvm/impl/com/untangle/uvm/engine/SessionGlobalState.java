@@ -39,7 +39,6 @@ public class SessionGlobalState
      * It is used by various parts of the platform and apps to store metadata about the session
      */
     protected HashMap<String,Object> stringAttachments;
-    protected HashMap<Long,Object> longAttachments;
 
     /**
      * Stores a list of the original agents/pipelinespecs processing this session
@@ -63,7 +62,6 @@ public class SessionGlobalState
         this.serverSideListener = serverSideListener;
 
         this.stringAttachments = new HashMap<String,Object>();
-        this.longAttachments = new HashMap<Long,Object>();
     }
 
     public long id()
@@ -142,16 +140,5 @@ public class SessionGlobalState
     public Map<String,Object> getAttachments()
     {
         return this.stringAttachments;
-    }
-
-    public Object attach(Long key, Object attachment)
-    {
-        logger.debug("globalAttach( " + key + " , " + attachment + " )");
-        return this.longAttachments.put(key,attachment);
-    }
-
-    public Object attachment(Long key)
-    {
-        return this.longAttachments.get(key);
     }
 }

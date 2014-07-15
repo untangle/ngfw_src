@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.engine;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.net.InetAddress;
 
 import com.untangle.jnetcap.NetcapSession;
@@ -51,7 +53,8 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     protected byte state = REQUESTED; /* REQUESTED, REJECTED, RELEASED */
     protected byte rejectCode  = REJECTED;
 
-    protected volatile Object attachment = null;
+    protected HashMap<String,Object> stringAttachments = new HashMap<String,Object>();
+    private static final String NO_KEY_VALUE = "NOKEY";
     
     /**
      * First way to create an IPNewSessionRequest:
@@ -226,14 +229,29 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 
     public Object attach(Object ob)
     {
-        Object oldOb = attachment;
-        attachment = ob;
-        return oldOb;
+        return attach( NO_KEY_VALUE, ob );
     }
 
     public Object attachment()
     {
-        return attachment;
+        return attachment( NO_KEY_VALUE );
+    }
+
+    public Object attach( String key, Object ob )
+    {
+        return this.stringAttachments.put( key, ob );
+    }
+
+    public Object attachment( String key )
+    {
+        return this.stringAttachments.get(key);
+    }
+
+    public void copyAttachments( NodeSessionImpl session )
+    {
+        for( Map.Entry<String,Object> entry : stringAttachments.entrySet() ) {
+            session.attach( entry.getKey(), entry.getValue() );
+        }
     }
 
     public Object globalAttach(String key, Object ob)

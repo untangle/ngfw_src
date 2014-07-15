@@ -50,7 +50,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
         // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
-        httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IpsHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
+        httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IpsHttpHandler(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),

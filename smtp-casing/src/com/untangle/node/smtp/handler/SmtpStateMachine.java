@@ -32,11 +32,14 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenResultBuilder;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 public abstract class SmtpStateMachine extends AbstractTokenHandler
 {
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
+    private static final String SESSION_STATE_KEY = "SMTP-session-state";
+    
     private static final String[] DEFAULT_ALLOWED_COMMANDS = { "DATA", "HELP", "HELO", "EHLO", "RCPT", "MAIL", "EXPN",
                                                                "QUIT", "RSET", "VRFY", "NOOP", "AUTH", "STARTTLS" };
 
@@ -47,194 +50,208 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     private final Logger logger = Logger.getLogger(SmtpStateMachine.class);
 
     private SmtpTransactionHandler smtpTransactionHandler;
-    private List<OutstandingRequest> outstandingRequests;
 
-    private long clientTimestamp;
-    private long serverTimestamp;
-
-    private boolean passthru = false;
-    private boolean clientTokensEnabled = true;
-    private List<Token> queuedClientTokens = new ArrayList<Token>();
-
-    private boolean scanningEnabled;
-
-    private boolean shutingDownMode = false;
-    // Time (absolute) when the class should stop being
-    // nice, and nuke the connection with the client
-    private long quitAt;
-
-    private final int giveupSz;
-    private final long maxClientWait;
-    private final long maxServerWait;
-    private final boolean isBufferAndTrickle;
-    private String heloName = null;
-
-    public SmtpStateMachine(NodeTCPSession session, int giveUpSz, long maxClientWait, long maxServerWait, boolean isBufferAndTrickle, boolean scanningEnabled)
+    public class SmtpSessionState
     {
-        super(session);
-        this.giveupSz = giveUpSz;
-        this.maxClientWait = maxClientWait <= 0 ? Integer.MAX_VALUE : maxClientWait;
-        this.maxServerWait = maxServerWait <= 0 ? Integer.MAX_VALUE : maxServerWait;
-        this.isBufferAndTrickle = isBufferAndTrickle;
+        protected long clientTimestamp;
+        protected long serverTimestamp;
 
-        updateTimestamps(true, true);
-        this.scanningEnabled = scanningEnabled;
+        protected boolean isBufferAndTrickle;
+        protected String heloName = null;
 
-        // Build-out request queue
-        outstandingRequests = new LinkedList<OutstandingRequest>();
+        // Time (absolute) when the class should stop being
+        // nice, and nuke the connection with the client
+        protected long quitAt;
 
-        // The first message passed for SMTP is actualy from the server.
-        // Place a Response handler into the OutstandingRequest queue to handle this and call our SessionHandler with
-        // the initial salutation
-        outstandingRequests.add(new OutstandingRequest(new ResponseCompletion()
-        {
-            @Override
-            public void handleResponse(Response resp, TokenResultBuilder ts)
-            {
-                handleOpeningResponse(resp, ts);
-            }
-        }));
+        protected boolean shutingDownMode = false;
+
+        protected boolean passthru = false;
+
+        protected boolean clientTokensEnabled = true;
+        protected List<Token> queuedClientTokens = new ArrayList<Token>();
+
+        protected List<OutstandingRequest> outstandingRequests;
+    }
+
+    public SmtpStateMachine( )
+    {
     }
 
     /**
      * Get the size over-which this class should no longer buffer. After this point, the Buffering is abandoned and the
      * <i>giveup-then-trickle</i> state is entered.
      */
-    protected final int getGiveupSz()
-    {
-        return giveupSz;
-    }
+    protected abstract int getGiveUpSz( NodeTCPSession session );
 
     /**
      * The maximum time (in relative milliseconds) that the client can wait for a response to DATA transmission.
      */
-    protected final long getMaxClientWait()
-    {
-        return maxClientWait;
-    }
+    protected abstract long getMaxClientWait( NodeTCPSession session );
 
     /**
      * The maximum time that the server can wait for a subsequent ("DATA") command.
      */
-    protected final long getMaxServerWait()
-    {
-        return maxServerWait;
-    }
+    protected abstract long getMaxServerWait( NodeTCPSession session );
+
+    protected abstract boolean getScanningEnabled( NodeTCPSession session );
+    
 
     /**
      * If true, this handler will continue to buffer even after trickling has begun (<i>buffer-and-trickle</i> mode).
      * The MIMEMessage can no longer be modified (i.e. it will not be passed downstream) but {@link #blockOrPass
      * blockOrPass()} will still be called once the complete message has been seen.
      */
-    protected final boolean isBufferAndTrickle()
+    protected final boolean isBufferAndTrickle( NodeTCPSession session )
     {
-        return isBufferAndTrickle;
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.isBufferAndTrickle;
     }
 
     /**
      * Determines, based on timestamps, if trickling should begin
      */
-    protected boolean shouldBeginTrickle()
+    protected boolean shouldBeginTrickle( NodeTCPSession session )
     {
+        long maxWaitPeriod = Math.min( getMaxClientWait( session ), getMaxServerWait( session ) );
+        long lastTimestamp = Math.min( getLastClientTimestamp( session ), getLastServerTimestamp( session ) );
 
-        long maxWaitPeriod = Math.min(getMaxClientWait(), getMaxServerWait());
-        long lastTimestamp = Math.min(getLastClientTimestamp(), getLastServerTimestamp());
-        if (maxWaitPeriod <= 0) {
+        if ( maxWaitPeriod <= 0 ) {
             // Time equal-to or below zero means give-up
             return false;
         }
+
         maxWaitPeriod = (long) (maxWaitPeriod * 0.95);// TODO bscott a real "slop" factor - not a guess
 
         return (System.currentTimeMillis() - lastTimestamp) < maxWaitPeriod ? false : true;
     }
 
-    private final void updateTimestamps(boolean client, boolean server)
+    private final void updateTimestamps( SmtpSessionState state, boolean client, boolean server )
     {
         long now = System.currentTimeMillis();
         if (client) {
-            clientTimestamp = now;
+            state.clientTimestamp = now;
         }
         if (server) {
-            serverTimestamp = now;
+            state.serverTimestamp = now;
         }
     }
 
-    public void startShutingDown()
+    public void startShutingDown( NodeTCPSession session )
     {
-        shutingDownMode = true;
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        state.shutingDownMode = true;
     }
 
-    public boolean isShutingDown()
+    public boolean isShutingDown( NodeTCPSession session )
     {
-        return shutingDownMode;
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.shutingDownMode;
     }
 
+    public String getHeloName( NodeTCPSession session )
+    {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.heloName;
+    }
+    
+    
     @Override
-    public TokenResult handleClientToken(Token token) throws TokenException
+    public void handleNewSessionRequest( TCPNewSessionRequest tsr )
     {
-        updateTimestamps(true, false);
+        SmtpSessionState state = new SmtpSessionState();
 
+        state.isBufferAndTrickle = false;
+
+        // Build-out request queue
+        updateTimestamps( state, true, true);
+        state.outstandingRequests = new LinkedList<OutstandingRequest>();
+
+        // The first message passed for SMTP is actualy from the server.
+        // Place a Response handler into the OutstandingRequest queue to handle this and call our SessionHandler with
+        // the initial salutation
+        state.outstandingRequests.add(new OutstandingRequest(new ResponseCompletion()
+        {
+            @Override
+            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+            {
+                handleOpeningResponse( session, resp, ts);
+            }
+        }));
+
+        tsr.attach( SESSION_STATE_KEY, state );
+    }
+    
+    @Override
+    public TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        updateTimestamps( state, true, false );
+
+        List<Token> queuedClientTokens = state.queuedClientTokens;
         TokenResultBuilder trb = new TokenResultBuilder();
 
         // First add the token, to preserve ordering if we have a queue (and while draining someone changes the
         // enablement flag)
         queuedClientTokens.add(token);
 
-        if (!clientTokensEnabled) {
-            logger.debug("[handleClientToken] Queuing Token \"" + token.getClass().getName() + "\" ("
-                    + queuedClientTokens.size() + " tokens queued)");
+        if (!state.clientTokensEnabled) {
+            logger.debug("[handleClientToken] Queuing Token \"" + token.getClass().getName() + "\" (" + queuedClientTokens.size() + " tokens queued)");
         } else {
             // Important - the enablement of client tokens could change as this loop is running.
-            while (queuedClientTokens.size() > 0 && clientTokensEnabled) {
+            while (queuedClientTokens.size() > 0 && state.clientTokensEnabled) {
                 if (queuedClientTokens.size() > 1) {
                     logger.debug("[handleClientToken] Draining Queued Token \""
                             + queuedClientTokens.get(0).getClass().getName() + "\" (" + queuedClientTokens.size()
                             + " tokens remain)");
                 }
-                handleClientTokenImpl(queuedClientTokens.remove(0), trb);
+                handleClientTokenImpl( session, queuedClientTokens.remove(0), trb );
             }
         }
         if (queuedClientTokens.size() > 0) {
             logger.debug("[handleClientToken] returning with (" + queuedClientTokens.size() + " queued tokens)");
         }
-        updateTimestamps(trb.hasDataForClient(), trb.hasDataForServer());
+        updateTimestamps( state, trb.hasDataForClient(), trb.hasDataForServer() );
         return trb.getTokenResult();
     }
 
     @Override
-    public TokenResult handleServerToken(Token token) throws TokenException
+    public TokenResult handleServerToken( NodeTCPSession session, Token token ) throws TokenException
     {
-        updateTimestamps(false, true);
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        updateTimestamps( state, false, true );
 
         TokenResultBuilder trb = new TokenResultBuilder();
+        List<Token> queuedClientTokens = state.queuedClientTokens;
 
-        while (queuedClientTokens.size() > 0 && clientTokensEnabled) {
+        while (queuedClientTokens.size() > 0 && state.clientTokensEnabled) {
             logger.debug("[handleServerToken] Draining Queued Client Token \""
                     + queuedClientTokens.get(0).getClass().getName() + "\" (" + queuedClientTokens.size()
                     + " tokens remain)");
-            handleClientTokenImpl(queuedClientTokens.remove(0), trb);
+            handleClientTokenImpl( session, queuedClientTokens.remove(0), trb );
         }
-        handleServerTokenImpl(token, trb);
+        handleServerTokenImpl( session, token, trb );
 
         // Important - the enablement of client tokens could change as this loop is running.
-        while (queuedClientTokens.size() > 0 && clientTokensEnabled) {
+        while (queuedClientTokens.size() > 0 && state.clientTokensEnabled) {
             logger.debug("[handleServerToken] Draining Queued Token \""
                     + queuedClientTokens.get(0).getClass().getName() + "\" (" + queuedClientTokens.size()
                     + " tokens remain)");
-            handleClientTokenImpl(queuedClientTokens.remove(0), trb);
+            handleClientTokenImpl( session, queuedClientTokens.remove(0), trb );
         }
         if (queuedClientTokens.size() > 0) {
             logger.debug("[handleServerToken] returning with (" + queuedClientTokens.size() + " queued tokens)");
         }
-        updateTimestamps(trb.hasDataForClient(), trb.hasDataForServer());
+        updateTimestamps( state, trb.hasDataForClient(), trb.hasDataForServer() );
         return trb.getTokenResult();
     }
 
     // FROM Client
-    private final void handleClientTokenImpl(Token token, TokenResultBuilder trb) throws TokenException
+    private final void handleClientTokenImpl( NodeTCPSession session, Token token, TokenResultBuilder trb ) throws TokenException
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+
         // Check for passthrough
-        if (passthru || !scanningEnabled) {
+        if ( state.passthru || !getScanningEnabled( session ) ) {
             logger.debug("(In passthru, client token) passing token of type " + token.getClass().getName());
             trb.addTokenForServer(token);
             return;
@@ -242,22 +259,22 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         if (token instanceof SASLExchangeToken || token instanceof AUTHCommand || token instanceof PassThruToken) {
             logger.debug("Received " + token.getClass().getName() + " token");
             if (token instanceof PassThruToken) {
-                passthru = true;
+                state.passthru = true;
                 logger.debug("(client token) Entering Passthru");
             }
             trb.addTokenForServer(token);
             return;
         }
-        if (token instanceof CommandWithEmailAddress && !shutingDownMode) {
+        if (token instanceof CommandWithEmailAddress && !state.shutingDownMode) {
             smtpTransactionHandler = getOrCreateTxHandler();
             if (((CommandWithEmailAddress) token).getType() == CommandType.MAIL)
-                smtpTransactionHandler.handleMAILCommand((CommandWithEmailAddress) token, this, trb);
+                smtpTransactionHandler.handleMAILCommand( session, (CommandWithEmailAddress) token, this, trb);
             else
-                smtpTransactionHandler.handleRCPTCommand((CommandWithEmailAddress) token, this, trb);
+                smtpTransactionHandler.handleRCPTCommand( session, (CommandWithEmailAddress) token, this, trb);
             return;
         }
         if (token instanceof Command) {
-            handleCommand(trb, (Command) token);
+            handleCommand( session, trb, (Command) token );
             return;
         }
         if (token instanceof Chunk) {
@@ -265,20 +282,20 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
             return;
         }
         // the rest of the commands are handled differently if in shutdown mode
-        if (shutingDownMode) {
-            handleCommandInShutDown(token, trb);
+        if (state.shutingDownMode) {
+            handleCommandInShutDown( session, token, trb );
             return;
         }
         if (token instanceof BeginMIMEToken) {
-            handleBeginMIME(trb, (BeginMIMEToken) token);
+            handleBeginMIME( session, trb, (BeginMIMEToken) token);
             return;
         }
         if (token instanceof ContinuedMIMEToken) {
-            handleContinuedMIME(trb, (ContinuedMIMEToken) token);
+            handleContinuedMIME( session, trb, (ContinuedMIMEToken) token);
             return;
         }
         if (token instanceof CompleteMIMEToken) {
-            handleCompleteMIME(trb, (CompleteMIMEToken) token);
+            handleCompleteMIME( session, trb, (CompleteMIMEToken) token);
             return;
         }
         logger.error("(client token) Unexpected Token of type \"" + token.getClass().getName() + "\".  Pass it along");
@@ -286,9 +303,10 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     // FROM Server
-    private final void handleServerTokenImpl(Token token, TokenResultBuilder trb) throws TokenException
+    private final void handleServerTokenImpl( NodeTCPSession session, Token token, TokenResultBuilder trb ) throws TokenException
     {
-        if (passthru || !scanningEnabled) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if ( state.passthru || !getScanningEnabled( session ) ) {
             logger.debug("(In passthru, server token) passing token of type " + token.getClass().getName());
             trb.addTokenForClient(token);
             return;
@@ -301,11 +319,11 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         // Passthru
         if (token instanceof PassThruToken) {
             logger.debug("(server token) Entering Passthru");
-            passthru = true;
+            state.passthru = true;
             trb.addTokenForClient(token);
             return;
         } else if (token instanceof Response) {
-            handleResponse(trb, (Response) token);
+            handleResponse( session, trb, (Response) token);
             return;
         } else if (token instanceof Chunk) {
             trb.addTokenForClient((Chunk) token);
@@ -327,10 +345,11 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
      * @param actions
      *            the available actions.
      */
-    public void handleOpeningResponse(Response resp, TokenResultBuilder ts)
+    public void handleOpeningResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts )
     {
-        if (shutingDownMode) {
-            if (timedOut()) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if ( state.shutingDownMode ) {
+            if ( timedOut( session ) ) {
                 return;
             } else {
                 send421(ts);
@@ -437,8 +456,9 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         return str.substring(0, index);
     }
 
-    private void handleCommand(TokenResultBuilder resultBuilder, Command cmd)
+    private void handleCommand( NodeTCPSession session, TokenResultBuilder resultBuilder, Command cmd )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
 
         logger.debug("Received Command \"" + cmd.getCmdString() + "\"" + " of type \"" + cmd.getClass().getName() + "\"");
         List<Response> immediateActions = new LinkedList<Response>();
@@ -446,7 +466,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         // Check for allowed commands
         if ((!(cmd instanceof UnparsableCommand)) && !isAllowedCommand( cmd.getCmdString() )) {
             logger.warn("Enqueuing negative response to " + "non-allowed command \"" + cmd.getCmdString() + "\"" + " (" + cmd.getArgString() + ")");
-            appendSyntheticResponse(new Response(500, "Syntax error, command unrecognized"), immediateActions);
+            appendSyntheticResponse( session, new Response(500, "Syntax error, command unrecognized"), immediateActions);
             if (immediateActions.size() > 0) {
                 processSynths(immediateActions, resultBuilder);
             }
@@ -456,59 +476,59 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         // Check for "EHLO" and "HELO"
         if (cmd.getType() == CommandType.EHLO) {
             logger.debug("Enqueuing private response handler to EHLO command so unknown extensions can be disabled");
-            sendCommandToServer(cmd, new ResponseCompletion() {
+            sendCommandToServer( session, cmd, new ResponseCompletion() {
                     @Override
-                    public void handleResponse(Response resp, TokenResultBuilder ts)
+                    public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
                     {
                         logger.debug("Processing response to EHLO Command");
                         sendResponseToClient(fixupEHLOResponse(resp), ts);
                     }
                 }, resultBuilder);
-            heloName = cmd.getArgString();
+            state.heloName = cmd.getArgString();
             followup(immediateActions, resultBuilder);
             return;
         } else if (cmd.getType() == CommandType.HELO) {
-            heloName = cmd.getArgString();
+            state.heloName = cmd.getArgString();
             // fall through and continue like before
         }
 
-        if (shutingDownMode) {
+        if ( state.shutingDownMode ) {
             transactionEnded(smtpTransactionHandler);
-            handleCommandInShutDown(cmd, resultBuilder);
+            handleCommandInShutDown( session, cmd, resultBuilder );
             return;
         }
         if (smtpTransactionHandler != null) {
             if (cmd.getType() == CommandType.RSET) {
-                smtpTransactionHandler.handleRSETCommand(cmd, this, resultBuilder);
+                smtpTransactionHandler.handleRSETCommand( session, cmd, this, resultBuilder );
                 smtpTransactionHandler = null;
             } else {
-                smtpTransactionHandler.handleCommand(cmd, this, resultBuilder, immediateActions);
+                smtpTransactionHandler.handleCommand( session, cmd, this, resultBuilder, immediateActions );
             }
         } else {
             // Odd case
             if (cmd.getType() == CommandType.DATA) {
                 smtpTransactionHandler = getOrCreateTxHandler();
-                smtpTransactionHandler.handleCommand(cmd, this, resultBuilder, immediateActions);
+                smtpTransactionHandler.handleCommand( session, cmd, this, resultBuilder, immediateActions );
             } else {
 
                 logger.debug("[handleCommand] with command of type \"" + cmd.getType() + "\"");
-                sendCommandToServer(cmd, SmtpTransactionHandler.PASSTHRU_RESPONSE_COMPLETION, resultBuilder);
+                sendCommandToServer( session, cmd, SmtpTransactionHandler.PASSTHRU_RESPONSE_COMPLETION, resultBuilder);
             }
         }
         followup(immediateActions, resultBuilder);
     }
 
-    private void handleCommandInShutDown(Token token, TokenResultBuilder ts)
+    private void handleCommandInShutDown( NodeTCPSession session, Token token, TokenResultBuilder ts )
     {
         // Check for our timeout
-        if (timedOut()) {
+        if ( timedOut( session ) ) {
             return;
         }
         if (token instanceof CommandWithEmailAddress || token instanceof Command) {
             Command command = (Command) token;
             // Check for "special" commands
             if (command.getType() == CommandType.QUIT) {
-                sendFINToClient();
+                sendFINToClient( session );
                 return;
             }
             if (command.getType() == CommandType.RSET) {
@@ -523,10 +543,11 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         send421(ts);
     }
 
-    private boolean timedOut()
+    private boolean timedOut( NodeTCPSession session )
     {
-        if (System.currentTimeMillis() > quitAt) {
-            sendFINToClient();
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (System.currentTimeMillis() > state.quitAt) {
+            sendFINToClient( session );
             return true;
         }
         return false;
@@ -541,30 +562,32 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         return smtpTransactionHandler;
     }
 
-    private void handleBeginMIME(TokenResultBuilder resultBuilder, BeginMIMEToken token)
+    private void handleBeginMIME( NodeTCPSession session, TokenResultBuilder resultBuilder, BeginMIMEToken token )
     {
         List<Response> immediateActions = new LinkedList<Response>();
         smtpTransactionHandler = getOrCreateTxHandler();
-        smtpTransactionHandler.handleBeginMIME(token, this, immediateActions, resultBuilder);
+        smtpTransactionHandler.handleBeginMIME( session, token, this, immediateActions, resultBuilder );
         followup(immediateActions, resultBuilder);
     }
 
-    private void handleContinuedMIME(TokenResultBuilder resultBuilder, ContinuedMIMEToken token)
+    private void handleContinuedMIME( NodeTCPSession session, TokenResultBuilder resultBuilder, ContinuedMIMEToken token)
     {
         List<Response> immediateActions = new LinkedList<Response>();
         SmtpTransactionHandler transactionHandler = getOrCreateTxHandler();
         if (token.isLast()) {
             smtpTransactionHandler = null;
         }
-        transactionHandler.handleContinuedMIME(token, this, immediateActions, resultBuilder);
+        transactionHandler.handleContinuedMIME( session, token, this, immediateActions, resultBuilder );
         followup(immediateActions, resultBuilder);
     }
 
-    private void handleResponse(TokenResultBuilder resultBuilder, Response resp)
+    private void handleResponse( NodeTCPSession session, TokenResultBuilder resultBuilder, Response resp)
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        
         logger.debug("[handleResponse()] with code " + resp.getCode());
-        if (outstandingRequests.size() == 0) {
-            long timeDiff = System.currentTimeMillis() - getLastServerTimestamp();
+        if (state.outstandingRequests.size() == 0) {
+            long timeDiff = System.currentTimeMillis() - getLastServerTimestamp( session );
             if (timeDiff > LIKELY_TIMEOUT_LENGTH) {
                 logger.warn("Unsolicited response from server.  Likely a timeout (" + timeDiff
                         + " millis since last communication)");
@@ -574,12 +597,12 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
             resultBuilder.addTokenForClient(resp);
             return;
         }
-        OutstandingRequest or = outstandingRequests.remove(0);
-        or.getResponseCompletion().handleResponse(resp, resultBuilder);
+        OutstandingRequest or = state.outstandingRequests.remove(0);
+        or.getResponseCompletion().handleResponse( session, resp, resultBuilder );
         processSynths(or.getAdditionalActions(), resultBuilder);
     }
 
-    private void handleCompleteMIME(TokenResultBuilder resultBuilder, CompleteMIMEToken token)
+    private void handleCompleteMIME( NodeTCPSession session, TokenResultBuilder resultBuilder, CompleteMIMEToken token)
     {
 
         SmtpTransactionHandler transactionHandler = getOrCreateTxHandler();
@@ -587,33 +610,39 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         // Looks odd, but the Transaction is complete so just assign the current handler to null.
         smtpTransactionHandler = null;
         List<Response> immediateActions = new LinkedList<Response>();
-        transactionHandler.handleCompleteMIME(token, this, immediateActions, resultBuilder);
+        transactionHandler.handleCompleteMIME( session, token, this, immediateActions, resultBuilder );
         followup(immediateActions, resultBuilder);
     }
 
-    public final void handleClientFin() throws TokenException
+    @Override
+    public final void handleClientFin( NodeTCPSession session ) throws TokenException
     {
-        outstandingRequests.add(new OutstandingRequest(SmtpTransactionHandler.NOOP_RESPONSE_COMPLETION));
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        state.outstandingRequests.add(new OutstandingRequest(SmtpTransactionHandler.NOOP_RESPONSE_COMPLETION));
         logger.debug("Passing along client FIN");
-        getSession().shutdownServer();
+        session.shutdownServer();
     }
 
-    public final void handleServerFin() throws TokenException
+    @Override
+    public final void handleServerFin( NodeTCPSession session ) throws TokenException
     {
-        if (!shutingDownMode) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (!state.shutingDownMode) {
             logger.debug("Passing along server FIN");
-            getSession().shutdownClient();
+            session.shutdownClient();
         } else {
             logger.debug("Supress server FIN");
         }
     }
 
-    public void handleFinalized()
+    @Override
+    public void handleFinalized( NodeTCPSession session )
     {
-        if (smtpTransactionHandler != null && !shutingDownMode) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (smtpTransactionHandler != null && !state.shutingDownMode) {
             smtpTransactionHandler.handleFinalized();
         }
-        getSession().cleanupTempFiles();
+        session.cleanupTempFiles();
     }
 
     public void sendResponseToClient(Response resp, TokenResultBuilder ts)
@@ -630,50 +659,54 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public void sendFINToServer(ResponseCompletion compl)
+    public void sendFINToServer( NodeTCPSession session, ResponseCompletion compl )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending FIN to server");
-        outstandingRequests.add(new OutstandingRequest(compl));
-        getSession().shutdownServer();
+        state.outstandingRequests.add(new OutstandingRequest(compl));
+        session.shutdownServer();
     }
 
-    public void sendFINToClient()
+    public void sendFINToClient( NodeTCPSession session )
     {
         logger.debug("Sending FIN to client");
-        getSession().shutdownClient();
+        session.shutdownClient();
     }
 
-    public void sendCommandToServer(Command command, ResponseCompletion compl, TokenResultBuilder ts)
+    public void sendCommandToServer( NodeTCPSession session, Command command, ResponseCompletion compl, TokenResultBuilder ts )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending Command " + command.getType() + " to server");
         ts.addTokenForServer(command);
-        outstandingRequests.add(new OutstandingRequest(compl));
+        state.outstandingRequests.add(new OutstandingRequest(compl));
     }
 
-    public void sendBeginMIMEToServer(BeginMIMEToken token, TokenResultBuilder ts)
+    public void sendBeginMIMEToServer( NodeTCPSession session, BeginMIMEToken token, TokenResultBuilder ts )
     {
         logger.debug("Sending BeginMIMEToken to server");
         ts.addTokenForServer(token);
     }
 
-    public void sendContinuedMIMEToServer(ContinuedMIMEToken token, TokenResultBuilder ts)
+    public void sendContinuedMIMEToServer( NodeTCPSession session, ContinuedMIMEToken token, TokenResultBuilder ts )
     {
         logger.debug("Sending intermediate ContinuedMIMEToken to server");
         ts.addTokenForServer(token);
     }
 
-    public void sendFinalMIMEToServer(ContinuedMIMEToken token, ResponseCompletion compl, TokenResultBuilder ts)
+    public void sendFinalMIMEToServer( NodeTCPSession session, ContinuedMIMEToken token, ResponseCompletion compl, TokenResultBuilder ts )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending final ContinuedMIMEToken to server");
         ts.addTokenForServer(token);
-        outstandingRequests.add(new OutstandingRequest(compl));
+        state.outstandingRequests.add(new OutstandingRequest(compl));
     }
 
-    public void sentWholeMIMEToServer(CompleteMIMEToken token, ResponseCompletion compl, TokenResultBuilder ts)
+    public void sentWholeMIMEToServer( NodeTCPSession session, CompleteMIMEToken token, ResponseCompletion compl, TokenResultBuilder ts )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending whole MIME to server");
         ts.addTokenForServer(token);
-        outstandingRequests.add(new OutstandingRequest(compl));
+        state.outstandingRequests.add(new OutstandingRequest(compl));
     }
 
     /**
@@ -684,49 +717,53 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
      * @param immediateActions
      * 
      */
-    public void appendSyntheticResponse(Response synth, List<Response> immediateActions)
+    public void appendSyntheticResponse( NodeTCPSession session, Response synth, List<Response> immediateActions )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Appending synthetic response");
-        if (outstandingRequests.size() == 0) {
+        if (state.outstandingRequests.size() == 0) {
             immediateActions.add(synth);
         } else {
-            outstandingRequests.get(outstandingRequests.size() - 1).getAdditionalActions().add(synth);
+            state.outstandingRequests.get(state.outstandingRequests.size() - 1).getAdditionalActions().add(synth);
         }
     }
 
     /**
      * Get the absolute time (based on the local clock) of when the client last sent or was-sent a unit of data.
      */
-    public long getLastClientTimestamp()
+    public long getLastClientTimestamp( NodeTCPSession session )
     {
-        return clientTimestamp;
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.clientTimestamp;
     }
 
     /**
      * Get the absolute time (based on the local clock) of when the server last was sent or sent a unit of data.
      */
-    public long getLastServerTimestamp()
+    public long getLastServerTimestamp( NodeTCPSession session )
     {
-        return serverTimestamp;
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        return state.serverTimestamp;
     }
 
     /**
      * Get the client IP address
      */
-    public InetAddress getClientAddress()
+    public InetAddress getClientAddress( NodeTCPSession session )
     {
-        return getSession().getClientAddr();
+        return session.getClientAddr();
     }
 
     /**
      * Re-enable the flow of Client tokens. If this method is called while Client Tokens are not
      * {@link #disableClientTokens disabled}, this has no effect.
      */
-    protected void enableClientTokens()
+    protected void enableClientTokens( NodeTCPSession session )
     {
-        if (!clientTokensEnabled) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (!state.clientTokensEnabled) {
             logger.debug("Re-enabling Client Tokens");
-            clientTokensEnabled = true;
+            state.clientTokensEnabled = true;
         } else {
             logger.debug("Redundant call to enable Client Tokens");
         }
@@ -736,11 +773,12 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
      * Disable the flow of client tokens. No more calls to the Handler will be made with Client Tokens until the
      * {@link #enableClientTokens enable method} is called.
      */
-    protected void disableClientTokens()
+    protected void disableClientTokens( NodeTCPSession session )
     {
-        if (clientTokensEnabled) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (state.clientTokensEnabled) {
             logger.debug("Disabling Client Tokens");
-            clientTokensEnabled = false;
+            state.clientTokensEnabled = false;
         } else {
             logger.debug("Redundant call to disable Client Tokens");
         }
@@ -751,14 +789,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         ts.addTokenForClient(new Response(421, "Service not available, closing transmission channel"));
     }
 
-    public String getHeloName()
-    {
-        return heloName;
-    }
+    public abstract ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, MessageInfo messageInfo );
 
-    public abstract ScannedMessageResult blockPassOrModify(MimeMessage m_msg, SmtpTransaction transaction,
-            MessageInfo m_messageInfo);
-
-    public abstract BlockOrPassResult blockOrPass(MimeMessage m_msg, SmtpTransaction transaction,
-            MessageInfo m_messageInfo);
+    public abstract BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, MessageInfo messageInfo );
 }

@@ -3,24 +3,25 @@
  */
 package com.untangle.node.token;
 
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.NodeTCPSession;
+
 /**
  * Handles a stream of tokens for a session.
  */
 public interface TokenHandler
 {
-    TokenResult handleClientToken(Token token) throws TokenException;
-    TokenResult handleServerToken(Token token) throws TokenException;
+    TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException;
+    TokenResult handleServerToken( NodeTCPSession session, Token token) throws TokenException;
 
-    /**
-     * Handle a FIN from the client.  By default, this FIN
-     * does <b>not</b> result in the shutdown of the server.
-     * To accomplish this (to logically propigate the
-     * shutdown) call <code>m_myTCPSession.shutdownServer()</code>
-     */
-    void handleClientFin() throws TokenException;
-    void handleServerFin() throws TokenException;
-    void handleTimer() throws TokenException;
-    void handleFinalized() throws TokenException;
+    void handleNewSessionRequest( TCPNewSessionRequest tsr ) ;
+    void handleNewSession( NodeTCPSession session ) ;
 
-    TokenResult releaseFlush();
+    void handleClientFin( NodeTCPSession session ) throws TokenException;
+    void handleServerFin( NodeTCPSession session ) throws TokenException;
+    void handleTimer( NodeSession session ) throws TokenException;
+    void handleFinalized( NodeTCPSession session ) throws TokenException;
+
+    TokenResult releaseFlush( NodeTCPSession session );
 }

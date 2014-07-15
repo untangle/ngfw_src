@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
@@ -88,8 +89,9 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected final SessionEvent sessionEvent;
 
-    protected volatile Object attachment = null;
-
+    protected HashMap<String,Object> stringAttachments = new HashMap<String,Object>();
+    private static final String NO_KEY_VALUE = "NOKEY";
+    
     protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
     {
         this.dispatcher = dispatcher;
@@ -150,16 +152,24 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public Object attach(Object ob)
     {
-        Object oldOb = attachment;
-        attachment = ob;
-        return oldOb;
+        return attach( NO_KEY_VALUE, ob );
     }
 
     public Object attachment()
     {
-        return attachment;
+        return attachment( NO_KEY_VALUE );
     }
 
+    public Object attach( String key, Object ob )
+    {
+        return this.stringAttachments.put( key, ob );
+    }
+
+    public Object attachment( String key )
+    {
+        return this.stringAttachments.get(key);
+    }
+    
     public Object globalAttach(String key, Object ob)
     {
         return this.sessionGlobalState().attach(key,ob);
@@ -173,16 +183,6 @@ public abstract class NodeSessionImpl implements NodeSession
     public Map<String,Object> getAttachments()
     {
         return this.sessionGlobalState().getAttachments();
-    }
-
-    public Object globalAttach(Long key, Object ob)
-    {
-        return this.sessionGlobalState().attach(key,ob);
-    }
-
-    public Object globalAttachment(Long key)
-    {
-        return this.sessionGlobalState().attachment(key);
     }
 
     public SessionGlobalState sessionGlobalState()

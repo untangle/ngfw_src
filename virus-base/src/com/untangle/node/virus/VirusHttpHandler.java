@@ -42,158 +42,173 @@ class VirusHttpHandler extends HttpStateMachine
     private final Logger logger = Logger.getLogger(getClass());
 
     private final VirusNodeImpl node;
-    
-    private boolean scan;
-    private long bufferingStart;
-    private int outstanding;
-    private int totalSize;
-    private String extension;
-    private String hostname;
-    private File scanfile;
-    private FileChannel outFile;
-    private FileChannel inFile;
+
+    public class VirusHttpState
+    {
+        private boolean scan = false;
+        private long bufferingStart;
+        private int outstanding;
+        private int totalSize;
+        private String extension = null;
+        private String hostname = null;
+        private File scanfile = null;
+        private FileChannel outFile = null;
+        private FileChannel inFile = null;
+    }
 
     // constructors -----------------------------------------------------------
 
-    VirusHttpHandler(NodeTCPSession session, VirusNodeImpl node)
+    VirusHttpHandler( VirusNodeImpl node )
     {
-        super(session);
-
         this.node = node;
     }
 
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
+    public void handleNewSession( NodeTCPSession session )
     {
+        super.handleNewSession( session );
+        VirusHttpState state = new VirusHttpState();
+        session.attach( state );
+    }
+    
+    @Override
+    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
+    {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         String path = requestLine.getRequestUri().getPath();
         
         if ( path == null ) {
-            this.extension = "";
+            state.extension = "";
         } else {
             int i = path.lastIndexOf('.');
-            this.extension = (0 <= i && path.length() - 1 > i) ? path.substring(i + 1) : null;
+            state.extension = (0 <= i && path.length() - 1 > i) ? path.substring(i + 1) : null;
 
-            releaseRequest();
+            releaseRequest( session );
         }
         return requestLine;
     }
 
     @Override
-    protected Header doRequestHeader(Header requestHeader)
+    protected Header doRequestHeader( NodeTCPSession session, Header requestHeader )
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         /* save hostname */
-        if ( this.hostname == null ) {
-            this.hostname = requestHeader.getValue("host");
+        if ( state.hostname == null ) {
+            state.hostname = requestHeader.getValue("host");
         }
-        if ( this.hostname == null ) {
-            RequestLineToken requestLine = getRequestLine();
+        if ( state.hostname == null ) {
+            RequestLineToken requestLine = getRequestLine( session );
             if (requestLine != null)
-                this.hostname = requestLine.getRequestUri().normalize().getHost();
+                state.hostname = requestLine.getRequestUri().normalize().getHost();
         }
         
         return requestHeader;
     }
 
     @Override
-    protected Chunk doRequestBody(Chunk chunk)
+    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd() { }
+    protected void doRequestBodyEnd( NodeTCPSession session ) { }
 
     @Override
-    protected StatusLine doStatusLine(StatusLine statusLine)
+    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
     {
         return statusLine;
     }
 
     @Override
-    protected Header doResponseHeader(Header header)
+    protected Header doResponseHeader( NodeTCPSession session, Header header )
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("doing response header");
 
         String reason = "";
 
-        RequestLineToken rl = getResponseRequest();
+        RequestLineToken rl = getResponseRequest( session );
 
         if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
-            this.scan = false;
-        } else if ( ignoredHost( this.hostname ) ) {
-            logger.debug("Ignoring downloads from: " + this.hostname);
-            this.scan = false;
-        } else if (matchesExtension(extension)) {
+            state.scan = false;
+        } else if ( ignoredHost( state.hostname ) ) {
+            logger.debug("Ignoring downloads from: " + state.hostname);
+            state.scan = false;
+        } else if (matchesExtension( state.extension )) {
             logger.debug("matches extension");
-            reason = extension;
-            this.scan = true;
+            reason = state.extension;
+            state.scan = true;
         } else {
             logger.debug("else...");
             String mimeType = header.getValue("content-type");
 
-            this.scan = matchesMimeType(mimeType);
+            state.scan = matchesMimeType(mimeType);
             if (logger.isDebugEnabled()) {
-                logger.debug("content-type: " + mimeType + "matches mime-type: " + scan);
+                logger.debug("content-type: " + mimeType + "matches mime-type: " + state.scan);
             }
 
             reason = mimeType;
         }
 
-        if (scan) {
-            bufferingStart = System.currentTimeMillis();
-            outstanding = 0;
-            totalSize = 0;
-            setupFile(reason);
+        if ( state.scan ) {
+            state.bufferingStart = System.currentTimeMillis();
+            state.outstanding = 0;
+            state.totalSize = 0;
+            setupFile( session, reason );
         } else {
             /* header.replaceField("accept-ranges", "none"); */
-            releaseResponse();
+            releaseResponse( session );
         }
 
         return header;
     }
 
     @Override
-    protected Chunk doResponseBody(Chunk chunk) throws TokenException
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
-        return scan ? bufferOrTrickle(chunk) : chunk;
+        VirusHttpState state = (VirusHttpState) session.attachment();
+        return state.scan ? bufferOrTrickle( session, chunk ) : chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd()
+    protected void doResponseBodyEnd( NodeTCPSession session )
     {
-        if (scan) {
+        VirusHttpState state = (VirusHttpState) session.attachment();
+        if (state.scan) {
             try {
-                outFile.close();
+                state.outFile.close();
             } catch (IOException exn) {
                 logger.warn("could not close channel", exn);
             }
-            scanFile();
-            if (getResponseMode() == Mode.QUEUEING) {
-                logger.warn("still queueing after scanFile, buffering: " + getResponseMode());
-                releaseResponse();
+            scanFile( session );
+            if ( getResponseMode( session ) == Mode.QUEUEING ) {
+                logger.warn("still queueing after scanFile, buffering: " + getResponseMode( session ));
+                releaseResponse( session );
             }
         } else {
-            if (getResponseMode() == Mode.QUEUEING) {
+            if ( getResponseMode( session ) == Mode.QUEUEING ) {
                 logger.warn("still queueing, but not scanned");
-                releaseResponse();
+                releaseResponse( session );
             }
         }
     }
 
     // private methods --------------------------------------------------------
 
-    private void scanFile()
+    private void scanFile( NodeTCPSession session )
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         VirusScannerResult result;
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Scanning the file: " + scanfile);
+                logger.debug("Scanning the file: " + state.scanfile);
             }
             node.incrementScanCount();
-            result = node.getScanner().scanFile(scanfile);
+            result = node.getScanner().scanFile(state.scanfile);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
@@ -206,41 +221,38 @@ class VirusHttpHandler extends HttpStateMachine
             result = VirusScannerResult.ERROR;
         }
 
-        RequestLine requestLine = getResponseRequest().getRequestLine();
+        RequestLine requestLine = getResponseRequest( session ).getRequestLine();
         node.logEvent( new VirusHttpEvent(requestLine, result, node.getName()) );
 
         if (result.isClean()) {
             node.incrementPassCount();
 
-            if (Mode.QUEUEING == getResponseMode()) {
-                releaseResponse();
-                try { scanfile.delete(); } catch (Exception ignore) {}
+            if ( getResponseMode( session ) == Mode.QUEUEING ) {
+                releaseResponse( session );
+                try { state.scanfile.delete(); } catch (Exception ignore) {}
             } else {
-                preStream(new FileChunkStreamer(scanfile, inFile, null, null, false));
+                preStream( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
             }
 
         } else {
             node.incrementBlockCount();
 
-            if (Mode.QUEUEING == getResponseMode()) {
-                RequestLineToken rl = getResponseRequest();
+            if ( getResponseMode( session ) == Mode.QUEUEING ) {
+                RequestLineToken rl = getResponseRequest( session );
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
-                String host = getResponseHost();
+                String host = getResponseHost( session );
                 logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
                 VirusBlockDetails bd = new VirusBlockDetails( host, uri, null, node.getName() );
                                                              
                 String nonce = node.generateNonce(bd);
-                NodeTCPSession sess = getSession();
-
-                Token[] response = node.generateResponse( nonce, sess, uri );
+                Token[] response = node.generateResponse( nonce, session, uri );
                 
-                blockResponse(response);
+                blockResponse( session, response );
             } else {
                 logger.info("Virus found: " + result.getVirusName());
-                NodeTCPSession s = getSession();
-                s.shutdownClient();
-                s.shutdownServer();
-                s.release();
+                session.shutdownClient();
+                session.shutdownServer();
+                session.release();
             }
         }
     }
@@ -303,107 +315,109 @@ class VirusHttpHandler extends HttpStateMachine
         return false;
     }
 
-    private void setupFile(String reason)
+    private void setupFile( NodeTCPSession session, String reason )
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("VIRUS: Scanning because of: " + reason);
         File fileBuf = null;
 
         try {
             fileBuf = File.createTempFile("VirusHttpHandler-", null);
             if (fileBuf != null)
-                getSession().attachTempFile(fileBuf.getAbsolutePath());
-            this.scanfile = fileBuf;
+                session.attachTempFile(fileBuf.getAbsolutePath());
+            state.scanfile = fileBuf;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("VIRUS: Using temporary file: " + this.scanfile);
+                logger.debug("VIRUS: Using temporary file: " + state.scanfile);
             }
 
-            this.outFile = (new FileOutputStream(fileBuf)).getChannel();
-            this.inFile = (new FileInputStream(fileBuf)).getChannel();
-            this.scanfile = fileBuf;
-
-            this.scan = true;
+            state.outFile = (new FileOutputStream(fileBuf)).getChannel();
+            state.inFile = (new FileInputStream(fileBuf)).getChannel();
+            state.scanfile = fileBuf;
+            state.scan = true;
+            
         } catch (IOException e) {
             logger.warn("Unable to create temporary file: " + e);
-            this.scan = false;
-            releaseResponse();
+            state.scan = false;
+            releaseResponse( session );
         } 
     }
     
     @Override
-    public void handleFinalized(){
-        getSession().cleanupTempFiles();
+    public void handleFinalized( NodeTCPSession session )
+    {
+        session.cleanupTempFiles();
     }
 
-    private Chunk bufferOrTrickle(Chunk chunk) throws TokenException
+    private Chunk bufferOrTrickle( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         ByteBuffer buf = chunk.getData();
 
         try {
-            for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); outFile.write(bb));
+            for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); state.outFile.write(bb));
         } catch (IOException e) {
             logger.warn("Unable to write to buffer file: " + e);
             throw new TokenException(e);
         }
 
-        outstanding += buf.remaining();
-        totalSize += buf.remaining();
+        state.outstanding += buf.remaining();
+        state.totalSize += buf.remaining();
 
-        if (Mode.QUEUEING == getResponseMode()) {
-            if (TIMEOUT > (System.currentTimeMillis() - bufferingStart)
-                && SIZE_LIMIT > totalSize) {
+        if ( getResponseMode( session ) == Mode.QUEUEING ) {
+            if (TIMEOUT > (System.currentTimeMillis() - state.bufferingStart) && SIZE_LIMIT > state.totalSize) {
                 logger.debug("buffering");
                 return chunk;
             } else {            /* switch to trickle mode */
                 logger.debug("switching to trickling");
                 try {
-                    inFile.position(outstanding);
+                    state.inFile.position(state.outstanding);
                 } catch (IOException exn) {
                     logger.warn("could not change file pointer", exn);
                 }
-                outstanding = 0;
-                releaseResponse();
+                state.outstanding = 0;
+                releaseResponse( session );
                 return chunk;
             }
         } else {                /* stay in trickle mode */
             logger.debug("trickling");
-            if (MAX_SCAN_LIMIT < totalSize) {
+            if (MAX_SCAN_LIMIT < state.totalSize) {
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
-                scan = false;
-                FileChunkStreamer streamer = new FileChunkStreamer
-                    (scanfile, inFile, null, null, false);
-                preStream(streamer);
+                state.scan = false;
+                FileChunkStreamer streamer = new FileChunkStreamer(state.scanfile, state.inFile, null, null, false);
+                preStream( session, streamer );
 
                 return Chunk.EMPTY;
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("continuing to trickle: " + totalSize);
+                    logger.debug("continuing to trickle: " + state.totalSize);
                 }
-                Chunk c = trickle();
+                Chunk c = trickle( session );
                 return c;
             }
         }
     }
 
-    private Chunk trickle() throws TokenException
+    private Chunk trickle( NodeTCPSession session ) throws TokenException
     {
+        VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("handleTokenTrickle()");
 
         int tricklePercent = node.getTricklePercent();
-        int trickleLen = (outstanding * tricklePercent) / 100;
+        int trickleLen = (state.outstanding * tricklePercent) / 100;
         ByteBuffer inbuf = ByteBuffer.allocate(trickleLen);
 
         inbuf.limit(trickleLen);
 
         try {
-            for (; inbuf.hasRemaining(); inFile.read(inbuf));
+            for (; inbuf.hasRemaining(); state.inFile.read(inbuf));
         } catch (IOException e) {
             logger.warn("Unable to read from buffer file: " + e);
             throw new TokenException(e);
         }
 
         inbuf.flip();
-        outstanding = 0;
+        state.outstanding = 0;
 
         return new Chunk(inbuf);
     }

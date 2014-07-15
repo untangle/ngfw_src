@@ -278,10 +278,10 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     {
         int strength = getStrength();
         PipeSpec[] result = new PipeSpec[] {
-            new SoloPipeSpec("virus-ftp-ctl", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-ftp-data", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
+            new SoloPipeSpec("virus-ftp-ctl", this, new TokenAdaptor(this, new VirusFtpHandler(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-ftp-data", this, new TokenAdaptor(this, new VirusFtpHandler(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpHandler(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpHandler(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
         };
         return result;
     }

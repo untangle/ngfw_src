@@ -27,27 +27,26 @@ public class TokenAdaptor extends AbstractEventHandler
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
-    private final TokenHandlerFactory handlerFactory;
-
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
-    public TokenAdaptor(Node node, TokenHandlerFactory thf)
+    private TokenHandler tokenHandler;
+    
+    public TokenAdaptor( Node node, TokenHandler handler )
     {
         super(node);
-        this.handlerFactory = thf;
+        this.tokenHandler = handler;
     }
 
     @Override
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
-        handlerFactory.handleNewSessionRequest( sessionRequest );
+        tokenHandler.handleNewSessionRequest( sessionRequest );
     }
 
     @Override
     public void handleTCPNewSession( NodeTCPSession session )
     {
-        TokenHandler handler = handlerFactory.tokenHandler( session );
-        session.attach( handler );
+        tokenHandler.handleNewSession( session );
     }
 
     @Override
@@ -65,16 +64,14 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
-        TokenHandler handler = (TokenHandler) session.attachment();
-        handleToken( handler, session, obj, true );
+        handleToken( tokenHandler, session, obj, true );
         return;
     }
 
     @Override
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
-        TokenHandler handler = (TokenHandler) session.attachment();
-        handleToken( handler, session, obj, false );
+        handleToken( tokenHandler, session, obj, false );
         return;
     }
     
@@ -82,10 +79,8 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPClientFIN( NodeTCPSession session )
     {
-        TokenHandler handler = (TokenHandler) session.attachment();
-
         try {
-            handler.handleClientFin();
+            tokenHandler.handleClientFin( session );
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -96,10 +91,8 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPServerFIN( NodeTCPSession session )
     {
-        TokenHandler handler = (TokenHandler) session.attachment();
-
         try {
-            handler.handleServerFin();
+            tokenHandler.handleServerFin( session );
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -117,17 +110,13 @@ public class TokenAdaptor extends AbstractEventHandler
 
     private void finalize( NodeTCPSession sess )
     {
-        TokenHandler handler = (TokenHandler) sess.attachment();
-
         try {
-            handler.handleFinalized();
+            tokenHandler.handleFinalized( sess );
         } catch ( Exception exn ) {
             logger.warn("Exception. resetting connection", exn);
             sess.resetClient();
             sess.resetServer();
         }
-
-        sess.attach( null ); // remove tokenHandler reference
     }
     // UDP events -------------------------------------------------------------
 
@@ -179,7 +168,7 @@ public class TokenAdaptor extends AbstractEventHandler
         TokenHandler handler = (TokenHandler) sess.attachment();
 
         try {
-            handler.handleTimer();
+            handler.handleTimer( sess );
         } catch (TokenException exn) {
             logger.warn("exception in timer, no action taken", exn);
         }
@@ -247,7 +236,7 @@ public class TokenAdaptor extends AbstractEventHandler
         if (token instanceof Release) {
             Release release = (Release)token;
 
-            TokenResult utr = handler.releaseFlush();
+            TokenResult utr = handler.releaseFlush( session );
 
             finalize( session );
             session.release();
@@ -255,13 +244,11 @@ public class TokenAdaptor extends AbstractEventHandler
             if (utr.isStreamer()) {
                 if (s2c) {
                     TokenStreamer cStm = utr.c2sStreamer();
-                    TokenStreamer sStm = new ReleaseTokenStreamer
-                        (utr.s2cStreamer(), release);
+                    TokenStreamer sStm = new ReleaseTokenStreamer(utr.s2cStreamer(), release);
 
                     return new TokenResult(sStm, cStm);
                 } else {
-                    TokenStreamer cStm = new ReleaseTokenStreamer
-                        (utr.c2sStreamer(), release);
+                    TokenStreamer cStm = new ReleaseTokenStreamer(utr.c2sStreamer(), release);
                     TokenStreamer sStm = utr.s2cStreamer();
 
                     return new TokenResult(sStm, cStm);
@@ -287,9 +274,9 @@ public class TokenAdaptor extends AbstractEventHandler
             }
         } else {
             if (s2c) {
-                return handler.handleServerToken(token);
+                return handler.handleServerToken( session, token );
             } else {
-                return handler.handleClientToken(token);
+                return handler.handleClientToken( session, token );
             }
         }
     }

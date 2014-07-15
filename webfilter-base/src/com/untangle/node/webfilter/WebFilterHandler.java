@@ -24,71 +24,66 @@ public class WebFilterHandler extends HttpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    protected WebFilterHandler(NodeTCPSession session, WebFilterBase node)
+    protected WebFilterHandler( WebFilterBase node )
     {
-        super(session);
-
         this.node = node;
     }
 
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
+    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
     @Override
-    protected Header doRequestHeader(Header requestHeader)
+    protected Header doRequestHeader( NodeTCPSession sess, Header requestHeader )
     {
         node.incrementScanCount();
 
-        NodeTCPSession sess = getSession();
-
-        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine(),requestHeader);
+        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine( sess ),requestHeader);
 
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
         if (null == nonce) {
-            releaseRequest();
+            releaseRequest( sess );
         } else {
             node.incrementBlockCount();
-            String uri = getRequestLine().getRequestUri().toString();
+            String uri = getRequestLine( sess ).getRequestUri().toString();
             Token[] response = node.generateResponse(nonce, sess, uri, requestHeader );
 
-            blockRequest(response);
+            blockRequest( sess, response );
         }
 
         return requestHeader;
     }
 
     @Override
-    protected Chunk doRequestBody(Chunk c)
+    protected Chunk doRequestBody( NodeTCPSession session, Chunk c )
     {
         return c;
     }
 
     @Override
-    protected void doRequestBodyEnd() { }
+    protected void doRequestBodyEnd( NodeTCPSession session )
+    { }
 
     @Override
-    protected StatusLine doStatusLine(StatusLine statusLine)
+    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
     {
         return statusLine;
     }
 
     @Override
-    protected Header doResponseHeader(Header responseHeader)
+    protected Header doResponseHeader( NodeTCPSession sess, Header responseHeader )
     {
-        if (100 == getStatusLine().getStatusCode()) {
-            releaseResponse();
+        if ( getStatusLine( sess ).getStatusCode() == 100 ) {
+            releaseResponse( sess );
         } else {
-            NodeTCPSession sess = getSession();
-
-            String nonce = node.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(),responseHeader);
+            String nonce = node.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest( sess ), responseHeader);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
@@ -97,11 +92,11 @@ public class WebFilterHandler extends HttpStateMachine
             if (null == nonce) {
                 node.incrementPassCount();
 
-                releaseResponse();
+                releaseResponse( sess );
             } else {
                 node.incrementBlockCount();
                 Token[] response = node.generateResponse(nonce, sess);
-                blockResponse(response);
+                blockResponse( sess, response );
             }
         }
 
@@ -109,11 +104,12 @@ public class WebFilterHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody(Chunk c)
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk c )
     {
         return c;
     }
 
     @Override
-    protected void doResponseBodyEnd() { }
+    protected void doResponseBodyEnd( NodeTCPSession session )
+    { }
 }

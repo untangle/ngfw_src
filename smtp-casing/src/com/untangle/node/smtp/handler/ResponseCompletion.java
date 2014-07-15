@@ -2,6 +2,7 @@ package com.untangle.node.smtp.handler;
 
 import com.untangle.node.smtp.Response;
 import com.untangle.node.token.TokenResultBuilder;
+import com.untangle.uvm.vnet.NodeTCPSession;
 
 public interface ResponseCompletion
 {
@@ -18,5 +19,5 @@ public interface ResponseCompletion
      * @param actions
      *            the set of available actions.
      */
-    public void handleResponse(Response resp, TokenResultBuilder ts);// , SmtpStateMachine handler);
+    public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts );// , SmtpStateMachine handler);
 }
