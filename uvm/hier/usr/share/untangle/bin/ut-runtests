@@ -208,7 +208,6 @@ ClientControl.verbosity   = parser.verbosity
 ClientControl.logfile = logfile
 ClientControl.interface = parser.internalIntfId;
 ClientControl.interfaceExternal = parser.externalIntfId
-print "Set ClientControl.quickTestsOnly"
 ClientControl.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
