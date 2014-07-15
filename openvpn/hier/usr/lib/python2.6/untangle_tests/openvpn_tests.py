@@ -202,6 +202,8 @@ class OpenVpnTests(unittest2.TestCase):
         
     def test_050_createClientVPNFullTunnel(self):
         global nodeData, vpnServerResult, vpnClientResult
+        if clientControl.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
         nodeData = node.getSettings()
