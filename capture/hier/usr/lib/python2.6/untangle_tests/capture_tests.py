@@ -219,6 +219,8 @@ class CaptureTests(unittest2.TestCase):
 
     def test_024_captureAnonymousLoginTimeout(self):
         global node, nodeData
+        if clientControl.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
         nodeData['authenticationType']="NONE"
