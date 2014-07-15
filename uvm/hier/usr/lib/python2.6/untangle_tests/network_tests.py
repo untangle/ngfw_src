@@ -282,7 +282,7 @@ def sendUDPPackets():
     return numOfPackets
 
 class NetworkTests(unittest2.TestCase):
-
+    
     @staticmethod
     def nodeName():
         return "network"
@@ -295,6 +295,8 @@ class NetworkTests(unittest2.TestCase):
     def vendorName():
         return "Untangle"
 
+    # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
+    
     def setUp(self):
         pass
 
@@ -447,6 +449,8 @@ class NetworkTests(unittest2.TestCase):
 
     # Test UDP QoS limits speed
     def test_053_testUDPwithQoS(self):
+        if clientControl.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping UDP with QoS test")
