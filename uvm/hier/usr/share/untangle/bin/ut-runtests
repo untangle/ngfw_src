@@ -134,8 +134,9 @@ def runTestSuite(suite):
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     rc = 0
     skipc = 0  # number of skipped tests.
+    timeString = ""
     if (parser.timedTests):
-        start_time = time.time()
+        suiteStartTime = time.time()
     total = len([t for t in tests])
     for test in tests:
 
@@ -144,7 +145,14 @@ def runTestSuite(suite):
         sys.stdout = logfile
         sys.stderr = logfile
 
+        if (parser.timedTests):
+            testStartTime = time.time()
+
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+
+        if (parser.timedTests):
+            testElapsedTime = time.time() - testStartTime
+            timeString = "in %d secs" % testElapsedTime
 
         sys.stdout = orig_stdout
         sys.stderr = orig_stderr
@@ -159,10 +167,10 @@ def runTestSuite(suite):
             print "Test skipped  : %s " % test._testMethodName
             skipc += 1
         else:
-            print "Test success : %s " % test._testMethodName
+            print "Test success : %s %s " % (test._testMethodName, timeString)
     if (parser.timedTests):
-        elapsed_time = time.time() - start_time
-        print "== Testing %s in %d secs ==" % (suite.nodeName(),elapsed_time)
+        suiteElapsedTime = time.time() - suiteStartTime
+        print "== Testing %s in %d secs ==" % (suite.nodeName(),suiteElapsedTime)
     else:
         print "== Testing %s ==" % suite.nodeName()
     return rc, skipc, total
@@ -196,10 +204,12 @@ if (parser.hostUsername != None):
     ClientControl.hostUsername = parser.hostUsername
 if (parser.hostKeyFile != None):
     ClientControl.hostKeyFile  = parser.hostKeyFile
-ClientControl.verbosity   = parser.verbosity;
-ClientControl.logfile = logfile;
+ClientControl.verbosity   = parser.verbosity
+ClientControl.logfile = logfile
 ClientControl.interface = parser.internalIntfId;
-ClientControl.interfaceExternal = parser.externalIntfId;
+ClientControl.interfaceExternal = parser.externalIntfId
+print "Set ClientControl.quickTestsOnly"
+ClientControl.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;
