@@ -603,6 +603,8 @@ class NetworkTests(unittest2.TestCase):
 
     # Test VRRP is active
     def test_100_VRRP(self):
+        if clientControl.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Find a static interface
         i=0
