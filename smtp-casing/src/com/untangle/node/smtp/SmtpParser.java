@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.FatalMailParseException;
-import com.untangle.node.smtp.SmtpCasing;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
@@ -24,14 +23,10 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 abstract class SmtpParser extends AbstractParser
 {
-
     private final Logger logger = Logger.getLogger(SmtpParser.class);
 
-    private final SmtpCasing casing;
-    private boolean passthru = false;
-
-    private CasingSessionTracker casingSessionTracker;
-
+    protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
+    
     /**
      * @param session
      *            the session
@@ -40,30 +35,18 @@ abstract class SmtpParser extends AbstractParser
      * @param clientSide
      *            true if this is a client-side casing
      */
-    protected SmtpParser(NodeTCPSession session, boolean clientSide, SmtpCasing parent, CasingSessionTracker casingSessionTracker)
+    protected SmtpParser( boolean clientSide )
     {
-
-        super(session, clientSide);
-        casing = parent;
-        this.casingSessionTracker = casingSessionTracker;
-    }
-
-    public SmtpCasing getCasing()
-    {
-        return casing;
-    }
-
-    public CasingSessionTracker getSessionTracker()
-    {
-        return casingSessionTracker;
+        super( clientSide );
     }
 
     /**
      * Is the casing currently in passthru mode
      */
-    protected boolean isPassthru()
+    protected boolean isPassthru( NodeTCPSession session )
     {
-        return passthru;
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        return sharedState.passthru;
     }
 
     /**
@@ -71,40 +54,32 @@ abstract class SmtpParser extends AbstractParser
      * error by the caller, or the reciept of a passthru token.
      * 
      */
-    protected void declarePassthru()
+    protected void declarePassthru( NodeTCPSession session)
     {
-        passthru = true;
-        casing.passthru();
-    }
-
-    /**
-     * Called by the casing to declare that this instance should now be in passthru mode.
-     */
-    protected final void passthru()
-    {
-        passthru = true;
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        sharedState.passthru = true;
     }
 
     @Override
-    public final TokenStreamer endSession()
+    public final TokenStreamer endSession( NodeTCPSession session )
     {
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") endSession()");
         // getCasing().endSession(isClientSide());
-        return super.endSession();
+        return super.endSession( session );
     }
 
-    public void handleFinalized()
+    public void handleFinalized( NodeTCPSession session )
     {
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") handleFinalized()");
     }
 
-    public final ParseResult parse(ByteBuffer buf) throws ParseException
+    public final ParseResult parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         try {
-            return isPassthru() ? new ParseResult(new Chunk(buf)) : doParse(buf);
+            return isPassthru( session ) ? new ParseResult(new Chunk(buf)) : doParse( session, buf );
         } catch (FatalMailParseException exn) {
-            getSession().shutdownClient();
-            getSession().shutdownServer();
+            session.shutdownClient();
+            session.shutdownServer();
             return new ParseResult();
         }
     }
@@ -114,13 +89,12 @@ abstract class SmtpParser extends AbstractParser
      * <br>
      * Note that if the casing is {@link #isPassthru in passthru} then this method will not be called.
      */
-    protected abstract ParseResult doParse(ByteBuffer buf) throws FatalMailParseException;
+    protected abstract ParseResult doParse( NodeTCPSession session, ByteBuffer buf ) throws FatalMailParseException;
 
-    public final ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    public final ParseResult parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
-        if (buf.hasRemaining()) {
-            logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server")
-                    + ") Passing final chunk of size: " + buf.remaining());
+        if ( buf.hasRemaining() ) {
+            logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") Passing final chunk of size: " + buf.remaining());
             return new ParseResult(new Chunk(buf));
         }
         return new ParseResult();

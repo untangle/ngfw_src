@@ -75,7 +75,7 @@ public class Dispatcher
      * The set of active sessions (both TCP and UDP), kept as weak
      * references to SessionState object (both TCP/UDP)
      */
-    private ConcurrentHashMap<NodeSession,NodeSession> liveSessions;
+    private ConcurrentHashMap<NodeSessionImpl,NodeSession> liveSessions;
 
     /**
      * dispatcher is created PipelineConnector.start() when user decides this
@@ -92,7 +92,7 @@ public class Dispatcher
         this.sessionEventListener = null;
         this.sessionEventLogger = pipelineConnector.sessionEventLogger();
         this.releasedHandler = new ReleasedEventHandler(node);
-        this.liveSessions = new ConcurrentHashMap<NodeSession,NodeSession>();
+        this.liveSessions = new ConcurrentHashMap<NodeSessionImpl,NodeSession>();
 
         this.node.addMetric(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
         this.node.addMetric(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
@@ -107,13 +107,13 @@ public class Dispatcher
 
     public synchronized void destroy()
     {
-        for ( NodeSession sess : liveSessions.keySet() ) {
+        for ( NodeSessionImpl sess : liveSessions.keySet() ) {
             removeSession( sess );
         }
     }
     
     // Called by the new session handler thread.
-    public void addSession( NodeTCPSession sess ) 
+    protected void addSession( NodeTCPSessionImpl sess ) 
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
         this.node.incrementMetric(STAT_TCP_LIVE_SESSIONS);
@@ -125,7 +125,7 @@ public class Dispatcher
     }
 
     // Called by the new session handler thread.
-    public void addSession( NodeUDPSession sess ) 
+    protected void addSession( NodeUDPSessionImpl sess ) 
     {
         this.node.incrementMetric(STAT_LIVE_SESSIONS);
         this.node.incrementMetric(STAT_UDP_LIVE_SESSIONS);
@@ -161,7 +161,7 @@ public class Dispatcher
     }
     
     // Called by NodeSessionImpl at closeFinal (raze) time.
-    protected void removeSession( NodeSession sess )
+    protected void removeSession( NodeSessionImpl sess )
     {
         this.node.decrementMetric(STAT_LIVE_SESSIONS);
         if (sess instanceof NodeUDPSession) {
@@ -175,7 +175,7 @@ public class Dispatcher
         if (pipelineConnector == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
-            pipelineConnector.removeSession((NodeSessionImpl)sess);
+            pipelineConnector.removeSession( sess );
         }
     }
 
@@ -195,7 +195,7 @@ public class Dispatcher
         int size = liveSessions.size();
         long[] idlist = new long[size];
         
-        for (Iterator<NodeSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<NodeSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             if (count == size) /* just in case */
                 break;
             NodeSession sess = i.next();
@@ -210,7 +210,7 @@ public class Dispatcher
     {
         LinkedList<NodeSession> sessions = new LinkedList<NodeSession>();
         
-        for (Iterator<NodeSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<NodeSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             sessions.add(i.next());
         }
 

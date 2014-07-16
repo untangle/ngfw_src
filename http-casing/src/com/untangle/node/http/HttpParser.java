@@ -26,6 +26,7 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.NodeSession;
 
 /**
  * An HTTP <code>Parser</code>.
@@ -33,6 +34,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 public class HttpParser extends AbstractParser
 {
     private final Logger logger = Logger.getLogger(HttpParser.class);
+    private static final String STATE_KEY = "HTTP-parser-state";
 
     private static final byte SP = ' ';
     private static final byte HT = '\t';
@@ -43,10 +45,7 @@ public class HttpParser extends AbstractParser
     private static final int CLOSE_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
     private static final int CONTENT_LENGTH_ENCODING = 3;
-
-    // longest allowable token or text:
     private static final int TIMEOUT = 30000;
-
     private static final int PRE_FIRST_LINE_STATE = 0;
     private static final int FIRST_LINE_STATE = 1;
     private static final int ACCUMULATE_HEADER_STATE = 2;
@@ -59,65 +58,77 @@ public class HttpParser extends AbstractParser
     private static final int LAST_CHUNK_STATE = 9;
     private static final int END_MARKER_STATE = 10;
 
-    private final HttpCasing casing;
-    private byte[] buf;
-    private final int maxHeader;
-    private final boolean blockLongHeaders;
-    private final int maxUri;
-    private final int maxRequestLine;
-    private final boolean blockLongUris;
-    private final String sessStr;
+    private final HttpNodeImpl node;
+    
+    private int maxHeader;
+    private boolean blockLongHeaders;
+    private int maxUri;
+    private int maxRequestLine;
+    private boolean blockLongUris;
 
-    private RequestLineToken requestLineToken;
-    private StatusLine statusLine;
-    private Header header;
+    private class HttpParserSessionState
+    {
+        protected RequestLineToken requestLineToken;
+        protected StatusLine statusLine;
+        protected Header header;
 
-    private int state;
-    private int transferEncoding;
-    private long contentLength; /* counts down content-length and chunks */
-    private long lengthCounter; /* counts up to final */
+        protected byte[] buf;
+        protected int currentState;
+        protected int transferEncoding;
+        protected long contentLength; /* counts down content-length and chunks */
+        protected long lengthCounter; /* counts up to final */
+    }
 
     // constructors -----------------------------------------------------------
 
-    protected HttpParser(NodeTCPSession session, boolean clientSide, HttpCasing casing)
+    protected HttpParser( boolean clientSide, HttpNodeImpl node )
     {
-        super(session, clientSide);
-        HttpNodeImpl node = casing.getNode();
+        super( clientSide );
+        this.node = node;
+    }
+
+    // Parser methods ------------------------------------------------------
+
+    public void handleNewSession( NodeTCPSession session )
+    {
+        /**
+         * FIXME move this somewhere else
+         * cant put it in initializer because settings aren't read yet
+         */
         HttpSettings settings = node.getHttpSettings();
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
         this.maxRequestLine = maxUri + 13;
         this.blockLongUris = settings.getBlockLongUris();
-        this.casing = casing;
-        this.sessStr = "HttpParser" + (clientSide ? " client-side " : " server-side ");
+        // XXX
 
-        // This is now initialized just before we need it and removed afterwards
-        this.buf = null;
+        HttpParserSessionState state = new HttpParserSessionState();
+        state.buf = null;
+        session.attach( STATE_KEY, state );
 
-        lineBuffering(true);
+        lineBuffering( session, true );
     }
-
-    // Parser methods ------------------------------------------------------
-
-    public ParseResult parse(ByteBuffer b) throws ParseException
+    
+    public ParseResult parse( NodeTCPSession session, ByteBuffer b ) throws ParseException
     {
-        cancelTimer();
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+        cancelTimer( session );
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "parsing chunk: " + b);
+            logger.debug("parsing chunk: " + b);
         }
         List<Token> tokenList = new LinkedList<Token>();
 
         boolean done = false;
         while (!done) {
-            switch (state) {
+            switch ( state.currentState ) {
             case PRE_FIRST_LINE_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in PRE_FIRST_LINE_STATE");
+                    logger.debug("in PRE_FIRST_LINE_STATE");
                 }
 
-                lengthCounter = 0;
+                state.lengthCounter = 0;
                     
                 // Once we have three bytes we look to see if we are on the
                 // client side and working with a valid request method.
@@ -151,7 +162,7 @@ public class HttpParser extends AbstractParser
                         b = null;
                         done = true;
                     } else {
-                        state = FIRST_LINE_STATE;
+                        state.currentState = FIRST_LINE_STATE;
                     }
                 } else if (b.remaining() > maxRequestLine) {
                     throw new ParseException("HTTP request length exceeded: " + AsciiCharBuffer.wrap(b));
@@ -171,16 +182,16 @@ public class HttpParser extends AbstractParser
             case FIRST_LINE_STATE: {
                 // Initialize the buffer, we'll need it until
                 // we're done with HEADER state.
-                this.buf = new byte[maxUri];
+                state.buf = new byte[maxUri];
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in FIRST_LINE_STATE");
+                    logger.debug("in FIRST_LINE_STATE");
                 }
 
                 if (completeLine(b)) {
-                    tokenList.add(firstLine(b));
+                    tokenList.add( firstLine( session, b ) );
 
-                    state = ACCUMULATE_HEADER_STATE;
+                    state.currentState = ACCUMULATE_HEADER_STATE;
                 } else {
                     b.compact();
                     done = true;
@@ -189,7 +200,7 @@ public class HttpParser extends AbstractParser
             }
             case ACCUMULATE_HEADER_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
+                    logger.debug("in ACCUMULATE_HEADER_STATE");
                 }
 
                 if (!completeHeader(b)) {
@@ -216,83 +227,85 @@ public class HttpParser extends AbstractParser
 
                     done = true;
                 } else {
-                    state = HEADER_STATE;
+                    state.currentState = HEADER_STATE;
                 }
                 break;
             }
             case HEADER_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in HEADER_STATE");
+                    logger.debug("in HEADER_STATE");
                 }
-                header = header(b);
-                tokenList.add(header);
+                state.header = header( session, b );
+                tokenList.add( state.header );
 
                 // Done with buf now
-                this.buf = null;
+                state.buf = null;
 
-                assert !b.hasRemaining();
+                if ( b.hasRemaining() )
+                    logger.warn("bytes remaining in buffer");
 
                 if (!clientSide) {
-                    if (null != requestLineToken) {
-                        HttpMethod method = requestLineToken.getMethod();
+                    if ( state.requestLineToken != null ) {
+                        HttpMethod method = state.requestLineToken.getMethod();
                         if (HttpMethod.HEAD == method) {
-                            transferEncoding = NO_BODY;
+                            state.transferEncoding = NO_BODY;
                         }
                     }
                 } else {
                     /* This is saved internally and used later with getRequestEvent */
-                    HttpRequestEvent evt = new HttpRequestEvent(requestLineToken.getRequestLine(), header.getValue("host"), lengthCounter);
+                    HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue("host"), state.lengthCounter );
                 }
 
-                if (NO_BODY == transferEncoding) {
-                    state = END_MARKER_STATE;
-                } else if (CLOSE_ENCODING == transferEncoding) {
-                    lineBuffering(false);
+                if ( state.transferEncoding == NO_BODY ) {
+                    state.currentState = END_MARKER_STATE;
+                } else if ( state.transferEncoding == CLOSE_ENCODING ) {
+                    lineBuffering( session, false );
                     b = null;
-                    state = CLOSED_BODY_STATE;
+                    state.currentState = CLOSED_BODY_STATE;
                     done = true;
-                } else if (CHUNKED_ENCODING == transferEncoding) {
-                    lineBuffering(true);
+                } else if ( state.transferEncoding == CHUNKED_ENCODING ) {
+                    lineBuffering( session, true );
                     b = null;
-                    state = CHUNK_LENGTH_STATE;
+                    state.currentState = CHUNK_LENGTH_STATE;
                     done = true;
-                } else if (CONTENT_LENGTH_ENCODING == transferEncoding) {
-                    lineBuffering(false);
-                    assert !b.hasRemaining();
-
-                    if (0 < contentLength) {
-                        readLimit(contentLength);
+                } else if ( state.transferEncoding == CONTENT_LENGTH_ENCODING ) {
+                    lineBuffering( session, false );
+                    if ( b.hasRemaining() )
+                        logger.warn("bytes remaining in buffer");
+                        
+                    if ( state.contentLength > 0 ) {
+                        readLimit( session, state.contentLength );
                         b = null;
-                        state = CONTENT_LENGTH_BODY_STATE;
+                        state.currentState = CONTENT_LENGTH_BODY_STATE;
                         done = true;
                     } else {
-                        state = END_MARKER_STATE;
+                        state.currentState = END_MARKER_STATE;
                     }
                 } else {
-                    assert false;
+                    logger.warn("Invalid transferEncoding: " + state.transferEncoding);
                 }
                 break;
             }
             case CLOSED_BODY_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in CLOSED_BODY_STATE!");
+                    logger.debug("in CLOSED_BODY_STATE!");
                 }
-                tokenList.add(closedBody(b));
+                tokenList.add( closedBody( session, b ) );
                 b = null;
                 done = true;
                 break;
             }
             case CONTENT_LENGTH_BODY_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
+                    logger.debug("in CONTENT_LENGTH_BODY_STATE");
                 }
-                tokenList.add(chunk(b));
-                if (0 == contentLength) {
+                tokenList.add( chunk( session, b ) );
+                if ( state.contentLength == 0 ) {
                     b = null;
                     // XXX handle trailer
-                    state = END_MARKER_STATE;
+                    state.currentState = END_MARKER_STATE;
                 } else {
-                    readLimit(contentLength);
+                    readLimit( session, state.contentLength );
                     b = null;
                     done = true;
                 }
@@ -301,7 +314,7 @@ public class HttpParser extends AbstractParser
             case CHUNK_LENGTH_STATE: {
                 // chunk-size     = 1*HEX
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in CHUNK_LENGTH_STATE");
+                    logger.debug("in CHUNK_LENGTH_STATE");
                 }
                 if (!completeLine(b)) {
                     b.compact();
@@ -309,39 +322,39 @@ public class HttpParser extends AbstractParser
                     break;
                 }
 
-                contentLength = chunkLength(b);
+                state.contentLength = chunkLength(b);
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "CHUNK contentLength = "
-                                 + contentLength);
+                    logger.debug("CHUNK contentLength = " + state.contentLength);
                 }
-                if (0 == contentLength) {
+                if ( state.contentLength == 0 ) {
                     b = null;
-                    state = LAST_CHUNK_STATE;
+                    state.currentState = LAST_CHUNK_STATE;
                 } else {
-                    lineBuffering(false);
-                    assert !b.hasRemaining();
+                    lineBuffering( session, false );
+                    if ( b.hasRemaining() )
+                        logger.warn("bytes remaining in buffer");
 
-                    readLimit(contentLength);
+                    readLimit( session, state.contentLength );
                     b = null;
 
-                    state = CHUNK_BODY_STATE;
+                    state.currentState = CHUNK_BODY_STATE;
                 }
                 done = true;
                 break;
             }
             case CHUNK_BODY_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in CHUNKED_BODY_STATE");
+                    logger.debug("in CHUNKED_BODY_STATE");
                 }
 
-                tokenList.add(chunk(b));
+                tokenList.add( chunk( session, b ) );
 
-                if (0 == contentLength) {
-                    lineBuffering(true);
+                if ( state.contentLength == 0 ) {
+                    lineBuffering( session, true );
                     b = null;
-                    state = CHUNK_END_STATE;
+                    state.currentState = CHUNK_END_STATE;
                 } else {
-                    readLimit(contentLength);
+                    readLimit( session, state.contentLength );
                     b = null;
                 }
 
@@ -350,7 +363,7 @@ public class HttpParser extends AbstractParser
             }
             case CHUNK_END_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in END_CHUNK_STATE");
+                    logger.debug("in END_CHUNK_STATE");
                 }
 
                 if (!completeLine(b)) {
@@ -360,18 +373,19 @@ public class HttpParser extends AbstractParser
                 }
 
                 eatCrLf(b);
-                assert !b.hasRemaining();
+                if ( b.hasRemaining() )
+                    logger.warn("bytes remaining in buffer");
 
                 b = null;
                 done = true;
 
-                state = CHUNK_LENGTH_STATE;
+                state.currentState = CHUNK_LENGTH_STATE;
                 break;
             }
             case LAST_CHUNK_STATE: {
                 // last-chunk     = 1*("0") [ chunk-extension ] CRLF
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in LAST_CHUNK_STATE");
+                    logger.debug("in LAST_CHUNK_STATE");
                 }
 
                 if (!completeLine(b)) {
@@ -382,50 +396,51 @@ public class HttpParser extends AbstractParser
 
                 eatCrLf(b);
 
-                assert !b.hasRemaining();
+                if ( b.hasRemaining() )
+                    logger.warn("bytes remaining in buffer");
 
                 b = null;
 
-                state = END_MARKER_STATE;
+                state.currentState = END_MARKER_STATE;
                 break;
             }
             case END_MARKER_STATE: {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "in END_MARKER_STATE");
+                    logger.debug("in END_MARKER_STATE");
                 }
                 EndMarker endMarker = EndMarker.MARKER;
                 tokenList.add(endMarker);
-                lineBuffering(true);
+                lineBuffering( session, true );
                 b = null;
-                state = PRE_FIRST_LINE_STATE;
+                state.currentState = PRE_FIRST_LINE_STATE;
 
                 if (!clientSide) {
-                    String contentType = header.getValue("content-type");
+                    String contentType = state.header.getValue("content-type");
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
 
-                    RequestLine rl = null == requestLineToken ? null : requestLineToken.getRequestLine();
+                    RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
 
                     if (null != rl) {
-                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, lengthCounter);
+                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, state.lengthCounter);
 
-                        casing.getNode().logEvent(evt);
+                        node.logEvent(evt);
                     }
                 } else {
-                    HttpRequestEvent evt = requestLineToken.getRequestLine().getHttpRequestEvent();
-                    evt.setContentLength(lengthCounter);
+                    HttpRequestEvent evt = state.requestLineToken.getRequestLine().getHttpRequestEvent();
+                    evt.setContentLength( state.lengthCounter );
 
                     if (evt.getRequestUri() == null) {
-                        logger.warn("null request for: " + getSession().sessionEvent());
+                        logger.warn("null request for: " + session.sessionEvent());
                     }
 
-                    casing.getNode().logEvent(evt);
+                    node.logEvent(evt);
 
                     /**
                      * Update host table with header info
                      * if an entry already exists for this host
                      */
-                    InetAddress clientAddr = getSession().sessionEvent().getCClientAddr();
-                    String agentString = header.getValue("user-agent");
+                    InetAddress clientAddr = session.sessionEvent().getCClientAddr();
+                    String agentString = state.header.getValue("user-agent");
                     HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
                     if (clientAddr != null && agentString != null && entry != null ) {
                         UserAgentString uas = new UserAgentString(agentString);
@@ -446,24 +461,23 @@ public class HttpParser extends AbstractParser
                 }
 
                 // Free up header storage
-                header = null;
+                state.header = null;
                 done = true;
                 break;
             }
             default:
-                assert false;
+                logger.warn("Invalid currentState: " + state.currentState);
             }
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "returning readBuffer: " + b);
+            logger.debug("returning readBuffer: " + b);
         }
 
-        scheduleTimer(TIMEOUT);
+        scheduleTimer( session, TIMEOUT );
 
         if (null != b && !b.hasRemaining()) {
-            String msg = "b does not have remaining: " + b
-                + " in state: " + state;
+            String msg = "b does not have remaining: " + b + " in state: " + state;
             b.flip();
             msg += " buffer contents: '" + AsciiCharBuffer.wrap(b) + "'";
             logger.error(msg);
@@ -514,13 +528,15 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public ParseResult parseEnd(ByteBuffer b) throws ParseException
+    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer b ) throws ParseException
     {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
         if (b.hasRemaining()) {
-            switch (state) {
+            switch ( state.currentState ) {
             case ACCUMULATE_HEADER_STATE:
                 b.flip();
-                List<Token> l = Collections.singletonList((Token)header(b));
+                List<Token> l = Collections.singletonList( (Token) header( session, b) );
                 return new ParseResult(l, null);
             default:
                 // I think we want to release in most circumstances
@@ -533,9 +549,11 @@ public class HttpParser extends AbstractParser
         return new ParseResult();
     }
 
-    public TokenStreamer endSession()
+    public TokenStreamer endSession( NodeTCPSession session )
     {
-        switch (state) {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
+        switch ( state.currentState ) {
         case PRE_FIRST_LINE_STATE:
             return null;
 
@@ -548,7 +566,7 @@ public class HttpParser extends AbstractParser
             return null;
 
         case CONTENT_LENGTH_BODY_STATE:
-            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: " + contentLength);
+            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: " + state.contentLength);
             return endMarkerStreamer();
 
         case CHUNK_LENGTH_STATE:
@@ -556,7 +574,7 @@ public class HttpParser extends AbstractParser
             return endMarkerStreamer();
 
         case CHUNK_BODY_STATE:
-            logger.warn("endSession in CHUNK_BODY_STATE, length: " + contentLength);
+            logger.warn("endSession in CHUNK_BODY_STATE, length: " + state.contentLength);
             return endMarkerStreamer();
 
         case CHUNK_END_STATE:
@@ -576,72 +594,80 @@ public class HttpParser extends AbstractParser
             return endMarkerStreamer();
 
         default:
-            logger.warn("endSession unhandled state: " + state);
+            logger.warn("endSession unhandled state: " + state.currentState);
             return null;
         }
     }
 
-    public void handleTimer()
+    public void handleTimer( NodeSession sess )
     {
+        NodeTCPSession session = (NodeTCPSession) sess;
         byte cs = session.clientState();
         byte ss = session.serverState();
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
+            logger.debug("handling timer cs=" + cs + " ss=" + ss);
         }
 
         if (cs == NodeTCPSession.HALF_OPEN_OUTPUT
             && ss == NodeTCPSession.HALF_OPEN_INPUT) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + "closing session in halfstate");
+                logger.debug("closing session in halfstate");
             }
             session.shutdownClient();
         } else {
-            scheduleTimer(TIMEOUT);
+            scheduleTimer( session, TIMEOUT );
         }
     }
 
     // private methods ---------------------------------------------------------
 
-    private Token firstLine(ByteBuffer data) throws ParseException
+    private Token firstLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
         if (!clientSide) {
-            statusLine = statusLine(data);
-            return statusLine;
+            state.statusLine = statusLine( session, data );
+            return state.statusLine;
         } else {
-            return requestLineToken = requestLine(data);
+            state.requestLineToken = requestLine( session, data );
+            return state.requestLineToken;
         }
     }
 
     // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-    private RequestLineToken requestLine(ByteBuffer data) throws ParseException
+    private RequestLineToken requestLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
-        transferEncoding = NO_BODY;
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
-        HttpMethod method = HttpMethod.getInstance(token(data));
+        state.transferEncoding = NO_BODY;
+
+        HttpMethod method = HttpMethod.getInstance( token( session, data ) );
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "method: " + method);
+            logger.debug("method: " + method);
         }
         eat(data, SP);
-        byte[] requestUri = requestUri(data);
+        byte[] requestUri = requestUri( session, data );
         eat(data, SP);
-        String httpVersion = version(data);
+        String httpVersion = version( data );
         eatCrLf(data);
 
-        RequestLine rl = new RequestLine(getSession().sessionEvent(), method, requestUri);
-        return new RequestLineToken(rl, httpVersion);
+        RequestLine rl = new RequestLine( session.sessionEvent(), method, requestUri );
+        return new RequestLineToken( rl, httpVersion );
     }
 
     // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-    private StatusLine statusLine(ByteBuffer data) throws ParseException
+    private StatusLine statusLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
-        transferEncoding = CLOSE_ENCODING;
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
+        state.transferEncoding = CLOSE_ENCODING;
 
         String httpVersion = version(data);
         eat(data, SP);
         int statusCode = statusCode(data);
         eat(data, SP);
-        String reasonPhrase = reasonPhrase(data);
+        String reasonPhrase = reasonPhrase( state, data );
         eatCrLf(data);
 
         // 4.4 Message Length
@@ -650,15 +676,14 @@ public class HttpParser extends AbstractParser
         // any response to a HEAD request) is always terminated by the
         // first empty line after the header fields, regardless of the
         // entity-header fields present in the message.
-        if (100 <= statusCode && 199 >= statusCode
-            || 204 == statusCode || 304 == statusCode) {
-            transferEncoding = NO_BODY;
+        if (100 <= statusCode && 199 >= statusCode || 204 == statusCode || 304 == statusCode) {
+            state.transferEncoding = NO_BODY;
         }
 
         if (100 != statusCode && 408 != statusCode) {
-            RequestLineToken rl = casing.dequeueRequest(statusCode);
+            RequestLineToken rl = dequeueRequest( session, statusCode );
             // casing returns null and logs an error when nothing in queue
-            requestLineToken = null != rl ? rl : requestLineToken;
+            state.requestLineToken = null != rl ? rl : state.requestLineToken;
         }
 
         return new StatusLine(httpVersion, statusCode, reasonPhrase);
@@ -677,18 +702,18 @@ public class HttpParser extends AbstractParser
     }
 
     // Reason-Phrase  = *<TEXT, excluding CR, LF>
-    private String reasonPhrase(ByteBuffer b) throws ParseException
+    private String reasonPhrase( HttpParserSessionState state, ByteBuffer b ) throws ParseException
     {
         int l = b.remaining();
 
         for (int i = 0; b.hasRemaining(); i++) {
-            if (isCtl(buf[i] = b.get())) {
+            if ( isCtl( state.buf[i] = b.get() ) ) {
                 b.position(b.position() - 1);
-                return new String(buf, 0, i);
+                return new String(state.buf, 0, i);
             }
         }
 
-        return new String(buf, 0, l);
+        return new String(state.buf, 0, l);
     }
 
     // Status-Code    =
@@ -708,12 +733,12 @@ public class HttpParser extends AbstractParser
         return i;
     }
 
-    private Header header(ByteBuffer data) throws ParseException
+    private Header header( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
         Header header = new Header();
 
         while (data.remaining() > 2) {
-            field(header, data);
+            field( session, header, data );
             eatCrLf(data);
         }
 
@@ -730,15 +755,17 @@ public class HttpParser extends AbstractParser
     // field-content  = <the OCTETs making up the field-value
     //                  and consisting of either *TEXT or combinations
     //                  of token, separators, and quoted-string>
-    private void field(Header header, ByteBuffer data)
+    private void field( NodeTCPSession session, Header header, ByteBuffer data )
         throws ParseException
     {
-        String key = token(data).trim();
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
+        String key = token( session, data ).trim();
         eat(data, ':');
-        String value = eatText(data).trim();
+        String value = eatText( session, data ).trim();
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "field key: " + key + " value: " + value);
+            logger.debug("field key: " + key + " value: " + value);
         }
 
         // 4.3: The presence of a message-body in a request is signaled by the
@@ -748,33 +775,34 @@ public class HttpParser extends AbstractParser
         if (key.equalsIgnoreCase("transfer-encoding")) {
             if (value.equalsIgnoreCase("chunked")) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(sessStr + "using chunked encoding");
+                    logger.debug("using chunked encoding");
                 }
-                transferEncoding = CHUNKED_ENCODING;
+                state.transferEncoding = CHUNKED_ENCODING;
             } else {
                 logger.warn("don't know transfer-encoding: " + value);
             }
-        } else if (key.equalsIgnoreCase("content-length")
-                   && transferEncoding != CHUNKED_ENCODING) {
+        } else if ( key.equalsIgnoreCase("content-length") && state.transferEncoding != CHUNKED_ENCODING ) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + "using content length encoding");
+                logger.debug("using content length encoding");
             }
-            transferEncoding = CONTENT_LENGTH_ENCODING;
-            contentLength = Long.parseLong(value);
+            state.transferEncoding = CONTENT_LENGTH_ENCODING;
+            state.contentLength = Long.parseLong(value);
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + "CL contentLength = " + contentLength);
+                logger.debug("CL contentLength = " + state.contentLength);
             }
         } else if (key.equalsIgnoreCase("accept-encoding")) {
             //value = "identity";
         }
 
-        header.addField(key, value);
+        header.addField( key, value );
     }
 
-    private Chunk closedBody(ByteBuffer buffer) throws ParseException
+    private Chunk closedBody( NodeTCPSession session, ByteBuffer buffer ) throws ParseException
     {
-        lengthCounter += buffer.remaining();
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
+        state.lengthCounter += buffer.remaining();
         return new Chunk(buffer.slice());
     }
 
@@ -788,7 +816,7 @@ public class HttpParser extends AbstractParser
                 i = 16 * i + hexValue((char)c);
             } else if (';' == c) {
                 // XXX
-                logger.warn(sessStr + "chunk extension not supported yet");
+                logger.warn("chunk extension not supported yet");
             } else if (CR == c || LF == c) {
                 b.position(b.position() - 1);
                 break;
@@ -796,7 +824,7 @@ public class HttpParser extends AbstractParser
                 // ignore spaces
             } else {
                 // XXX
-                logger.warn(sessStr + "unknown character in chunk length: " + c);
+                logger.warn("unknown character in chunk length: " + c);
             }
         }
 
@@ -807,27 +835,31 @@ public class HttpParser extends AbstractParser
 
     // chunk          = chunk-size [ chunk-extension ] CRLF
     //                  chunk-data CRLF
-    private Chunk chunk(ByteBuffer buffer) throws ParseException
+    private Chunk chunk( NodeTCPSession session, ByteBuffer buffer ) throws ParseException
     {
-        int remaining = buffer.remaining();
-        contentLength -= remaining;
-        lengthCounter += remaining;
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
-        assert 0 <= contentLength;
+        int remaining = buffer.remaining();
+        state.contentLength -= remaining;
+        state.lengthCounter += remaining;
+
+        if ( state.contentLength < 0 )
+            logger.warn("Invalid content lengeth");
 
         return new Chunk(buffer.slice());
     }
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
-    private byte[] requestUri(ByteBuffer b)
+    private byte[] requestUri( NodeTCPSession session, ByteBuffer b )
         throws ParseException
     {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
         ByteBuffer dup = b.duplicate();
 
         for (int i = 0; b.hasRemaining(); i++) {
             if (maxUri <= i && blockLongUris) {
-                String msg = "(buf limit exceeded) " + buf.length
-                    + ": " + new String(buf);
+                String msg = "(buf limit exceeded) " + state.buf.length + ": " + new String(state.buf);
                 session.shutdownClient();
                 session.shutdownServer();
                 throw new ParseException("blocking " + msg);
@@ -848,7 +880,7 @@ public class HttpParser extends AbstractParser
         return a;
     }
 
-    private void eat(ByteBuffer data, String s) throws ParseException
+    private void eat( ByteBuffer data, String s ) throws ParseException
     {
         byte[] sb = s.getBytes();
         for (int i = 0; i < sb.length; i++) {
@@ -869,7 +901,7 @@ public class HttpParser extends AbstractParser
 
         int b = data.get();
         if (b != c) {
-            logger.debug(sessStr + "expected " + b + " bytes, but got " + c + " bytes.");
+            logger.debug("expected " + b + " bytes, but got " + c + " bytes.");
             data.position(data.position() - 1);
             return false;
         } else {
@@ -880,16 +912,16 @@ public class HttpParser extends AbstractParser
     // read *TEXT, folding LWS
     // TEXT           = <any OCTET except CTLs,
     //                  but including LWS>
-    private String eatText(ByteBuffer b) throws ParseException
+    private String eatText( NodeTCPSession session, ByteBuffer b ) throws ParseException
     {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         eatLws(b);
 
         int l = b.remaining();
 
         for (int i = 0; b.hasRemaining(); i++) {
-            if (buf.length <= i) {
-                String msg = "(buf limit exceeded) " + buf.length
-                    + ": " + new String(buf);
+            if ( state.buf.length <= i ) {
+                String msg = "(buf limit exceeded) " + state.buf.length + ": " + new String(state.buf);
                 if (blockLongUris) {
                     session.shutdownClient();
                     session.shutdownServer();
@@ -898,16 +930,16 @@ public class HttpParser extends AbstractParser
                     throw new ParseException("non-http " + msg);
                 }
             }
-            buf[i] = b.get();
-            if (isCtl(buf[i])) {
+            state.buf[i] = b.get();
+            if ( isCtl( state.buf[i] ) ) {
                 b.position(b.position() - 1);
                 if (eatLws(b)) {
-                    buf[i] = SP;
+                    state.buf[i] = SP;
                 } else {
                     byte b1 = b.get(b.position());
                     byte b2 = b.get(b.position() + 1);
                     if (LF == b1 || CR == b1 && LF == b2) {
-                        return new String(buf, 0, i);
+                        return new String( state.buf, 0, i );
                     } else {
                         b.get();
                         // XXX make this configurable
@@ -917,7 +949,7 @@ public class HttpParser extends AbstractParser
             }
         }
 
-        return new String(buf, 0, l);
+        return new String( state.buf, 0, l );
     }
 
     // LWS            = [CRLF] 1*( SP | HT )
@@ -955,7 +987,7 @@ public class HttpParser extends AbstractParser
 
     // CRLF           = CR LF
     // in our implementation, CR is optional
-    private void eatCrLf(ByteBuffer b) throws ParseException
+    private void eatCrLf( ByteBuffer b ) throws ParseException
     {
         byte b1 = b.get();
         boolean ate = LF == b1 || CR == b1 && LF == b.get();
@@ -966,7 +998,7 @@ public class HttpParser extends AbstractParser
 
     // DIGIT          = <any US-ASCII digit "0".."9">
     // this method reads 1*DIGIT
-    private int eatDigits(ByteBuffer b) throws ParseException
+    private int eatDigits( ByteBuffer b ) throws ParseException
     {
         boolean foundOne = false;
         int i = 0;
@@ -988,19 +1020,21 @@ public class HttpParser extends AbstractParser
     }
 
     // token          = 1*<any CHAR except CTLs or separators>
-    private String token(ByteBuffer b)
+    private String token( NodeTCPSession session, ByteBuffer b )
     {
+        HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
+
         int l = b.remaining();
 
         for (int i = 0; b.hasRemaining(); i++) {
-            buf[i] = b.get();
-            if (isCtl(buf[i]) || isSeparator(buf[i])) {
+            state.buf[i] = b.get();
+            if ( isCtl( state.buf[i] ) || isSeparator( state.buf[i] ) ) {
                 b.position(b.position() - 1);
-                return new String(buf, 0, i);
+                return new String( state.buf, 0, i );
             }
         }
 
-        return new String(buf, 0, l);
+        return new String( state.buf, 0, l );
     }
 
     // separators     = "(" | ")" | "<" | ">" | "@"
@@ -1102,4 +1136,20 @@ public class HttpParser extends AbstractParser
             }
         };
     }
+
+    @SuppressWarnings("unchecked")
+    RequestLineToken dequeueRequest( NodeTCPSession session, int statusCode )
+    {
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "HTTP-request-queue" );
+
+        if ( requests != null & requests.size() > 0 ) {
+            return requests.remove(0);
+        } else {
+            if ( statusCode < 400 || statusCode > 499 ) {
+                logger.warn("requests is empty: " + statusCode);
+            }
+            return null;
+        }
+    }
+    
 }

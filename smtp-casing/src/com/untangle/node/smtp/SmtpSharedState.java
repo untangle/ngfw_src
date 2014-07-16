@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SmtpSharedState.java 36445 2013-11-20 00:04:22Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -8,6 +8,9 @@ import java.util.List;
 
 import javax.mail.internet.InternetAddress;
 
+import com.untangle.node.smtp.sasl.SASLObserver;
+import com.untangle.node.smtp.sasl.SASLObserverFactory;
+
 import org.apache.log4j.Logger;
 
 
@@ -15,7 +18,7 @@ import org.apache.log4j.Logger;
  * Class which is shared between Client Parser and Unparser, observing state transitions (esp: transaction-impacting)
  * Commands and Responses to accumulate who is part of a transaction (TO/FROM) and to align requests with responses.
  */
-class CasingSessionTracker
+class SmtpSharedState
 {
 
     /**
@@ -42,7 +45,8 @@ class CasingSessionTracker
         private int m_tail = 0;
         private int m_head = 0;
 
-        CSHistory(int len) {
+        CSHistory(int len)
+        {
             m_items = new String[len + 1];
             m_len = len + 1;
         }
@@ -80,18 +84,21 @@ class CasingSessionTracker
 
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
-    private final Logger m_logger = Logger.getLogger(CasingSessionTracker.class);
+    private final Logger logger = Logger.getLogger(SmtpSharedState.class);
 
-    private SmtpTransaction m_currentTransaction;
-    private List<ResponseAction> m_outstandingRequests;
-    private boolean m_closing = false;
-    private CSHistory m_history = new CSHistory(25);
-    private long m_lastTransmissionTimestamp;
-
-    CasingSessionTracker() {
-        m_outstandingRequests = new LinkedList<ResponseAction>();
+    protected SmtpTransaction currentTransaction;
+    protected List<ResponseAction> outstandingRequests;
+    protected boolean closing = false;
+    protected CSHistory history = new CSHistory(25);
+    protected long lastTransmissionTimestamp;
+    protected boolean passthru = false;
+    protected SmtpSASLObserver saslObserver;
+    
+    public SmtpSharedState()
+    {
+        outstandingRequests = new LinkedList<ResponseAction>();
         // Add response for initial salutation
-        m_outstandingRequests.add(new SimpleResponseAction());
+        outstandingRequests.add(new SimpleResponseAction());
         updateLastTransmissionTimestamp();
     }
 
@@ -100,7 +107,7 @@ class CasingSessionTracker
      */
     SmtpTransaction getCurrentTransaction()
     {
-        return m_currentTransaction;
+        return currentTransaction;
     }
 
     /**
@@ -108,7 +115,7 @@ class CasingSessionTracker
      */
     void closing()
     {
-        m_closing = true;
+        closing = true;
     }
 
     void beginMsgTransmission()
@@ -119,8 +126,8 @@ class CasingSessionTracker
     void beginMsgTransmission(ResponseAction chainedAction)
     {
         getOrCreateTransaction();
-        m_outstandingRequests.add(new TransmissionResponseAction(chainedAction));
-        m_history.add("(c) <Begin Msg Transmission>");
+        outstandingRequests.add(new TransmissionResponseAction(chainedAction));
+        history.add("(c) <Begin Msg Transmission>");
 
     }
 
@@ -130,7 +137,7 @@ class CasingSessionTracker
      */
     void serverShutdown()
     {
-        m_outstandingRequests.add(new SimpleResponseAction());
+        outstandingRequests.add(new SimpleResponseAction());
     }
 
     void commandReceived(Command command)
@@ -142,9 +149,9 @@ class CasingSessionTracker
     {
 
         if (command instanceof UnparsableCommand) {
-            m_history.add("(c) " + command.getCmdString() + " (" + command.getArgString() + ")");
+            history.add("(c) " + command.getCmdString() + " (" + command.getArgString() + ")");
         } else {
-            m_history.add("(c) " + command.getCmdString());
+            history.add("(c) " + command.getCmdString());
         }
 
         ResponseAction action = null;
@@ -158,52 +165,50 @@ class CasingSessionTracker
             action = new RCPTResponseAction(addr, chainedAction);
         } else if (command.getType() == CommandType.RSET) {
             getOrCreateTransaction().reset();
-            m_currentTransaction = null;
+            currentTransaction = null;
             action = new SimpleResponseAction(chainedAction);
         } else if (command.getType() == CommandType.DATA) {
             action = new DATAResponseAction(chainedAction);
         } else {
             action = new SimpleResponseAction(chainedAction);
         }
-        m_outstandingRequests.add(action);
+        outstandingRequests.add(action);
     }
 
     void responseReceived(Response response)
     {
-        m_history.add("(s) " + response.getCode());
-        if (m_outstandingRequests.size() == 0) {
-            if (!m_closing) {
-                long diff = System.currentTimeMillis() - m_lastTransmissionTimestamp;
+        history.add("(s) " + response.getCode());
+        if (outstandingRequests.size() == 0) {
+            if (!closing) {
+                long diff = System.currentTimeMillis() - lastTransmissionTimestamp;
                 if (diff > LIKELY_TIMEOUT_LENGTH) {
-                    m_logger.info("Unsolicited response from server.  Likely a timeout notification as " + diff
-                            + " milliseconds have transpired since last communication");
+                    logger.info("Unsolicited response from server.  Likely a timeout notification as " + diff + " milliseconds have transpired since last communication");
                 } else {
-                    m_logger.warn("Misalignment of req/resp tracking.  No outstanding response.  " + "Recent history: "
-                            + historyToString());
+                    logger.warn("Misalignment of req/resp tracking.  No outstanding response.  " + "Recent history: " + historyToString());
                 }
             }
         } else {
-            m_outstandingRequests.remove(0).response(response.getCode());
+            outstandingRequests.remove(0).response(response.getCode());
         }
     }
 
     private void updateLastTransmissionTimestamp()
     {
-        m_lastTransmissionTimestamp = System.currentTimeMillis();
+        lastTransmissionTimestamp = System.currentTimeMillis();
     }
 
     private SmtpTransaction getOrCreateTransaction()
     {
-        if (m_currentTransaction == null) {
-            m_currentTransaction = new SmtpTransaction();
+        if (currentTransaction == null) {
+            currentTransaction = new SmtpTransaction();
         }
-        return m_currentTransaction;
+        return currentTransaction;
     }
 
     private String historyToString()
     {
         StringBuilder sb = new StringBuilder();
-        for (String s : m_history.getHistory()) {
+        for (String s : history.getHistory()) {
             if (sb.length() != 0) {
                 sb.append(',');
             }
@@ -265,8 +270,8 @@ class CasingSessionTracker
 
         void responseImpl(int code)
         {
-            if (m_currentTransaction != null) {
-                m_currentTransaction.fromResponse(m_addr, code < 300);
+            if (currentTransaction != null) {
+                currentTransaction.fromResponse(m_addr, code < 300);
             }
         }
     }
@@ -283,8 +288,8 @@ class CasingSessionTracker
 
         void responseImpl(int code)
         {
-            if (m_currentTransaction != null) {
-                m_currentTransaction.toResponse(m_addr, code < 300);
+            if (currentTransaction != null) {
+                currentTransaction.toResponse(m_addr, code < 300);
             }
         }
     }
@@ -300,7 +305,7 @@ class CasingSessionTracker
         {
             if (code >= 400) {
                 getOrCreateTransaction().failed();
-                m_currentTransaction = null;
+                currentTransaction = null;
             }
         }
     }
@@ -314,15 +319,59 @@ class CasingSessionTracker
 
         void responseImpl(int code)
         {
-            if (m_currentTransaction != null) {
+            if (currentTransaction != null) {
                 if (code < 300) {
-                    m_currentTransaction.commit();
+                    currentTransaction.commit();
                 } else {
-                    m_currentTransaction.failed();
+                    currentTransaction.failed();
                 }
             }
-            m_currentTransaction = null;
+            currentTransaction = null;
         }
     }
 
+    /**
+     * Test if this session is engaged in a SASL exchange
+     * 
+     * @return true if in SASL login
+     */
+    boolean isInSASLLogin()
+    {
+        return saslObserver != null;
+    }
+
+    /**
+     * Open a SASL exchange observer, based on the given mechanism name. If null is returned, a suitable SASLObserver
+     * could not be found for the named mechanism (and we should punt on this session).
+     */
+    boolean openSASLExchange(String mechanismName)
+    {
+        SASLObserver observer = SASLObserverFactory.createObserverForMechanism(mechanismName);
+        if (observer == null) {
+            logger.debug("Could not find SASLObserver for mechanism \"" + mechanismName + "\"");
+            return false;
+        }
+        saslObserver = new SmtpSASLObserver(observer);
+        return true;
+    }
+
+    /**
+     * Get the current SASLObserver. If this returns null yet the caller thinks there is an open SASL exchange, this is
+     * an error
+     * 
+     * @return the SmtpSASLObserver
+     */
+    SmtpSASLObserver getSASLObserver()
+    {
+        return saslObserver;
+    }
+
+    /**
+     * Close the current SASLExchange
+     */
+    void closeSASLExchange()
+    {
+        saslObserver = null;
+    }
+    
 }

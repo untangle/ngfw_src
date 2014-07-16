@@ -22,9 +22,9 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class CasingAdaptor extends CasingBase
 {
-    public CasingAdaptor(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
+    public CasingAdaptor( Node node, Parser parser, Unparser unparser, boolean clientSide, boolean releaseParseExceptions )
     {
-        super(node,casingFactory,clientSide,releaseParseExceptions);
+        super( node, parser, unparser, clientSide, releaseParseExceptions );
     }
 
     // SessionEventListener methods -------------------------------------------
@@ -32,9 +32,8 @@ public class CasingAdaptor extends CasingBase
     @Override
     public void handleTCPNewSession( NodeTCPSession session )
     {
-        Casing casing = casingFactory.casing( session, clientSide );
-
-        session.attach( casing );
+        this.parser.handleNewSession( session );
+        this.unparser.handleNewSession( session );
     }
 
     @Override
@@ -143,15 +142,15 @@ public class CasingAdaptor extends CasingBase
     {
         TCPStreamer tcpStream = null;
 
-        Casing casing = (Casing)session.attachment();
+        // Casing casing = (Casing)session.attachment();
 
         if (clientSide) {
-            TokenStreamer tokSt = casing.parser().endSession();
+            TokenStreamer tokSt = this.parser.endSession( session );
             if (null != tokSt) {
                 tcpStream = new TokenStreamerAdaptor( tokSt, session );
             }
         } else {
-            tcpStream = casing.unparser().endSession();
+            tcpStream = this.unparser.endSession( session );
         }
 
         if (null != tcpStream) {
@@ -166,12 +165,12 @@ public class CasingAdaptor extends CasingBase
     {
         TCPStreamer ts = null;
 
-        Casing casing = (Casing)session.attachment();
+        // Casing casing = (Casing)session.attachment();
 
         if (clientSide) {
-            ts = casing.unparser().endSession();
+            ts = this.unparser.endSession( session );
         } else {
-            TokenStreamer tokSt = casing.parser().endSession();
+            TokenStreamer tokSt = this.parser.endSession( session );
             if (null != tokSt) {
                 ts = new TokenStreamerAdaptor( tokSt, session );
             }
@@ -194,12 +193,12 @@ public class CasingAdaptor extends CasingBase
     }
 
     @Override
-    public void handleTimer( NodeSession sess )
+    public void handleTimer( NodeSession session )
     {
-        Casing casing = (Casing) sess.attachment();
+        // Casing casing = (Casing) sess.attachment();
 
-        Parser p = casing.parser();
-        p.handleTimer();
+        // Parser p = casing.parser();
+        this.parser.handleTimer( session );
         // XXX unparser doesnt get one, does it need it?
     }
 
@@ -207,12 +206,12 @@ public class CasingAdaptor extends CasingBase
 
     private void unparse( NodeTCPSession session, Object obj, boolean s2c )
     {
-        Casing casing = (Casing)session.attachment();
+        // Casing casing = (Casing)session.attachment();
 
         Token tok = (Token) obj;
         UnparseResult ur;
         try {
-            ur = unparseToken(session, casing, tok);
+            ur = unparseToken(session, this.unparser, tok);
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
@@ -268,18 +267,16 @@ public class CasingAdaptor extends CasingBase
         }
     }
 
-    private UnparseResult unparseToken(NodeTCPSession session, Casing c, Token token)
+    private UnparseResult unparseToken( NodeTCPSession session, Unparser unparser, Token token )
         throws UnparseException
     {
-        Unparser u = c.unparser();
-
         if (token instanceof Release) {
             Release release = (Release)token;
 
             finalize( session );
             session.release();
 
-            UnparseResult ur = u.releaseFlush();
+            UnparseResult ur = unparser.releaseFlush( session );
             if (ur.isStreamer()) {
                 TCPStreamer ts = new ReleaseTcpStreamer(ur.getTcpStreamer(), release);
                 return new UnparseResult(ts);
@@ -291,23 +288,23 @@ public class CasingAdaptor extends CasingBase
                 return new UnparseResult(r);
             }
         } else {
-            return u.unparse(token);
+            return unparser.unparse( session, token );
         }
     }
 
     private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
-        Casing casing = (Casing)session.attachment();
+        // Casing casing = (Casing)session.attachment();
 
         ParseResult pr;
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
-        Parser p = casing.parser();
+        Parser p = this.parser;
         try {
             if (last) {
-                pr = p.parseEnd(buf);
+                pr = p.parseEnd( session, buf );
             } else {
-                pr = p.parse(buf);
+                pr = p.parse( session, buf );
             }
         } catch (Throwable exn) {
             if (releaseParseExceptions) {
@@ -404,11 +401,9 @@ public class CasingAdaptor extends CasingBase
         }
     }
 
-    private void finalize( NodeSession sess )
+    private void finalize( NodeTCPSession session )
     {
-        Casing casing = (Casing)sess.attachment();;
-
-        casing.parser().handleFinalized();
-        casing.unparser().handleFinalized();
+        this.parser.handleFinalized( session );
+        this.unparser.handleFinalized( session );
     }
 }

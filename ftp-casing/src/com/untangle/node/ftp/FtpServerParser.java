@@ -31,20 +31,21 @@ public class FtpServerParser extends AbstractParser
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    private final Fitting fitting;
-
     private final Logger logger = Logger.getLogger(FtpServerParser.class);
 
-    FtpServerParser(NodeTCPSession session)
+    public FtpServerParser()
     {
-        super(session, false);
-        lineBuffering(true);
-
-        fitting = session.pipelineConnector().getOutputFitting();
+        super( false );
     }
 
-    public ParseResult parse(ByteBuffer buf) throws ParseException
+    public void handleNewSession( NodeTCPSession session )
     {
+        lineBuffering( session, true );
+    }
+
+    public ParseResult parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    {
+        Fitting fitting = session.pipelineConnector().getOutputFitting();
         if (Fitting.FTP_CTL_STREAM == fitting) {
             return parseServerCtl(buf);
         } else if (Fitting.FTP_DATA_STREAM == fitting) {
@@ -54,9 +55,10 @@ public class FtpServerParser extends AbstractParser
         }
     }
 
-    public ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
-        if (Fitting.FTP_DATA_STREAM == fitting) {
+        Fitting fitting = session.pipelineConnector().getOutputFitting();
+        if ( fitting == Fitting.FTP_DATA_STREAM ) {
             List<Token> l = Arrays.asList(new Token[] { EndMarker.MARKER });
             return new ParseResult(l, null);
         } else {
@@ -67,11 +69,11 @@ public class FtpServerParser extends AbstractParser
         }
     }
 
-    public TokenStreamer endSession() { return null; }
+    public TokenStreamer endSession( NodeTCPSession session ) { return null; }
 
     // private methods --------------------------------------------------------
 
-    private ParseResult parseServerCtl(ByteBuffer buf) throws ParseException
+    private ParseResult parseServerCtl( ByteBuffer buf ) throws ParseException
     {
         ByteBuffer dup = buf.duplicate();
 

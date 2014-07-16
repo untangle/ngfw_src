@@ -5,6 +5,7 @@ package com.untangle.node.http;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -25,9 +26,11 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 class HttpUnparser extends AbstractUnparser
 {
-    private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
+    private static final Logger logger = Logger.getLogger(HttpUnparser.class);
 
-    // XXX move to util class/interface
+    private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
+    private static final String STATE_KEY = "HTTP-unparser-state";
+    
     private static final byte[] LAST_CHUNK = "0\r\n\r\n".getBytes();
     private static final byte[] CRLF = "\r\n".getBytes();
 
@@ -35,129 +38,145 @@ class HttpUnparser extends AbstractUnparser
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
 
-    private final Logger logger = Logger.getLogger(HttpUnparser.class);
+    private final HttpNodeImpl node;
 
     // used to keep request with header, IIS requires this
-    private final Queue<ByteBuffer> outputQueue = new LinkedList<ByteBuffer>();
-    private final HttpCasing httpCasing;
-
-    private int size = 0;
-    private int transferEncoding;
-    private String sessStr;
-
-    HttpUnparser(NodeTCPSession session, boolean clientSide, HttpCasing httpCasing)
+    private class HttpUnparserSessionState
     {
-        super(session, clientSide);
-        this.httpCasing = httpCasing;
-        this.sessStr = "HttpUnparser" + (clientSide ? " client-side " : " server-side ");
+        protected Queue<ByteBuffer> outputQueue = new LinkedList<ByteBuffer>();
+        protected int size = 0;
+        protected int transferEncoding;
     }
 
-    public TCPStreamer endSession() { return null; }
-
-    public UnparseResult unparse(Token token)
+    public HttpUnparser( boolean clientSide, HttpNodeImpl node )
     {
+        super( clientSide );
+        this.node = node;
+    }
+
+    public void handleNewSession( NodeTCPSession session )
+    {
+        HttpUnparserSessionState state = new HttpUnparserSessionState();
+        state.size = 0;
+        state.outputQueue = new LinkedList<ByteBuffer>();
+        session.attach( STATE_KEY, state );
+    }
+
+    public TCPStreamer endSession( NodeTCPSession session )
+    {
+        return null;
+    }
+
+    public UnparseResult unparse( NodeTCPSession session, Token token )
+    {
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
+        
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " got unparse event node: " + token);
+            logger.debug(" got unparse event node: " + token);
         }
 
         if (token instanceof StatusLine) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + " got status line!");
+                logger.debug(" got status line!");
             }
-            transferEncoding = CLOSE_ENCODING;
-            return statusLine((StatusLine)token);
+            state.transferEncoding = CLOSE_ENCODING;
+            return statusLine( session, (StatusLine) token );
         } else if (token instanceof RequestLineToken) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + " got request line!");
+                logger.debug(" got request line!");
             }
-            return requestLine((RequestLineToken)token);
+            return requestLine( session, (RequestLineToken) token);
         } else if (token instanceof Header) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + " got header!");
+                logger.debug(" got header!");
             }
-            return header((Header)token);
+            return header( session, (Header) token );
         } else if (token instanceof Chunk) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + " got chunk!");
+                logger.debug(" got chunk!");
             }
-            return chunk((Chunk)token);
+            return chunk( session, (Chunk) token );
         } else if (token instanceof EndMarker) {
             if (logger.isDebugEnabled()) {
-                logger.debug(sessStr + " got endmarker");
+                logger.debug(" got endmarker");
             }
-            return endMarker();
+            return endMarker( session );
         } else {
             throw new IllegalArgumentException("unexpected: " + token);
         }
     }
 
-    public UnparseResult releaseFlush()
+    public UnparseResult releaseFlush( NodeTCPSession session )
     {
-        return dequeueOutput();
+        return dequeueOutput( session );
     }
 
-    private UnparseResult statusLine(StatusLine s)
+    private UnparseResult statusLine( NodeTCPSession session, StatusLine statusLine )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " status-line");
+            logger.debug(" status-line");
         }
 
-        queueOutput(s.getBytes());
+        queueOutput( session, statusLine.getBytes() );
 
         return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UnparseResult requestLine(RequestLineToken rl)
+    private UnparseResult requestLine( NodeTCPSession session, RequestLineToken rl )
     {
         HttpMethod method = rl.getMethod();
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " request-line" + sessStr + " Unparser got method: " + method);
+            logger.debug(" request-line" + " Unparser got method: " + method);
         }
 
-        httpCasing.queueRequest(rl);
+        queueRequest( session, rl );
 
-        queueOutput(rl.getBytes());
+        queueOutput( session, rl.getBytes() );
 
         return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UnparseResult header(Header h)
+    private UnparseResult header( NodeTCPSession session, Header header )
     {
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
+
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " header");
+            logger.debug(" header");
         }
 
-        String encoding = h.getValue("transfer-encoding");
-        if (null != encoding && encoding.equalsIgnoreCase("chunked")) {
-            transferEncoding = CHUNKED_ENCODING;
-        } else if (null != h.getValue("content-length")) {
-            transferEncoding = CONTENT_LENGTH_ENCODING;
+        String encoding = header.getValue("transfer-encoding");
+        if ( encoding != null && encoding.equalsIgnoreCase("chunked") ) {
+            state.transferEncoding = CHUNKED_ENCODING;
+        } else if ( header.getValue("content-length") != null ) {
+            state.transferEncoding = CONTENT_LENGTH_ENCODING;
         }
 
-        queueOutput(h.getBytes());
+        queueOutput( session, header.getBytes() );
         if (isClientSide()) {
-            return dequeueOutput();
+            return dequeueOutput( session );
         } else {
             return new UnparseResult(BYTE_BUFFER_PROTO);
         }
     }
 
-    private UnparseResult chunk(Chunk c)
+    private UnparseResult chunk( NodeTCPSession session, Chunk c )
     {
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
+
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " chunk");
+            logger.debug(" chunk");
         }
 
         ByteBuffer cBuf = c.getBytes();
 
-        if (CHUNKED_ENCODING == transferEncoding && 0 == cBuf.remaining()) {
+        if ( state.transferEncoding == CHUNKED_ENCODING && cBuf.remaining() == 0 ) {
             return new UnparseResult(BYTE_BUFFER_PROTO);
         }
 
         ByteBuffer buf;
 
-        switch (transferEncoding) {
+        switch ( state.transferEncoding ) {
         case CLOSE_ENCODING:
         case CONTENT_LENGTH_ENCODING:
             buf = cBuf;
@@ -172,61 +191,79 @@ class HttpUnparser extends AbstractUnparser
             buf.flip();
             break;
         default:
-            throw new IllegalStateException("transferEncoding: " + transferEncoding);
+            throw new IllegalStateException("transferEncoding: " + state.transferEncoding);
         }
 
-        if (outputQueue.isEmpty()) {
+        if ( state.outputQueue.isEmpty() ) {
             return new UnparseResult(new ByteBuffer[] { buf });
         } else {
-            queueOutput(buf);
-            return dequeueOutput();
+            queueOutput( session, buf );
+            return dequeueOutput( session );
         }
     }
 
-    private UnparseResult endMarker()
+    private UnparseResult endMarker( NodeTCPSession session )
     {
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
+
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + " GOT END MARER!!");
+            logger.debug(" GOT END MARER!!");
         }
 
         ByteBuffer buf = null;
 
-        if (CHUNKED_ENCODING == transferEncoding) {
+        if ( state.transferEncoding == CHUNKED_ENCODING ) {
             buf = ByteBuffer.wrap(LAST_CHUNK);
         }
 
-        if (outputQueue.isEmpty()) {
+        if ( state.outputQueue.isEmpty() ) {
             return new UnparseResult(null == buf ? BYTE_BUFFER_PROTO : new ByteBuffer[] { buf });
         } else {
             if (null != buf) {
-                queueOutput(buf);
+                queueOutput( session, buf );
             }
 
-            return dequeueOutput();
+            return dequeueOutput( session );
         }
     }
 
-    private void queueOutput(ByteBuffer buf)
+    private void queueOutput( NodeTCPSession session, ByteBuffer buf )
     {
-        size += buf.remaining();
-
-        outputQueue.add(buf);
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
+        state.size += buf.remaining();
+        state.outputQueue.add(buf);
     }
 
-    private UnparseResult dequeueOutput()
+    private UnparseResult dequeueOutput( NodeTCPSession session )
     {
-        ByteBuffer buf = ByteBuffer.allocate(size);
+        HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
-        for (Iterator<ByteBuffer> i = outputQueue.iterator(); i.hasNext(); ) {
+        ByteBuffer buf = ByteBuffer.allocate( state.size );
+
+        for (Iterator<ByteBuffer> i = state.outputQueue.iterator(); i.hasNext(); ) {
             ByteBuffer b = i.next();
             buf.put(b);
         }
 
         buf.flip();
 
-        size = 0;
-        outputQueue.clear();
+        state.size = 0;
+        state.outputQueue.clear();
 
         return new UnparseResult(new ByteBuffer[] { buf });
     }
+
+    @SuppressWarnings("unchecked")
+    void queueRequest( NodeTCPSession session, RequestLineToken request )
+    {
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "HTTP-request-queue" );
+
+        if ( requests == null ) {
+            requests = new LinkedList<RequestLineToken>();
+            session.globalAttach( "HTTP-request-queue", requests );
+        }
+
+        requests.add(request);
+    }
+    
 }

@@ -22,12 +22,16 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 class FtpUnparser extends AbstractUnparser
 {
-    public FtpUnparser(NodeTCPSession session, boolean clientSide)
+    public FtpUnparser( boolean clientSide )
     {
-        super(session, clientSide);
+        super( clientSide );
     }
 
-    public UnparseResult unparse(Token token) throws UnparseException
+    public void handleNewSession( NodeTCPSession session )
+    {
+    }
+    
+    public UnparseResult unparse( NodeTCPSession session, Token token ) throws UnparseException
     {
         InetSocketAddress socketAddress = null;
         if (token instanceof FtpReply) { // XXX tacky
@@ -56,7 +60,6 @@ class FtpUnparser extends AbstractUnparser
                 InetAddress address = socketAddress.getAddress();
                 if ((null == address)||
                     address.getHostAddress().equals("0.0.0.0")) {
-                    NodeTCPSession session = getSession();
 
                     socketAddress = new InetSocketAddress( session.getServerAddr(), socketAddress.getPort());
                 } /* otherwise use the data from nat */
@@ -94,7 +97,7 @@ class FtpUnparser extends AbstractUnparser
         return new UnparseResult(new ByteBuffer[] { token.getBytes() });
     }
 
-    public TCPStreamer endSession()
+    public TCPStreamer endSession( NodeTCPSession session )
     {
         FtpStateMachine.removeDataSockets(session.getSessionId());
         return null;

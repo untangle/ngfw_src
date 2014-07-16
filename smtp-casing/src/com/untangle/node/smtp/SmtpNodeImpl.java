@@ -38,9 +38,8 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final Logger logger = Logger.getLogger(SmtpNodeImpl.class);
 
-    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec(PROTOCOL_NAME, this, SmtpCasingFactory.factory(), Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
-
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC };
+    private CasingPipeSpec smtpPipeSpec;
+    private PipeSpec[] pipeSpecs;
 
     private SmtpNodeSettings settings;
 
@@ -55,6 +54,14 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     {
         super(nodeSettings, nodeProperties);
 
+        SmtpClientParser clientParser = new SmtpClientParser();
+        SmtpClientUnparser clientUnparser = new SmtpClientUnparser();
+        SmtpServerParser serverParser = new SmtpServerParser();
+        SmtpServerUnparser serverUnparser = new SmtpServerUnparser();
+
+        this.smtpPipeSpec = new CasingPipeSpec(PROTOCOL_NAME, this, clientParser, serverParser, clientUnparser, serverUnparser, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
+        this.pipeSpecs = new PipeSpec[] { smtpPipeSpec };
+        
         createSingletonsIfRequired();
 
         MailExportFactory.factory().registerExport(this);
@@ -223,7 +230,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     private void reconfigure()
     {
-        SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
+        smtpPipeSpec.setEnabled(settings.isSmtpEnabled());
     }
 
     // Node methods -----------------------------------------------------------

@@ -12,19 +12,11 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public abstract class AbstractUnparser implements Unparser
 {
-    private final String idStr;
-
-    protected final NodeTCPSession session;
     protected final boolean clientSide;
 
-    protected AbstractUnparser(NodeTCPSession session, boolean clientSide)
+    protected AbstractUnparser( boolean clientSide )
     {
-        this.session = session;
         this.clientSide = clientSide;
-
-        String name = getClass().getName();
-
-        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":" + session.id() + ">";
     }
 
     // Unparser methods -------------------------------------------------------
@@ -36,27 +28,27 @@ public abstract class AbstractUnparser implements Unparser
      * then you will see one of the helpful exception messages
      */
 
-    public UnparseResult unparse(Token token) throws UnparseException
+    public UnparseResult unparse( NodeTCPSession session, Token token ) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
     }
 
-    public void unparse( NodeTCPSession session, ByteBuffer data ) throws UnparseException
+    public void unparseFIXME( NodeTCPSession session, ByteBuffer data ) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }
 
-    public UnparseResult releaseFlush()
+    public UnparseResult releaseFlush( NodeTCPSession session )
     {
         return UnparseResult.NONE;
     }
 
-    public TCPStreamer endSession()
+    public TCPStreamer endSession( NodeTCPSession session )
     {
         return null;
     }
 
-    public void handleFinalized()
+    public void handleFinalized( NodeTCPSession session )
     {
     }
 
@@ -65,17 +57,5 @@ public abstract class AbstractUnparser implements Unparser
     protected boolean isClientSide()
     {
         return clientSide;
-    }
-
-    protected NodeTCPSession getSession()
-    {
-        return session;
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return idStr;
     }
 }

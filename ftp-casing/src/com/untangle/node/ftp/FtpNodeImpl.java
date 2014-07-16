@@ -17,8 +17,8 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class FtpNodeImpl extends NodeBase implements FtpNode
 {
-    private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
-    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
+    private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, new FtpClientParser(), new FtpServerParser(), new FtpUnparser(true), new FtpUnparser(false), Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
+    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, new FtpClientParser(), new FtpServerParser(), new FtpUnparser(true), new FtpUnparser(false), Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
     private final Logger logger = Logger.getLogger(FtpNodeImpl.class);
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();

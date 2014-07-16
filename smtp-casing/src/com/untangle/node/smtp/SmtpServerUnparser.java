@@ -26,45 +26,57 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 
 class SmtpServerUnparser extends SmtpUnparser
 {
+    private static final String STATE_KEY = "SMTP-client-parser-state";
 
-    private final Logger m_logger = Logger.getLogger(SmtpServerUnparser.class);
+    private final Logger logger = Logger.getLogger(SmtpServerUnparser.class);
 
-    private ByteBufferByteStuffer m_byteStuffer;
-    private MIMEAccumulator m_accumulator;
-
-    SmtpServerUnparser(NodeTCPSession session, SmtpCasing parent, CasingSessionTracker tracker) {
-        super(session, false, parent, tracker);
-        m_logger.debug("Created");
+    private class SmtpServerUnparserState
+    {
+        protected ByteBufferByteStuffer byteStuffer;
+        protected MIMEAccumulator accumulator;
     }
 
-    @Override
-    protected UnparseResult doUnparse(Token token)
+    public SmtpServerUnparser()
     {
+        super( true );
+    }
 
+    public void handleNewSession( NodeTCPSession session )
+    {
+        SmtpServerUnparserState state = new SmtpServerUnparserState();
+        session.attach( STATE_KEY, state );
+    }
+    
+    @Override
+    protected UnparseResult doUnparse( NodeTCPSession session, Token token )
+    {
+        SmtpServerUnparserState state = (SmtpServerUnparserState) session.attachment( STATE_KEY );
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        
         // -----------------------------------------------------------
         if (token instanceof AUTHCommand) {
-            m_logger.debug("Received AUTHCommand token");
+            logger.debug("Received AUTHCommand token");
 
             ByteBuffer buf = token.getBytes();
 
             AUTHCommand authCmd = (AUTHCommand) token;
             String mechName = authCmd.getMechanismName();
 
-            if (!getCasing().openSASLExchange(mechName)) {
-                m_logger.debug("Unable to find SASLObserver for \"" + mechName + "\"");
-                declarePassthru();
+            if (! sharedState.openSASLExchange( mechName ) ) {
+                logger.debug("Unable to find SASLObserver for \"" + mechName + "\"");
+                declarePassthru( session );
             } else {
-                m_logger.debug("Opening SASL Exchange");
-                switch (getCasing().getSASLObserver().initialClientResponse(authCmd.getInitialResponse())) {
+                logger.debug("Opening SASL Exchange");
+                switch ( sharedState.getSASLObserver().initialClientResponse( authCmd.getInitialResponse() ) ) {
                     case EXCHANGE_COMPLETE:
-                        m_logger.debug("SASL Exchange complete");
-                        getCasing().closeSASLExchange();
+                        logger.debug("SASL Exchange complete");
+                        sharedState.closeSASLExchange();
                         break;
                     case IN_PROGRESS:
                         break;// Nothing interesting to do
                     case RECOMMEND_PASSTHRU:
-                        m_logger.debug("Entering passthru on advice of SASLObserver");
-                        declarePassthru();
+                        logger.debug("Entering passthru on advice of SASLObserver");
+                        declarePassthru( session );
                 }
             }
 
@@ -73,24 +85,24 @@ class SmtpServerUnparser extends SmtpUnparser
 
         // -----------------------------------------------------------
         if (token instanceof SASLExchangeToken) {
-            m_logger.debug("Received SASLExchangeToken token");
+            logger.debug("Received SASLExchangeToken token");
 
             ByteBuffer buf = token.getBytes();
 
-            if (!getCasing().isInSASLLogin()) {
-                m_logger.error("Received SASLExchangeToken without an open exchange");
+            if ( ! sharedState.isInSASLLogin() ) {
+                logger.error("Received SASLExchangeToken without an open exchange");
             } else {
-                switch (getCasing().getSASLObserver().clientData(buf.duplicate())) {
+                switch ( sharedState.getSASLObserver().clientData( buf.duplicate() ) ) {
                     case EXCHANGE_COMPLETE:
-                        m_logger.debug("SASL Exchange complete");
-                        getCasing().closeSASLExchange();
+                        logger.debug("SASL Exchange complete");
+                        sharedState.closeSASLExchange();
                         break;
                     case IN_PROGRESS:
                         // Nothing to do
                         break;
                     case RECOMMEND_PASSTHRU:
-                        m_logger.debug("Entering passthru on advice of SASLObserver");
-                        declarePassthru();
+                        logger.debug("Entering passthru on advice of SASLObserver");
+                        declarePassthru( session );
                 }
             }
             return new UnparseResult(buf);
@@ -101,36 +113,36 @@ class SmtpServerUnparser extends SmtpUnparser
             Command command = (Command) token;
 
             if (command instanceof UnparsableCommand) {
-                m_logger.debug("Received UnparsableCommand to pass.  Register "
+                logger.debug("Received UnparsableCommand to pass.  Register "
                         + "response action to know if there is a local parser error, or if "
                         + "this is an errant command");
-                getSessionTracker().commandReceived(command, new CommandParseErrorResponseCallback(command.getBytes()));
+                sharedState.commandReceived( command, new CommandParseErrorResponseCallback( session, command.getBytes() ) );
             } else if (command.getType() == CommandType.STARTTLS) {
-                m_logger.debug("Saw STARTTLS command.  Enqueue response action to go into " + "passthru if accepted");
-                getSessionTracker().commandReceived(command, new TLSResponseCallback());
+                logger.debug("Saw STARTTLS command.  Enqueue response action to go into " + "passthru if accepted");
+                sharedState.commandReceived( command, new TLSResponseCallback( session ) );
             } else {
-                m_logger.debug("Send command to server: " + command.toDebugString());
-                getSessionTracker().commandReceived(command);
+                logger.debug("Send command to server: " + command.toDebugString());
+                sharedState.commandReceived( command );
             }
             return new UnparseResult(token.getBytes());
         }
 
         // -----------------------------------------------------------
         if (token instanceof BeginMIMEToken) {
-            m_logger.debug("Send BeginMIMEToken to server");
-            getSessionTracker().beginMsgTransmission();
+            logger.debug("Send BeginMIMEToken to server");
+            sharedState.beginMsgTransmission();
             BeginMIMEToken bmt = (BeginMIMEToken) token;
             // Initialize the byte stuffer.
-            m_byteStuffer = new ByteBufferByteStuffer();
-            m_accumulator = bmt.getMIMEAccumulator();
-            return new UnparseResult(bmt.toStuffedTCPStreamer(m_byteStuffer));
+            state.byteStuffer = new ByteBufferByteStuffer();
+            state.accumulator = bmt.getMIMEAccumulator();
+            return new UnparseResult( bmt.toStuffedTCPStreamer( state.byteStuffer ) );
         }
 
         // -----------------------------------------------------------
         if (token instanceof CompleteMIMEToken) {
-            m_logger.debug("Send CompleteMIMEToken to server");
-            getSessionTracker().beginMsgTransmission();
-            return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer( true, getSession() ));
+            logger.debug("Send CompleteMIMEToken to server");
+            sharedState.beginMsgTransmission();
+            return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ));
         }
         // -----------------------------------------------------------
         if (token instanceof ContinuedMIMEToken) {
@@ -138,27 +150,27 @@ class SmtpServerUnparser extends SmtpUnparser
 
             ByteBuffer sink = null;
             if (continuedToken.shouldUnparse()) {
-                m_logger.debug("Sending continued MIME chunk to server");
+                logger.debug("Sending continued MIME chunk to server");
                 ByteBuffer buf = token.getBytes();
-                sink = ByteBuffer.allocate(buf.remaining() + (m_byteStuffer.getLeftoverCount() * 2));
-                m_byteStuffer.transfer(buf, sink);
-                m_logger.debug("After byte stuffing, wound up with: " + sink.remaining() + " bytes");
+                sink = ByteBuffer.allocate(buf.remaining() + ( state.byteStuffer.getLeftoverCount() * 2));
+                state.byteStuffer.transfer(buf, sink);
+                logger.debug("After byte stuffing, wound up with: " + sink.remaining() + " bytes");
             } else {
-                m_logger.debug("Continued MIME chunk should not go to server (already sent or empty)");
+                logger.debug("Continued MIME chunk should not go to server (already sent or empty)");
             }
             if (continuedToken.getMIMEChunk().isLast()) {
-                m_logger.debug("Last MIME chunk");
-                ByteBuffer remainder = m_byteStuffer.getLast(true);
-                m_byteStuffer = null;
-                m_accumulator.dispose();
-                m_accumulator = null;
+                logger.debug("Last MIME chunk");
+                ByteBuffer remainder = state.byteStuffer.getLast(true);
+                state.byteStuffer = null;
+                state.accumulator.dispose();
+                state.accumulator = null;
                 return new UnparseResult(sink == null ? new ByteBuffer[] { remainder } : new ByteBuffer[] { sink,
                         remainder });
             } else {
                 if (sink != null) {
                     return new UnparseResult(sink);
                 } else {
-                    m_logger.debug("Continued token empty (return nothing)");
+                    logger.debug("Continued token empty (return nothing)");
                     return UnparseResult.NONE;
                 }
             }
@@ -166,7 +178,7 @@ class SmtpServerUnparser extends SmtpUnparser
         // -----------------------------------------------------------
         if (token instanceof Chunk) {
             ByteBuffer buf = token.getBytes();
-            m_logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
+            logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
             return new UnparseResult(buf);
         }
 
@@ -177,23 +189,25 @@ class SmtpServerUnparser extends SmtpUnparser
         }
 
         // Default (bad) case
-        m_logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
+        logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
         return new UnparseResult(token.getBytes());
     }
 
-    private void tlsStarting()
+    private void tlsStarting( NodeTCPSession session )
     {
-        m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
-        declarePassthru();// Inform the parser of this state
+        logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
+        declarePassthru( session );// Inform the parser of this state
     }
 
     @Override
-    public void handleFinalized()
+    public void handleFinalized( NodeTCPSession session )
     {
-        super.handleFinalized();
-        if (m_accumulator != null) {
-            m_accumulator.dispose();
-            m_accumulator = null;
+        SmtpServerUnparserState state = (SmtpServerUnparserState) session.attachment( STATE_KEY );
+
+        super.handleFinalized( session );
+        if (state.accumulator != null) {
+            state.accumulator.dispose();
+            state.accumulator = null;
         }
     }
 
@@ -202,24 +216,24 @@ class SmtpServerUnparser extends SmtpUnparser
     /**
      * Callback registered with the CasingSessionTracker for the response to a command that could not be parsed.
      */
-    class CommandParseErrorResponseCallback implements CasingSessionTracker.ResponseAction
+    class CommandParseErrorResponseCallback implements SmtpSharedState.ResponseAction
     {
+        private NodeTCPSession session;
+        private String offendingCommand;
 
-        private String m_offendingCommand;
-
-        CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
-            m_offendingCommand = bbToString(bufWithOffendingLine);
+        protected CommandParseErrorResponseCallback( NodeTCPSession session, ByteBuffer bufWithOffendingLine )
+        {
+            this.session = session;
+            this.offendingCommand = bbToString(bufWithOffendingLine);
         }
 
         public void response(int code)
         {
             if (code < 300) {
-                m_logger.error("Parser could not parse command line \"" + m_offendingCommand
-                        + "\" yet accepted by server.  Parser error.  Enter passthru");
-                declarePassthru();
+                logger.error("Parser could not parse command line \"" + this.offendingCommand + "\" yet accepted by server.  Parser error.  Enter passthru");
+                declarePassthru( this.session );
             } else {
-                m_logger.debug("Command \"" + m_offendingCommand + "\" unparsable, and rejected "
-                        + "by server.  Do not enter passthru (assume errant client)");
+                logger.debug("Command \"" + this.offendingCommand + "\" unparsable, and rejected " + "by server.  Do not enter passthru (assume errant client)");
             }
         }
     }
@@ -227,16 +241,23 @@ class SmtpServerUnparser extends SmtpUnparser
     // ================ Inner Class =================
 
     /**
-     * Callback registered with the CasingSessionTracker for the response to the STARTTLS command
+     * Callback registered with the SmtpSharedState for the response to the STARTTLS command
      */
-    class TLSResponseCallback implements CasingSessionTracker.ResponseAction
+    class TLSResponseCallback implements SmtpSharedState.ResponseAction
     {
+        private NodeTCPSession session;
+
+        protected TLSResponseCallback( NodeTCPSession session )
+        {
+            this.session = session;
+        }
+        
         public void response(int code)
         {
             if (code < 300) {
-                tlsStarting();
+                tlsStarting( session );
             } else {
-                m_logger.debug("STARTTLS command rejected.  Do not go into passthru");
+                logger.debug("STARTTLS command rejected.  Do not go into passthru");
             }
         }
     }

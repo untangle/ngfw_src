@@ -13,7 +13,8 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.node.token.CasingBase;
 import com.untangle.node.token.CasingCoupler;
 import com.untangle.node.token.CasingAdaptor;
-import com.untangle.node.token.CasingFactory;
+import com.untangle.node.token.Parser;
+import com.untangle.node.token.Unparser;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
@@ -40,40 +41,72 @@ public class CasingPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, CasingFactory casingFactory, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser clientParser, Parser serverParser, Unparser clientUnparser, Unparser serverUnparser, Fitting input, Fitting output)
     {
         super(name, node, subscriptions);
 
-        switch(output)
-        {
+        switch ( output ) {
         case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, casingFactory, true, true);
-            outsideAdaptor = new CasingCoupler(node, casingFactory, false, true);
+            insideAdaptor = new CasingCoupler(node, clientParser, serverUnparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, serverParser, clientUnparser, false, true);
             break;
-
         default:
-            insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
-            outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+            insideAdaptor = new CasingAdaptor(node, clientParser, serverUnparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, serverParser, clientUnparser, false, true);
         }
 
         this.input = input;
         this.output = output;
     }
 
-    public CasingPipeSpec(String name, Node node, CasingFactory casingFactory, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser parser, Unparser unparser, Fitting input, Fitting output)
+    {
+        super(name, node, subscriptions);
+
+        switch ( output ) {
+        case HTTP_STREAM:
+            insideAdaptor = new CasingCoupler(node, parser, unparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, parser, unparser, false, true);
+            break;
+        default:
+            insideAdaptor = new CasingAdaptor(node, parser, unparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, parser, unparser, false, true);
+        }
+
+        this.input = input;
+        this.output = output;
+    }
+
+    public CasingPipeSpec(String name, Node node, Parser clientParser, Parser serverParser, Unparser clientUnparser, Unparser serverUnparser, Fitting input, Fitting output)
     {
         super(name, node);
 
-        switch(output)
-        {
+        switch ( output ) {
         case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, casingFactory, true, true);
-            outsideAdaptor = new CasingCoupler(node, casingFactory, false, true);
+            insideAdaptor = new CasingCoupler(node, clientParser, serverUnparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, serverParser, clientUnparser, false, true);
             break;
-
         default:
-            insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
-            outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
+            insideAdaptor = new CasingAdaptor(node, clientParser, serverUnparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, serverParser, clientUnparser, false, true);
+        }
+
+        this.input = input;
+        this.output = output;
+    }
+    
+    public CasingPipeSpec(String name, Node node, Parser parser, Unparser unparser, Fitting input, Fitting output)
+    {
+        super(name, node);
+
+        switch ( output ) {
+        case HTTP_STREAM:
+            insideAdaptor = new CasingCoupler(node, parser, unparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, parser, unparser, false, true);
+            break;
+        default:
+            insideAdaptor = new CasingAdaptor(node, parser, unparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, parser, unparser, false, true);
         }
 
         this.input = input;

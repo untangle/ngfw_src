@@ -5,6 +5,7 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -13,6 +14,8 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public interface Parser
 {
+    void handleNewSession( NodeTCPSession session );
+    
     /**
      * Parse data from the stream.
      *
@@ -20,7 +23,7 @@ public interface Parser
      * @return the ParseResult.
      * @exception ParseException if a parse error occurs.
      */
-    ParseResult parse( ByteBuffer chunk ) throws ParseException;
+    ParseResult parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException;
 
     /**
      * Used for casings that expect byte stream on both sides
@@ -28,7 +31,7 @@ public interface Parser
      * @param event the TCPChunkEvent received
      * @throws ParseException
      */
-    void parse( NodeTCPSession session, ByteBuffer data ) throws ParseException;
+    void parseFIXME( NodeTCPSession session, ByteBuffer data ) throws ParseException;
 
     /**
      * Called with last data from the read buffer on session close.
@@ -37,7 +40,7 @@ public interface Parser
      * @return the ParseResult.
      * @exception ParseException if a parse error occurs.
      */
-    ParseResult parseEnd( ByteBuffer chunk ) throws ParseException;
+    ParseResult parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException;
 
     /**
      * On FIN, allows the parser to stream out any final data.
@@ -47,16 +50,16 @@ public interface Parser
      *
      * @return a <code>TokenStreamer</code> value
      */
-    TokenStreamer endSession();
+    TokenStreamer endSession( NodeTCPSession session );
 
     /**
      * Called on scheduled timer event.
      */
-    void handleTimer();
+    void handleTimer( NodeSession session );
 
     /**
      * Called when both client and server sides
      * {@link com.untangle.uvm.vnet.SessionEventListener#handleTCPFinalized are shutdown}
      */
-    void handleFinalized();
+    void handleFinalized( NodeTCPSession session );
 }

@@ -16,9 +16,9 @@ import com.untangle.uvm.vnet.TCPStreamer;
 
 public class CasingCoupler extends CasingBase
 {
-    public CasingCoupler(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
+    public CasingCoupler(Node node, Parser parser, Unparser unparser, boolean clientSide, boolean releaseParseExceptions)
     {
-        super(node, casingFactory, clientSide, releaseParseExceptions);
+        super(node, parser, unparser, clientSide, releaseParseExceptions);
     }
 
     // SessionEventListener methods -------------------------------------------
@@ -26,18 +26,10 @@ public class CasingCoupler extends CasingBase
     @Override
     public void handleTCPNewSession( NodeTCPSession session )
     {
-        Casing casing = casingFactory.casing(session, clientSide);
-        //Pipeline pipeline = pipeFoundry.getPipeline(session.id());
-
-        // if (logger.isDebugEnabled()) {
-        //     logger.debug("new session setting: " + pipeline + " for: " + session.id());
-        // }
-
-        session.attach( casing );
-        
-        //addCasing(session, casing, pipeline);
+        this.parser.handleNewSession( session );
+        this.unparser.handleNewSession( session );
     }
-
+    
     @Override
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
@@ -100,38 +92,26 @@ public class CasingCoupler extends CasingBase
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + session.id());
         }
-        Casing c = (Casing) session.attachment();
 
         // the casing may have already been shutdown so we only need to
         // call the finalized stuff if it still exists 
-        if (c != null) {
-            c.parser().handleFinalized();
-            c.unparser().handleFinalized();
-        }
-
-        //removeCasingDesc(session);
+        this.parser.handleFinalized( session );
+        this.unparser.handleFinalized( session );
     }
 
     @Override
     public void handleTimer( NodeSession sess )
     {
-        Casing c = (Casing) sess.attachment();
-        Parser p = c.parser();
-        p.handleTimer();
-        // XXX unparser doesnt get one, does it need it?
+        this.parser.handleTimer( sess );
     }
 
     // private methods --------------------------------------------------------
 
     private void streamParse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
-        Casing casing = (Casing) session.attachment();
-        Parser parser = casing.parser();
-
         try {
-            parser.parse( session, data );
+            this.parser.parseFIXME( session, data );
         }
-
         catch (Exception exn) {
             logger.warn("Error during streamParse()", exn);
             return;
@@ -142,13 +122,9 @@ public class CasingCoupler extends CasingBase
 
     private void streamUnparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
-        Casing casing = (Casing) session.attachment();
-        Unparser unparser = casing.unparser();
-
         try {
-            unparser.unparse( session, data );
+            this.unparser.unparseFIXME( session, data );
         }
-
         catch (Exception exn) {
             logger.warn("Error during streamUnparse()", exn);
         }

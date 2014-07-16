@@ -14,43 +14,43 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-/**
- * ...name says it all...
- */
 class SmtpClientUnparser extends SmtpUnparser
 {
+    private final Logger logger = Logger.getLogger(SmtpClientUnparser.class);
 
-    private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
-
-    SmtpClientUnparser(NodeTCPSession session, SmtpCasing parent, CasingSessionTracker tracker) {
-        super(session, true, parent, tracker);
-        m_logger.debug("Created");
+    SmtpClientUnparser( )
+    {
+        super( true );
     }
 
     @Override
-    protected UnparseResult doUnparse(Token token)
+    public void handleNewSession( NodeTCPSession session ) { }
+    
+    @Override
+    protected UnparseResult doUnparse( NodeTCPSession session, Token token )
     {
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
 
         // -----------------------------------------------------------
         if (token instanceof SASLExchangeToken) {
-            m_logger.debug("Received SASLExchangeToken token");
+            logger.debug("Received SASLExchangeToken token");
 
             ByteBuffer buf = token.getBytes();
 
-            if (!getCasing().isInSASLLogin()) {
-                m_logger.error("Received SASLExchangeToken without an open exchange");
+            if ( ! sharedState.isInSASLLogin() ) {
+                logger.error("Received SASLExchangeToken without an open exchange");
             } else {
-                switch (getCasing().getSASLObserver().serverData(buf.duplicate())) {
+                switch ( sharedState.getSASLObserver().serverData(buf.duplicate() ) ) {
                     case EXCHANGE_COMPLETE:
-                        m_logger.debug("SASL Exchange complete");
-                        getCasing().closeSASLExchange();
+                        logger.debug("SASL Exchange complete");
+                        sharedState.closeSASLExchange();
                         break;
                     case IN_PROGRESS:
                         // Nothing to do
                         break;
                     case RECOMMEND_PASSTHRU:
-                        m_logger.debug("Entering passthru on advice of SASLObserver");
-                        declarePassthru();
+                        logger.debug("Entering passthru on advice of SASLObserver");
+                        declarePassthru( session );
                 }
             }
             return new UnparseResult(buf);
@@ -59,18 +59,18 @@ class SmtpClientUnparser extends SmtpUnparser
         // -----------------------------------------------------------
         if (token instanceof MetadataToken) {
             // Don't pass along metadata tokens
-            m_logger.debug("Pass along Metadata token as nothing");
+            logger.debug("Pass along Metadata token as nothing");
             return UnparseResult.NONE;
         }
 
         // -----------------------------------------------------------
         if (token instanceof Response) {
             Response resp = (Response) token;
-            getSessionTracker().responseReceived(resp);
+            sharedState.responseReceived(resp);
 
-            m_logger.debug("Passing response to client: " + resp.toDebugString());
+            logger.debug("Passing response to client: " + resp.toDebugString());
         } else {
-            m_logger.debug("Unparse token of type " + (token == null ? "null" : token.getClass().getName()));
+            logger.debug("Unparse token of type " + (token == null ? "null" : token.getClass().getName()));
         }
 
         return new UnparseResult(token.getBytes());

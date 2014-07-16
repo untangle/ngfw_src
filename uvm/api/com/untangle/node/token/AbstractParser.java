@@ -4,6 +4,7 @@
 package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -11,19 +12,11 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public abstract class AbstractParser implements Parser
 {
-    private final String idStr;
-
-    protected final NodeTCPSession session;
     protected final boolean clientSide;
 
-    protected AbstractParser(NodeTCPSession session, boolean clientSide)
+    protected AbstractParser( boolean clientSide )
     {
-        this.session = session;
         this.clientSide = clientSide;
-
-        String name = getClass().getName();
-
-        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":" + session.id() + ">";
     }
 
     // Parser methods ---------------------------------------------------------
@@ -35,31 +28,31 @@ public abstract class AbstractParser implements Parser
      * then you will see one of the helpful exception messages
      */
 
-    public ParseResult parse(ByteBuffer chunk) throws ParseException
+    public ParseResult parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
     }
 
-    public void parse( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    public void parseFIXME( NodeTCPSession session, ByteBuffer data ) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
     }
 
     // Parser noops -----------------------------------------------------------
 
-    public TokenStreamer endSession()
+    public TokenStreamer endSession( NodeTCPSession session )
     {
         return null;
     }
 
-    public ParseResult parseEnd(ByteBuffer chunk) throws ParseException
+    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
     {
         return null;
     }
 
     // session manipulation ---------------------------------------------------
 
-    protected void lineBuffering(boolean oneLine)
+    protected void lineBuffering( NodeTCPSession session, boolean oneLine )
     {
         if (clientSide)
             {
@@ -69,7 +62,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    protected long readLimit()
+    protected long readLimit( NodeTCPSession session )
     {
         if (clientSide) {
             return session.clientReadLimit();
@@ -78,7 +71,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    protected void readLimit(long limit)
+    protected void readLimit( NodeTCPSession session, long limit )
     {
         if (clientSide) {
             session.clientReadLimit(limit);
@@ -87,12 +80,12 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    protected void scheduleTimer(long delay)
+    protected void scheduleTimer( NodeTCPSession session, long delay )
     {
         session.scheduleTimer(delay);
     }
 
-    protected void cancelTimer()
+    protected void cancelTimer( NodeTCPSession session )
     {
         session.cancelTimer();
     }
@@ -102,20 +95,8 @@ public abstract class AbstractParser implements Parser
         return clientSide;
     }
 
-    protected NodeTCPSession getSession()
-    {
-        return session;
-    }
-
     // no-ops methods ---------------------------------------------------------
 
-    public void handleTimer() { }
-    public void handleFinalized() { }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return idStr;
-    }
+    public void handleTimer( NodeSession session ) { }
+    public void handleFinalized( NodeTCPSession session ) { }
 }

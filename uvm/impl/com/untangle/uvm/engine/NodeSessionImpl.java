@@ -948,7 +948,7 @@ public abstract class NodeSessionImpl implements NodeSession
     {
         cancelTimer();
 
-        dispatcher.removeSession(this);
+        dispatcher.removeSession( this );
     }
 
     /**

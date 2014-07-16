@@ -20,30 +20,22 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 abstract class SmtpUnparser extends AbstractUnparser
 {
-    private final SmtpCasing casing;
     private final Logger logger = Logger.getLogger(SmtpUnparser.class);
-    private boolean passthru = false;
 
-    private CasingSessionTracker casingSessionTracker;
+    protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
 
-    protected SmtpUnparser(NodeTCPSession session, boolean clientSide, SmtpCasing casing, CasingSessionTracker tracker)
+    protected SmtpUnparser( boolean clientSide )
     {
-        super(session, clientSide);
-        this.casing = casing;
-        casingSessionTracker = tracker;
+        super( clientSide );
     }
-
-    public SmtpCasing getCasing()
-    {
-        return casing;
-    }
-
+    
     /**
      * Is the casing currently in passthru mode
      */
-    protected boolean isPassthru()
+    protected boolean isPassthru( NodeTCPSession session )
     {
-        return passthru;
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        return sharedState.passthru;
     }
 
     /**
@@ -51,28 +43,20 @@ abstract class SmtpUnparser extends AbstractUnparser
      * error by the caller, or the reciept of a passthru token.
      * 
      */
-    protected void declarePassthru()
+    protected void declarePassthru( NodeTCPSession session)
     {
-        passthru = true;
-        casing.passthru();
+        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        sharedState.passthru = true;
     }
 
-    /**
-     * Called by the casing to declare that this instance should now be in passthru mode.
-     */
-    protected final void passthru()
-    {
-        passthru = true;
-    }
-
-    public UnparseResult unparse(Token token)
+    public UnparseResult unparse( NodeTCPSession session, Token token )
     {
         if (token instanceof PassThruToken) {
             logger.debug("Received PassThruToken");
-            declarePassthru();// Inform the parser of this state
+            declarePassthru( session );// Inform the parser of this state
             return UnparseResult.NONE;
         }
-        return doUnparse(token);
+        return doUnparse( session, token );
     }
 
     /**
@@ -80,9 +64,9 @@ abstract class SmtpUnparser extends AbstractUnparser
      * <br>
      * Note that subclasses should <b>not</b> worry about tracing, or receiving Passthru tokens
      */
-    protected abstract UnparseResult doUnparse(Token token);
+    protected abstract UnparseResult doUnparse( NodeTCPSession session, Token token );
 
-    public final TCPStreamer endSession()
+    public final TCPStreamer endSession( NodeTCPSession session )
     {
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") End Session");
         // getCasing().endSession(isClientSide());
@@ -90,13 +74,8 @@ abstract class SmtpUnparser extends AbstractUnparser
     }
 
     @Override
-    public void handleFinalized()
+    public void handleFinalized( NodeTCPSession session )
     {
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") handleFinalized");
-    }
-
-    CasingSessionTracker getSessionTracker()
-    {
-        return casingSessionTracker;
     }
 }

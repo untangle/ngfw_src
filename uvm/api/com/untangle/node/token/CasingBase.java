@@ -22,14 +22,16 @@ public class CasingBase extends AbstractEventHandler
 {
     protected final Logger logger = Logger.getLogger(CasingBase.class);
 
-    protected final CasingFactory casingFactory;
+    protected final Parser parser;
+    protected final Unparser unparser;
     protected final boolean clientSide;
     protected volatile boolean releaseParseExceptions;
 
-    public CasingBase(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
+    public CasingBase( Node node, Parser parser, Unparser unparser, boolean clientSide, boolean releaseParseExceptions )
     {
         super(node);
-        this.casingFactory = casingFactory;
+        this.parser = parser;
+        this.unparser = unparser;
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;
     }
