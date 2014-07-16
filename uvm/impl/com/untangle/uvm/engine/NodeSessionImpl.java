@@ -944,6 +944,19 @@ public abstract class NodeSessionImpl implements NodeSession
     public InetAddress getServerAddr() { return newServerAddr; }
     public int getServerPort() { return newServerPort; }
 
+    public String toString()
+    {
+        String origClientAddr = ( getOrigClientAddr() != null ? getOrigClientAddr().getHostAddress() : "null" );
+        String newServerAddr = ( getNewServerAddr() != null ? getNewServerAddr().getHostAddress() : "null" );
+        return "" +
+            "[NodeSession-" + System.identityHashCode(this) + "]" +
+            "[Session-" + getSessionId() + "] " +
+            getProtocol() + "|" +
+            origClientAddr + ":" +
+            getOrigClientPort() + "->" +
+            newServerAddr + ":" +
+            getNewServerPort();
+    }
     protected void closeFinal()
     {
         cancelTimer();
