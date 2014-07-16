@@ -34,23 +34,19 @@ class SmtpC2SParser extends SmtpParser
 {
     private static final String CLIENT_PARSER_STATE_KEY = "SMTP-client-parser-state";
 
-    private final Logger logger = Logger.getLogger(SmtpC2SParser.class);
+    private static final Logger logger = Logger.getLogger(SmtpC2SParser.class);
 
     private static final int MAX_COMMAND_LINE_SZ = 1024 * 2;
 
-    private enum SmtpClientState
-    {
-        COMMAND, BODY, HEADERS
-            };
+    private enum SmtpClientState { COMMAND, BODY, HEADERS };
 
-    // Transient
     private class SmtpC2SParserSessionState
     {
         protected SmtpClientState currentState = SmtpClientState.COMMAND;
         protected ScannerAndAccumulator sac;
     }
 
-    public SmtpC2SParser( )
+    public SmtpC2SParser()
     {
         super( true );
     }
@@ -61,9 +57,9 @@ class SmtpC2SParser extends SmtpParser
         SmtpC2SParserSessionState state = new SmtpC2SParserSessionState();
         session.attach( CLIENT_PARSER_STATE_KEY, state );
 
-        SmtpSharedState sharedState = new SmtpSharedState();
-        session.globalAttach( SHARED_STATE_KEY, sharedState );
-                
+        SmtpSharedState clientSideSharedState = new SmtpSharedState();
+        session.attach( SHARED_STATE_KEY, clientSideSharedState );
+
         lineBuffering( session, false );
     }
 
@@ -72,7 +68,7 @@ class SmtpC2SParser extends SmtpParser
     protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf ) throws FatalMailParseException
     {
         SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         // ===============================================
         // In general, there are a lot of helper functions called which return true/false. 
@@ -102,14 +98,14 @@ class SmtpC2SParser extends SmtpParser
                 // ==================================================
             case COMMAND:
 
-                if ( sharedState.isInSASLLogin() ) {
+                if ( clientSideSharedState.isInSASLLogin() ) {
                     logger.debug("In SASL Exchange");
-                    SmtpSASLObserver observer = sharedState.getSASLObserver();
+                    SmtpSASLObserver observer = clientSideSharedState.getSASLObserver();
                     ByteBuffer dup = buf.duplicate();
                     switch (observer.clientData(buf)) {
                     case EXCHANGE_COMPLETE:
                         logger.debug("SASL Exchange complete");
-                        sharedState.closeSASLExchange();
+                        clientSideSharedState.closeSASLExchange();
                         // fallthrough ?? XXX
                     case IN_PROGRESS:
                         // There should not be any extra bytes left with "in progress"
@@ -147,7 +143,7 @@ class SmtpC2SParser extends SmtpParser
 
                         cmd = new UnparsableCommand(badBuf);
 
-                        sharedState.commandReceived(cmd, new CommandParseErrorResponseCallback( session, badBuf ));
+                        clientSideSharedState.commandReceived(cmd, new CommandParseErrorResponseCallback( session, badBuf ));
 
                         toks.add(cmd);
                         break;
@@ -160,7 +156,7 @@ class SmtpC2SParser extends SmtpParser
                         logger.debug("Received an AUTH command (hiding details for privacy reasons)");
                         AUTHCommand authCmd = (AUTHCommand) cmd;
                         String mechName = authCmd.getMechanismName();
-                        if ( ! sharedState.openSASLExchange(mechName) ) {
+                        if ( ! clientSideSharedState.openSASLExchange(mechName) ) {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Unable to find SASLObserver for \"" + mechName + "\"");
                             }
@@ -172,10 +168,10 @@ class SmtpC2SParser extends SmtpParser
                             logger.debug("Opening SASL Exchange");
                         }
 
-                        switch ( sharedState.getSASLObserver().initialClientResponse(authCmd.getInitialResponse()) ) {
+                        switch ( clientSideSharedState.getSASLObserver().initialClientResponse(authCmd.getInitialResponse()) ) {
                         case EXCHANGE_COMPLETE:
                             logger.debug("SASL Exchange complete");
-                            sharedState.closeSASLExchange();
+                            clientSideSharedState.closeSASLExchange();
                             break;
                         case IN_PROGRESS:
                             break;// Nothing interesting to do
@@ -197,7 +193,7 @@ class SmtpC2SParser extends SmtpParser
 
                     if (cmd.getType() == CommandType.STARTTLS) {
                         logger.debug("Enqueue observer for response to STARTTLS, " + "to go into passthru if accepted");
-                        sharedState.commandReceived( cmd, new TLSResponseCallback( session ) );
+                        clientSideSharedState.commandReceived( cmd, new TLSResponseCallback( session ) );
                     } else if (cmd.getType() == CommandType.DATA) {
                         logger.debug("entering data transmission (DATA)");
                         if ( ! openSAC( session ) ) {
@@ -213,11 +209,11 @@ class SmtpC2SParser extends SmtpParser
                         logger.debug("Change state to " + SmtpClientState.HEADERS
                                      + ".  Enqueue response handler in case DATA "
                                      + "command rejected (returning us to " + SmtpClientState.COMMAND + ")");
-                        sharedState.commandReceived(cmd, new DATAResponseCallback( session, state.sac ));
+                        clientSideSharedState.commandReceived(cmd, new DATAResponseCallback( session, state.sac ));
                         state.currentState = SmtpClientState.HEADERS;
                         // Go back and start evaluating the header bytes.
                     } else {
-                        sharedState.commandReceived(cmd);
+                        clientSideSharedState.commandReceived(cmd);
                     }
                 }// ENDOF Complete Command
                 else {// BEGIN Not complete Command
@@ -266,7 +262,7 @@ class SmtpC2SParser extends SmtpParser
                     }// ENDOF Header PArse Error
 
                     logger.debug("Adding the BeginMIMEToken");
-                    sharedState.beginMsgTransmission();
+                    clientSideSharedState.beginMsgTransmission();
                     toks.add(new BeginMIMEToken( state.sac.accumulator, createMessageInfo( session, headers )) );
                     state.sac.noLongerAccumulatorMaster();
                     state.currentState = SmtpClientState.BODY;
@@ -324,6 +320,7 @@ class SmtpC2SParser extends SmtpParser
         SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         super.handleFinalized( session );
+
         if ( state.sac != null ) {
             logger.debug("Unexpected finalized in state " + state.currentState);
             state.sac.accumulator.dispose();
@@ -472,7 +469,7 @@ class SmtpC2SParser extends SmtpParser
     private MessageInfo createMessageInfo( NodeTCPSession session, InternetHeaders headers )
     {
         SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         if (headers == null) {
             return new MessageInfo(session.sessionEvent(), session.getServerPort(), "");
@@ -504,7 +501,7 @@ class SmtpC2SParser extends SmtpParser
         UvmContextFactory.context().logEvent(ret);
 
         // Add anyone from the transaction
-        SmtpTransaction smtpTx = sharedState.getCurrentTransaction();
+        SmtpTransaction smtpTx = clientSideSharedState.getCurrentTransaction();
         if (smtpTx == null) {
             logger.error("Transaction tracker returned null for current transaction");
         } else {

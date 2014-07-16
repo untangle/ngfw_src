@@ -22,13 +22,16 @@ class SmtpS2CParser extends SmtpParser
 {
     private final Logger logger = Logger.getLogger(SmtpS2CParser.class);
 
-    public SmtpS2CParser( )
+    public SmtpS2CParser()
     {
         super( false );
     }
 
     public void handleNewSession( NodeTCPSession session )
     {
+        SmtpSharedState serverSideSharedState = new SmtpSharedState();
+        session.attach( SHARED_STATE_KEY, serverSideSharedState );
+
         lineBuffering( session, false );
     }
     
@@ -38,7 +41,7 @@ class SmtpS2CParser extends SmtpParser
     {
         List<Token> toks = new ArrayList<Token>();
         boolean done = false;
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState serverSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         while (buf.hasRemaining() && !done) {
 
@@ -48,13 +51,13 @@ class SmtpS2CParser extends SmtpParser
                 return new ParseResult(toks);
             }
 
-            if ( sharedState.isInSASLLogin() ) {
+            if ( serverSideSharedState.isInSASLLogin() ) {
                 logger.debug("In SASL Exchange");
                 ByteBuffer dup = buf.duplicate();
-                switch ( sharedState.getSASLObserver().serverData( buf ) ) {
+                switch ( serverSideSharedState.getSASLObserver().serverData( buf ) ) {
                     case EXCHANGE_COMPLETE:
                         logger.debug("SASL Exchange complete");
-                        sharedState.closeSASLExchange();
+                        serverSideSharedState.closeSASLExchange();
                         // fallthrough ?? XXX
                     case IN_PROGRESS:
                         // There should not be any extra bytes
@@ -78,7 +81,7 @@ class SmtpS2CParser extends SmtpParser
                 Response resp = new ResponseParser().parse(dup);
                 if (resp != null) {
                     buf.position(dup.position());
-                    sharedState.responseReceived(resp);
+                    serverSideSharedState.responseReceived(resp);
                     logger.debug("Received response: " + resp.toDebugString());
                     toks.add(resp);
                 } else {

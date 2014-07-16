@@ -28,7 +28,7 @@ class SmtpC2SUnparser extends SmtpUnparser
 {
     private static final String SERVER_UNPARSER_STATE_KEY = "SMTP-server-parser-state";
 
-    private final Logger logger = Logger.getLogger(SmtpC2SUnparser.class);
+    private static final Logger logger = Logger.getLogger(SmtpC2SUnparser.class);
 
     private class SmtpC2SUnparserState
     {
@@ -51,7 +51,7 @@ class SmtpC2SUnparser extends SmtpUnparser
     protected UnparseResult doUnparse( NodeTCPSession session, Token token )
     {
         SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState serverSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         
         // -----------------------------------------------------------
         if (token instanceof AUTHCommand) {
@@ -62,15 +62,15 @@ class SmtpC2SUnparser extends SmtpUnparser
             AUTHCommand authCmd = (AUTHCommand) token;
             String mechName = authCmd.getMechanismName();
 
-            if (! sharedState.openSASLExchange( mechName ) ) {
+            if (! serverSideSharedState.openSASLExchange( mechName ) ) {
                 logger.debug("Unable to find SASLObserver for \"" + mechName + "\"");
                 declarePassthru( session );
             } else {
                 logger.debug("Opening SASL Exchange");
-                switch ( sharedState.getSASLObserver().initialClientResponse( authCmd.getInitialResponse() ) ) {
+                switch ( serverSideSharedState.getSASLObserver().initialClientResponse( authCmd.getInitialResponse() ) ) {
                     case EXCHANGE_COMPLETE:
                         logger.debug("SASL Exchange complete");
-                        sharedState.closeSASLExchange();
+                        serverSideSharedState.closeSASLExchange();
                         break;
                     case IN_PROGRESS:
                         break;// Nothing interesting to do
@@ -89,13 +89,13 @@ class SmtpC2SUnparser extends SmtpUnparser
 
             ByteBuffer buf = token.getBytes();
 
-            if ( ! sharedState.isInSASLLogin() ) {
+            if ( ! serverSideSharedState.isInSASLLogin() ) {
                 logger.error("Received SASLExchangeToken without an open exchange");
             } else {
-                switch ( sharedState.getSASLObserver().clientData( buf.duplicate() ) ) {
+                switch ( serverSideSharedState.getSASLObserver().clientData( buf.duplicate() ) ) {
                     case EXCHANGE_COMPLETE:
                         logger.debug("SASL Exchange complete");
-                        sharedState.closeSASLExchange();
+                        serverSideSharedState.closeSASLExchange();
                         break;
                     case IN_PROGRESS:
                         // Nothing to do
@@ -116,13 +116,13 @@ class SmtpC2SUnparser extends SmtpUnparser
                 logger.debug("Received UnparsableCommand to pass.  Register "
                         + "response action to know if there is a local parser error, or if "
                         + "this is an errant command");
-                sharedState.commandReceived( command, new CommandParseErrorResponseCallback( session, command.getBytes() ) );
+                serverSideSharedState.commandReceived( command, new CommandParseErrorResponseCallback( session, command.getBytes() ) );
             } else if (command.getType() == CommandType.STARTTLS) {
                 logger.debug("Saw STARTTLS command.  Enqueue response action to go into " + "passthru if accepted");
-                sharedState.commandReceived( command, new TLSResponseCallback( session ) );
+                serverSideSharedState.commandReceived( command, new TLSResponseCallback( session ) );
             } else {
                 logger.debug("Send command to server: " + command.toDebugString());
-                sharedState.commandReceived( command );
+                serverSideSharedState.commandReceived( command );
             }
             return new UnparseResult(token.getBytes());
         }
@@ -130,7 +130,7 @@ class SmtpC2SUnparser extends SmtpUnparser
         // -----------------------------------------------------------
         if (token instanceof BeginMIMEToken) {
             logger.debug("Send BeginMIMEToken to server");
-            sharedState.beginMsgTransmission();
+            serverSideSharedState.beginMsgTransmission();
             BeginMIMEToken bmt = (BeginMIMEToken) token;
             // Initialize the byte stuffer.
             state.byteStuffer = new ByteBufferByteStuffer();
@@ -141,7 +141,7 @@ class SmtpC2SUnparser extends SmtpUnparser
         // -----------------------------------------------------------
         if (token instanceof CompleteMIMEToken) {
             logger.debug("Send CompleteMIMEToken to server");
-            sharedState.beginMsgTransmission();
+            serverSideSharedState.beginMsgTransmission();
             return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ));
         }
         // -----------------------------------------------------------

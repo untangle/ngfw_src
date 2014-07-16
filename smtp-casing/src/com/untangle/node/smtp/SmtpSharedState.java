@@ -88,7 +88,6 @@ class SmtpSharedState
 
     protected SmtpTransaction currentTransaction;
     protected List<ResponseAction> outstandingRequests;
-    protected boolean closing = false;
     protected CSHistory history = new CSHistory(25);
     protected long lastTransmissionTimestamp;
     protected boolean passthru = false;
@@ -108,14 +107,6 @@ class SmtpSharedState
     SmtpTransaction getCurrentTransaction()
     {
         return currentTransaction;
-    }
-
-    /**
-     * Inform the tracker that we're closing, so it can supress any final message from the server.
-     */
-    void closing()
-    {
-        closing = true;
     }
 
     void beginMsgTransmission()
@@ -147,7 +138,7 @@ class SmtpSharedState
 
     void commandReceived(Command command, ResponseAction chainedAction)
     {
-        //logger.warn("XXX COMMAND: " + command.getCmdString(), new Exception());
+        logger.debug( "Command received: " + command.getCmdString() );
 
         if (command instanceof UnparsableCommand) {
             history.add("(c) " + command.getCmdString() + " (" + command.getArgString() + ")");
@@ -180,15 +171,13 @@ class SmtpSharedState
     {
         history.add("(s) " + response.getCode());
 
-        //logger.warn("XXX RESPONSE: " + response.getCode(), new Exception());
+        logger.debug( "Response received: " + response.getCode() );
         if (outstandingRequests.size() == 0) {
-            if (!closing) {
-                long diff = System.currentTimeMillis() - lastTransmissionTimestamp;
-                if (diff > LIKELY_TIMEOUT_LENGTH) {
-                    logger.info("Unsolicited response from server.  Likely a timeout notification as " + diff + " milliseconds have transpired since last communication");
-                } else {
-                    logger.warn("Misalignment of req/resp tracking.  No outstanding request for response: " + response.getCode() + " Recent history: " + historyToString());
-                }
+            long diff = System.currentTimeMillis() - lastTransmissionTimestamp;
+            if (diff > LIKELY_TIMEOUT_LENGTH) {
+                logger.info("Unsolicited response from server.  Likely a timeout notification as " + diff + " milliseconds have transpired since last communication");
+            } else {
+                logger.warn("No outstanding request for response: " + response.getCode() + " Recent history: " + historyToString());
             }
         } else {
             outstandingRequests.remove(0).response(response.getCode());

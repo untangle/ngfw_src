@@ -45,7 +45,7 @@ abstract class SmtpParser extends AbstractParser
      */
     protected boolean isPassthru( NodeTCPSession session )
     {
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         return sharedState.passthru;
     }
 
@@ -56,7 +56,7 @@ abstract class SmtpParser extends AbstractParser
      */
     protected void declarePassthru( NodeTCPSession session)
     {
-        SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         sharedState.passthru = true;
     }
 
