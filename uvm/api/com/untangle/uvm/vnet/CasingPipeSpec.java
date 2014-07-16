@@ -41,18 +41,18 @@ public class CasingPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser clientParser, Parser serverParser, Unparser clientUnparser, Unparser serverUnparser, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser c2sParser, Parser s2cParser, Unparser c2sUnparser, Unparser s2cUnparser, Fitting input, Fitting output)
     {
         super(name, node, subscriptions);
 
         switch ( output ) {
         case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, clientParser, serverUnparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, serverParser, clientUnparser, false, true);
+            insideAdaptor = new CasingCoupler(node, c2sParser, s2cUnparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, s2cParser, c2sUnparser, false, true);
             break;
         default:
-            insideAdaptor = new CasingAdaptor(node, clientParser, serverUnparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, serverParser, clientUnparser, false, true);
+            insideAdaptor = new CasingAdaptor(node, c2sParser, s2cUnparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, s2cParser, c2sUnparser, false, true);
         }
 
         this.input = input;
@@ -77,18 +77,18 @@ public class CasingPipeSpec extends PipeSpec
         this.output = output;
     }
 
-    public CasingPipeSpec(String name, Node node, Parser clientParser, Parser serverParser, Unparser clientUnparser, Unparser serverUnparser, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Parser c2sParser, Parser s2cParser, Unparser c2sUnparser, Unparser s2cUnparser, Fitting input, Fitting output)
     {
         super(name, node);
 
         switch ( output ) {
         case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, clientParser, serverUnparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, serverParser, clientUnparser, false, true);
+            insideAdaptor = new CasingCoupler(node, c2sParser, s2cUnparser, true, true);
+            outsideAdaptor = new CasingCoupler(node, s2cParser, c2sUnparser, false, true);
             break;
         default:
-            insideAdaptor = new CasingAdaptor(node, clientParser, serverUnparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, serverParser, clientUnparser, false, true);
+            insideAdaptor = new CasingAdaptor(node, c2sParser, s2cUnparser, true, true);
+            outsideAdaptor = new CasingAdaptor(node, s2cParser, c2sUnparser, false, true);
         }
 
         this.input = input;

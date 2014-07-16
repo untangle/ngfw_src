@@ -54,12 +54,12 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     {
         super(nodeSettings, nodeProperties);
 
-        SmtpClientParser clientParser = new SmtpClientParser();
-        SmtpClientUnparser clientUnparser = new SmtpClientUnparser();
-        SmtpServerParser serverParser = new SmtpServerParser();
-        SmtpServerUnparser serverUnparser = new SmtpServerUnparser();
+        SmtpC2SParser   c2sParser = new SmtpC2SParser();
+        SmtpC2SUnparser c2sUnparser = new SmtpC2SUnparser();
+        SmtpS2CParser   s2cParser = new SmtpS2CParser();
+        SmtpS2CUnparser s2cUnparser = new SmtpS2CUnparser();
 
-        this.smtpPipeSpec = new CasingPipeSpec(PROTOCOL_NAME, this, clientParser, serverParser, clientUnparser, serverUnparser, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
+        this.smtpPipeSpec = new CasingPipeSpec(PROTOCOL_NAME, this, c2sParser, s2cParser, c2sUnparser, s2cUnparser, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
         this.pipeSpecs = new PipeSpec[] { smtpPipeSpec };
         
         createSingletonsIfRequired();

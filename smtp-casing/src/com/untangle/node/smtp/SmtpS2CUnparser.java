@@ -14,11 +14,11 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-class SmtpClientUnparser extends SmtpUnparser
+class SmtpS2CUnparser extends SmtpUnparser
 {
-    private final Logger logger = Logger.getLogger(SmtpClientUnparser.class);
+    private final Logger logger = Logger.getLogger(SmtpS2CUnparser.class);
 
-    SmtpClientUnparser( )
+    SmtpS2CUnparser( )
     {
         super( true );
     }

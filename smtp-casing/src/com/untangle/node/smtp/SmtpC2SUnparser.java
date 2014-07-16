@@ -24,33 +24,33 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-class SmtpServerUnparser extends SmtpUnparser
+class SmtpC2SUnparser extends SmtpUnparser
 {
-    private static final String STATE_KEY = "SMTP-client-parser-state";
+    private static final String SERVER_UNPARSER_STATE_KEY = "SMTP-server-parser-state";
 
-    private final Logger logger = Logger.getLogger(SmtpServerUnparser.class);
+    private final Logger logger = Logger.getLogger(SmtpC2SUnparser.class);
 
-    private class SmtpServerUnparserState
+    private class SmtpC2SUnparserState
     {
         protected ByteBufferByteStuffer byteStuffer;
         protected MIMEAccumulator accumulator;
     }
 
-    public SmtpServerUnparser()
+    public SmtpC2SUnparser()
     {
         super( true );
     }
 
     public void handleNewSession( NodeTCPSession session )
     {
-        SmtpServerUnparserState state = new SmtpServerUnparserState();
-        session.attach( STATE_KEY, state );
+        SmtpC2SUnparserState state = new SmtpC2SUnparserState();
+        session.attach( SERVER_UNPARSER_STATE_KEY, state );
     }
     
     @Override
     protected UnparseResult doUnparse( NodeTCPSession session, Token token )
     {
-        SmtpServerUnparserState state = (SmtpServerUnparserState) session.attachment( STATE_KEY );
+        SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
         SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
         
         // -----------------------------------------------------------
@@ -202,7 +202,7 @@ class SmtpServerUnparser extends SmtpUnparser
     @Override
     public void handleFinalized( NodeTCPSession session )
     {
-        SmtpServerUnparserState state = (SmtpServerUnparserState) session.attachment( STATE_KEY );
+        SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
 
         super.handleFinalized( session );
         if (state.accumulator != null) {

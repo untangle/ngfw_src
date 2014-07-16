@@ -30,11 +30,11 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * SMTP client parser
  */
-class SmtpClientParser extends SmtpParser
+class SmtpC2SParser extends SmtpParser
 {
-    private static final String STATE_KEY = "SMTP-client-parser-state";
+    private static final String CLIENT_PARSER_STATE_KEY = "SMTP-client-parser-state";
 
-    private final Logger logger = Logger.getLogger(SmtpClientParser.class);
+    private final Logger logger = Logger.getLogger(SmtpC2SParser.class);
 
     private static final int MAX_COMMAND_LINE_SZ = 1024 * 2;
 
@@ -44,13 +44,13 @@ class SmtpClientParser extends SmtpParser
             };
 
     // Transient
-    private class SmtpClientParserSessionState
+    private class SmtpC2SParserSessionState
     {
         protected SmtpClientState currentState = SmtpClientState.COMMAND;
         protected ScannerAndAccumulator sac;
     }
 
-    public SmtpClientParser( )
+    public SmtpC2SParser( )
     {
         super( true );
     }
@@ -58,11 +58,11 @@ class SmtpClientParser extends SmtpParser
     @Override
     public void handleNewSession( NodeTCPSession session )
     {
-        SmtpClientParserSessionState state = new SmtpClientParserSessionState();
-        session.attach( STATE_KEY, state );
+        SmtpC2SParserSessionState state = new SmtpC2SParserSessionState();
+        session.attach( CLIENT_PARSER_STATE_KEY, state );
 
         SmtpSharedState sharedState = new SmtpSharedState();
-        session.globalAttach( SHARED_STATE_KEY, state );
+        session.globalAttach( SHARED_STATE_KEY, sharedState );
                 
         lineBuffering( session, false );
     }
@@ -71,7 +71,7 @@ class SmtpClientParser extends SmtpParser
     @SuppressWarnings("fallthrough")
     protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf ) throws FatalMailParseException
     {
-        SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
 
         // ===============================================
@@ -321,7 +321,7 @@ class SmtpClientParser extends SmtpParser
     @Override
     public void handleFinalized( NodeTCPSession session )
     {
-        SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         super.handleFinalized( session );
         if ( state.sac != null ) {
@@ -358,7 +358,7 @@ class SmtpClientParser extends SmtpParser
 
         public void response(int code)
         {
-            SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+            SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
             if (code < 400) {
                 logger.debug("DATA command accepted");
@@ -435,7 +435,7 @@ class SmtpClientParser extends SmtpParser
      */
     private boolean openSAC( NodeTCPSession session )
     {
-        SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         try {
             state.sac = new ScannerAndAccumulator( new MIMEAccumulator( session ) );
@@ -471,7 +471,7 @@ class SmtpClientParser extends SmtpParser
      */
     private MessageInfo createMessageInfo( NodeTCPSession session, InternetHeaders headers )
     {
-        SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState sharedState = (SmtpSharedState) session.globalAttachment( SHARED_STATE_KEY );
 
         if (headers == null) {
@@ -536,7 +536,7 @@ class SmtpClientParser extends SmtpParser
      */
     private void puntDuringHeaders( NodeTCPSession session, List<Token> toks, ByteBuffer buf )
     {
-        SmtpClientParserSessionState state = (SmtpClientParserSessionState) session.attachment( STATE_KEY );
+        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         // Get any bytes trapped in the file
         ByteBuffer trapped = state.sac.accumulator.drainFileToByteBuffer();

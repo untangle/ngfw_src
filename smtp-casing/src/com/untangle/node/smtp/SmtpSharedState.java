@@ -147,6 +147,7 @@ class SmtpSharedState
 
     void commandReceived(Command command, ResponseAction chainedAction)
     {
+        //logger.warn("XXX COMMAND: " + command.getCmdString(), new Exception());
 
         if (command instanceof UnparsableCommand) {
             history.add("(c) " + command.getCmdString() + " (" + command.getArgString() + ")");
@@ -178,13 +179,15 @@ class SmtpSharedState
     void responseReceived(Response response)
     {
         history.add("(s) " + response.getCode());
+
+        //logger.warn("XXX RESPONSE: " + response.getCode(), new Exception());
         if (outstandingRequests.size() == 0) {
             if (!closing) {
                 long diff = System.currentTimeMillis() - lastTransmissionTimestamp;
                 if (diff > LIKELY_TIMEOUT_LENGTH) {
                     logger.info("Unsolicited response from server.  Likely a timeout notification as " + diff + " milliseconds have transpired since last communication");
                 } else {
-                    logger.warn("Misalignment of req/resp tracking.  No outstanding response.  " + "Recent history: " + historyToString());
+                    logger.warn("Misalignment of req/resp tracking.  No outstanding request for response: " + response.getCode() + " Recent history: " + historyToString());
                 }
             }
         } else {

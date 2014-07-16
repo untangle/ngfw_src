@@ -18,11 +18,11 @@ import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-class SmtpServerParser extends SmtpParser
+class SmtpS2CParser extends SmtpParser
 {
-    private final Logger logger = Logger.getLogger(SmtpServerParser.class);
+    private final Logger logger = Logger.getLogger(SmtpS2CParser.class);
 
-    public SmtpServerParser( )
+    public SmtpS2CParser( )
     {
         super( false );
     }
