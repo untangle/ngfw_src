@@ -233,6 +233,20 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         // Will result in client's outgoing and incoming socket queue being set to null 
     }
 
+    public void beginStream( int side, TCPStreamer s )
+    {
+        if (streamer != null) {
+            String message = "Already streaming";
+            logger.error(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (side == CLIENT)
+            streamer = new TCPStreamer[] { s, null };
+        else
+            streamer = new TCPStreamer[] { null, s };
+    }
+
     public void beginClientStream( TCPStreamer streamer )
     {
         beginStream(CLIENT, streamer);
@@ -313,20 +327,6 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readBuf[side] = buf;
     }
     
-    protected void beginStream( int side, TCPStreamer s )
-    {
-        if (streamer != null) {
-            String message = "Already streaming";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        if (side == CLIENT)
-            streamer = new TCPStreamer[] { s, null };
-        else
-            streamer = new TCPStreamer[] { null, s };
-    }
-
     protected void endStream()
     {
         IPStreamer cs = streamer[CLIENT];

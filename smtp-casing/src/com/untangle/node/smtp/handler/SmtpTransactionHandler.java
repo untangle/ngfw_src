@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.smtp.handler;
 
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenResultBuilder;
 
 public class SmtpTransactionHandler
 {
@@ -63,17 +65,17 @@ public class SmtpTransactionHandler
     public static final ResponseCompletion PASSTHRU_RESPONSE_COMPLETION = new ResponseCompletion()
     {
         @Override
-        public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+        public void handleResponse( NodeTCPSession session, Response resp )
         {
             logger.debug("Sending response " + resp.getCode() + " to client");
-            ts.addTokenForClient(resp);
+            session.sendObjectToClient( resp );
         }
     };
 
     public static final ResponseCompletion NOOP_RESPONSE_COMPLETION = new ResponseCompletion()
     {
         @Override
-        public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+        public void handleResponse( NodeTCPSession session, Response resp )
         {
 
         }
@@ -96,7 +98,7 @@ public class SmtpTransactionHandler
         return tx;
     }
 
-    public void handleRSETCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, TokenResultBuilder ts )
+    public void handleRSETCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine )
     {
 
         logReceivedToken(command);
@@ -107,19 +109,19 @@ public class SmtpTransactionHandler
             txLog.add("Aborting at client request");
             stateMachine.transactionEnded(this);
             getTransaction().reset();
-            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION, ts );
+            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             changeState(BufTxState.DONE);
             closeMessageResources(false);
         } else {// State/command misalignment
             txLog.add("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
             stateMachine.transactionEnded(this);
-            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION, ts );
+            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             changeState(BufTxState.DONE);
         }
     }
 
-    public void handleCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, TokenResultBuilder ts, List<Response> immediateActions )
+    public void handleCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(command);
 
@@ -131,18 +133,18 @@ public class SmtpTransactionHandler
                 changeState(BufTxState.BUFFERING_MAIL);
             } else {
                 txLog.add("Passthru to client");
-                stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION, ts );
+                stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             }
         } else {
             txLog.add("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
-            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION, ts );
+            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             stateMachine.transactionEnded(this);
             changeState(BufTxState.DONE);
         }
     }
 
-    private void handleMAILOrRCPTCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, TokenResultBuilder ts, ResponseCompletion compl )
+    private void handleMAILOrRCPTCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, ResponseCompletion compl )
     {
 
         logReceivedToken(command);
@@ -152,67 +154,65 @@ public class SmtpTransactionHandler
                 changeState(BufTxState.GATHER_ENVELOPE);
             }
             txLog.add("Pass " + command.getType() + " command to server, register callback to modify envelope at response");
-            stateMachine.sendCommandToServer( session, command, compl, ts );
+            stateMachine.sendCommandToServer( session, command, compl );
         } else {
             txLog.add("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
-            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION, ts );
+            stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             stateMachine.transactionEnded(this);
             changeState(BufTxState.DONE);
         }
     }
 
-    public void handleMAILCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine, TokenResultBuilder ts )
+    public void handleMAILCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine )
     {
         getTransaction().fromRequest(command.getAddress());
-        handleMAILOrRCPTCommand( session, command, stateMachine, ts, new ResponseCompletion()
+        handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
             @Override
-            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+            public void handleResponse( NodeTCPSession session, Response resp )
             {
                 getTransaction().fromResponse(command.getAddress(), (resp.getCode() < 300));
                 logger.debug("Sending response " + resp.getCode() + " to client");
-                ts.addTokenForClient(resp);
+                session.sendObjectToClient( resp );
             }
         });
     }
 
-    public void handleRCPTCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine,
-            TokenResultBuilder ts)
+    public void handleRCPTCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine )
     {
         getTransaction().toRequest(command.getAddress());
-        handleMAILOrRCPTCommand( session, command, stateMachine, ts, new ResponseCompletion()
+        handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
             @Override
-            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+            public void handleResponse( NodeTCPSession session, Response resp )
             {
                 getTransaction().toResponse(command.getAddress(), (resp.getCode() < 300));
                 logger.debug("Sending response " + resp.getCode() + " to client");
-                ts.addTokenForClient(resp);
+                session.sendObjectToClient( resp );
             }
         });
     }
 
-    public void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions, TokenResultBuilder ts )
+    public void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
     {
-
         logReceivedToken(token);
 
         accumulator = token.getMIMEAccumulator();
         messageInfo = token.getMessageInfo();
         isMessageMaster = true;
 
-        handleMIMEChunk( session, true, false, null, stateMachine, immediateActions, ts );
+        handleMIMEChunk( session, true, false, null, stateMachine, immediateActions );
     }
 
-    public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions, TokenResultBuilder ts )
+    public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
-        handleMIMEChunk( session, false, token.isLast(), token, stateMachine, immediateActions, ts );
+        handleMIMEChunk( session, false, token.isLast(), token, stateMachine, immediateActions );
     }
 
-    public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions, TokenResultBuilder ts )
+    public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
     {
 
         logReceivedToken(token);
@@ -222,7 +222,7 @@ public class SmtpTransactionHandler
         isMessageMaster = true;
         accumulator = null;
 
-        handleMIMEChunk( session, true, true, token, stateMachine, immediateActions, ts );
+        handleMIMEChunk( session, true, true, token, stateMachine, immediateActions );
 
     }
 
@@ -248,7 +248,7 @@ public class SmtpTransactionHandler
                                   boolean isFirst, boolean isLast,
                                   Token token,
                                   final SmtpStateMachine stateMachine,
-                                  List<Response> immediateActions, final TokenResultBuilder ts)
+                                  List<Response> immediateActions )
     {
         ContinuedMIMEToken continuedToken = null;
         if (token != null && token instanceof ContinuedMIMEToken) {
@@ -285,11 +285,11 @@ public class SmtpTransactionHandler
                             stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                             {
                                 @Override
-                                public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                                public void handleResponse( NodeTCPSession session, Response resp )
                                 {
-                                    handleResponseAfterPassedMessage( session, stateMachine, resp, ts );
+                                    handleResponseAfterPassedMessage( session, stateMachine, resp );
                                 }
-                            }, ts);
+                            });
 
                             changeState(BufTxState.DONE);
                             break;
@@ -301,7 +301,7 @@ public class SmtpTransactionHandler
 
                             // Send REST to server (ignore result)
                             txLog.add("Send synthetic RSET to server (ignoring the response)");
-                            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION, ts );
+                            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION );
 
                             changeState(BufTxState.DONE);
                             stateMachine.transactionEnded(this);
@@ -317,7 +317,7 @@ public class SmtpTransactionHandler
 
                             // Send REST to server (ignore result)
                             txLog.add("Send synthetic RSET to server (ignoring the response)");
-                            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION, ts );
+                            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION );
 
                             changeState(BufTxState.DONE);
                             stateMachine.transactionEnded(this);
@@ -356,11 +356,11 @@ public class SmtpTransactionHandler
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                            public void handleResponse( NodeTCPSession session, Response resp)
                             {
-                                handleMsgIncompleteDataContinuation( session, resp, ts, stateMachine, BufTxState.DRAIN_MAIL );
+                                handleMsgIncompleteDataContinuation( session, resp, stateMachine, BufTxState.DRAIN_MAIL );
                             }
-                        }, ts );
+                        });
                         changeState(BufTxState.DONE);
                     } else if (timedOut && stateMachine.isBufferAndTrickle( session )) {
                         // T&B DATA Sent
@@ -372,11 +372,11 @@ public class SmtpTransactionHandler
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                            public void handleResponse( NodeTCPSession session, Response resp )
                             {
-                                handleMsgIncompleteDataContinuation( session, resp, ts, stateMachine, BufTxState.T_B_READING_MAIL );
+                                handleMsgIncompleteDataContinuation( session, resp, stateMachine, BufTxState.T_B_READING_MAIL );
                             }
-                        }, ts);
+                        });
                         changeState(BufTxState.DONE);
                     } else {
                         // The chunk is already recorded. Nothing to do. No delta state
@@ -395,16 +395,16 @@ public class SmtpTransactionHandler
                     stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                     {
                         @Override
-                        public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                        public void handleResponse( NodeTCPSession session, Response resp)
                         {
-                            handleMailTransmissionContinuation(resp, ts, stateMachine);
+                            handleMailTransmissionContinuation( session, resp, stateMachine );
                         }
-                    }, ts);
+                    });
 
                     changeState(BufTxState.DONE);
                 } else {
                     // No change in state, and the chunk has already been passed along.
-                    stateMachine.sendContinuedMIMEToServer( session, continuedToken, ts );
+                    stateMachine.sendContinuedMIMEToServer( session, continuedToken);
                 }
                 break;
             case PASSTHRU_PENDING_NACK:
@@ -439,11 +439,11 @@ public class SmtpTransactionHandler
                             stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                             {
                                 @Override
-                                public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                                public void handleResponse( NodeTCPSession session, Response resp)
                                 {
-                                    handleMailTransmissionContinuation(resp, ts, stateMachine);
+                                    handleMailTransmissionContinuation( session, resp, stateMachine );
                                 }
-                            }, ts);
+                            });
                             break;
                         case DROP:
                             // Block, the hard way...
@@ -474,7 +474,7 @@ public class SmtpTransactionHandler
                             break;
                     }
                 } else {
-                    stateMachine.sendContinuedMIMEToServer( session, continuedToken, ts );
+                    stateMachine.sendContinuedMIMEToServer( session, continuedToken );
                 }
                 break;
             default:
@@ -483,9 +483,9 @@ public class SmtpTransactionHandler
                 stateMachine.transactionEnded(this);
                 appendChunk(continuedToken);
                 if (isLast) {
-                    stateMachine.sendContinuedMIMEToServer( session, continuedToken, ts );
+                    stateMachine.sendContinuedMIMEToServer( session, continuedToken );
                 } else {
-                    stateMachine.sendFinalMIMEToServer( session, continuedToken, PASSTHRU_RESPONSE_COMPLETION, ts );
+                    stateMachine.sendFinalMIMEToServer( session, continuedToken, PASSTHRU_RESPONSE_COMPLETION );
                 }
         }
     }
@@ -495,9 +495,8 @@ public class SmtpTransactionHandler
      * 
      * @param stateMachine
      * @param resp
-     * @param ts
      */
-    private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpStateMachine stateMachine, Response resp, TokenResultBuilder ts )
+    private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpStateMachine stateMachine, Response resp )
     {
         logReceivedResponse(resp);
         txLog.add("Response to DATA command was " + resp.getCode());
@@ -515,16 +514,16 @@ public class SmtpTransactionHandler
             if (msg == null) {
                 txLog.add("Passing along an unparsable MIME message in two tokens");
                 isMessageMaster = false;
-                stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo), ts);
+                stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo) );
                 stateMachine.sendFinalMIMEToServer( session, new ContinuedMIMEToken(accumulator.createChunk(null, true)),
                         new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                            public void handleResponse( NodeTCPSession session, Response resp )
                             {
-                                handleMailTransmissionContinuation(resp, ts, stateMachine);
+                                handleMailTransmissionContinuation( session, resp, stateMachine );
                             }
-                        }, ts);
+                        });
                 accumulator = null;
             } else {
                 txLog.add("Passing along parsed MIME in one token");
@@ -536,11 +535,11 @@ public class SmtpTransactionHandler
                         new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+                            public void handleResponse( NodeTCPSession session, Response resp )
                             {
-                                handleMailTransmissionContinuation(resp, ts, stateMachine);
+                                handleMailTransmissionContinuation( session, resp, stateMachine );
                             }
-                        }, ts);
+                        });
                 isMessageMaster = false;
                 msg = null;
             }
@@ -553,7 +552,7 @@ public class SmtpTransactionHandler
             getTransaction().failed();
 
             // Pass along same error (whatever it was) to client
-            stateMachine.sendResponseToClient(resp, ts);
+            stateMachine.sendResponseToClient( session, resp );
 
             // We're done
             changeState(BufTxState.DONE);
@@ -623,7 +622,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleMailTransmissionContinuation(Response resp, TokenResultBuilder ts, SmtpStateMachine stateMachine)
+    public void handleMailTransmissionContinuation( NodeTCPSession session, Response resp, SmtpStateMachine stateMachine )
     {
         logReceivedResponse(resp);
         txLog.add("Response to mail transmission command was " + resp.getCode());
@@ -636,10 +635,10 @@ public class SmtpTransactionHandler
         changeState(BufTxState.DONE);
         stateMachine.transactionEnded(SmtpTransactionHandler.this);
         logger.debug("Sending response " + resp.getCode() + " to client");
-        ts.addTokenForClient(resp);
+        session.sendObjectToClient( resp );
     }
 
-    public void handleMsgIncompleteDataContinuation( NodeTCPSession session, Response resp, TokenResultBuilder ts, SmtpStateMachine stateMachine, BufTxState nextStateIfPositive )
+    public void handleMsgIncompleteDataContinuation( NodeTCPSession session, Response resp, SmtpStateMachine stateMachine, BufTxState nextStateIfPositive )
     {
 
         logReceivedResponse(resp);
@@ -652,14 +651,14 @@ public class SmtpTransactionHandler
 
         if (resp.getCode() < 400) {
             txLog.add("Begin trickle with BeginMIMEToken");
-            stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo), ts);
+            stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo) );
             isMessageMaster = false;
             changeState(nextStateIfPositive);
         } else {
             // Discard message
             closeMessageResources(false);
 
-            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION, ts);
+            stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION );
             changeState(BufTxState.PASSTHRU_PENDING_NACK);
         }
     }

@@ -35,7 +35,6 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.smtp.quarantine.MailSummary;
 import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
-import com.untangle.node.token.TokenResultBuilder;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -254,7 +253,7 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
     }
 
     @Override
-    public void handleOpeningResponse( NodeTCPSession session, Response resp, TokenResultBuilder ts)
+    public void handleOpeningResponse( NodeTCPSession session, Response resp )
     {
         // Note the receivedBy
         String[] rargs = resp.getArgs();
@@ -263,7 +262,7 @@ public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTransla
         } else {
             receivedBy = rargs[0];
         }
-        super.handleOpeningResponse( session, resp, ts );
+        super.handleOpeningResponse( session, resp );
     }
 
     @Override

@@ -14,7 +14,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
-import com.untangle.node.token.TokenResult;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -45,43 +44,46 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 
     // protected methods ------------------------------------------------------
 
-    protected TokenResult doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    protected void doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
-        return new TokenResult(null, new Token[] { command });
+        session.sendObjectToServer( command );
     }
 
-    protected TokenResult doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
+    protected void doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
-        return new TokenResult(new Token[] { reply }, null);
+        session.sendObjectToClient( reply );
     }
 
-    protected TokenResult doClientData( NodeTCPSession session, Chunk c ) throws TokenException
+    protected void doClientData( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
-        return new TokenResult(null, new Token[] { c });
+        session.sendObjectToServer( chunk );
     }
 
     protected void doClientDataEnd( NodeTCPSession session ) throws TokenException { }
 
-    protected TokenResult doServerData( NodeTCPSession session, Chunk c ) throws TokenException
+    protected void doServerData( NodeTCPSession session, Chunk chunk ) throws TokenException
     {
-        return new TokenResult(new Token[] { c }, null);
+        session.sendObjectToClient( chunk );
     }
 
     protected void doServerDataEnd( NodeTCPSession session ) throws TokenException { }
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleClientToken( NodeTCPSession session, Token token ) throws TokenException
     {
         Fitting clientFitting = session.pipelineConnector().getInputFitting();
 
         if (Fitting.FTP_CTL_TOKENS == clientFitting) {
-            return doCommand( session, (FtpCommand)token );
+            doCommand( session, (FtpCommand)token );
+            return;
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
             if (token instanceof EndMarker) {
-                return new TokenResult(null, new Token[] { EndMarker.MARKER });
+                session.sendObjectToServer( EndMarker.MARKER );
+                return;
             } else if (token instanceof Chunk) {
-                return doClientData( session, (Chunk)token );
+                doClientData( session, (Chunk)token );
+                return;
             } else {
                 throw new TokenException("bad token: " + token);
             }
@@ -90,17 +92,20 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public TokenResult handleServerToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleServerToken( NodeTCPSession session, Token token ) throws TokenException
     {
         Fitting serverFitting = session.pipelineConnector().getOutputFitting();
 
         if (Fitting.FTP_CTL_TOKENS == serverFitting) {
-            return doReply( session, (FtpReply)token );
+            doReply( session, (FtpReply)token );
+            return;
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
             if (token instanceof EndMarker) {
-                return new TokenResult(new Token[] { EndMarker.MARKER }, null);
+                session.sendObjectToClient( EndMarker.MARKER );
+                return;
             } else if (token instanceof Chunk) {
-                return doServerData( session, (Chunk)token );
+                doServerData( session, (Chunk)token );
+                return;
             } else {
                 throw new TokenException("bad token: " + token);
             }

@@ -142,6 +142,8 @@ public interface NodeTCPSession extends NodeSession
      */
     void resetServer();
 
+    void beginStream(int side, TCPStreamer streamer);
+
     /**
      * <code>beginClientStream</code> begins streaming to the client.  While streaming no
      * other chunk or writable events will be delivered until the stream is finished.  (This

@@ -515,6 +515,10 @@ public abstract class NodeSessionImpl implements NodeSession
 
     public void sendObject( int side, Object obj )
     {
+        if ( obj.getClass().isArray() ) {
+            logger.warn("sendObject() called with array. Did you mean sendObjects() instead?", new Exception());
+        }
+
         ObjectCrumb crumb = new ObjectCrumb( obj );
         addCrumb(side, crumb);
     }
@@ -951,7 +955,7 @@ public abstract class NodeSessionImpl implements NodeSession
         return "" +
             "[NodeSession-" + System.identityHashCode(this) + "]" +
             "[Session-" + getSessionId() + "] " +
-            getProtocol() + "|" +
+            getProtocol() + " " +
             origClientAddr + ":" +
             getOrigClientPort() + "->" +
             newServerAddr + ":" +

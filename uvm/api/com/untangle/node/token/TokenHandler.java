@@ -12,8 +12,8 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 public interface TokenHandler
 {
-    TokenResult handleClientToken( NodeTCPSession session, Token token ) throws TokenException;
-    TokenResult handleServerToken( NodeTCPSession session, Token token) throws TokenException;
+    void handleClientToken( NodeTCPSession session, Token token ) throws TokenException;
+    void handleServerToken( NodeTCPSession session, Token token) throws TokenException;
 
     void handleNewSessionRequest( TCPNewSessionRequest tsr ) ;
     void handleNewSession( NodeTCPSession session ) ;
@@ -23,5 +23,5 @@ public interface TokenHandler
     void handleTimer( NodeSession session ) throws TokenException;
     void handleFinalized( NodeTCPSession session ) throws TokenException;
 
-    TokenResult releaseFlush( NodeTCPSession session );
+    void releaseFlush( NodeTCPSession session );
 }

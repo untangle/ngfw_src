@@ -40,9 +40,9 @@ public abstract class AbstractTokenHandler implements TokenHandler
         session.shutdownClient();
     }
 
-    public TokenResult releaseFlush( NodeTCPSession session )
+    public void releaseFlush( NodeTCPSession session )
     {
-        return TokenResult.NONE;
+        return;
     }
 
     public void handleFinalized( NodeTCPSession session ) throws TokenException

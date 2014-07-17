@@ -29,7 +29,6 @@ import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
-import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.NodeSession;
@@ -81,7 +80,7 @@ class VirusFtpHandler extends FtpStateMachine
     }
     
     @Override
-    protected TokenResult doClientData( NodeTCPSession session, Chunk c ) throws TokenException
+    protected void doClientData( NodeTCPSession session, Chunk c ) throws TokenException
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if ( node.getSettings().getScanFtp() ) {
@@ -95,14 +94,16 @@ class VirusFtpHandler extends FtpStateMachine
 
             Chunk outChunk = trickle( session, c.getData() );
 
-            return new TokenResult(null, new Token[] { outChunk });
+            session.sendObjectToServer( outChunk );
+            return;
         } else {
-            return new TokenResult(null, new Token[] { c });
+            session.sendObjectToServer( c );
+            return;
         }
     }
 
     @Override
-    protected TokenResult doServerData( NodeTCPSession session, Chunk c ) throws TokenException
+    protected void doServerData( NodeTCPSession session, Chunk c ) throws TokenException
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if ( node.getSettings().getScanFtp() ) {
@@ -116,9 +117,11 @@ class VirusFtpHandler extends FtpStateMachine
 
             Chunk outChunk = trickle( session, c.getData() );
 
-            return new TokenResult(new Token[] { outChunk }, null);
+            session.sendObjectToClient( outChunk );
+            return;
         } else {
-            return new TokenResult(new Token[] { c }, null);
+            session.sendObjectToClient( c );
+            return;
         }
     }
 
@@ -175,24 +178,26 @@ class VirusFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected TokenResult doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    protected void doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
     {
         // no longer have a setting for blocking partial fetches
         // it causes too many issues
         // if (FtpFunction.REST == command.getFunction() &&
         // !node.getSettings().getAllowFtpResume()) {
         // FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
-        // return new TokenResult(new Token[] { reply }, null);
+        // session.sendObjectToClient( reply );
+        // return;
         // }
 
         if (command.getFunction() == FtpFunction.RETR){
             String fileName = command.getArgument();
             addFileName( session.getSessionId(), fileName );
         }
-        return new TokenResult(null, new Token[] { command });
+        session.sendObjectToServer( command );
+        return;
     }
     
-    protected TokenResult doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
+    protected void doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
     {
         if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV){
             try {
@@ -202,7 +207,8 @@ class VirusFtpHandler extends FtpStateMachine
                 throw new TokenException(e);
             }
         }
-        return new TokenResult(new Token[] { reply }, null);
+        session.sendObjectToClient( reply );
+        return;
     }
 
     // private methods --------------------------------------------------------

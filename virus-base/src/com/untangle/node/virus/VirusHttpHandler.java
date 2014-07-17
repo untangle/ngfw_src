@@ -231,7 +231,7 @@ class VirusHttpHandler extends HttpStateMachine
                 releaseResponse( session );
                 try { state.scanfile.delete(); } catch (Exception ignore) {}
             } else {
-                preStream( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
+                streamClient( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
             }
 
         } else {
@@ -384,8 +384,8 @@ class VirusHttpHandler extends HttpStateMachine
             if (MAX_SCAN_LIMIT < state.totalSize) {
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
                 state.scan = false;
-                FileChunkStreamer streamer = new FileChunkStreamer(state.scanfile, state.inFile, null, null, false);
-                preStream( session, streamer );
+
+                streamClient( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
 
                 return Chunk.EMPTY;
             } else {
