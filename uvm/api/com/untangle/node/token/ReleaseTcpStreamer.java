@@ -14,11 +14,11 @@ import com.untangle.uvm.vnet.TCPStreamer;
 class ReleaseTcpStreamer implements TCPStreamer
 {
     private final TCPStreamer streamer;
-    private final Release release;
+    private final ReleaseToken release;
 
     private boolean released = false;
 
-    ReleaseTcpStreamer(TCPStreamer streamer, Release release)
+    ReleaseTcpStreamer(TCPStreamer streamer, ReleaseToken release)
     {
         this.streamer = streamer;
         this.release = release;

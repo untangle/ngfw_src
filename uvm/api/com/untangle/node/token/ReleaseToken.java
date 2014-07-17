@@ -9,13 +9,13 @@ import java.nio.ByteBuffer;
  * This token means: drain queued data, send this data out, and
  * release the session.
  */
-public class Release implements Token
+public class ReleaseToken implements Token
 {
-    public static final Release EMPTY = new Release(ByteBuffer.allocate(0));
+    public static final ReleaseToken EMPTY = new ReleaseToken(ByteBuffer.allocate(0));
 
     private final ByteBuffer data;
 
-    public Release(ByteBuffer data)
+    public ReleaseToken(ByteBuffer data)
     {
         this.data = data;
     }

@@ -11,11 +11,11 @@ package com.untangle.node.token;
 class ReleaseTokenStreamer implements TokenStreamer
 {
     private final TokenStreamer streamer;
-    private final Release release;
+    private final ReleaseToken release;
 
     private boolean released = false;
 
-    ReleaseTokenStreamer(TokenStreamer streamer, Release release)
+    ReleaseTokenStreamer(TokenStreamer streamer, ReleaseToken release)
     {
         this.streamer = streamer;
         this.release = release;

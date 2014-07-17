@@ -233,8 +233,8 @@ public class TokenAdaptor extends AbstractEventHandler
     public TokenResult doToken(NodeTCPSession session, boolean s2c, TokenHandler handler, Token token)
         throws TokenException
     {
-        if (token instanceof Release) {
-            Release release = (Release)token;
+        if (token instanceof ReleaseToken) {
+            ReleaseToken release = (ReleaseToken)token;
 
             TokenResult utr = handler.releaseFlush( session );
 

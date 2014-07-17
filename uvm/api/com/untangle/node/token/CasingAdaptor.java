@@ -270,8 +270,8 @@ public class CasingAdaptor extends CasingBase
     private UnparseResult unparseToken( NodeTCPSession session, Unparser unparser, Token token )
         throws UnparseException
     {
-        if (token instanceof Release) {
-            Release release = (Release)token;
+        if (token instanceof ReleaseToken) {
+            ReleaseToken release = (ReleaseToken)token;
 
             finalize( session );
             session.release();
@@ -353,7 +353,7 @@ public class CasingAdaptor extends CasingBase
                 finalize( session );
                 session.release();
 
-                pr = new ParseResult(new Release(dup));
+                pr = new ParseResult(new ReleaseToken(dup));
             } else {
                 session.shutdownServer();
                 session.shutdownClient();
