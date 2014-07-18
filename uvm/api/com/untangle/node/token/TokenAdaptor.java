@@ -81,7 +81,7 @@ public class TokenAdaptor extends AbstractEventHandler
     {
         try {
             tokenHandler.handleClientFin( session );
-        } catch (TokenException exn) {
+        } catch ( Exception exn ) {
             logger.warn("resetting connection", exn);
             session.resetClient();
             session.resetServer();
@@ -93,7 +93,7 @@ public class TokenAdaptor extends AbstractEventHandler
     {
         try {
             tokenHandler.handleServerFin( session );
-        } catch (TokenException exn) {
+        } catch ( Exception exn ) {
             logger.warn("resetting connection", exn);
             session.resetClient();
             session.resetServer();
@@ -169,7 +169,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
         try {
             handler.handleTimer( sess );
-        } catch (TokenException exn) {
+        } catch ( Exception exn ) {
             logger.warn("exception in timer, no action taken", exn);
         }
     }
@@ -182,7 +182,7 @@ public class TokenAdaptor extends AbstractEventHandler
         
         try {
             doToken(session, s2c, handler, token);
-        } catch (TokenException exn) {
+        } catch ( Exception exn ) {
             logger.warn("resetting connection", exn);
             session.resetClient();
             session.resetServer();
@@ -215,7 +215,7 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     public void doToken( NodeTCPSession session, boolean s2c, TokenHandler handler, Token token )
-        throws TokenException
+       
     {
         if (token instanceof ReleaseToken) {
             ReleaseToken release = (ReleaseToken)token;

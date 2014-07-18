@@ -28,7 +28,6 @@ import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenException;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
@@ -174,7 +173,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
     
     @Override
-    public void handleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleClientToken( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         updateTimestamps( state );
@@ -206,7 +205,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public void handleServerToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleServerToken( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         updateTimestamps( state );
@@ -236,7 +235,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     // FROM Client
-    private final void handleClientTokenImpl( NodeTCPSession session, Token token ) throws TokenException
+    private final void handleClientTokenImpl( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -293,7 +292,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     // FROM Server
-    private final void handleServerTokenImpl( NodeTCPSession session, Token token ) throws TokenException
+    private final void handleServerTokenImpl( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if ( state.passthru || !getScanningEnabled( session ) ) {
@@ -605,7 +604,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public final void handleClientFin( NodeTCPSession session ) throws TokenException
+    public final void handleClientFin( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         state.outstandingRequests.add(new OutstandingRequest(SmtpTransactionHandler.NOOP_RESPONSE_COMPLETION));
@@ -614,7 +613,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public final void handleServerFin( NodeTCPSession session ) throws TokenException
+    public final void handleServerFin( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (!state.shutingDownMode) {

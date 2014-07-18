@@ -16,7 +16,6 @@ import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.TokenException;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Chunk;
@@ -122,13 +121,13 @@ public class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk ) throws TokenException
+    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd( NodeTCPSession session ) throws TokenException
+    protected void doRequestBodyEnd( NodeTCPSession session )
     {
     }
 
@@ -140,24 +139,24 @@ public class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk ) throws TokenException
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
     {
         return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd( NodeTCPSession session ) throws TokenException
+    protected void doResponseBodyEnd( NodeTCPSession session )
     {
     }
 
     @Override
-    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine ) throws TokenException
+    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
     @Override
-    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine ) throws TokenException
+    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
     {
         return statusLine;
     }

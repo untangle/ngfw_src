@@ -24,7 +24,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenException;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -168,7 +167,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk ) throws TokenException
+    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         return state.scan ? bufferOrTrickle( session, chunk ) : chunk;
@@ -349,7 +348,7 @@ class VirusHttpHandler extends HttpStateMachine
         session.cleanupTempFiles();
     }
 
-    private Chunk bufferOrTrickle( NodeTCPSession session, Chunk chunk ) throws TokenException
+    private Chunk bufferOrTrickle( NodeTCPSession session, Chunk chunk )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         ByteBuffer buf = chunk.getData();
@@ -358,7 +357,7 @@ class VirusHttpHandler extends HttpStateMachine
             for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); state.outFile.write(bb));
         } catch (IOException e) {
             logger.warn("Unable to write to buffer file: " + e);
-            throw new TokenException(e);
+            throw new RuntimeException(e);
         }
 
         state.outstanding += buf.remaining();
@@ -398,7 +397,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
-    private Chunk trickle( NodeTCPSession session ) throws TokenException
+    private Chunk trickle( NodeTCPSession session )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("handleTokenTrickle()");
@@ -413,7 +412,7 @@ class VirusHttpHandler extends HttpStateMachine
             for (; inbuf.hasRemaining(); state.inFile.read(inbuf));
         } catch (IOException e) {
             logger.warn("Unable to read from buffer file: " + e);
-            throw new TokenException(e);
+            throw new RuntimeException(e);
         }
 
         inbuf.flip();

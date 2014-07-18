@@ -18,7 +18,6 @@ import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.SeriesTokenStreamer;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.NodeSession;
@@ -104,22 +103,22 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     // protected abstract methods ---------------------------------------------
 
     protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl )
-        throws TokenException;
+       ;
     protected abstract Header doRequestHeader( NodeTCPSession session, Header h )
-        throws TokenException;
+       ;
     protected abstract Chunk doRequestBody( NodeTCPSession session, Chunk c )
-        throws TokenException;
+       ;
     protected abstract void doRequestBodyEnd( NodeTCPSession session )
-        throws TokenException;
+       ;
 
     protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl )
-        throws TokenException;
+       ;
     protected abstract Header doResponseHeader( NodeTCPSession session, Header h )
-        throws TokenException;
+       ;
     protected abstract Chunk doResponseBody( NodeTCPSession session, Chunk c )
-        throws TokenException;
+       ;
     protected abstract void doResponseBodyEnd( NodeTCPSession session )
-        throws TokenException;
+       ;
 
     // protected methods ------------------------------------------------------
 
@@ -288,7 +287,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     }
     
     @Override
-    public void handleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleClientToken( NodeTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -307,7 +306,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         return;
     }
 
-    public void handleServerToken( NodeTCPSession session, Token token ) throws TokenException
+    public void handleServerToken( NodeTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -340,7 +339,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     // private methods --------------------------------------------------------
 
     @SuppressWarnings("fallthrough")
-    private void doHandleClientToken( NodeTCPSession session, Token token ) throws TokenException
+    private void doHandleClientToken( NodeTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         state.clientState = nextClientState( state.clientState, token );
@@ -535,7 +534,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     }
 
     @SuppressWarnings("fallthrough")
-    private void doHandleServerToken( NodeTCPSession session, Token token ) throws TokenException
+    private void doHandleServerToken( NodeTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         state.serverState = nextServerState( state.serverState, token );

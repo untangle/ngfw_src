@@ -25,17 +25,17 @@ public abstract class AbstractTokenHandler implements TokenHandler
         // do nothing
     }
 
-    public void handleTimer( NodeSession session ) throws TokenException
+    public void handleTimer( NodeSession session )
     {
         // do nothing
     }
 
-    public void handleClientFin( NodeTCPSession session ) throws TokenException
+    public void handleClientFin( NodeTCPSession session )
     {
         session.shutdownServer();
     }
 
-    public void handleServerFin( NodeTCPSession session ) throws TokenException
+    public void handleServerFin( NodeTCPSession session )
     {
         session.shutdownClient();
     }
@@ -45,7 +45,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
         return;
     }
 
-    public void handleFinalized( NodeTCPSession session ) throws TokenException
+    public void handleFinalized( NodeTCPSession session )
     {
         // do nothing
     }

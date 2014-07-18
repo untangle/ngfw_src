@@ -15,7 +15,6 @@ import com.untangle.node.ftp.FtpReply;
 import com.untangle.node.ftp.FtpStateMachine;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenException;
 
 /**
  * This handles FTP and inserts the necessary port forwards and rewrites the PORT/PASV commands so that the necessary connection can be made
@@ -60,7 +59,7 @@ class RouterFtpHandler extends FtpStateMachine
 
     
     @Override
-    protected void doCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    protected void doCommand( NodeTCPSession session, FtpCommand command )
     {
         FtpFunction function = command.getFunction();
 
@@ -105,7 +104,7 @@ class RouterFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected void doReply( NodeTCPSession session, FtpReply reply ) throws TokenException
+    protected void doReply( NodeTCPSession session, FtpReply reply )
     {
         int replyCode = reply.getReplyCode();
 
@@ -152,30 +151,30 @@ class RouterFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected void doClientDataEnd( NodeTCPSession session ) throws TokenException
+    protected void doClientDataEnd( NodeTCPSession session )
     {
         session.shutdownServer();
     }
 
     @Override
-    protected void doServerDataEnd( NodeTCPSession session ) throws TokenException
+    protected void doServerDataEnd( NodeTCPSession session )
     {
         session.shutdownClient();
     }
 
     @Override
-    public void handleFinalized( NodeTCPSession session ) throws TokenException
+    public void handleFinalized( NodeTCPSession session )
     {
         node.getSessionManager().releaseSession( session );
     }
 
-    private void portCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    private void portCommand( NodeTCPSession session, FtpCommand command )
     {
         handlePortCommand( session, command );
     }
 
     /* Handle a port command, this is the helper for both extended and normal commands */
-    private void handlePortCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    private void handlePortCommand( NodeTCPSession session, FtpCommand command )
     {
         InetSocketAddress addr;
 
@@ -256,18 +255,18 @@ class RouterFtpHandler extends FtpStateMachine
         return;
     }
 
-    private void eprtCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    private void eprtCommand( NodeTCPSession session, FtpCommand command )
     {
         logger.debug( "Handling extended port command" );
         handlePortCommand( session, command );
     }
     
-    private void pasvCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    private void pasvCommand( NodeTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
-    private void pasvReply( NodeTCPSession session, FtpReply reply ) throws TokenException
+    private void pasvReply( NodeTCPSession session, FtpReply reply )
     {
         InetSocketAddress addr;
 
@@ -281,16 +280,16 @@ class RouterFtpHandler extends FtpStateMachine
         try {
             addr = reply.getSocketAddress();
         } catch ( ParseException e ) {
-            throw new TokenException( "Error getting socket address", e );
+            throw new RuntimeException( "Error getting socket address", e );
         }
 
         if ( null == addr ) {
-            throw new TokenException( "Error getting socket address" );
+            throw new RuntimeException( "Error getting socket address" );
         }
 
         /* Verify that the server is going to the same place */
         if (addr.getAddress() == null ) {
-            throw new TokenException( "wildcard address" );
+            throw new RuntimeException( "wildcard address" );
         }
 
         if ( sessionData.isServerRedirect()) {
@@ -316,28 +315,28 @@ class RouterFtpHandler extends FtpStateMachine
         return;
     }
 
-    private void epsvCommand( NodeTCPSession session, FtpCommand command ) throws TokenException
+    private void epsvCommand( NodeTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
-    private void epsvReply( NodeTCPSession session, FtpReply reply ) throws TokenException
+    private void epsvReply( NodeTCPSession session, FtpReply reply )
     {
         RouterSessionData sessionData = getSessionData( session );
         if ( sessionData == null ) {
             logger.debug( "Ignoring unmodified session" );
-            throw new TokenException( "Missing session data");
+            throw new RuntimeException( "Missing session data");
         }
         
         InetSocketAddress addr;
         try {
             addr = reply.getSocketAddress();
         } catch ( ParseException e ) {
-            throw new TokenException( "Error getting socket address", e );
+            throw new RuntimeException( "Error getting socket address", e );
         }
 
         if ( null == addr ) {
-            throw new TokenException( "Error getting socket address" );
+            throw new RuntimeException( "Error getting socket address" );
         }
 
         /**
