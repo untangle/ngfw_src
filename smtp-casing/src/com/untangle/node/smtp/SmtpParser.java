@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.FatalMailParseException;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
@@ -77,7 +76,7 @@ abstract class SmtpParser extends AbstractParser
     {
         try {
             return isPassthru( session ) ? new ParseResult(new Chunk(buf)) : doParse( session, buf );
-        } catch (FatalMailParseException exn) {
+        } catch ( Exception exn ) {
             session.shutdownClient();
             session.shutdownServer();
             return new ParseResult();
@@ -89,7 +88,7 @@ abstract class SmtpParser extends AbstractParser
      * <br>
      * Note that if the casing is {@link #isPassthru in passthru} then this method will not be called.
      */
-    protected abstract ParseResult doParse( NodeTCPSession session, ByteBuffer buf ) throws FatalMailParseException;
+    protected abstract ParseResult doParse( NodeTCPSession session, ByteBuffer buf );
 
     public final ParseResult parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {

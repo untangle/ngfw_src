@@ -23,8 +23,8 @@ public class CommandWithEmailAddress extends Command
 
     private static InternetAddress NULL_ADDRESS = new InternetAddress();
 
-    protected CommandWithEmailAddress(CommandType type, String cmdStr, String argStr) throws ParseException,
-            FatalMailParseException {
+    protected CommandWithEmailAddress(CommandType type, String cmdStr, String argStr) throws ParseException
+    {
         super(type, cmdStr, argStr);
 
         if (argStr == null) {
@@ -100,7 +100,7 @@ public class CommandWithEmailAddress extends Command
     /**
      * Helper for subclasses, which have already stripped-off the "TO" or "FROM"
      */
-    protected void assignFromWire(String str) throws ParseException, FatalMailParseException
+    protected void assignFromWire(String str) throws ParseException
     {
         EmailAddressAndExtra ewe = parseAddressAndExtra(str);
         setAddress(ewe.addr);
@@ -110,8 +110,7 @@ public class CommandWithEmailAddress extends Command
     /**
      * Parses an email address (which is assumed to begin at str index 0) and any extra ESMTP junk at the end
      */
-    protected static EmailAddressAndExtra parseAddressAndExtra(String str) throws ParseException,
-            FatalMailParseException
+    protected static EmailAddressAndExtra parseAddressAndExtra(String str) throws ParseException
     {
         if (str == null) {
             return new EmailAddressAndExtra(NULL_ADDRESS, null);
@@ -148,7 +147,7 @@ public class CommandWithEmailAddress extends Command
      * Leading spaces are trimmed. <br>
      * Will never return null.
      */
-    protected static InternetAddress parseAddress(String str) throws FatalMailParseException
+    protected static InternetAddress parseAddress( String str )
     {
         if (str == null) {
             return NULL_ADDRESS;
@@ -163,11 +162,11 @@ public class CommandWithEmailAddress extends Command
                 return NULL_ADDRESS;
             }
             if (addresses.length > 1) {
-                throw new FatalMailParseException("Line contained more than one address \"" + str + "\"");
+                throw new RuntimeException("Line contained more than one address \"" + str + "\"");
             }
             return addresses[0];
         } catch (AddressException ex) {
-            throw new FatalMailParseException("could not parse email address: " + str, ex);
+            throw new RuntimeException("could not parse email address: " + str, ex);
         }
     }
 

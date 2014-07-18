@@ -9,7 +9,6 @@ import static com.untangle.node.util.Rfc822Util.eatSpace;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.smtp.FatalMailParseException;
 import com.untangle.node.token.ParseException;
 
 /**
@@ -22,7 +21,7 @@ public class CommandParser
      * Parse the buffer (which must have a complete line!) into a Command. May return a subclass of Command for Commands
      * with interesting arguments we wish parsed.
      */
-    public static Command parse(ByteBuffer buf) throws ParseException, FatalMailParseException
+    public static Command parse(ByteBuffer buf) throws ParseException
     {
         String cmdStr = consumeToken(buf);
         cmdStr = cmdStr == null ? "" : cmdStr.trim();

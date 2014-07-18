@@ -65,7 +65,7 @@ class SmtpC2SParser extends SmtpParser
 
     @Override
     @SuppressWarnings("fallthrough")
-    protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf ) throws FatalMailParseException
+    protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf )
     {
         SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
