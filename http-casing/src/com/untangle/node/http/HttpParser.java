@@ -1142,7 +1142,7 @@ public class HttpParser extends AbstractParser
     {
         List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "HTTP-request-queue" );
 
-        if ( requests != null & requests.size() > 0 ) {
+        if ( requests != null && requests.size() > 0 ) {
             return requests.remove(0);
         } else {
             if ( statusCode < 400 || statusCode > 499 ) {
