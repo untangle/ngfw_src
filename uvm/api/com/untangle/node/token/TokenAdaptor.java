@@ -188,30 +188,6 @@ public class TokenAdaptor extends AbstractEventHandler
             session.resetServer();
             return;
         }
-
-        // FIXME - must be handled elsewhere
-        // FIXME - must be handled elsewhere
-        // FIXME - must be handled elsewhere
-        
-        // if (tr.isStreamer()) {
-        //     if (tr.s2cStreamer() != null) {
-        //         logger.debug("beginning client stream");
-        //         TokenStreamer tokSt = tr.s2cStreamer();
-        //         TCPStreamer ts = new TokenStreamerAdaptor( tokSt, session );
-        //         session.beginClientStream(ts);
-        //     } else {
-        //         logger.debug("beginning server stream");
-        //         TokenStreamer tokSt = tr.c2sStreamer();
-        //         TCPStreamer ts = new TokenStreamerAdaptor( tokSt, session );
-        //         session.beginServerStream(ts);
-        //     }
-        //     // just means nothing extra to send before beginning stream.
-        //     return;
-        // } else {
-        //     session.sendObjectsToClient( tr.s2cTokens() );
-        //     session.sendObjectsToServer( tr.c2sTokens() );
-        //     return;
-        // }
     }
 
     public void doToken( NodeTCPSession session, boolean s2c, TokenHandler handler, Token token )
@@ -224,41 +200,6 @@ public class TokenAdaptor extends AbstractEventHandler
 
             finalize( session );
             session.release();
-
-            // FIXME - must be handled elsewhere
-            // FIXME - must be handled elsewhere
-            // FIXME - must be handled elsewhere
-            // if (utr.isStreamer()) {
-            //     if (s2c) {
-            //         TokenStreamer cStm = utr.c2sStreamer();
-            //         TokenStreamer sStm = new ReleaseTokenStreamer(utr.s2cStreamer(), release);
-
-            //         return new TokenResult(sStm, cStm);
-            //     } else {
-            //         TokenStreamer cStm = new ReleaseTokenStreamer(utr.c2sStreamer(), release);
-            //         TokenStreamer sStm = utr.s2cStreamer();
-
-            //         return new TokenResult(sStm, cStm);
-            //     }
-            // } else {
-            //     if (s2c) {
-            //         Token[] cTok = utr.c2sTokens();
-
-            //         Token[] sTokOrig = utr.s2cTokens();
-            //         Token[] sTok = new Token[sTokOrig.length + 1];
-            //         System.arraycopy(sTokOrig, 0, sTok, 0, sTokOrig.length);
-            //         sTok[sTok.length - 1] = release;
-
-            //         return new TokenResult(sTok, cTok);
-            //     } else {
-            //         Token[] cTokOrig = utr.c2sTokens();
-            //         Token[] cTok = new Token[cTokOrig.length + 1];
-            //         System.arraycopy(cTokOrig, 0, cTok, 0, cTokOrig.length);
-            //         cTok[cTok.length - 1] = release;
-            //         Token[] sTok = utr.s2cTokens();
-            //         return new TokenResult(sTok, cTok);
-            //     }
-            // }
         } else {
             if (s2c) {
                 handler.handleServerToken( session, token );

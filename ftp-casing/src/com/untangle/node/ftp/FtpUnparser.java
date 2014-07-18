@@ -7,11 +7,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseException;
-import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -22,6 +23,8 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 class FtpUnparser extends AbstractUnparser
 {
+    private static final Logger logger = Logger.getLogger(FtpUnparser.class);
+
     public FtpUnparser( boolean clientSide )
     {
         super( clientSide );
@@ -31,7 +34,7 @@ class FtpUnparser extends AbstractUnparser
     {
     }
     
-    public UnparseResult unparse( NodeTCPSession session, Token token ) throws UnparseException
+    public void unparse( NodeTCPSession session, Token token ) throws UnparseException
     {
         InetSocketAddress socketAddress = null;
         if (token instanceof FtpReply) { // XXX tacky
@@ -94,12 +97,19 @@ class FtpUnparser extends AbstractUnparser
             FtpStateMachine.addDataSocket(socketAddress, session.getSessionId());
         }
 
-        return new UnparseResult(new ByteBuffer[] { token.getBytes() });
+        if ( clientSide )
+            session.sendDataToClient( token.getBytes() );
+        else
+            session.sendDataToServer( token.getBytes() );
     }
 
-    public TCPStreamer endSession( NodeTCPSession session )
+    public void endSession( NodeTCPSession session )
     {
         FtpStateMachine.removeDataSockets(session.getSessionId());
-        return null;
+        if ( clientSide )
+            session.shutdownClient();
+        else
+            session.shutdownServer();
+        return;
     }
 }

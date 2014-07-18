@@ -20,7 +20,6 @@ import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
-import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
@@ -65,7 +64,7 @@ class SmtpC2SParser extends SmtpParser
 
     @Override
     @SuppressWarnings("fallthrough")
-    protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf )
+    protected void doParse( NodeTCPSession session, ByteBuffer buf )
     {
         SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
@@ -90,7 +89,9 @@ class SmtpC2SParser extends SmtpParser
                 if (buf.hasRemaining()) {
                     toks.add(new Chunk(buf));
                 }
-                return new ParseResult(toks);
+                for ( Token tok : toks )
+                    session.sendObjectToServer( tok );
+                return;
             }
 
             switch ( state.currentState ) {
@@ -118,7 +119,9 @@ class SmtpC2SParser extends SmtpParser
                         toks.add( PassThruToken.PASSTHRU );
                         toks.add( new Chunk( dup.slice() ) );
                         buf.position( buf.limit() );
-                        return new ParseResult(toks);
+                        for ( Token tok : toks )
+                            session.sendObjectToServer( tok );
+                        return;
                     }
                     break;
                 }
@@ -163,7 +166,10 @@ class SmtpC2SParser extends SmtpParser
                             declarePassthru( session );
                             toks.add( PassThruToken.PASSTHRU );
                             toks.add(  new Chunk( buf ) );
-                            return new ParseResult(toks, null);
+
+                            for ( Token tok : toks )
+                                session.sendObjectToServer( tok );
+                            return;
                         } else {
                             logger.debug("Opening SASL Exchange");
                         }
@@ -180,7 +186,10 @@ class SmtpC2SParser extends SmtpParser
                             declarePassthru( session );
                             toks.add(PassThruToken.PASSTHRU);
                             toks.add(new Chunk(buf));
-                            return new ParseResult(toks);
+
+                            for ( Token tok : toks )
+                                session.sendObjectToServer( tok );
+                            return;
                         }
                         break;
                     } else {
@@ -204,7 +213,9 @@ class SmtpC2SParser extends SmtpParser
                             declarePassthru( session );
                             toks.add(PassThruToken.PASSTHRU);
                             toks.add(new Chunk(buf));
-                            return new ParseResult(toks, null);
+                            for ( Token tok : toks )
+                                session.sendObjectToServer( tok );
+                            return;
                         }
                         logger.debug("Change state to " + SmtpClientState.HEADERS
                                      + ".  Enqueue response handler in case DATA "
@@ -224,7 +235,9 @@ class SmtpC2SParser extends SmtpParser
                         declarePassthru( session );
                         toks.add(PassThruToken.PASSTHRU);
                         toks.add(new Chunk(buf));
-                        return new ParseResult(toks, null);
+                        for ( Token tok : toks )
+                            session.sendObjectToServer( tok );
+                        return;
                     }
                     logger.debug("Command line does not end with CRLF.  Need more bytes");
                     done = true;
@@ -252,7 +265,9 @@ class SmtpC2SParser extends SmtpParser
                 if (! state.sac.accumulator.addHeaderBytes(dup2, endOfHeaders) ) {
                     logger.error("Unable to write header bytes to disk.  Enter passthru");
                     puntDuringHeaders( session, toks, dup );
-                    return new ParseResult(toks, null);
+                    for ( Token tok : toks )
+                        session.sendObjectToServer( tok );
+                    return;
                 }
 
                 if (endOfHeaders) {// BEGIN End of Headers
@@ -306,12 +321,14 @@ class SmtpC2SParser extends SmtpParser
         buf = compactIfNotEmpty(buf, MAX_COMMAND_LINE_SZ);
 
         if (buf == null) {
-            logger.debug("returning ParseResult with " + toks.size() + " tokens and a null buffer");
+            logger.debug("sending " + toks.size() + " tokens and setting a null buffer");
         } else {
-            logger.debug("returning ParseResult with " + toks.size() + " tokens and a buffer with " + buf.remaining()
-                         + " remaining (" + buf.position() + " to be seen on next invocation)");
+            logger.debug("sending " + toks.size() + " tokens and setting a buffer with " + buf.remaining() + " remaining (" + buf.position() + " to be seen on next invocation)");
         }
-        return new ParseResult(toks, buf);
+        for ( Token tok : toks )
+            session.sendObjectToServer( tok );
+        session.setClientBuffer( buf );
+        return;
     }
 
     @Override

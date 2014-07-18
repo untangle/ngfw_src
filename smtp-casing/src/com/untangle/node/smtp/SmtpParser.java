@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
-import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -60,11 +59,12 @@ abstract class SmtpParser extends AbstractParser
     }
 
     @Override
-    public final TokenStreamer endSession( NodeTCPSession session )
+    public final void endSession( NodeTCPSession session )
     {
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") endSession()");
         // getCasing().endSession(isClientSide());
-        return super.endSession( session );
+        super.endSession( session );
+        return;
     }
 
     public void handleFinalized( NodeTCPSession session )
@@ -72,14 +72,23 @@ abstract class SmtpParser extends AbstractParser
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") handleFinalized()");
     }
 
-    public final ParseResult parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public final void parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         try {
-            return isPassthru( session ) ? new ParseResult(new Chunk(buf)) : doParse( session, buf );
+            if ( isPassthru( session ) ) {
+                if ( clientSide )
+                    session.sendObjectToServer( new Chunk(buf) );
+                else
+                    session.sendObjectToClient( new Chunk(buf) );
+                return;
+            } else {
+                doParse( session, buf );
+                return;
+            }
         } catch ( Exception exn ) {
             session.shutdownClient();
             session.shutdownServer();
-            return new ParseResult();
+            return;
         }
     }
 
@@ -88,15 +97,20 @@ abstract class SmtpParser extends AbstractParser
      * <br>
      * Note that if the casing is {@link #isPassthru in passthru} then this method will not be called.
      */
-    protected abstract ParseResult doParse( NodeTCPSession session, ByteBuffer buf );
+    protected abstract void doParse( NodeTCPSession session, ByteBuffer buf );
 
-    public final ParseResult parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public final void parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         if ( buf.hasRemaining() ) {
             logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") Passing final chunk of size: " + buf.remaining());
-            return new ParseResult(new Chunk(buf));
+
+            if ( clientSide )
+                session.sendObjectToServer( new Chunk(buf) );
+            else
+                session.sendObjectToClient( new Chunk(buf) );
+            return;
         }
-        return new ParseResult();
+        return;
     }
 
     /**

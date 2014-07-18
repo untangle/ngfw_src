@@ -22,34 +22,32 @@ public abstract class AbstractUnparser implements Unparser
     // Unparser methods -------------------------------------------------------
 
     /*
-     * CasingAdaptor will call the UnparseResult/Token version
      * CasingCoupler will call the TCPChunkResult/TCPChunkEvent version
      * If you forget to override one or the other in your casing
      * then you will see one of the helpful exception messages
      */
 
-    public UnparseResult unparse( NodeTCPSession session, Token token ) throws UnparseException
-    {
-        throw new UnparseException("Unexpected call to base class unparse(ByteBuffer)");
-    }
-
-    public void unparseFIXME( NodeTCPSession session, ByteBuffer data ) throws UnparseException
+    public void unparse( NodeTCPSession session, ByteBuffer data ) throws UnparseException
     {
         throw new UnparseException("Unexpected call to base class unparse(Token)");
     }
 
-    public UnparseResult releaseFlush( NodeTCPSession session )
+    public void releaseFlush( NodeTCPSession session )
     {
-        return UnparseResult.NONE;
+        return;
     }
 
-    public TCPStreamer endSession( NodeTCPSession session )
+    public void endSession( NodeTCPSession session )
     {
-        return null;
+        if ( clientSide )
+            session.shutdownClient();
+        else
+            session.shutdownServer();
     }
 
     public void handleFinalized( NodeTCPSession session )
     {
+        
     }
 
     // protected methods ------------------------------------------------------

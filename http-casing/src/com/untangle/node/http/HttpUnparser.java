@@ -16,13 +16,11 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * An HTTP <code>Unparser</code>.
- *
  */
 class HttpUnparser extends AbstractUnparser
 {
@@ -40,7 +38,7 @@ class HttpUnparser extends AbstractUnparser
 
     private final HttpNodeImpl node;
 
-    // used to keep request with header, IIS requires this
+    // used to keep request with header
     private class HttpUnparserSessionState
     {
         protected Queue<ByteBuffer> outputQueue = new LinkedList<ByteBuffer>();
@@ -62,12 +60,7 @@ class HttpUnparser extends AbstractUnparser
         session.attach( STATE_KEY, state );
     }
 
-    public TCPStreamer endSession( NodeTCPSession session )
-    {
-        return null;
-    }
-
-    public UnparseResult unparse( NodeTCPSession session, Token token )
+    public void unparse( NodeTCPSession session, Token token )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
         
@@ -80,38 +73,43 @@ class HttpUnparser extends AbstractUnparser
                 logger.debug(" got status line!");
             }
             state.transferEncoding = CLOSE_ENCODING;
-            return statusLine( session, (StatusLine) token );
+            statusLine( session, (StatusLine) token );
+            return;
         } else if (token instanceof RequestLineToken) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got request line!");
             }
-            return requestLine( session, (RequestLineToken) token);
+            requestLine( session, (RequestLineToken) token);
+            return;
         } else if (token instanceof Header) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got header!");
             }
-            return header( session, (Header) token );
+            header( session, (Header) token );
+            return;
         } else if (token instanceof Chunk) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got chunk!");
             }
-            return chunk( session, (Chunk) token );
+            chunk( session, (Chunk) token );
+            return;
         } else if (token instanceof EndMarker) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got endmarker");
             }
-            return endMarker( session );
+            endMarker( session );
+            return;
         } else {
             throw new IllegalArgumentException("unexpected: " + token);
         }
     }
 
-    public UnparseResult releaseFlush( NodeTCPSession session )
+    public void releaseFlush( NodeTCPSession session )
     {
-        return dequeueOutput( session );
+        dequeueOutput( session );
     }
 
-    private UnparseResult statusLine( NodeTCPSession session, StatusLine statusLine )
+    private void statusLine( NodeTCPSession session, StatusLine statusLine )
     {
         if (logger.isDebugEnabled()) {
             logger.debug(" status-line");
@@ -119,10 +117,13 @@ class HttpUnparser extends AbstractUnparser
 
         queueOutput( session, statusLine.getBytes() );
 
-        return new UnparseResult(BYTE_BUFFER_PROTO);
+        if ( clientSide )
+            session.sendDataToClient( BYTE_BUFFER_PROTO );
+        else
+            session.sendDataToServer( BYTE_BUFFER_PROTO );
     }
 
-    private UnparseResult requestLine( NodeTCPSession session, RequestLineToken rl )
+    private void requestLine( NodeTCPSession session, RequestLineToken rl )
     {
         HttpMethod method = rl.getMethod();
 
@@ -134,10 +135,13 @@ class HttpUnparser extends AbstractUnparser
 
         queueOutput( session, rl.getBytes() );
 
-        return new UnparseResult(BYTE_BUFFER_PROTO);
+        if ( clientSide )
+            session.sendDataToClient( BYTE_BUFFER_PROTO );
+        else
+            session.sendDataToServer( BYTE_BUFFER_PROTO );
     }
 
-    private UnparseResult header( NodeTCPSession session, Header header )
+    private void header( NodeTCPSession session, Header header )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
@@ -154,13 +158,16 @@ class HttpUnparser extends AbstractUnparser
 
         queueOutput( session, header.getBytes() );
         if (isClientSide()) {
-            return dequeueOutput( session );
+            dequeueOutput( session );
         } else {
-            return new UnparseResult(BYTE_BUFFER_PROTO);
+            if ( clientSide )
+                session.sendDataToClient( BYTE_BUFFER_PROTO );
+            else
+                session.sendDataToServer( BYTE_BUFFER_PROTO );
         }
     }
 
-    private UnparseResult chunk( NodeTCPSession session, Chunk c )
+    private void chunk( NodeTCPSession session, Chunk c )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
@@ -171,7 +178,11 @@ class HttpUnparser extends AbstractUnparser
         ByteBuffer cBuf = c.getBytes();
 
         if ( state.transferEncoding == CHUNKED_ENCODING && cBuf.remaining() == 0 ) {
-            return new UnparseResult(BYTE_BUFFER_PROTO);
+            if ( clientSide )
+                session.sendDataToClient( BYTE_BUFFER_PROTO );
+            else
+                session.sendDataToServer( BYTE_BUFFER_PROTO );
+            return;
         }
 
         ByteBuffer buf;
@@ -195,14 +206,17 @@ class HttpUnparser extends AbstractUnparser
         }
 
         if ( state.outputQueue.isEmpty() ) {
-            return new UnparseResult(new ByteBuffer[] { buf });
+            if ( clientSide )
+                session.sendDataToClient( buf );
+            else
+                session.sendDataToServer( buf );
         } else {
             queueOutput( session, buf );
-            return dequeueOutput( session );
+            dequeueOutput( session );
         }
     }
 
-    private UnparseResult endMarker( NodeTCPSession session )
+    private void endMarker( NodeTCPSession session )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
@@ -217,13 +231,24 @@ class HttpUnparser extends AbstractUnparser
         }
 
         if ( state.outputQueue.isEmpty() ) {
-            return new UnparseResult(null == buf ? BYTE_BUFFER_PROTO : new ByteBuffer[] { buf });
+            if ( buf == null ) {
+                if ( clientSide )
+                    session.sendDataToClient( BYTE_BUFFER_PROTO );
+                else
+                    session.sendDataToServer( BYTE_BUFFER_PROTO );
+            } else {
+                if ( clientSide )
+                    session.sendDataToClient( buf );
+                else
+                    session.sendDataToServer( buf );
+            }
         } else {
             if (null != buf) {
                 queueOutput( session, buf );
             }
 
-            return dequeueOutput( session );
+            dequeueOutput( session );
+            return;
         }
     }
 
@@ -234,7 +259,7 @@ class HttpUnparser extends AbstractUnparser
         state.outputQueue.add(buf);
     }
 
-    private UnparseResult dequeueOutput( NodeTCPSession session )
+    private void dequeueOutput( NodeTCPSession session )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
@@ -250,7 +275,11 @@ class HttpUnparser extends AbstractUnparser
         state.size = 0;
         state.outputQueue.clear();
 
-        return new UnparseResult(new ByteBuffer[] { buf });
+        if ( clientSide )
+            session.sendDataToClient( buf );
+        else
+            session.sendDataToServer( buf );
+        return;
     }
 
     @SuppressWarnings("unchecked")

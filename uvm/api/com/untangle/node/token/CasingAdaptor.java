@@ -140,47 +140,25 @@ public class CasingAdaptor extends CasingBase
     @Override
     public void handleTCPClientFIN( NodeTCPSession session )
     {
-        TCPStreamer tcpStream = null;
-
-        // Casing casing = (Casing)session.attachment();
-
         if (clientSide) {
-            TokenStreamer tokSt = this.parser.endSession( session );
-            if (null != tokSt) {
-                tcpStream = new TokenStreamerAdaptor( tokSt, session );
-            }
+            this.parser.endSession( session );
         } else {
-            tcpStream = this.unparser.endSession( session );
+            this.unparser.endSession( session );
         }
 
-        if (null != tcpStream) {
-            session.beginServerStream(tcpStream);
-        } else {
-            session.shutdownServer();
-        }
+        return;
     }
 
     @Override
     public void handleTCPServerFIN( NodeTCPSession session )
     {
-        TCPStreamer ts = null;
-
-        // Casing casing = (Casing)session.attachment();
-
         if (clientSide) {
-            ts = this.unparser.endSession( session );
+            this.unparser.endSession( session );
         } else {
-            TokenStreamer tokSt = this.parser.endSession( session );
-            if (null != tokSt) {
-                ts = new TokenStreamerAdaptor( tokSt, session );
-            }
+            this.parser.endSession( session );
         }
 
-        if (null != ts) {
-            session.beginClientStream(ts);
-        } else {
-            session.shutdownClient();
-        }
+        return;
     }
 
     @Override
@@ -209,66 +187,20 @@ public class CasingAdaptor extends CasingBase
         // Casing casing = (Casing)session.attachment();
 
         Token tok = (Token) obj;
-        UnparseResult ur;
+
         try {
-            ur = unparseToken(session, this.unparser, tok);
-        } catch (Exception exn) { /* not just UnparseException */
+            unparseToken(session, this.unparser, tok);
+        } catch (Exception exn) {
             logger.error("internal error, closing connection", exn);
-            if (s2c) {
-                // XXX We don't have a good handle on this
-                session.resetClient();
-                session.resetServer();
-            } else {
-                // XXX We don't have a good handle on this
-                session.shutdownServer();
-                session.resetClient();
-            }
-            logger.debug("returning DO_NOT_PASS");
+
+            session.resetClient();
+            session.resetServer();
 
             return;
-        }
-
-        if (ur.isStreamer()) {
-            TCPStreamer ts = ur.getTcpStreamer();
-            if (s2c) {
-                session.beginClientStream(ts);
-            } else {
-                session.beginServerStream(ts);
-            }
-
-            return;
-        } else {
-            if (s2c) {
-                logger.debug("unparse result to client");
-                ByteBuffer[] result = ur.result();
-                if (logger.isDebugEnabled()) {
-                    for (int i = 0; result != null && i < result.length; i++) {
-                        logger.debug("  to client: " + result[i]);
-                    }
-                }
-
-                if (result.length > 0) {
-                    session.sendDataToClient( result );
-                }
-                return;
-            } else {
-                logger.debug("unparse result to server");
-                ByteBuffer[] result = ur.result();
-                if (logger.isDebugEnabled()) {
-                    for (int i = 0; result != null && i < result.length; i++) {
-                        logger.debug("  to server: " + result[i]);
-                    }
-                }
-                if (result.length > 0) {
-                    session.sendDataToServer( result );
-                }
-                return;
-            }
         }
     }
 
-    private UnparseResult unparseToken( NodeTCPSession session, Unparser unparser, Token token )
-        throws UnparseException
+    private void unparseToken( NodeTCPSession session, Unparser unparser, Token token ) throws UnparseException
     {
         if (token instanceof ReleaseToken) {
             ReleaseToken release = (ReleaseToken)token;
@@ -276,35 +208,24 @@ public class CasingAdaptor extends CasingBase
             finalize( session );
             session.release();
 
-            UnparseResult ur = unparser.releaseFlush( session );
-            if (ur.isStreamer()) {
-                TCPStreamer ts = new ReleaseTcpStreamer(ur.getTcpStreamer(), release);
-                return new UnparseResult(ts);
-            } else {
-                ByteBuffer[] orig = ur.result();
-                ByteBuffer[] r = new ByteBuffer[orig.length + 1];
-                System.arraycopy(orig, 0, r, 0, orig.length);
-                r[r.length - 1] = release.getBytes();
-                return new UnparseResult(r);
-            }
+            unparser.releaseFlush( session );
+            return;
         } else {
-            return unparser.unparse( session, token );
+            unparser.unparse( session, token );
+            return;
         }
     }
 
     private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
-        // Casing casing = (Casing)session.attachment();
-
-        ParseResult pr;
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
         Parser p = this.parser;
         try {
             if (last) {
-                pr = p.parseEnd( session, buf );
+                p.parseEnd( session, buf );
             } else {
-                pr = p.parse( session, buf );
+                p.parse( session, buf );
             }
         } catch (Throwable exn) {
             if (releaseParseExceptions) {
@@ -353,7 +274,12 @@ public class CasingAdaptor extends CasingBase
                 finalize( session );
                 session.release();
 
-                pr = new ParseResult(new ReleaseToken(dup));
+                if ( s2c ) {
+                    session.sendObjectToClient( new ReleaseToken( dup ) );
+                } else {
+                    session.sendObjectToServer( new ReleaseToken( dup ) );
+                }
+                return;
             } else {
                 session.shutdownServer();
                 session.shutdownClient();
@@ -361,44 +287,8 @@ public class CasingAdaptor extends CasingBase
             }
         }
 
-        if (pr.isStreamer()) {
-            TokenStreamer tokSt = pr.getTokenStreamer();
-            TCPStreamer ts = new TokenStreamerAdaptor(tokSt, session);
-            if (s2c) {
-                session.beginClientStream(ts);
-                session.setServerBuffer( pr.getReadBuffer() );
-            } else {
-                session.beginServerStream(ts);
-                session.setClientBuffer( pr.getReadBuffer() );
-            }
 
-            return;
-        } else {
-            List<Token> results = pr.getResults();
-
-            if (s2c) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to server, read buffer: " + pr.getReadBuffer() + "  to client: " + results);
-                }
-
-                if ( results.size() > 0 ) {
-                    Token[] arr = results.toArray( new Token[results.size()] );
-                    session.sendObjectsToClient( arr );
-                }
-                session.setServerBuffer( pr.getReadBuffer() );
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("parse result to client, read buffer: " + pr.getReadBuffer() + "  to server: " + results);
-                }
-
-                if ( results.size() > 0 ) {
-                    Token[] arr = results.toArray( new Token[results.size()] );
-                    session.sendObjectsToServer( arr );
-                }
-                session.setClientBuffer( pr.getReadBuffer() );
-            }
-            return;
-        }
+        return;
     }
 
     private void finalize( NodeTCPSession session )

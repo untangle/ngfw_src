@@ -19,35 +19,22 @@ public abstract class AbstractParser implements Parser
         this.clientSide = clientSide;
     }
 
-    // Parser methods ---------------------------------------------------------
-
-    /*
-     * CasingAdaptor will call the ParseResult/ByteBuffer version
-     * CasingCoupler will call the TCPChunkResult/TCPChunkEvent version
-     * If you forget to override one or the other in your casing
-     * then you will see one of the helpful exception messages
-     */
-
-    public ParseResult parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
     {
         throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
     }
 
-    public void parseFIXME( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    public void endSession( NodeTCPSession session )
     {
-        throw new ParseException("Unexpected call to base class parse(TCPChunkEvent)");
+        if ( clientSide )
+            session.shutdownServer();
+        else
+            session.shutdownClient();
     }
 
-    // Parser noops -----------------------------------------------------------
-
-    public TokenStreamer endSession( NodeTCPSession session )
+    public void parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
     {
-        return null;
-    }
-
-    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
-    {
-        return null;
+        return;
     }
 
     // session manipulation ---------------------------------------------------

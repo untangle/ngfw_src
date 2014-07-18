@@ -16,7 +16,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.ParseException;
-import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -110,7 +109,7 @@ public class HttpParser extends AbstractParser
         lineBuffering( session, true );
     }
     
-    public ParseResult parse( NodeTCPSession session, ByteBuffer b ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer b ) throws ParseException
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         cancelTimer( session );
@@ -216,7 +215,7 @@ public class HttpParser extends AbstractParser
                             // XXX send error page instead
                             session.shutdownClient();
                             session.shutdownServer();
-                            return new ParseResult();
+                            return;
                         } else {
                             // allow session to be released, or not
                             throw new ParseException(msg);
@@ -484,7 +483,15 @@ public class HttpParser extends AbstractParser
             throw new ParseException(msg);
         }
 
-        return new ParseResult(tokenList, b);
+        if ( clientSide ) {
+            session.setClientBuffer( b );
+            for ( Token token : tokenList ) 
+                session.sendObjectToServer( token );
+        } else {
+            session.setServerBuffer( b );
+            for ( Token token : tokenList ) 
+                session.sendObjectToClient( token );
+        }
     }
 
     private boolean completeLine(ByteBuffer b)
@@ -528,7 +535,7 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer b ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer b ) throws ParseException
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -536,8 +543,13 @@ public class HttpParser extends AbstractParser
             switch ( state.currentState ) {
             case ACCUMULATE_HEADER_STATE:
                 b.flip();
-                List<Token> l = Collections.singletonList( (Token) header( session, b) );
-                return new ParseResult(l, null);
+
+                if ( clientSide ) {
+                    session.sendObjectToServer( header( session, b) );
+                } else {
+                    session.sendObjectToClient( header( session, b) );
+                }
+                return;
             default:
                 // I think we want to release in most circumstances
                 throw new ParseException("in state: " + state + " data trapped in read buffer: " + b.remaining());
@@ -545,58 +557,57 @@ public class HttpParser extends AbstractParser
         }
 
         // we should implement this to make sure end markers get sent always
-
-        return new ParseResult();
+        return;
     }
 
-    public TokenStreamer endSession( NodeTCPSession session )
+    public void endSession( NodeTCPSession session )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
         switch ( state.currentState ) {
         case PRE_FIRST_LINE_STATE:
-            return null;
-
+            break;
         case ACCUMULATE_HEADER_STATE:
             logger.warn("endSession in ACCUMULATE_HEADER_STATE");
-            return null;
-
+            break;
         case HEADER_STATE:
             logger.warn("endSession in HEADER_STATE");
-            return null;
-
+            break;
         case CONTENT_LENGTH_BODY_STATE:
             logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: " + state.contentLength);
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case CHUNK_LENGTH_STATE:
             logger.warn("endSession in CHUNK_LENGTH_STATE");
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case CHUNK_BODY_STATE:
             logger.warn("endSession in CHUNK_BODY_STATE, length: " + state.contentLength);
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case CHUNK_END_STATE:
             logger.warn("endSession in CHUNK_END_STATE");
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case LAST_CHUNK_STATE:
             logger.warn("endSession in LAST_CHUNK_STATE");
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case END_MARKER_STATE:
             logger.warn("endSession in END_MARKER_STATE");
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         case CLOSED_BODY_STATE:
             /* this case is legit */
-            return endMarkerStreamer();
-
+            endMarkerStreamer();
+            break;
         default:
             logger.warn("endSession unhandled state: " + state.currentState);
-            return null;
+            break;
         }
+
+        super.endSession( session );
+        return;
     }
 
     public void handleTimer( NodeSession sess )

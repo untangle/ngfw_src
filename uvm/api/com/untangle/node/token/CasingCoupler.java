@@ -110,7 +110,7 @@ public class CasingCoupler extends CasingBase
     private void streamParse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
         try {
-            this.parser.parseFIXME( session, data );
+            this.parser.parse( session, data );
         }
         catch (Exception exn) {
             logger.warn("Error during streamParse()", exn);
@@ -123,7 +123,7 @@ public class CasingCoupler extends CasingBase
     private void streamUnparse( NodeTCPSession session, ByteBuffer data, boolean s2c )
     {
         try {
-            this.unparser.unparseFIXME( session, data );
+            this.unparser.unparse( session, data );
         }
         catch (Exception exn) {
             logger.warn("Error during streamUnparse()", exn);

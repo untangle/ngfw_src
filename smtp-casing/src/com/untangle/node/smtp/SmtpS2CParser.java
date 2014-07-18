@@ -13,7 +13,6 @@ import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
 import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.token.Chunk;
-import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -37,7 +36,7 @@ class SmtpS2CParser extends SmtpParser
     
     @Override
     @SuppressWarnings("fallthrough")
-    protected ParseResult doParse( NodeTCPSession session, ByteBuffer buf )
+    protected void doParse( NodeTCPSession session, ByteBuffer buf )
     {
         List<Token> toks = new ArrayList<Token>();
         boolean done = false;
@@ -48,7 +47,9 @@ class SmtpS2CParser extends SmtpParser
             if ( isPassthru( session ) ) {
                 logger.debug("Passthru buffer (" + buf.remaining() + " bytes )");
                 toks.add(new Chunk(buf));
-                return new ParseResult(toks);
+                for ( Token tok : toks )
+                    session.sendObjectToClient( tok );
+                return;
             }
 
             if ( serverSideSharedState.isInSASLLogin() ) {
@@ -71,7 +72,9 @@ class SmtpS2CParser extends SmtpParser
                         toks.add(PassThruToken.PASSTHRU);
                         toks.add(new Chunk(dup.slice()));
                         buf.position(buf.limit());
-                        return new ParseResult(toks);
+                        for ( Token tok : toks )
+                            session.sendObjectToClient( tok );
+                        return;
                 }
                 continue;
             }
@@ -93,7 +96,9 @@ class SmtpS2CParser extends SmtpParser
                 declarePassthru( session );
                 toks.add( PassThruToken.PASSTHRU );
                 toks.add( new Chunk(buf) );
-                return new ParseResult(toks);
+                for ( Token tok : toks )
+                    session.sendObjectToClient( tok );
+                return;
             }
         }
 
@@ -101,10 +106,12 @@ class SmtpS2CParser extends SmtpParser
         buf = compactIfNotEmpty(buf, (1024 * 2));
 
         if (buf != null) {
-            logger.debug("returning ParseResult with " + toks.size() + " tokens and a buffer with " + buf.remaining()
-                    + " remaining");
+            logger.debug("sending " + toks.size() + " tokens and setting a buffer with " + buf.remaining() + " remaining");
         }
-        return new ParseResult(toks, buf);
+        for ( Token tok : toks )
+            session.sendObjectToClient( tok );
+        session.setServerBuffer( buf );
+        return;
     }
 
 }

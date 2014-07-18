@@ -277,11 +277,17 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     public void sendDataToServer( ByteBuffer buf2send )
     {
+        // logger.warn("XXX: sendDataToServer()", new Exception());
+        //  try { logger.warn("XXX: sendDataToServer(): " + new String( buf2send.array(), "ASCII" )); } catch (Exception e) {}
+
         sendData( SERVER, buf2send );
     }
 
     public void sendDataToClient( ByteBuffer buf2send )
     {
+        // logger.warn("XXX: sendDataToClient()", new Exception());
+        // try { logger.warn("XXX: sendDataToClient(): " + new String( buf2send.array(), "ASCII" )); } catch (Exception e) {}
+        
         sendData( CLIENT, buf2send );
     }
     

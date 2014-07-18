@@ -13,7 +13,6 @@ import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.ParseException;
-import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
@@ -46,40 +45,41 @@ public class FtpClientParser extends AbstractParser
         lineBuffering( session, true );
     }
 
-    public ParseResult parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
         if ( fitting == Fitting.FTP_CTL_STREAM ) {
-            return parseCtl(buf);
+            parseCtl( session, buf );
+            return;
         } else {
             Chunk c = new Chunk(buf.duplicate());
-            List<Token> l = Arrays.asList(new Token[] { c });
-            return new ParseResult(l, null);
+            session.sendObjectToServer( c );
+            return;
         }
     }
 
-    public ParseResult parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
-            List<Token> l = Arrays.asList(new Token[] { EndMarker.MARKER });
-            return new ParseResult(l, null);
+            session.sendObjectToServer( EndMarker.MARKER );
         } else {
             if (buf.hasRemaining()) {
                 logger.warn("unread data in read buffer: " + buf.remaining());
             }
-            return new ParseResult();
+            return;
         }
     }
 
-    public TokenStreamer endSession( NodeTCPSession session )
+    public void endSession( NodeTCPSession session )
     {
-        return null;
+        session.shutdownServer();
+        return;
     }
 
     // private methods --------------------------------------------------------
 
-    private ParseResult parseCtl(ByteBuffer buf) throws ParseException
+    private void parseCtl( NodeTCPSession session, ByteBuffer buf ) throws ParseException
     {
         if (completeLine(buf)) {
             byte[] ba = new byte[buf.remaining()];
@@ -111,10 +111,11 @@ public class FtpClientParser extends AbstractParser
             }
 
             FtpCommand cmd = new FtpCommand(fn, arg);
-            List<Token> l = Arrays.asList(new Token[] { cmd });
-            return new ParseResult(l, null);
+            session.sendObjectToServer( cmd );
+            return;
         } else {
-            return new ParseResult(buf);
+            session.setClientBuffer( buf ); // wait for more data
+            return;
         }
     }
 

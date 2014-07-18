@@ -21,7 +21,6 @@ import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 class SmtpC2SUnparser extends SmtpUnparser
@@ -48,7 +47,7 @@ class SmtpC2SUnparser extends SmtpUnparser
     }
     
     @Override
-    protected UnparseResult doUnparse( NodeTCPSession session, Token token )
+    protected void doUnparse( NodeTCPSession session, Token token )
     {
         SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
         SmtpSharedState serverSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
@@ -80,7 +79,8 @@ class SmtpC2SUnparser extends SmtpUnparser
                 }
             }
 
-            return new UnparseResult(buf);
+            session.sendDataToServer( buf );
+            return;
         }
 
         // -----------------------------------------------------------
@@ -105,7 +105,8 @@ class SmtpC2SUnparser extends SmtpUnparser
                         declarePassthru( session );
                 }
             }
-            return new UnparseResult(buf);
+            session.sendDataToServer( buf );
+            return;
         }
 
         // -----------------------------------------------------------
@@ -124,7 +125,8 @@ class SmtpC2SUnparser extends SmtpUnparser
                 logger.debug("Send command to server: " + command.toDebugString());
                 serverSideSharedState.commandReceived( command );
             }
-            return new UnparseResult(token.getBytes());
+            session.sendDataToServer( token.getBytes() );
+            return;
         }
 
         // -----------------------------------------------------------
@@ -135,14 +137,18 @@ class SmtpC2SUnparser extends SmtpUnparser
             // Initialize the byte stuffer.
             state.byteStuffer = new ByteBufferByteStuffer();
             state.accumulator = bmt.getMIMEAccumulator();
-            return new UnparseResult( bmt.toStuffedTCPStreamer( state.byteStuffer ) );
+
+            session.beginServerStream( bmt.toStuffedTCPStreamer( state.byteStuffer ) );
+            return;
         }
 
         // -----------------------------------------------------------
         if (token instanceof CompleteMIMEToken) {
             logger.debug("Send CompleteMIMEToken to server");
             serverSideSharedState.beginMsgTransmission();
-            return new UnparseResult(((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ));
+
+            session.beginServerStream( ((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ) );
+            return;
         }
         // -----------------------------------------------------------
         if (token instanceof ContinuedMIMEToken) {
@@ -164,14 +170,17 @@ class SmtpC2SUnparser extends SmtpUnparser
                 state.byteStuffer = null;
                 state.accumulator.dispose();
                 state.accumulator = null;
-                return new UnparseResult(sink == null ? new ByteBuffer[] { remainder } : new ByteBuffer[] { sink,
-                        remainder });
+                if ( sink != null ) 
+                    session.sendDataToServer( sink );
+                session.sendDataToServer( remainder );
+                return;    
             } else {
                 if (sink != null) {
-                    return new UnparseResult(sink);
+                    session.sendDataToServer( sink );
+                    return;
                 } else {
                     logger.debug("Continued token empty (return nothing)");
-                    return UnparseResult.NONE;
+                    return;
                 }
             }
         }
@@ -179,18 +188,22 @@ class SmtpC2SUnparser extends SmtpUnparser
         if (token instanceof Chunk) {
             ByteBuffer buf = token.getBytes();
             logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
-            return new UnparseResult(buf);
+
+            session.sendDataToServer( buf );
+            return;
         }
 
         // -----------------------------------------------------------
         if (token instanceof MetadataToken) {
             // Don't pass along metadata tokens
-            return UnparseResult.NONE;
+            return;
         }
 
         // Default (bad) case
         logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
-        return new UnparseResult(token.getBytes());
+
+        session.sendDataToServer( token.getBytes() );
+        return;
     }
 
     private void tlsStarting( NodeTCPSession session )

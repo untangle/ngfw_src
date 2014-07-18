@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
@@ -49,14 +48,16 @@ abstract class SmtpUnparser extends AbstractUnparser
         sharedState.passthru = true;
     }
 
-    public UnparseResult unparse( NodeTCPSession session, Token token )
+    @Override
+    public void unparse( NodeTCPSession session, Token token )
     {
         if (token instanceof PassThruToken) {
             logger.debug("Received PassThruToken");
             declarePassthru( session );// Inform the parser of this state
-            return UnparseResult.NONE;
+            return;
         }
-        return doUnparse( session, token );
+        doUnparse( session, token );
+        return;
     }
 
     /**
@@ -64,14 +65,7 @@ abstract class SmtpUnparser extends AbstractUnparser
      * <br>
      * Note that subclasses should <b>not</b> worry about tracing, or receiving Passthru tokens
      */
-    protected abstract UnparseResult doUnparse( NodeTCPSession session, Token token );
-
-    public final TCPStreamer endSession( NodeTCPSession session )
-    {
-        logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") End Session");
-        // getCasing().endSession(isClientSide());
-        return null;
-    }
+    protected abstract void doUnparse( NodeTCPSession session, Token token );
 
     @Override
     public void handleFinalized( NodeTCPSession session )
