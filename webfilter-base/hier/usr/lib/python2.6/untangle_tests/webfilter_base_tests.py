@@ -83,6 +83,8 @@ class WebFilterBaseTests(unittest2.TestCase):
             flushEvents()
         # remove previous temp files
         clientControl.runCommand("rm -f /tmp/webfilter_base_test_* >/dev/null 2>&1")
+        clientControl.runCommand("rm -f ./index.html.* >/dev/null 2>&1")
+        clientControl.runCommand("rm -f ./unblock.* >/dev/null 2>&1")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -91,9 +93,6 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify porn site is blocked in default config
     def test_011_defaultPornIsBlocked(self):
-        # clean up html files left on client box
-        clientControl.runCommand("rm -f ./index.html.* >/dev/null 2>&1")
-        clientControl.runCommand("rm -f ./unblock.* >/dev/null 2>&1")
         result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
 
