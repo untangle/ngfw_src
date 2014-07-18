@@ -482,6 +482,9 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     def test_999_finalTearDown(self):
         global node
+        # clean up html files left on client box
+        clientControl.runCommand("rm -f ./index.html.* >/dev/null 2>&1")
+        clientControl.runCommand("rm -f ./unblock.* >/dev/null 2>&1")
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
         
