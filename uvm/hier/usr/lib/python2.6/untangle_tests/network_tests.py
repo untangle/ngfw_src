@@ -298,6 +298,8 @@ class NetworkTests(unittest2.TestCase):
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
     
     def setUp(self):
+        # clean up html files left on client box
+        clientControl.runCommand("rm -f ./5MB.zip.* >/dev/null 2>&1")
         pass
 
     def test_010_clientIsOnline(self):
