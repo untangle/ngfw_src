@@ -4,7 +4,7 @@ var rpc = null;
 var reports = null;
 var testMode = false;
 
-JSONRpcClient.toplevel_ex_handler = function (ex) {
+JSONRpcClient.toplevel_ex_handler = function (exception) {
     if (!Ung.Util.handleTimeout(exception)) {
         Ext.MessageBox.alert("Failed", exception.message);
     }
@@ -47,7 +47,6 @@ Ung.Util = {
                     if (message == null || message == "Unknown") {
                         message = i18n._("Please Try Again");
                     }
-                    
                     Ext.MessageBox.alert("Failed", message);
                     return;
                 }
@@ -94,7 +93,6 @@ Ung.Util = {
             if (message == null) {
                 message = i18n._("An error has occurred.");
             }
-            
             var details = "";
             if ( exception ) {
                 if ( exception.javaStack )
@@ -107,13 +105,12 @@ Ung.Util = {
                     details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
                 if ( exception.javaStack )
                     details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
-                if ( exception.stack ) 
+                if ( exception.stack )
                     details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
-                if ( rpc.fullVersionAndRevision != null ) 
+                if ( rpc.fullVersionAndRevision != null )
                     details += "<b>" + i18n._("Build") +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
                 details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
             }
-            
             if (handler==null) {
                 Ung.Util.showWarningMessage(message, details);
             } else if(type==null || type== "alertCallback") {
@@ -164,8 +161,8 @@ Ext.define('Ung.Reports', {
     selectedApplication: null,
     //report details object
     reportDetails:null,
-    //cuttOffdate 
-    cutOffDateInMillisecs: null,    
+    //cuttOffdate
+    cutOffDateInMillisecs: null,
     // breadcrumbs object for the report details
     breadcrumbs: null,
     //progress bar for various actions
@@ -187,11 +184,9 @@ Ext.define('Ung.Reports', {
         this.initSemaphore = 3;
         this.progressBar = Ext.MessageBox;
         this.treeNodes =[];
-        
         if(Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
-        
         rpc = {};
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
 
@@ -312,16 +307,25 @@ Ext.define('Ung.Reports', {
                     }
                 }
             }]
-        });        
-        //reports.changeDate(this.reportsDate.time,this.numDays);
-        //reports.selectedApplication = this.app;
+        });
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        reports.getApplicationData(reports.selectedApplication, reports.numDays);
-        if ( this.drillType != null && this.drillType.length > 0 && this.drillValue != null && this.drillValue.length > 0) {
-            reports.getDrilldownApplicationData(this.drillType, reports.selectedApplication,this.drillValue);
-        }
+        rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
+            if (exception) {
+                if (!Ung.Util.handleTimeout(exception)) {
+                    Ext.MessageBox.alert("Failed", exception.message);
+                }
+                return;
+            }
+            this.tableOfContents = result;
+            this.getTreeNodesFromTableOfContent(this.tableOfContents);
+            if ( !Ext.isEmpty(this.drillType) && !Ext.isEmpty(this.drillValue)) {
+                reports.getDrilldownApplicationData(this.drillType, reports.selectedApplication,this.drillValue);
+            } else {
+                reports.getApplicationData(reports.selectedApplication, reports.numDays);
+            }
+        },this), this.reportsDate, this.numDays);
     },
     startApplication: function() {
         this.reportDatesItems = [];
@@ -336,17 +340,15 @@ Ext.define('Ung.Reports', {
                 }
             });
         }
-        
         var treeStore = Ext.create('Ext.data.TreeStore', {
             root: {
                 expanded:true,
                 children: []
             }
         });
-
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'border',
-            items: [ 
+            items: [
             {
                 xtype:'panel',
                 region: 'north',
@@ -446,8 +448,8 @@ Ext.define('Ung.Reports', {
                                         return;
                                     }
                                     reports.selectedNode=node[0];
-                                    if (node[0].data.id != 'users' && 
-                                        node[0].data.id != 'hosts' && 
+                                    if (node[0].data.id != 'users' &&
+                                        node[0].data.id != 'hosts' &&
                                         node[0].data.id != 'emails') {
                                             reports.selectedApplication = node[0].data.id;
                                         }
@@ -463,7 +465,6 @@ Ext.define('Ung.Reports', {
                             if (qsDate) {
                                 dp = qsDate.split('-');
                                 d = new Date(parseInt(dp[0], 10), parseInt(dp[1], 10) - 1, parseInt(dp[2], 10));
-                                                        
                                 reports.changeDate({
                                     javaClass: 'java.util.Date',
                                     ime: d.getTime()
@@ -505,7 +506,7 @@ Ext.define('Ung.Reports', {
         for(i=0;i<this.reportDatesItems.length;i++){
             if(value==this.reportDatesItems[i].dt.time && numDays == this.reportDatesItems[i].numDays ){
                 found = i;
-                break;        
+                break;
             }
         }
         if(found == -1){
@@ -514,8 +515,8 @@ Ext.define('Ung.Reports', {
             this.availableReportsWindow.hide();
             if(this.isDynamicDataAvailable(this.reportDatesItems[found])===false){
                 alert(i18n._("The data used to calculate the selected report is older than the \"Retention Time\" setting and has been removed from the server. So you may not see any dynamic data for this report.")); //this has to be an alert - inorder to be blocking.
-            } 
-            this.changeDate(this.reportDatesItems[found].dt, this.reportDatesItems[found].numDays);            
+            }
+            this.changeDate(this.reportDatesItems[found].dt, this.reportDatesItems[found].numDays);
         }
     },
     showAvailableReports: function() {
@@ -558,13 +559,12 @@ Ext.define('Ung.Reports', {
                     renderer: Ext.bind(function(value,meta,record){
                         return '<a href="javascript:reports.showReportFor('+value.time+','+record.data.numDays+')">'+i18n._("View Report")+'</a>';
                     },this)
-                    
                 },{
                     header: i18n._( "Range Size (days)" ),
                     width: 150,
                     dataIndex: "numDays",
                     renderer: function(value){
-                        return value; 
+                        return value;
                     }
                 },{
                     header: i18n._( "Per Host/User/Email Reports" ),
@@ -575,7 +575,6 @@ Ext.define('Ung.Reports', {
                     },this)
                 }]
             });
-            
             this.availableReportsWindow = Ext.create('Ext.Window',{
                 applyTo: 'window-container',
                 layout: 'fit',
@@ -599,7 +598,6 @@ Ext.define('Ung.Reports', {
                 }]
             });
         }
-        
         this.availableReportsWindow.show();
     },
     isDynamicDataAvailable: function(selectedDate) {
@@ -609,7 +607,7 @@ Ext.define('Ung.Reports', {
         cutOffDateInMillisecs = this.cutOffDateInMillisecs;
 
         return fromDateInMillisecs >= cutOffDateInMillisecs;
-    },    
+    },
     getTreeNodesFromTableOfContent: function(tableOfContents) {
         var treeNodes = [];
         if (tableOfContents.platform != null) {
@@ -731,7 +729,7 @@ Ext.define('Ung.Reports', {
             }
         }
         if(found){
-            this.numDays =  this.reportDatesItems[i].numDays;   
+            this.numDays =  this.reportDatesItems[i].numDays;
             rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
                 if (exception) {
                     if (!Ung.Util.handleTimeout(exception)) {
@@ -747,13 +745,12 @@ Ext.define('Ung.Reports', {
                     children: treeNodes
                 });
                 Ext.getCmp('tree-panel').getSelectionModel().select(0);
-            },this), this.reportsDate, this.numDays);        
+            },this), this.reportsDate, this.numDays);
         }
     },
     getDateRangeText: function(selectedDate) {
         var oneDay = 24*3600*1000;
         var tzOffset = new Date().getTimezoneOffset() * 60 * 1000;
-        
         toDate =new Date( selectedDate.dt.time + tzOffset - oneDay );
         fromDate = new Date( selectedDate.dt.time + tzOffset - ( ( selectedDate.numDays) * oneDay ));
         formatString = 'l, F j Y';
@@ -768,19 +765,16 @@ Ext.define('Ung.Reports', {
     },
 
     getApplicationData: function(nodeName, numDays) {
-        reports.progressBar.wait(i18n._("Please Wait"));        
-
+        reports.progressBar.wait(i18n._("Please Wait"));
         if(nodeName == 'untangle-pnode-summary'){
             rpc.reportingManager.getHighlights( Ext.bind(function(result,exception){
                 this.processHiglightsData(result,exception,nodeName,numDays);
             },this), reports.reportsDate, numDays);
-                    
-        }else{
+        } else {
             rpc.reportingManager.getApplicationData(Ext.bind(function(result,exception){
                 this.processApplicationData(result,exception,nodeName,numDays);
             },this), reports.reportsDate, numDays, nodeName);
         }
-        
     },
     processHiglightsData: function(result,exception,nodeName,numDays) {
         if (exception) {
@@ -793,7 +787,6 @@ Ext.define('Ung.Reports', {
         reports.breadcrumbs.push({ text: this.selectedNode.data.text,
             handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays])
         });
-    
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
@@ -803,7 +796,7 @@ Ext.define('Ung.Reports', {
                      alert(e.message);
                  }
              }
-        );         
+        );
     },
     processApplicationData: function (result,exception,nodeName,numDays) {
         if (exception) {
@@ -814,12 +807,13 @@ Ext.define('Ung.Reports', {
         }
         rpc.applicationData=result;
         if(this.selectedNode){
-            reports.breadcrumbs.push({ text: this.selectedNode.data.text,
-                                       handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays]),
-                                       drilldownType: rpc.drilldownType,
-                                       drilldownValue: rpc.drilldownValue
-                                     });
-        }                  
+            reports.breadcrumbs.push({
+                text: this.selectedNode.data.text,
+                handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays]),
+                drilldownType: rpc.drilldownType,
+                drilldownValue: rpc.drilldownValue
+            });
+        }
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
@@ -835,7 +829,7 @@ Ext.define('Ung.Reports', {
                      alert(e.message);
                  }
              }
-        );    
+        );
     },
     getDrilldownTableOfContents: function(type, value) {
         var fnMap = {
@@ -886,17 +880,32 @@ Ext.define('Ung.Reports', {
             if(result==null){
                Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
                return;
-            }      
+            }
             rpc.applicationData=result;
-            reports.breadcrumbs.push({ 
-                text: i18n.sprintf("%s: %s reports ",
-                value, this.appNames[app]),
+            reports.breadcrumbs.push({
+                text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
                 handler: Ext.bind(this.getDrilldownApplicationData, this, [type, app, value]),
                 drilldownType: rpc.drilldownType,
                 drilldownValue: rpc.drilldownValue
             });
-            this.reportDetails.buildReportDetails(); // XXX take to correct page
-            reports.progressBar.hide();
+            if(!reports.printView) {
+                this.reportDetails.buildReportDetails(); // XXX take to correct page
+                reports.progressBar.hide();
+            } else {
+                Ung.Util.loadModuleTranslations( app, i18n,
+                    function(){
+                        try{
+                            reports.reportDetails = new Ung.ReportDetails({reportType: app});
+                            if ( reports.progressBar.rendered) {
+                               reports.progressBar.hide();
+                            }
+                            window.setTimeout(function(){window.print();},1000);
+                        }catch(e){
+                            alert(e.message);
+                        }
+                    }
+               );
+            }
         },this), reports.reportsDate, reports.numDays, app, value);
     },
     openBreadcrumb: function(breadcrumbIndex) {
@@ -953,7 +962,7 @@ Ext.define("Ung.GridEventLogReports", {
     },
     refreshList: function() {
         this.setLoading(i18n._('Querying Database...'));
-        rpc.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this), this.reportsDate, this.numDays, 
+        rpc.reportingManager.getDetailDataResultSet(Ext.bind(this.refreshCallback, this), this.reportsDate, this.numDays,
             this.selectedApplication, this.sectionName, this.drilldownType, this.drilldownValue);
     }
 });
@@ -1091,8 +1100,8 @@ Ext.define('Ung.ReportDetails', {
                 if(typeof(rpc.applicationData.list)=='object'){
                     //add highlights only if there is a highlights section
                     itemsArray.push(this.buildHighlightSection(rpc.applicationData, 'Summary'));
-                }               
-            }else{
+                }
+            } else {
                 if(rpc.applicationData.sections != null){
                     for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
                         var section=rpc.applicationData.sections.list[i];
@@ -1102,7 +1111,6 @@ Ext.define('Ung.ReportDetails', {
                 }
             }
         }
-    
         //create breadcrums item
         var breadcrumbArr=[];
         for(i=0;i<reports.breadcrumbs.length;i++) {
@@ -1173,7 +1181,6 @@ Ext.define('Ung.ReportDetails', {
         items.push({
             html: '<div class="summary-header"><img height="50" border="0" src="/images/BrandingLogo.png"/><strong>'+i18n._('Reports Summary')+'</strong></div>',
             colspan: 2
-            
         });
         for(i=0;i<highlights.list.length;i++){
             str = this.getHighlightHTML(highlights.list[i],true);
@@ -1187,7 +1194,7 @@ Ext.define('Ung.ReportDetails', {
         }
         return Ext.create('Ext.panel.Panel',{
             title: i18n._('Summary'),
-            layout:{ 
+            layout:{
                 type:'table',
                 columns:2,
                 tableAttrs: {
@@ -1218,7 +1225,7 @@ Ext.define('Ung.ReportDetails', {
                             '<strong>' + hvm[key] + '</strong>');
         }
         url = imagePath + summaryItem.name + imageSuffix;
-        return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+');margin-top:0px;margin-bottom:0px;">'+stringTemplate+'</p></div>';        
+        return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+');margin-top:0px;margin-bottom:0px;">'+stringTemplate+'</p></div>';
     },
 
     buildSummarySection: function (appName, section) {
@@ -1240,12 +1247,11 @@ Ext.define('Ung.ReportDetails', {
                             ].join('&');
             items.push({
                 html:'<a target="_print" href="?'+printargs+'" class="print small-right-margin">'+i18n._('Print')+'</a>',
-                colspan: 2        
+                colspan: 2
             });
         }
-        
         for (var i = 0; i < section.summaryItems.list.length; i++) {
-            var summaryItem = section.summaryItems.list[i];       
+            var summaryItem = section.summaryItems.list[i];
 
         if (summaryItem.stringTemplate) {
             str = this.getHighlightHTML(summaryItem,false);
@@ -1360,7 +1366,7 @@ Ext.define('Ung.ReportDetails', {
                     style: 'padding: 0px 0px 0px 0px;',
                     iconCls:'export-excel',
                     text: i18n._('Export Data'),
-                    handler: function () { 
+                    handler: function () {
                         window.open(summaryItem.csvUrl);
                     }
                 }],
@@ -1372,7 +1378,7 @@ Ext.define('Ung.ReportDetails', {
             }
         }
         var cfg={title: section.title,
-                layout:{ 
+                layout:{
                     type:'table',
                     columns: 2,
                     tableAttrs: {
@@ -1405,13 +1411,12 @@ Ext.define('Ung.ReportDetails', {
         var columns = [];
         var c = null;
         var fields = [];
-        
         for (var i = 0; i < section.columns.list.length; i++) {
             c = section.columns.list[i];
             if (c === null || c === undefined) { break; }
             var col = {
-                header:this.i18n._(c.title), 
-                dataIndex:c.name
+                header: this.i18n._(c.title),
+                dataIndex: c.name
             };
 
             if (c.type == "Date") {
@@ -1489,7 +1494,6 @@ Ext.define('Ung.ReportDetails', {
             columns.push(col);
             fields.push({ name: c.name });
         }
-        
         var detailSection = Ext.create('Ung.GridEventLogReports',{
                 name: section.title,
                 settingsCmp: this,
