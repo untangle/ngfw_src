@@ -75,7 +75,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     /**
      * Sync task
      */
-    private final LycenseSyncTask task = new LycenseSyncTask();
+    private final LicenseSyncTask task = new LicenseSyncTask();
 
     /**
      * Pulse that syncs the license, this is a daemon task.
@@ -565,10 +565,11 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         }
 
         String input = null;
-        if ( license.getKeyVersion() == 1 )
+        if ( license.getKeyVersion() == 1 ) {
             input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
-        else if ( license.getKeyVersion() == 3 )
-            input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + license.getSeats() + "the meaning of life is 42";
+        } else if ( license.getKeyVersion() == 3 ) {
+            input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + nullToEmptyStr(license.getSeats()) + "the meaning of life is 42";
+        }
         else {
             // versions v1,v3 are supported. v2 is for ICC
             // any other version is unknown
@@ -690,7 +691,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         logger.info("Reloading licenses... done" );
     }
     
-    private class LycenseSyncTask implements Runnable
+    private class LicenseSyncTask implements Runnable
     {
         public void run()
         {
@@ -730,5 +731,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         } else {
             license.setValid(Boolean.FALSE);
         }
+    }
+
+    private static String nullToEmptyStr( Object foo )
+    {
+        if ( foo == null )
+            return "";
+        else
+            return foo.toString();
     }
 }
