@@ -528,6 +528,13 @@ public class HostTableImpl implements HostTable
                                 continue;
                             }
                             /**
+                             * If this host is still reachable/online, don't remove the information
+                             */
+                            if ( entry.getAddress().isReachable( 500 ) ) {
+                                continue;
+                            }
+                            
+                            /**
                              * Otherwise just delete the entire entry
                              */
                             else {
