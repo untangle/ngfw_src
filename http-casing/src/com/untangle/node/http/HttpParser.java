@@ -15,7 +15,6 @@ import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -109,7 +108,7 @@ public class HttpParser extends AbstractParser
         lineBuffering( session, true );
     }
     
-    public void parse( NodeTCPSession session, ByteBuffer b ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer b )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         cancelTimer( session );
@@ -150,7 +149,7 @@ public class HttpParser extends AbstractParser
 
                     default:
                         // this does not look like HTTP
-                        throw new ParseException("HTTP request invalid method: " + AsciiCharBuffer.wrap(b));                            
+                        throw new RuntimeException("HTTP request invalid method: " + AsciiCharBuffer.wrap(b));                            
                     }
                 }
 
@@ -164,7 +163,7 @@ public class HttpParser extends AbstractParser
                         state.currentState = FIRST_LINE_STATE;
                     }
                 } else if (b.remaining() > maxRequestLine) {
-                    throw new ParseException("HTTP request length exceeded: " + AsciiCharBuffer.wrap(b));
+                    throw new RuntimeException("HTTP request length exceeded: " + AsciiCharBuffer.wrap(b));
                 } else {
                     if (b.capacity() < maxRequestLine) {
                         ByteBuffer r = ByteBuffer.allocate(maxRequestLine);
@@ -218,7 +217,7 @@ public class HttpParser extends AbstractParser
                             return;
                         } else {
                             // allow session to be released, or not
-                            throw new ParseException(msg);
+                            throw new RuntimeException(msg);
                         }
                     }
 
@@ -480,7 +479,7 @@ public class HttpParser extends AbstractParser
             b.flip();
             msg += " buffer contents: '" + AsciiCharBuffer.wrap(b) + "'";
             logger.error(msg);
-            throw new ParseException(msg);
+            throw new RuntimeException(msg);
         }
 
         if ( clientSide ) {
@@ -535,7 +534,7 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer b ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer b )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -552,7 +551,7 @@ public class HttpParser extends AbstractParser
                 return;
             default:
                 // I think we want to release in most circumstances
-                throw new ParseException("in state: " + state + " data trapped in read buffer: " + b.remaining());
+                throw new RuntimeException("in state: " + state + " data trapped in read buffer: " + b.remaining());
             }
         }
 
@@ -633,7 +632,7 @@ public class HttpParser extends AbstractParser
 
     // private methods ---------------------------------------------------------
 
-    private Token firstLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    private Token firstLine( NodeTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -647,7 +646,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-    private RequestLineToken requestLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    private RequestLineToken requestLine( NodeTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -668,7 +667,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-    private StatusLine statusLine( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    private StatusLine statusLine( NodeTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -701,7 +700,7 @@ public class HttpParser extends AbstractParser
     }
 
     // HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
-    private String version(ByteBuffer data) throws ParseException
+    private String version(ByteBuffer data)
     {
         eat(data, "HTTP");
         eat(data, '/');
@@ -713,7 +712,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Reason-Phrase  = *<TEXT, excluding CR, LF>
-    private String reasonPhrase( HttpParserSessionState state, ByteBuffer b ) throws ParseException
+    private String reasonPhrase( HttpParserSessionState state, ByteBuffer b )
     {
         int l = b.remaining();
 
@@ -732,19 +731,19 @@ public class HttpParser extends AbstractParser
     //     | ...
     //     | extension-code
     // extension-code = 3DIGIT
-    private int statusCode(ByteBuffer b) throws ParseException
+    private int statusCode(ByteBuffer b)
     {
         int i = eatDigits(b);
 
         if (1000 < i || 100 > i) {
             // assumes no status codes begin with 0
-            throw new ParseException("expected 3 DIGITs, got: " + i);
+            throw new RuntimeException("expected 3 DIGITs, got: " + i);
         }
 
         return i;
     }
 
-    private Header header( NodeTCPSession session, ByteBuffer data ) throws ParseException
+    private Header header( NodeTCPSession session, ByteBuffer data )
     {
         Header header = new Header();
 
@@ -767,7 +766,7 @@ public class HttpParser extends AbstractParser
     //                  and consisting of either *TEXT or combinations
     //                  of token, separators, and quoted-string>
     private void field( NodeTCPSession session, Header header, ByteBuffer data )
-        throws ParseException
+       
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -809,7 +808,7 @@ public class HttpParser extends AbstractParser
         header.addField( key, value );
     }
 
-    private Chunk closedBody( NodeTCPSession session, ByteBuffer buffer ) throws ParseException
+    private Chunk closedBody( NodeTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -817,7 +816,7 @@ public class HttpParser extends AbstractParser
         return new Chunk(buffer.slice());
     }
 
-    private int chunkLength(ByteBuffer b) throws ParseException
+    private int chunkLength(ByteBuffer b)
     {
         int i = 0;
 
@@ -846,7 +845,7 @@ public class HttpParser extends AbstractParser
 
     // chunk          = chunk-size [ chunk-extension ] CRLF
     //                  chunk-data CRLF
-    private Chunk chunk( NodeTCPSession session, ByteBuffer buffer ) throws ParseException
+    private Chunk chunk( NodeTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -862,7 +861,7 @@ public class HttpParser extends AbstractParser
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
     private byte[] requestUri( NodeTCPSession session, ByteBuffer b )
-        throws ParseException
+       
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -873,7 +872,7 @@ public class HttpParser extends AbstractParser
                 String msg = "(buf limit exceeded) " + state.buf.length + ": " + new String(state.buf);
                 session.shutdownClient();
                 session.shutdownServer();
-                throw new ParseException("blocking " + msg);
+                throw new RuntimeException("blocking " + msg);
             }
 
             char c = (char)b.get();
@@ -891,7 +890,7 @@ public class HttpParser extends AbstractParser
         return a;
     }
 
-    private void eat( ByteBuffer data, String s ) throws ParseException
+    private void eat( ByteBuffer data, String s )
     {
         byte[] sb = s.getBytes();
         for (int i = 0; i < sb.length; i++) {
@@ -923,7 +922,7 @@ public class HttpParser extends AbstractParser
     // read *TEXT, folding LWS
     // TEXT           = <any OCTET except CTLs,
     //                  but including LWS>
-    private String eatText( NodeTCPSession session, ByteBuffer b ) throws ParseException
+    private String eatText( NodeTCPSession session, ByteBuffer b )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         eatLws(b);
@@ -936,9 +935,9 @@ public class HttpParser extends AbstractParser
                 if (blockLongUris) {
                     session.shutdownClient();
                     session.shutdownServer();
-                    throw new ParseException("blocking " + msg);
+                    throw new RuntimeException("blocking " + msg);
                 } else {
-                    throw new ParseException("non-http " + msg);
+                    throw new RuntimeException("non-http " + msg);
                 }
             }
             state.buf[i] = b.get();
@@ -998,18 +997,18 @@ public class HttpParser extends AbstractParser
 
     // CRLF           = CR LF
     // in our implementation, CR is optional
-    private void eatCrLf( ByteBuffer b ) throws ParseException
+    private void eatCrLf( ByteBuffer b )
     {
         byte b1 = b.get();
         boolean ate = LF == b1 || CR == b1 && LF == b.get();
         if (!ate) {
-            throw new ParseException("CRLF expected: " + b1);
+            throw new RuntimeException("CRLF expected: " + b1);
         }
     }
 
     // DIGIT          = <any US-ASCII digit "0".."9">
     // this method reads 1*DIGIT
-    private int eatDigits( ByteBuffer b ) throws ParseException
+    private int eatDigits( ByteBuffer b )
     {
         boolean foundOne = false;
         int i = 0;
@@ -1024,7 +1023,7 @@ public class HttpParser extends AbstractParser
         }
 
         if (!foundOne) {
-            throw new ParseException("no digits found");
+            throw new RuntimeException("no digits found");
         }
 
         return i;

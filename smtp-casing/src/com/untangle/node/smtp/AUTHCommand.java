@@ -3,8 +3,6 @@
  */
 package com.untangle.node.smtp;
 
-import com.untangle.node.token.ParseException;
-
 /**
  * Class reprsenting an SMTP "AUTH" Command (RFC 2554)
  */
@@ -14,7 +12,8 @@ public class AUTHCommand extends Command
     private String m_mechanismName;
     private String m_initialResponse;
 
-    public AUTHCommand(String cmdStr, String argStr) throws ParseException {
+    public AUTHCommand(String cmdStr, String argStr)
+    {
         super(CommandType.AUTH, cmdStr, argStr);
         parseArgStr();
     }

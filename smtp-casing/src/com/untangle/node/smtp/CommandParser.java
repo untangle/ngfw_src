@@ -9,8 +9,6 @@ import static com.untangle.node.util.Rfc822Util.eatSpace;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.ParseException;
-
 /**
  * Because of classloader issues this class is public. However, it should really not be used other than in the casing.
  */
@@ -21,7 +19,7 @@ public class CommandParser
      * Parse the buffer (which must have a complete line!) into a Command. May return a subclass of Command for Commands
      * with interesting arguments we wish parsed.
      */
-    public static Command parse(ByteBuffer buf) throws ParseException
+    public static Command parse(ByteBuffer buf)
     {
         String cmdStr = consumeToken(buf);
         cmdStr = cmdStr == null ? "" : cmdStr.trim();

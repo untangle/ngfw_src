@@ -7,7 +7,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 
@@ -30,8 +29,6 @@ public class FtpReply implements Token
         this.replyCode = replyCode;
         this.message = message;
     }
-
-    // static factories ------------------------------------------------------
 
     public static FtpReply makeReply(int replyCode, String message)
     {
@@ -60,9 +57,7 @@ public class FtpReply implements Token
         return makeReply(PASV, msg);
     }
 
-    // business methods ------------------------------------------------------
-
-    public InetSocketAddress getSocketAddress() throws ParseException
+    public InetSocketAddress getSocketAddress()
     {
         switch(replyCode) {
         case PASV:
@@ -72,7 +67,7 @@ public class FtpReply implements Token
                 int b = message.indexOf('(');
                 int e = message.indexOf(')', b);
                 if ((b < 0) || (e < 0)) 
-                    throw new ParseException("Missing parenthesis in passive command.");
+                    throw new RuntimeException("Missing parenthesis in passive command.");
                 String addrStr = message.substring(b + 1, e);
                 if (PASV  == replyCode) {
                     return FtpUtil.parsePort(addrStr);
@@ -85,8 +80,6 @@ public class FtpReply implements Token
         }
     }
 
-    // bean methods -----------------------------------------------------------
-
     public int getReplyCode()
     {
         return replyCode;
@@ -97,8 +90,6 @@ public class FtpReply implements Token
         return message;
     }
 
-    // Token methods ---------------------------------------------------------
-
     /**
      * Includes final CRLF.
      *
@@ -108,8 +99,6 @@ public class FtpReply implements Token
     {
         return ByteBuffer.wrap(message.getBytes());
     }
-
-    // Object methods ---------------------------------------------------------
 
     public String toString()
     {

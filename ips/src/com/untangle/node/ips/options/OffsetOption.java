@@ -5,13 +5,11 @@ package com.untangle.node.ips.options;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.ParseException;
-
 public class OffsetOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public OffsetOption(OptionArg arg) throws ParseException
+    public OffsetOption(OptionArg arg)
     {
         super(arg);
 
@@ -27,7 +25,7 @@ public class OffsetOption extends IpsOption
         try {
             offset = Integer.parseInt(params);
         } catch (Exception e) {
-            throw new ParseException("Not a valid Offset argument: " + params);
+            throw new RuntimeException("Not a valid Offset argument: " + params);
         }
         option.setOffset(offset);
     }

@@ -5,13 +5,11 @@ package com.untangle.node.ips.options;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.ParseException;
-
 public class DepthOption extends IpsOption
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DepthOption(OptionArg arg) throws ParseException
+    public DepthOption(OptionArg arg)
     {
         super(arg);
 
@@ -29,7 +27,7 @@ public class DepthOption extends IpsOption
         try {
             depth = Integer.parseInt(params);
         } catch (Exception e) {
-            throw new ParseException("Not a valid Offset argument: " + params);
+            throw new RuntimeException("Not a valid Offset argument: " + params);
         }
         option.setDepth(depth);
     }

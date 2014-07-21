@@ -20,9 +20,8 @@ public interface Parser
      * Parse data from the stream.
      *
      * @param chunk the byte data from the stream.
-     * @exception ParseException if a parse error occurs.
      */
-    void parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException;
+    void parse( NodeTCPSession session, ByteBuffer chunk ) throws Exception;
 
     /**
      * Called with last data from the read buffer on session close.
@@ -30,7 +29,7 @@ public interface Parser
      * @param chunk data from read buffer.
      * @exception ParseException if a parse error occurs.
      */
-    void parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException;
+    void parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws Exception;
 
     /**
      * On FIN, allows the parser to stream out any final data.

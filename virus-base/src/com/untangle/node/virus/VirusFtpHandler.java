@@ -26,7 +26,6 @@ import com.untangle.node.ftp.FtpStateMachine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.FileChunkStreamer;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
@@ -202,7 +201,7 @@ class VirusFtpHandler extends FtpStateMachine
             try {
                 InetSocketAddress socketAddress = reply.getSocketAddress();
                 addDataSocket( socketAddress, session.getSessionId() );
-            } catch (ParseException e) {
+            } catch ( Exception e ) {
                 throw new RuntimeException(e);
             }
         }

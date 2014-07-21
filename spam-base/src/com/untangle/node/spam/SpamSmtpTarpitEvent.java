@@ -6,7 +6,6 @@ package com.untangle.node.spam;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
 
 /**

@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeSession;
@@ -106,8 +105,6 @@ public class IpsDetectionEngine
     {
         try {
             return (manager.addRule(rule));
-        } catch (ParseException e) {
-            logger.warn("Could not parse rule: ", e);
         } catch (Exception e) {
             logger.error("Some sort of really bad exception: ", e);
             logger.error("For rule: " + rule);

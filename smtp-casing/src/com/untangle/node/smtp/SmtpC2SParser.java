@@ -19,7 +19,6 @@ import com.untangle.node.smtp.mime.HeaderNames;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.token.Chunk;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
@@ -132,7 +131,7 @@ class SmtpC2SParser extends SmtpParser
                     Command cmd = null;
                     try {
                         cmd = CommandParser.parse(buf);
-                    } catch (ParseException pe) {
+                    } catch (Exception pe) {
                         // Duplicate the bad buffer
                         dup.limit(findCrLf(dup) + 2);
                         ByteBuffer badBuf = ByteBuffer.allocate(dup.remaining());
@@ -141,8 +140,7 @@ class SmtpC2SParser extends SmtpParser
                         // Position the "real" buffer beyond the bad point.
                         buf.position(dup.position());
 
-                        logger.warn("Exception parsing command line \"" + ASCIIUtil.bbToString(badBuf)
-                                    + "\".  Pass to server and monitor response", pe);
+                        logger.warn("Exception parsing command line \"" + ASCIIUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
 
                         cmd = new UnparsableCommand(badBuf);
 

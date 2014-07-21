@@ -7,25 +7,18 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.untangle.uvm.node.ParseException;
-
 public class IpsRuleSignature
 {
     private static final Map<IpsRuleSignature, WeakReference<IpsRuleSignature>> INSTANCES = new WeakHashMap<IpsRuleSignature, WeakReference<IpsRuleSignature>>();
 
     private final IpsRuleSignatureImpl impl;
 
-    // constructors ------------------------------------------------------------
-
     private IpsRuleSignature(IpsRuleSignatureImpl impl)
     {
         this.impl = impl;
     }
 
-    // public static methods ---------------------------------------------------
-
     public static IpsRuleSignature parseSignature(IpsNodeImpl ips, IpsRule rule, String signatureString, int action, boolean initSettingsTime, String string)
-        throws ParseException
     {
         IpsRuleSignatureImpl impl = new IpsRuleSignatureImpl(ips, rule, signatureString, action, initSettingsTime, string);
 

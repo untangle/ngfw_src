@@ -7,7 +7,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.untangle.node.smtp.mime.MIMEUtil;
-import com.untangle.node.token.ParseException;
 
 /**
  * Base class of a Command which holds a parsed EmailAddress (parsed from the arguments).
@@ -23,7 +22,7 @@ public class CommandWithEmailAddress extends Command
 
     private static InternetAddress NULL_ADDRESS = new InternetAddress();
 
-    protected CommandWithEmailAddress(CommandType type, String cmdStr, String argStr) throws ParseException
+    protected CommandWithEmailAddress(CommandType type, String cmdStr, String argStr)
     {
         super(type, cmdStr, argStr);
 
@@ -100,7 +99,7 @@ public class CommandWithEmailAddress extends Command
     /**
      * Helper for subclasses, which have already stripped-off the "TO" or "FROM"
      */
-    protected void assignFromWire(String str) throws ParseException
+    protected void assignFromWire(String str)
     {
         EmailAddressAndExtra ewe = parseAddressAndExtra(str);
         setAddress(ewe.addr);
@@ -110,7 +109,7 @@ public class CommandWithEmailAddress extends Command
     /**
      * Parses an email address (which is assumed to begin at str index 0) and any extra ESMTP junk at the end
      */
-    protected static EmailAddressAndExtra parseAddressAndExtra(String str) throws ParseException
+    protected static EmailAddressAndExtra parseAddressAndExtra(String str)
     {
         if (str == null) {
             return new EmailAddressAndExtra(NULL_ADDRESS, null);

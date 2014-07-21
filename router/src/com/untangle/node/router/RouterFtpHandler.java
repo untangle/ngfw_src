@@ -13,7 +13,6 @@ import com.untangle.node.ftp.FtpEpsvReply;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
 import com.untangle.node.ftp.FtpStateMachine;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 
 /**
@@ -187,7 +186,7 @@ class RouterFtpHandler extends FtpStateMachine
 
         try {
             addr = command.getSocketAddress();
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             logger.info( "Error parsing port command" + e );
             session.sendObjectToClient( SYNTAX_REPLY );
             return;
@@ -279,7 +278,7 @@ class RouterFtpHandler extends FtpStateMachine
 
         try {
             addr = reply.getSocketAddress();
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             throw new RuntimeException( "Error getting socket address", e );
         }
 
@@ -331,7 +330,7 @@ class RouterFtpHandler extends FtpStateMachine
         InetSocketAddress addr;
         try {
             addr = reply.getSocketAddress();
-        } catch ( ParseException e ) {
+        } catch ( Exception e ) {
             throw new RuntimeException( "Error getting socket address", e );
         }
 

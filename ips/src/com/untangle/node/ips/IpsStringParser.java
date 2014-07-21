@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.Protocol;
@@ -25,12 +24,11 @@ public class IpsStringParser
     private static final Pattern maskPattern = Pattern.compile("\\d\\d");
 
     public static String[] parseRuleSplit(String rule)
-        throws ParseException
     {
         int first = rule.indexOf("(");
         int last = rule.lastIndexOf(")");
         if (first < 0 || last < 0)
-            throw new ParseException("Could not split rule: "+rule);
+            throw new RuntimeException("Could not split rule: "+rule);
         String parts[] = { rule.substring(0,first).trim(), rule.substring(first+1,last).trim() };
 
         return parts;
@@ -39,7 +37,6 @@ public class IpsStringParser
     // Returns null if the rule is to be removed (like an 'ip' rule
     // for instance)
     public static IpsRuleHeader parseHeader(String header, int action)
-        throws ParseException
     {
         boolean clientIPFlag = false;
         boolean clientPortFlag = false;
@@ -50,7 +47,7 @@ public class IpsStringParser
         /* Header should match: prot sourceIP sourcePort -> destIP destPort */
         String tokens[] = header.split(" ");
         if (tokens.length != 6) {
-            throw new ParseException("Not a valid String Header:\n" + header);
+            throw new RuntimeException("Not a valid String Header:\n" + header);
         }
 
         /*Objects needed for a IpsRuleHeader constructor*/
@@ -106,9 +103,9 @@ public class IpsStringParser
 
         /*So we throw them ourselves*/
         if (clientPortRange == null)
-            throw new ParseException("Invalid source port: " + tokens[2]);
+            throw new RuntimeException("Invalid source port: " + tokens[2]);
         if (serverPortRange == null) {
-            throw new ParseException("Invalid destination port: " +tokens[5]);
+            throw new RuntimeException("Invalid destination port: " +tokens[5]);
         }
 
         /*Build and return the rule header*/
@@ -123,7 +120,6 @@ public class IpsStringParser
     }
 
     private static Protocol parseProtocol( String protoString )
-        throws ParseException
     {
         if (protoString.equalsIgnoreCase("tcp"))
             return Protocol.TCP;
@@ -134,18 +130,17 @@ public class IpsStringParser
         else if (protoString.equalsIgnoreCase("icmp"))
             return null;
         else
-            throw new ParseException("Invalid Protocol string: " + protoString);
+            throw new RuntimeException("Invalid Protocol string: " + protoString);
     }
 
     private static boolean parseDirection( String direction )
-        throws ParseException
     {
         if (direction.equals("<>"))
             return true; /* bidirectional */
         else if (direction.equals("->"))
             return false; /* one dierction only */
         else
-            throw new ParseException("Invalid direction opperator: " + direction);
+            throw new RuntimeException("Invalid direction opperator: " + direction);
     }
 
     private static String stripNegation(String str)
@@ -161,7 +156,6 @@ public class IpsStringParser
     }
 
     private static List<IPMatcher> parseIPToken( String ipString )
-        throws ParseException
     {
         List<IPMatcher> ipList = new ArrayList<IPMatcher>();
         if (ipString.equalsIgnoreCase("any"))

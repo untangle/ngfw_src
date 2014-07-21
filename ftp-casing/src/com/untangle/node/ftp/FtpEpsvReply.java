@@ -6,8 +6,6 @@ package com.untangle.node.ftp;
 import java.net.InetSocketAddress;
 import java.util.regex.Pattern;
 
-import com.untangle.node.token.ParseException;
-
 /**
  * FTP server reply to a command.
  * @see "RFC , Section 4.2"
@@ -26,8 +24,7 @@ public class FtpEpsvReply extends FtpReply
     
     public static FtpReply makeEpsvReply(InetSocketAddress socketAddress)
     {
-        String message = "Entering Extended Passive Mode ("
-            + FtpUtil.unparseExtendedPasvReply(socketAddress) + ").";
+        String message = "Entering Extended Passive Mode (" + FtpUtil.unparseExtendedPasvReply(socketAddress) + ").";
 
         String[] lines = LINE_SPLITTER.split(message);
 
@@ -46,7 +43,7 @@ public class FtpEpsvReply extends FtpReply
         return new FtpEpsvReply(sb.toString(), socketAddress);
     }
 
-    public InetSocketAddress getSocketAddress() throws ParseException
+    public InetSocketAddress getSocketAddress()
     {
         return socketAddress;
     }

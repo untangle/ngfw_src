@@ -6,7 +6,6 @@ package com.untangle.node.ftp;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 
@@ -31,7 +30,7 @@ public class FtpCommand implements Token
         this.argument = argument;
     }
 
-    public InetSocketAddress getSocketAddress() throws ParseException
+    public InetSocketAddress getSocketAddress()
     {
         if (FtpFunction.PORT == function) {
             return FtpUtil.parsePort(argument);

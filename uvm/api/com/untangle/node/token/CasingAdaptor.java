@@ -200,7 +200,7 @@ public class CasingAdaptor extends CasingBase
         }
     }
 
-    private void unparseToken( NodeTCPSession session, Unparser unparser, Token token ) throws UnparseException
+    private void unparseToken( NodeTCPSession session, Unparser unparser, Token token ) throws Exception
     {
         if (token instanceof ReleaseToken) {
             ReleaseToken release = (ReleaseToken)token;

@@ -17,14 +17,18 @@ public interface Unparser
     void handleNewSession( NodeTCPSession session );
 
     /**
-     * Node tokens back into bytes.
+     * Unparse tokens back into bytes.
      *
      * @param token next token.
-     * @exception UnparseException on unparse error.
      */
-    void unparse( NodeTCPSession session, Token token ) throws UnparseException;
+    void unparse( NodeTCPSession session, Token token ) throws Exception;
 
-    void unparse( NodeTCPSession session, ByteBuffer buffer ) throws UnparseException;
+    /**
+     * Unparse bytes back into bytes
+     * This is currently used by the HTTPS inspector
+     * to unparse unecrypted text back into SSL
+     */
+    void unparse( NodeTCPSession session, ByteBuffer buffer );
     
     /**
      * Called when a session is being released. The unparser should
@@ -33,7 +37,7 @@ public interface Unparser
      * @exception UnparseException if thrown, it will cause the
      * session to be closed.
      */
-    void releaseFlush( NodeTCPSession session ) throws UnparseException;
+    void releaseFlush( NodeTCPSession session ) throws Exception;
 
     /**
      * On session end, the unparser has an opportunity to stream data.

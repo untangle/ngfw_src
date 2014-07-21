@@ -9,8 +9,6 @@ import static com.untangle.node.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.ParseException;
-
 public class Rfc822Util
 {
     /**
@@ -92,12 +90,11 @@ public class Rfc822Util
      * @return a <code>String</code> value
      * @exception ParseException if a CRLF was not found in the buffer's remaining data
      */
-    public static String consumeLine(ByteBuffer buf)
-        throws ParseException {
-
+    public static String consumeLine( ByteBuffer buf )
+    {
         int index = BufferUtil.findCrLf(buf);
         if(index < 0) {
-            throw new ParseException("No Line terminator in \"" + ASCIIUtil.bbToString(buf) + "\"");
+            throw new RuntimeException("No Line terminator in \"" + ASCIIUtil.bbToString(buf) + "\"");
         }
         ByteBuffer dup = buf.duplicate();
         dup.limit(index);

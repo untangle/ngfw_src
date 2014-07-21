@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -72,7 +71,7 @@ abstract class SmtpParser extends AbstractParser
         logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") handleFinalized()");
     }
 
-    public final void parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public final void parse( NodeTCPSession session, ByteBuffer buf )
     {
         try {
             if ( isPassthru( session ) ) {
@@ -99,7 +98,7 @@ abstract class SmtpParser extends AbstractParser
      */
     protected abstract void doParse( NodeTCPSession session, ByteBuffer buf );
 
-    public final void parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public final void parseEnd( NodeTCPSession session, ByteBuffer buf )
     {
         if ( buf.hasRemaining() ) {
             logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") Passing final chunk of size: " + buf.remaining());

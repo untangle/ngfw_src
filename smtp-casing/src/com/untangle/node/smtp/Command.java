@@ -10,7 +10,6 @@ import static com.untangle.node.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 
 /**
@@ -18,21 +17,22 @@ import com.untangle.node.token.Token;
  */
 public class Command implements Token
 {
+    private final CommandType type;
+    private final String cmdStr;
+    private String argStr;
 
-    private final CommandType m_type;
-    private final String m_cmdStr;
-    private String m_argStr;
-
-    public Command(CommandType type, String cmdStr, String argStr) throws ParseException {
-        m_type = type;
-        m_cmdStr = cmdStr;
-        m_argStr = argStr;
+    public Command(CommandType type, String cmdStr, String argStr)
+    {
+        this.type = type;
+        this.cmdStr = cmdStr;
+        this.argStr = argStr;
     }
 
-    public Command(CommandType type) {
-        m_type = type;
-        m_cmdStr = type.toString();
-        m_argStr = null;
+    public Command(CommandType type)
+    {
+        this.type = type;
+        this.cmdStr = type.toString();
+        this.argStr = null;
     }
 
     /**
@@ -40,12 +40,12 @@ public class Command implements Token
      */
     public String getCmdString()
     {
-        return m_cmdStr;
+        return this.cmdStr;
     }
 
     protected void setArgStr(String argStr)
     {
-        m_argStr = argStr;
+        this.argStr = argStr;
     }
 
     /**
@@ -53,7 +53,7 @@ public class Command implements Token
      */
     public String getArgString()
     {
-        return m_argStr;
+        return this.argStr;
     }
 
     /**
@@ -61,7 +61,7 @@ public class Command implements Token
      */
     public CommandType getType()
     {
-        return m_type;
+        return this.type;
     }
 
     /**
@@ -71,9 +71,9 @@ public class Command implements Token
     public ByteBuffer getBytes()
     {
         // Do a bit of fixup on the string
-        String cmdStr = m_type.toString();
+        String tmpCmdStr = this.type.toString();
         if (getType() == CommandType.UNKNOWN) {
-            cmdStr = m_cmdStr;
+            tmpCmdStr = this.cmdStr;
         }
 
         String argStr = getArgString();
@@ -86,7 +86,7 @@ public class Command implements Token
             arg = false;
         }
 
-        byte[] cmdBytes = cmdStr.getBytes();
+        byte[] cmdBytes = tmpCmdStr.getBytes();
         byte[] argBytes = argStr.getBytes();
 
         int size = cmdBytes.length + (arg ? argBytes.length + 1 : 0) + 3;
@@ -122,13 +122,13 @@ public class Command implements Token
 
     public int getEstimatedSize()
     {
-        String cmdStr = m_type.toString();
+        String tmpCmdStr = this.type.toString();
         if (getType() == CommandType.UNKNOWN) {
-            cmdStr = m_cmdStr;
+            tmpCmdStr = this.cmdStr;
         }
 
         String argStr = getArgString();
 
-        return cmdStr.length() + (argStr == null ? (0) : (argStr.length() + 1)) + 3;
+        return tmpCmdStr.length() + (argStr == null ? (0) : (argStr.length() + 1)) + 3;
     }
 }

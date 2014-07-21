@@ -19,7 +19,6 @@ import com.untangle.node.smtp.quarantine.QuarantineUserView;
 import com.untangle.node.smtp.safelist.NoSuchSafelistException;
 import com.untangle.node.smtp.safelist.SafelistActionFailedException;
 import com.untangle.node.smtp.safelist.SafelistManipulation;
-import com.untangle.uvm.node.ParseException;
 
 public class JsonInterfaceImpl implements JsonInterface
 {
@@ -37,17 +36,17 @@ public class JsonInterfaceImpl implements JsonInterface
 
     private static final JsonInterfaceImpl INSTANCE = new JsonInterfaceImpl();
 
-    public boolean requestDigest(String account) throws ParseException, QuarantineUserActionFailedException
+    public boolean requestDigest(String account) throws QuarantineUserActionFailedException
     {
         if (account == null)
-            throw new ParseException("Missing account");
+            throw new RuntimeException("Missing account");
 
         // Validate at least basic format
         try {
             if (MIMEUtil.parseEmailAddress(account) == null)
-                throw new ParseException("Invalid Email Address");
+                throw new RuntimeException("Invalid Email Address");
         } catch (Exception e) {
-            throw new ParseException("Invalid Email Address");
+            throw new RuntimeException("Invalid Email Address");
         }
 
         QuarantineUserView quarantine = QuarantineEnduserServlet.instance().getQuarantine();

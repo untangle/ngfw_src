@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -42,7 +41,7 @@ public class FtpServerParser extends AbstractParser
         lineBuffering( session, true );
     }
 
-    public void parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getOutputFitting();
         if (Fitting.FTP_CTL_STREAM == fitting) {
@@ -56,7 +55,7 @@ public class FtpServerParser extends AbstractParser
         }
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getOutputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
@@ -76,9 +75,7 @@ public class FtpServerParser extends AbstractParser
         return;
     }
 
-    // private methods --------------------------------------------------------
-
-    private void parseServerCtl( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    private void parseServerCtl( NodeTCPSession session, ByteBuffer buf )
     {
         ByteBuffer dup = buf.duplicate();
 
@@ -86,7 +83,7 @@ public class FtpServerParser extends AbstractParser
             int replyCode = replyCode(dup);
 
             if (-1 == replyCode) {
-                throw new ParseException("expected reply code");
+                throw new RuntimeException("expected reply code");
             }
 
             switch (dup.get()) {
@@ -124,7 +121,7 @@ public class FtpServerParser extends AbstractParser
             }
 
             default:
-                throw new ParseException("expected a space");
+                throw new RuntimeException("expected a space");
             }
         }
 
@@ -141,7 +138,7 @@ public class FtpServerParser extends AbstractParser
         return;
     }
 
-    private void parseServerData( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    private void parseServerData( NodeTCPSession session, ByteBuffer buf )
     {
         Chunk c = new Chunk(buf.duplicate());
         session.sendObjectToClient( c );

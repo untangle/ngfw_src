@@ -10,9 +10,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractUnparser;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.UnparseException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -34,30 +32,22 @@ class FtpUnparser extends AbstractUnparser
     {
     }
     
-    public void unparse( NodeTCPSession session, Token token ) throws UnparseException
+    public void unparse( NodeTCPSession session, Token token )
     {
         InetSocketAddress socketAddress = null;
         if (token instanceof FtpReply) { // XXX tacky
             FtpReply reply = (FtpReply)token;
             if (FtpReply.PASV == reply.getReplyCode()) {
-                try {
-                    socketAddress = reply.getSocketAddress();
-                } catch (ParseException exn) {
-                    throw new UnparseException(exn);
-                }
+                socketAddress = reply.getSocketAddress();
             }
 
             /* Extended pasv replies don't contain the server address, have to get that
              * from the session.  NAT/Router is the only place that has that information
              * must register the connection there. */
             else if (FtpReply.EPSV == reply.getReplyCode()) {
-                try {
-                    socketAddress = reply.getSocketAddress();
-                    if (null == socketAddress)
-                        throw new UnparseException("unable to get socket address");
-                } catch (ParseException exn) {
-                    throw new UnparseException(exn);
-                }
+                socketAddress = reply.getSocketAddress();
+                if (null == socketAddress)
+                    throw new RuntimeException("unable to get socket address");
 
                 /* Nat didn't already rewrite the reply, use the server address */
                 InetAddress address = socketAddress.getAddress();
@@ -70,17 +60,9 @@ class FtpUnparser extends AbstractUnparser
         } else if (token instanceof FtpCommand) { // XXX tacky
             FtpCommand cmd = (FtpCommand)token;
             if (FtpFunction.PORT == cmd.getFunction()) {
-                try {
-                    socketAddress = cmd.getSocketAddress();
-                } catch (ParseException exn) {
-                    throw new UnparseException(exn);
-                }
+                socketAddress = cmd.getSocketAddress();
             } else if (FtpFunction.EPRT == cmd.getFunction()) {
-                try {
-                    socketAddress = cmd.getSocketAddress();
-                } catch (ParseException exn) {
-                    throw new UnparseException(exn);
-                }
+                socketAddress = cmd.getSocketAddress();
             }
         }
 

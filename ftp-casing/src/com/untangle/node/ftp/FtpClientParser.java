@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
-import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
@@ -31,21 +30,17 @@ public class FtpClientParser extends AbstractParser
 
     private final Logger logger = Logger.getLogger(FtpClientParser.class);
 
-    // constructors -----------------------------------------------------------
-
     public FtpClientParser()
     {
         super(true);
     }
-
-    // Parser methods ---------------------------------------------------------
 
     public void handleNewSession( NodeTCPSession session )
     {
         lineBuffering( session, true );
     }
 
-    public void parse( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
         if ( fitting == Fitting.FTP_CTL_STREAM ) {
@@ -58,7 +53,7 @@ public class FtpClientParser extends AbstractParser
         }
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
@@ -77,9 +72,7 @@ public class FtpClientParser extends AbstractParser
         return;
     }
 
-    // private methods --------------------------------------------------------
-
-    private void parseCtl( NodeTCPSession session, ByteBuffer buf ) throws ParseException
+    private void parseCtl( NodeTCPSession session, ByteBuffer buf )
     {
         if (completeLine(buf)) {
             byte[] ba = new byte[buf.remaining()];
@@ -101,7 +94,7 @@ public class FtpClientParser extends AbstractParser
                 String fnStr = new String(ba, 0, i);
                 fn = FtpFunction.valueOf(fnStr.toUpperCase());
                 if (null == fn) {
-                    throw new ParseException("Unknown FTP function: " + fnStr);
+                    throw new RuntimeException("Unknown FTP function: " + fnStr);
                 }
 
                 while (SP == ba[++i]);

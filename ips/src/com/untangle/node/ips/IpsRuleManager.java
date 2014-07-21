@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 
 public class IpsRuleManager
@@ -81,7 +80,7 @@ public class IpsRuleManager
         headers.clear();
     }
 
-    public boolean addRule(IpsRule rule) throws ParseException
+    public boolean addRule(IpsRule rule)
     {
         String ruleText = rule.getText();
 
@@ -90,7 +89,7 @@ public class IpsRuleManager
 
         IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.trans_getAction());
         if (header == null) {
-            throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
+            throw new RuntimeException("Unable to parse header of rule " + ruleParts[0]);
         }
 
         IpsRuleSignature signature = IpsRuleSignature
@@ -173,7 +172,7 @@ public class IpsRuleManager
             rule.trans_setClassification(signature.getClassification());
             rule.trans_setURL(signature.getURL());
             //logger.debug("create rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-        } catch(ParseException e) {
+        } catch( Exception e ) {
             logger.error("Parsing exception for rule: " + text, e);
             return null;
         }

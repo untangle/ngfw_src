@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.untangle.node.token.ParseException;
-
 /**
  * Utilities for the FTP protocol.
  */
@@ -24,7 +22,7 @@ class FtpUtil
     static final Pattern EXTENDED_PORT_PATTERN;
     static final Pattern EXTENDED_PASV_PATTERN;
 
-    static InetSocketAddress parsePort(String s) throws ParseException
+    static InetSocketAddress parsePort(String s)
     {
         String[] toks = Pattern.compile(",").split(s);
 
@@ -37,7 +35,7 @@ class FtpUtil
         try {
             addr = InetAddress.getByAddress(bAddr);
         } catch (UnknownHostException exn) {
-            throw new ParseException("bad address");
+            throw new RuntimeException("bad address");
         }
 
         int port = 256 * Integer.parseInt(toks[4]) + Integer.parseInt(toks[5]);
@@ -45,37 +43,33 @@ class FtpUtil
         return new InetSocketAddress(addr, port);
     }
 
-    static InetSocketAddress parseExtendedPort(String s) throws ParseException
+    static InetSocketAddress parseExtendedPort(String s)
     {
         Matcher matcher = EXTENDED_PORT_PATTERN.matcher( s );
 
         try {
             if (!matcher.matches()) {
-                throw new ParseException( "Unable to parse extended port command" );
+                throw new RuntimeException( "Unable to parse extended port command" );
             }
 
             return new InetSocketAddress( InetAddress.getByName(matcher.group(2)), Integer.valueOf(matcher.group(3)) );
-        } catch (ParseException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ParseException( "Unable to parse extended port command" );
+            throw new RuntimeException( "Unable to parse extended port command" );
         }
     }
 
-    static InetSocketAddress parseExtendedPasvReply(String s) throws ParseException
+    static InetSocketAddress parseExtendedPasvReply(String s)
     {
         Matcher matcher = EXTENDED_PASV_PATTERN.matcher(s);
 
         try {
             if (!matcher.matches()) {
-                throw new ParseException("Unable to parse extended pasv reply: '" + s + "'");
+                throw new RuntimeException("Unable to parse extended pasv reply: '" + s + "'");
             }
 
             return new InetSocketAddress(Integer.valueOf(matcher.group(2)));
-        } catch (ParseException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ParseException("Unable to parse extended pasv reply", e);
+            throw new RuntimeException("Unable to parse extended pasv reply", e);
         }
     }
 

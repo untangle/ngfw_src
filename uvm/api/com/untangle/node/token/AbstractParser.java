@@ -19,9 +19,9 @@ public abstract class AbstractParser implements Parser
         this.clientSide = clientSide;
     }
 
-    public void parse( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
+    public void parse( NodeTCPSession session, ByteBuffer chunk )
     {
-        throw new ParseException("Unexpected call to base class parse(ByteBuffer)");
+        throw new RuntimeException("Unexpected call to base class parse(ByteBuffer)");
     }
 
     public void endSession( NodeTCPSession session )
@@ -32,7 +32,7 @@ public abstract class AbstractParser implements Parser
             session.shutdownClient();
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer chunk ) throws ParseException
+    public void parseEnd( NodeTCPSession session, ByteBuffer chunk )
     {
         return;
     }

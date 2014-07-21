@@ -12,12 +12,11 @@ import com.untangle.node.smtp.quarantine.NoSuchInboxException;
 import com.untangle.node.smtp.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.smtp.safelist.NoSuchSafelistException;
 import com.untangle.node.smtp.safelist.SafelistActionFailedException;
-import com.untangle.uvm.node.ParseException;
 
 public interface JsonInterface
 {
     public boolean requestDigest( String account )
-        throws ParseException, QuarantineUserActionFailedException;
+        throws QuarantineUserActionFailedException;
 
     public List<InboxRecord> getInboxRecords( String token )
         throws BadTokenException, NoSuchInboxException, QuarantineUserActionFailedException;
