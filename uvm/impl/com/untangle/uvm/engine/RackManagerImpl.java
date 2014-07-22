@@ -153,7 +153,7 @@ public class RackManagerImpl implements RackManager
             installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
+            License commtouchAsLicense = lm.getLicense(License.SPAMBLOCKER);
             if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
                 installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
