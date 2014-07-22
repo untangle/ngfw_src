@@ -25,8 +25,6 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class TokenAdaptor extends AbstractEventHandler
 {
-    private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
-
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
     private TokenHandler tokenHandler;
@@ -64,14 +62,28 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
-        handleToken( tokenHandler, session, obj, true );
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            tokenHandler.releaseFlush( session );
+            finalize( session );
+            session.release();
+        }
+
+        tokenHandler.handleServerToken( session, token );
         return;
     }
 
     @Override
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
-        handleToken( tokenHandler, session, obj, false );
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            tokenHandler.releaseFlush( session );
+            finalize( session );
+            session.release();
+        }
+
+        tokenHandler.handleClientToken( session, token );
         return;
     }
     
@@ -79,25 +91,13 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPClientFIN( NodeTCPSession session )
     {
-        try {
-            tokenHandler.handleClientFin( session );
-        } catch ( Exception exn ) {
-            logger.warn("resetting connection", exn);
-            session.resetClient();
-            session.resetServer();
-        }
+        tokenHandler.handleClientFin( session );
     }
 
     @Override
     public void handleTCPServerFIN( NodeTCPSession session )
     {
-        try {
-            tokenHandler.handleServerFin( session );
-        } catch ( Exception exn ) {
-            logger.warn("resetting connection", exn);
-            session.resetClient();
-            session.resetServer();
-        }
+        tokenHandler.handleServerFin( session );
     }
 
     @Override
@@ -110,15 +110,8 @@ public class TokenAdaptor extends AbstractEventHandler
 
     private void finalize( NodeTCPSession sess )
     {
-        try {
-            tokenHandler.handleFinalized( sess );
-        } catch ( Exception exn ) {
-            logger.warn("Exception. resetting connection", exn);
-            sess.resetClient();
-            sess.resetServer();
-        }
+        tokenHandler.handleFinalized( sess );
     }
-    // UDP events -------------------------------------------------------------
 
     @Override
     public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
@@ -165,49 +158,10 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTimer( NodeSession sess )
     {
-        TokenHandler handler = (TokenHandler) sess.attachment();
-
         try {
-            handler.handleTimer( sess );
+            tokenHandler.handleTimer( sess );
         } catch ( Exception exn ) {
             logger.warn("exception in timer, no action taken", exn);
-        }
-    }
-
-    // private methods --------------------------------------------------------
-
-    private void handleToken(TokenHandler handler, NodeTCPSession session, Object obj, boolean s2c)
-    {
-        Token token = (Token) obj;
-        
-        try {
-            doToken(session, s2c, handler, token);
-        } catch ( Exception exn ) {
-            logger.warn("resetting connection", exn);
-            session.resetClient();
-            session.resetServer();
-            return;
-        }
-    }
-
-    public void doToken( NodeTCPSession session, boolean s2c, TokenHandler handler, Token token )
-       
-    {
-        if (token instanceof ReleaseToken) {
-            ReleaseToken release = (ReleaseToken)token;
-
-            handler.releaseFlush( session );
-
-            finalize( session );
-            session.release();
-        } else {
-            if (s2c) {
-                handler.handleServerToken( session, token );
-                return;
-            } else {
-                handler.handleClientToken( session, token );
-                return;
-            }
         }
     }
 }

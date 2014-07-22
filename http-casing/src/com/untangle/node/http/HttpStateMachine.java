@@ -566,14 +566,14 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
             case RELEASED:
                 if ( state.responseQueue.size() == 0 )
-                    logger.warn("Invalid respones queue size.");
+                    logger.warn("Invalid response queue size.");
 
                 session.sendObjectToClient( state.statusLine );
                 return;
 
             case BLOCKED:
                 if ( state.responseQueue.size() == 0 )
-                    logger.warn("Invalid respones queue size.");
+                    logger.warn("Invalid response queue size.");
 
                 session.sendObjectsToClient( state.responseResponse );
                 state.responseResponse = null;
