@@ -8,7 +8,6 @@ import static com.untangle.node.smtp.SmtpNodeImpl.PROTOCOL_NAME;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractUnparser;
-import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;

@@ -19,7 +19,6 @@ import com.untangle.node.smtp.mime.HeaderNames;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
 import com.untangle.uvm.UvmContextFactory;

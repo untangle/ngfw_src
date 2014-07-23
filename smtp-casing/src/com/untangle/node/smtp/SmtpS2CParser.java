@@ -13,7 +13,6 @@ import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
 import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 

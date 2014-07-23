@@ -1,8 +1,9 @@
 /**
  * $Id$
  */
-package com.untangle.node.token;
+package com.untangle.node.smtp;
 
+import com.untangle.node.token.MetadataToken;
 
 /**
  * Token representing the directive that downstream TokenHandlers
