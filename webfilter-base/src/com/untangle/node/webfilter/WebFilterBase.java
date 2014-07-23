@@ -11,7 +11,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.node.token.HeaderToken;
+import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;

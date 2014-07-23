@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.HeaderToken;
+import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;

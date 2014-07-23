@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.HeaderToken;
+import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;

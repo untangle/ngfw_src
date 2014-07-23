@@ -22,7 +22,7 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.FileChunkStreamer;
-import com.untangle.node.token.HeaderToken;
+import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;

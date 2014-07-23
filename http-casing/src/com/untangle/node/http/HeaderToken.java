@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.token;
+package com.untangle.node.http;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -10,11 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.node.token.Token;
+
 /**
  * Holds an RFC 822 header, as used by HTTP.
- *
- * XXX add support for multiple keys of the same name.
- *
  */
 public class HeaderToken implements Token
 {
