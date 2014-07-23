@@ -18,7 +18,7 @@ import com.untangle.uvm.vnet.IPPacketHeader;
  * Note that each handler method is free to rethrow an Exception received from
  * sending a request, modifying a session, etc.
  */
-public interface SessionEventListener extends java.util.EventListener
+public interface SessionEventHandler extends java.util.EventListener
 {
 
     /**

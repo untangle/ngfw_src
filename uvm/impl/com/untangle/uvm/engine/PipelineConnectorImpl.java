@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.
@@ -41,7 +41,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     private final PipeSpec pipeSpec;
 
     private Dispatcher dispatcher;
-    private SessionEventListener listener;
+    private SessionEventHandler listener;
 
     private final Node node;
 
@@ -56,7 +56,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     // public construction is the easiest solution to access from
     // PipelineConnectorManager for now.
-    public PipelineConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting )
+    public PipelineConnectorImpl(PipeSpec pipeSpec, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting )
     {
         this.node = pipeSpec.getNode();
 
@@ -158,7 +158,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         dispatcher = new Dispatcher(this);
 
         if (listener != null)
-            dispatcher.setSessionEventListener( listener );
+            dispatcher.setSessionEventHandler( listener );
 
         this.live = true;
     }

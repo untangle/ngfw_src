@@ -6,13 +6,13 @@ package com.untangle.uvm.vnet;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides
  * the default actions that any node event handler will need.
  */
-public abstract class AbstractEventHandler implements SessionEventListener
+public abstract class AbstractEventHandler implements SessionEventHandler
 {
     protected NodeBase node;
 

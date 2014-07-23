@@ -7,14 +7,14 @@ import java.net.InetSocketAddress;
 
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.
  */
 public interface PipelineFoundry
 {
-    PipelineConnector createPipelineConnector( PipeSpec spec, SessionEventListener listener, Fitting inputFitting, Fitting outputFitting );
+    PipelineConnector createPipelineConnector( PipeSpec spec, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting );
 
     void registerPipelineConnector( PipelineConnector pipelineConnector );
 

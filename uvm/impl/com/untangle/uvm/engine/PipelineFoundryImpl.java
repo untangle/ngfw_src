@@ -31,7 +31,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.CasingPipeSpec;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * Implements PipelineFoundry.
@@ -183,7 +183,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * Create an PipelineConnectorImpl.
      * This is here because PipelineConnectorImpl is in Impl and things in API need to create them. Should fix this
      */
-    public PipelineConnectorImpl createPipelineConnector(PipeSpec spec, SessionEventListener listener, Fitting input, Fitting output)
+    public PipelineConnectorImpl createPipelineConnector(PipeSpec spec, SessionEventHandler listener, Fitting input, Fitting output)
     {
         return new PipelineConnectorImpl( spec, listener, input, output );
     }

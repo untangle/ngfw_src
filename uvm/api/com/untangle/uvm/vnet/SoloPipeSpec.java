@@ -14,7 +14,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * <code>PipeSpec</code> for a regular Node.
@@ -30,12 +30,12 @@ public class SoloPipeSpec extends PipeSpec
     private final Affinity affinity;
     private final int strength;
 
-    private final SessionEventListener listener;
+    private final SessionEventHandler listener;
     private PipelineConnector pipelineConnector;
 
     // constructors -----------------------------------------------------------
 
-    public SoloPipeSpec(String name, Node node, Set<Subscription> subscriptions, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
+    public SoloPipeSpec(String name, Node node, Set<Subscription> subscriptions, SessionEventHandler listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node, subscriptions);
 
@@ -49,7 +49,7 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Node node, Subscription subscription, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
+    public SoloPipeSpec(String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node, subscription);
 
@@ -63,7 +63,7 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Node node, SessionEventListener listener, Fitting fitting, Affinity affinity, int strength)
+    public SoloPipeSpec(String name, Node node, SessionEventHandler listener, Fitting fitting, Affinity affinity, int strength)
     {
         super(name, node);
 
@@ -79,7 +79,7 @@ public class SoloPipeSpec extends PipeSpec
 
     // accessors --------------------------------------------------------------
 
-    public SessionEventListener getListener()
+    public SessionEventHandler getListener()
     {
         return listener;
     }

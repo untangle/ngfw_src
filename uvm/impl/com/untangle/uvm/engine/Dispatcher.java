@@ -26,7 +26,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.SessionEventListener;
+import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
@@ -56,7 +56,7 @@ public class Dispatcher
     private static final String STAT_TCP_SESSION_REQUESTS = "tcp-session-requests";
     private static final String STAT_UDP_SESSION_REQUESTS = "udp-session-requests";
     
-    private SessionEventListener sessionEventListener;
+    private SessionEventHandler sessionEventListener;
 
     /**
      * A specific logger for this session
@@ -69,7 +69,7 @@ public class Dispatcher
      * time.  We use the default abstract event handler implmentation
      * to become a transparent proxy.
      */
-    private SessionEventListener releasedHandler;
+    private SessionEventHandler releasedHandler;
 
     /**
      * The set of active sessions (both TCP and UDP), kept as weak
@@ -184,7 +184,7 @@ public class Dispatcher
         return pipelineConnector;
     }
 
-    protected void setSessionEventListener( SessionEventListener listener )
+    protected void setSessionEventHandler( SessionEventHandler listener )
     {
         sessionEventListener = listener;
     }

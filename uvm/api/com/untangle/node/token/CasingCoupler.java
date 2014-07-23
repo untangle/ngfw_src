@@ -32,7 +32,7 @@ public class CasingCoupler extends AbstractEventHandler
         this.releaseParseExceptions = releaseParseExceptions;
     }
 
-    // SessionEventListener methods -------------------------------------------
+    // SessionEventHandler methods -------------------------------------------
 
     @Override
     public void handleTCPNewSession( NodeTCPSession session )

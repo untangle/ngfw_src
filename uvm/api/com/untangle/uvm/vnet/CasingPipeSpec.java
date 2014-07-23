@@ -28,8 +28,8 @@ public class CasingPipeSpec extends PipeSpec
     private final Fitting input;
     private final Fitting output;
 
-    private final SessionEventListener insideAdaptor;
-    private final SessionEventListener outsideAdaptor;
+    private final SessionEventHandler insideAdaptor;
+    private final SessionEventHandler outsideAdaptor;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -122,12 +122,12 @@ public class CasingPipeSpec extends PipeSpec
         return output;
     }
 
-    public SessionEventListener getInsideAdaptor()
+    public SessionEventHandler getInsideAdaptor()
     {
         return insideAdaptor;
     }
 
-    public SessionEventListener getOutsideAdaptor()
+    public SessionEventHandler getOutsideAdaptor()
     {
         return outsideAdaptor;
     }
