@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
@@ -81,11 +81,11 @@ class HttpUnparser extends AbstractUnparser
             }
             requestLine( session, (RequestLineToken) token);
             return;
-        } else if (token instanceof Header) {
+        } else if (token instanceof HeaderToken) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got header!");
             }
-            header( session, (Header) token );
+            header( session, (HeaderToken) token );
             return;
         } else if (token instanceof ChunkToken) {
             if (logger.isDebugEnabled()) {
@@ -141,7 +141,7 @@ class HttpUnparser extends AbstractUnparser
             session.sendDataToServer( BYTE_BUFFER_PROTO );
     }
 
-    private void header( NodeTCPSession session, Header header )
+    private void header( NodeTCPSession session, HeaderToken header )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 

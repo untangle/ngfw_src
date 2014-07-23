@@ -17,7 +17,7 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -38,7 +38,7 @@ public class CaptureHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected Header doRequestHeader( NodeTCPSession session, Header requestHeader )
+    protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )
     {
         Token[] response = null;
 
@@ -132,7 +132,7 @@ public class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Header doResponseHeader( NodeTCPSession session, Header header )
+    protected HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken header )
     {
         releaseResponse( session );
         return header;
@@ -170,7 +170,7 @@ public class CaptureHttpHandler extends HttpStateMachine
         StatusLine sl = new StatusLine("HTTP/1.1", 503, "Service Unavailable");
         response[0] = sl;
 
-        Header head = new Header();
+        HeaderToken head = new HeaderToken();
         head.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         head.addField("Pragma", "no-cache");
         head.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");

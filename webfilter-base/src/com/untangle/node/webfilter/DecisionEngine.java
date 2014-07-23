@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.http.RequestLineToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.util.UrlMatchingUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.MimeType;
@@ -75,7 +75,7 @@ public abstract class DecisionEngine
      * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response (null means the site is passed and no response is given).
      */
-    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
+    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         URI uri = null;
         try {
@@ -258,7 +258,7 @@ public abstract class DecisionEngine
      * If for any reason the visit is block a nonce is returned.
      * Otherwise null is return and the response is passed
      */
-    public String checkResponse( NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, Header header )
+    public String checkResponse( NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
     {
         if (null == requestLine) {
             return null;

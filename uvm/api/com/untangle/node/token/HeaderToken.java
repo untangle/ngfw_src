@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Holds an RFC 822 header, as used by HTTP and SMTP.
+ * Holds an RFC 822 header, as used by HTTP.
  *
  * XXX add support for multiple keys of the same name.
  *
  */
-public class Header implements Token
+public class HeaderToken implements Token
 {
     private Map<String, Field> header = new LinkedHashMap<String, Field>();
 
-    public Header() { }
+    public HeaderToken() { }
 
     public void addField(String key, String value)
     {

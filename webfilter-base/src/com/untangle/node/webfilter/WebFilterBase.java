@@ -11,7 +11,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -265,7 +265,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public abstract String getName();
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header header )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken header )
     {
         return replacementGenerator.generateResponse( nonce, session, uri,header );
     }

@@ -9,7 +9,7 @@ import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -38,7 +38,7 @@ public class WebFilterHandler extends HttpStateMachine
     }
 
     @Override
-    protected Header doRequestHeader( NodeTCPSession sess, Header requestHeader )
+    protected HeaderToken doRequestHeader( NodeTCPSession sess, HeaderToken requestHeader )
     {
         node.incrementScanCount();
 
@@ -78,7 +78,7 @@ public class WebFilterHandler extends HttpStateMachine
     }
 
     @Override
-    protected Header doResponseHeader( NodeTCPSession sess, Header responseHeader )
+    protected HeaderToken doResponseHeader( NodeTCPSession sess, HeaderToken responseHeader )
     {
         if ( getStatusLine( sess ).getStatusCode() == 100 ) {
             releaseResponse( sess );

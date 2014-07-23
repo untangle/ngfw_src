@@ -22,7 +22,7 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.FileChunkStreamer;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
@@ -90,7 +90,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Header doRequestHeader( NodeTCPSession session, Header requestHeader )
+    protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         /* save hostname */
@@ -122,7 +122,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Header doResponseHeader( NodeTCPSession session, Header header )
+    protected HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken header )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("doing response header");
@@ -422,7 +422,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @SuppressWarnings("unused")
-    private boolean isPersistent(Header header)
+    private boolean isPersistent(HeaderToken header)
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");

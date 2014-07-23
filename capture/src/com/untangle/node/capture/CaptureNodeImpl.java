@@ -17,7 +17,6 @@ import java.net.URLDecoder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.node.DirectoryConnector;

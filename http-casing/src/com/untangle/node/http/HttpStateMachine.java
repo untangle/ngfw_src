@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.ArrayTokenStreamer;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
@@ -99,12 +99,12 @@ public abstract class HttpStateMachine extends AbstractEventHandler
     }
 
     protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl );
-    protected abstract Header doRequestHeader( NodeTCPSession session, Header h );
+    protected abstract HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken h );
     protected abstract ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c );
     protected abstract void doRequestBodyEnd( NodeTCPSession session );
 
     protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl );
-    protected abstract Header doResponseHeader( NodeTCPSession session, Header h );
+    protected abstract HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken h );
     protected abstract ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c );
     protected abstract void doResponseBodyEnd( NodeTCPSession session );
 
@@ -388,7 +388,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
         case REQ_HEADER_STATE:
             if ( state.requestMode != Mode.BLOCKED ) {
-                Header h = (Header)token;
+                HeaderToken h = (HeaderToken)token;
                 state.requestPersistent = isPersistent(h);
                 Mode preMode = state.requestMode;
                 h = doRequestHeader( session, h );
@@ -595,7 +595,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
         case RESP_HEADER_STATE:
             if ( state.responseMode != Mode.BLOCKED ) {
-                Header h = (Header)token;
+                HeaderToken h = (HeaderToken)token;
                 state.responsePersistent = isPersistent(h);
 
                 /**
@@ -780,7 +780,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
         }
     }
 
-    private boolean isPersistent(Header header)
+    private boolean isPersistent(HeaderToken header)
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");

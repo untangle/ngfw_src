@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -68,7 +68,7 @@ public class HttpParser extends AbstractParser
     {
         protected RequestLineToken requestLineToken;
         protected StatusLine statusLine;
-        protected Header header;
+        protected HeaderToken header;
 
         protected byte[] buf;
         protected int currentState;
@@ -743,9 +743,9 @@ public class HttpParser extends AbstractParser
         return i;
     }
 
-    private Header header( NodeTCPSession session, ByteBuffer data )
+    private HeaderToken header( NodeTCPSession session, ByteBuffer data )
     {
-        Header header = new Header();
+        HeaderToken header = new HeaderToken();
 
         while (data.remaining() > 2) {
             field( session, header, data );
@@ -765,8 +765,7 @@ public class HttpParser extends AbstractParser
     // field-content  = <the OCTETs making up the field-value
     //                  and consisting of either *TEXT or combinations
     //                  of token, separators, and quoted-string>
-    private void field( NodeTCPSession session, Header header, ByteBuffer data )
-       
+    private void field( NodeTCPSession session, HeaderToken header, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 

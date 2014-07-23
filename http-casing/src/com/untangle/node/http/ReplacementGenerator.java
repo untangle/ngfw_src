@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.Header;
+import com.untangle.node.token.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
@@ -69,7 +69,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return generateResponse(o, session, null, null );
     }
 
-    public Token[] generateResponse( T o, NodeTCPSession session, String uri, Header requestHeader )
+    public Token[] generateResponse( T o, NodeTCPSession session, String uri, HeaderToken requestHeader )
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader );
@@ -80,7 +80,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return generateResponse(nonce, session, null, null );
     }
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, Header requestHeader )
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken requestHeader )
     {
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, true);
@@ -101,7 +101,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
-    public Token[] generateSimpleResponse( String nonce, NodeTCPSession session, String uri, Header requestHeader )
+    public Token[] generateSimpleResponse( String nonce, NodeTCPSession session, String uri, HeaderToken requestHeader )
     {
         return generateSimplePage(nonce, imagePreferred(uri, requestHeader));
     }
@@ -138,7 +138,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
         response[0] = sl;
 
-        Header h = new Header();
+        HeaderToken h = new HeaderToken();
         h.addField("Content-Length", Integer.toString(chunk.getSize()));
         h.addField("Content-Type", gif ? "image/gif" : "text/html");
         h.addField("Connection", "Close");
@@ -158,7 +158,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         StatusLine sl = new StatusLine("HTTP/1.1", 307, "Temporary Redirect");
         response[0] = sl;
 
-        Header h = new Header();
+        HeaderToken h = new HeaderToken();
         h.addField("Location", getRedirectUrl(nonce, host, tid));
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
@@ -175,7 +175,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
-    private boolean imagePreferred( String uri, Header header )
+    private boolean imagePreferred( String uri, HeaderToken header )
     {
         if (null != uri && IMAGE_PATTERN.matcher(uri).matches()) {
             return true;
