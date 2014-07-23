@@ -20,11 +20,22 @@ import com.untangle.uvm.vnet.TCPStreamer;
 /**
  * Adapts a Token session's underlying byte-stream a <code>Casing</code>.
  */
-public class CasingAdaptor extends CasingBase
+public class CasingAdaptor extends AbstractEventHandler
 {
+    protected final Logger logger = Logger.getLogger(CasingAdaptor.class);
+
+    protected final Parser parser;
+    protected final Unparser unparser;
+    protected final boolean clientSide;
+    protected volatile boolean releaseParseExceptions;
+    
     public CasingAdaptor( Node node, Parser parser, Unparser unparser, boolean clientSide, boolean releaseParseExceptions )
     {
-        super( node, parser, unparser, clientSide, releaseParseExceptions );
+        super(node);
+        this.parser = parser;
+        this.unparser = unparser;
+        this.clientSide = clientSide;
+        this.releaseParseExceptions = releaseParseExceptions;
     }
 
     // SessionEventListener methods -------------------------------------------

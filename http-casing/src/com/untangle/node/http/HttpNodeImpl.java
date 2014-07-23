@@ -54,9 +54,10 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
 
     private void reconfigure()
     {
-        if (null != settings) {
+        if ( settings != null ) {
             pipeSpec.setEnabled(settings.isEnabled());
-            pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
+            // XXX - this is obsolete
+            //pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
         }
     }
 

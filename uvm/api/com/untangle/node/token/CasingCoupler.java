@@ -14,11 +14,22 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
-public class CasingCoupler extends CasingBase
+public class CasingCoupler extends AbstractEventHandler
 {
+    protected final Logger logger = Logger.getLogger(CasingCoupler.class);
+
+    protected final Parser parser;
+    protected final Unparser unparser;
+    protected final boolean clientSide;
+    protected volatile boolean releaseParseExceptions;
+
     public CasingCoupler(Node node, Parser parser, Unparser unparser, boolean clientSide, boolean releaseParseExceptions)
     {
-        super(node, parser, unparser, clientSide, releaseParseExceptions);
+        super(node);
+        this.parser = parser;
+        this.unparser = unparser;
+        this.clientSide = clientSide;
+        this.releaseParseExceptions = releaseParseExceptions;
     }
 
     // SessionEventListener methods -------------------------------------------

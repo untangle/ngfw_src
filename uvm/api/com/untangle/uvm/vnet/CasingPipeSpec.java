@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.node.token.CasingBase;
 import com.untangle.node.token.CasingCoupler;
 import com.untangle.node.token.CasingAdaptor;
 import com.untangle.node.token.Parser;
@@ -29,15 +28,13 @@ public class CasingPipeSpec extends PipeSpec
     private final Fitting input;
     private final Fitting output;
 
-    private final CasingBase insideAdaptor;
-    private final CasingBase outsideAdaptor;
+    private final SessionEventListener insideAdaptor;
+    private final SessionEventListener outsideAdaptor;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private PipelineConnector insidePipelineConnector;
     private PipelineConnector outsidePipelineConnector;
-
-    private boolean releaseParseExceptions = true;
 
     // constructors -----------------------------------------------------------
 
@@ -125,26 +122,14 @@ public class CasingPipeSpec extends PipeSpec
         return output;
     }
 
-    public CasingBase getInsideAdaptor()
+    public SessionEventListener getInsideAdaptor()
     {
         return insideAdaptor;
     }
 
-    public CasingBase getOutsideAdaptor()
+    public SessionEventListener getOutsideAdaptor()
     {
         return outsideAdaptor;
-    }
-
-    public boolean getReleaseParseExceptions()
-    {
-        return releaseParseExceptions;
-    }
-
-    public void setReleaseParseExceptions( boolean releaseParseExceptions )
-    {
-        this.releaseParseExceptions = releaseParseExceptions;
-        insideAdaptor.setReleaseParseExceptions(releaseParseExceptions);
-        outsideAdaptor.setReleaseParseExceptions(releaseParseExceptions);
     }
 
     // PipeSpec methods -------------------------------------------------------
