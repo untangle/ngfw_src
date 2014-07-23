@@ -1842,7 +1842,7 @@ Ung.MetricManager = {
             var i;
             for (i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
-                
+
                 if (nodeCmp && nodeCmp.isRunning()) {
                     nodeCmp.metrics = result.metrics[main.nodes[i].nodeId];
                     nodeCmp.updateMetrics();
@@ -3688,7 +3688,7 @@ Ung.CustomEventLog = {
             }, {
                 name: 'adblocker_cookie_ident'
             }, {
-                name: 'commtouchav_name'
+                name: 'virusblocker_name'
             }, {
                 name: 'clam_name'
             }],
@@ -3833,11 +3833,11 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'clam_name'
             }, {
-                hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virusblocker_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'commtouchav_name'
+                dataIndex: 'virusblocker_name'
             }]
         });
         return grid;
@@ -3962,7 +3962,7 @@ Ung.CustomEventLog = {
                 name: 's_server_addr',
                 sortType: Ung.SortTypes.asIp
             }, {
-                name: 'commtouchav_name'
+                name: 'virusblocker_name'
             }, {
                 name: 'clam_name'
             }, {
@@ -3987,15 +3987,15 @@ Ung.CustomEventLog = {
             }, {
                 name: 'spamassassin_tests_string'
             }, {
-                name:  'commtouchas_action',
+                name:  'spamblocker_action',
                 type: 'string',
                 convert: Ext.bind( function(value, rec ) {
                     return Ung.CustomEventLog.mailEventConvertAction(value, rec);
                 }, this)
             }, {
-                name: 'commtouchas_score'
+                name: 'spamblocker_score'
             }, {
-                name: 'commtouchas_tests_string'
+                name: 'spamblocker_tests_string'
             }, {
                 name:  'phish_action',
                 type: 'string',
@@ -4047,11 +4047,11 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'clam_name'
             }, {
-                hidden: visibleColumnsParam.indexOf('commtouchav_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virusblocker_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'commtouchav_name'
+                dataIndex: 'virusblocker_name'
             }, {
                 hidden: visibleColumnsParam.indexOf('addr') < 0,
                 header: i18n._("Receiver"),
@@ -4093,26 +4093,26 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'spamassassin_tests_string'
             }, {
-                hidden: visibleColumnsParam.indexOf('commtouchas_action') < 0,
+                hidden: visibleColumnsParam.indexOf('spamblocker_action') < 0,
                 header: i18n._("Action (Spam Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'commtouchas_action'
+                dataIndex: 'spamblocker_action'
             }, {
-                hidden: visibleColumnsParam.indexOf('commtouchas_score') < 0,
+                hidden: visibleColumnsParam.indexOf('spamblocker_score') < 0,
                 header: i18n._("Spam Score (Spam Blocker)"),
                 width: 70,
                 sortable: true,
-                dataIndex: 'commtouchas_score',
+                dataIndex: 'spamblocker_score',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('commtouchas_tests_string') < 0,
+                hidden: visibleColumnsParam.indexOf('spamblocker_tests_string') < 0,
                 header: i18n._("Detail (Spam Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'commtouchas_tests_string'
+                dataIndex: 'spamblocker_tests_string'
             }, {
                 hidden: visibleColumnsParam.indexOf('phish_action') < 0,
                 header: i18n._("Action (Phish Blocker)"),

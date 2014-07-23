@@ -68,8 +68,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         
         if (vendor.equals("SpamAssassin")) 
             vendorTag = "spamassassin";
-        else if (vendor.equals("CommtouchAs"))
-            vendorTag = "commtouchas";
+        else if (vendor.equals("SpamBlocker"))
+            vendorTag = "spamblocker";
         else if (vendor.equals("Clam")) {
             vendorTag = "phish";
             badEmailName = "Phish";

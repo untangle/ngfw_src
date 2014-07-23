@@ -53,7 +53,7 @@ import com.untangle.uvm.node.Reporting;
 
 /**
  * Implements RackManager.
- * 
+ *
  * The public methods are documented in RackManager.java
  */
 public class RackManagerImpl implements RackManager
@@ -92,7 +92,7 @@ public class RackManagerImpl implements RackManager
         Map<String, NodeProperties> installableNodesMap =  new HashMap<String, NodeProperties>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<String, License>();
-        
+
         /**
          * Build the license map
          */
@@ -113,7 +113,7 @@ public class RackManagerImpl implements RackManager
         for ( NodeProperties nodeProps : nm.getAllNodeProperties() ) {
             if ( ! nodeProps.getInvisible() ) {
                 installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
-            } 
+            }
         }
 
         /**
@@ -148,18 +148,18 @@ public class RackManagerImpl implements RackManager
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
-        List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
-        if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
+        List<Node> spamBlockerNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-spamblocker", policyId);
+        if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
             installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
-            License commtouchAsLicense = lm.getLicense(License.SPAMBLOCKER);
-            if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
+            License spamBlockerLicense = lm.getLicense(License.SPAMBLOCKER);
+            if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
                 installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
         }
-        
-        
+
+
         /**
          * Build the list of apps to show on the left hand nav
          */
@@ -182,11 +182,11 @@ public class RackManagerImpl implements RackManager
     public void instantiate(final String name, final Long policyId) throws Exception
     {
         logger.info("instantiate( " + name + ")");
-        
+
         synchronized (this) {
             /* FIXME get dependenencies (parents) */
             List<String> parents = new LinkedList<String>();
-            
+
             /**
              * Instantiate all subpkgs that are nodes
              */
@@ -197,8 +197,8 @@ public class RackManagerImpl implements RackManager
                 if (! nodeProperties.exists()) {
                     logger.warn( "Unable to find node: " + node );
                     continue;
-                } 
-                
+                }
+
                 try {
                     logger.info("instantiate( " + node + ")");
 
@@ -208,14 +208,14 @@ public class RackManagerImpl implements RackManager
                     if ( thisNode == null || nd == null ) {
                         logger.warn( "Failed to instantiate: " + node );
                     }
-                    
+
                     if ( nd.getAutoStart() ) {
                         thisNode.start();
                     }
-                    
+
                 } catch (Exception exn) {
                     logger.warn("could not instantiate " + node, exn);
-                } 
+                }
             }
         }
 

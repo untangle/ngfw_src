@@ -188,7 +188,7 @@ class Report:
                                                                                            host,
                                                                                            user,
                                                                                            email))
-        
+
         node_base = get_node_base(self.__name, date_base,
                                   report_days=report_days, host=host, user=user,
                                   email=email)
@@ -309,10 +309,10 @@ class DetailSection(Section):
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         pass
-    
+
     def get_all_columns(self, host=None, user=None, email=None):
         pass
-    
+
     def get_session_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
                    ColumnDesc('bandwidth_priority', _('Priority'), 'Numeric'),
@@ -346,7 +346,7 @@ class DetailSection(Section):
                    ColumnDesc('capture_rule_index', _('Rule ID (Captive Portal)')),
                    ColumnDesc('capture_blocked', _('Captured'), 'Boolean')]
         return columns
-    
+
     def get_http_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
                    ColumnDesc('c_client_addr', _('Client')),
@@ -368,10 +368,10 @@ class DetailSection(Section):
                    ColumnDesc('adblocker_action', _('Action (Ad Blocker)')),
                    ColumnDesc('adblocker_cookie_ident', _('Cookie')),
                    ColumnDesc('clam_name', _('Virus Name (Clam)')),
-                   ColumnDesc('commtouchav_name', _('Virus Name (Commtouchav)'))
+                   ColumnDesc('virusblocker_name', _('Virus Name (Virus Blocker)'))
                    ]
         return columns
-    
+
     def get_http_query_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
                    ColumnDesc('c_client_addr', _('Client')),
@@ -384,21 +384,21 @@ class DetailSection(Section):
                    ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
                    ]
         return columns
-    
+
     def get_email_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
                    ColumnDesc('c_client_addr', _('Client')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('s_server_addr', _('Server')),
                    ColumnDesc('clam_name', _('Virus Name (Clam)')),
-                   ColumnDesc('commtouchav_name', _('Virus Name (Commtouchav)')),
+                   ColumnDesc('virusblocker_name', _('Virus Name (Virus Blocker)')),
                    ColumnDesc('addr', _('Receiver')),
                    ColumnDesc('sender', _('Sender')),
                    ColumnDesc('subject', _('Subject')),
                    ColumnDesc('spamassassin_action', _('Action (Spamassassin)')),
                    ColumnDesc('spamassassin_score', _('Spam score (Spamassassin)'),'Numeric'),
-                   ColumnDesc('commtouchas_action', _('Action (Commtouchas)')),
-                   ColumnDesc('commtouchas_score', _('Spam score (Commtouchas)'),'Numeric'),
+                   ColumnDesc('spamblocker_action', _('Action (Spam Blocker)')),
+                   ColumnDesc('spamblocker_score', _('Spam score (Spam Blocker)'),'Numeric'),
                    ColumnDesc('phish_action', _('Action (Phish)'))
                    ]
         return columns
@@ -452,13 +452,13 @@ class DetailSection(Section):
         try:
             curs = conn.cursor()
             curs.execute(sql)
-            
+
             r = []
             #logger.debug('Description: %s' % (curs.description,))
             for column in curs.description:
                 r.append(column[0])
             w.writerow(r)
-            
+
             while 1:
                 r = curs.fetchone()
                 if not r:
@@ -490,18 +490,18 @@ class ColumnDesc():
     @property
     def title(self):
         return self.__title
-    
+
     def setTitle(self, title):
         self.__title = title
-    
+
     @property
     def name(self):
         return self.__name
-    
+
     @property
     def hidden(self):
         return self.__hidden
-    
+
     def setHidden(self, hidden):
         self.__hidden = hidden
 
@@ -664,7 +664,7 @@ class Graph:
                     key_statistics_2.append(KeyStatistic(name, value, self.__key_statistics[0].unit))
 
             self.__key_statistics = key_statistics_2
-            
+
         if not self.__plot:
             return None
 
@@ -817,7 +817,7 @@ class Chart:
         if self.__xlabel:
             self.__xlabel = self.__xlabel.decode('utf-8')
         self.__ylabel = ylabel
-            
+
         self.__major_formatter = major_formatter
 
         self.__datasets = []
@@ -901,7 +901,7 @@ class Chart:
 
                 self.__datasets2[str(i[0])] = i[1]
                 self.__colors[OTHERS_STR] = reports.colors.color_palette[self.__color_num]
-                
+
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:
             self.__generate_pie_csv(filename, host=host, user=user, email=email)
@@ -946,7 +946,7 @@ class Chart:
             except:
                 logger.critical("Could not set y-bale to '%s' (type '%s')" % (self.__ylabel, type(self.__ylabel)))
                 raise
-            
+
 
         if self.__major_formatter:
             element.set('major-formatter', self.__major_formatter.name)
@@ -977,7 +977,7 @@ class Chart:
                     a[z] = y
                     data[x] = a
             z = z + 1
-            
+
         for x in self.__required_points:
             a = data.get(x, None)
             if not a:

@@ -23,14 +23,14 @@ class HttpCasing(Node):
 
         ft = FactTable('reports.http_totals', 'reports.http_events',
                        'time_stamp',
-                       [Column('hostname', 'text'), 
+                       [Column('hostname', 'text'),
                         Column('username', 'text'),
                         Column('host', 'text'),
                         Column('s2c_content_type', 'text')],
                        [Column('hits', 'bigint', 'count(*)'),
                         Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
                         Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
-        
+
         # remove obsolete columns
         sql_helper.drop_column('reports', 'http_totals', 's2c_bytes')
         sql_helper.drop_column('reports', 'http_totals', 'c2s_bytes')
@@ -43,26 +43,26 @@ class HttpCasing(Node):
 CREATE TABLE reports.http_events (
     event_id bigserial,
     time_stamp timestamp without time zone,
-    session_id bigint, 
+    session_id bigint,
     client_intf smallint,
     server_intf smallint,
-    c_client_addr inet, 
-    s_client_addr inet, 
-    c_server_addr inet, 
+    c_client_addr inet,
+    s_client_addr inet,
+    c_server_addr inet,
     s_server_addr inet,
-    c_client_port integer, 
-    s_client_port integer, 
-    c_server_port integer, 
+    c_client_port integer,
+    s_client_port integer,
+    c_server_port integer,
     s_server_port integer,
-    policy_id bigint, 
+    policy_id bigint,
     username text,
     hostname text,
-    request_id bigint, 
-    method character(1), 
+    request_id bigint,
+    method character(1),
     uri text,
-    host text, 
+    host text,
     c2s_content_length bigint,
-    s2c_content_length bigint, 
+    s2c_content_length bigint,
     s2c_content_type text,
     adblocker_blocked boolean,
     adblocker_cookie_ident text,
@@ -77,9 +77,9 @@ CREATE TABLE reports.http_events (
     sitefilter_flagged boolean,
     clam_clean boolean,
     clam_name text,
-    commtouchav_clean boolean,
-    commtouchav_name text)""")
-    
+    virusblocker_clean boolean,
+    virusblocker_name text)""")
+
         # 10.2 conversion, in 10.1 and 10.0 these columns were integers, convert them
         # Had to disable this conversion - it takes too long
         # We will just have to leave old installs as integers
@@ -93,7 +93,7 @@ CREATE TABLE reports.http_events (
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","http_events","event_id", unique=True):
             sql_helper.create_index("reports","http_events","event_id", unique=True);
-        
+
         sql_helper.create_index("reports","http_events","session_id");
         sql_helper.create_index("reports","http_events","policy_id");
         sql_helper.create_index("reports","http_events","time_stamp");
@@ -108,6 +108,6 @@ CREATE TABLE reports.http_events (
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("http_events", cutoff)
-        sql_helper.drop_fact_table("http_totals", cutoff)        
+        sql_helper.drop_fact_table("http_totals", cutoff)
 
 reports.engine.register_node(HttpCasing())

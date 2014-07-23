@@ -168,8 +168,8 @@ public class SpamLogEvent extends LogEvent
         String prefix = ""; /* XXX this is a hack - we should use proper column names */
         if ("spamassassin".equals(getVendorName().toLowerCase()))
             prefix = "spamassassin";
-        else if ("commtouchas".equals(getVendorName().toLowerCase()))
-            prefix = "commtouchas";
+        else if ("spamblocker".equals(getVendorName().toLowerCase()))
+            prefix = "spamblocker";
         else if ("clam".equals(getVendorName().toLowerCase()))
             prefix = "phish";
         else if ("phish".equals(getVendorName().toLowerCase()))

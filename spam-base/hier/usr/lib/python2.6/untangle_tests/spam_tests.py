@@ -24,23 +24,23 @@ smtpServerHost = 'test.untangle.com'
 def sendTestmessage():
     sender = 'test@example.com'
     receivers = ['qa@example.com']
-    
+
     message = """From: Test <test@example.com>
     To: Test Group <qa@example.com>
     Subject: SMTP e-mail test
-    
+
     This is a test e-mail message.
     """
-    
+
     try:
        smtpObj = smtplib.SMTP(smtpServerHost)
-       smtpObj.sendmail(sender, receivers, message)         
+       smtpObj.sendmail(sender, receivers, message)
        print "Successfully sent email"
        return 1
     except smtplib.SMTPException:
        print "Error: unable to send email"
        return 0
-       
+
 def getLatestMailSender():
     clientControl.runCommand("rm mailpkg.tar* >/dev/null 2>&1") # remove all previous mail packages
     results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
@@ -93,7 +93,7 @@ class SpamTests(unittest2.TestCase):
             for checkAddress in curQuarantineList['list']:
                 if checkAddress['address']:
                     curQuarantine.deleteInbox(checkAddress['address'])
-            
+
     # verify client is online
     def test_010_clientIsOnline(self):
         time.sleep(3)
@@ -123,12 +123,12 @@ class SpamTests(unittest2.TestCase):
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        if (not 'commtouchas_score' in events['list'][0]):
+        if (not 'spamblocker_score' in events['list'][0]):
             assert(events['list'][0]['spamassassin_score'] >= 3.0)
         else:
-            assert(events['list'][0]['commtouchas_score'] >= 3.0)
+            assert(events['list'][0]['spamblocker_score'] >= 3.0)
         assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-            
+
     def test_030_adminQuarantine(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
@@ -145,7 +145,7 @@ class SpamTests(unittest2.TestCase):
             print checkAddress
             if (checkAddress['address'] == 'qa@example.com') and (checkAddress['totalMails'] > 0): addressFound = True
         assert(addressFound)
-             
+
     def test_040_userQuarantine(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
@@ -160,7 +160,7 @@ class SpamTests(unittest2.TestCase):
         curQuarantineList = curQuarantine.getInboxRecords('qa@example.com')
         #print curQuarantineList
         assert(len(curQuarantineList['list']) > 0)
-            
+
     def test_050_userQuarantinePurge(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
@@ -172,13 +172,13 @@ class SpamTests(unittest2.TestCase):
         # Get user quarantine list of email addresses
         addressFound = False
         curQuarantine = nodeSP.getQuarantineUserView()
-        
+
         curQuarantineList = curQuarantine.getInboxRecords('qa@example.com')
         initialLen = len(curQuarantineList['list'])
         mailId = curQuarantineList['list'][0]['mailID'];
         print mailId
         curQuarantine.purge('qa@example.com', [mailId]);
-        
+
         curQuarantineListAfter = curQuarantine.getInboxRecords('qa@example.com')
         assert(len(curQuarantineListAfter['list']) == initialLen - 1);
 

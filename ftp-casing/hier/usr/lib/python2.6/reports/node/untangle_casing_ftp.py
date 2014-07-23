@@ -26,7 +26,7 @@ class FtpCasing(Node):
                        [Column('hostname', 'text'),
                         Column('username', 'text')],
                        [Column('hits', 'bigint', 'count(*)')])
-        
+
         # remove obsolete columns
         sql_helper.drop_column('reports', 'ftp_totals', 's2c_bytes')
         sql_helper.drop_column('reports', 'ftp_totals', 'c2s_bytes')
@@ -39,23 +39,23 @@ class FtpCasing(Node):
 CREATE TABLE reports.ftp_events (
     event_id bigserial,
     time_stamp timestamp without time zone,
-    session_id bigint, 
+    session_id bigint,
     client_intf smallint,
     server_intf smallint,
-    c_client_addr inet, 
-    s_client_addr inet, 
-    c_server_addr inet, 
+    c_client_addr inet,
+    s_client_addr inet,
+    c_server_addr inet,
     s_server_addr inet,
-    policy_id bigint, 
+    policy_id bigint,
     username text,
     hostname text,
-    request_id bigint, 
-    method character(1), 
+    request_id bigint,
+    method character(1),
     uri text,
     clam_clean boolean,
     clam_name text,
-    commtouchav_clean boolean,
-    commtouchav_name text)""")
+    virusblocker_clean boolean,
+    virusblocker_name text)""")
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports", "ftp_events", "request_id", unique=True):
@@ -64,13 +64,13 @@ CREATE TABLE reports.ftp_events (
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports", "ftp_events", "event_id", unique=True):
             sql_helper.create_index("reports", "ftp_events", "event_id", unique=True);
-        
+
         sql_helper.create_index("reports", "ftp_events", "session_id");
         sql_helper.create_index("reports", "ftp_events", "policy_id");
         sql_helper.create_index("reports", "ftp_events", "time_stamp");
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("ftp_events", cutoff)
-        sql_helper.drop_fact_table("ftp_totals", cutoff)        
+        sql_helper.drop_fact_table("ftp_totals", cutoff)
 
 reports.engine.register_node(FtpCasing())
