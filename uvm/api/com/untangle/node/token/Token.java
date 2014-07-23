@@ -13,5 +13,4 @@ import java.nio.ByteBuffer;
 public interface Token
 {
     ByteBuffer getBytes();
-    int getEstimatedSize();
 }

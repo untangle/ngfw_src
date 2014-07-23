@@ -75,9 +75,4 @@ public final class ContinuedMIMEToken implements Token
     {
         return m_chunk == null ? 0 : m_chunk.length();
     }
-
-    public int getEstimatedSize()
-    {
-        return m_chunk.hasData() ? m_chunk.getData().remaining() : 0;
-    }
 }

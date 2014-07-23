@@ -84,10 +84,4 @@ public class FtpCommand implements Token
     {
         return AsciiCharBuffer.wrap(getBytes()).toString();
     }
-
-    public int getEstimatedSize()
-    {
-        return (null == function ? 0 : function.toString().length())
-            + (null == argument ? 0 : argument.length());
-    }
 }

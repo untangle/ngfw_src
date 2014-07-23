@@ -27,9 +27,4 @@ public class SASLExchangeToken implements Token
     {
         return m_buf.slice();
     }
-
-    public int getEstimatedSize()
-    {
-        return m_buf.remaining();
-    }
 }

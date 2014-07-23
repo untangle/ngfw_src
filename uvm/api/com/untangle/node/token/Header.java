@@ -20,8 +20,6 @@ public class Header implements Token
 {
     private Map<String, Field> header = new LinkedHashMap<String, Field>();
 
-    private int estimatedSize = 0;
-
     public Header() { }
 
     public void addField(String key, String value)
@@ -31,21 +29,14 @@ public class Header implements Token
         if (null == f) {
             f = new Field(key);
             header.put(key.toUpperCase(), f);
-        } else {
-            estimatedSize -= f.getEstimatedSize();
-        }
+        } 
 
         f.addValue(value);
-        estimatedSize += f.getEstimatedSize();
     }
 
     public void removeField(String key)
     {
         Field f = header.remove(key.toUpperCase());
-
-        if (null != f) {
-            estimatedSize -= f.getEstimatedSize();
-        }
     }
 
     /**
@@ -62,13 +53,11 @@ public class Header implements Token
             f = new Field(key);
             header.put(key, f);
         } else {
-            estimatedSize -= f.getEstimatedSize();
             /* Remove all of the items */
             f.values.clear();
         }
 
         f.addValue( value );
-        estimatedSize += f.getEstimatedSize();
     }
 
     public String getValue(String key)
@@ -112,27 +101,17 @@ public class Header implements Token
         String key;
 
         private List<String> values = new LinkedList<String>();
-        private int estimatedSize;
 
         Field(String key)
         {
             this.key = key;
-            estimatedSize = key.length();
         }
 
         void addValue(String value)
         {
             values.add(value);
-            estimatedSize += value.length();
-        }
-
-        int getEstimatedSize()
-        {
-            return estimatedSize;
         }
     }
-
-    // Token methods ----------------------------------------------------------
 
     public ByteBuffer getBytes()
     {
@@ -151,10 +130,5 @@ public class Header implements Token
         byte[] buf = sb.toString().getBytes();
 
         return ByteBuffer.wrap(buf);
-    }
-
-    public int getEstimatedSize()
-    {
-        return estimatedSize;
     }
 }

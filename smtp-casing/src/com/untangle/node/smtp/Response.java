@@ -114,17 +114,4 @@ public class Response implements Token
         }
         return sb.toString();
     }
-
-    public int getEstimatedSize()
-    {
-        int len = 0;
-        for (String arg : m_args) {
-            len += 3;// NNN
-            len += 1;// SP or DASH
-            len += (arg == null ? 0 : arg.length());
-            len += 2;// CRLF
-        }
-
-        return len;
-    }
 }

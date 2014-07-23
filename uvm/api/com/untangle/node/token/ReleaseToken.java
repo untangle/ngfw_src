@@ -29,9 +29,4 @@ public class ReleaseToken implements Token
     {
         return data.duplicate();
     }
-
-    public int getEstimatedSize()
-    {
-        return 0;
-    }
 }

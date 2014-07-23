@@ -36,7 +36,6 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
-
 Package: untangle-node-webfilter
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init

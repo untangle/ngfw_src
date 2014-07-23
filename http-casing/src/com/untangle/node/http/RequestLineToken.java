@@ -93,12 +93,4 @@ public class RequestLineToken implements Token
 
         return ByteBuffer.wrap(buf);
     }
-
-    public int getEstimatedSize()
-    {
-        return requestLine.getMethod().toString().length()
-            + requestLine.getUriBytes().length
-            + httpVersion.toString().length()
-            + 4;
-    }
 }

@@ -104,9 +104,4 @@ public class FtpReply implements Token
     {
         return AsciiCharBuffer.wrap(getBytes()).toString();
     }
-
-    public int getEstimatedSize()
-    {
-        return 3 + message.length();
-    }
 }

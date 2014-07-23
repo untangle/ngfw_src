@@ -51,9 +51,4 @@ public class StatusLine implements Token
 
         return ByteBuffer.wrap(buf);
     }
-
-    public int getEstimatedSize()
-    {
-        return httpVersion.length() + 3 + reasonPhrase.length();
-    }
 }

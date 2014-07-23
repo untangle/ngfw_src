@@ -49,9 +49,4 @@ public class Chunk implements Token
     {
         return data.duplicate();
     }
-
-    public int getEstimatedSize()
-    {
-        return data.remaining();
-    }
 }

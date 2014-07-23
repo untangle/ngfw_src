@@ -119,16 +119,4 @@ public class Command implements Token
     {
         return toDebugString();
     }
-
-    public int getEstimatedSize()
-    {
-        String tmpCmdStr = this.type.toString();
-        if (getType() == CommandType.UNKNOWN) {
-            tmpCmdStr = this.cmdStr;
-        }
-
-        String argStr = getArgString();
-
-        return tmpCmdStr.length() + (argStr == null ? (0) : (argStr.length() + 1)) + 3;
-    }
 }
