@@ -74,12 +74,12 @@ public class IpsSessionInfo
         return isServer;
     }
 
-    public int getChunkCount()
+    public int getChunkTokenCount()
     {
         return chunkCount;
     }
 
-    public void iterateChunkCount()
+    public void iterateChunkTokenCount()
     {
         this.chunkCount++;
     }

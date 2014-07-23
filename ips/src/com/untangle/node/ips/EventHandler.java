@@ -72,25 +72,25 @@ public class EventHandler extends AbstractEventHandler
 
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data  )
     {
-        ipsEngine.handleChunk( data, session, false );
+        ipsEngine.handleChunkToken( data, session, false );
         super.handleTCPClientChunk( session, data );
     }
 
     public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data  )
     {
-        ipsEngine.handleChunk( data, session, true );
+        ipsEngine.handleChunkToken( data, session, true );
         super.handleTCPServerChunk( session, data );
     }
 
     public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        ipsEngine.handleChunk( data, session, false );
+        ipsEngine.handleChunkToken( data, session, false );
         super.handleUDPClientPacket( session, data, header );
     }
 
     public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        ipsEngine.handleChunk( data, session, true );
+        ipsEngine.handleChunkToken( data, session, true );
         super.handleUDPServerPacket( session, data, header );
     }
 

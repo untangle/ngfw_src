@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
@@ -47,7 +47,7 @@ public class FtpClientParser extends AbstractParser
             parseCtl( session, buf );
             return;
         } else {
-            Chunk c = new Chunk(buf.duplicate());
+            ChunkToken c = new ChunkToken(buf.duplicate());
             session.sendObjectToServer( c );
             return;
         }
@@ -57,7 +57,7 @@ public class FtpClientParser extends AbstractParser
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
-            session.sendObjectToServer( EndMarker.MARKER );
+            session.sendObjectToServer( EndMarkerToken.MARKER );
         } else {
             if (buf.hasRemaining()) {
                 logger.warn("unread data in read buffer: " + buf.remaining());

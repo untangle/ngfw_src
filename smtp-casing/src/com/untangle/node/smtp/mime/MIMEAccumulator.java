@@ -31,20 +31,20 @@ import com.untangle.uvm.vnet.TCPStreamer;
  * which will only close open streams.</li>
  * <li>
  * If multiple nodes are in "buffer-and-trickle" where they are accumulating MIME yet also passing it along, there is
- * confusion as-to if a given MIMEChunk should (a) be written to disk and (b) should be unparsed. To avoid this
- * confusion, all MIMEChunks are members of a given MIMEAccumulator, and have methods to determine if they should be
- * unparsed. Appending a chunk to the file is simplified via the {@link #appendChunkToFile appendChunkToFile} which
+ * confusion as-to if a given MIMEChunkToken should (a) be written to disk and (b) should be unparsed. To avoid this
+ * confusion, all MIMEChunkTokens are members of a given MIMEAccumulator, and have methods to determine if they should be
+ * unparsed. Appending a chunk to the file is simplified via the {@link #appendChunkTokenToFile appendChunkTokenToFile} which
  * silently ignores duplicate calls to append the same chunk.</li>
  * </ul>
  * <br>
  * <br>
  * If a MIMEAccumulator ever reaches an unparser, the {@link #toTCPStreamer toTCPStreamer} method can be used to obtain
  * a streamer destined for the endpoint. The MIMEAccumulator then "remembers" this event, such that subsequent
- * MIMEChunks may or may not be written-out depending on when (if) they were appended to the file. If they were appended
+ * MIMEChunkTokens may or may not be written-out depending on when (if) they were appended to the file. If they were appended
  * <i>before</i> the unparse event, then they should not be unparsed if received. In other words, please use the
- * "shouldUnparse" method on MIMEChunk before unparsing. <br>
+ * "shouldUnparse" method on MIMEChunkToken before unparsing. <br>
  * <br>
- * No one should ever see a MIMEChunk before the MIMEAccumulator to-which it belongs.
+ * No one should ever see a MIMEChunkToken before the MIMEAccumulator to-which it belongs.
  */
 public class MIMEAccumulator
 {
@@ -59,28 +59,28 @@ public class MIMEAccumulator
     private FileMIMESource m_fileMIMESource;
     private int m_headersLen;
     private boolean m_unparsed = false;
-    private int m_greatestChunkAppendedAndUnparsed = -1;
+    private int m_greatestChunkTokenAppendedAndUnparsed = -1;
     private int m_chunkIndex = 0;
     private MimeMessage m_mimeMessage;
 
     /**
-     * Class used to represent a chunk of MIME accociated with a given MIMEAccumulator. MIMEChunks may not have useful
+     * Class used to represent a chunk of MIME accociated with a given MIMEAccumulator. MIMEChunkTokens may not have useful
      * data (if for example they are simply a marker of {@link #isLast the end} of a MIME message). <br>
      * <br>
-     * MIMEChunks also may or may not be written to file. To write a given chunk to a file, use the "appendChunkToFile"
+     * MIMEChunkTokens also may or may not be written to file. To write a given chunk to a file, use the "appendChunkTokenToFile"
      * method of the MIMEAccumulator. <br>
      * <br>
-     * Before ever unparsing a MIMEChunk, please use the {@link #shouldUnparse shouldUnparse} method, which will catch
-     * the case of a MIMEChunk passed <b>and</b> written to file.
+     * Before ever unparsing a MIMEChunkToken, please use the {@link #shouldUnparse shouldUnparse} method, which will catch
+     * the case of a MIMEChunkToken passed <b>and</b> written to file.
      */
-    public class MIMEChunk
+    public class MIMEChunkToken
     {
         private boolean m_isLast = false;
         private int m_index;
         private ByteBuffer m_buf;
         private boolean m_writtenToFile = false;
 
-        private MIMEChunk(ByteBuffer buf, boolean isLast, int index) {
+        private MIMEChunkToken(ByteBuffer buf, boolean isLast, int index) {
             m_isLast = isLast;
             m_buf = buf;
             m_index = index;
@@ -137,7 +137,7 @@ public class MIMEAccumulator
         }
 
         /**
-         * Test if this chunk should be unparsed. False will be returned if this was passed t0 "appendChunkToFile" yet
+         * Test if this chunk should be unparsed. False will be returned if this was passed t0 "appendChunkTokenToFile" yet
          * the MIMEAccumulator has yet to be unparsed.
          */
         public boolean shouldUnparse()
@@ -199,7 +199,7 @@ public class MIMEAccumulator
     }
 
     /**
-     * Method to associate a chunk with this MIMEAccumulator. Does not implicitly {@link #appendChunkToFile add to the
+     * Method to associate a chunk with this MIMEAccumulator. Does not implicitly {@link #appendChunkTokenToFile add to the
      * underlying file}.
      * 
      * @param buf
@@ -207,16 +207,16 @@ public class MIMEAccumulator
      * @param isLast
      *            true if this is the last chunk in the MIME message
      */
-    public MIMEAccumulator.MIMEChunk createChunk(ByteBuffer buf, boolean isLast)
+    public MIMEAccumulator.MIMEChunkToken createChunkToken(ByteBuffer buf, boolean isLast)
     {
         int next = nextIndex();
-        m_logger.debug("[createChunk()] Creating MIMEChunk " + next + " with "
+        m_logger.debug("[createChunkToken()] Creating MIMEChunkToken " + next + " with "
                 + (buf == null ? "0" : Integer.toString(buf.remaining())) + " bytes");
-        return new MIMEChunk(buf, isLast, nextIndex());
+        return new MIMEChunkToken(buf, isLast, nextIndex());
     }
 
     /**
-     * Add the given chunk to this accumulator. An error will occur if the chunk was not {@link createChunk created by
+     * Add the given chunk to this accumulator. An error will occur if the chunk was not {@link createChunkToken created by
      * this accumulator}. <br>
      * <br>
      * The boolean is used to convey outcome (success/failure). Failures have already been logged. If error, chunk was
@@ -229,26 +229,26 @@ public class MIMEAccumulator
      *            the chunk
      * @return true if successful.
      */
-    public boolean appendChunkToFile(MIMEAccumulator.MIMEChunk chunk)
+    public boolean appendChunkTokenToFile(MIMEAccumulator.MIMEChunkToken chunk)
     {
         if (!chunk.isSameAccumulator(this)) {
-            throw new RuntimeException("Chunk not for this MIME file");
+            throw new RuntimeException("ChunkToken not for this MIME file");
         }
         if (!chunk.hasData()) {
-            m_logger.debug("[appendChunkToFile()] Chunk " + chunk + " has no data.  Nothing to append");
+            m_logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " has no data.  Nothing to append");
             return true;
         }
         if (chunk.isWrittenToFile()) {
-            m_logger.debug("[appendChunkToFile()] Chunk " + chunk + " already appended to this file");
+            m_logger.debug("[appendChunkTokenToFile()] ChunkToken " + chunk + " already appended to this file");
             return true;
         }
         if (!appendToFile(chunk.getData())) {
-            m_logger.debug("[appendChunkToFile()] Error appending chunk " + chunk);
+            m_logger.debug("[appendChunkTokenToFile()] Error appending chunk " + chunk);
             return false;
         }
         if (!m_unparsed) {
-            m_logger.debug("[appendChunkToFile()] Assign chunk " + chunk + " greatest chunk yet unparsed");
-            m_greatestChunkAppendedAndUnparsed = chunk.getIndex();
+            m_logger.debug("[appendChunkTokenToFile()] Assign chunk " + chunk + " greatest chunk yet unparsed");
+            m_greatestChunkTokenAppendedAndUnparsed = chunk.getIndex();
         }
         chunk.writtenToFile();
         return true;
@@ -511,12 +511,12 @@ public class MIMEAccumulator
     /**
      * Callback from a chunk to see if it should be unparsed.
      */
-    private boolean shouldUnparseImpl(MIMEChunk chunk)
+    private boolean shouldUnparseImpl(MIMEChunkToken chunk)
     {
         if (m_unparsed) {
             // The starting bytes have been unparsed.
             // We skip writing this out if this was within the chunks written out.
-            return chunk.isWrittenToFile() ? chunk.getIndex() > m_greatestChunkAppendedAndUnparsed : true;
+            return chunk.isWrittenToFile() ? chunk.getIndex() > m_greatestChunkTokenAppendedAndUnparsed : true;
         } else {
             return !chunk.isWrittenToFile();
         }
@@ -524,7 +524,7 @@ public class MIMEAccumulator
 
     private void setUnparsed()
     {
-        m_logger.debug("Unparsed at chunk " + m_greatestChunkAppendedAndUnparsed);
+        m_logger.debug("Unparsed at chunk " + m_greatestChunkTokenAppendedAndUnparsed);
         m_unparsed = true;
     }
 
@@ -586,7 +586,7 @@ public class MIMEAccumulator
 
         public ByteBuffer nextChunk()
         {
-            m_logger.debug("Next Chunk called");
+            m_logger.debug("Next ChunkToken called");
             if (m_fileInChannel == null) {
                 m_logger.error("Cannot return anything.  Channel never opened");
                 setUnparsed();

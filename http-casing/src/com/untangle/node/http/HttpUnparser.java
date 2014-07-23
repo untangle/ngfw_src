@@ -12,8 +12,8 @@ import java.util.Queue;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractUnparser;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -87,13 +87,13 @@ class HttpUnparser extends AbstractUnparser
             }
             header( session, (Header) token );
             return;
-        } else if (token instanceof Chunk) {
+        } else if (token instanceof ChunkToken) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got chunk!");
             }
-            chunk( session, (Chunk) token );
+            chunk( session, (ChunkToken) token );
             return;
-        } else if (token instanceof EndMarker) {
+        } else if (token instanceof EndMarkerToken) {
             if (logger.isDebugEnabled()) {
                 logger.debug(" got endmarker");
             }
@@ -167,7 +167,7 @@ class HttpUnparser extends AbstractUnparser
         }
     }
 
-    private void chunk( NodeTCPSession session, Chunk c )
+    private void chunk( NodeTCPSession session, ChunkToken c )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 

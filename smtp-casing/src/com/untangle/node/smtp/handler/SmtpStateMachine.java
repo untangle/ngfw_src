@@ -24,7 +24,7 @@ import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.UnparsableCommand;
 import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.ReleaseToken;
@@ -289,7 +289,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
             handleCommand( session, (Command) token );
             return;
         }
-        if (token instanceof Chunk) {
+        if (token instanceof ChunkToken) {
             session.sendObjectToServer( token );
             return;
         }
@@ -337,8 +337,8 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
         } else if (token instanceof Response) {
             handleResponse( session, (Response) token);
             return;
-        } else if (token instanceof Chunk) {
-            session.sendObjectToClient((Chunk) token);
+        } else if (token instanceof ChunkToken) {
+            session.sendObjectToClient((ChunkToken) token);
             return;
         }
         logger.error("Unexpected Token of type \"" + token.getClass().getName() + "\".  Pass it along");

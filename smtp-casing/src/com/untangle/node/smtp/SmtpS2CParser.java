@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
 import com.untangle.node.smtp.SASLExchangeToken;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -46,7 +46,7 @@ class SmtpS2CParser extends SmtpParser
 
             if ( isPassthru( session ) ) {
                 logger.debug("Passthru buffer (" + buf.remaining() + " bytes )");
-                toks.add(new Chunk(buf));
+                toks.add(new ChunkToken(buf));
                 for ( Token tok : toks )
                     session.sendObjectToClient( tok );
                 return;
@@ -70,7 +70,7 @@ class SmtpS2CParser extends SmtpParser
                         logger.debug("Entering passthru on advice of SASLObserver");
                         declarePassthru( session );
                         toks.add(PassThruToken.PASSTHRU);
-                        toks.add(new Chunk(dup.slice()));
+                        toks.add(new ChunkToken(dup.slice()));
                         buf.position(buf.limit());
                         for ( Token tok : toks )
                             session.sendObjectToClient( tok );
@@ -95,7 +95,7 @@ class SmtpS2CParser extends SmtpParser
                 logger.warn("Exception parsing server response", ex);
                 declarePassthru( session );
                 toks.add( PassThruToken.PASSTHRU );
-                toks.add( new Chunk(buf) );
+                toks.add( new ChunkToken(buf) );
                 for ( Token tok : toks )
                     session.sendObjectToClient( tok );
                 return;

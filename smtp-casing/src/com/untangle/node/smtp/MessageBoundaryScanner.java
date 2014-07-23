@@ -534,12 +534,12 @@ public class MessageBoundaryScanner
                     if (scanner.processBody(bufs[i], sink)) {
                         sink.flip();
                         result += "Read end of message on buffer: " + i + "\n";
-                        printBuffer(sink, "(last) Body Chunk");
+                        printBuffer(sink, "(last) Body ChunkToken");
                         printBuffer(bufs[i], "Remaining");
                     } else {
                         sink.flip();
                         result += "Not enough bytes in buffer: " + i + " for body\n";
-                        printBuffer(sink, "BodyChunk");
+                        printBuffer(sink, "BodyChunkToken");
                         printBuffer(bufs[i], "Remaining");
                         if (i + 1 >= bufs.length) {
                             result += "\n\n*************\n***ERROR*** Wants more bytes "

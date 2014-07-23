@@ -12,8 +12,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.ArrayTokenStreamer;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.token.Token;
@@ -100,12 +100,12 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
     protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl );
     protected abstract Header doRequestHeader( NodeTCPSession session, Header h );
-    protected abstract Chunk doRequestBody( NodeTCPSession session, Chunk c );
+    protected abstract ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c );
     protected abstract void doRequestBodyEnd( NodeTCPSession session );
 
     protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl );
     protected abstract Header doResponseHeader( NodeTCPSession session, Header h );
-    protected abstract Chunk doResponseBody( NodeTCPSession session, Chunk c );
+    protected abstract ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c );
     protected abstract void doResponseBodyEnd( NodeTCPSession session );
 
     protected ClientState getClientState( NodeTCPSession session )
@@ -444,19 +444,19 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
         case REQ_BODY_STATE:
             if ( state.requestMode != Mode.BLOCKED ) {
-                Chunk c = (Chunk) token;
+                ChunkToken c = (ChunkToken) token;
                 Mode preMode = state.requestMode;
                 c = doRequestBody( session, c );
 
                 switch ( state.requestMode ) {
                 case QUEUEING:
-                    if ( c != null && c != Chunk.EMPTY ) {
+                    if ( c != null && c != ChunkToken.EMPTY ) {
                         state.requestQueue.add(c);
                     }
                     return;
 
                 case RELEASED:
-                    if ( c != null  && c != Chunk.EMPTY ) {
+                    if ( c != null  && c != ChunkToken.EMPTY ) {
                         state.requestQueue.add(c);
                     }
                     Token[] toks = new Token[ state.requestQueue.size() ];
@@ -498,14 +498,14 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
                 switch ( state.requestMode ) {
                 case QUEUEING:
-                    logger.error("queueing after EndMarker, release request");
+                    logger.error("queueing after EndMarkerToken, release request");
                     releaseRequest( session );
                     /* fall through */
 
                 case RELEASED:
                     doRequestBodyEnd( session );
 
-                    state.requestQueue.add(EndMarker.MARKER);
+                    state.requestQueue.add(EndMarkerToken.MARKER);
                     Token[] toks = new Token[ state.requestQueue.size() ];
                     toks = state.requestQueue.toArray(toks);
                     state.requestQueue.clear();
@@ -643,18 +643,18 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
         case RESP_BODY_STATE:
             if ( state.responseMode != Mode.BLOCKED ) {
-                Chunk c = (Chunk)token;
+                ChunkToken c = (ChunkToken)token;
                 c = doResponseBody( session, c );
 
                 switch ( state.responseMode ) {
                 case QUEUEING:
-                    if (null != c && Chunk.EMPTY != c) {
+                    if (null != c && ChunkToken.EMPTY != c) {
                         state.responseQueue.add(c);
                     }
                     return;
 
                 case RELEASED:
-                    if (null != c && Chunk.EMPTY != c) {
+                    if (null != c && ChunkToken.EMPTY != c) {
                         state.responseQueue.add(c);
                     }
                     Token[] toks = new Token[ state.responseQueue.size() ];
@@ -678,7 +678,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
         case RESP_BODY_END_STATE:
             if ( state.responseMode != Mode.BLOCKED ) {
-                EndMarker em = (EndMarker)token;
+                EndMarkerToken em = (EndMarkerToken)token;
 
                 doResponseBodyEnd( session );
                 if ( state.statusLine.getStatusCode() != 100 ) {
@@ -687,7 +687,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
 
                 switch ( state.responseMode ) {
                 case QUEUEING:
-                    logger.warn("queueing after EndMarker, release repsonse");
+                    logger.warn("queueing after EndMarkerToken, release repsonse");
                     releaseResponse( session );
                     /* fall through */
 
@@ -728,14 +728,14 @@ public abstract class HttpStateMachine extends AbstractEventHandler
             return ClientState.REQ_HEADER_STATE;
 
         case REQ_HEADER_STATE:
-            if (o instanceof Chunk) {
+            if (o instanceof ChunkToken) {
                 return ClientState.REQ_BODY_STATE;
             } else {
                 return ClientState.REQ_BODY_END_STATE;
             }
 
         case REQ_BODY_STATE:
-            if (o instanceof Chunk) {
+            if (o instanceof ChunkToken) {
                 return ClientState.REQ_BODY_STATE;
             } else {
                 return ClientState.REQ_BODY_END_STATE;
@@ -759,14 +759,14 @@ public abstract class HttpStateMachine extends AbstractEventHandler
             return ServerState.RESP_HEADER_STATE;
 
         case RESP_HEADER_STATE:
-            if (o instanceof Chunk) {
+            if (o instanceof ChunkToken) {
                 return ServerState.RESP_BODY_STATE;
             } else {
                 return ServerState.RESP_BODY_END_STATE;
             }
 
         case RESP_BODY_STATE:
-            if (o instanceof Chunk) {
+            if (o instanceof ChunkToken) {
                 return ServerState.RESP_BODY_STATE;
             } else {
                 return ServerState.RESP_BODY_END_STATE;

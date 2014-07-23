@@ -46,16 +46,16 @@ public class MIMETCPStreamer implements TCPStreamer
      * 
      * @param msg
      *            the MIMEMessage
-     * @param readChunkSz
+     * @param readChunkTokenSz
      *            the size of the read buffer for the file
      * @param disposeWhenComplete
      *            if true, the MIMEMessage's {@link com.untangle.node.smtp.mime.MIMEPart#dispose dispose} method will be
      *            called when streaming is complete or an error is encountered.
      */
-    public MIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, int readChunkSz, boolean disposeWhenComplete, NodeTCPSession session)
+    public MIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, int readChunkTokenSz, boolean disposeWhenComplete, NodeTCPSession session)
     {
         m_msg = msg;
-        m_chunkSz = readChunkSz;
+        m_chunkSz = readChunkTokenSz;
         m_disposeWhenComplete = disposeWhenComplete;
         this.messageInfo = messageInfo;
         try {
@@ -148,7 +148,7 @@ public class MIMETCPStreamer implements TCPStreamer
     }
 
     /**
-     * Method creates a new read buffer. By default, a new buffer of length "readChunkSz" is allocated and used. This
+     * Method creates a new read buffer. By default, a new buffer of length "readChunkTokenSz" is allocated and used. This
      * method may be overidden by subclasses, which do not intend to return this buffer to the ultimate caller of
      * {@link #nextChunk nextChunk}. In such a case, a read buffer may be re-used (of the contents of the read are going
      * to be modified anyway.
@@ -160,7 +160,7 @@ public class MIMETCPStreamer implements TCPStreamer
 
     public ByteBuffer nextChunk()
     {
-        m_logger.debug("Next Chunk called");
+        m_logger.debug("Next ChunkToken called");
         if (m_channel == null) {
             return null;
         }

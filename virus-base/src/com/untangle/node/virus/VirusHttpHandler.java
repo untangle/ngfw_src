@@ -20,7 +20,7 @@ import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
@@ -107,7 +107,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
@@ -167,7 +167,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken chunk )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         return state.scan ? bufferOrTrickle( session, chunk ) : chunk;
@@ -348,7 +348,7 @@ class VirusHttpHandler extends HttpStateMachine
         session.cleanupTempFiles();
     }
 
-    private Chunk bufferOrTrickle( NodeTCPSession session, Chunk chunk )
+    private ChunkToken bufferOrTrickle( NodeTCPSession session, ChunkToken chunk )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         ByteBuffer buf = chunk.getData();
@@ -386,18 +386,18 @@ class VirusHttpHandler extends HttpStateMachine
 
                 streamClient( session, new FileChunkStreamer(state.scanfile, state.inFile, null, null, false) );
 
-                return Chunk.EMPTY;
+                return ChunkToken.EMPTY;
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("continuing to trickle: " + state.totalSize);
                 }
-                Chunk c = trickle( session );
+                ChunkToken c = trickle( session );
                 return c;
             }
         }
     }
 
-    private Chunk trickle( NodeTCPSession session )
+    private ChunkToken trickle( NodeTCPSession session )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("handleTokenTrickle()");
@@ -418,7 +418,7 @@ class VirusHttpHandler extends HttpStateMachine
         inbuf.flip();
         state.outstanding = 0;
 
-        return new Chunk(inbuf);
+        return new ChunkToken(inbuf);
     }
 
     @SuppressWarnings("unused")

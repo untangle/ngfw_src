@@ -202,14 +202,14 @@ public class SmtpTransactionHandler
         messageInfo = token.getMessageInfo();
         isMessageMaster = true;
 
-        handleMIMEChunk( session, true, false, null, stateMachine, immediateActions );
+        handleMIMEChunkToken( session, true, false, null, stateMachine, immediateActions );
     }
 
     public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
-        handleMIMEChunk( session, false, token.isLast(), token, stateMachine, immediateActions );
+        handleMIMEChunkToken( session, false, token.isLast(), token, stateMachine, immediateActions );
     }
 
     public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
@@ -222,7 +222,7 @@ public class SmtpTransactionHandler
         isMessageMaster = true;
         accumulator = null;
 
-        handleMIMEChunk( session, true, true, token, stateMachine, immediateActions );
+        handleMIMEChunkToken( session, true, true, token, stateMachine, immediateActions );
 
     }
 
@@ -244,7 +244,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    private void handleMIMEChunk( final NodeTCPSession session,
+    private void handleMIMEChunkToken( final NodeTCPSession session,
                                   boolean isFirst, boolean isLast,
                                   Token token,
                                   final SmtpStateMachine stateMachine,
@@ -260,7 +260,7 @@ public class SmtpTransactionHandler
             case DONE:
                 txLog.add("Impossible command now: MIME chunk (first? " + isFirst + ", isLast? " + isLast);
                 dumpToLogger(Level.ERROR);
-                appendChunk(continuedToken);
+                appendChunkToken(continuedToken);
                 changeState(BufTxState.DONE);
                 break;
             case BUFFERING_MAIL:
@@ -269,7 +269,7 @@ public class SmtpTransactionHandler
                     // We have the complete message.
                     txLog.add("Have whole message.  Evaluate");
                     if (continuedToken != null) {
-                        appendChunk(continuedToken);
+                        appendChunkToken(continuedToken);
                     }
 
                     BlockOrPassResult action = evaluateMessage( session, true, stateMachine );
@@ -330,7 +330,7 @@ public class SmtpTransactionHandler
                     }
                 } else {
                     txLog.add("Not last MIME chunk, append to the file");
-                    appendChunk(continuedToken);
+                    appendChunkToken(continuedToken);
                     // We go down one of three branches from here. We begin passthru if the
                     // mail is too large or if we've timed out.
                     //
@@ -428,7 +428,7 @@ public class SmtpTransactionHandler
             case T_B_READING_MAIL:
                 // Page 29
                 // Write it to the file regardless
-                appendChunk(continuedToken);
+                appendChunkToken(continuedToken);
                 if (isLast) {
                     txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
                     BlockOrPassResult action = evaluateMessage( session, false, stateMachine );
@@ -481,7 +481,7 @@ public class SmtpTransactionHandler
                 txLog.add("Error - Unknown State " + state);
                 changeState(BufTxState.DONE);
                 stateMachine.transactionEnded(this);
-                appendChunk(continuedToken);
+                appendChunkToken(continuedToken);
                 if (isLast) {
                     stateMachine.sendContinuedMIMEToServer( session, continuedToken );
                 } else {
@@ -515,7 +515,7 @@ public class SmtpTransactionHandler
                 txLog.add("Passing along an unparsable MIME message in two tokens");
                 isMessageMaster = false;
                 stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo) );
-                stateMachine.sendFinalMIMEToServer( session, new ContinuedMIMEToken(accumulator.createChunk(null, true)),
+                stateMachine.sendFinalMIMEToServer( session, new ContinuedMIMEToken(accumulator.createChunkToken(null, true)),
                         new ResponseCompletion()
                         {
                             @Override
@@ -560,7 +560,7 @@ public class SmtpTransactionHandler
     }
 
     // If null, just ignore
-    private void appendChunk(ContinuedMIMEToken continuedToken)
+    private void appendChunkToken(ContinuedMIMEToken continuedToken)
     {
         if (continuedToken == null) {
             return;
@@ -569,8 +569,8 @@ public class SmtpTransactionHandler
             logger.error("Received ContinuedMIMEToken without a MIMEAccumulator set");
             return;
         }
-        if (!accumulator.appendChunkToFile(continuedToken.getMIMEChunk())) {
-            logger.error("Error appending MIME Chunk");
+        if (!accumulator.appendChunkTokenToFile(continuedToken.getMIMEChunkToken())) {
+            logger.error("Error appending MIME ChunkToken");
         }
 
     }

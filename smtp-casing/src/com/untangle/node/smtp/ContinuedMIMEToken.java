@@ -11,31 +11,31 @@ import com.untangle.node.token.Token;
 /**
  * Token which follows a {@link com.untangle.node.smtp.BeginMIMEToken BeginMIMEToken}. There may be one or more
  * ContinuedMIMETokens after the begin token. Remaining interesting properties about this token are found in the
- * internal {@link #getMIMEChunk MIMEChunk}.
+ * internal {@link #getMIMEChunkToken MIMEChunkToken}.
  */
 public final class ContinuedMIMEToken implements Token
 {
 
     private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 
-    private final MIMEAccumulator.MIMEChunk m_chunk;
+    private final MIMEAccumulator.MIMEChunkToken m_chunk;
 
-    public ContinuedMIMEToken(MIMEAccumulator.MIMEChunk chunk) {
+    public ContinuedMIMEToken(MIMEAccumulator.MIMEChunkToken chunk) {
         m_chunk = chunk;
     }
 
     /**
-     * Get the internal {@link com.untangle.node.smtp.mime.MIMEAccumulator#MIMEChunk MIMEChunk}.
+     * Get the internal {@link com.untangle.node.smtp.mime.MIMEAccumulator#MIMEChunkToken MIMEChunkToken}.
      * 
      * @return the chunk
      */
-    public MIMEAccumulator.MIMEChunk getMIMEChunk()
+    public MIMEAccumulator.MIMEChunkToken getMIMEChunkToken()
     {
         return m_chunk;
     }
 
     /**
-     * Convienence method. Equivilant to <code>getMIMEChunk().shouldUnparse()</code>. This <b>must</b> be called before
+     * Convienence method. Equivilant to <code>getMIMEChunkToken().shouldUnparse()</code>. This <b>must</b> be called before
      * unparsing (calling {@link #getBytes getBytes}) as the data in this chunk may have already been unparsed as a
      * result of being in buffer-and-passthru mode.
      * 
@@ -48,7 +48,7 @@ public final class ContinuedMIMEToken implements Token
     }
 
     /**
-     * Convienence method. Equivilant to <code>getMIMEChunk().isLast()</code>.
+     * Convienence method. Equivilant to <code>getMIMEChunkToken().isLast()</code>.
      * 
      * @return true if this token represents the last of the MIME chunks
      */

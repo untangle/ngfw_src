@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -59,7 +59,7 @@ public class FtpServerParser extends AbstractParser
     {
         Fitting fitting = session.pipelineConnector().getOutputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
-            session.sendObjectToClient( EndMarker.MARKER );
+            session.sendObjectToClient( EndMarkerToken.MARKER );
             return;
         } else {
             if (buf.hasRemaining()) {
@@ -140,7 +140,7 @@ public class FtpServerParser extends AbstractParser
 
     private void parseServerData( NodeTCPSession session, ByteBuffer buf )
     {
-        Chunk c = new Chunk(buf.duplicate());
+        ChunkToken c = new ChunkToken(buf.duplicate());
         session.sendObjectToClient( c );
         return;
     }

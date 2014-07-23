@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -62,7 +62,7 @@ public class WebFilterHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doRequestBody( NodeTCPSession session, Chunk c )
+    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c )
     {
         return c;
     }
@@ -104,7 +104,7 @@ public class WebFilterHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk c )
+    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c )
     {
         return c;
     }

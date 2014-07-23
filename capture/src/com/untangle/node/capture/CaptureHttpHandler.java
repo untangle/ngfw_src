@@ -16,9 +16,9 @@ import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Header;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -121,7 +121,7 @@ public class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
@@ -139,7 +139,7 @@ public class CaptureHttpHandler extends HttpStateMachine
     }
 
     @Override
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
@@ -178,8 +178,8 @@ public class CaptureHttpHandler extends HttpStateMachine
         head.addField("Connection", "Close");
         response[1] = head;
 
-        response[2] = Chunk.EMPTY;
-        response[3] = EndMarker.MARKER;
+        response[2] = ChunkToken.EMPTY;
+        response[3] = EndMarkerToken.MARKER;
         return (response);
     }
 }

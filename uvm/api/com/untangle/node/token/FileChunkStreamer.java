@@ -35,11 +35,7 @@ public class FileChunkStreamer implements TokenStreamer
     private StreamState state;
     private Iterator<Token> iterator = null;
 
-    // constructors -----------------------------------------------------------
-
-    private FileChunkStreamer(File file, FileChannel channel,
-                              List<Token> beginTokens, List<Token> endTokens,
-                              boolean closeWhenDone)
+    private FileChunkStreamer(File file, FileChannel channel, List<Token> beginTokens, List<Token> endTokens, boolean closeWhenDone)
     {
         this.file = file;
         this.channel = channel;
@@ -55,9 +51,7 @@ public class FileChunkStreamer implements TokenStreamer
         }
     }
 
-    public FileChunkStreamer(File file, FileChannel channel,
-                             Token beginToken, Token endToken,
-                             boolean closeWhenDone)
+    public FileChunkStreamer(File file, FileChannel channel, Token beginToken, Token endToken, boolean closeWhenDone)
     {
         this(file, channel,
              null == beginToken ? null : Arrays.asList(new Token[] { beginToken }),
@@ -65,24 +59,16 @@ public class FileChunkStreamer implements TokenStreamer
              closeWhenDone);
     }
 
-
-    public FileChunkStreamer(File file,
-                             Token beginToken, Token endToken,
-                             boolean closeWhenDone)
+    public FileChunkStreamer(File file, Token beginToken, Token endToken, boolean closeWhenDone)
         throws IOException
     {
-        this(file, new FileInputStream(file).getChannel(), beginToken,
-             endToken, closeWhenDone);
+        this(file, new FileInputStream(file).getChannel(), beginToken, endToken, closeWhenDone);
     }
-
-    // TCPStreamer methods ----------------------------------------------------
 
     public boolean closeWhenDone()
     {
         return closeWhenDone;
     }
-
-    // TokenStreamer methods --------------------------------------------------
 
     @SuppressWarnings("fallthrough")
     public Token nextToken()
@@ -107,7 +93,7 @@ public class FileChunkStreamer implements TokenStreamer
                 if (0 <= channel.read(buf)) {
                     buf.flip();
                     logger.debug("read chunk: " + buf.remaining());
-                    return new Chunk(buf);
+                    return new ChunkToken(buf);
                 } else {
                     channel.close();
                     file.delete();

@@ -23,8 +23,8 @@ import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
 import com.untangle.node.ftp.FtpStateMachine;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
@@ -74,7 +74,7 @@ class VirusFtpHandler extends FtpStateMachine
     }
     
     @Override
-    protected void doClientData( NodeTCPSession session, Chunk c )
+    protected void doClientData( NodeTCPSession session, ChunkToken c )
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if ( node.getSettings().getScanFtp() ) {
@@ -86,9 +86,9 @@ class VirusFtpHandler extends FtpStateMachine
                 state.c2s = true;
             }
 
-            Chunk outChunk = trickle( session, c.getData() );
+            ChunkToken outChunkToken = trickle( session, c.getData() );
 
-            session.sendObjectToServer( outChunk );
+            session.sendObjectToServer( outChunkToken );
             return;
         } else {
             session.sendObjectToServer( c );
@@ -97,7 +97,7 @@ class VirusFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected void doServerData( NodeTCPSession session, Chunk c )
+    protected void doServerData( NodeTCPSession session, ChunkToken c )
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if ( node.getSettings().getScanFtp() ) {
@@ -109,9 +109,9 @@ class VirusFtpHandler extends FtpStateMachine
                 state.c2s = false;
             }
 
-            Chunk outChunk = trickle( session, c.getData() );
+            ChunkToken outChunkToken = trickle( session, c.getData() );
 
-            session.sendObjectToClient( outChunk );
+            session.sendObjectToClient( outChunkToken );
             return;
         } else {
             session.sendObjectToClient( c );
@@ -205,7 +205,7 @@ class VirusFtpHandler extends FtpStateMachine
         return;
     }
 
-    private Chunk trickle( NodeTCPSession session, ByteBuffer b )
+    private ChunkToken trickle( NodeTCPSession session, ByteBuffer b )
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         int l = b.remaining() * node.getTricklePercent() / 100;
@@ -226,7 +226,7 @@ class VirusFtpHandler extends FtpStateMachine
 
         b.flip();
 
-        return new Chunk(b);
+        return new ChunkToken(b);
     }
 
     private TCPStreamer scan( NodeTCPSession session )
@@ -251,7 +251,7 @@ class VirusFtpHandler extends FtpStateMachine
 
         if ( result.isClean() ) {
             node.incrementPassCount();
-            TokenStreamer tokSt = new FileChunkStreamer( state.file, state.inChannel, null, EndMarker.MARKER, true );
+            TokenStreamer tokSt = new FileChunkStreamer( state.file, state.inChannel, null, EndMarkerToken.MARKER, true );
             return new TokenStreamerAdaptor( tokSt, session );
         } else {
             node.incrementBlockCount();

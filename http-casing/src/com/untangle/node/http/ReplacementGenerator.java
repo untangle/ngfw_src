@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
@@ -120,17 +120,17 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     private Token[] generateSimplePage( String nonce, boolean gif )
     {
-        Chunk chunk;
+        ChunkToken chunk;
         if (gif) {
             byte[] buf = new byte[WHITE_GIF.length];
             System.arraycopy(WHITE_GIF, 0, buf, 0, buf.length);
             ByteBuffer bb = ByteBuffer.wrap(buf);
-            chunk = new Chunk(bb);
+            chunk = new ChunkToken(bb);
         } else {
             String replacement = getReplacement(nonceFactory.getNonceData(nonce));
             ByteBuffer buf = ByteBuffer.allocate(replacement.length());
             buf.put(replacement.getBytes()).flip();
-            chunk = new Chunk(buf);
+            chunk = new ChunkToken(buf);
         }
 
         Token response[] = new Token[4];
@@ -146,7 +146,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
         response[2] = chunk;
 
-        response[3] = EndMarker.MARKER;
+        response[3] = EndMarkerToken.MARKER;
 
         return response;
     }
@@ -168,9 +168,9 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         h.addField("Connection", "Close");
         response[1] = h;
 
-        response[2] = Chunk.EMPTY;
+        response[2] = ChunkToken.EMPTY;
 
-        response[3] = EndMarker.MARKER;
+        response[3] = EndMarkerToken.MARKER;
 
         return response;
     }

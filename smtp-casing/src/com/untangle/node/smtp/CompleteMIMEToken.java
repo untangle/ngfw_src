@@ -101,7 +101,7 @@ public class CompleteMIMEToken extends MetadataToken
         @Override
         public ByteBuffer nextChunk()
         {
-            m_logger.debug("Next Chunk called");
+            m_logger.debug("Next ChunkToken called");
 
             ByteBuffer superRet = super.nextChunk();// This is actualy our "m_readBuf"
             if (superRet != null) {

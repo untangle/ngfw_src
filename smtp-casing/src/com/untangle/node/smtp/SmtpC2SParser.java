@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.mime.HeaderNames;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.smtp.mime.MIMEUtil;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
@@ -86,7 +86,7 @@ class SmtpC2SParser extends SmtpParser
             // this method.
             if ( isPassthru( session ) ) {
                 if (buf.hasRemaining()) {
-                    toks.add(new Chunk(buf));
+                    toks.add(new ChunkToken(buf));
                 }
                 for ( Token tok : toks )
                     session.sendObjectToServer( tok );
@@ -116,7 +116,7 @@ class SmtpC2SParser extends SmtpParser
                         logger.debug("Entering passthru on advice of SASLObserver");
                         declarePassthru( session );
                         toks.add( PassThruToken.PASSTHRU );
-                        toks.add( new Chunk( dup.slice() ) );
+                        toks.add( new ChunkToken( dup.slice() ) );
                         buf.position( buf.limit() );
                         for ( Token tok : toks )
                             session.sendObjectToServer( tok );
@@ -163,7 +163,7 @@ class SmtpC2SParser extends SmtpParser
                             }
                             declarePassthru( session );
                             toks.add( PassThruToken.PASSTHRU );
-                            toks.add(  new Chunk( buf ) );
+                            toks.add(  new ChunkToken( buf ) );
 
                             for ( Token tok : toks )
                                 session.sendObjectToServer( tok );
@@ -183,7 +183,7 @@ class SmtpC2SParser extends SmtpParser
                             logger.debug("Entering passthru on advice of SASLObserver");
                             declarePassthru( session );
                             toks.add(PassThruToken.PASSTHRU);
-                            toks.add(new Chunk(buf));
+                            toks.add(new ChunkToken(buf));
 
                             for ( Token tok : toks )
                                 session.sendObjectToServer( tok );
@@ -210,7 +210,7 @@ class SmtpC2SParser extends SmtpParser
                             logger.debug("Declare passthru as we cannot buffer MIME");
                             declarePassthru( session );
                             toks.add(PassThruToken.PASSTHRU);
-                            toks.add(new Chunk(buf));
+                            toks.add(new ChunkToken(buf));
                             for ( Token tok : toks )
                                 session.sendObjectToServer( tok );
                             return;
@@ -232,7 +232,7 @@ class SmtpC2SParser extends SmtpParser
                                      + "Assume tunneling (permitted) and declare passthru");
                         declarePassthru( session );
                         toks.add(PassThruToken.PASSTHRU);
-                        toks.add(new Chunk(buf));
+                        toks.add(new ChunkToken(buf));
                         for ( Token tok : toks )
                             session.sendObjectToServer( tok );
                         return;
@@ -281,7 +281,7 @@ class SmtpC2SParser extends SmtpParser
                     state.currentState = SmtpClientState.BODY;
                     if ( state.sac.scanner.isEmptyMessage() ) {
                         logger.debug("Message blank.  Skip to reading commands");
-                        toks.add( new ContinuedMIMEToken( state.sac.accumulator.createChunk(null, true) ) );
+                        toks.add( new ContinuedMIMEToken( state.sac.accumulator.createChunkToken(null, true) ) );
                         state.currentState = SmtpClientState.COMMAND;
                         state.sac = null;
                     }
@@ -298,19 +298,19 @@ class SmtpC2SParser extends SmtpParser
                 ByteBuffer bodyBuf = ByteBuffer.allocate(buf.remaining());
                 boolean bodyEnd = state.sac.scanner.processBody(buf, bodyBuf);
                 bodyBuf.flip();
-                MIMEAccumulator.MIMEChunk mimeChunk = null;
+                MIMEAccumulator.MIMEChunkToken mimeChunkToken = null;
                 if (bodyEnd) {
                     logger.debug("Found end of body");
-                    mimeChunk = state.sac.accumulator.createChunk(bodyBuf, true);
-                    logger.debug("Adding last MIME token with length: " + mimeChunk.getData().remaining());
+                    mimeChunkToken = state.sac.accumulator.createChunkToken(bodyBuf, true);
+                    logger.debug("Adding last MIME token with length: " + mimeChunkToken.getData().remaining());
                     state.sac = null;
                     state.currentState = SmtpClientState.COMMAND;
                 } else {
-                    mimeChunk = state.sac.accumulator.createChunk(bodyBuf, false);
-                    logger.debug("Adding continued MIME token with length: " + mimeChunk.getData().remaining());
+                    mimeChunkToken = state.sac.accumulator.createChunkToken(bodyBuf, false);
+                    logger.debug("Adding continued MIME token with length: " + mimeChunkToken.getData().remaining());
                     done = true;
                 }
-                toks.add(new ContinuedMIMEToken(mimeChunk));
+                toks.add(new ContinuedMIMEToken(mimeChunkToken));
                 break;
             }
         }
@@ -564,9 +564,9 @@ class SmtpC2SParser extends SmtpParser
         declarePassthru( session );
         toks.add( PassThruToken.PASSTHRU );
         if (trapped != null && trapped.remaining() > 0) {
-            toks.add(new Chunk(trapped));
+            toks.add(new ChunkToken(trapped));
         }
-        toks.add(new Chunk(buf));
+        toks.add(new ChunkToken(buf));
     }
 
     /**

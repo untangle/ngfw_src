@@ -35,7 +35,7 @@ public class IpsDetectionEngine
     // multiple pipes (octet & http).  So we keep the registry here.
     private static Map<Long, IpsSessionInfo> sessionInfoMap = null;
 
-    private int maxChunks = 4;
+    private int maxChunkTokens = 4;
     private Map<String,RuleClassification> classifications = null;
 
     private IpsRuleManager manager;
@@ -248,7 +248,7 @@ public class IpsDetectionEngine
     }
 
     //In process of fixing this
-    public void handleChunk( ByteBuffer chunk, NodeSession session, boolean isFromServer )
+    public void handleChunkToken( ByteBuffer chunk, NodeSession session, boolean isFromServer )
     {
         try {
             long startTime = System.currentTimeMillis();
@@ -261,10 +261,10 @@ public class IpsDetectionEngine
                 return;
             }
 
-            info.iterateChunkCount();
+            info.iterateChunkTokenCount();
             info.setData( chunk );
             info.setFlow(isFromServer);
-            int numChunks = info.getChunkCount();
+            int numChunkTokens = info.getChunkTokenCount();
             
             boolean result;
             if(isFromServer)
@@ -273,8 +273,8 @@ public class IpsDetectionEngine
                 result = info.processC2SSignatures();
 
             if (!result) {
-                int maxChunks = node.getSettings().getMaxChunks();
-                if (numChunks > maxChunks) {
+                int maxChunkTokens = node.getSettings().getMaxChunkTokens();
+                if (numChunkTokens > maxChunkTokens) {
                     sessionInfoMap.remove(session.id());
                     session.release();
                 }

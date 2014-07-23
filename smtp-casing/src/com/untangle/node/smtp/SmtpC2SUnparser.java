@@ -18,7 +18,7 @@ import com.untangle.node.smtp.Command;
 import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.smtp.UnparsableCommand;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -164,7 +164,7 @@ class SmtpC2SUnparser extends SmtpUnparser
             } else {
                 logger.debug("Continued MIME chunk should not go to server (already sent or empty)");
             }
-            if (continuedToken.getMIMEChunk().isLast()) {
+            if (continuedToken.getMIMEChunkToken().isLast()) {
                 logger.debug("Last MIME chunk");
                 ByteBuffer remainder = state.byteStuffer.getLast(true);
                 state.byteStuffer = null;
@@ -185,7 +185,7 @@ class SmtpC2SUnparser extends SmtpUnparser
             }
         }
         // -----------------------------------------------------------
-        if (token instanceof Chunk) {
+        if (token instanceof ChunkToken) {
             ByteBuffer buf = token.getBytes();
             logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
 

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.ReleaseToken;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -41,14 +41,14 @@ public abstract class FtpStateMachine extends AbstractEventHandler
         session.sendObjectToClient( reply );
     }
 
-    protected void doClientData( NodeTCPSession session, Chunk chunk )
+    protected void doClientData( NodeTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToServer( chunk );
     }
 
     protected void doClientDataEnd( NodeTCPSession session ) { }
 
-    protected void doServerData( NodeTCPSession session, Chunk chunk )
+    protected void doServerData( NodeTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToClient( chunk );
     }
@@ -89,11 +89,11 @@ public abstract class FtpStateMachine extends AbstractEventHandler
             doCommand( session, (FtpCommand)token );
             return;
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
-            if (token instanceof EndMarker) {
-                session.sendObjectToServer( EndMarker.MARKER );
+            if (token instanceof EndMarkerToken) {
+                session.sendObjectToServer( EndMarkerToken.MARKER );
                 return;
-            } else if (token instanceof Chunk) {
-                doClientData( session, (Chunk)token );
+            } else if (token instanceof ChunkToken) {
+                doClientData( session, (ChunkToken)token );
                 return;
             } else {
                 throw new RuntimeException("bad token: " + token);
@@ -111,11 +111,11 @@ public abstract class FtpStateMachine extends AbstractEventHandler
             doReply( session, (FtpReply)token );
             return;
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
-            if (token instanceof EndMarker) {
-                session.sendObjectToClient( EndMarker.MARKER );
+            if (token instanceof EndMarkerToken) {
+                session.sendObjectToClient( EndMarkerToken.MARKER );
                 return;
-            } else if (token instanceof Chunk) {
-                doServerData( session, (Chunk)token );
+            } else if (token instanceof ChunkToken) {
+                doServerData( session, (ChunkToken)token );
                 return;
             } else {
                 throw new RuntimeException("bad token: " + token);

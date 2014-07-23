@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -76,9 +76,9 @@ abstract class SmtpParser extends AbstractParser
         try {
             if ( isPassthru( session ) ) {
                 if ( clientSide )
-                    session.sendObjectToServer( new Chunk(buf) );
+                    session.sendObjectToServer( new ChunkToken(buf) );
                 else
-                    session.sendObjectToClient( new Chunk(buf) );
+                    session.sendObjectToClient( new ChunkToken(buf) );
                 return;
             } else {
                 doParse( session, buf );
@@ -104,9 +104,9 @@ abstract class SmtpParser extends AbstractParser
             logger.debug("(" + PROTOCOL_NAME + ")(" + (isClientSide() ? "client" : "server") + ") Passing final chunk of size: " + buf.remaining());
 
             if ( clientSide )
-                session.sendObjectToServer( new Chunk(buf) );
+                session.sendObjectToServer( new ChunkToken(buf) );
             else
-                session.sendObjectToClient( new Chunk(buf) );
+                session.sendObjectToClient( new ChunkToken(buf) );
             return;
         }
         return;

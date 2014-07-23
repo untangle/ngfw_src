@@ -46,7 +46,7 @@ public class CaptureHttpsHandler extends AbstractEventHandler
         sessreq.globalAttach(NodeSession.KEY_CAPTURE_SSL_ENGINE, engine);
     }
 
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunkToken( NodeTCPSession session, ByteBuffer data )
     {
         // get the SSL engine attached to the session
         CaptureSSLEngine engine = (CaptureSSLEngine) session.globalAttachment(NodeSession.KEY_CAPTURE_SSL_ENGINE);

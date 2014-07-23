@@ -6,7 +6,7 @@ package com.untangle.node.ips;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.Chunk;
+import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Header;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -41,7 +41,7 @@ class IpsHttpHandler extends HttpStateMachine {
 
     protected void doResponseBodyEnd( NodeTCPSession session ) { }
 
-    protected Chunk doResponseBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
@@ -51,7 +51,7 @@ class IpsHttpHandler extends HttpStateMachine {
         return header;
     }
 
-    protected Chunk doRequestBody( NodeTCPSession session, Chunk chunk )
+    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }

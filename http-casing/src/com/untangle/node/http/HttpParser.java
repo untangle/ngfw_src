@@ -12,8 +12,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
-import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
+import com.untangle.node.token.ChunkToken;
+import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
@@ -406,7 +406,7 @@ public class HttpParser extends AbstractParser
                 if (logger.isDebugEnabled()) {
                     logger.debug("in END_MARKER_STATE");
                 }
-                EndMarker endMarker = EndMarker.MARKER;
+                EndMarkerToken endMarker = EndMarkerToken.MARKER;
                 tokenList.add(endMarker);
                 lineBuffering( session, true );
                 b = null;
@@ -808,12 +808,12 @@ public class HttpParser extends AbstractParser
         header.addField( key, value );
     }
 
-    private Chunk closedBody( NodeTCPSession session, ByteBuffer buffer )
+    private ChunkToken closedBody( NodeTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
         state.lengthCounter += buffer.remaining();
-        return new Chunk(buffer.slice());
+        return new ChunkToken(buffer.slice());
     }
 
     private int chunkLength(ByteBuffer b)
@@ -845,7 +845,7 @@ public class HttpParser extends AbstractParser
 
     // chunk          = chunk-size [ chunk-extension ] CRLF
     //                  chunk-data CRLF
-    private Chunk chunk( NodeTCPSession session, ByteBuffer buffer )
+    private ChunkToken chunk( NodeTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -856,7 +856,7 @@ public class HttpParser extends AbstractParser
         if ( state.contentLength < 0 )
             logger.warn("Invalid content lengeth");
 
-        return new Chunk(buffer.slice());
+        return new ChunkToken(buffer.slice());
     }
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
@@ -1141,7 +1141,7 @@ public class HttpParser extends AbstractParser
                     return null;
                 } else {
                     sent = true;
-                    return EndMarker.MARKER;
+                    return EndMarkerToken.MARKER;
                 }
             }
         };

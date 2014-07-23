@@ -20,9 +20,9 @@ public class IpsSettings implements Serializable
     private Set<IpsVariable> immutables = new HashSet<IpsVariable>();
 
     /**
-     * maxChunks is the maximum number of chunks scanned in a session
+     * maxChunkTokens is the maximum number of chunks scanned in a session
      */
-    private int maxChunks = 4;
+    private int maxChunkTokens = 4;
 
     /**
      * sessionBypassLimit is the maximum number of sessions that will
@@ -65,8 +65,8 @@ public class IpsSettings implements Serializable
     public float getLoadBypassLimit() { return this.loadBypassLimit; }
     public void setLoadBypassLimit( float newValue ) { this.loadBypassLimit = newValue; }
     
-    public int getMaxChunks() { return maxChunks; }
-    public void setMaxChunks( int newValue ) { this.maxChunks = newValue; }
+    public int getMaxChunkTokens() { return maxChunkTokens; }
+    public void setMaxChunkTokens( int newValue ) { this.maxChunkTokens = newValue; }
 
     public List<IpsRule> getRules() { return new LinkedList<IpsRule>(this.rules); }
     public void setRules( List<IpsRule> newValue ) { this.rules = new HashSet<IpsRule>(newValue); }
