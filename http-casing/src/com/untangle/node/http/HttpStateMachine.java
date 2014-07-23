@@ -11,24 +11,25 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.ArrayTokenStreamer;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
  * Adapts a stream of HTTP tokens to methods relating to the protocol
  * state.
  *
  */
-public abstract class HttpStateMachine extends AbstractTokenHandler
+public abstract class HttpStateMachine extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -92,34 +93,20 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         protected boolean responsePersistent;
     }
 
-    // constructors -----------------------------------------------------------
-
     protected HttpStateMachine()
     {
         super();
     }
 
-    // protected abstract methods ---------------------------------------------
+    protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl );
+    protected abstract Header doRequestHeader( NodeTCPSession session, Header h );
+    protected abstract Chunk doRequestBody( NodeTCPSession session, Chunk c );
+    protected abstract void doRequestBodyEnd( NodeTCPSession session );
 
-    protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl )
-       ;
-    protected abstract Header doRequestHeader( NodeTCPSession session, Header h )
-       ;
-    protected abstract Chunk doRequestBody( NodeTCPSession session, Chunk c )
-       ;
-    protected abstract void doRequestBodyEnd( NodeTCPSession session )
-       ;
-
-    protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl )
-       ;
-    protected abstract Header doResponseHeader( NodeTCPSession session, Header h )
-       ;
-    protected abstract Chunk doResponseBody( NodeTCPSession session, Chunk c )
-       ;
-    protected abstract void doResponseBodyEnd( NodeTCPSession session )
-       ;
-
-    // protected methods ------------------------------------------------------
+    protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl );
+    protected abstract Header doResponseHeader( NodeTCPSession session, Header h );
+    protected abstract Chunk doResponseBody( NodeTCPSession session, Chunk c );
+    protected abstract void doResponseBodyEnd( NodeTCPSession session );
 
     protected ClientState getClientState( NodeTCPSession session )
     {
@@ -276,16 +263,40 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         state.responseResponse = response;
     }
 
-    // AbstractTokenHandler methods -------------------------------------------
-
-    @Override
-    public void handleNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         HttpSessionState state = new HttpSessionState();
         session.attach( SESSION_STATE_KEY, state );
     }
-    
+
     @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            releaseFlush( session );
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        handleServerToken( session, token );
+        return;
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            releaseFlush( session );
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        handleClientToken( session, token );
+        return;
+    }
+    
     public void handleClientToken( NodeTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -320,7 +331,6 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         return;
     }
 
-    @Override
     public void releaseFlush( NodeTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );

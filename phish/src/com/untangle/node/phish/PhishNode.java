@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
-import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -21,20 +20,15 @@ public class PhishNode extends SpamNodeImpl implements Phish
     private final Logger logger = Logger.getLogger(getClass());
 
     // We want to make sure that phish is before spam,
-    // before virus in the pipeline (towards the client for smtp,
-    // server for pop/imap).
+    // before virus in the pipeline (towards the client for smtp).
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("phish-smtp", this, new TokenAdaptor(this, new PhishSmtpHandler(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 12)
+        new SoloPipeSpec("phish-smtp", this, new PhishSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, 12)
     };
-
-    // constructors -----------------------------------------------------------
 
     public PhishNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties, new PhishScanner() );
     }
-
-    // private methods --------------------------------------------------------
 
     private void readNodeSettings()
     {
@@ -64,8 +58,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
     }
     
-    // public methods ---------------------------------------------------------
-
     public PhishSettings getSettings()
     {
         return (PhishSettings)super.getSettings();

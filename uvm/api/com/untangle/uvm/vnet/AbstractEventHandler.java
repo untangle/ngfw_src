@@ -21,6 +21,11 @@ public abstract class AbstractEventHandler implements SessionEventListener
         this.node = (NodeBase)node;
     }
 
+    protected AbstractEventHandler()
+    {
+        this.node = null;
+    }
+    
     public void handleTimer( NodeSession session )
     {
     }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
@@ -38,7 +37,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
     // the casing doesn't have to be initialized.
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpHandler(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
+        new SoloPipeSpec("spam-smtp", this, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
         new SoloPipeSpec("spam-smtp-tarpit", this, this.tarpitHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11)
     };
 

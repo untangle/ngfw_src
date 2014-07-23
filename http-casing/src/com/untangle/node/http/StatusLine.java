@@ -40,8 +40,7 @@ public class StatusLine implements Token
         return reasonPhrase;
     }
 
-    // Token methods ----------------------------------------------------------
-
+    @Override
     public ByteBuffer getBytes()
     {
         StringBuilder sb = new StringBuilder();

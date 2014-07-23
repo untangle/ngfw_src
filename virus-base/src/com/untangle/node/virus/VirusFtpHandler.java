@@ -61,17 +61,13 @@ class VirusFtpHandler extends FtpStateMachine
      */
     private static final Map<Long, String> fileNamesByCtlSessionId = new ConcurrentHashMap<Long, String>();
 
-    // constructors -----------------------------------------------------------
-
     VirusFtpHandler( VirusNodeImpl node )
     {
         this.node = node;
     }
 
-    // FtpStateMachine methods ------------------------------------------------
-
     @Override
-    public void handleNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         VirusFtpState state = new VirusFtpState();
         session.attach( state );
@@ -209,8 +205,6 @@ class VirusFtpHandler extends FtpStateMachine
         return;
     }
 
-    // private methods --------------------------------------------------------
-
     private Chunk trickle( NodeTCPSession session, ByteBuffer b )
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
@@ -268,7 +262,7 @@ class VirusFtpHandler extends FtpStateMachine
     }
     
     @Override
-    public void handleFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( NodeTCPSession session )
     {
         session.cleanupTempFiles();
     }

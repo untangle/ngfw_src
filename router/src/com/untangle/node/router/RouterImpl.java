@@ -7,7 +7,6 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
@@ -45,8 +44,8 @@ public class RouterImpl extends NodeBase implements Router
         /**
          * This subscription has to evaluate after NAT
          */
-        routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new TokenAdaptor(this, new RouterFtpHandler(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
-        routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new TokenAdaptor(this, new RouterFtpHandler(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
+        routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new RouterFtpHandler(this), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
+        routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new RouterFtpHandler(this), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
     }

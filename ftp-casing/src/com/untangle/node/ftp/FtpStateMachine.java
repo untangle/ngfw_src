@@ -9,10 +9,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Token;
+import com.untangle.node.token.ReleaseToken;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
@@ -20,28 +21,15 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * State machine for FTP traffic.
  *
  */
-public abstract class FtpStateMachine extends AbstractTokenHandler
+public abstract class FtpStateMachine extends AbstractEventHandler
 {
-    //private final Fitting clientFitting;
-    //private final Fitting serverFitting;
-
-    // public final NodeTCPSession session;
     /**
      * Used to obtain the control session that opened the data session on the
      * given port.
      */
     private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<InetSocketAddress, Long>();
     
-    // constructors -----------------------------------------------------------
-
-    protected FtpStateMachine()
-    {
-        // this.session = session;
-        // clientFitting = session.pipelineConnector().getInputFitting();
-        // serverFitting = session.pipelineConnector().getOutputFitting();
-    }
-
-    // protected methods ------------------------------------------------------
+    protected FtpStateMachine() {}
 
     protected void doCommand( NodeTCPSession session, FtpCommand command )
     {
@@ -67,8 +55,32 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 
     protected void doServerDataEnd( NodeTCPSession session ) { }
 
-    // AbstractTokenHandler methods -------------------------------------------
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
 
+        handleServerToken( session, token );
+        return;
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        handleClientToken( session, token );
+        return;
+    }
+    
     public void handleClientToken( NodeTCPSession session, Token token )
     {
         Fitting clientFitting = session.pipelineConnector().getInputFitting();
@@ -114,13 +126,13 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public void handleClientFin( NodeTCPSession session )
+    public void handleTCPClientFIN( NodeTCPSession session )
     {
         doClientDataEnd( session );
     }
 
     @Override
-    public void handleServerFin( NodeTCPSession session )
+    public void handleTCPServerFIN( NodeTCPSession session )
     {
         doServerDataEnd( session );
     }

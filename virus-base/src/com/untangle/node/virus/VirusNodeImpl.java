@@ -16,7 +16,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -278,10 +277,10 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     {
         int strength = getStrength();
         PipeSpec[] result = new PipeSpec[] {
-            new SoloPipeSpec("virus-ftp-ctl", this, new TokenAdaptor(this, new VirusFtpHandler(this)), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-ftp-data", this, new TokenAdaptor(this, new VirusFtpHandler(this)), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpHandler(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpHandler(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
+            new SoloPipeSpec("virus-ftp-ctl", this, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-ftp-data", this, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-http", this, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-smtp", this, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
         };
         return result;
     }

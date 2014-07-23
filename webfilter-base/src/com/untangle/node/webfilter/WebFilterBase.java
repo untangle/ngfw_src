@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
@@ -44,7 +43,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final Logger logger = Logger.getLogger(getClass());
     
-    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("web-filter", this, new TokenAdaptor( this, new WebFilterHandler( this ) ), Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
+    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("web-filter", this, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
     protected final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
     protected final WebFilterReplacementGenerator replacementGenerator;

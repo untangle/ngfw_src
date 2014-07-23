@@ -36,7 +36,8 @@ class RouterFtpHandler extends FtpStateMachine
         this.sessionManager = node.getSessionManager();
     }
 
-    public void handleNewSession( NodeTCPSession session )
+    @Override
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         /**
          * Remove redirect if this session is the redirected session
@@ -56,7 +57,6 @@ class RouterFtpHandler extends FtpStateMachine
         
     }
 
-    
     @Override
     protected void doCommand( NodeTCPSession session, FtpCommand command )
     {
@@ -162,7 +162,7 @@ class RouterFtpHandler extends FtpStateMachine
     }
 
     @Override
-    public void handleFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( NodeTCPSession session )
     {
         node.getSessionManager().releaseSession( session );
     }

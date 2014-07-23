@@ -65,9 +65,9 @@ class VirusHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    public void handleNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        super.handleNewSession( session );
+        super.handleTCPNewSession( session );
         VirusHttpState state = new VirusHttpState();
         session.attach( state );
     }
@@ -343,7 +343,7 @@ class VirusHttpHandler extends HttpStateMachine
     }
     
     @Override
-    public void handleFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( NodeTCPSession session )
     {
         session.cleanupTempFiles();
     }

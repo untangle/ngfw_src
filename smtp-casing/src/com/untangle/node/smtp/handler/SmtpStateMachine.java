@@ -24,14 +24,15 @@ import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.UnparsableCommand;
 import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
-import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
-public abstract class SmtpStateMachine extends AbstractTokenHandler
+public abstract class SmtpStateMachine extends AbstractEventHandler
 {
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
@@ -90,7 +91,6 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     protected abstract long getMaxServerWait( NodeTCPSession session );
 
     protected abstract boolean getScanningEnabled( NodeTCPSession session );
-    
 
     /**
      * If true, this handler will continue to buffer even after trickling has begun (<i>buffer-and-trickle</i> mode).
@@ -145,9 +145,8 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         return state.heloName;
     }
     
-    
     @Override
-    public void handleNewSessionRequest( TCPNewSessionRequest tsr )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest tsr )
     {
         SmtpSessionState state = new SmtpSessionState();
 
@@ -171,8 +170,33 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
 
         tsr.attach( SESSION_STATE_KEY, state );
     }
-    
+
     @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        handleServerToken( session, token );
+        return;
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        handleClientToken( session, token );
+        return;
+    }
+        
     public void handleClientToken( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -204,7 +228,6 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         return;
     }
 
-    @Override
     public void handleServerToken( NodeTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -604,7 +627,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public final void handleClientFin( NodeTCPSession session )
+    public final void handleTCPClientFIN( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         state.outstandingRequests.add(new OutstandingRequest(SmtpTransactionHandler.NOOP_RESPONSE_COMPLETION));
@@ -613,7 +636,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public final void handleServerFin( NodeTCPSession session )
+    public final void handleTCPServerFIN( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (!state.shutingDownMode) {
@@ -625,7 +648,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
     }
 
     @Override
-    public void handleFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (smtpTransactionHandler != null && !state.shutingDownMode) {
