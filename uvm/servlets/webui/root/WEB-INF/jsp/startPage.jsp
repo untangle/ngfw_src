@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="true"/>
 <head>
+    <meta charset="UTF-8"/>
     <title>${companyName}</title>
     <style type="text/css">
      @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";

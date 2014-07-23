@@ -187,12 +187,12 @@ if (!Ung.hasResource["Ung.About"]) {
                     header: this.i18n._("Start Date"),
                     dataIndex: "start",
                     width: 240,
-                    renderer: function(value) { return new Date(value*1000); }
+                    renderer: Ext.bind(function(value) { return this.i18n.timestampFormat(value*1000);}, this)
                 },{
                     header: this.i18n._("End Date"),
                     dataIndex: "end",
                     width: 240,
-                    renderer: function(value) { return new Date(value*1000); }
+                    renderer: Ext.bind(function(value) { return this.i18n.timestampFormat(value*1000); }, this)
                 },{
                     header: this.i18n._("Seats"),
                     dataIndex: "seats",
