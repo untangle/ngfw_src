@@ -3,17 +3,19 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.Rfc822Util.consumeLine;
-import static com.untangle.node.util.Rfc822Util.consumeToken;
-import static com.untangle.node.util.Rfc822Util.eatSpace;
-
 import java.nio.ByteBuffer;
+
+import com.untangle.node.util.ASCIIUtil;
+import com.untangle.node.util.BufferUtil;
 
 /**
  * Because of classloader issues this class is public. However, it should really not be used other than in the casing.
  */
 public class CommandParser
 {
+    public static final char SP = ' ';
+    public static final char HTAB = '\t';
+    public static final char CR = '\r';
 
     /**
      * Parse the buffer (which must have a complete line!) into a Command. May return a subclass of Command for Commands
@@ -38,6 +40,96 @@ public class CommandParser
         }
     }
 
+    /**
+     * Consumes contiguous whitespace.
+     *
+     * @param buf buffer.
+     * @return true if whitespace was consumed.
+     */
+    public static boolean eatSpace(ByteBuffer buf)
+    {
+        if (buf.hasRemaining() && isWhitespace(buf.get(buf.position()))) {
+            while (buf.hasRemaining()) {
+                if (!isWhitespace(buf.get())) {
+                    buf.position(buf.position() - 1);
+                    break;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Consumes from the point, until but not including the CRLF.
+     *
+     * @param buf buffer with position
+     * @return a <code>String</code> value
+     * @exception ParseException if a CRLF was not found in the buffer's remaining data
+     */
+    public static String consumeLine( ByteBuffer buf )
+    {
+        int index = BufferUtil.findCrLf(buf);
+        if(index < 0) {
+            throw new RuntimeException("No Line terminator in \"" + ASCIIUtil.bbToString(buf) + "\"");
+        }
+        ByteBuffer dup = buf.duplicate();
+        dup.limit(index);
+        buf.position(index+2);
+        return ASCIIUtil.bbToString(dup);
+    }
+
+    /**
+     * Consumes the next token from the buffer.
+     *
+     * @param buf buffer with point on the first character of the token.
+     * @return the token.
+     */
+    public static String consumeToken(ByteBuffer buf)
+    {
+        StringBuilder sb = new StringBuilder();
+        while (buf.hasRemaining()) {
+            char c = (char)buf.get();
+            if (CR == c || isWhitespace(c)) {
+                buf.position(buf.position() - 1);
+                break;
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Whitespace according to RFC 2822 2.2.2 (SP, HTAB).
+     *
+     * @param c a <code>char</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isWhitespace(char c)
+    {
+        return SP == c || HTAB == c;
+    }
+
+    public static boolean isWhitespace(byte b)
+    {
+        return isWhitespace((char)b);
+    }
+
+    public static boolean isTspecial(char c)
+    {
+        switch (c) {
+        case '(': case ')': case '<': case '>': case '@':
+        case ',': case ';': case ':': case '\\': case '"':
+        case '/': case '[': case ']': case '?': case '=':
+            return true;
+        default:
+            return false;
+        }
+    }
+    
     /************** Tests ******************/
 
     public static String runTest(String[] args) throws Exception
