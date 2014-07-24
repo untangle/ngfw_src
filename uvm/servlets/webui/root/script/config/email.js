@@ -965,6 +965,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         editor: {
                             xtype: 'textfield',
                             emptyText: this.i18n._("distributionlistrecipient@example.com"),
+                            vtype: 'email',
                             allowBlank: false
                         }
                     }, 
@@ -988,6 +989,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         fieldLabel: this.i18n._("Distribution List Address"),
                         emptyText: this.i18n._("distributionlistrecipient@example.com"),
                         width: 450,
+                        vtype: 'email',
                         allowBlank: false
                     },
                     {
