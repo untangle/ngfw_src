@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.MailSummary;
 import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
-import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
@@ -67,7 +68,7 @@ public class QuarantineStore
         ERROR
     };
 
-    private final UtLogger logger = new UtLogger(QuarantineStore.class);
+    private final Logger logger = Logger.getLogger(QuarantineStore.class);
     private File rootDir;
     private AddressLock addressLock;
     private MasterTable masterTable;
@@ -78,7 +79,7 @@ public class QuarantineStore
         rootDir = dir;
 
         if (!rootDir.exists()) {
-            logger.debug("Creating Quarantine root \"", rootDir, "\"");
+            logger.debug("Creating Quarantine root \"" + rootDir + "\"");
             rootDir.mkdirs();
         }
 
@@ -174,7 +175,7 @@ public class QuarantineStore
 
         inboxAddr = inboxAddr.toLowerCase();
 
-        logger.debug("Call to quarantine mail from file \"", file, "\" into inbox \"", inboxAddr, "\"");
+        logger.debug("Call to quarantine mail from file \"" + file + "\" into inbox \"" + inboxAddr + "\"");
 
         File dir = getInboxDir(inboxAddr, true);
 
@@ -356,7 +357,7 @@ public class QuarantineStore
      */
     public Pair<GenericStatus, InboxIndex> rescue(String address, String... mailIDs)
     {
-        logger.debug("Rescue requested for ", mailIDs.length, " mails for account \"", address, "\"");
+        logger.debug("Rescue requested for " + mailIDs.length + " mails for account \"" + address + "\"");
         return eject(address, new QuarantineEjectionHandler()
         {
             @Override
@@ -393,7 +394,7 @@ public class QuarantineStore
      */
     public Pair<GenericStatus, InboxIndex> purge(String address, String... mailIDs)
     {
-        logger.debug("Purge requested for ", mailIDs.length, " mails for account \"", address, "\"");
+        logger.debug("Purge requested for " + mailIDs.length + " mails for account \"" + address + "\"");
         return eject(address, new QuarantineEjectionHandler()
         {
             @Override
@@ -581,7 +582,7 @@ public class QuarantineStore
         File baseDir = new File(getInboxPath(lcAddress));
         if (!baseDir.exists()) {
             if (!autoCreate) {
-                logger.debug("No inbox for \"", lcAddress, "\"");
+                logger.debug("No inbox for \"" + lcAddress + "\"");
                 return null;
             }
             addressLock.lock(lcAddress);
@@ -601,7 +602,7 @@ public class QuarantineStore
         try {
             if (!baseDir.exists()) {
                 if (!baseDir.mkdirs()) {
-                    logger.warn("Inbox for \"", lcAddress, "\" could not be created.");
+                    logger.warn("Inbox for \"" + lcAddress + "\" could not be created.");
                     return null;
                 }
                 InboxIndex inboxIndex = new InboxIndex();
@@ -609,7 +610,7 @@ public class QuarantineStore
                 QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
                 masterTable.addInbox(lcAddress);
             } else {
-                logger.debug("Inbox for \"", lcAddress, "\" created by concurrent thread");
+                logger.debug("Inbox for \"" + lcAddress + "\" created by concurrent thread");
             }
             return baseDir;
         } catch (Exception ex) {
