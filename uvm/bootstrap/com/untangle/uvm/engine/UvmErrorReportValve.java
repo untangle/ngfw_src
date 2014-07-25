@@ -79,7 +79,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<title>");
         w.write(tr("{0} Server", companyName, i18nMap));
         w.write("</title>\n");
-        w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=iso-8859-1\" />\n");
+        w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n");
         w.write("<style type=\"text/css\">\n");
         w.write("/* <![CDATA[ */\n");
         w.write("@import url(/images/base.css);\n");

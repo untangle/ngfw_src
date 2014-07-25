@@ -6,6 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:uvm="http://java.untangle.com/jsp/uvm">
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Setup Wizard</title>
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";

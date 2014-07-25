@@ -14,6 +14,7 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title><c:out value="${pageTitle}"/></title>
     <style type="text/css">
         @import "/ext4/resources/css/ext-all-gray.css";

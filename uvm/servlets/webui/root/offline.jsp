@@ -50,7 +50,7 @@ String[] messageArguments = {
             }
         }     
     </script>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><%= I18nUtil.tr("Congratulations! Welcome", i18n_map ) %></title>
 </head>
 

@@ -13,7 +13,7 @@ String companyUrl = uvm.brandingManager().getCompanyUrl();
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=company%> | Try Later</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
     @import "/ext4/resources/css/ext-all-gray.css";
     @import "/skins/default/css/user.css";

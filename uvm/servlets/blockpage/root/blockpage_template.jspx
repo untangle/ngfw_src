@@ -1,3 +1,5 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns:jsp="http://java.sun.com/JSP/Page"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:uvm="http://java.untangle.com/jsp/uvm"
@@ -26,6 +28,7 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>  
     <link rel="icon"  type="image/png" href="/images/block-favicon.png"/>  
     <title><c:out value="${pageTitle}"/></title>
