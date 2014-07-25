@@ -144,7 +144,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.enableParameters( false );
             var text = [];
             text.push( this.output.getValue());
-            text.push( "" + new Date() + " - " + this.settingsCmp.i18n._("Test Started")+"\n");
+            text.push( "" + this.settingsCmp.i18n.timestampFormat((new Date()).getTime()) + " - " + this.settingsCmp.i18n._("Test Started")+"\n");
             this.output.setValue( text.join( "" ));
             main.getExecManager().execEvil(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return; 
@@ -184,7 +184,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     text.push(result);
                     window.setTimeout( Ext.bind(this.continueNetworkUtility, this), 1000 );  
                 } else { //Test is finished
-                    text.push( "" + new Date() + " - " + this.settingsCmp.i18n._("Test Completed") +"\n\n");
+                    text.push( "" + this.settingsCmp.i18n.timestampFormat((new Date()).getTime()) + " - " + this.settingsCmp.i18n._("Test Completed") +"\n\n");
                     this.finishNetworkUtility();
                 }
                 this.output.setValue( text.join(""));
