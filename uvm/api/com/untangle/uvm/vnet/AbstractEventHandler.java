@@ -10,7 +10,10 @@ import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * <code>AbstractEventHandler</code> is the abstract base class that provides
- * the default actions that any node event handler will need.
+ * the default actions that any session event handler will need.
+ *
+ * By default the event handler methods will just pass the events on to the other side.
+ * Subclasses will need to override these methods with the appropriate actions.
  */
 public abstract class AbstractEventHandler implements SessionEventHandler
 {
@@ -28,130 +31,101 @@ public abstract class AbstractEventHandler implements SessionEventHandler
     
     public void handleTimer( NodeSession session )
     {
+        // do nothing
     }
-
-    //////////////////////////////////////////////////////////////////////
-    // TCP
-    //////////////////////////////////////////////////////////////////////
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
-        /* accept */
+        // do nothing
     }
 
     public void handleTCPNewSession( NodeTCPSession session )
     {
-        /* ignore */
+        // do nothing
     }
 
     public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
     {
-        /* ignore */
-        return;
-    }
-
-    public void handleTCPClientFIN( NodeTCPSession session )
-    {
-        // Just go ahead and shut down the other side.  The node will override
-        // this method if it wants to keep the other side open.
-        session.shutdownServer();
+        // do nothing
     }
 
     public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
     {
-        /* ignore */
-        return;
+        // do nothing
+    }
+
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        // propagate shutdown to other side
+        session.shutdownServer();
     }
 
     public void handleTCPServerFIN( NodeTCPSession session )
     {
-        // Just go ahead and shut down the other side.  The node will override
-        // this method if it wants to keep the other side open.
+        // propagate shutdown to other side
         session.shutdownClient();
     }
 
     public void handleTCPClientRST( NodeTCPSession session )
     {
-        // Just go ahead and reset the other side.  The node will override
-        // this method if it wants to keep the other side open.
+        // propagate reset to other side
         session.resetServer();
     }
 
     public void handleTCPServerRST( NodeTCPSession session )
     {
-        // Just go ahead and reset the other side.  The node will override
-        // this method if it wants to keep the other side open.
+        // propagate reset to other side
         session.resetClient();
     }
 
     public void handleTCPFinalized( NodeTCPSession session )
     {
+        // do nothing
     }
 
     public void handleTCPComplete( NodeTCPSession session )
     {
+        // do nothing
     }
 
     public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
     {
-        byte serverState = session.serverState();
-        // Default just sends the bytes onwards if the output is open.
-        if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendDataToServer( data );
-        return;
+        session.sendDataToServer( data );
     }
 
     public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
     {
-        byte clientState = session.clientState();
-        // Default just sends the bytes onwards if the output is open.
-        if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendDataToClient( data );
-        return;
+        session.sendDataToClient( data );
     }
 
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
-        byte serverState = session.serverState();
-        // Default just sends the bytes onwards if the output is open.
-        if (serverState == NodeTCPSession.OPEN || serverState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendObjectToServer( obj );
-        return;
+        session.sendObjectToServer( obj );
     }
 
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
-        byte clientState = session.clientState();
-        // Default just sends the bytes onwards if the output is open.
-        if (clientState == NodeTCPSession.OPEN || clientState == NodeTCPSession.HALF_OPEN_OUTPUT)
-            session.sendObjectToClient( obj );
-        return;
+        session.sendObjectToClient( obj );
     }
     
     public void handleTCPServerWritable( NodeTCPSession session )
     {
-        // Default writes nothing more.
-        return;
+        // do nothing
     }
 
     public void handleTCPClientWritable( NodeTCPSession session )
     {
-        // Default writes nothing more.
-        return;
+        // do nothing
     }
-
-    //////////////////////////////////////////////////////////////////////
-    // UDP
-    //////////////////////////////////////////////////////////////////////
 
     public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
-        /* accept */
+        // do nothing
     }
 
     public void handleUDPNewSession( NodeUDPSession session )
     {
-        /* ignore */
+        // do nothing
     }
 
     public void handleUDPClientExpired( NodeUDPSession session )
@@ -176,36 +150,32 @@ public abstract class AbstractEventHandler implements SessionEventHandler
 
     public void handleUDPServerWritable( NodeUDPSession session )
     {
-        // Default writes nothing more.
+        // do nothing
     }
 
     public void handleUDPClientWritable( NodeUDPSession session )
     {
-        // Default writes nothing more.
+        // do nothing
     }
 
     public void handleUDPFinalized( NodeUDPSession session )
     {
+        // do nothing
     }
 
     public void handleUDPComplete( NodeUDPSession session )
     {
+        // do nothing
     }
 
     public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        byte serverState = session.serverState();
-        // Default just sends the bytes onwards if the output is open.
-        if (serverState == NodeSession.OPEN)
-            session.sendServerPacket( data, header );
+        session.sendServerPacket( data, header );
     }
 
     public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
-        byte clientState = session.clientState();
-        // Default just sends the bytes onwards if the output is open.
-        if (clientState == NodeSession.OPEN)
-            session.sendClientPacket( data, header );
+        session.sendClientPacket( data, header );
     }
 
 }
