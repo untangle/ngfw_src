@@ -10,10 +10,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.node.token.CasingCoupler;
-import com.untangle.node.token.CasingAdaptor;
-import com.untangle.node.token.Parser;
-import com.untangle.node.token.Unparser;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
@@ -38,78 +34,28 @@ public class CasingPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser c2sParser, Parser s2cParser, Unparser c2sUnparser, Unparser s2cUnparser, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, SessionEventHandler clientHandler, SessionEventHandler serverHandler, Fitting input, Fitting output)
     {
         super(name, node, subscriptions);
 
-        switch ( output ) {
-        case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, c2sParser, s2cUnparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, s2cParser, c2sUnparser, false, true);
-            break;
-        default:
-            insideAdaptor = new CasingAdaptor(node, c2sParser, s2cUnparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, s2cParser, c2sUnparser, false, true);
-        }
+        this.insideAdaptor = clientHandler;
+        this.outsideAdaptor = serverHandler;
 
         this.input = input;
         this.output = output;
     }
 
-    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, Parser parser, Unparser unparser, Fitting input, Fitting output)
-    {
-        super(name, node, subscriptions);
-
-        switch ( output ) {
-        case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, parser, unparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, parser, unparser, false, true);
-            break;
-        default:
-            insideAdaptor = new CasingAdaptor(node, parser, unparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, parser, unparser, false, true);
-        }
-
-        this.input = input;
-        this.output = output;
-    }
-
-    public CasingPipeSpec(String name, Node node, Parser c2sParser, Parser s2cParser, Unparser c2sUnparser, Unparser s2cUnparser, Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, SessionEventHandler clientHandler, SessionEventHandler serverHandler, Fitting input, Fitting output)
     {
         super(name, node);
 
-        switch ( output ) {
-        case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, c2sParser, s2cUnparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, s2cParser, c2sUnparser, false, true);
-            break;
-        default:
-            insideAdaptor = new CasingAdaptor(node, c2sParser, s2cUnparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, s2cParser, c2sUnparser, false, true);
-        }
+        this.insideAdaptor = clientHandler;
+        this.outsideAdaptor = serverHandler;
 
         this.input = input;
         this.output = output;
     }
     
-    public CasingPipeSpec(String name, Node node, Parser parser, Unparser unparser, Fitting input, Fitting output)
-    {
-        super(name, node);
-
-        switch ( output ) {
-        case HTTP_STREAM:
-            insideAdaptor = new CasingCoupler(node, parser, unparser, true, true);
-            outsideAdaptor = new CasingCoupler(node, parser, unparser, false, true);
-            break;
-        default:
-            insideAdaptor = new CasingAdaptor(node, parser, unparser, true, true);
-            outsideAdaptor = new CasingAdaptor(node, parser, unparser, false, true);
-        }
-
-        this.input = input;
-        this.output = output;
-    }
-
     // accessors --------------------------------------------------------------
 
     public Fitting getInput()

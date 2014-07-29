@@ -11,20 +11,21 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * An HTTP <code>Unparser</code>.
  */
-class HttpUnparser extends AbstractUnparser
+public class HttpUnparserEventHandler extends AbstractEventHandler
 {
-    private static final Logger logger = Logger.getLogger(HttpUnparser.class);
+    private static final Logger logger = Logger.getLogger(HttpUnparserEventHandler.class);
 
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
     private static final String STATE_KEY = "HTTP-unparser-state";
@@ -37,7 +38,8 @@ class HttpUnparser extends AbstractUnparser
     private static final int CHUNKED_ENCODING = 2;
 
     private final HttpNodeImpl node;
-
+    private final boolean clientSide;
+    
     // used to keep request with header
     private class HttpUnparserSessionState
     {
@@ -46,13 +48,14 @@ class HttpUnparser extends AbstractUnparser
         protected int transferEncoding;
     }
 
-    public HttpUnparser( boolean clientSide, HttpNodeImpl node )
+    public HttpUnparserEventHandler( boolean clientSide, HttpNodeImpl node )
     {
-        super( clientSide );
+        this.clientSide = clientSide;
         this.node = node;
     }
 
-    public void handleNewSession( NodeTCPSession session )
+    @Override
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         HttpUnparserSessionState state = new HttpUnparserSessionState();
         state.size = 0;
@@ -60,7 +63,120 @@ class HttpUnparser extends AbstractUnparser
         session.attach( STATE_KEY, state );
     }
 
-    public void unparse( NodeTCPSession session, Token token )
+    @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        if (clientSide) {
+            logger.warn("Received object but expected data.");
+            throw new RuntimeException("Received object but expected data.");
+        } else {
+            unparse( session, obj, false );
+            return;
+        }
+    }
+    
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        if (clientSide) {
+            unparse( session, obj, true );
+            return;
+        } else {
+            logger.warn("Received object but expected data.");
+            throw new RuntimeException("Received object but expected data.");
+        }
+    }
+
+    @Override
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+
+    @Override
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+    
+    @Override
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        if (clientSide) {
+            logger.warn("Received unexpected event.");
+            throw new RuntimeException("Received unexpected event.");
+        } else {
+            session.shutdownServer();
+        }
+    }
+
+    @Override
+    public void handleTCPServerFIN( NodeTCPSession session )
+    {
+        if (clientSide) {
+            session.shutdownClient();
+        } else {
+            logger.warn("Received unexpected event.");
+            throw new RuntimeException("Received unexpected event.");
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void unparse( NodeTCPSession session, Object obj, boolean s2c )
+    {
+        // Casing casing = (Casing)session.attachment();
+
+        Token tok = (Token) obj;
+
+        try {
+            unparseToken(session, tok);
+        } catch (Exception exn) {
+            logger.error("internal error, closing connection", exn);
+
+            session.resetClient();
+            session.resetServer();
+
+            return;
+        }
+    }
+
+    private void unparseToken( NodeTCPSession session, Token token ) throws Exception
+    {
+        if (token instanceof ReleaseToken) {
+            ReleaseToken release = (ReleaseToken)token;
+
+            session.release();
+
+            releaseFlush( session );
+            return;
+        } else {
+            unparse( session, token );
+            return;
+        }
+    }
+    
+    private void unparse( NodeTCPSession session, Token token )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
         
@@ -157,7 +273,7 @@ class HttpUnparser extends AbstractUnparser
         }
 
         queueOutput( session, header.getBytes() );
-        if (isClientSide()) {
+        if ( clientSide ) {
             dequeueOutput( session );
         } else {
             if ( clientSide )

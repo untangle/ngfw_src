@@ -11,12 +11,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.UserAgentString;
 import com.untangle.uvm.UvmContextFactory;
@@ -25,13 +25,14 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
  * An HTTP <code>Parser</code>.
  */
-public class HttpParser extends AbstractParser
+public class HttpParserEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(HttpParser.class);
+    private final Logger logger = Logger.getLogger(HttpParserEventHandler.class);
     private static final String STATE_KEY = "HTTP-parser-state";
 
     private static final byte SP = ' ';
@@ -64,6 +65,8 @@ public class HttpParser extends AbstractParser
     private int maxRequestLine;
     private boolean blockLongUris;
 
+    private boolean clientSide;
+    
     private class HttpParserSessionState
     {
         protected RequestLineToken requestLineToken;
@@ -79,15 +82,16 @@ public class HttpParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    protected HttpParser( boolean clientSide, HttpNodeImpl node )
+    protected HttpParserEventHandler( boolean clientSide, HttpNodeImpl node )
     {
-        super( clientSide );
+        this.clientSide = clientSide;
         this.node = node;
     }
 
     // Parser methods ------------------------------------------------------
 
-    public void handleNewSession( NodeTCPSession session )
+    @Override
+    public void handleTCPNewSession( NodeTCPSession session )
     {
         /**
          * FIXME move this somewhere else
@@ -99,13 +103,166 @@ public class HttpParser extends AbstractParser
         this.maxUri = settings.getMaxUriLength();
         this.maxRequestLine = maxUri + 13;
         this.blockLongUris = settings.getBlockLongUris();
-        // XXX
 
         HttpParserSessionState state = new HttpParserSessionState();
         state.buf = null;
         session.attach( STATE_KEY, state );
 
         lineBuffering( session, true );
+    }
+    
+    @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        if (clientSide) {
+            parse( session, data, false, false );
+        } else {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+
+    @Override
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        if (clientSide) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        } else {
+            parse( session, data, true, false );
+            return;
+        }
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if (clientSide) {
+            parse( session, data, false, true);
+            return;
+        } else {
+            if ( data.hasRemaining() ) {
+                logger.warn("Received data when expect object");
+                throw new RuntimeException("Received data when expect object");
+            }
+            return;
+        }
+    }
+
+    @Override
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if (clientSide) {
+            if ( data.hasRemaining() ) {
+                logger.warn("Received data when expect object");
+                throw new RuntimeException("Received data when expect object");
+            }
+        } else {
+            parse( session, data, true, true );
+            return;
+        }
+    }
+
+    @Override
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        if (clientSide) {
+            endSession( session );
+        } else {
+            logger.warn("Received unexpected event.");
+            throw new RuntimeException("Received unexpected event.");
+        }
+
+        return;
+    }
+
+    @Override
+    public void handleTCPServerFIN( NodeTCPSession session )
+    {
+        if (clientSide) {
+            logger.warn("Received unexpected event.");
+            throw new RuntimeException("Received unexpected event.");
+        } else {
+            endSession( session );
+        }
+
+        return;
+    }
+    
+    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    {
+        ByteBuffer buf = data;
+        ByteBuffer dup = buf.duplicate();
+        try {
+            if (last) {
+                parseEnd( session, buf );
+            } else {
+                parse( session, buf );
+            }
+        } catch (Throwable exn) {
+            String sessionEndpoints = "[" +
+                session.getProtocol() + " : " + 
+                session.getClientAddr() + ":" + session.getClientPort() + " -> " +
+                session.getServerAddr() + ":" + session.getServerPort() + "]";
+
+            /**
+             * Some Special handling for semi-common parse exceptions
+             * Otherwise just print the full stack trace
+             *
+             * Parse exception are quite common in the real world as people use non-compliant
+             * or different protocol on standard ports.
+             * As such we don't want to litter the logs too much with these warnings, but we don't want to eliminate
+             * them entirely.
+             */
+            String message = exn.getMessage();
+            if (message != null && message.contains("no digits found")) {
+                logger.info("Protocol parse exception (no digits found). Releasing session: " + sessionEndpoints);
+            } else if (message != null && message.contains("expected")) {
+                logger.info("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
+            } else if (message != null && message.contains("data trapped")) {
+                logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints, exn);
+                // "data trapped" means that we've already buffered data, and have no discovered its probably not
+                // a protocol we can understand.
+                // Since we've already buffered data we need to reset the bytebuffer to send the data we've already buffered
+                // to do se reset the position to zero, and the the limit to the current position.
+                // Bug #11886 for more details
+                dup.limit(dup.position());
+                dup.position(0);
+            } else if (message != null && message.contains("buf limit exceeded")) {
+                logger.info("Protocol parse exception (buf limit exceeded). Releasing session: " + sessionEndpoints);
+            } else if (message != null && message.contains("header exceeds")) {
+                logger.info("Protocol parse exception (header exceeds). Releasing session: " + sessionEndpoints);
+            } else if (message != null && message.contains("length exceeded")) {
+                logger.info("Protocol parse exception (request length exceeded). Releasing session: " + sessionEndpoints);
+            } else if (message != null && message.contains("invalid method")) {
+                logger.info("Protocol parse exception (invalid request method). Releasing session: " + sessionEndpoints);                    
+            } else {
+                logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
+            }
+                
+            session.release();
+
+            if ( s2c ) {
+                session.sendObjectToClient( new ReleaseToken( dup ) );
+            } else {
+                session.sendObjectToServer( new ReleaseToken( dup ) );
+            }
+            return;
+        }
     }
     
     public void parse( NodeTCPSession session, ByteBuffer b )
@@ -605,7 +762,10 @@ public class HttpParser extends AbstractParser
             break;
         }
 
-        super.endSession( session );
+        if ( clientSide )
+            session.shutdownServer();
+        else
+            session.shutdownClient();
         return;
     }
 
@@ -1125,6 +1285,44 @@ public class HttpParser extends AbstractParser
     boolean isAlpha(byte b)
     {
         return isUpAlpha(b) || isLoAlpha(b);
+    }
+
+    protected void lineBuffering( NodeTCPSession session, boolean oneLine )
+    {
+        if (clientSide)
+            {
+            session.clientLineBuffering(oneLine);
+        } else {
+            session.serverLineBuffering(oneLine);
+        }
+    }
+
+    protected long readLimit( NodeTCPSession session )
+    {
+        if (clientSide) {
+            return session.clientReadLimit();
+        } else {
+            return session.serverReadLimit();
+        }
+    }
+
+    protected void readLimit( NodeTCPSession session, long limit )
+    {
+        if (clientSide) {
+            session.clientReadLimit(limit);
+        } else {
+            session.serverReadLimit(limit);
+        }
+    }
+    
+    protected void scheduleTimer( NodeTCPSession session, long delay )
+    {
+        session.scheduleTimer(delay);
+    }
+
+    protected void cancelTimer( NodeTCPSession session )
+    {
+        session.cancelTimer();
     }
 
     private TokenStreamer endMarkerStreamer()

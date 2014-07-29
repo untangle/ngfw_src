@@ -26,10 +26,11 @@ import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SessionEventHandler;
+import com.untangle.uvm.vnet.ForkedEventHandler;
 
 public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 {
-    public static final String PROTOCOL_NAME = "smtp";
     private static final long ONE_GB = (1024L * 1024L * 1024L);
 
     // the safelist that applies to all users
@@ -54,12 +55,15 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     {
         super(nodeSettings, nodeProperties);
 
-        SmtpC2SParser   c2sParser = new SmtpC2SParser();
-        SmtpC2SUnparser c2sUnparser = new SmtpC2SUnparser();
-        SmtpS2CParser   s2cParser = new SmtpS2CParser();
-        SmtpS2CUnparser s2cUnparser = new SmtpS2CUnparser();
+        SessionEventHandler clientSideHandler = new ForkedEventHandler( new SmtpClientParserEventHandler(), new SmtpClientUnparserEventHandler() );
+        SessionEventHandler serverSideHandler = new ForkedEventHandler( new SmtpServerUnparserEventHandler(), new SmtpServerParserEventHandler() );
 
-        this.smtpPipeSpec = new CasingPipeSpec(PROTOCOL_NAME, this, c2sParser, s2cParser, c2sUnparser, s2cUnparser, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
+        // SmtpClientParserEventHandler   c2sParser = new SmtpClientParserEventHandler();
+        // SmtpServerUnparserEventHandler c2sUnparser = new SmtpServerUnparserEventHandler();
+        // SmtpServerParserEventHandler   s2cParser = new SmtpServerParserEventHandler();
+        // SmtpClientUnparserEventHandler s2cUnparser = new SmtpClientUnparserEventHandler();
+
+        this.smtpPipeSpec = new CasingPipeSpec("smtp-casing", this, clientSideHandler, serverSideHandler, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
         this.pipeSpecs = new PipeSpec[] { smtpPipeSpec };
         
         createSingletonsIfRequired();

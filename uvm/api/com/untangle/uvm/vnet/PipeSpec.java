@@ -100,7 +100,6 @@ public abstract class PipeSpec
         this.enabled = enabled;
     }
 
-    // public methods ---------------------------------------------------------
     public void setSubscriptions(Set<Subscription> subscriptions)
     {
         synchronized (this) {

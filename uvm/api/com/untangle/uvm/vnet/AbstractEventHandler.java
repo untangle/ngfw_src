@@ -108,16 +108,16 @@ public abstract class AbstractEventHandler implements SessionEventHandler
         session.sendObjectToClient( obj );
     }
     
-    public void handleTCPServerWritable( NodeTCPSession session )
-    {
-        // do nothing
-    }
-
     public void handleTCPClientWritable( NodeTCPSession session )
     {
         // do nothing
     }
 
+    public void handleTCPServerWritable( NodeTCPSession session )
+    {
+        // do nothing
+    }
+    
     public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
     {
         // do nothing
@@ -148,12 +148,12 @@ public abstract class AbstractEventHandler implements SessionEventHandler
         session.expireClient();
     }
 
-    public void handleUDPServerWritable( NodeUDPSession session )
+    public void handleUDPClientWritable( NodeUDPSession session )
     {
         // do nothing
     }
 
-    public void handleUDPClientWritable( NodeUDPSession session )
+    public void handleUDPServerWritable( NodeUDPSession session )
     {
         // do nothing
     }

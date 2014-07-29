@@ -7,6 +7,8 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.ForkedEventHandler;
+import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.SettingsManager;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
@@ -17,11 +19,18 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class FtpNodeImpl extends NodeBase implements FtpNode
 {
-    private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, new FtpClientParser(), new FtpServerParser(), new FtpUnparser(false), new FtpUnparser(true), Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
-    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, new FtpClientParser(), new FtpServerParser(), new FtpUnparser(false), new FtpUnparser(true), Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
     private final Logger logger = Logger.getLogger(FtpNodeImpl.class);
-    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+
+    private SessionEventHandler clientSideCtlHandler = new ForkedEventHandler( new FtpClientParserEventHandler(), new FtpUnparserEventHandler(true) );
+    private SessionEventHandler serverSideCtlHandler = new ForkedEventHandler( new FtpUnparserEventHandler(false), new FtpServerParserEventHandler() );
+
+    private SessionEventHandler clientSideDataHandler = new ForkedEventHandler( new FtpClientParserEventHandler(), new FtpUnparserEventHandler(true) );
+    private SessionEventHandler serverSideDataHandler = new ForkedEventHandler( new FtpUnparserEventHandler(false), new FtpServerParserEventHandler() );
+    
+    private final PipeSpec ctlPipeSpec  = new CasingPipeSpec("ftp-control", this, clientSideCtlHandler, serverSideCtlHandler, Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
+    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp-data", this, clientSideDataHandler, serverSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
+
     private FtpSettings settings;
 
     // constructors -----------------------------------------------------------
@@ -44,7 +53,7 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save(FtpSettings.class, settingsFile, newSettings);
+            UvmContextFactory.context().settingsManager().save(FtpSettings.class, settingsFile, newSettings);
         } catch(Exception exn) {
             logger.error("setFtpSettings()",exn);
             return;
@@ -77,7 +86,7 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
 
         try {
             // first we try to read our json settings
-            readSettings = settingsManager.load( FtpSettings.class, settingsFile );
+            readSettings = UvmContextFactory.context().settingsManager().load( FtpSettings.class, settingsFile );
         } catch (Exception exn) {
             logger.error("postInit()",exn);
         }

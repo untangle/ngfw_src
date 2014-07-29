@@ -20,51 +20,146 @@ import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Token;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.node.util.ASCIIUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
  * SMTP client parser
  */
-class SmtpC2SParser extends SmtpParser
+class SmtpClientParserEventHandler extends AbstractEventHandler
 {
+    protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
+
     private static final String CLIENT_PARSER_STATE_KEY = "SMTP-client-parser-state";
 
-    private static final Logger logger = Logger.getLogger(SmtpC2SParser.class);
+    private static final Logger logger = Logger.getLogger(SmtpClientParserEventHandler.class);
 
     private static final int MAX_COMMAND_LINE_SZ = 1024 * 2;
 
     private enum SmtpClientState { COMMAND, BODY, HEADERS };
 
-    private class SmtpC2SParserSessionState
+    private class SmtpClientParserEventHandlerSessionState
     {
         protected SmtpClientState currentState = SmtpClientState.COMMAND;
         protected ScannerAndAccumulator sac;
     }
 
-    public SmtpC2SParser()
+    public SmtpClientParserEventHandler()
     {
-        super( true );
+        super();
     }
 
     @Override
-    public void handleNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        SmtpC2SParserSessionState state = new SmtpC2SParserSessionState();
+        SmtpClientParserEventHandlerSessionState state = new SmtpClientParserEventHandlerSessionState();
         session.attach( CLIENT_PARSER_STATE_KEY, state );
 
         SmtpSharedState clientSideSharedState = new SmtpSharedState();
         session.attach( SHARED_STATE_KEY, clientSideSharedState );
-
-        lineBuffering( session, false );
     }
 
     @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        parse( session, data, false, false );
+    }
+
+    @Override
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        parse( session, data, false, true);
+    }
+
+    @Override
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+
+    @Override
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        session.shutdownServer();
+    }
+
+    @Override
+    public void handleTCPServerFIN( NodeTCPSession session )
+    {
+        logger.warn("Received unexpected event.");
+        throw new RuntimeException("Received unexpected event.");
+    }
+
+    @Override
+    public void handleTCPFinalized( NodeTCPSession session )
+    {
+        SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+
+        if ( state.sac != null ) {
+            logger.debug("Unexpected finalized in state " + state.currentState);
+            state.sac.accumulator.dispose();
+            state.sac = null;
+        }
+    }
+    
+    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    {
+        ByteBuffer buf = data;
+        ByteBuffer dup = buf.duplicate();
+        try {
+            if (last) {
+                parseEnd( session, buf );
+            } else {
+                parse( session, buf );
+            }
+        } catch (Throwable exn) {
+            String sessionEndpoints = "[" +
+                session.getProtocol() + " : " + 
+                session.getClientAddr() + ":" + session.getClientPort() + " -> " +
+                session.getServerAddr() + ":" + session.getServerPort() + "]";
+
+            session.release();
+
+            if ( s2c ) {
+                session.sendObjectToClient( new ReleaseToken( dup ) );
+            } else {
+                session.sendObjectToServer( new ReleaseToken( dup ) );
+            }
+            return;
+        }
+    }
+    
     @SuppressWarnings("fallthrough")
     protected void doParse( NodeTCPSession session, ByteBuffer buf )
     {
-        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+        SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         // ===============================================
@@ -328,18 +423,50 @@ class SmtpC2SParser extends SmtpParser
         return;
     }
 
-    @Override
-    public void handleFinalized( NodeTCPSession session )
+    public void parse( NodeTCPSession session, ByteBuffer buf )
     {
-        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
-
-        super.handleFinalized( session );
-
-        if ( state.sac != null ) {
-            logger.debug("Unexpected finalized in state " + state.currentState);
-            state.sac.accumulator.dispose();
-            state.sac = null;
+        try {
+            if ( isPassthru( session ) ) {
+                session.sendObjectToServer( new ChunkToken(buf) );
+                return;
+            } else {
+                doParse( session, buf );
+                return;
+            }
+        } catch ( Exception exn ) {
+            session.shutdownClient();
+            session.shutdownServer();
+            return;
         }
+    }
+
+    public final void parseEnd( NodeTCPSession session, ByteBuffer buf )
+    {
+        if ( buf.hasRemaining() ) {
+            session.sendObjectToServer( new ChunkToken(buf) );
+            return;
+        }
+        return;
+    }
+
+    /**
+     * Is the casing currently in passthru mode
+     */
+    protected boolean isPassthru( NodeTCPSession session )
+    {
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
+        return sharedState.passthru;
+    }
+
+    /**
+     * Called by the unparser to declare that we are now in passthru mode. This is called either because of a parsing
+     * error by the caller, or the reciept of a passthru token.
+     * 
+     */
+    protected void declarePassthru( NodeTCPSession session)
+    {
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
+        sharedState.passthru = true;
     }
 
     /**
@@ -351,6 +478,25 @@ class SmtpC2SParser extends SmtpParser
         declarePassthru( session );// Inform the unparser of this state
     }
 
+    /**
+     * Helper which compacts (and possibly expands) the buffer if anything remains. Otherwise, just returns null.
+     */
+    protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf, int maxSz)
+    {
+        if (buf.hasRemaining()) {
+            buf.compact();
+            if (buf.limit() < maxSz) {
+                ByteBuffer b = ByteBuffer.allocate(maxSz);
+                buf.flip();
+                b.put(buf);
+                return b;
+            }
+            return buf;
+        } else {
+            return null;
+        }
+    }
+    
     // ================ Inner Class =================
 
     /**
@@ -369,7 +515,7 @@ class SmtpC2SParser extends SmtpParser
 
         public void response(int code)
         {
-            SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+            SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
             if (code < 400) {
                 logger.debug("DATA command accepted");
@@ -446,7 +592,7 @@ class SmtpC2SParser extends SmtpParser
      */
     private boolean openSAC( NodeTCPSession session )
     {
-        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+        SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         try {
             state.sac = new ScannerAndAccumulator( new MIMEAccumulator( session ) );
@@ -482,7 +628,7 @@ class SmtpC2SParser extends SmtpParser
      */
     private MessageInfo createMessageInfo( NodeTCPSession session, InternetHeaders headers )
     {
-        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+        SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         if (headers == null) {
@@ -547,7 +693,7 @@ class SmtpC2SParser extends SmtpParser
      */
     private void puntDuringHeaders( NodeTCPSession session, List<Token> toks, ByteBuffer buf )
     {
-        SmtpC2SParserSessionState state = (SmtpC2SParserSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
+        SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
 
         // Get any bytes trapped in the file
         ByteBuffer trapped = state.sac.accumulator.drainFileToByteBuffer();

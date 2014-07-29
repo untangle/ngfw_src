@@ -4,6 +4,8 @@
 package com.untangle.node.http;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.vnet.SessionEventHandler;
+import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
@@ -18,7 +20,10 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class HttpNodeImpl extends NodeBase implements HttpNode
 {
-    private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http-casing", this, new HttpParser(true,this), new HttpParser(false,this), new HttpUnparser(false,this), new HttpUnparser(true,this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
+    private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
+    private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );
+    
+    private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http-casing", this, clientSideHandler, serverSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
     private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
 
@@ -56,8 +61,6 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     {
         if ( settings != null ) {
             pipeSpec.setEnabled(settings.isEnabled());
-            // XXX - this is obsolete
-            //pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
         }
     }
 

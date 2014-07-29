@@ -9,37 +9,120 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
  * Parses FTP traffic.
- *
  */
-public class FtpClientParser extends AbstractParser
+public class FtpClientParserEventHandler extends AbstractEventHandler
 {
     private static final char SP = ' ';
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    private final Logger logger = Logger.getLogger(FtpClientParser.class);
+    private final Logger logger = Logger.getLogger(FtpClientParserEventHandler.class);
 
-    public FtpClientParser()
+    public FtpClientParserEventHandler()
     {
-        super(true);
     }
 
-    public void handleNewSession( NodeTCPSession session )
+    @Override
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        lineBuffering( session, true );
+        session.clientLineBuffering( true );
     }
 
+    @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        parse( session, data, false, false );
+    }
+
+    @Override
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+    
+    @Override
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        parse( session, data, false, true);
+    }
+
+    @Override
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+
+    @Override
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        endSession( session );
+    }
+
+    @Override
+    public void handleTCPServerFIN( NodeTCPSession session )
+    {
+        logger.warn("Received unexpected event.");
+        throw new RuntimeException("Received unexpected event.");
+    }
+
+    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    {
+        ByteBuffer buf = data;
+        ByteBuffer dup = buf.duplicate();
+        try {
+            if (last) {
+                parseEnd( session, buf );
+            } else {
+                parse( session, buf );
+            }
+        } catch (Throwable exn) {
+            String sessionEndpoints = "[" +
+                session.getProtocol() + " : " + 
+                session.getClientAddr() + ":" + session.getClientPort() + " -> " +
+                session.getServerAddr() + ":" + session.getServerPort() + "]";
+
+            session.release();
+
+            if ( s2c ) {
+                session.sendObjectToClient( new ReleaseToken( dup ) );
+            } else {
+                session.sendObjectToServer( new ReleaseToken( dup ) );
+            }
+        }
+
+        return;
+    }
+    
     public void parse( NodeTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();

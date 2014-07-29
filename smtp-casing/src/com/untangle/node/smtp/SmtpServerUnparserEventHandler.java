@@ -21,35 +21,144 @@ import com.untangle.node.smtp.mime.MIMEAccumulator;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
+import com.untangle.node.token.ReleaseToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
-class SmtpC2SUnparser extends SmtpUnparser
+class SmtpServerUnparserEventHandler extends AbstractEventHandler
 {
+    protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
+
     private static final String SERVER_UNPARSER_STATE_KEY = "SMTP-server-parser-state";
 
-    private static final Logger logger = Logger.getLogger(SmtpC2SUnparser.class);
+    private static final Logger logger = Logger.getLogger(SmtpServerUnparserEventHandler.class);
 
-    private class SmtpC2SUnparserState
+    private class SmtpServerUnparserEventHandlerState
     {
         protected ByteBufferByteStuffer byteStuffer;
         protected MIMEAccumulator accumulator;
     }
 
-    public SmtpC2SUnparser()
+    public SmtpServerUnparserEventHandler()
     {
-        super( true );
+        super();
     }
 
-    public void handleNewSession( NodeTCPSession session )
+    @Override
+    public void handleTCPNewSession( NodeTCPSession session )
     {
-        SmtpC2SUnparserState state = new SmtpC2SUnparserState();
+        SmtpServerUnparserEventHandlerState state = new SmtpServerUnparserEventHandlerState();
         session.attach( SERVER_UNPARSER_STATE_KEY, state );
+    }
+
+    @Override
+    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    {
+        logger.warn("Received data when expect object");
+        throw new RuntimeException("Received data when expect object");
+    }
+
+    @Override
+    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        unparse( session, obj, false );
     }
     
     @Override
+    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    {
+        logger.warn("Received object but expected data.");
+        throw new RuntimeException("Received object but expected data.");
+    }
+
+    @Override
+    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+
+    @Override
+    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    {
+        if ( data.hasRemaining() ) {
+            logger.warn("Received data when expect object");
+            throw new RuntimeException("Received data when expect object");
+        }
+    }
+    
+    @Override
+    public void handleTCPClientFIN( NodeTCPSession session )
+    {
+        session.shutdownServer();
+    }
+
+    @Override
+    public void handleTCPServerFIN( NodeTCPSession session )
+    {
+        logger.warn("Received unexpected event.");
+        throw new RuntimeException("Received unexpected event.");
+    }
+
+    @Override
+    public void handleTCPFinalized( NodeTCPSession session )
+    {
+        SmtpServerUnparserEventHandlerState state = (SmtpServerUnparserEventHandlerState) session.attachment( SERVER_UNPARSER_STATE_KEY );
+
+        if (state.accumulator != null) {
+            state.accumulator.dispose();
+            state.accumulator = null;
+        }
+    }
+    
+    // private methods --------------------------------------------------------
+
+    private void unparse( NodeTCPSession session, Object obj, boolean s2c )
+    {
+        Token tok = (Token) obj;
+
+        try {
+            unparseToken(session, tok);
+        } catch (Exception exn) {
+            logger.error("internal error, closing connection", exn);
+
+            session.resetClient();
+            session.resetServer();
+
+            return;
+        }
+    }
+
+    private void unparseToken( NodeTCPSession session, Token token ) throws Exception
+    {
+        if (token instanceof ReleaseToken) {
+            ReleaseToken release = (ReleaseToken)token;
+
+            session.release();
+
+            return;
+        } else if (token instanceof PassThruToken) {
+            logger.debug("Received PassThruToken");
+            declarePassthru( session );// Inform the parser of this state
+            return;
+        } else {
+            doUnparse( session, token );
+            return;
+        }
+    }
+    
     protected void doUnparse( NodeTCPSession session, Token token )
     {
-        SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
+        SmtpServerUnparserEventHandlerState state = (SmtpServerUnparserEventHandlerState) session.attachment( SERVER_UNPARSER_STATE_KEY );
         SmtpSharedState serverSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         
         // -----------------------------------------------------------
@@ -212,17 +321,6 @@ class SmtpC2SUnparser extends SmtpUnparser
         declarePassthru( session );// Inform the parser of this state
     }
 
-    @Override
-    public void handleFinalized( NodeTCPSession session )
-    {
-        SmtpC2SUnparserState state = (SmtpC2SUnparserState) session.attachment( SERVER_UNPARSER_STATE_KEY );
-
-        super.handleFinalized( session );
-        if (state.accumulator != null) {
-            state.accumulator.dispose();
-            state.accumulator = null;
-        }
-    }
 
     // ================ Inner Class =================
 
@@ -273,5 +371,25 @@ class SmtpC2SUnparser extends SmtpUnparser
                 logger.debug("STARTTLS command rejected.  Do not go into passthru");
             }
         }
+    }
+
+    /**
+     * Is the casing currently in passthru mode
+     */
+    protected boolean isPassthru( NodeTCPSession session )
+    {
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
+        return sharedState.passthru;
+    }
+
+    /**
+     * Called by the unparser to declare that we are now in passthru mode. This is called either because of a parsing
+     * error by the caller, or the reciept of a passthru token.
+     * 
+     */
+    protected void declarePassthru( NodeTCPSession session)
+    {
+        SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
+        sharedState.passthru = true;
     }
 }
