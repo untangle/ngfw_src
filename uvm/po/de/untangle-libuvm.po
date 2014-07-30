@@ -1750,7 +1750,7 @@ msgid "Warning! Internet succeeded, but DNS failed."
 msgstr "Warnung! Internet erfolgreich, aber DNS fehlgeschlagen."
 
 #: ../servlets/setup/root/script/setup.js:1283
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:661
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:661
 msgid "Success!"
 msgstr "Erfolg!"
 
@@ -4237,118 +4237,118 @@ msgstr "Off-Site Verbindung zur Berichterstattung ist nicht erlaubt"
 msgid "standard access to reporting"
 msgstr "Standard Verbindung zur Berichterstattung"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:102
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:117
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:102
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:117
 #, java-format
 msgid "{0} Server"
 msgstr "{0} Server"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:152
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:152
 msgid "Bad Request"
 msgstr "Falsche Anfrage"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:155
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:155
 msgid "Unauthorized"
 msgstr "Nicht authorisiert"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:158
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:158
 msgid "Payment Required"
 msgstr "Zahlung erforderlich"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:161
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:161
 msgid "Forbidden"
 msgstr "Nicht erlaubt"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:164
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:164
 msgid "Not Found"
 msgstr "Nicht gefunden"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:167
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:167
 msgid "Method Not Allowed"
 msgstr "Methode nicht erlaubt"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:170
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:170
 msgid "Not Acceptable"
 msgstr "Nicht akzeptierbar"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:173
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:173
 msgid "Proxy Authentication Required"
 msgstr "Proxy Authentifizierung erforderlich"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:176
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:176
 msgid "Request Timeout"
 msgstr "Anfrage Zeitüberschreitung"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:179
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:179
 msgid "Conflict"
 msgstr "Konflikt"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:182
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:182
 msgid "Gone"
 msgstr "Verloren"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:185
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:185
 msgid "Length Required"
 msgstr "Länge erforderlich"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:188
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:188
 msgid "Precondition Failed"
 msgstr "Vorbedingung fehlgeschlagen"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:191
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:191
 msgid "Request Entity Too Large"
 msgstr "Anfrageeinheit zu lang"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:194
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:194
 msgid "Request-URI Too Long"
 msgstr "Anfrage-URI zu lang"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:197
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:197
 msgid "Unsupported Media Type"
 msgstr "Nicht unterstützter Medientyp"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:200
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:200
 msgid "Requested Range Not Satisfiable"
 msgstr "Angefragter Bereich nicht erfüllbar"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:203
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:203
 msgid "Expectation Failed"
 msgstr "Erwartung fehlgeschlagen"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:206
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:206
 msgid "Internal Server Error"
 msgstr "Interner Server Fehler"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:209
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:209
 msgid "Not Implemented"
 msgstr "Nicht implementiert"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:212
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:212
 msgid "Bad Gateway"
 msgstr "Falsches Gateway"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:215
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:215
 msgid "Service Unavailable"
 msgstr "Dienst nicht verfügbar"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:218
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:218
 msgid "Gateway Timeout"
 msgstr "Gateway Zeitüberschreitung"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:221
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:221
 msgid "HTTP Version Not Supported"
 msgstr "HTTP Version nicht unterstützt"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:224
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:224
 msgid "Error"
 msgstr "Fehler"
 
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:659
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:659
 #, java-format
 msgid "{0} Server Test Message"
 msgstr "{0} Server Test Nachricht"
 
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:662
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:662
 #, java-format
 msgid ""
 "This automated message was generated by the {0} Server{1}to confirm that "
@@ -4361,19 +4361,19 @@ msgstr ""
 msgid "your network administrator"
 msgstr "Ihr(en) Netzwerk Administrator"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:206
+#: ../impl/com/untangle/uvm/Dispatcher.java:206
 msgid "UDP sessions"
 msgstr "UDP Sitzungen"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:207
+#: ../impl/com/untangle/uvm/Dispatcher.java:207
 msgid "TCP sessions"
 msgstr "TCP Sitzungen"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:208
+#: ../impl/com/untangle/uvm/Dispatcher.java:208
 msgid "UDP session requests"
 msgstr "UDP Sitzungsanfragen"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:209
+#: ../impl/com/untangle/uvm/Dispatcher.java:209
 msgid "TCP session requests"
 msgstr "TCP Sitzungsanfragen"
 

@@ -1721,7 +1721,7 @@ msgid "Warning! Internet succeeded, but DNS failed."
 msgstr "警告！Internet无问题，但DNS失败。"
 
 #: ../servlets/setup/root/script/setup.js:1283
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:661
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:661
 msgid "Success!"
 msgstr "成功！"
 
@@ -4120,118 +4120,118 @@ msgstr "不允许异地访问报告"
 msgid "standard access to reporting"
 msgstr "标准访问报告"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:102
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:117
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:102
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:117
 #, java-format
 msgid "{0} Server"
 msgstr "{0}服务器"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:152
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:152
 msgid "Bad Request"
 msgstr "不良请求"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:155
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:155
 msgid "Unauthorized"
 msgstr "未被授权的"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:158
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:158
 msgid "Payment Required"
 msgstr "需要付费"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:161
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:161
 msgid "Forbidden"
 msgstr "禁止的"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:164
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:164
 msgid "Not Found"
 msgstr "未找到"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:167
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:167
 msgid "Method Not Allowed"
 msgstr "不允许的方法"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:170
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:170
 msgid "Not Acceptable"
 msgstr "不可接受的"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:173
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:173
 msgid "Proxy Authentication Required"
 msgstr "需要代理身份验证"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:176
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:176
 msgid "Request Timeout"
 msgstr "请求超时"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:179
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:179
 msgid "Conflict"
 msgstr "冲突"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:182
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:182
 msgid "Gone"
 msgstr "消失"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:185
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:185
 msgid "Length Required"
 msgstr "需要长度"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:188
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:188
 msgid "Precondition Failed"
 msgstr "预处理失败"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:191
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:191
 msgid "Request Entity Too Large"
 msgstr "请求的实体太大"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:194
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:194
 msgid "Request-URI Too Long"
 msgstr "请求的URI太长"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:197
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:197
 msgid "Unsupported Media Type"
 msgstr "不支持的媒体类型"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:200
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:200
 msgid "Requested Range Not Satisfiable"
 msgstr "不满足所请求的范围"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:203
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:203
 msgid "Expectation Failed"
 msgstr "预期失败"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:206
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:206
 msgid "Internal Server Error"
 msgstr "内部服务器错误"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:209
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:209
 msgid "Not Implemented"
 msgstr "尚未实现"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:212
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:212
 msgid "Bad Gateway"
 msgstr "坏网关"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:215
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:215
 msgid "Service Unavailable"
 msgstr "服务不可用"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:218
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:218
 msgid "Gateway Timeout"
 msgstr "网关超时"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:221
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:221
 msgid "HTTP Version Not Supported"
 msgstr "该HTTP版本不支持"
 
-#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:224
+#: ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java:224
 msgid "Error"
 msgstr "错误"
 
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:659
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:659
 #, java-format
 msgid "{0} Server Test Message"
 msgstr ""
 
-#: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:662
+#: ../impl/com/untangle/uvm/MailSenderImpl.java:662
 #, java-format
 msgid ""
 "This automated message was generated by the {0} Server{1}to confirm that "
@@ -4242,19 +4242,19 @@ msgstr ""
 msgid "your network administrator"
 msgstr "您的网络管理员"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:206
+#: ../impl/com/untangle/uvm/Dispatcher.java:206
 msgid "UDP sessions"
 msgstr "UDP会话"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:207
+#: ../impl/com/untangle/uvm/Dispatcher.java:207
 msgid "TCP sessions"
 msgstr "TCP会话"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:208
+#: ../impl/com/untangle/uvm/Dispatcher.java:208
 msgid "UDP session requests"
 msgstr "UDP会话请求"
 
-#: ../impl/com/untangle/uvm/engine/Dispatcher.java:209
+#: ../impl/com/untangle/uvm/Dispatcher.java:209
 msgid "TCP session requests"
 msgstr "TCP会话请求"
 

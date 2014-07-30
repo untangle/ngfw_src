@@ -255,7 +255,7 @@ def monitor_uvm(pid):
         if needToRestart(pid):
             debug("*** Killing untangle-vm(%i)." % pid);
             os.system("kill %i" % pid);
-            os.system("pkill -f com.untangle.uvm.engine.Main");
+            os.system("pkill -f com.untangle.uvm.Main");
             # wait for shutdown
             time.sleep(10)
             # check if proc is still alive
@@ -329,7 +329,7 @@ def sigINThandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
-        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
+        os.system("pkill -%s -f com.untangle.uvm.Main" % str(signal));
 
 #
 # SIGTERM handler 
@@ -341,7 +341,7 @@ def sigTERMhandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
-        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
+        os.system("pkill -%s -f com.untangle.uvm.Main" % str(signal));
 
 #
 # SIGARB handler 
@@ -353,7 +353,7 @@ def sigABRThandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
-        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
+        os.system("pkill -%s -f com.untangle.uvm.Main" % str(signal));
 
 
 ##############################################################
@@ -404,12 +404,12 @@ while True:
                 valgrind_cmd = valgrind_cmd + "--leak-check=full "
             args = (valgrind_cmd + 
                     "/usr/bin/java " + java_opts + " " + uvm_args + " -XX:UseSSE=0 " + " -Djava.compiler=NONE " + 
-                    " com.untangle.uvm.engine.Main").split();
+                    " com.untangle.uvm.Main").split();
             os.execv("/usr/bin/valgrind", args);
         else:
             args = ("/usr/bin/java " + 
                     java_opts + " " + uvm_args + 
-                    " com.untangle.uvm.engine.Main").split();
+                    " com.untangle.uvm.Main").split();
             os.execv("/usr/bin/java", args);
 
         debug("ERROR: execv returned");

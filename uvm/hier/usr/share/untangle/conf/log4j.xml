@@ -84,25 +84,25 @@
   </category>
 
   <!-- event logs need to have a specific facility -->
-  <category name="com.untangle.uvm.engine.SyslogManagerImpl" additivity="false">
+  <category name="com.untangle.uvm.SyslogManagerImpl" additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="EVENTS"/>
   </category>
 
   <!-- normal level for engine and following is INFO -->
-  <category name="com.untangle.uvm.engine">
+  <category name="com.untangle.uvm">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.engine.PipelineFoundryImpl">
+  <category name="com.untangle.uvm.PipelineFoundryImpl">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.engine.SettingsManagerImpl">
+  <category name="com.untangle.uvm.SettingsManagerImpl">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.engine.CertCacheManagerImpl">
+  <category name="com.untangle.uvm.CertCacheManagerImpl">
     <priority value="INFO"/>
   </category>
 

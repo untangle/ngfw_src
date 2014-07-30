@@ -41,7 +41,7 @@ public class UvmContextFactory
             synchronized (UvmContextFactory.class) {
                 if (null == UVM_CONTEXT) {
                     try {
-                        Class c = Class.forName("com.untangle.uvm.engine.UvmContextImpl");
+                        Class c = Class.forName("com.untangle.uvm.UvmContextImpl");
                         Method m = c.getMethod("context");
                         UVM_CONTEXT = (UvmContext)m.invoke(null);
                     } catch ( Exception e ) {

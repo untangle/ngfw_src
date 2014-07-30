@@ -40,13 +40,13 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../../reporting/servlets/reports/root/script/*.js
 
     #xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../api/com/untangle/uvm/util/OutsideValve.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/uvm/engine/MailSenderImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/UvmErrorReportValve.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/uvm/MailSenderImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../uvm/servlets/webui/src/com/untangle/uvm/webui/servlet/GridSettingsServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/branding/src/com/untangle/node/branding/BrandingSettings.java
 
     echo 'get blingers keys'
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/engine/Dispatcher.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/Dispatcher.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../api/com/untangle/uvm/vnet/NodeBase.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../firewall/src/com/untangle/node/firewall/FirewallImpl.java

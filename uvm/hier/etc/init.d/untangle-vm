@@ -46,7 +46,7 @@ updateStatusExit() {
 
 # Finds the actual java uvm process
 uvmJavaPid() { 
-    ps awwx | awk '/[j]ava.*com.untangle.uvm.engine.Main/ {print $1}' 
+    ps awwx | awk '/[j]ava.*com.untangle.uvm.Main/ {print $1}' 
 }
 # Finds the java uvm process
 uvmWrapperPid() { 
