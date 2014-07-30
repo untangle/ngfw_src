@@ -50,21 +50,6 @@ public class RouterImpl extends NodeBase implements Router
         pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
     }
 
-    PipelineConnector getRouterPipelineConnector()
-    {
-        return routerPipeSpec.getPipelineConnector();
-    }
-
-    PipelineConnector getRouterFtpPipeSpecCtl()
-    {
-        return routerFtpPipeSpecCtl.getPipelineConnector();
-    }
-    
-    PipelineConnector getRouterFtpPipeSpecData()
-    {
-        return routerFtpPipeSpecData.getPipelineConnector();
-    }
-
     @Override
     protected PipeSpec[] getPipeSpecs()
     {

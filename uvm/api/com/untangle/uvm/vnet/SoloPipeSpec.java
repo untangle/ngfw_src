@@ -79,16 +79,6 @@ public class SoloPipeSpec extends PipeSpec
 
     // accessors --------------------------------------------------------------
 
-    public SessionEventHandler getListener()
-    {
-        return listener;
-    }
-
-    public Fitting getFitting()
-    {
-        return fitting;
-    }
-
     public Affinity getAffinity()
     {
         return affinity;
@@ -97,11 +87,6 @@ public class SoloPipeSpec extends PipeSpec
     public int getStrength()
     {
         return strength;
-    }
-
-    public PipelineConnector getPipelineConnector()
-    {
-        return pipelineConnector;
     }
 
     // PipeSpec methods -------------------------------------------------------

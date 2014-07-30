@@ -30,7 +30,6 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**

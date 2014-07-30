@@ -19,8 +19,6 @@ import com.untangle.uvm.node.Node;
  */
 public class CasingPipeSpec extends PipeSpec
 {
-    private static final PipelineFoundry FOUNDRY;
-
     private final Fitting input;
     private final Fitting output;
 
@@ -56,37 +54,13 @@ public class CasingPipeSpec extends PipeSpec
         this.output = output;
     }
     
-    // accessors --------------------------------------------------------------
-
-    public Fitting getInput()
-    {
-        return input;
-    }
-
-    public Fitting getOutput()
-    {
-        return output;
-    }
-
-    public SessionEventHandler getInsideAdaptor()
-    {
-        return insideAdaptor;
-    }
-
-    public SessionEventHandler getOutsideAdaptor()
-    {
-        return outsideAdaptor;
-    }
-
-    // PipeSpec methods -------------------------------------------------------
-
     @Override
     public void connectPipelineConnector()
     {
         if (null == insidePipelineConnector && null == outsidePipelineConnector) {
-            insidePipelineConnector = FOUNDRY.createPipelineConnector(this, insideAdaptor, input, output);
-            outsidePipelineConnector = FOUNDRY.createPipelineConnector(this, outsideAdaptor, output, input);
-            FOUNDRY.registerCasing(insidePipelineConnector, outsidePipelineConnector);
+            insidePipelineConnector = UvmContextFactory.context().pipelineFoundry().createPipelineConnector(this, insideAdaptor, input, output);
+            outsidePipelineConnector = UvmContextFactory.context().pipelineFoundry().createPipelineConnector(this, outsideAdaptor, output, input);
+            UvmContextFactory.context().pipelineFoundry().registerCasing(insidePipelineConnector, outsidePipelineConnector);
         } else {
             logger.warn("casing PipelineConnectors already connected");
         }
@@ -96,7 +70,7 @@ public class CasingPipeSpec extends PipeSpec
     public void disconnectPipelineConnector()
     {
         if (null != insidePipelineConnector && null != outsidePipelineConnector) {
-            FOUNDRY.deregisterCasing(insidePipelineConnector);
+            UvmContextFactory.context().pipelineFoundry().deregisterCasing(insidePipelineConnector);
             insidePipelineConnector.destroy();
             outsidePipelineConnector.destroy();
             insidePipelineConnector = outsidePipelineConnector = null;
@@ -122,11 +96,5 @@ public class CasingPipeSpec extends PipeSpec
         } else {
             return null;
         }
-    }
-
-    // static initialization --------------------------------------------------
-
-    static {
-        FOUNDRY = UvmContextFactory.context().pipelineFoundry();
     }
 }
