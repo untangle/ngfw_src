@@ -15,8 +15,6 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.Worker;
-import com.untangle.uvm.util.WorkerRunner;
 
 /**
  * Regularly monitor user-unblocked sites and expire them after a
@@ -27,20 +25,16 @@ class UnblockedSitesMonitor
 {
     private static long MONITOR_SLEEP_DELAY_MS = 5l * 60l * 1000l;
 
-    // private members ---------------------------------------------------------
     private final WebFilterBase wfb;
     private final Logger logger = Logger.getLogger(getClass());
     private final Monitor monitor = new Monitor();
-    private final WorkerRunner workerRunner = new WorkerRunner(monitor, UvmContextFactory.context());
 
-    // constructors -----------------------------------------------
     public UnblockedSitesMonitor(WebFilterBase myWfb)
     {
         logger.info("UnblockedSitesMonitor initializing");
         wfb = myWfb;
     }
 
-    // class protected methods -----------------------------------------------
     void addUnblockedSite(InetAddress addr, String site)
     {
         monitor.addUnblockedSite(addr, site);
@@ -48,21 +42,23 @@ class UnblockedSitesMonitor
 
     void start()
     {
-        workerRunner.start();
+        this.monitor.running = true;
+        UvmContextFactory.context().newThread(this.monitor).start();
     }
 
     void stop()
     {
-        workerRunner.stop();
+        this.monitor.running = false;
     }
 
-    // inner classes ---------------------------------------------------------
     /**
      * The Monitor class actually takes care of periodically checking
      * host-unblocked sites, and removing them if they are expired.
      */
-    private final class Monitor implements Worker
+    private final class Monitor implements Runnable
     {
+        protected boolean running = true;
+        
         private SortedSet<UnblockedSite> unblockedSites = new TreeSet<UnblockedSite>();
     
         public synchronized void addUnblockedSite(InetAddress addr, String site)
@@ -75,58 +71,62 @@ class UnblockedSitesMonitor
             logger.info("Adding unblock:" + bs);
         }
 
-        public void start() {}
-
-        public void stop() {}
-
-        public void work() throws InterruptedException
+        public void run()
         {
-            Thread.sleep(MONITOR_SLEEP_DELAY_MS);
-            
-            if (unblockedSites.isEmpty())
-                return;
+            while ( true ) {
 
-            long expirationTime = System.currentTimeMillis() - (wfb.getSettings().getUnblockTimeout()*1000);
+                try {
+                    Thread.sleep(MONITOR_SLEEP_DELAY_MS);
+                } catch ( Exception e ) {}
 
-            /**
-             * If the first site in the list is not yet expired and the list is order
-             * There is no need to traverse the whole list
-             */
-            if (unblockedSites.first().creationTimeMillis > expirationTime)
-               return;
+                if ( ! running )
+                    return;
+                
+                if (unblockedSites.isEmpty())
+                    continue;
 
-            try {
-                Map<InetAddress,List<String>> sitesToDelete = new HashMap<InetAddress,List<String>>();
-                synchronized(this) {
-                    Iterator<UnblockedSite> iter = unblockedSites.iterator();
-                    UnblockedSite bs;
-                    List<String> l;
+                long expirationTime = System.currentTimeMillis() - (wfb.getSettings().getUnblockTimeout()*1000);
 
-                    while (iter.hasNext()) {
-                        bs = iter.next();
-                        logger.info("Evaluating unblock \"" + bs + "\"");
+                /**
+                 * If the first site in the list is not yet expired and the list is order
+                 * There is no need to traverse the whole list
+                 */
+                if (unblockedSites.first().creationTimeMillis > expirationTime)
+                    continue;
 
-                        if (bs.creationTimeMillis > expirationTime) {
-                            logger.info("Evaluating unblock \"" + bs + "\": still valid");
-                            break; // ordered, so we can stop right here
-                        }
+                try {
+                    Map<InetAddress,List<String>> sitesToDelete = new HashMap<InetAddress,List<String>>();
+                    synchronized(this) {
+                        Iterator<UnblockedSite> iter = unblockedSites.iterator();
+                        UnblockedSite bs;
+                        List<String> l;
 
-                        logger.info("Evaluating unblock \"" + bs + "\": expired (" + bs.creationTimeMillis + " > " + expirationTime + ")");
-                        iter.remove();
+                        while (iter.hasNext()) {
+                            bs = iter.next();
+                            logger.info("Evaluating unblock \"" + bs + "\"");
 
-                        // add to sitesToDelete
-                        if (sitesToDelete.containsKey(bs.addr))
-                            sitesToDelete.get(bs.addr).add(bs.site);
-                        else {
-                            l = new ArrayList<String>();
-                            l.add(bs.site);
-                            sitesToDelete.put(bs.addr, l);
+                            if (bs.creationTimeMillis > expirationTime) {
+                                logger.info("Evaluating unblock \"" + bs + "\": still valid");
+                                break; // ordered, so we can stop right here
+                            }
+
+                            logger.info("Evaluating unblock \"" + bs + "\": expired (" + bs.creationTimeMillis + " > " + expirationTime + ")");
+                            iter.remove();
+
+                            // add to sitesToDelete
+                            if (sitesToDelete.containsKey(bs.addr))
+                                sitesToDelete.get(bs.addr).add(bs.site);
+                            else {
+                                l = new ArrayList<String>();
+                                l.add(bs.site);
+                                sitesToDelete.put(bs.addr, l);
+                            }
                         }
                     }
+                    wfb.getDecisionEngine().removeUnblockedSites(sitesToDelete);
+                } catch (Exception e) {
+                    logger.warn("Problem in UnblockedSitesMonitor: '" + e.getMessage() + "'", e);
                 }
-                wfb.getDecisionEngine().removeUnblockedSites(sitesToDelete);
-            } catch (Exception e) {
-                logger.warn("Problem in UnblockedSitesMonitor: '" + e.getMessage() + "'", e);
             }
         }
     }
