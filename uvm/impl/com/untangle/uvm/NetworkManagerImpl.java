@@ -843,11 +843,74 @@ public class NetworkManagerImpl implements NetworkManager
             
         }
 
-        // Prevent users from choosing untangle.com (#7574)
+        /**
+         * Prevent users from choosing untangle.com (#7574)
+         */
         if ( "untangle.com".equals(networkSettings.getDomainName()) ) {
             throw new RuntimeException( "untangle.com is not an allowed domain name." );
         }
-        
+
+        /**
+         * Check that there are no routes that conflict with interface address or aliases
+         * Check that there are no redundant routes
+         */
+        for ( StaticRoute route : networkSettings.getStaticRoutes() ) {
+            if ( route.getNetwork() == null )
+                continue;
+            if ( route.getPrefix() == null )
+                continue;
+
+            /**
+             * Check other routes
+             */
+            for ( StaticRoute route2 : networkSettings.getStaticRoutes() ) {
+                if ( route.getNetwork() == null )
+                    continue;
+                if ( route.getPrefix() == null )
+                    continue;
+                if ( route.getRuleId() == route2.getRuleId() )
+                    continue;
+
+                IPMaskedAddress maskedAddr1 = new IPMaskedAddress( route.getNetwork(), route.getPrefix() );
+                IPMaskedAddress maskedAddr2 = new IPMaskedAddress( route2.getNetwork(), route2.getPrefix() );;
+                
+                if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+                    throw new RuntimeException( route.getDescription() + " & " + route2.getDescription() + " route conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
+                }
+                
+            }
+            
+            /**
+             * Check interface addresses and aliases
+             */
+            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                    continue;
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                    continue;
+                if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                    continue;
+                if ( intf.getV4StaticAddress() == null || intf.getV4StaticPrefix() == null )
+                    continue;
+                
+                /**
+                 * check intf1 against intf static address and all aliases
+                 */
+                IPMaskedAddress maskedAddr1 = new IPMaskedAddress( route.getNetwork(), route.getPrefix() );
+                IPMaskedAddress maskedAddr2;
+                
+                maskedAddr2 = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
+                if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+                    throw new RuntimeException( route.getDescription() + " & " + intf.getName() + " route & address conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
+                }
+                for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
+                    maskedAddr2 = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                    if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+                        throw new RuntimeException( route.getDescription() + " & " + intf.getName() + " route & address conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
+                    }
+                }
+            }
+        }
     }
 
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
