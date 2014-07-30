@@ -26,7 +26,7 @@ import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.handler.ScannedMessageResult;
-import com.untangle.node.smtp.handler.SmtpStateMachine;
+import com.untangle.node.smtp.handler.SmtpEventHandler;
 import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
 import com.untangle.node.smtp.mime.MIMEOutputStream;
 import com.untangle.node.smtp.mime.MIMEUtil;
@@ -39,7 +39,7 @@ import com.untangle.node.util.GlobUtil;
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.
  */
-public class VirusSmtpHandler extends SmtpStateMachine implements TemplateTranslator
+public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTranslator
 {
     private static final String MOD_SUB_TEMPLATE = "[VIRUS] $MIMEMessage:SUBJECT$";
 

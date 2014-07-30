@@ -16,7 +16,7 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.http.HttpMethod;
-import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.HttpEventHandler;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
@@ -31,7 +31,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * Virus handler for HTTP.
  */
-class VirusHttpHandler extends HttpStateMachine
+class VirusHttpHandler extends HttpEventHandler
 {
     // make configurable
     private static final int TIMEOUT = 30000;
@@ -62,7 +62,7 @@ class VirusHttpHandler extends HttpStateMachine
         this.node = node;
     }
 
-    // HttpStateMachine methods -----------------------------------------------
+    // HttpEventHandler methods -----------------------------------------------
 
     @Override
     public void handleTCPNewSession( NodeTCPSession session )

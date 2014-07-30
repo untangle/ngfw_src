@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
-import com.untangle.node.ftp.FtpStateMachine;
+import com.untangle.node.ftp.FtpEventHandler;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.EndMarkerToken;
 import com.untangle.node.token.FileChunkStreamer;
@@ -38,11 +38,11 @@ import com.untangle.node.util.GlobUtil;
 /**
  * Handler for the FTP protocol.
  */
-class VirusFtpHandler extends FtpStateMachine
+class VirusFtpHandler extends FtpEventHandler
 {
     private final VirusNodeImpl node;
 
-    private final Logger logger = Logger.getLogger(FtpStateMachine.class);
+    private final Logger logger = Logger.getLogger(FtpEventHandler.class);
 
     private class VirusFtpState
     {

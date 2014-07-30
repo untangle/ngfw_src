@@ -3,14 +3,14 @@
  */
 package com.untangle.node.ips;
 
-import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.HttpEventHandler;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.ChunkToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-class IpsHttpHandler extends HttpStateMachine {
+class IpsHttpHandler extends HttpEventHandler {
 
     private IpsDetectionEngine engine;
 

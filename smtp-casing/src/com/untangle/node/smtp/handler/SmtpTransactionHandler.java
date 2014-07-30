@@ -43,7 +43,7 @@ public class SmtpTransactionHandler
         DROP, PASS, TEMPORARILY_REJECT
     };
 
-    private static final Logger logger = Logger.getLogger(SmtpStateMachine.class);
+    private static final Logger logger = Logger.getLogger(SmtpEventHandler.class);
 
     private static final String RESP_TXT_354 = "Start mail input; end with <CRLF>.<CRLF>";
 
@@ -98,7 +98,7 @@ public class SmtpTransactionHandler
         return tx;
     }
 
-    public void handleRSETCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine )
+    public void handleRSETCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine )
     {
 
         logReceivedToken(command);
@@ -121,7 +121,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, List<Response> immediateActions )
+    public void handleCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(command);
 
@@ -144,7 +144,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    private void handleMAILOrRCPTCommand( NodeTCPSession session, Command command, SmtpStateMachine stateMachine, ResponseCompletion compl )
+    private void handleMAILOrRCPTCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine, ResponseCompletion compl )
     {
 
         logReceivedToken(command);
@@ -164,7 +164,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleMAILCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine )
+    public void handleMAILCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().fromRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
@@ -179,7 +179,7 @@ public class SmtpTransactionHandler
         });
     }
 
-    public void handleRCPTCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpStateMachine stateMachine )
+    public void handleRCPTCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().toRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
@@ -194,7 +194,7 @@ public class SmtpTransactionHandler
         });
     }
 
-    public void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
+    public void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
@@ -205,14 +205,14 @@ public class SmtpTransactionHandler
         handleMIMEChunkToken( session, true, false, null, stateMachine, immediateActions );
     }
 
-    public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
+    public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
         handleMIMEChunkToken( session, false, token.isLast(), token, stateMachine, immediateActions );
     }
 
-    public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpStateMachine stateMachine, List<Response> immediateActions )
+    public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
 
         logReceivedToken(token);
@@ -247,7 +247,7 @@ public class SmtpTransactionHandler
     private void handleMIMEChunkToken( final NodeTCPSession session,
                                   boolean isFirst, boolean isLast,
                                   Token token,
-                                  final SmtpStateMachine stateMachine,
+                                  final SmtpEventHandler stateMachine,
                                   List<Response> immediateActions )
     {
         ContinuedMIMEToken continuedToken = null;
@@ -496,7 +496,7 @@ public class SmtpTransactionHandler
      * @param stateMachine
      * @param resp
      */
-    private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpStateMachine stateMachine, Response resp )
+    private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpEventHandler stateMachine, Response resp )
     {
         logReceivedResponse(resp);
         txLog.add("Response to DATA command was " + resp.getCode());
@@ -598,7 +598,7 @@ public class SmtpTransactionHandler
      * Returns PASS if we should pass. If there is a parsing error, this also returns PASS. If the message was changed,
      * it'll just be picked-up implicitly.
      */
-    private BlockOrPassResult evaluateMessage( NodeTCPSession session, boolean canModify, SmtpStateMachine stateMachine)
+    private BlockOrPassResult evaluateMessage( NodeTCPSession session, boolean canModify, SmtpEventHandler stateMachine)
     {
         if (msg == null) {
             msg = accumulator.parseBody(messageInfo);
@@ -622,7 +622,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleMailTransmissionContinuation( NodeTCPSession session, Response resp, SmtpStateMachine stateMachine )
+    public void handleMailTransmissionContinuation( NodeTCPSession session, Response resp, SmtpEventHandler stateMachine )
     {
         logReceivedResponse(resp);
         txLog.add("Response to mail transmission command was " + resp.getCode());
@@ -638,7 +638,7 @@ public class SmtpTransactionHandler
         session.sendObjectToClient( resp );
     }
 
-    public void handleMsgIncompleteDataContinuation( NodeTCPSession session, Response resp, SmtpStateMachine stateMachine, BufTxState nextStateIfPositive )
+    public void handleMsgIncompleteDataContinuation( NodeTCPSession session, Response resp, SmtpEventHandler stateMachine, BufTxState nextStateIfPositive )
     {
 
         logReceivedResponse(resp);

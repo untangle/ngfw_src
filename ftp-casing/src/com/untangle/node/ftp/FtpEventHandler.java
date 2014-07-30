@@ -21,7 +21,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  * State machine for FTP traffic.
  *
  */
-public abstract class FtpStateMachine extends AbstractEventHandler
+public abstract class FtpEventHandler extends AbstractEventHandler
 {
     /**
      * Used to obtain the control session that opened the data session on the
@@ -29,7 +29,7 @@ public abstract class FtpStateMachine extends AbstractEventHandler
      */
     private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<InetSocketAddress, Long>();
     
-    protected FtpStateMachine() {}
+    protected FtpEventHandler() {}
 
     protected void doCommand( NodeTCPSession session, FtpCommand command )
     {
@@ -46,17 +46,17 @@ public abstract class FtpStateMachine extends AbstractEventHandler
         session.sendObjectToServer( chunk );
     }
 
-    protected void doClientDataEnd( NodeTCPSession session ) { }
-
     protected void doServerData( NodeTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToClient( chunk );
     }
 
+    protected void doClientDataEnd( NodeTCPSession session ) { }
+    
     protected void doServerDataEnd( NodeTCPSession session ) { }
 
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public final void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -64,47 +64,6 @@ public abstract class FtpStateMachine extends AbstractEventHandler
             session.release();
         }
 
-        handleServerToken( session, token );
-        return;
-    }
-
-    @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
-    {
-        Token token = (Token) obj;
-        if (token instanceof ReleaseToken) {
-            handleTCPFinalized( session );
-            session.release();
-        }
-
-        handleClientToken( session, token );
-        return;
-    }
-    
-    public void handleClientToken( NodeTCPSession session, Token token )
-    {
-        Fitting clientFitting = session.pipelineConnector().getInputFitting();
-
-        if (Fitting.FTP_CTL_TOKENS == clientFitting) {
-            doCommand( session, (FtpCommand)token );
-            return;
-        } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
-            if (token instanceof EndMarkerToken) {
-                session.sendObjectToServer( EndMarkerToken.MARKER );
-                return;
-            } else if (token instanceof ChunkToken) {
-                doClientData( session, (ChunkToken)token );
-                return;
-            } else {
-                throw new RuntimeException("bad token: " + token);
-            }
-        } else {
-            throw new IllegalStateException("bad fitting: " + clientFitting);
-        }
-    }
-
-    public void handleServerToken( NodeTCPSession session, Token token )
-    {
         Fitting serverFitting = session.pipelineConnector().getOutputFitting();
 
         if (Fitting.FTP_CTL_TOKENS == serverFitting) {
@@ -126,13 +85,42 @@ public abstract class FtpStateMachine extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public final void handleTCPClientObject( NodeTCPSession session, Object obj )
+    {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
+
+        Fitting clientFitting = session.pipelineConnector().getInputFitting();
+
+        if (Fitting.FTP_CTL_TOKENS == clientFitting) {
+            doCommand( session, (FtpCommand)token );
+            return;
+        } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
+            if (token instanceof EndMarkerToken) {
+                session.sendObjectToServer( EndMarkerToken.MARKER );
+                return;
+            } else if (token instanceof ChunkToken) {
+                doClientData( session, (ChunkToken)token );
+                return;
+            } else {
+                throw new RuntimeException("bad token: " + token);
+            }
+        } else {
+            throw new IllegalStateException("bad fitting: " + clientFitting);
+        }
+    }
+    
+    @Override
+    public final void handleTCPClientFIN( NodeTCPSession session )
     {
         doClientDataEnd( session );
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public final void handleTCPServerFIN( NodeTCPSession session )
     {
         doServerDataEnd( session );
     }

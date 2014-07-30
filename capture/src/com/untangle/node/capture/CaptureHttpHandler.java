@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.HttpEventHandler;
 import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
@@ -22,7 +22,7 @@ import com.untangle.node.token.ChunkToken;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
-public class CaptureHttpHandler extends HttpStateMachine
+public class CaptureHttpHandler extends HttpEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptureNodeImpl node;
@@ -35,7 +35,7 @@ public class CaptureHttpHandler extends HttpStateMachine
         this.node = node;
     }
 
-    // HttpStateMachine methods -----------------------------------------------
+    // HttpEventHandler methods -----------------------------------------------
 
     @Override
     protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )

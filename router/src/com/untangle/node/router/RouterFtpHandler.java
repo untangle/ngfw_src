@@ -12,13 +12,13 @@ import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpEpsvReply;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
-import com.untangle.node.ftp.FtpStateMachine;
+import com.untangle.node.ftp.FtpEventHandler;
 import com.untangle.node.token.Token;
 
 /**
  * This handles FTP and inserts the necessary port forwards and rewrites the PORT/PASV commands so that the necessary connection can be made
  */
-class RouterFtpHandler extends FtpStateMachine
+class RouterFtpHandler extends FtpEventHandler
 {
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl node;

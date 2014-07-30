@@ -32,7 +32,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
-public abstract class SmtpStateMachine extends AbstractEventHandler
+public abstract class SmtpEventHandler extends AbstractEventHandler
 {
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
@@ -45,7 +45,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
                                                                  "QUIT", "RSET", "VRFY", "NOOP", "SIZE", "DSN", "DELIVERBY",
                                                                  "AUTH", "AUTH=LOGIN", "OK", "STARTTLS" };
 
-    private final Logger logger = Logger.getLogger(SmtpStateMachine.class);
+    private final Logger logger = Logger.getLogger(SmtpEventHandler.class);
 
     private SmtpTransactionHandler smtpTransactionHandler;
 
@@ -70,7 +70,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
         protected List<OutstandingRequest> outstandingRequests;
     }
 
-    public SmtpStateMachine( )
+    public SmtpEventHandler( )
     {
     }
 
@@ -90,6 +90,9 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
      */
     protected abstract long getMaxServerWait( NodeTCPSession session );
 
+    /**
+     * Return true if scanning is enabled for this session
+     */
     protected abstract boolean getScanningEnabled( NodeTCPSession session );
 
     /**
@@ -146,7 +149,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPNewSessionRequest( TCPNewSessionRequest tsr )
+    public final void handleTCPNewSessionRequest( TCPNewSessionRequest tsr )
     {
         SmtpSessionState state = new SmtpSessionState();
 
@@ -172,7 +175,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public final void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -180,25 +183,6 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
             session.release();
         }
 
-        handleServerToken( session, token );
-        return;
-    }
-
-    @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
-    {
-        Token token = (Token) obj;
-        if (token instanceof ReleaseToken) {
-            handleTCPFinalized( session );
-            session.release();
-        }
-
-        handleClientToken( session, token );
-        return;
-    }
-        
-    public void handleClientToken( NodeTCPSession session, Token token )
-    {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         updateTimestamps( state );
 
@@ -225,11 +209,17 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
             logger.debug("[handleClientToken] returning with (" + queuedClientTokens.size() + " queued tokens)");
         }
         updateTimestamps( state );
-        return;
     }
 
-    public void handleServerToken( NodeTCPSession session, Token token )
+    @Override
+    public final void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
+        Token token = (Token) obj;
+        if (token instanceof ReleaseToken) {
+            handleTCPFinalized( session );
+            session.release();
+        }
+
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         updateTimestamps( state );
 
@@ -254,6 +244,7 @@ public abstract class SmtpStateMachine extends AbstractEventHandler
             logger.debug("[handleServerToken] returning with (" + queuedClientTokens.size() + " queued tokens)");
         }
         updateTimestamps( state );
+
         return;
     }
 

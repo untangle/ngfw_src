@@ -5,7 +5,7 @@ package com.untangle.node.webfilter;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.http.HttpStateMachine;
+import com.untangle.node.http.HttpEventHandler;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.ChunkToken;
@@ -16,7 +16,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * Blocks HTTP traffic that is on an active block list.
  */
-public class WebFilterHandler extends HttpStateMachine
+public class WebFilterHandler extends HttpEventHandler
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
@@ -29,7 +29,7 @@ public class WebFilterHandler extends HttpStateMachine
         this.node = node;
     }
 
-    // HttpStateMachine methods -----------------------------------------------
+    // HttpEventHandler methods -----------------------------------------------
 
     @Override
     protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )

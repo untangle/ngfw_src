@@ -28,7 +28,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
  * state.
  *
  */
-public abstract class HttpStateMachine extends AbstractEventHandler
+public abstract class HttpEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -92,7 +92,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
         protected boolean responsePersistent;
     }
 
-    protected HttpStateMachine()
+    protected HttpEventHandler()
     {
         super();
     }
@@ -262,6 +262,7 @@ public abstract class HttpStateMachine extends AbstractEventHandler
         state.responseResponse = response;
     }
 
+    @Override
     public void handleTCPNewSession( NodeTCPSession session )
     {
         HttpSessionState state = new HttpSessionState();
@@ -278,8 +279,15 @@ public abstract class HttpStateMachine extends AbstractEventHandler
             session.release();
         }
 
-        handleServerToken( session, token );
-        return;
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        state.task = Task.RESPONSE;
+        try {
+            doHandleServerToken( session, token );
+        } finally {
+            state.task = Task.NONE;
+            state.preStreamer = null;
+        }
     }
 
     @Override
@@ -292,12 +300,6 @@ public abstract class HttpStateMachine extends AbstractEventHandler
             session.release();
         }
 
-        handleClientToken( session, token );
-        return;
-    }
-    
-    public void handleClientToken( NodeTCPSession session, Token token )
-    {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
         state.task = Task.REQUEST;
@@ -311,25 +313,8 @@ public abstract class HttpStateMachine extends AbstractEventHandler
             state.task = Task.NONE;
             state.preStreamer = null;
         }
-
-        return;
     }
-
-    public void handleServerToken( NodeTCPSession session, Token token )
-    {
-        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
-
-        state.task = Task.RESPONSE;
-        try {
-            doHandleServerToken( session, token);
-        } finally {
-            state.task = Task.NONE;
-            state.preStreamer = null;
-        }
-
-        return;
-    }
-
+    
     public void releaseFlush( NodeTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );

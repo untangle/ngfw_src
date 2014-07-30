@@ -28,7 +28,7 @@ import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
 import com.untangle.node.smtp.handler.ScannedMessageResult;
-import com.untangle.node.smtp.handler.SmtpStateMachine;
+import com.untangle.node.smtp.handler.SmtpEventHandler;
 import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
 import com.untangle.node.smtp.mime.MIMEOutputStream;
 import com.untangle.node.smtp.mime.MIMEUtil;
@@ -42,7 +42,7 @@ import com.untangle.uvm.vnet.NodeTCPSession;
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.
  */
-public class SpamSmtpHandler extends SmtpStateMachine implements TemplateTranslator
+public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTranslator
 {
     private final Logger logger = Logger.getLogger(SpamSmtpHandler.class);
 

@@ -180,7 +180,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
             /**
              * Keep the correlation between the data session and the control session that opened it
              */
-            FtpStateMachine.addDataSocket(socketAddress, session.getSessionId());
+            FtpEventHandler.addDataSocket(socketAddress, session.getSessionId());
         }
 
         if ( clientSide )
@@ -191,7 +191,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
 
     public void endSession( NodeTCPSession session )
     {
-        FtpStateMachine.removeDataSockets(session.getSessionId());
+        FtpEventHandler.removeDataSockets(session.getSessionId());
         if ( clientSide )
             session.shutdownClient();
         else
