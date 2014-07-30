@@ -11,7 +11,7 @@ import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
-import com.untangle.node.util.NonceFactory;
+import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.NodeSettings;

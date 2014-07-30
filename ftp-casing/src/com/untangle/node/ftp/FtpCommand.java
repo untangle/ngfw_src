@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.Token;
-import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.util.AsciiCharBuffer;
 
 /**
  * FTP command.

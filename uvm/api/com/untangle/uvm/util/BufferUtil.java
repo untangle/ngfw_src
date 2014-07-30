@@ -1,10 +1,10 @@
 /**
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.LF;
 
 import java.io.IOException;
 import java.io.OutputStream;

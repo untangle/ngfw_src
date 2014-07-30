@@ -26,7 +26,7 @@ import com.untangle.uvm.node.GroupMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.UrlMatcher;
 import com.untangle.uvm.node.DirectoryConnector;
-import com.untangle.node.util.GlobUtil;
+import com.untangle.uvm.util.GlobUtil;
 
 /**
  * This is a matching criteria for a generic Rule

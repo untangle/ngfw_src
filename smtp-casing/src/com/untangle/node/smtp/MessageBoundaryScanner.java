@@ -3,14 +3,14 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.Ascii.COLON;
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.CRLF_BA;
-import static com.untangle.node.util.Ascii.DOT;
-import static com.untangle.node.util.Ascii.HTAB;
-import static com.untangle.node.util.Ascii.LF;
-import static com.untangle.node.util.BufferUtil.findCrLf;
-import static com.untangle.node.util.BufferUtil.findPattern;
+import static com.untangle.uvm.util.Ascii.COLON;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.CRLF_BA;
+import static com.untangle.uvm.util.Ascii.DOT;
+import static com.untangle.uvm.util.Ascii.HTAB;
+import static com.untangle.uvm.util.Ascii.LF;
+import static com.untangle.uvm.util.BufferUtil.findCrLf;
+import static com.untangle.uvm.util.BufferUtil.findPattern;
 
 import java.nio.ByteBuffer;
 

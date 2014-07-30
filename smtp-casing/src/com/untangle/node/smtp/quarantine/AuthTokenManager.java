@@ -9,7 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.Pair;
+import com.untangle.uvm.util.Pair;
 
 /**
  * Class responsible for wrapping/unwrapping Authentication Tokens. Not based on any strong crypto - just keeping it

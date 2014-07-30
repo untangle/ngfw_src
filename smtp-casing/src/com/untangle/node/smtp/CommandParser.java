@@ -5,8 +5,8 @@ package com.untangle.node.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.util.ASCIIUtil;
-import com.untangle.node.util.BufferUtil;
+import com.untangle.uvm.util.AsciiUtil;
+import com.untangle.uvm.util.BufferUtil;
 
 /**
  * Because of classloader issues this class is public. However, it should really not be used other than in the casing.
@@ -72,12 +72,12 @@ public class CommandParser
     {
         int index = BufferUtil.findCrLf(buf);
         if(index < 0) {
-            throw new RuntimeException("No Line terminator in \"" + ASCIIUtil.bbToString(buf) + "\"");
+            throw new RuntimeException("No Line terminator in \"" + AsciiUtil.bbToString(buf) + "\"");
         }
         ByteBuffer dup = buf.duplicate();
         dup.limit(index);
         buf.position(index+2);
-        return ASCIIUtil.bbToString(dup);
+        return AsciiUtil.bbToString(dup);
     }
 
     /**

@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
 import com.untangle.uvm.vnet.Token;
-import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.util.AsciiCharBuffer;
 
 /**
  * FTP server reply to a command.

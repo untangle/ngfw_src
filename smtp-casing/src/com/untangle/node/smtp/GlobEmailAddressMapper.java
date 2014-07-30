@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.node.util.Pair;
+import com.untangle.uvm.util.Pair;
 
 /**
  * Maps one email address to another. Understands limited wildcarding, where "*" maps (in regex land) to ".*". <br>

@@ -24,7 +24,7 @@ import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.FileChunkStreamer;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
-import com.untangle.node.util.GlobUtil;
+import com.untangle.uvm.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.vnet.NodeTCPSession;
 

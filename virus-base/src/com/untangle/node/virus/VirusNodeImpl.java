@@ -3,7 +3,7 @@
  */
 package com.untangle.node.virus;
 
-import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.uvm.util.Ascii.CRLF;
 
 import java.net.InetAddress;
 import java.util.Date;

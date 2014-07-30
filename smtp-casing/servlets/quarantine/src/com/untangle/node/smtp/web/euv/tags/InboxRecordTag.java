@@ -9,7 +9,7 @@ import java.util.Date;
 import javax.servlet.jsp.PageContext;
 
 import com.untangle.node.smtp.quarantine.InboxRecord;
-import com.untangle.node.util.JSEscape;
+import com.untangle.uvm.util.JSEscape;
 
 
 /**

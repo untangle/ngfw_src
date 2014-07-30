@@ -3,11 +3,11 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.CRLF_BA;
-import static com.untangle.node.util.Ascii.DOT;
-import static com.untangle.node.util.Ascii.LF;
-import static com.untangle.node.util.Ascii.SP;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.CRLF_BA;
+import static com.untangle.uvm.util.Ascii.DOT;
+import static com.untangle.uvm.util.Ascii.LF;
+import static com.untangle.uvm.util.Ascii.SP;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;

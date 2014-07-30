@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.node.util.GlobUtil;
+import com.untangle.uvm.util.GlobUtil;
 
 public class UserMatcher
 {

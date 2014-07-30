@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp.mime;
 
-import static com.untangle.node.util.Ascii.CRLF_BA;
+import static com.untangle.uvm.util.Ascii.CRLF_BA;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

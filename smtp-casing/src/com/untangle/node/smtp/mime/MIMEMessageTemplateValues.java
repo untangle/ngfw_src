@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp.mime;
 
-import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.uvm.util.Ascii.CRLF;
 
 import java.util.Enumeration;
 import java.util.List;
@@ -21,7 +21,7 @@ import com.untangle.uvm.node.TemplateValues;
  * Class representing a MIMEMessage. Adds the strongly-typed {@link #getMMHeaders MIMEMessageHeaders} with convienence
  * members for a top-level message (such as recipient and subject manipulation). <br>
  * <br>
- * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}. The variable syntax for
+ * This class also implements {@link com.untangle.uvm.util.TemplateValues TemplateValues}. The variable syntax for
  * accessing elements of the MIMEMessage is based on <code>MIMEMessage:&lt;name></code> where <code>name</code> can be
  * any one of the following:
  * <ul>

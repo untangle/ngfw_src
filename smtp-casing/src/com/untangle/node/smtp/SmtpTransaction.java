@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.uvm.util.Ascii.CRLF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import com.untangle.uvm.node.TemplateValues;
  * (recipients and sender) as "provisional" until they are "confirmed". Confirmed means the server accepted, provisional
  * means the request was issued by client yet final disposition is unknown. <br>
  * <br>
- * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}. Valid key names which can be
+ * This class also implements {@link com.untangle.uvm.util.TemplateValues TemplateValues}. Valid key names which can be
  * derefferenced from an SmtpTransaction begin with the literal <code>$SMTPTransaction:</code> followed by any of the
  * following tokens:
  * <ul>

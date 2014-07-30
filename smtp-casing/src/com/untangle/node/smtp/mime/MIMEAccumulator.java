@@ -150,7 +150,7 @@ public class MIMEAccumulator
          */
         public void superDebugMe(Logger logger, String prefix)
         {
-            String body = getData() == null ? "<null>" : com.untangle.node.util.ASCIIUtil.bbToString(getData());
+            String body = getData() == null ? "<null>" : com.untangle.uvm.util.AsciiUtil.bbToString(getData());
             logger.debug(prefix + " " + toString() + " \"" + body + "\"");
         }
 

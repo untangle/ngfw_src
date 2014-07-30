@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.UriUtil;
+import com.untangle.uvm.util.UriUtil;
 import com.untangle.uvm.node.SessionEvent;
 
 /**

@@ -34,7 +34,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.node.util.GlobUtil;
+import com.untangle.uvm.util.GlobUtil;
 
 /**
  * Protocol Handler which is called-back as messages are found which are candidates for Virus Scanning.

@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 /**
  * Wraps a byte array to create a <code>CharSequence</code>.

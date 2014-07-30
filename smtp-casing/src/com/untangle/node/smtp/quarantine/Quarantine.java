@@ -28,7 +28,7 @@ import com.untangle.node.smtp.SmtpNodeSettings;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.smtp.quarantine.store.InboxSummary;
 import com.untangle.node.smtp.quarantine.store.QuarantineStore;
-import com.untangle.node.util.Pair;
+import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.util.I18nUtil;

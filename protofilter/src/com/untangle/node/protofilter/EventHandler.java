@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;

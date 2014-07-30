@@ -15,7 +15,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.util.I18nUtil;
 
 /**

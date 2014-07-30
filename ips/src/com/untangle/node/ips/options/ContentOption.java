@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.ips.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
-import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.node.util.AsciiCharBufferCharacterIterator;
+import com.untangle.uvm.util.AsciiCharBuffer;
+import com.untangle.uvm.util.AsciiCharBufferCharacterIterator;
 
 /**
  * This class matches the content option found in snort based rule signatures.

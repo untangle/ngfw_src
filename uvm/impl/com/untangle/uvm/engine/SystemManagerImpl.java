@@ -23,7 +23,7 @@ import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.util.IOUtil;
 
 /**
  * The Manager for system-related settings

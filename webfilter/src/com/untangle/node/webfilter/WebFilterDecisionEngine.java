@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.UrlMatchingUtil;
+import com.untangle.uvm.util.UrlMatchingUtil;
 
 /**
  * This class has the Web Filter Lite (webfilter) specifics for the decision engine

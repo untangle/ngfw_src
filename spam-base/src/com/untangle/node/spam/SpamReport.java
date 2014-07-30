@@ -3,7 +3,7 @@
  */
 package com.untangle.node.spam;
 
-import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.uvm.util.Ascii.CRLF;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +18,7 @@ import com.untangle.uvm.node.TemplateValues;
 /**
  * Class to encapsulate a SPAM report. <br>
  * <br>
- * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}. Valid key names which can be
+ * This class also implements {@link com.untangle.uvm.util.TemplateValues TemplateValues}. Valid key names which can be
  * derefferenced from a SpamReport begin with the literal <code>SPAMReport:</code> followed by any of the following
  * tokens:
  * <ul>

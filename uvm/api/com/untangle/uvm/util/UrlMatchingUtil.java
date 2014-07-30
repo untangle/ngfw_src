@@ -1,4 +1,4 @@
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 import java.net.InetAddress;
 import java.util.List;

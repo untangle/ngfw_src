@@ -18,8 +18,8 @@ import com.untangle.node.smtp.quarantine.InboxIndex;
 import com.untangle.node.smtp.quarantine.InboxRecord;
 import com.untangle.node.smtp.quarantine.MailSummary;
 import com.untangle.node.smtp.quarantine.QuarantineEjectionHandler;
-import com.untangle.node.util.IOUtil;
-import com.untangle.node.util.Pair;
+import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
 
 /**

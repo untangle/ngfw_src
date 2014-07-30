@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.BufferUtil.findCrLf;
+import static com.untangle.uvm.util.BufferUtil.findCrLf;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,7 +21,7 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.node.util.ASCIIUtil;
+import com.untangle.uvm.util.AsciiUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -234,7 +234,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
                         // Position the "real" buffer beyond the bad point.
                         buf.position(dup.position());
 
-                        logger.warn("Exception parsing command line \"" + ASCIIUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
+                        logger.warn("Exception parsing command line \"" + AsciiUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
 
                         cmd = new UnparsableCommand(badBuf);
 
@@ -568,7 +568,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         CommandParseErrorResponseCallback( NodeTCPSession session, ByteBuffer bufWithOffendingLine )
         {
             this.session = session;
-            offendingCommand = ASCIIUtil.bbToString(bufWithOffendingLine);
+            offendingCommand = AsciiUtil.bbToString(bufWithOffendingLine);
         }
 
         public void response(int code)

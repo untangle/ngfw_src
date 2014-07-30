@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.uvm.util.AsciiUtil.bbToString;
 
 import java.nio.ByteBuffer;
 

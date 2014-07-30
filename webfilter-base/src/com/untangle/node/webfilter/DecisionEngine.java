@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.HeaderToken;
-import com.untangle.node.util.UrlMatchingUtil;
+import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.util.I18nUtil;

@@ -3,7 +3,7 @@
  */
 package com.untangle.node.spam;
 
-import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.uvm.util.Ascii.CRLF;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

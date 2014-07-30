@@ -3,8 +3,8 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.ASCIIUtil.bbToString;
-import static com.untangle.node.util.BufferUtil.findCrLf;
+import static com.untangle.uvm.util.AsciiUtil.bbToString;
+import static com.untangle.uvm.util.BufferUtil.findCrLf;
 
 import java.nio.ByteBuffer;
 
@@ -15,7 +15,7 @@ import com.untangle.node.smtp.NotAnSMTPResponseLineException;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
 import com.untangle.node.smtp.sasl.SASLObserver;
-import com.untangle.node.util.ByteBufferBuilder;
+import com.untangle.uvm.util.ByteBufferBuilder;
 
 /**
  * Class which acts to watch a SASL interaction, attempting to detect if the SASL exchange will result in a session with

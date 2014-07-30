@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 

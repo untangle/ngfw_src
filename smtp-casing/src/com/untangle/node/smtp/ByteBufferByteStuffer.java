@@ -3,9 +3,9 @@
  */
 package com.untangle.node.smtp;
 
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.DOT;
-import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.DOT;
+import static com.untangle.uvm.util.Ascii.LF;
 
 import java.nio.ByteBuffer;
 

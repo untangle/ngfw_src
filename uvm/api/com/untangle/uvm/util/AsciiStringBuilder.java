@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 /**
  * Modeled after the Java <code>StringBuilder</code> class,
@@ -15,7 +15,7 @@ package com.untangle.node.util;
  * may be called as a test.  Note that when used within the known
  * Untangle Platform, it should never be a problem.
  */
-public class ASCIIStringBuilder {
+public class AsciiStringBuilder {
 
     private static final byte[] NULL_BYTES =
         new byte[] {'n', 'u', 'l', 'l'};
@@ -43,7 +43,7 @@ public class ASCIIStringBuilder {
      * Construct a new instance with the default
      * initial capacity.
      */
-    public ASCIIStringBuilder() {
+    public AsciiStringBuilder() {
         this(16);//Magic number 16 taken from Java sources
     }
 
@@ -51,7 +51,7 @@ public class ASCIIStringBuilder {
      * Construct a new instance with the
      * given initial internal capacity.
      */
-    public ASCIIStringBuilder(int initCapacity) {
+    public AsciiStringBuilder(int initCapacity) {
         m_bytes = new byte[initCapacity];
     }
 
@@ -65,7 +65,7 @@ public class ASCIIStringBuilder {
      * @param str initial string
      *
      */
-    public ASCIIStringBuilder(String str) {
+    public AsciiStringBuilder(String str) {
         m_bytes = new byte[str.length() + 16];
         append(str);
     }
@@ -80,7 +80,7 @@ public class ASCIIStringBuilder {
      * @param len the length
      *
      */
-    public ASCIIStringBuilder(byte[] bytes,
+    public AsciiStringBuilder(byte[] bytes,
                               int start,
                               int len) {
         m_bytes = new byte[len + 16];
@@ -94,7 +94,7 @@ public class ASCIIStringBuilder {
      * @param bytes initial bytes
      *
      */
-    public ASCIIStringBuilder(byte[] bytes) {
+    public AsciiStringBuilder(byte[] bytes) {
         this(bytes, 0, bytes.length);
     }
 
@@ -108,7 +108,7 @@ public class ASCIIStringBuilder {
      *
      * @return this
      */
-    public ASCIIStringBuilder append(String str) {
+    public AsciiStringBuilder append(String str) {
         byte[] bytes = null;
         if(str == null) {
             bytes = NULL_BYTES;
@@ -126,7 +126,7 @@ public class ASCIIStringBuilder {
      *
      * @return this
      */
-    public ASCIIStringBuilder append(byte[] bytes) {
+    public AsciiStringBuilder append(byte[] bytes) {
         return append(bytes, 0, bytes.length);
     }
 
@@ -139,7 +139,7 @@ public class ASCIIStringBuilder {
      *
      * @return this
      */
-    public ASCIIStringBuilder append(byte[] bytes,
+    public AsciiStringBuilder append(byte[] bytes,
                                      int start,
                                      int len) {
         ensure(len);
@@ -155,7 +155,7 @@ public class ASCIIStringBuilder {
      *
      * @return this
      */
-    public ASCIIStringBuilder append(byte b) {
+    public AsciiStringBuilder append(byte b) {
         ensure(1);
         m_bytes[m_pos++] = b;
         return this;
@@ -168,7 +168,7 @@ public class ASCIIStringBuilder {
      *
      * @return this
      */
-    public ASCIIStringBuilder append(char c) {
+    public AsciiStringBuilder append(char c) {
         return append((byte) c);
     }
 

@@ -3,11 +3,11 @@
  */
 package com.untangle.node.smtp.mime;
 
-import static com.untangle.node.util.ASCIIUtil.isEOL;
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.CRLF_BA;
-import static com.untangle.node.util.Ascii.DASH;
-import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.uvm.util.AsciiUtil.isEOL;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.CRLF_BA;
+import static com.untangle.uvm.util.Ascii.DASH;
+import static com.untangle.uvm.util.Ascii.LF;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,8 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.ByteBufferBuilder;
-import com.untangle.node.util.DynPushbackInputStream;
+import com.untangle.uvm.util.ByteBufferBuilder;
+import com.untangle.uvm.util.DynPushbackInputStream;
 
 /**
  * Specialized Stream with methods useful for parsing MIME messages. It defines a "line" as being terminated by CRLF,

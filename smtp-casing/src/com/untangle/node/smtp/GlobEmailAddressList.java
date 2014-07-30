@@ -6,7 +6,7 @@ package com.untangle.node.smtp;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.node.util.Pair;
+import com.untangle.uvm.util.Pair;
 
 /**
  * List of email addresses, understanding a glob (wildcard) syntax <br>

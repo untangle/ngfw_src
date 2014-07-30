@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 /**
  * I found myself creating many little classes (structs), to associate

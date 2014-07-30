@@ -3,12 +3,12 @@
  */
 package com.untangle.node.smtp.mime;
 
-import static com.untangle.node.util.ASCIIUtil.bbToString;
-import static com.untangle.node.util.ASCIIUtil.isEOL;
-import static com.untangle.node.util.ASCIIUtil.isLWS;
-import static com.untangle.node.util.Ascii.SP;
-import static com.untangle.node.util.BufferUtil.endsWith;
-import static com.untangle.node.util.BufferUtil.startsWith;
+import static com.untangle.uvm.util.AsciiUtil.bbToString;
+import static com.untangle.uvm.util.AsciiUtil.isEOL;
+import static com.untangle.uvm.util.AsciiUtil.isLWS;
+import static com.untangle.uvm.util.Ascii.SP;
+import static com.untangle.uvm.util.BufferUtil.endsWith;
+import static com.untangle.uvm.util.BufferUtil.startsWith;
 
 import java.nio.ByteBuffer;
 

@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 import java.io.UnsupportedEncodingException;
 

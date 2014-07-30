@@ -1,12 +1,12 @@
 /**
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
-import static com.untangle.node.util.Ascii.CR;
-import static com.untangle.node.util.Ascii.HTAB;
-import static com.untangle.node.util.Ascii.LF;
-import static com.untangle.node.util.Ascii.SP;
+import static com.untangle.uvm.util.Ascii.CR;
+import static com.untangle.uvm.util.Ascii.HTAB;
+import static com.untangle.uvm.util.Ascii.LF;
+import static com.untangle.uvm.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
 
@@ -31,12 +31,12 @@ import java.nio.ByteBuffer;
  * We also use the term "EOF" ("End of file") liberally.  When dealing
  * with A ByteBuffer, EOF means "the end of the buffer".
  */
-public final class ASCIIUtil {
+public final class AsciiUtil {
 
     private static final byte UPPER_LOWER_DIFF = 0x20;
 
     //Ensure this is only a collection of functions
-    private ASCIIUtil() {}
+    private AsciiUtil() {}
 
 
     /**
@@ -65,7 +65,7 @@ public final class ASCIIUtil {
      */
     public static String bbToString(ByteBuffer buf) {
         buf.mark();
-        ASCIIStringBuilder sb = new ASCIIStringBuilder();
+        AsciiStringBuilder sb = new AsciiStringBuilder();
         while(buf.hasRemaining()) {
             sb.append(buf.get());
         }
@@ -136,7 +136,7 @@ public final class ASCIIUtil {
                                     boolean isLWSDelim,
                                     boolean returnDelim) {
 
-        ASCIIStringBuilder sb = new ASCIIStringBuilder();
+        AsciiStringBuilder sb = new AsciiStringBuilder();
 
         buf.mark();
         byte b;
@@ -370,7 +370,7 @@ public final class ASCIIUtil {
 
     /**
      * Transfer whitespace from the given buffer
-     * to the ASCIIStringBuilder.  The position
+     * to the AsciiStringBuilder.  The position
      * of the buffer is advanced for all bytes
      * transferred.
      *
@@ -384,7 +384,7 @@ public final class ASCIIUtil {
      *        transfer.
      */
     public static void transferWhitespace(ByteBuffer buf,
-                                          ASCIIStringBuilder sb,
+                                          AsciiStringBuilder sb,
                                           boolean isEOLWhitespace,
                                           boolean isLWSWhitespace) {
 

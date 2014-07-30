@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.util;
+package com.untangle.uvm.util;
 
 /**
  * Class to escape Strings which may contain JavaScript (to avoid
