@@ -11,15 +11,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.JarURLConnection;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -30,11 +36,14 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.ValveBase;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ResourceAttributes;
 import org.apache.naming.resources.ProxyDirContext;
@@ -46,7 +55,7 @@ import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
-import com.untangle.uvm.util.AdministrationValve;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -436,6 +445,67 @@ public class TomcatManagerImpl implements TomcatManager
                 wrapped.scan(file);
                 return;
             } 
+        }
+    }
+
+    private class AdministrationValve extends ValveBase
+    {
+        private final Logger logger = Logger.getLogger(getClass());
+
+        public AdministrationValve() { }
+
+        public void invoke( Request request, Response response ) throws IOException, ServletException
+        {
+            if ( !isAccessAllowed( request )) {
+                logger.warn( "The request: " + request + " denied by AdministrationValve." );
+                String msg = administrationDenied();
+                request.setAttribute(TomcatManager.UVM_WEB_MESSAGE_ATTR, msg);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "The request: " + request + " allowed by AdministrationValve." );
+            }
+
+            /* If necessary call the next valve */
+            Valve nextValve = getNext();
+            if ( nextValve != null ) nextValve.invoke( request, response );
+        }
+
+        private String administrationDenied()
+        {
+            Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
+            return I18nUtil.tr("HTTP administration is disabled.", i18n_map);
+        }
+
+        private boolean isAccessAllowed( ServletRequest request )
+        {
+            String address = request.getRemoteAddr();
+            boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
+
+            logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
+
+            /**
+             * Always allow HTTP from 127.0.0.1
+             */
+            try {
+                if (address != null && InetAddress.getByName( address ).isLoopbackAddress())
+                    return true;
+            } catch (UnknownHostException e) {
+                logger.warn( "Unable to parse the internet address: " + address );
+            }
+        
+            /**
+             * Otherwise only allow HTTP if enabled
+             */
+            if (request.getScheme().equals("http")) {
+                if (!isHttpAllowed)
+                    logger.warn("isAccessAllowed( " + request + " ) denied. [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
+                return isHttpAllowed;
+            }
+            else
+                return true; /* https always allowed */
         }
     }
 }

@@ -20,7 +20,6 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;

@@ -8,12 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.untangle.uvm.util.ServletStreamer;
 
 import org.apache.log4j.Logger;
 
@@ -88,9 +89,51 @@ public class Downloader extends HttpServlet
             return;
         }
 
-        ServletStreamer ss = ServletStreamer.getInstance();
+        response.setContentType( type );
 
-        ss.stream( request, response, fileData, downloadFileName, type, length );
+        if ( downloadFileName != null ) {
+            response.setHeader( "Content-Disposition", "attachment; filename=\"" + downloadFileName + "\"" );
+        }
+        if ( length > 0 ) {
+            response.setHeader( "Content-Length", "" + length );
+        }
+
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        OutputStream out = null;
+
+        try {
+            out = response.getOutputStream();
+            bis = new BufferedInputStream( fileData );
+            bos = new BufferedOutputStream( out );
+            byte[] buff = new byte[2048];
+            int bytesRead;
+            while( -1 != ( bytesRead = bis.read( buff, 0, buff.length ))) bos.write( buff, 0, bytesRead );
+        } catch ( Exception e ) {
+            logger.warn( "Error streaming file.", e );
+        } finally {
+            try {
+                if ( bis != null ) bis.close();
+            } catch ( Exception e ) {
+                logger.warn( "Error closing input stream", e );
+            }
+
+            try {
+                if ( bos != null ) bos.close();
+            } catch ( Exception e ) {
+                logger.warn( "Error closing output stream", e );
+            }
+
+            try {
+                if ( out != null ) out.close();
+            } catch ( Exception e ) {
+                logger.warn( "Error closing output stream", e );
+            }
+        }
+
+        // ServletStreamer ss = ServletStreamer.getInstance();
+
+        // ss.stream( request, response, fileData, downloadFileName, type, length );
     }
 
     void rejectFile( HttpServletRequest request, HttpServletResponse response )

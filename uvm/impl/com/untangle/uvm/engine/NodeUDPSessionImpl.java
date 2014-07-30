@@ -14,7 +14,7 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.util.MetaEnv;
+
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeUDPSession;

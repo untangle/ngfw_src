@@ -3,15 +3,18 @@
  */
 package com.untangle.node.spam;
 
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.LoadAvg;
-import com.untangle.uvm.util.MetaEnv;
 
 public final class SpamLoadChecker
 {
     public static final float ALLOW_ANYWAY_CHANCE = 0.05f;
 
+    private static Random rng = new Random();
+    
     private SpamLoadChecker() { }
     
     /**
@@ -29,7 +32,7 @@ public final class SpamLoadChecker
             return true;
         }
         if (oneMinLA >= loadLimit) {
-            if (MetaEnv.rng().nextFloat() < ALLOW_ANYWAY_CHANCE) {
+            if ( rng.nextFloat() < ALLOW_ANYWAY_CHANCE ) {
                 logger.warn("Load too high, but allowing anyway: " + la);
                 return false;
             }
