@@ -5,7 +5,7 @@ package com.untangle.node.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * Opaque chunk of data, used to pass SASL information between casings, being ignored by Nodes.

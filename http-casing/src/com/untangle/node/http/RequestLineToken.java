@@ -6,7 +6,7 @@ package com.untangle.node.http;
 import java.net.URI;
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * The in-memory token passed through the pipeline.

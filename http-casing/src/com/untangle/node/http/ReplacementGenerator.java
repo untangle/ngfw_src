@@ -7,10 +7,10 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.EndMarkerToken;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;

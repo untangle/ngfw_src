@@ -11,13 +11,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.EndMarkerToken;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
-import com.untangle.node.token.ReleaseToken;
-import com.untangle.node.token.Token;
-import com.untangle.node.token.TokenStreamer;
-import com.untangle.node.token.TokenStreamerAdaptor;
+import com.untangle.uvm.vnet.ReleaseToken;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.uvm.vnet.TokenStreamer;
+import com.untangle.uvm.vnet.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;

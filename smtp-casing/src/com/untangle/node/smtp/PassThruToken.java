@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp;
 
-import com.untangle.node.token.MetadataToken;
+import com.untangle.uvm.vnet.MetadataToken;
 
 /**
  * Token representing the directive that downstream TokenHandlers

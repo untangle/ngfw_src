@@ -9,7 +9,7 @@ import static com.untangle.node.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * Class to encapsulate an SMTP response. The {@link #getArgs arguments} are any Strings after the "NNN" on each

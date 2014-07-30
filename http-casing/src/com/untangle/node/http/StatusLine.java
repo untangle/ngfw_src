@@ -5,7 +5,7 @@ package com.untangle.node.http;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 
 /**

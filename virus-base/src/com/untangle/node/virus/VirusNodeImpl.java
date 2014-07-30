@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;

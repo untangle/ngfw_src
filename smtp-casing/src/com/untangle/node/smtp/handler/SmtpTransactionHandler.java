@@ -23,7 +23,7 @@ import com.untangle.node.smtp.MessageInfo;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 public class SmtpTransactionHandler
 {

@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 
 /**

@@ -10,7 +10,7 @@ import static com.untangle.node.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * Class reprsenting an SMTP Command issued by a client.

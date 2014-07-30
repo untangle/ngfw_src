@@ -13,7 +13,7 @@ import com.untangle.node.ftp.FtpEpsvReply;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
 import com.untangle.node.ftp.FtpEventHandler;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * This handles FTP and inserts the necessary port forwards and rewrites the PORT/PASV commands so that the necessary connection can be made

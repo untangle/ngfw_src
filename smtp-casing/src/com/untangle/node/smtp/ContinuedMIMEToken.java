@@ -6,7 +6,7 @@ package com.untangle.node.smtp;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.smtp.mime.MIMEAccumulator;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * Token which follows a {@link com.untangle.node.smtp.BeginMIMEToken BeginMIMEToken}. There may be one or more

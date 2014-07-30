@@ -11,11 +11,11 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.EndMarkerToken;
-import com.untangle.node.token.ReleaseToken;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.EndMarkerToken;
+import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.node.http.HeaderToken;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;

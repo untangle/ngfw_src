@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.token;
+package com.untangle.uvm.vnet;
 
 /**
  * Streams out a series of tokens.

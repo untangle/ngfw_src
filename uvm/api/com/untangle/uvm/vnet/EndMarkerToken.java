@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.token;
+package com.untangle.uvm.vnet;
 
 /**
  * Marks the end of a set of {@link Chunk}s.

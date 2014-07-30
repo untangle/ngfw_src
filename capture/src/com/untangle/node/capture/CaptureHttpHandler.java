@@ -16,10 +16,10 @@ import com.untangle.node.http.HttpMethod;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.StatusLine;
-import com.untangle.node.token.EndMarkerToken;
+import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 public class CaptureHttpHandler extends HttpEventHandler

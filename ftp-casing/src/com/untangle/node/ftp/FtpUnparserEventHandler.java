@@ -9,8 +9,8 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.token.Token;
-import com.untangle.node.token.ReleaseToken;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeTCPSession;

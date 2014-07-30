@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.ResponseParser;
 import com.untangle.node.smtp.SASLExchangeToken;
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.Token;
-import com.untangle.node.token.ReleaseToken;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 

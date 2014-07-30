@@ -6,7 +6,7 @@ package com.untangle.node.ftp;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.node.token.Token;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 
 /**

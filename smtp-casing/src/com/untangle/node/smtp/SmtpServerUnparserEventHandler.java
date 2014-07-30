@@ -18,10 +18,10 @@ import com.untangle.node.smtp.Command;
 import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.smtp.UnparsableCommand;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
-import com.untangle.node.token.ChunkToken;
-import com.untangle.node.token.MetadataToken;
-import com.untangle.node.token.Token;
-import com.untangle.node.token.ReleaseToken;
+import com.untangle.uvm.vnet.ChunkToken;
+import com.untangle.uvm.vnet.MetadataToken;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
