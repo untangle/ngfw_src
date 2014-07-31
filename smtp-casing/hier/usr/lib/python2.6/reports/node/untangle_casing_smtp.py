@@ -106,6 +106,14 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.drop_column('reports', 'mail_addrs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'mail_addrs', 'p2s_bytes')
 
+        # rename old commtouch columns
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_score', 'spamblocker_score')
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_is_spam', 'spamblocker_is_spam')
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_tests_string', 'spamblocker_tests_string')
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_action', 'spamblocker_action')
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchav_clean', 'virusblocker_clean');
+        sql_helper.rename_column('reports', 'mail_addrs', 'commtouchav_name', 'virusblocker_name')
+
         sql_helper.add_column('reports', 'mail_addrs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'mail_addrs', 'sender', 'text')
         sql_helper.add_column('reports', 'mail_addrs', 'clam_clean', 'boolean')
@@ -227,6 +235,14 @@ CREATE TABLE reports.mail_msgs (
         sql_helper.drop_column('reports', 'mail_msgs', 's2p_bytes')
         sql_helper.drop_column('reports', 'mail_msgs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'mail_msgs', 'p2s_bytes')
+
+        # rename old commtouch columns
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchas_score', 'spamblocker_score')
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchas_is_spam', 'spamblocker_is_spam')
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchas_tests_string', 'spamblocker_tests_string')
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchas_action', 'spamblocker_action')
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchav_clean', 'virusblocker_clean');
+        sql_helper.rename_column('reports', 'mail_msgs', 'commtouchav_name', 'virusblocker_name')
 
         sql_helper.add_column('reports', 'mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'mail_msgs', 'sender', 'text')

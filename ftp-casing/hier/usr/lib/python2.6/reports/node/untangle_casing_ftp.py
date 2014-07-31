@@ -65,6 +65,9 @@ CREATE TABLE reports.ftp_events (
         if not sql_helper.index_exists("reports", "ftp_events", "event_id", unique=True):
             sql_helper.create_index("reports", "ftp_events", "event_id", unique=True);
 
+        sql_helper.rename_column("reports", "ftp_events", "commtouchav_clean", "virusblocker_clean");
+        sql_helper.rename_column("reports", "ftp_events", "commtouchav_name", "virusblocker_name");
+
         sql_helper.create_index("reports", "ftp_events", "session_id");
         sql_helper.create_index("reports", "ftp_events", "policy_id");
         sql_helper.create_index("reports", "ftp_events", "time_stamp");
