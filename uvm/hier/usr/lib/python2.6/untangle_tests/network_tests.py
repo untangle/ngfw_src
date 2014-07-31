@@ -731,6 +731,12 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 0)
 
+    def test_130_sessionview(self):
+        result = uvmContext.getMergedSessions()
+        listSessions = result['result']['list']
+        # TODO verify columns in list.
+        # print listSessions
+        
     def test_999_finalTearDown(self):
         global node,nodeFW
         # Restore original settings to return to initial settings
