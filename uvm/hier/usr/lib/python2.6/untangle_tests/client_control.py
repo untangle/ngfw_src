@@ -8,7 +8,7 @@ class ClientControl:
     # global variables
     hostIP = "192.168.2.100"
     hostUsername = "testshell"
-    hostKeyFile = "@PREFIX@/usr/lib/python2.6/untangle_tests/testShell.key"
+    hostKeyFile = "/usr/lib/python2.6/untangle_tests/testShell.key"
     logfile = None
     verbosity = 0
     sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"
@@ -68,3 +68,6 @@ class ClientControl:
                 self.restoreOutput()
 
         
+    def isOnline(self):
+        result = self.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        return result

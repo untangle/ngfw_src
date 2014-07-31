@@ -306,7 +306,7 @@ class NetworkTests(unittest2.TestCase):
         # save original network settings
         global orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = clientControl.isOnline()
         assert (result == 0)
 
     # test basic port forward (tcp port 80)

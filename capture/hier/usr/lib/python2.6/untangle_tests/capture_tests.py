@@ -149,7 +149,7 @@ class CaptureTests(unittest2.TestCase):
         clientControl.runCommand("rm -f /tmp/capture_test_* >/dev/null 2>&1")
 
     def test_010_clientIsOnline(self):
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = clientControl.isOnline()
         assert (result == 0)
 
     def test_020_defaultTrafficCheck(self):

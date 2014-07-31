@@ -76,8 +76,7 @@ class ReportTests(unittest2.TestCase):
            
     # verify client is online
     def test_010_clientIsOnline(self):
-        ClientControl.verbosity = 1
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = clientControl.isOnline()
         assert (result == 0)
     
     def test_020_sendReportOut(self):

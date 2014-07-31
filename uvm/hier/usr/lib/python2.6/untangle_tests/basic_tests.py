@@ -65,7 +65,7 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client is online
     def test_14_clientIsOnline(self):
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = clientControl.isOnline()
         assert (result == 0)
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://google.com/")
         assert (result == 0)
