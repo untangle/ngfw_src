@@ -554,7 +554,7 @@ Ung.Util = {
             }
         } catch (e) {
             error=e;
-            alert(error);
+            console.log("Failed loading script: ", sScriptSrc, e);
         }
         if(handler) {
             handler.call(this);
