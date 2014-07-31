@@ -69,5 +69,6 @@ class ClientControl:
 
         
     def isOnline(self):
+        time.sleep(3) # wait for apps to install
         result = self.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         return result
