@@ -125,23 +125,23 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Phish"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Clean"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Hourly Phish Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Daily Phish Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_phish.py:7
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_phish.py:7
 msgid "Top Ten Phishing Victims"
 msgstr ""
 

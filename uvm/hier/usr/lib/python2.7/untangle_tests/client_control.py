@@ -8,7 +8,7 @@ class ClientControl:
     # global variables
     hostIP = "192.168.2.100"
     hostUsername = "testshell"
-    hostKeyFile = "/usr/lib/python2.6/untangle_tests/testShell.key"
+    hostKeyFile = "/usr/lib/python2.7/untangle_tests/testShell.key"
     logfile = None
     verbosity = 0
     sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"

@@ -109,7 +109,7 @@ msgid "IP Address"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:132
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:417
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:417
 msgid "User Name"
 msgstr ""
 
@@ -452,39 +452,39 @@ msgid "Action"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:990
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:36
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:36
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:109
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:166
 msgid "Login Success"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:992
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:37
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:37
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:115
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:167
 msgid "Login Failure"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:994
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:38
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:38
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:121
 msgid "Session Timeout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:996
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:39
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:39
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:127
 msgid "Idle Timeout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:998
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:40
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:40
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:133
 msgid "User Logout"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1000
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:41
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:41
 #: ../src/com/untangle/node/capture/CaptureNodeImpl.java:139
 msgid "Admin Logout"
 msgstr ""
@@ -510,22 +510,22 @@ msgid "Rule ID"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1065
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:452
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:452
 msgid "Client Address"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1070
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:453
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:453
 msgid "Client Port"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1075
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:454
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:454
 msgid "Server Address"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-capture/settings.js:1080
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:455
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:455
 msgid "Server Port"
 msgstr ""
 
@@ -564,113 +564,113 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:96
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:96
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:136
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:136
 msgid "processed"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:137
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:137
 msgid "user login events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:169
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:169
 msgid "Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:263
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:263
 msgid "Average Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:266
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:266
 msgid "Max Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:269
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:269
 msgid "Average Failures"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:272
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:272
 msgid "Max Failures"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:275
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:275
 msgid "Average Timeouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:278
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:278
 msgid "Max Timeouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:281
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:281
 msgid "Average Logouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:284
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:284
 msgid "Max Logouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:287
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:287
 msgid "Average Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:290
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:290
 msgid "Max Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:300
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:300
 msgid "Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:303
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:303
 msgid "Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:305
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:305
 msgid "Failures"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:307
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:307
 msgid "Timeouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:309
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:309
 msgid "Logouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:317
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:317
 msgid "Top Captive Portal Users"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:364
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:364
 msgid "Top Blocked Clients"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:394
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:457
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:394
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:457
 msgid "Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:410
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:410
 msgid "Capture User Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:416
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:451
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:416
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:451
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:418
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:418
 msgid "Type"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:445
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:445
 msgid "Capture Rule Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.6/reports/node/untangle_node_capture.py:456
+#: ../hier/usr/lib/python2.7/reports/node/untangle_node_capture.py:456
 msgid "Rule Applied"
 msgstr ""
 

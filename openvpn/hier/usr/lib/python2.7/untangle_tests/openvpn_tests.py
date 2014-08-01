@@ -91,7 +91,7 @@ class OpenVpnTests(unittest2.TestCase):
             vpnHostResult = subprocess.call(["ping","-c","1",qaHostVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             vpnClientResult = subprocess.call(["ping","-c","1",qaClientVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             serverVPNIP = uvmContext.networkManager().getFirstWanAddress()
-            vpnServerResult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 1 " + serverVPNIP + " >/dev/null 2>&1\"")
+            vpnServerResult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 1 " + serverVPNIP + " >/dev/null 2>&1\"")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -153,15 +153,15 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
         assert (result == 0)
         # copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
+        os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
         # connect openvpn from the PC to the Untangle server.
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
         time.sleep(10) # wait for vpn tunnel to form 
         # ping the test host behind the Untangle from the remote testbox
-        result = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ clientControl.hostIP +" >/dev/null 2>&1\"")
+        result = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ clientControl.hostIP +" >/dev/null 2>&1\"")
         
         listOfClients = node.getActiveClients()
         print "address " + listOfClients['list'][0]['address']
@@ -176,10 +176,10 @@ class OpenVpnTests(unittest2.TestCase):
         test_dns_name = "testname.ats.com"
         appendDNSRule(createDNSRule(ip_address_testuntangle,test_dns_name))
         # time.sleep(5) # wait for DNS to refresh
-        dns_name_result = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ test_dns_name +" >/dev/null 2>&1\"")
+        dns_name_result = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 2 "+ test_dns_name +" >/dev/null 2>&1\"")
 
         # stop the vpn tunnel on remote box
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo pkill openvpn\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo pkill openvpn\"")
         nukeDNSRules()
         assert(result==0)
         assert(dns_name_result==0)
@@ -219,12 +219,12 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
         assert (result == 0)
         # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
+        os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + qaClientVPN + ":/tmp/>/dev/null 2>&1")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo unzip -o /tmp/clientconfig.zip -d /tmp/ >/dev/null 2>&1\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/\"")
         # Connect openvpn from the PC to the Untangle server.
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &\"")
         timeout = 50
         ping_result = 0
         while not ping_result and timeout > 0:
@@ -243,16 +243,16 @@ class OpenVpnTests(unittest2.TestCase):
         while result1 and timeout > 0:
             time.sleep(1)
             timeout -= 1
-            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l >/dev/null 2>&1\"")
-        result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + ">/dev/null 2>&1\"")
+            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l >/dev/null 2>&1\"")
+        result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + ">/dev/null 2>&1\"")
         # print "look for block page"
-        webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\"")
+        webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\"")
         # print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
 
         # stop the vpn tunnel on remote box
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.6/untangle_tests/testShell.key testshell@" + vpn_address + " \"nohup sudo pkill openvpn >/dev/null 2>&1 \"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"nohup sudo pkill openvpn >/dev/null 2>&1 \"")
         time.sleep(5) # wait for vpn tunnel to go down 
         # print ("result " + str(result) + " webresult " + str(webresult))
         assert(listOfClients['list'][0]['address'] == qaClientVPN)
