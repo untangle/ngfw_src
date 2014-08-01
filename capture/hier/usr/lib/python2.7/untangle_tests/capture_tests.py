@@ -413,12 +413,15 @@ class CaptureTests(unittest2.TestCase):
         search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
         assert (search == 0)
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node, nodeAD
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
-        node = None
-        nodeAD = None
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None
+        if nodeAD != None:
+            uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
+            nodeAD = None
 
 TestDict.registerNode("capture", CaptureTests)

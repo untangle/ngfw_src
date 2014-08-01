@@ -93,8 +93,11 @@ class IpsTests(unittest2.TestCase):
         print events['list'][0]
         assert(events['list'][0]['ips_description'] == randomName)
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
+        if node == None:
+            return
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
         

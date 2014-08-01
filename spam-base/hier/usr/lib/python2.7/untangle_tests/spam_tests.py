@@ -196,7 +196,9 @@ class SpamTests(unittest2.TestCase):
             if (checkAddress['address'] == 'qa@example.com') and (checkAddress['totalMails'] > 0): addressFound = True
         assert(not addressFound)
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None

@@ -81,10 +81,10 @@ class WebFilterBaseTests(unittest2.TestCase):
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             flushEvents()
+        self.node = node
         # remove previous temp files
-        clientControl.runCommand("rm -f /tmp/webfilter_base_test_* >/dev/null 2>&1")
-        clientControl.runCommand("rm -f ./index.html.* >/dev/null 2>&1")
-        clientControl.runCommand("rm -f ./unblock.* >/dev/null 2>&1")
+        # FIXME dont run these before every test
+        clientControl.runCommand("rm -f /tmp/webfilter_base_test_* ~/index.html* ~/unblock.*")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -482,10 +482,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         print "block %s passReferers %s" % (resultReferer,settings["passReferers"])
         assert( resultReferer == 0 )        
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None
         
 
 

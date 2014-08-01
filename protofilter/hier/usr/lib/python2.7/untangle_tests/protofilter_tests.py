@@ -68,7 +68,7 @@ class ProtofilterTests(unittest2.TestCase):
         result = clientControl.isOnline()
         assert (result == 0)
 
-    def test_020_testHTTpPatternLog(self):
+    def test_020_testHttpPatternLog(self):
         nukepatterns()
         
         addPatterns(definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
@@ -97,7 +97,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "HTTP" )            
         assert(events['list'][0]['protofilter_blocked'] == False )            
 
-    def test_030_testHTTpPatternBlocked(self):
+    def test_030_testHttpPatternBlocked(self):
         nukepatterns()
         
         addPatterns(definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
@@ -126,7 +126,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "HTTP" )            
         assert(events['list'][0]['protofilter_blocked'] == True )            
 
-    def test_040_testFTPPatternBlock(self):
+    def test_040_testFtpPatternBlock(self):
         nukepatterns()
         
         addPatterns(definition="^220[\x09-\x0d -~]*ftp",
@@ -155,7 +155,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "FTP" )            
         assert(events['list'][0]['protofilter_blocked'] == True )            
 
-    def test_050_testDNsUDpPatternLog(self):
+    def test_050_testDnsUDpPatternLog(self):
         nukepatterns()
         
         addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
@@ -184,7 +184,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
         assert(events['list'][0]['protofilter_blocked'] == False )            
 
-    def test_060_testDNsUDpPatternBlock(self):
+    def test_060_testDnsUDpPatternBlock(self):
         nukepatterns()
         
         addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
@@ -213,10 +213,12 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
         assert(events['list'][0]['protofilter_blocked'] == True )            
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None
         
 
 TestDict.registerNode("protofilter", ProtofilterTests)

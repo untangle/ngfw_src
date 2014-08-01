@@ -85,9 +85,11 @@ class ReportTests(unittest2.TestCase):
         node.setSettings(settings)
         # TODO set email address, send email, check attachment size
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
         # no need to uninstall reports
+        # if node != None:
         # uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
 

@@ -313,8 +313,10 @@ class VirusTests(unittest2.TestCase):
         assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
         nukePassSites()
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None
         

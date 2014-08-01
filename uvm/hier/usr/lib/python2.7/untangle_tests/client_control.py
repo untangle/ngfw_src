@@ -12,6 +12,10 @@ class ClientControl:
     logfile = None
     verbosity = 0
     sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"
+    quickTestsOnly = False
+    interface = 0
+    interfaceExternal = 0
+
     # set the key file permissions correctly just in case
     os.system("chmod 600 %s" % hostKeyFile)
 

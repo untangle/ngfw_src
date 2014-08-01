@@ -261,11 +261,15 @@ class OpenVpnTests(unittest2.TestCase):
         assert(webresult==0)
 
 
-    def test_999_finalTearDown(self):
-        global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
-        node = None
+    @staticmethod
+    def finalTearDown(self):
+        global node, nodeWeb
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            node = None
+        if nodeWeb != None:
+            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+            nodeWeb = None
 
 TestDict.registerNode("openvpn", OpenVpnTests)
 

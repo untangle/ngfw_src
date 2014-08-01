@@ -657,9 +657,11 @@ class FirewallTests(unittest2.TestCase):
         assert(events['list'][0]['firewall_blocked'] == False)
         assert(events['list'][0]['firewall_flagged'] == False)
 
-    def test_999_finalTearDown(self):
+    @staticmethod
+    def finalTearDown(self):
         global node
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        if node != None:
+            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
         
 TestDict.registerNode("firewall", FirewallTests)

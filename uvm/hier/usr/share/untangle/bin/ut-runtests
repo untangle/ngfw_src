@@ -28,6 +28,8 @@ class ArgumentParser(object):
         self.repeat = False
         self.externalIntfId = 1
         self.internalIntfId = 2
+        self.suitesToRun = ['all']
+        self.suitesToExclude = []
         self.testsToRun = ['all']
         self.testsToExclude = []
         self.timedTests = False
@@ -50,6 +52,12 @@ class ArgumentParser(object):
 
     def set_repeat( self, arg ):
         self.repeat = True
+
+    def set_suitesToRun( self, arg ):
+        self.suitesToRun = arg.split(",")
+
+    def set_suitesToExclude( self, arg ):
+        self.suitesToExclude = arg.split(",")
 
     def set_testsToRun( self, arg ):
         self.testsToRun = arg.split(",")
@@ -81,15 +89,17 @@ class ArgumentParser(object):
             '-v' : self.increase_verbosity,
             '-q' : self.set_fastfail,
             '-r' : self.set_repeat,
-            '-t' : self.set_testsToRun,
-            '-e' : self.set_testsToExclude,
+            '-t' : self.set_suitesToRun,
+            '-T' : self.set_testsToRun,
+            '-e' : self.set_suitesToExclude,
+            '-E' : self.set_testsToExclude,
             '-d' : self.set_externalIntfId,
             '-x' : self.set_timedTests,
             '-z' : self.set_quickTestsOnly,
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:e:vqrxz')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:T:e:E:vqrxz')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -108,8 +118,10 @@ def printUsage():
     -l <file>  : log file
     -d <int>   : interface ID of the external interface (outside) default: 1
     -s <int>   : interface ID of the internal interface (client) default: 2
-    -t <tests> : comma seperated list tests to run (default: "all") (exm: "webfilter,adblocker")
-    -e <tests> : comma seperated list tests to EXCLUDE (default: "all") (exm: "webfilter,adblocker")
+    -t <suite> : comma seperated list test suites to run (default: "all") (exm: "webfilter,adblocker")
+    -T <test>  : comma seperated list tests within suites to run (default: "all") (exm: "test_010_clientOnline")
+    -e <suite> : comma seperated list test suites to EXCLUDE (default: "all") (exm: "webfilter,adblocker")
+    -E <test>  : comma seperated list tests within suites to EXCLUDE (default: "all") (exm: "test_010_clientOnline")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
     -r         : repeat test indefinitely (or until failure if -q is specified)
@@ -134,11 +146,19 @@ def runTestSuite(suite):
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     rc = 0
     skipc = 0  # number of skipped tests.
+    total = 0
     timeString = ""
     if (parser.timedTests):
         suiteStartTime = time.time()
-    total = len([t for t in tests])
     for test in tests:
+        test_name = test._testMethodName
+
+        if not ( test_name in parser.testsToRun or "all" in parser.testsToRun ):
+            continue
+        if test_name in parser.testsToExclude:
+            continue
+
+        total += 1
 
         orig_stdout = sys.stdout
         orig_stderr = sys.stderr
@@ -158,16 +178,20 @@ def runTestSuite(suite):
         sys.stderr = orig_stderr
 
         if (len(results.failures) > 0 or len(results.errors) > 0):
-            print "Test FAILED  : %s " % test._testMethodName
+            print "Test FAILED  : %s " % test_name
             if (parser.fastfail):
                 exit(1)
             else:
                 rc += 1
         elif (len(results.skipped) > 0):
-            print "Test skipped  : %s " % test._testMethodName
+            print "Test skipped  : %s " % test_name
             skipc += 1
         else:
-            print "Test success : %s %s " % (test._testMethodName, timeString)
+            print "Test success : %s %s " % (test_name, timeString)
+
+    if "finalTearDown" in dir(suite):
+        suite.finalTearDown(suite)
+
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
         print "== Testing %s in %d secs ==" % (suite.nodeName(),suiteElapsedTime)
@@ -216,23 +240,23 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
     print "== Installing untangle-node-reporting =="
     reportsNode = uvm.Uvm().getUvmContext().nodeManager().instantiate('untangle-node-reporting', None)
 
-if ("environment" in parser.testsToRun or "all" in parser.testsToRun) and "environment" not in parser.testsToExclude:
+if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
 
-if "all" in parser.testsToRun:
-    parser.testsToRun = TestDict.allNodes()
+if "all" in parser.suitesToRun:
+    parser.suitesToRun = TestDict.allNodes()
 
 # remove excluded tests
-for testName in parser.testsToExclude:
-    if testName in parser.testsToRun:
-        parser.testsToRun.remove(testName)
+for testName in parser.suitesToExclude:
+    if testName in parser.suitesToRun:
+        parser.suitesToRun.remove(testName)
 
 while True:
     rc = 0
     total = 0
     skiptotal = 0
 
-    for node in parser.testsToRun:
+    for node in parser.suitesToRun:
         if node == "environment":
             continue
         testClz = TestDict.test(node)

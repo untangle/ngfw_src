@@ -16,8 +16,6 @@ from uvm import Uvm
 from untangle_tests import TestDict
 from untangle_tests import ClientControl
 
-node = None
-nodeFW = None
 radiusServer = "10.111.56.71"
 ftp_server = "test.untangle.com"
 ftp_file_name = "test.zip"
@@ -179,10 +177,10 @@ def appendQoSRule(newRule):
     netsettings['qosSettings']['qosRules']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def appendFWRule(newRule):
-    rules = nodeFW.getRules()
+def appendFWRule(node, newRule):
+    rules = node.getRules()
     rules["list"].append(newRule)
-    nodeFW.setRules(rules)
+    node.setRules(rules)
 
 def appendRouteRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -230,11 +228,7 @@ def nukeDynDNS():
 
 def getDownloadSpeed():
     # Download file and record the average speed in which the file was download
-    clientControl.runCommand("rm /tmp/test.txt >/dev/null 2>&1")
-    result = clientControl.runCommand("wget -o /tmp/test.txt http://test.untangle.com/5MB.zip")
-    ClientControl.verbosity = 1
-    result = clientControl.runCommand("tail -2 /tmp/test.txt", True)
-    # remove test file
+    result = clientControl.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", True)
     match = re.search(r'([0-9.]+) [KM]B\/s', result)
     bandwidth_speed =  match.group(1)
     # cast string to float for comparsion.
@@ -298,14 +292,12 @@ class NetworkTests(unittest2.TestCase):
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
     
     def setUp(self):
-        # clean up html files left on client box
-        clientControl.runCommand("rm -f ./5MB.zip.* >/dev/null 2>&1")
-        pass
+        global orig_netsettings
+        if orig_netsettings == None:
+            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
     def test_010_clientIsOnline(self):
         # save original network settings
-        global orig_netsettings
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         result = clientControl.isOnline()
         assert (result == 0)
 
@@ -490,26 +482,25 @@ class NetworkTests(unittest2.TestCase):
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
-        global nodeFW
-        if nodeFW == None:
-            if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
-                print "ERROR: Node %s already installed" % self.nodeNameFW()
-                raise Exception('node %s already instantiated' % self.nodeNameFW())
-            nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
+        nodeFW = None
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
+            print "ERROR: Node %s already installed" % self.nodeNameFW()
+            raise Exception('node %s already instantiated' % self.nodeNameFW())
+        nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
         nukeBypassRules()
         # verify port 80 is open
-        result = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
-        assert (result == 0)
+        result1 = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
         # Block port 80 and verify it's closed
-        appendFWRule(createSingleMatcherRule("DST_PORT","80"))
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        assert (result != 0)
+        appendFWRule(nodeFW, createSingleMatcherRule("DST_PORT","80"))
+        result2 = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
         appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        assert (result == 0)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        result3 = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert (result1 == 0)
+        assert (result2 != 0)
+        assert (result3 == 0)
 
     # Test FTP in active and passive modes
     def test_065_ftpModes(self):
@@ -737,16 +728,11 @@ class NetworkTests(unittest2.TestCase):
         # TODO verify columns in list.
         # print listSessions
 
-    def test_999_finalTearDown(self):
-        global node,nodeFW
+    @staticmethod
+    def finalTearDown(self):
         # Restore original settings to return to initial settings
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # In case firewall is still installed.
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
-            uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
-        node = None
-        nodeFW = None
 
 
 TestDict.registerNode("network", NetworkTests)
