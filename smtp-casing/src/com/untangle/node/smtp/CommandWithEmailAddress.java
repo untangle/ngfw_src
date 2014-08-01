@@ -213,19 +213,20 @@ public class CommandWithEmailAddress extends Command
     public static String runTest(String[] args) throws Exception
     {
 
-        String[] boundedTest = new String[] { "foo", "<foo", "foo>", "<foo>", "\"doo\"<foo>", "\"doo<foo>",
-                "\"doo<foo\">", "\"doo\"<foo> ABCXYZ FOO", "<foo> ABC123 XYZ" };
+        String[] boundedTest = new String[] { "foo", "<foo", "foo>", "<foo>", "\"doo\"<foo>", "\"doo<foo>", "\"doo<foo\">", "\"doo\"<foo> ABCXYZ FOO", "<foo> ABC123 XYZ" };
 
         String result = "";
         for (String s : boundedTest) {
-            result += "String: " + s + "\n";
-            result += "   extractAddress: " + CommandWithEmailAddress.extractAddress(s) + "\n";
+            try {
+                result += "String: " + s + "\n" + "   extractAddress: " + CommandWithEmailAddress.extractAddress(s) + "\n";
+            } catch (Exception e) {}
         }
 
         String[] tests = new String[] { "foo@moo.com", "<foo@moo.com", "foo@moo.com>", "<foo@moo.com>", "<>" };
         for (String s : tests) {
-            result += "Address: " + s + "\n";
-            result += "   Became \"" + CommandWithEmailAddress.parseAddress(s) + "\"\n";
+            try {
+                result += "Address: " + s + "\n" + "   Became \"" + CommandWithEmailAddress.parseAddress(s) + "\"\n";
+            } catch (Exception e) {}
         }
         return result;
     }

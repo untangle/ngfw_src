@@ -399,6 +399,10 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
             }
         } catch (Exception e) {
             logger.warn("Exception:",e);
+            
+            for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause()) {
+                logger.warn( "Cause:", cause );
+            }
         }
         return result;
     }

@@ -178,9 +178,13 @@ public final class MailSummary implements Serializable
     {
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-        InputStream in = new FileInputStream(args[0]);
-
+        InputStream in;
+            
+        try {
+            in = new FileInputStream(args[0]);
+        } catch (Exception e) {
+            return "File not found";
+        }
         // InputSource input = new org.xml.sax.InputSource(in);
 
         String result = "";
