@@ -559,15 +559,15 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 return;
 
             case RELEASED:
-                if ( state.responseQueue.size() == 0 )
-                    logger.warn("Invalid response queue size.");
+                if ( state.responseQueue.size() != 0 )
+                    logger.warn("Invalid response queue size on release: " + state.responseQueue.size());
 
                 session.sendObjectToClient( state.statusLine );
                 return;
 
             case BLOCKED:
-                if ( state.responseQueue.size() == 0 )
-                    logger.warn("Invalid response queue size.");
+                if ( state.responseQueue.size() != 0 )
+                    logger.warn("Invalid response queue size on block: " + state.responseQueue.size());
 
                 session.sendObjectsToClient( state.responseResponse );
                 state.responseResponse = null;
