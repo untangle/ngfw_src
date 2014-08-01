@@ -155,7 +155,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "FTP" )            
         assert(events['list'][0]['protofilter_blocked'] == True )            
 
-    def test_050_testDnsUDpPatternLog(self):
+    def test_050_testDnsUdpPatternLog(self):
         nukepatterns()
         
         addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
@@ -184,7 +184,7 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
         assert(events['list'][0]['protofilter_blocked'] == False )            
 
-    def test_060_testDnsUDpPatternBlock(self):
+    def test_060_testDnsUdpPatternBlock(self):
         nukepatterns()
         
         addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
