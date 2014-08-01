@@ -2,6 +2,12 @@
 
 import sys
 import string
+import traceback
+import platform
+
+OLD_STYLE=False
+if "2.6.26" in platform.platform():
+    OLD_STYLE=True
 
 def parse_segment(segment):
     if segment == None:
@@ -31,6 +37,7 @@ def parse_line(line):
         # Destination port of reply-side packets.
         # [ASSURED], if this connection has seen traffic in both directions (for UDP) or an ACK in an ESTABLISHED connection (for TCP). Otherwise not present.
         # Use count of this connection structure.
+
         idx = 0
         dict['protocol']       = string.upper(line_parts[idx]); idx=idx+1;
         if dict['protocol'] == "UNKNOWN": return None
@@ -45,19 +52,13 @@ def parse_line(line):
 
         # some kernels are missing the fields orig_packets, orig_bytes, reply_packets, reply_bytes
         # if there is an exception assume they aren't there
-        try: 
-            dict['orig_packets'] = 0
+        dict['orig_packets'] = 0
+        dict['orig_bytes'] = 0
+        if OLD_STYLE:
             dict['orig_packets'] = int(parse_segment(line_parts[idx])); 
             idx=idx+1;
-        except Exception,e:
-            pass
-        
-        try:
-            dict['orig_bytes'] = 0
             dict['orig_bytes'] = int(parse_segment(line_parts[idx])); 
             idx=idx+1;
-        except Exception,e:
-            pass
 
         # skip UNREPLIED
         if line_parts[idx] == "[UNREPLIED]": idx=idx+1
@@ -66,18 +67,13 @@ def parse_line(line):
         dict['reply_src_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
         dict['reply_dst_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
 
-        try:
-            dict['reply_packets'] = 0
+        dict['reply_packets'] = 0
+        dict['reply_bytes'] = 0
+        if OLD_STYLE:
             dict['reply_packets'] = int(parse_segment(line_parts[idx])); 
             idx=idx+1;
-        except Exception,e:
-            pass
-        try:
-            dict['reply_bytes'] = 0
             dict['reply_bytes'] = int(parse_segment(line_parts[idx])); 
             idx=idx+1;
-        except Exception,e:
-            pass
 
         # skip ASSURED
         if line_parts[idx] == "[ASSURED]": idx=idx+1
@@ -90,7 +86,7 @@ def parse_line(line):
         return dict
     except Exception,e:
         print "Exception:"
-        print e
+        traceback.print_exc(e)
         return None
 
 
