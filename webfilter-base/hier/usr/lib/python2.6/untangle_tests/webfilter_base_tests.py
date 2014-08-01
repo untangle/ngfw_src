@@ -113,19 +113,19 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify test site is not blocked in default config
     def test_015_defaultTestSiteIsNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        assert (result == 0)
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html", True)
+        assert ( "text123" in result )
 
     # verify blocked site url list works
     def test_016_blockedUrl(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should now be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1", True)
         nukeBlockedUrls()
-        assert (result == 0)
+        assert ( "blockpage" in result )
 
     # verify that a block list entry does not match when the URI doesnt match exactly
-    def test_017_blockedUrl(self):
+    def test_017_blockedUrl2(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
         result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
