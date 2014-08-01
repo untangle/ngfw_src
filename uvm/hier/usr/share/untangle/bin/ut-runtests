@@ -237,8 +237,8 @@ while True:
             continue
         testClz = TestDict.test(node)
         if testClz == None:
-           print "Unable to find tests for \"%s\" - skipping." % node
-           continue
+           print "Unable to find tests for \"%s\"" % node
+           exit(1)
         errors, skipc, subTotal = runTestSuite(testClz)
         rc += errors
         total += subTotal
