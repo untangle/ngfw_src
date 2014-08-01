@@ -56,8 +56,8 @@ perl -i -pe 's/premium/non-free/' /etc/apt/sources.list.d/untangle.list
 perl -i -pe 's/non-free non-free/non-free/' /etc/apt/sources.list.d/untangle.list
 
 # 10.1 (kill old monit processes)
-killall monit-wrapper.sh
-killall monit
+killall monit-wrapper.sh 2>&1 >/dev/null
+killall monit 2>&1 >/dev/null
 sed -i '/monit-wrapper/d' /etc/inittab ; init q
 rm -f /var/log/uvm/monit.*
 
