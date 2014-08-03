@@ -34,6 +34,7 @@ def flushEvents():
         reports.flushEvents()
 
 def createCaptureInternalNicRule():
+    faceValue = str(ClientControl.interface)
     return {
         "capture": True,
         "description": "Test Rule - Capture all internal traffic",
@@ -46,7 +47,7 @@ def createCaptureInternalNicRule():
                 "invert": False,
                 "javaClass": "com.untangle.node.capture.CaptureRuleMatcher",
                 "matcherType": "SRC_INTF",
-                "value": "2"
+                "value": faceValue
                 }]
             },
         "ruleId": 1
