@@ -112,7 +112,6 @@ class SystemProperties():
             return output
         else:
             return None
-
         
 # debug
 # systemProperties = SystemProperties()

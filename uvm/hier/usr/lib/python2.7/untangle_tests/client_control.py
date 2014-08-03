@@ -71,7 +71,40 @@ class ClientControl:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
 
-        
+    # FIXME this should be in a test util class
     def isOnline(self):
         result = self.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         return result
+
+    # FIXME this should be in a test util class
+    def check_events(self, events, num_events, *args):
+        if events == None:
+            return False
+        if num_events == 0:
+            return False
+        if (len(args) % 2) != 0:
+            print "Invalid argument length"
+            return False
+        num_checked = 0
+        while num_checked < num_events:
+            if len(events) <= num_checked:
+                break
+            event = events[num_checked]
+            num_checked += 1
+
+            # check each expected value
+            # if one doesn't match continue to the next event
+            # if all match, return True
+            allMatched = True
+            for i in range(0, len(args)/2):
+                key=args[i*2]
+                expectedValue=args[i*2+1]
+                actualValue = event.get(key)
+                #print "key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )
+                if expectedValue != actualValue:
+                    allMatched = False
+                    break
+
+            if allMatched:
+                return True
+        return False

@@ -365,19 +365,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        print ("Event:" + 
-               " time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " host: " + str(events['list'][0]['host']) + 
-               " uri: " + str(events['list'][0]['uri']) + 
-               " blocked: " + str(events['list'][0][self.shortNodeName() + '_blocked']) + 
-               " flagged: " + str(events['list'][0][self.shortNodeName() + '_flagged']) +
-               " now: " + str(datetime.datetime.now())) 
-        assert(events['list'][0]['host'] == "test.untangle.com")
-        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0][self.shortNodeName() + '_blocked'] == True)
-        assert(events['list'][0][self.shortNodeName() + '_flagged'] == True)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "host","test.untangle.com", 
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
+                                            self.shortNodeName() + '_blocked', True, 
+                                            self.shortNodeName() + '_flagged', True )
+        assert( found )
 
     def test_101_eventlog_flaggedUrl(self):
         fname = sys._getframe().f_code.co_name
@@ -393,12 +386,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['host'] == "test.untangle.com")
-        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0][self.shortNodeName() + '_blocked'] == False)
-        assert(events['list'][0][self.shortNodeName() + '_flagged'] == True)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "host","test.untangle.com", 
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
+                                            self.shortNodeName() + '_blocked', False, 
+                                            self.shortNodeName() + '_flagged', True )
+        assert( found )
 
     def test_102_eventlog_allUrls(self):
         fname = sys._getframe().f_code.co_name
@@ -412,12 +405,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['host'] == "test.untangle.com")
-        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0][self.shortNodeName() + '_blocked'] == False)
-        assert(events['list'][0][self.shortNodeName() + '_flagged'] == False)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "host","test.untangle.com", 
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
+                                            self.shortNodeName() + '_blocked', False, 
+                                            self.shortNodeName() + '_flagged', False )
+        assert( found )
 
     # verify that a block page is shown but unblock button option is available.
     def test_120_unblockOption(self):
