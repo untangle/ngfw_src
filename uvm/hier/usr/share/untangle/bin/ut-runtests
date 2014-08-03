@@ -94,6 +94,7 @@ class ArgumentParser(object):
             '-e' : self.set_suitesToExclude,
             '-E' : self.set_testsToExclude,
             '-d' : self.set_externalIntfId,
+            '-s' : self.set_internalIntfId,
             '-x' : self.set_timedTests,
             '-z' : self.set_quickTestsOnly,
         }
