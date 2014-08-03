@@ -299,7 +299,7 @@ class FirewallTests(unittest2.TestCase):
     # verify dst intf number rule doesnt match everythin
     def test_052_blockDstIntfWrongIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", ClientControl.interfaceExternal + 1 ) );
+        appendRule( createSingleMatcherRule( "DST_INTF", int(ClientControl.interfaceExternal) + 1 ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
@@ -342,7 +342,7 @@ class FirewallTests(unittest2.TestCase):
     # verify src intf number rule doesnt match everythin
     def test_062_blockSrcIntfWrongIntf(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "SRC_INTF", ClientControl.interface + 1 ) );
+        appendRule( createSingleMatcherRule( "SRC_INTF", int(ClientControl.interface) + 1 ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
