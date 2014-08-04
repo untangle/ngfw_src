@@ -607,13 +607,12 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['s_server_port'] == 80)
-        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
-        assert(events['list'][0]['firewall_blocked'] == True)
-        assert(events['list'][0]['firewall_flagged'] == True)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            's_server_port', 80,
+                                            'firewall_blocked', True,
+                                            'firewall_flagged', True)
+        assert( found )
 
     # verify a flag port 80 rule works
     def test_101_flagDstPort80EventLog(self):
@@ -628,13 +627,12 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['s_server_port'] == 80)
-        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
-        assert(events['list'][0]['firewall_flagged'] == True)
-        assert(events['list'][0]['firewall_blocked'] == False)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            's_server_port', 80,
+                                            'firewall_blocked', False,
+                                            'firewall_flagged', True)
+        assert( found )
 
     # verify a port 80 rule log
     def test_102_logDstPort80EventLog(self):
@@ -649,13 +647,11 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['s_server_port'] == 80)
-        assert(events['list'][0]['firewall_rule_index'] != 0 and events['list'][0]['firewall_rule_index'] != None)
-        assert(events['list'][0]['firewall_blocked'] == False)
-        assert(events['list'][0]['firewall_flagged'] == False)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            's_server_port', 80,
+                                            'firewall_blocked', False,
+                                            'firewall_flagged', False)
 
     @staticmethod
     def finalTearDown(self):

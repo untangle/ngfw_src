@@ -88,10 +88,9 @@ class IpsTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        print events['list'][0]
-        assert(events['list'][0]['ips_description'] == randomName)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'ips_description', randomName)
+        assert( found )
 
     @staticmethod
     def finalTearDown(self):

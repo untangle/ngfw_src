@@ -116,7 +116,7 @@ class SpamTests(unittest2.TestCase):
             if q['name'] == 'Quarantined Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        # print events['list'][0]
+        assert( events != None )
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
         assert(events['list'][0]['s_server_port'] == 25)
@@ -148,11 +148,6 @@ class SpamTests(unittest2.TestCase):
     def test_040_userQuarantine(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
-        for q in node.getEventQueries():
-            if q['name'] == 'Quarantined Events': query = q;
-        # print query
-        if (query == None):
-            raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
         # Get user quarantine list of email addresses
         addressFound = False
         curQuarantine = nodeSP.getQuarantineUserView()
@@ -163,11 +158,6 @@ class SpamTests(unittest2.TestCase):
     def test_050_userQuarantinePurge(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
-        for q in node.getEventQueries():
-            if q['name'] == 'Quarantined Events': query = q;
-        # print query
-        if (query == None):
-            raise unittest2.SkipTest('Unable to run user quarantine since there are no quarantine events')
         # Get user quarantine list of email addresses
         addressFound = False
         curQuarantine = nodeSP.getQuarantineUserView()
@@ -182,11 +172,6 @@ class SpamTests(unittest2.TestCase):
         assert(len(curQuarantineListAfter['list']) == initialLen - 1);
 
     def test_060_adminQuarantineDeleteAccount(self):
-        for q in node.getEventQueries():
-            if q['name'] == 'Quarantined Events': query = q;
-        # print query
-        if (query == None):
-            raise unittest2.SkipTest('Unable to run admin quarantine since there are no quarantine events')
         # Get adminstrative quarantine list of email addresses
         addressFound = False
         curQuarantine = nodeSP.getQuarantineMaintenenceView()

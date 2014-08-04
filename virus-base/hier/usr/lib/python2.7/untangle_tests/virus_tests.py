@@ -109,15 +109,13 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'])  # pass if event list is not empty
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
         ftp_server_IP = socket.gethostbyname(ftp_server)
-        assert(events['list'][0]['s_server_addr'] == ftp_server_IP)  # IP address of ftp server
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['uri'] == ftp_virus_file_name)
-        assert(events['list'][0][ self.shortName() + '_name'] != None)
-        assert(events['list'][0][ self.shortName() + '_clean'] == False)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "s_server_addr", ftp_server_IP, 
+                                            "c_client_addr", ClientControl.hostIP, 
+                                            "uri", ftp_virus_file_name,
+                                            self.shortName() + '_clean', False )
+        assert( found )
 
     # test that client can block virus ftp download zip
     def test_023_ftpVirusPassSite(self):
@@ -136,15 +134,12 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'])  # pass if event list is not empty
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        ftp_server_IP = socket.gethostbyname(ftp_server)
-        assert(events['list'][0]['s_server_addr'] == ftp_server_IP)  # IP address of ftp server
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['uri'] == ftp_virus_file_name)
-        assert(events['list'][0][ self.shortName() + '_name'] != None)
-        assert(events['list'][0][ self.shortName() + '_clean'] == False)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "s_server_addr", ftp_server_IP, 
+                                            "c_client_addr", ClientControl.hostIP, 
+                                            "uri", ftp_virus_file_name,
+                                            self.shortName() + '_clean', False )
+        assert( found )
         nukePassSites()
 
     def test_100_eventlog_httpVirus(self):
@@ -158,13 +153,11 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'])  # pass if event list is not empty
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['host'] == "test.untangle.com")
-        assert(events['list'][0]['uri'] == ("/test/eicar.zip?arg=%s" % fname))
-        assert(events['list'][0][ self.shortName() + '_name'] != None)
-        assert(events['list'][0][ self.shortName() + '_clean'] == False)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "host", "test.untangle.com", 
+                                            "uri", ("/test/eicar.zip?arg=%s" % fname),
+                                            self.shortName() + '_clean', False )
+        assert( found )
 
     def test_101_eventlog_httpNonVirus(self):
         fname = sys._getframe().f_code.co_name
@@ -177,13 +170,12 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['host'] == "test.untangle.com")
-        assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
-        assert(events['list'][0][self.shortName() + '_clean'] == True)
-        
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "host", "test.untangle.com", 
+                                            "uri", ("/test/test.zip?arg=%s" % fname),
+                                            self.shortName() + '_clean', True )
+        assert( found )
+
     def test_102_eventlog_ftpVirus(self):
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
@@ -195,12 +187,10 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'])  # pass if event list is not empty
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['uri'] == ftp_virus_file_name)
-        assert(events['list'][0][ self.shortName() + '_name'] != None)
-        assert(events['list'][0][ self.shortName() + '_clean'] == False)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "uri", ftp_virus_file_name,
+                                            self.shortName() + '_clean', False )
+        assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
         fname = sys._getframe().f_code.co_name
@@ -213,11 +203,10 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['uri'] == "test.zip")
-        assert(events['list'][0][self.shortName() + '_clean'] == True)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "uri", "test.zip",
+                                            self.shortName() + '_clean', True )
+        assert( found )
 
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
@@ -239,14 +228,12 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        print "startTime: " + str(startTime)
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['addr'] == "junk@test.untangle.com")
-        assert(events['list'][0]['subject'] == str(fname))
-        assert(events['list'][0][self.shortName() + '_clean'] == False)
-        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            "addr", "junk@test.untangle.com", 
+                                            "subject", str(fname), 
+                                            self.shortName() + '_clean', False,
+                                            min_date=startTime )
+        assert( found )
 
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
@@ -270,14 +257,12 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        print "startTime: " + str(startTime)
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['addr'] == "junk@test.untangle.com")
-        assert(events['list'][0]['subject'] == str(fname))
-        assert(events['list'][0][ self.shortName() + '_clean'] == True)
-        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "addr", "junk@test.untangle.com", 
+                                            "subject", str(fname), 
+                                            self.shortName() + '_clean', True,
+                                            min_date=startTime )
+        assert( found )
 
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
@@ -303,14 +288,12 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        print "startTime: " + str(startTime)
-        assert(len(events['list']) > 0)
-        print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['addr'] == "junk@test.untangle.com")
-        assert(events['list'][0]['subject'] == str(fname))
-        assert(events['list'][0][ self.shortName() + '_clean'] == True)
-        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
+        found = clientControl.check_events( events.get('list'), 5, 
+                                            "addr", "junk@test.untangle.com", 
+                                            "subject", str(fname), 
+                                            self.shortName() + '_clean', True,
+                                            min_date=startTime )
+        assert( found )
         nukePassSites()
 
     @staticmethod

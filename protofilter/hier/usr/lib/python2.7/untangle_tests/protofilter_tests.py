@@ -86,16 +86,11 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        print ("Event:" + 
-               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
-               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
-               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
-               " now: " + str(datetime.datetime.now())) 
-        
-        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
-        assert(events['list'][0]['protofilter_protocol'] == "HTTP" )            
-        assert(events['list'][0]['protofilter_blocked'] == False )            
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'protofilter_protocol', 'HTTP',
+                                            'protofilter_blocked', False )
+        assert( found )
 
     def test_030_testHttpPatternBlocked(self):
         nukepatterns()
@@ -114,17 +109,12 @@ class ProtofilterTests(unittest2.TestCase):
             if q['name'] == 'All Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        # assert(events != None)
-        print ("Event:" + 
-               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
-               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
-               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
-               " now: " + str(datetime.datetime.now())) 
-        
-        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
-        assert(events['list'][0]['protofilter_protocol'] == "HTTP" )            
-        assert(events['list'][0]['protofilter_blocked'] == True )            
+        assert(events != None)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'protofilter_protocol', 'HTTP',
+                                            'protofilter_blocked', True )
+        assert( found )
 
     def test_040_testFtpPatternBlock(self):
         nukepatterns()
@@ -144,16 +134,11 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        print ("Event:" + 
-               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
-               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
-               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
-               " now: " + str(datetime.datetime.now())) 
-        
-        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
-        assert(events['list'][0]['protofilter_protocol'] == "FTP" )            
-        assert(events['list'][0]['protofilter_blocked'] == True )            
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'protofilter_protocol', 'FTP',
+                                            'protofilter_blocked', True )
+        assert( found )
 
     def test_050_testDnsUdpPatternLog(self):
         nukepatterns()
@@ -173,16 +158,11 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        print ("Event:" + 
-               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
-               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
-               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
-               " now: " + str(datetime.datetime.now())) 
-        
-        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
-        assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
-        assert(events['list'][0]['protofilter_blocked'] == False )            
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'protofilter_protocol', 'DNS',
+                                            'protofilter_blocked', False )
+        assert( found )
 
     def test_060_testDnsUdpPatternBlock(self):
         nukepatterns()
@@ -202,16 +182,11 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        print ("Event:" + 
-               " Time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['time_stamp']['time'])/1000))) + 
-               " Client IP: " + str(events['list'][0]['c_client_addr']) + 
-               " Protocol: " + str(events['list'][0]['protofilter_protocol']) + 
-               " Blocked: " + str(events['list'][0]['protofilter_blocked']) + 
-               " now: " + str(datetime.datetime.now())) 
-        
-        assert(events['list'][0]['c_client_addr'] ==  ClientControl.hostIP )
-        assert(events['list'][0]['protofilter_protocol'] == "DNS" )            
-        assert(events['list'][0]['protofilter_blocked'] == True )            
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'protofilter_protocol', 'DNS',
+                                            'protofilter_blocked', True )
+        assert( found )
 
     @staticmethod
     def finalTearDown(self):

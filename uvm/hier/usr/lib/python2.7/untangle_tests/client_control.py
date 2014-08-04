@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import time
+import datetime
 
 class ClientControl:
 
@@ -77,11 +78,15 @@ class ClientControl:
         return result
 
     # FIXME this should be in a test util class
-    def check_events(self, events, num_events, *args):
+    def check_events(self, events, num_events, *args, **kwargs):
         if events == None:
             return False
         if num_events == 0:
             return False
+        if kwargs.get('min_date') == None:
+            min_date = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        else:
+            min_date = kwargs.get('min_date')
         if (len(args) % 2) != 0:
             print "Invalid argument length"
             return False
@@ -92,6 +97,10 @@ class ClientControl:
             event = events[num_checked]
             num_checked += 1
 
+            # check date, if the event is too old - ignore it
+            if datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000) < min_date:
+                continue
+
             # check each expected value
             # if one doesn't match continue to the next event
             # if all match, return True
@@ -101,7 +110,8 @@ class ClientControl:
                 expectedValue=args[i*2+1]
                 actualValue = event.get(key)
                 #print "key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )
-                if expectedValue != actualValue:
+                if str(expectedValue) != str(actualValue):
+                    print "mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) )
                     allMatched = False
                     break
 

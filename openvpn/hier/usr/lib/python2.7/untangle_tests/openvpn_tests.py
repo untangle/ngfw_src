@@ -192,12 +192,11 @@ class OpenVpnTests(unittest2.TestCase):
             if q['name'] == 'Connections': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        # print events['list']
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['remote_address'] == qaClientVPN)
-        assert(events['list'][0]['client_name'] == vpnClientName)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'remote_address', qaClientVPN,
+                                            'client_name', vpnClientName )
+        assert( found )
         
     def test_050_createClientVPNFullTunnel(self):
         global nodeData, vpnServerResult, vpnClientResult

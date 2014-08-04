@@ -117,14 +117,14 @@ class PhishTests(unittest2.TestCase):
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        assert(events['list'][0])
-        # print events['list'][0]
-        # Verify Quarantined events occurred..
-        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
-        assert(events['list'][0]['s_server_port'] == 25)
-        assert(events['list'][0]['addr'] == 'qa@example.com')
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['phish_action'] == 'Q')
+        assert(events != None)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_server_addr', ip_address_testuntangle,
+                                            's_server_port', 25,
+                                            'addr', 'qa@example.com',
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'phish_action', 'Q')
+        assert( found )
             
     def test_030_smtpMarkPhishTest(self):
         if (not canRelay):
@@ -145,13 +145,14 @@ class PhishTests(unittest2.TestCase):
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        # print events['list'][0]
-        # Verify Quarantined events occurred..
-        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
-        assert(events['list'][0]['s_server_port'] == 25)
-        assert(events['list'][0]['addr'] == 'qa@example.com')
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['phish_action'] == 'M')
+        assert(events != None)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_server_addr', ip_address_testuntangle,
+                                            's_server_port', 25,
+                                            'addr', 'qa@example.com',
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'phish_action', 'M')
+        assert( found )
 
     def test_040_smtpDropPhishTest(self):
         if (not canRelay):
@@ -172,13 +173,14 @@ class PhishTests(unittest2.TestCase):
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        # print events['list'][0]
-        # Verify Quarantined events occurred..
-        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
-        assert(events['list'][0]['s_server_port'] == 25)
-        assert(events['list'][0]['addr'] == 'qa@example.com')
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        assert(events['list'][0]['phish_action'] == 'D')
+        assert(events != None)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_server_addr', ip_address_testuntangle,
+                                            's_server_port', 25,
+                                            'addr', 'qa@example.com',
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'phish_action', 'D')
+        assert( found )
         
     @staticmethod
     def finalTearDown(self):

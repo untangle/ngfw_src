@@ -180,14 +180,11 @@ class CaptureTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,100)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        for event in events['list']:
-            if event['c_server_addr'] == test_untangle_com_ip:
-                assert(event['c_client_addr'] == ClientControl.hostIP)
-                assert(event['capture_blocked'] == True)
-                return
-        assert(False) # event not found
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_server_addr', test_untangle_com_ip,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            'capture_blocked', True )
+        assert( found )
 
     def test_023_captureAnonymousLogin(self):
         global node, nodeData

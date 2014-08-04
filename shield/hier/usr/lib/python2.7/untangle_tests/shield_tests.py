@@ -51,12 +51,10 @@ class ShieldTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        assert(events['list'] != None)
-        assert(len(events['list']) > 0)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.hostIP)
-        print "First Event: %s" % str(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000))
-        print "Start Time: %s" % str(startTime)
-        assert(datetime.fromtimestamp((events['list'][0]['time_stamp']['time'])/1000) > startTime)
+        found = clientControl.check_events( events.get('list'), 5,
+                                            'c_client_addr', ClientControl.hostIP,
+                                            min_date=startTime)
+        assert( found )
 
     @staticmethod
     def finalTearDown(self):
