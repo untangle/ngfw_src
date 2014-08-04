@@ -69,6 +69,7 @@ fi
 # 11.0 upgrade (Closes: #11853)
 if dpkg --compare-versions "$oldVersion" le 11.0~ ; then
   /usr/share/untangle-netd/bin/sync-settings.py -vv
+  /etc/init.d/networking restart
 fi
 
 # 11.0 remove obsolete files
