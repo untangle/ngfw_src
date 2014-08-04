@@ -97,8 +97,8 @@ class ClientControl:
             event = events[num_checked]
             num_checked += 1
 
-            # check date, if the event is too old - ignore it
-            if datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000) < min_date:
+            # if event has a date and its too old - ignore the event
+            if event.get('time_stamp') != None and datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000) < min_date:
                 continue
 
             # check each expected value
