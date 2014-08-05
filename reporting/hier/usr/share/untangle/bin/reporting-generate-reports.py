@@ -119,9 +119,9 @@ if os.path.isfile(LOCKFILE):
           logger.info("Removing leftover pidfile (pid %s)" % pid)
           os.remove(LOCKFILE)
 
-f = open(LOCKFILE, "w")
-f.write("%s\n" % os.getpid())
-f.close()
+pidfile = open(LOCKFILE, "w")
+pidfile.write("%s\n" % os.getpid())
+pidfile.close()
 logger.info("Wrote pidfile (pid: %s)" % os.getpid())
 
 import reports.i18n_helper
@@ -307,9 +307,15 @@ if not create_schemas:
 
               if not no_mail and not simulate:
                    logger.info("About to email report summaries for %s days" % (report_days,))          
-                   f = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
-                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports, attach_csv, attachment_size_limit)
-                   os.remove(f)
+                   pdf_file = None
+                   try:
+                        pdf_file = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
+                   except Exception, e:
+                        logger.warn("Failed to generate PDF")
+                        traceback.print_exc(e)
+                   reports.mailer.mail_reports(end_date, report_days, pdf_file, mail_reports, attach_csv, attachment_size_limit)
+                   if pdf_file:
+                        os.remove( pdf_file )
      except Exception, e:
           logger.critical("Exception while building report: %s" % (e,), exc_info=True)
 else:

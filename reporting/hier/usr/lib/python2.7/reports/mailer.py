@@ -8,19 +8,20 @@ REPORTS_PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sy
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 
-BODY_TEMPLATE_SIMPLE = u"""
-The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
-The PDF file requires Adobe Reader to view.
+BODY_TEMPLATE_PDF = u"""
+The %(company)s PDF Summary Reports for %(date_start)s - %(date_end)s are attached.<br/>
+<br/>
 """
 
-BODY_TEMPLATE_LINK = BODY_TEMPLATE_SIMPLE + u"""
-For more in-depth online reports, click %(link)s to view
-Online %(company)s Reports.
+BODY_TEMPLATE_LINK = u"""
+Click %(link)s to view %(company)s Reports.<br/>
+<br/>
 """
 
 ATTACHMENT_TOO_BIG_TEMPLATE = u"""
-The detailed reports were %sMB, which is too large to attach to this email:
-the user-defined limit is currently %sMB.
+The detailed reports were %sMB, which is too large to attach to this email:<br/>
+the configured limit is currently %sMB.<br/>
+<br/>
 """
 
 HTML_LINK_TEMPLATE = u'<a href="%s">here</a>'
@@ -61,7 +62,7 @@ from uvm.settings_reader import get_uvm_settings_item
 
 _ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
 
-def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachment_size_limit):
+def mail_reports(end_date, report_days, pdf_file, mail_reports, attach_csv, attachment_size_limit):
     if attach_csv:
         zip_dir = __make_zip_file(end_date, report_days, mail_reports)
         zip_file = '%s/reports.zip' % zip_dir
@@ -77,37 +78,42 @@ def mail_reports(end_date, report_days, file, mail_reports, attach_csv, attachme
     for receiver in receivers:
         try:
             has_web_access = receiver in report_users
-            mail(file, zip_file, sender, receiver, end_date, company_name, has_web_access, url, report_days, attachment_size_limit)
+            mail(pdf_file, zip_file, sender, receiver, end_date, company_name, has_web_access, url, report_days, attachment_size_limit)
         except:
             logger.warn("Failed to send email summary to '%s'" % (receiver), exc_info=True)
 
     if zip_file:
         shutil.rmtree(zip_dir)
 
-def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, url, report_days, attachment_size_limit):
+def mail(pdf_file, zip_file, sender, receiver, date, company_name, has_web_access, url, report_days, attachment_size_limit):
     Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
     msgRoot = MIMEMultipart('alternative')
+
+    if pdf_file == None and zip_file == None and not has_web_access:
+        logger.warn("Email has no content (no PDF, no ZIP, no link). Not sending...")
+        return
 
     h = { 'company': company_name,
           'date_start': (date - datetime.timedelta(days=report_days+1)).strftime(locale.nl_langinfo(locale.D_FMT)),
           'date_end': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)) }
 
+    # build both the plain-text and html version of the text
+    msg_plain = ""
+    msg_html = ""
     if has_web_access and url:
         h.update({'link' : url})
-        msg_plain = BODY_TEMPLATE_LINK % h
         h.update({'link' : HTML_LINK_TEMPLATE % (url,)})
-        msg_html = BODY_TEMPLATE_LINK % h
-    else:
-        msg_plain = msg_html = BODY_TEMPLATE_SIMPLE % h
-
+        msg_plain += BODY_TEMPLATE_LINK.replace("<br/>","\n") % h
+        msg_html += BODY_TEMPLATE_LINK % h
+    if pdf_file:
+        msg_plain += BODY_TEMPLATE_PDF.replace("<br/>","\n") % h
+        msg_html += BODY_TEMPLATE_PDF % h
     if zip_file:
       attachment_size = os.path.getsize(zip_file) / float(10**6)
       attachment_too_big = attachment_size > attachment_size_limit
       if attachment_too_big:
-          note = ATTACHMENT_TOO_BIG_TEMPLATE % (attachment_size,
-                                                attachment_size_limit)
-          msg_plain += note
-          msg_html += note
+          msg_plain += ATTACHMENT_TOO_BIG_TEMPLATE.replace("<br/>","\n") % (attachment_size, attachment_size_limit)
+          msg_html += ATTACHMENT_TOO_BIG_TEMPLATE % (attachment_size, attachment_size_limit)
 
     msgRoot.attach(MIMEText(msg_plain.encode('utf-8'), 'plain', 'utf-8'))
     msgRoot.attach(MIMEText((u"<HTML>" + msg_html + u"</HTML>").encode('utf-8'), 'html', 'utf-8'))
@@ -134,11 +140,12 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access, u
     msgRoot['From'] = "%s" % Header(sender, 'ascii') # falls back to utf-8 if ascii fails
     msgRoot['To'] = "%s" % Header(receiver, 'ascii') # falls back to utf-8 if ascii fails
 
-    part = MIMEBase('application', "pdf")
-    part.set_payload(open(file, 'rb').read())
-    Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'% (h['date_end'].replace('/', '_'),length_name))
-    msgRoot.attach(part)
+    if pdf_file:
+        part = MIMEBase('application', "pdf")
+        part.set_payload(open(pdf_file, 'rb').read())
+        Encoders.encode_base64(part)
+        part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'% (h['date_end'].replace('/', '_'),length_name))
+        msgRoot.attach(part)
 
     if zip_file and not attachment_too_big:
         part = MIMEBase('application', "zip")
@@ -204,7 +211,7 @@ def __get_url(date):
     except:
         logger.warn('Could not calculate reports URL', exc_info=True)
 
-    return 'https://%s/reports?time=%s' % ( url, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
+    return 'https://%s/reports?time=%s' % ( url, date.strftime("%Y-%m-%d") )
 
 def __get_report_users():
     rv = []
