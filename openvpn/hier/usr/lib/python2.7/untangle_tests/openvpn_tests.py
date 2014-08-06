@@ -242,16 +242,15 @@ class OpenVpnTests(unittest2.TestCase):
         while result1 and timeout > 0:
             time.sleep(1)
             timeout -= 1
-            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l >/dev/null 2>&1\"")
-        result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + ">/dev/null 2>&1\"")
+            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l\" >/dev/null 2>&1")
+        result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + "\" >/dev/null 2>&1")
         # print "look for block page"
-        webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\"")
-        # print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
+        webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\" >/dev/null 2>&1")
+        print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
 
-        # stop the vpn tunnel on remote box
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"nohup sudo pkill openvpn >/dev/null 2>&1 \"")
+
         time.sleep(5) # wait for vpn tunnel to go down 
         # print ("result " + str(result) + " webresult " + str(webresult))
         assert(listOfClients['list'][0]['address'] == qaClientVPN)
