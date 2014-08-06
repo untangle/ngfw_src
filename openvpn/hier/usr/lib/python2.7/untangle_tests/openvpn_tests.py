@@ -250,7 +250,7 @@ class OpenVpnTests(unittest2.TestCase):
 
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)
-
+        os.system("ssh -q -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"nohup sudo pkill openvpn >/dev/null 2>&1 &\"")
         time.sleep(5) # wait for vpn tunnel to go down 
         # print ("result " + str(result) + " webresult " + str(webresult))
         assert(listOfClients['list'][0]['address'] == qaClientVPN)
