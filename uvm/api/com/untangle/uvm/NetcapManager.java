@@ -4,7 +4,7 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public interface NetcapManager
 {    
@@ -19,6 +19,6 @@ public interface NetcapManager
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher );
-    public void shutdownMatches( SessionMatcher matcher, PipeSpec ps );
-    
+    public void shutdownMatches( SessionMatcher matcher, PipelineConnector connector );
+
 }

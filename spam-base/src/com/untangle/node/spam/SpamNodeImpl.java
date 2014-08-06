@@ -14,8 +14,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 
@@ -36,10 +35,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     // server for pop/imap).
     // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
     // the casing doesn't have to be initialized.
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
-        new SoloPipeSpec("spam-smtp-tarpit", this, this.tarpitHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11)
-    };
+    private PipelineConnector smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10);
+    private PipelineConnector tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
+    private PipelineConnector[] connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
 
     private final SpamScanner scanner;
 
@@ -256,9 +254,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     @Override

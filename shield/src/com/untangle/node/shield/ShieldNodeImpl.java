@@ -23,16 +23,15 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 {
     private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
     private final EventHandler handler;
-    private final SoloPipeSpec pipeSpec;
-    private final SoloPipeSpec[] pipeSpecs;
+    private final PipelineConnector connector;
+    private final PipelineConnector[] connectors;
 
     private ShieldSettings settings;
 
@@ -45,8 +44,8 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
         this.handler = new EventHandler( this );
 
-        this.pipeSpec = new SoloPipeSpec("shield", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 1);
-        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1);
+        this.connectors = new PipelineConnector[] { connector };
         
         this.scannedEventsQuery = new EventLogQuery(I18nUtil.marktr("Scanned Sessions"),
                                                     "SELECT * FROM reports.sessions " + 
@@ -95,9 +94,9 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return this.pipeSpecs;
+        return this.connectors;
     }
 
     public void initializeSettings()

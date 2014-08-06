@@ -40,7 +40,7 @@ public class Dispatcher
     private static final int TCP_READ_BUFFER_SIZE = 8192;
     private static final int UDP_MAX_PACKET_SIZE  = 16384;
     
-    private Logger logger;
+    protected static final Logger logger = Logger.getLogger( Dispatcher.class );
 
     private final PipelineConnectorImpl pipelineConnector;
     private final NodeBase node;
@@ -56,11 +56,6 @@ public class Dispatcher
     private static final String STAT_UDP_SESSION_REQUESTS = "udp-session-requests";
     
     private SessionEventHandler sessionEventListener;
-
-    /**
-     * A specific logger for this session
-     */
-    private Logger sessionEventLogger;
 
     /**
      * We need a single global <code>releasedHandler</code> for all
@@ -85,11 +80,9 @@ public class Dispatcher
      */
     public Dispatcher(PipelineConnectorImpl pipelineConnector) 
     {
-        this.logger = Logger.getLogger(Dispatcher.class.getName());
         this.pipelineConnector = pipelineConnector;
         this.node = (NodeBase)pipelineConnector.node();
         this.sessionEventListener = null;
-        this.sessionEventLogger = pipelineConnector.sessionEventLogger();
         this.releasedHandler = new ReleasedEventHandler(node);
         this.liveSessions = new ConcurrentHashMap<NodeSessionImpl,NodeSession>();
 
@@ -104,10 +97,10 @@ public class Dispatcher
         this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP NodeSession Requests")));
     }
 
-    public synchronized void destroy()
+    public synchronized void killAllSessions()
     {
         for ( NodeSessionImpl sess : liveSessions.keySet() ) {
-            removeSession( sess );
+            sess.killSession();
         }
     }
     
@@ -593,7 +586,7 @@ public class Dispatcher
 
     private void elog( Level level, String eventName, long sessionId )
     {
-        if ( sessionEventLogger.isEnabledFor(level) ) {
+        if ( logger.isEnabledFor(level) ) {
             StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");
@@ -601,13 +594,13 @@ public class Dispatcher
             message.append("] T: ");
             message.append(Thread.currentThread().getName());
 
-            sessionEventLogger.log(level, message.toString());
+            logger.log(level, message.toString());
         }
     }
 
     private void elog( Level level, String eventName, long sessionId, long dataSize )
     {
-        if (sessionEventLogger.isEnabledFor(level)) {
+        if ( logger.isEnabledFor(level) ) {
             StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");
@@ -617,7 +610,7 @@ public class Dispatcher
             message.append(" T: ");
             message.append(Thread.currentThread().getName());
 
-            sessionEventLogger.log(level, message.toString());
+            logger.log(level, message.toString());
         }
     }
     

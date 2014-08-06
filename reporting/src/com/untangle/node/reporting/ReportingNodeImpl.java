@@ -34,7 +34,7 @@ import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class ReportingNodeImpl extends NodeBase implements ReportingNode, Reporting
 {
@@ -254,9 +254,9 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     }
     
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return new PipeSpec[0];
+        return new PipelineConnector[0];
     }
 
     protected void postInit()

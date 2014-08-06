@@ -52,11 +52,6 @@ public abstract class NodeBase implements Node
     private NodeProperties nodeProperties;
 
     /**
-     * This is the pipeline/traffic subscriptions for this node
-     */
-    private PipeSpec[] pipeSpecs;
-
-    /**
      * This stores a set of parents of this node
      * Parents are any nodes that this node depends on to operate properly
      */
@@ -91,30 +86,20 @@ public abstract class NodeBase implements Node
         currentState = NodeState.LOADED;
     }
 
-    protected abstract PipeSpec[] getPipeSpecs();
+    protected abstract PipelineConnector[] getConnectors();
 
-    protected void connectPipelineConnector()
+    protected void connectPipelineConnectors()
     {
-        if (null == pipeSpecs) {
-            PipeSpec[] pss = getPipeSpecs();
-            pipeSpecs = null == pss ? new PipeSpec[0] : pss;
-            for (PipeSpec ps : pipeSpecs) {
-                ps.connectPipelineConnector();
-            }
-        } else {
-            logger.warn("PipelineConnectors already connected");
+        for ( PipelineConnector connector : getConnectors() ) {
+            UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( connector );
         }
     }
 
-    protected void disconnectPipelineConnector()
+    protected void disconnectPipelineConnectors()
     {
-        if (null != pipeSpecs) {
-            for (PipeSpec ps : pipeSpecs) {
-                ps.disconnectPipelineConnector();
-            }
-            pipeSpecs = null;
-        } else {
-            logger.warn("PipelineConnectors not connected");
+        for ( PipelineConnector connector : getConnectors() ) {
+            UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( connector );
+            connector.destroy();
         }
     }
     
@@ -331,9 +316,9 @@ public abstract class NodeBase implements Node
     {
         List<NodeSession> sessions = new LinkedList<NodeSession>();
 
-        if (null != pipeSpecs) {
-            for (PipeSpec ps : pipeSpecs) {
-                for (NodeSession sess : ps.liveSessions()) {
+        if ( getConnectors() != null ) {
+            for ( PipelineConnector connector : getConnectors() ) {
+                for ( NodeSession sess : connector.liveSessions() ) {
                     /* create a new sessiontupleimpl so the list will be serialized properly */
                     sessions.add( sess );
                 }
@@ -501,13 +486,13 @@ public abstract class NodeBase implements Node
     protected void killMatchingSessions( SessionMatcher matcher )
     {
         logger.info("killMatchingSessions()");
-        if (matcher == null)
+        if ( matcher == null )
             return;
-        if (pipeSpecs == null)
+        if ( getConnectors() == null )
             return;
         
-        for (PipeSpec ps : pipeSpecs)
-            UvmContextFactory.context().netcapManager().shutdownMatches( matcher, ps );
+        for ( PipelineConnector connector : getConnectors() )
+            UvmContextFactory.context().netcapManager().shutdownMatches( matcher, connector );
     }
     
     /**
@@ -603,7 +588,7 @@ public abstract class NodeBase implements Node
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
 
             preStart();
-            connectPipelineConnector();
+            connectPipelineConnectors();
             postStart(); 
 
             logger.info("Started    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
@@ -631,7 +616,7 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Stopping   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
             preStop();
-            disconnectPipelineConnector();
+            disconnectPipelineConnectors();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
@@ -649,7 +634,7 @@ public abstract class NodeBase implements Node
 
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
-            postStop(); // XXX if exception, state == ?
+            postStop(); 
             logger.info("Stopped    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();

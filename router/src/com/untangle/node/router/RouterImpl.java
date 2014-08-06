@@ -7,12 +7,11 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class RouterImpl extends NodeBase implements Router
 {
@@ -20,11 +19,11 @@ public class RouterImpl extends NodeBase implements Router
     private final RouterSessionManager sessionManager;
     private final DhcpMonitor dhcpMonitor;
 
-    private final SoloPipeSpec routerPipeSpec;
-    private final SoloPipeSpec routerFtpPipeSpecCtl;
-    private final SoloPipeSpec routerFtpPipeSpecData;
+    private final PipelineConnector routerConnector;
+    private final PipelineConnector routerFtpConnectorCtl;
+    private final PipelineConnector routerFtpConnectorData;
 
-    private final PipeSpec[] pipeSpecs;
+    private final PipelineConnector[] connectors;
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
@@ -39,21 +38,21 @@ public class RouterImpl extends NodeBase implements Router
         /**
          * Have to figure out pipeline ordering, this should always towards the server
          */
-        routerPipeSpec = new SoloPipeSpec("router", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
+        routerConnector = UvmContextFactory.context().pipelineFoundry().create("router", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32 - 1);
 
         /**
          * This subscription has to evaluate after NAT
          */
-        routerFtpPipeSpecCtl = new SoloPipeSpec("router-ftp-ctl", this, new RouterFtpHandler(this), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
-        routerFtpPipeSpecData = new SoloPipeSpec("router-ftp-data", this, new RouterFtpHandler(this), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
+        routerFtpConnectorCtl = UvmContextFactory.context().pipelineFoundry().create("router-ftp-ctl", this, null, new RouterFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
+        routerFtpConnectorData = UvmContextFactory.context().pipelineFoundry().create("router-ftp-data", this, null, new RouterFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
 
-        pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpecCtl, routerFtpPipeSpecData };
+        connectors = new PipelineConnector[] { routerConnector, routerFtpConnectorCtl, routerFtpConnectorData };
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     public String lookupHostname( InetAddress address )

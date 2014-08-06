@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 /**
@@ -141,7 +140,7 @@ public class SessionTable
         shutdownMatches( matcher, null );
     }
 
-    protected void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
+    protected void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
         logger.info( "shutdownMatches() called." );
@@ -163,12 +162,8 @@ public class SessionTable
                 /**
                  * Only process sessions involving the specified pipespec and associated connectors
                  */
-                if ( ps != null && ps.getPipelineConnectors() != null ) {
-                    boolean matchesOne = false;
-                    for ( PipelineConnector conn : ps.getPipelineConnectors() )
-                        if ( session.getPipelineConnectors().contains(conn) )
-                            matchesOne = true;
-                    if (!matchesOne)
+                if ( connector != null ) {
+                    if ( ! session.getPipelineConnectors().contains( connector ) )
                         continue;
                 }
                 

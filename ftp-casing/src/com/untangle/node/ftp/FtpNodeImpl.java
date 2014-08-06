@@ -4,11 +4,10 @@
 package com.untangle.node.ftp;
 
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.SessionEventHandler;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.SettingsManager;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
@@ -27,9 +26,11 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
     private SessionEventHandler clientSideDataHandler = new ForkedEventHandler( new FtpClientParserEventHandler(), new FtpUnparserEventHandler(true) );
     private SessionEventHandler serverSideDataHandler = new ForkedEventHandler( new FtpUnparserEventHandler(false), new FtpServerParserEventHandler() );
     
-    private final PipeSpec ctlPipeSpec  = new CasingPipeSpec("ftp-control", this, clientSideCtlHandler, serverSideCtlHandler, Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
-    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp-data", this, clientSideDataHandler, serverSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
+    private final PipelineConnector controlClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-client-side", this, null, clientSideCtlHandler, Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS, null, null );
+    private final PipelineConnector controlServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-server-side", this, null, serverSideCtlHandler, Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_STREAM, null, null );
+    private final PipelineConnector dataClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-client-side", this, null, clientSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS, null, null );
+    private final PipelineConnector dataServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-server-side", this, null, serverSideDataHandler, Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_STREAM, null, null );
+    private final PipelineConnector[] connectors = new PipelineConnector[] { controlClientSideConnector, controlServerSideConnector, dataClientSideConnector, dataServerSideConnector };
 
     private FtpSettings settings;
 
@@ -68,9 +69,9 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
 
     public void reconfigure()
     {
-        if (null != settings) {
-            ctlPipeSpec.setEnabled(settings.isEnabled());
-            dataPipeSpec.setEnabled(settings.isEnabled());
+        if ( settings != null ) {
+            for ( PipelineConnector connector : this.connectors ) 
+                connector.setEnabled( settings.isEnabled() );
         }
     }
 
@@ -111,15 +112,26 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
         }
     }
 
-    // NodeBase methods ----------------------------------------------
-
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
+    @Override
+    protected void connectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().registerCasing( controlClientSideConnector, controlServerSideConnector );
+        UvmContextFactory.context().pipelineFoundry().registerCasing( dataClientSideConnector, dataServerSideConnector );
+    }
+
+    @Override
+    protected void disconnectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( controlClientSideConnector );
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( dataClientSideConnector );
+    }
+    
 
     public Object getSettings()
     {

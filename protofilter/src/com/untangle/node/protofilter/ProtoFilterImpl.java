@@ -18,8 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 
@@ -31,8 +30,8 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     private final EventHandler handler = new EventHandler( this );
 
-    private final SoloPipeSpec pipeSpec = new SoloPipeSpec("protofilter", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+    private final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("protofilter", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
+    private final PipelineConnector[] connectors = new PipelineConnector[] { connector };
 
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
@@ -129,15 +128,11 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
     }        
 
-    // NodeBase methods ----------------------------------------------
-
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
-
-    // Node methods ------------------------------------------------------
 
     /*
      * First time initialization

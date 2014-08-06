@@ -95,7 +95,7 @@
   </category>
 
   <category name="com.untangle.uvm.PipelineFoundryImpl">
-    <priority value="INFO"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.uvm.SettingsManagerImpl">
@@ -123,7 +123,7 @@
   <!-- ============================================== -->
 
   <category name="com.untangle.uvm.node">
-    <priority value="INFO"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.node.util">
@@ -183,7 +183,7 @@
   </category>
 
   <category name="com.untangle.node.firewall">
-    <priority value="INFO"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.node.ftp">

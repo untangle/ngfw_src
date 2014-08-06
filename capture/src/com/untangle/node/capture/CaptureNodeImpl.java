@@ -27,12 +27,11 @@ import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.UvmContextFactory;
@@ -59,12 +58,12 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private final CaptureHttpsHandler httpsHandler = new CaptureHttpsHandler(this);
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
+    
+    private final PipelineConnector trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptureTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
+    private final PipelineConnector httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32);
+    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
+    private final PipelineConnector[] connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
 
-    private final SoloPipeSpec trafficPipe = new SoloPipeSpec("capture-traffic", this, new CaptureTrafficHandler(this), Fitting.OCTET_STREAM, Affinity.SERVER, 0);
-    private final PipeSpec httpsPipe = new SoloPipeSpec("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH);
-    private final SoloPipeSpec httpPipe = new SoloPipeSpec("capture-http", this, new CaptureHttpHandler(this), Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
-
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpsPipe, trafficPipe, httpPipe };
     private final CaptureReplacementGenerator replacementGenerator;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -371,9 +370,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return (pipeSpecs);
+        return this.connectors;
     }
 
     @Override

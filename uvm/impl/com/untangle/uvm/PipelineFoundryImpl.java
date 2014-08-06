@@ -24,13 +24,13 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Subscription;
 
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.PipelineFoundry;
-import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.SessionEventHandler;
+
 
 /**
  * Implements PipelineFoundry.
@@ -148,17 +148,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
         String nodeList = "nodes: [ ";
         for (Iterator<PipelineConnectorImpl> i = pipelineConnectorList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
-            PipeSpec pipeSpec = pipelineConnector.getPipeSpec();
 
             /**
              * Check that this netcap connector actually is interested in this session
              */
-            if ( ! pipeSpec.matches(sessionTuple) ) {
+            if ( ! pipelineConnector.matches(sessionTuple) ) {
                 // remove from pipelineConnectorList
                 i.remove(); 
             } else {
                 // keep in pipelineConnectorList
-                nodeList += pipeSpec.getName() + " ";
+                nodeList += pipelineConnector.getName() + " ";
             }
         }
         nodeList += "]";
@@ -178,13 +177,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return pipelineConnectorList;
     }
 
-    /**
-     * Create an PipelineConnectorImpl.
-     * This is here because PipelineConnectorImpl is in Impl and things in API need to create them. Should fix this
-     */
-    public PipelineConnectorImpl createPipelineConnector(PipeSpec spec, SessionEventHandler listener, Fitting input, Fitting output)
+    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
     {
-        return new PipelineConnectorImpl( spec, listener, input, output );
+        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength );
     }
 
     /**
@@ -192,6 +187,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
+        logger.debug( "registerPipelineConnector( " + pipelineConnector.getName() + " )" );
         this.pipelineConnectors.add( ((PipelineConnectorImpl) pipelineConnector) );
         Collections.sort( this.pipelineConnectors, PipelineConnectorComparator.COMPARATOR );
         clearCache();
@@ -202,6 +198,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
+        logger.debug( "deregisterPipelineConnector( " + pipelineConnector.getName() + " )" );
         this.pipelineConnectors.remove( (PipelineConnectorImpl) pipelineConnector );
         clearCache();
     }
@@ -211,10 +208,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public void registerCasing( PipelineConnector insidePipelineConnector, PipelineConnector outsidePipelineConnector )
     {
-        if (insidePipelineConnector.getPipeSpec() != outsidePipelineConnector.getPipeSpec()) {
-            throw new IllegalArgumentException("casing constraint violated");
-        }
-
+        logger.debug("registerCasing( " + insidePipelineConnector.getName() + " , " + outsidePipelineConnector.getName() + " )");
         synchronized (this) {
             casings.put( ((PipelineConnectorImpl) insidePipelineConnector) , ((PipelineConnectorImpl) outsidePipelineConnector) );
             clearCache();
@@ -226,6 +220,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public void deregisterCasing( PipelineConnector insidePipelineConnector )
     {
+        logger.debug("deregisterCasing( " + insidePipelineConnector.getName() + " )");
         synchronized (this) {
             casings.remove( ((PipelineConnectorImpl)insidePipelineConnector) );
             clearCache();
@@ -339,7 +334,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this pipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( pipelineConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) )
+            if ( ! policyMatch( pipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) )
                 continue;
             
             pipelineConnectorList.add( pipelineConnector );
@@ -381,7 +376,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this insidePipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( insidePipelineConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId) ) 
+            if ( ! policyMatch( insidePipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) ) 
                 continue;
 
             /**
@@ -613,19 +608,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
-    private static class PipelineConnectorComparator implements Comparator<PipelineConnector>
+    private static class PipelineConnectorComparator implements Comparator<PipelineConnectorImpl>
     {
         static final PipelineConnectorComparator COMPARATOR = new PipelineConnectorComparator();
 
         private PipelineConnectorComparator() { }
 
-        public int compare(PipelineConnector mp1, PipelineConnector mp2)
+        public int compare(PipelineConnectorImpl mp1, PipelineConnectorImpl mp2)
         {
-            SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
-            SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();
-
-            Affinity ra1 = null == ps1 ? null : ps1.getAffinity();
-            Affinity ra2 = null == ps2 ? null : ps2.getAffinity();
+            Affinity ra1 = mp1.getAffinity();
+            Affinity ra2 = mp2.getAffinity();
 
             if (null == ra1) {
                 if (null == ra2) {
@@ -648,8 +640,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     throw new RuntimeException("programmer malfunction");
                 }
             } else if (ra1 == ra2) {
-                int s1 = ps1.getStrength();
-                int s2 = ps2.getStrength();
+                int s1 = mp1.getAffinityStrength();
+                int s2 = mp2.getAffinityStrength();
 
                 if (s1 == s2) {
                     if (mp1 == mp2) {

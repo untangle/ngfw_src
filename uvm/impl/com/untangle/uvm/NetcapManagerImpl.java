@@ -11,8 +11,8 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.util.JsonClient;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class NetcapManagerImpl implements NetcapManager
 {
@@ -202,10 +202,10 @@ public class NetcapManagerImpl implements NetcapManager
         SessionTable.getInstance().shutdownMatches( matcher );
     }
 
-    /** Shutdown all of the sessions that have been touch by the PipeSpec that match <code>matcher</code> */
-    public void shutdownMatches( SessionMatcher matcher, PipeSpec ps )
+    /** Shutdown all of the sessions that have been touch by the PipelineConnector that match <code>matcher</code> */
+    public void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
-        SessionTable.getInstance().shutdownMatches( matcher, ps );
+        SessionTable.getInstance().shutdownMatches( matcher, connector );
     }
 
     /** See if a addr:port binding is already in use by an existing session */
@@ -213,5 +213,4 @@ public class NetcapManagerImpl implements NetcapManager
     {
         return SessionTable.getInstance().isTcpPortUsed( addr, port );
     }
-    
 }

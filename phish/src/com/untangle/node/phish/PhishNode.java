@@ -12,8 +12,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class PhishNode extends SpamNodeImpl implements Phish
 {
@@ -21,9 +20,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp).
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("phish-smtp", this, new PhishSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, 12)
-    };
+    protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("phish-smtp", this, null, new PhishSmtpHandler( this ), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 12);
+    protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
 
     public PhishNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -95,9 +93,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     @Override

@@ -22,10 +22,9 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class FirewallImpl extends NodeBase implements Firewall
 {
@@ -36,8 +35,8 @@ public class FirewallImpl extends NodeBase implements Firewall
     private static final String STAT_PASS = "pass";
     
     private final EventHandler handler;
-    private final SoloPipeSpec pipeSpec;
-    private final SoloPipeSpec[] pipeSpecs;
+    private final PipelineConnector connector;
+    private final PipelineConnector[] connectors;
 
     private EventLogQuery allEventsQuery;
     private EventLogQuery flaggedEventsQuery;
@@ -91,8 +90,8 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         this.handler = new EventHandler(this);
 
-        this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
-        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3);
+        this.connectors = new PipelineConnector[] { connector };
 
         this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                 "SELECT * FROM reports.sessions " + 
@@ -178,9 +177,9 @@ public class FirewallImpl extends NodeBase implements Firewall
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     @Override

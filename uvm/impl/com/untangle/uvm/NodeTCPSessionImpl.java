@@ -277,17 +277,11 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
 
     public void sendDataToServer( ByteBuffer buf2send )
     {
-        // logger.warn("XXX: sendDataToServer()", new Exception());
-        //  try { logger.warn("XXX: sendDataToServer(): " + new String( buf2send.array(), "ASCII" )); } catch (Exception e) {}
-
         sendData( SERVER, buf2send );
     }
 
     public void sendDataToClient( ByteBuffer buf2send )
     {
-        // logger.warn("XXX: sendDataToClient()", new Exception());
-        // try { logger.warn("XXX: sendDataToClient(): " + new String( buf2send.array(), "ASCII" )); } catch (Exception e) {}
-        
         sendData( CLIENT, buf2send );
     }
     
@@ -297,10 +291,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         int offset = buf2send.position();
         int size = buf2send.remaining();
         if (size <= 0) {
-            // if (logger.isInfoEnabled())
-                // logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
-                //             buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
-                //             buf2send.arrayOffset(), new Exception());
+            // already done
             return;
         }
 

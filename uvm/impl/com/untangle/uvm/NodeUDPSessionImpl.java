@@ -46,7 +46,6 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
 
         PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
 
-        this.logger = pipelineConnector.sessionLoggerUDP();
         this.ttl     = request.ttl();
         this.tos     = request.tos();
     }

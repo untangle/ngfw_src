@@ -22,10 +22,9 @@ import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.node.smtp.safelist.SafelistSettings;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.CasingPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 
@@ -39,9 +38,13 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final Logger logger = Logger.getLogger(SmtpNodeImpl.class);
 
-    private CasingPipeSpec smtpPipeSpec;
-    private PipeSpec[] pipeSpecs;
-
+    private SessionEventHandler clientSideHandler = new ForkedEventHandler( new SmtpClientParserEventHandler(), new SmtpClientUnparserEventHandler() );
+    private SessionEventHandler serverSideHandler = new ForkedEventHandler( new SmtpServerUnparserEventHandler(), new SmtpServerParserEventHandler() );
+    
+    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-client-side", this, null, clientSideHandler, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS, null, null );
+    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "smtp-server-side", this, null, serverSideHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_STREAM, null, null );
+    private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
+    
     private SmtpNodeSettings settings;
 
     private static Quarantine quarantine;
@@ -55,17 +58,6 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     {
         super(nodeSettings, nodeProperties);
 
-        SessionEventHandler clientSideHandler = new ForkedEventHandler( new SmtpClientParserEventHandler(), new SmtpClientUnparserEventHandler() );
-        SessionEventHandler serverSideHandler = new ForkedEventHandler( new SmtpServerUnparserEventHandler(), new SmtpServerParserEventHandler() );
-
-        // SmtpClientParserEventHandler   c2sParser = new SmtpClientParserEventHandler();
-        // SmtpServerUnparserEventHandler c2sUnparser = new SmtpServerUnparserEventHandler();
-        // SmtpServerParserEventHandler   s2cParser = new SmtpServerParserEventHandler();
-        // SmtpClientUnparserEventHandler s2cUnparser = new SmtpClientUnparserEventHandler();
-
-        this.smtpPipeSpec = new CasingPipeSpec("smtp-casing", this, clientSideHandler, serverSideHandler, Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
-        this.pipeSpecs = new PipeSpec[] { smtpPipeSpec };
-        
         createSingletonsIfRequired();
 
         MailExportFactory.factory().registerExport(this);
@@ -234,7 +226,10 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
 
     private void reconfigure()
     {
-        smtpPipeSpec.setEnabled(settings.isSmtpEnabled());
+        if ( settings != null ) {
+            for ( PipelineConnector connector : this.connectors ) 
+                connector.setEnabled( settings.isSmtpEnabled() );
+        }
     }
 
     // Node methods -----------------------------------------------------------
@@ -301,10 +296,23 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
     // NodeBase methods ---------------------------------------------------
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
+
+    @Override
+    protected void connectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().registerCasing( clientSideConnector, serverSideConnector );
+    }
+
+    @Override
+    protected void disconnectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector );
+    }
+    
 
     public Object getSettings()
     {

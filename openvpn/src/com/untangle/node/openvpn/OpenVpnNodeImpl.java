@@ -29,8 +29,7 @@ import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 
 public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 {
@@ -43,8 +42,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     private static final String STAT_PASS = "pass";
     private static final String STAT_CONNECT = "connect";
 
-    private final SoloPipeSpec pipeSpec;
-    private final SoloPipeSpec[] pipeSpecs;
+    private final PipelineConnector connector;
+    private final PipelineConnector[] connectors;
 
     private final EventHandler handler;
     
@@ -67,8 +66,8 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.openVpnMonitor   = new OpenVpnMonitor( this );
         this.listener         = new NetworkListener();
 
-        this.pipeSpec = new SoloPipeSpec( "openvpn", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 2);
-        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
+        this.connectors = new PipelineConnector[] { connector };
 
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
@@ -77,9 +76,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     @Override

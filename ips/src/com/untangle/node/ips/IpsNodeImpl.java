@@ -14,8 +14,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 
@@ -31,8 +30,9 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     final IpsStatistics statistics;
 
     private final EventHandler handler;
-    private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
-    private final PipeSpec[] pipeSpecs;
+    private final PipelineConnector  octetConnector;
+    private final PipelineConnector httpConnector;
+    private final PipelineConnector [] connectors;
 
     private IpsDetectionEngine engine;
 
@@ -48,9 +48,10 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         statistics = new IpsStatistics();
 
         // Put the octet stream close to the server so that it is after the http processing.
-        octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
-        httpPipeSpec = new SoloPipeSpec("ips-http", this, new IpsHttpHandler(this), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
-        pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
+
+        this.octetConnector = UvmContextFactory.context().pipelineFoundry().create("ips-octet", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 10);
+        this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("ips-http", this, null, new IpsHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, 0);
+        this.connectors = new PipelineConnector[] { octetConnector, httpConnector };
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "SELECT * FROM reports.sessions " + 
@@ -73,10 +74,9 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        logger.debug("Getting PipeSpec");
-        return pipeSpecs;
+        return this.connectors;
     }
 
     public IpsStatistics getStatistics()

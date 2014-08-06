@@ -961,6 +961,7 @@ public abstract class NodeSessionImpl implements NodeSession
             newServerAddr + ":" +
             getNewServerPort();
     }
+
     protected void closeFinal()
     {
         cancelTimer();

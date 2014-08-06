@@ -24,8 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -43,8 +42,8 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final Logger logger = Logger.getLogger(getClass());
     
-    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("web-filter", this, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
-    protected final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
+    protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
+    protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
 
     protected final WebFilterReplacementGenerator replacementGenerator;
 
@@ -309,9 +308,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     @Override

@@ -27,10 +27,8 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.vnet.Subscription;
 
 /**
  * Virus Node.
@@ -67,14 +65,15 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
         "The infected portion of the message was removed by Virus Blocker";
 
-    private static final int FTP = 0;
-    private static final int HTTP = 1;
-    private static final int SMTP = 2;
+    private PipelineConnector virusFtpCtl;
+    private PipelineConnector virusFtpData;
+    private PipelineConnector virusHttp;
+    private PipelineConnector virusSmtp;
 
     private static int deployCount = 0;
     
     private final VirusScanner scanner;
-    private final PipeSpec[] pipeSpecs;
+    private final PipelineConnector[] connectors;
     private final VirusReplacementGenerator replacementGenerator;
 
     private final Logger logger = Logger.getLogger(VirusNodeImpl.class);
@@ -127,7 +126,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         super( nodeSettings, nodeProperties );
 
         this.scanner = scanner;
-        this.pipeSpecs = initialPipeSpecs();
+        this.connectors = initialConnectors();
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
 
         String nodeName = getName();
@@ -273,51 +272,36 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     // Node methods ------------------------------------------------------
 
-    private PipeSpec[] initialPipeSpecs()
+    private PipelineConnector[] initialConnectors()
     {
         int strength = getStrength();
-        PipeSpec[] result = new PipeSpec[] {
-            new SoloPipeSpec("virus-ftp-ctl", this, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-ftp-data", this, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-http", this, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-smtp", this, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
+
+        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl",  this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength);
+        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength);
+        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http",  this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, strength);
+        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp",  this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, strength);
+
+        PipelineConnector[] result = new PipelineConnector[] {
+            virusFtpCtl,
+            virusFtpData,
+            virusHttp,
+            virusSmtp
         };
         return result;
     }
 
     public void reconfigure()
     {
-        // FTP
-        Set<Subscription> subscriptions = new HashSet<Subscription>();
-        {
-            Subscription subscription = new Subscription(Protocol.TCP);
-            subscriptions.add(subscription);
-        }
-        pipeSpecs[FTP].setSubscriptions(subscriptions);
-
-        // HTTP
-        subscriptions = new HashSet<Subscription>();
-        if (settings.getScanHttp()) {
-            Subscription subscription = new Subscription(Protocol.TCP);
-            subscriptions.add(subscription);
-        }
-        pipeSpecs[HTTP].setSubscriptions(subscriptions);
-
-        // SMTP
-        subscriptions = new HashSet<Subscription>();
-        {
-            Subscription subscription = new Subscription(Protocol.TCP);
-            subscriptions.add(subscription);
-        }
-        pipeSpecs[SMTP].setSubscriptions(subscriptions);
+        virusHttp.setEnabled( settings.getScanHttp() );
+        virusSmtp.setEnabled( settings.getScanSmtp() );
+        virusFtpCtl.setEnabled( settings.getScanFtp() );
+        virusFtpData.setEnabled( settings.getScanFtp() );
     }
 
-    // NodeBase methods ----------------------------------------------
-
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
     public void initializeSettings()

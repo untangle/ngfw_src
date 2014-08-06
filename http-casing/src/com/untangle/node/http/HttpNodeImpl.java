@@ -7,9 +7,8 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.CasingPipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.SettingsManager;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
@@ -23,8 +22,10 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );
     
-    private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http-casing", this, clientSideHandler, serverSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+    private final PipelineConnector clientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-client-side", this, null, clientSideHandler, Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS, null, null );
+    private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, null, null );
+    private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
+
     private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -60,7 +61,8 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     private void reconfigure()
     {
         if ( settings != null ) {
-            pipeSpec.setEnabled(settings.isEnabled());
+            for ( PipelineConnector connector : this.connectors ) 
+                connector.setEnabled( settings.isEnabled() );
         }
     }
 
@@ -101,11 +103,23 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
 
+    @Override
+    protected void connectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().registerCasing( clientSideConnector, serverSideConnector );
+    }
+
+    @Override
+    protected void disconnectPipelineConnectors()
+    {
+        UvmContextFactory.context().pipelineFoundry().deregisterCasing( clientSideConnector );
+    }
+    
     public Object getSettings()
     {
         return getHttpSettings();

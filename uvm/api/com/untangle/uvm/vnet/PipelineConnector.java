@@ -23,13 +23,8 @@ public interface PipelineConnector
      * Deactivates an active PipelineConnector and disconnects it from netcap.
      * This kills all sessions and threads, and keeps any new sessions
      * or further commands from being issued.
-     *
-     * The PipelineConnector may not be used again.  State will be
-     * <code>DEAD_ARGON</code> from here on out.
      */
     void destroy();
-
-    PipeSpec getPipeSpec();
 
     long[] liveSessionIds();
 
@@ -37,9 +32,15 @@ public interface PipelineConnector
     
     Node node();
 
+    String getName();
+
     Fitting getInputFitting();
 
     Fitting getOutputFitting();
+
+    boolean isEnabled();
+
+    void setEnabled( boolean enabled );
 }
 
 

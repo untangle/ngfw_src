@@ -1,5 +1,5 @@
 /**
- * $Id$
+* $Id$
  */
 package com.untangle.uvm;
 
@@ -13,13 +13,15 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeUDPSession;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.Subscription;
+import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.SessionEventHandler;
+import com.untangle.uvm.node.Node;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.
@@ -29,71 +31,58 @@ import com.untangle.uvm.vnet.SessionEventHandler;
 public class PipelineConnectorImpl implements PipelineConnector
 {
     /**
-     * Live flag
-     */
-    private boolean live = false;
-    
-    /**
      * Active Sessions for this agent
      */
     private Set<NodeSession> activeSessions = new HashSet<NodeSession>();
 
-    private final PipeSpec pipeSpec;
+    private boolean enabled = true;
 
-    private Dispatcher dispatcher;
-    private SessionEventHandler listener;
-
+    private final Dispatcher dispatcher;
+    private final String name;
     private final Node node;
-
-    private final Logger logger;
-    private final Logger sessionLogger;
-    private final Logger sessionEventLogger;
-    private final Logger sessionLoggerTCP;
-    private final Logger sessionLoggerUDP;
-
+    private final Subscription subscription;
+    private final SessionEventHandler listener;
     private final Fitting inputFitting;
     private final Fitting outputFitting;
+    private final Affinity affinity;
+    private final Integer affinityStrength;
+    
+    protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
     
     // public construction is the easiest solution to access from
     // PipelineConnectorManager for now.
-    public PipelineConnectorImpl(PipeSpec pipeSpec, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting )
+    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength )
     {
-        this.node = pipeSpec.getNode();
-
+        this.name = name;
+        this.node = node;
+        this.subscription = subscription;
         this.listener = listener;
-        this.pipeSpec = pipeSpec;
-        this.dispatcher = dispatcher;
-
-        logger = Logger.getLogger(PipelineConnector.class);
-        sessionLogger = Logger.getLogger(NodeSession.class);
-        sessionEventLogger = Logger.getLogger(NodeSession.class);
-        sessionLoggerTCP = Logger.getLogger(NodeTCPSession.class);
-        sessionLoggerUDP = Logger.getLogger(NodeUDPSession.class);
         this.inputFitting = inputFitting;
         this.outputFitting = outputFitting;
+        this.affinity = affinity;
+        this.affinityStrength = affinityStrength;
         
-        try {
-            start();
-        } catch (Exception x) {
-            logger.error("Exception plumbing PipelineConnector", x);
-            destroy();
-        }
+        dispatcher = new Dispatcher(this);
+        if (listener != null)
+            dispatcher.setSessionEventHandler( listener );
     }
 
-    public Dispatcher getDispatcher()
+    public boolean isEnabled()
     {
-        return dispatcher;
+        return enabled;
     }
 
-    public PipeSpec getPipeSpec()
+    public void setEnabled(boolean enabled)
     {
-        return pipeSpec;
+        this.enabled = enabled;
     }
 
-    public Node node()
-    {
-        return node;
-    }
+    public String getName() { return this.name; }
+    public Node getNode() { return this.node; }
+    public Node node() { return this.node; }
+    public Affinity getAffinity() { return this.affinity; }
+    public Integer getAffinityStrength() { return this.affinityStrength; }
+    public Dispatcher getDispatcher() { return dispatcher; }
 
     public Fitting getInputFitting()
     {
@@ -103,31 +92,6 @@ public class PipelineConnectorImpl implements PipelineConnector
     public Fitting getOutputFitting()
     {
         return outputFitting;
-    }
-    
-    public Logger logger()
-    {
-        return logger;
-    }
-
-    public Logger sessionLogger()
-    {
-        return sessionLogger;
-    }
-
-    public Logger sessionEventLogger()
-    {
-        return sessionEventLogger;
-    }
-
-    public Logger sessionLoggerTCP()
-    {
-        return sessionLoggerTCP;
-    }
-
-    public Logger sessionLoggerUDP()
-    {
-        return sessionLoggerUDP;
     }
 
     public NodeProperties nodeProperties()
@@ -150,19 +114,6 @@ public class PipelineConnectorImpl implements PipelineConnector
             return null;
     }
     
-    private synchronized  void start() 
-    {
-        if ( this.live )
-            return;
-        
-        dispatcher = new Dispatcher(this);
-
-        if (listener != null)
-            dispatcher.setSessionEventHandler( listener );
-
-        this.live = true;
-    }
-
     /**
      * This is called by the Node (or NodeManager?) to disconnect
      * from a live PipelineConnector. Since it is live we must be sure to shut down the
@@ -171,21 +122,17 @@ public class PipelineConnectorImpl implements PipelineConnector
      */
     public synchronized void destroy()
     {
-        if ( ! this.live ) return;
+        if ( this.dispatcher == null )
+            return;
 
         try {
-            dispatcher.destroy();
+            this.dispatcher.killAllSessions();
         } catch (Exception x) {
             logger.info("Exception destroying PipelineConnector", x);
         }
-        dispatcher = null;
-
-        SessionTable.getInstance().shutdownActive();
 
         /* Remove all of the active sessions */
         activeSessions.clear();
-
-        this.live = false;
     }
 
 
@@ -208,9 +155,22 @@ public class PipelineConnectorImpl implements PipelineConnector
     {
         return activeSessions.remove( session );
     }
+
+    public boolean matches( com.untangle.uvm.node.SessionTuple tuple )
+    {
+        if ( !enabled ) {
+            return false;
+        }
+        
+        if ( subscription != null && ! subscription.matches( tuple ) ) {
+            return false;
+        }
+
+        return true;
+    }
     
     public String toString()
     {
-        return "PipelineConnector[" + this.pipeSpec.getName() + "]";
+        return "PipelineConnector[" + this.name + "]";
     }
 }

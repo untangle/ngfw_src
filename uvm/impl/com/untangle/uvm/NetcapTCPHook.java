@@ -224,6 +224,10 @@ public class NetcapTCPHook implements NetcapCallback
                     request = new TCPNewSessionRequestImpl( prevRequest, agent, sessionEvent, sessionGlobalState );
                 }
 
+                if ( agent.getDispatcher() == null ) {
+                    logger.warn("NULL DISPATCHER XXX " + agent.getName());
+                }
+                    
                 NodeTCPSession session = agent.getDispatcher().newSession( request );
 
                 try {
