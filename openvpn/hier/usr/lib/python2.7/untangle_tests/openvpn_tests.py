@@ -91,7 +91,7 @@ class OpenVpnTests(unittest2.TestCase):
             vpnHostResult = subprocess.call(["ping","-c","1",qaHostVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             vpnClientResult = subprocess.call(["ping","-c","1",qaClientVPN],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             serverVPNIP = uvmContext.networkManager().getFirstWanAddress()
-            vpnServerResult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 1 " + serverVPNIP + " >/dev/null 2>&1\"")
+            vpnServerResult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"ping -c 1 " + serverVPNIP + "\" >/dev/null 2>&1")
 
     # verify client is online
     def test_010_clientIsOnline(self):
