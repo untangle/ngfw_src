@@ -4,6 +4,7 @@ import getopt
 import signal
 import os
 import time
+import traceback
 sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 import unittest2
@@ -191,7 +192,11 @@ def runTestSuite(suite):
             print "Test success : %s %s " % (test_name, timeString)
 
     if "finalTearDown" in dir(suite):
-        suite.finalTearDown(suite)
+        try:
+            suite.finalTearDown(suite)
+        except Exception, e:
+            print "finalTearDown EXCEPTION: "
+            traceback.print_exc( e )
 
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
