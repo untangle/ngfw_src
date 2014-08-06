@@ -725,6 +725,7 @@ class NetworkTests(unittest2.TestCase):
     def test_130_sessionview(self):
         foundTestSession = False
         clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",False,True)
+        time.sleep(2) # since we launched netcat in background, give it a second to establish connection
         result = uvmContext.sessionMonitor().getMergedSessions()
         sessionList = result['list']
         # find session generated with netcat in session table.
