@@ -12,9 +12,6 @@ from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
 
-ftp_server = "test.untangle.com"
-ftp_virus_file_name = "FedEx-Shipment-Notification-Jan23-2012-100100.zip"
-
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
@@ -51,9 +48,9 @@ class VirusTests(unittest2.TestCase):
         if node == None:
             # download eicar and trojan files before installing virus blocker
             clientControl.runCommand("rm /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file >/dev/null 2>&1")
-            result = clientControl.runCommand("wget http://test.untangle.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
+            result = clientControl.runCommand("wget http://test.untangle.com/virus/eicar.com -O /tmp/eicar -o /dev/null 2>&1")
             assert (result == 0)
-            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
+            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
             assert (result == 0)
             md5StdNum = clientControl.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
             print "md5StdNum <%s>" % md5StdNum
@@ -75,29 +72,34 @@ class VirusTests(unittest2.TestCase):
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_012_httpVirusBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip 2>&1 | grep -q blocked")
+    def test_012_httpEicarBlocked(self):
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_013_httpVirusPassSite(self):
+    def test_013_httpVirusBlocked(self):
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
+        assert (result == 0)
+
+    # test that client can block virus http download zip
+    def test_014_httpEicarPassSite(self):
         addPassSite("test.untangle.com")
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip 2>&1 | grep -q blocked")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         nukePassSites()
         assert (result == 1)
 
     # test that client can ftp download zip
     def test_021_ftpNonVirusNotBlocked(self):
-        adResult = subprocess.call(["ping","-c","1",ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        adResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/test.zip")
+        result = clientControl.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
     def test_022_ftpVirusBlocked(self):
         clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
@@ -109,20 +111,20 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        ftp_server_IP = socket.gethostbyname(ftp_server)
+        ftp_server_IP = socket.gethostbyname("test.untangle.com")
         found = clientControl.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
                                             "c_client_addr", ClientControl.hostIP, 
-                                            "uri", ftp_virus_file_name,
+                                            "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
 
     # test that client can block virus ftp download zip
     def test_023_ftpVirusPassSite(self):
-        ftp_server_IP = socket.gethostbyname(ftp_server)
+        ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
         clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
@@ -137,14 +139,14 @@ class VirusTests(unittest2.TestCase):
         found = clientControl.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
                                             "c_client_addr", ClientControl.hostIP, 
-                                            "uri", ftp_virus_file_name,
+                                            "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
         nukePassSites()
 
     def test_100_eventlog_httpVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
         flushEvents()
         query = None;
@@ -155,7 +157,7 @@ class VirusTests(unittest2.TestCase):
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
-                                            "uri", ("/test/eicar.zip?arg=%s" % fname),
+                                            "uri", ("/virus/eicar.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', False )
         assert( found )
 
@@ -178,7 +180,7 @@ class VirusTests(unittest2.TestCase):
 
     def test_102_eventlog_ftpVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + ftp_server + "/" + ftp_virus_file_name)
+        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         flushEvents()
         query = None;
@@ -188,13 +190,13 @@ class VirusTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5, 
-                                            "uri", ftp_virus_file_name,
+                                            "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O /dev/null ftp://" + ftp_server + "/test.zip")
+        result = clientControl.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
         flushEvents()
         query = None;
@@ -267,7 +269,7 @@ class VirusTests(unittest2.TestCase):
     port25Test = subprocess.call(["netcat","-z","-w","1","test.untangle.com","25"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     @unittest2.skipIf(port25Test != 0,  "Port 25 blocked")
     def test_106_eventlog_smtpVirusPassList(self):
-        ftp_server_IP = socket.gethostbyname(ftp_server)
+        ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
