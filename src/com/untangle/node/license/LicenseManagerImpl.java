@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
@@ -50,7 +50,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[0];
+    private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     /**
      * Map from the product name to the latest valid license available for this product
@@ -118,9 +118,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+    protected PipelineConnector[] getConnectors()
     {
-        return pipeSpecs;
+        return this.connectors;
     }
     
     /**
