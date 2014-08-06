@@ -723,10 +723,22 @@ class NetworkTests(unittest2.TestCase):
         assert(result == 0)
 
     def test_130_sessionview(self):
+        foundTestSession = False
+        clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",False,True)
         result = uvmContext.sessionMonitor().getMergedSessions()
         sessionList = result['list']
-        # TODO verify columns in list.
-        # print listSessions
+        # find session generated with netcat in session table.
+        for i in range(len(sessionList)):
+            # print sessionList[i]
+            # print "------------------------------"
+            if (sessionList[i]['preNatClient'] == ClientControl.hostIP) and \
+               (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
+               (sessionList[i]['postNatServerPort'] == 80) and \
+               (not sessionList[i]['bypassed']):
+                foundTestSession = True
+                break
+        clientControl.runCommand("pkill netcat >/dev/null 2>&1")
+        assert(foundTestSession)
 
     @staticmethod
     def finalTearDown(self):
