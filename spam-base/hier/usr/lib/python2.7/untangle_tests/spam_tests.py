@@ -49,7 +49,8 @@ def getLatestMailSender():
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail():
-    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180 >/dev/null 2>&1")
+    clientControl.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180 >/dev/null 2>&1")
+    time.delay(2) # wait for email to be sent
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -111,6 +112,8 @@ class SpamTests(unittest2.TestCase):
         ip_address_testuntangle = match.group()
 
         sendSpamMail()
+        flushEvents()
+
         query = None;
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
