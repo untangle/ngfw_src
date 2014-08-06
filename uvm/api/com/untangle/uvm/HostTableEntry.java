@@ -64,10 +64,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setHostname( String newValue ) { this.hostname = newValue; updateAccessTime(); }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
-    public void setUsernameAdConnector( String newValue ) { this.usernameAdConnector = newValue; updateAccessTime(); }
+    public void setUsernameAdConnector( String newValue ) { this.usernameAdConnector = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
 
     public String getUsernameCapture() { return this.usernameCapture; }
-    public void setUsernameCapture( String newValue ) { this.usernameCapture = newValue; updateAccessTime(); }
+    public void setUsernameCapture( String newValue ) { this.usernameCapture = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
     
     public boolean getCaptivePortal() { return this.captivePortal; }
     public void setCaptivePortal( boolean newValue ) { this.captivePortal = newValue; updateAccessTime(); }

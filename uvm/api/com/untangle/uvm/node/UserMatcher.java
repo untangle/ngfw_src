@@ -66,7 +66,7 @@ public class UserMatcher
             }
             if (value.equalsIgnoreCase(this.single))
                 return true;
-            if (Pattern.matches(this.regexValue, value))
+            if (Pattern.matches(this.regexValue, value.toLowerCase()))
                 return true;
             return false;
             
