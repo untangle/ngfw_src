@@ -74,7 +74,7 @@ class ClientControl:
 
     # FIXME this should be in a test util class
     def isOnline(self):
-        result = self.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = self.runCommand("wget -O /dev/null -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         return result
 
     # FIXME this should be in a test util class

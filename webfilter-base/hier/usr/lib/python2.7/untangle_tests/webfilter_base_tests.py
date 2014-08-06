@@ -78,13 +78,10 @@ class WebFilterBaseTests(unittest2.TestCase):
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
-                raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+                raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             flushEvents()
         self.node = node
-        # remove previous temp files
-        # FIXME dont run these before every test
-        clientControl.runCommand("rm -f /tmp/webfilter_base_test_* ~/index.html* ~/unblock.*")
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -420,6 +417,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings["unblockMode"] = "Host"
         node.setSettings(settings)        
         # this test URL should be blocked but allow  
+        clientControl.runCommand("rm -f /tmp/webfilter_base_test_120.log")
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/webfilter_base_test_120.log -O /tmp/webfilter_base_test_120.out http://test.untangle.com/test/testPage1.html")
         resultButton = clientControl.runCommand("grep -q 'unblock' /tmp/webfilter_base_test_120.out")
         resultBlock = clientControl.runCommand("grep -q 'blockpage' /tmp/webfilter_base_test_120.out")
@@ -435,8 +433,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print "unBlockParameters %s" % unBlockParameters
-        clientControl.runCommand("wget -q --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
-        resultUnBlock = clientControl.runCommand("wget -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        clientControl.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        resultUnBlock = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -452,7 +450,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings = node.getSettings()
         settings["passReferers"] = False
         node.setSettings(settings)
-        resultReferer = clientControl.runCommand("wget --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = clientControl.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -467,7 +465,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings = node.getSettings()
         settings["passReferers"] = True
         node.setSettings(settings)
-        resultReferer = clientControl.runCommand("wget --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = clientControl.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
