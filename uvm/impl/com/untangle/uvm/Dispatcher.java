@@ -97,10 +97,12 @@ public class Dispatcher
         this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP NodeSession Requests")));
     }
 
-    public synchronized void killAllSessions()
+    public void killAllSessions()
     {
-        for ( NodeSessionImpl sess : liveSessions.keySet() ) {
-            sess.killSession();
+        for ( Iterator<NodeSessionImpl> itr = liveSessions.keySet().iterator() ; itr.hasNext() ; ) {
+            NodeSessionImpl sess = itr.next();
+            itr.remove(); // remove it from hashmap
+            sess.killSession(); // then kill it
         }
     }
     

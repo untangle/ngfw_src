@@ -3,11 +3,10 @@
  */
 package com.untangle.uvm;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.Node;
@@ -33,7 +32,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     /**
      * Active Sessions for this agent
      */
-    private Set<NodeSession> activeSessions = new HashSet<NodeSession>();
+    private Set<NodeSession> activeSessions = java.util.Collections.newSetFromMap(new ConcurrentHashMap<NodeSession,Boolean>());
 
     private boolean enabled = true;
 
@@ -120,11 +119,8 @@ public class PipelineConnectorImpl implements PipelineConnector
      * Dispatcher nicely (in comparison to shutdown, below).
      *
      */
-    public synchronized void destroy()
+    public void destroy()
     {
-        if ( this.dispatcher == null )
-            return;
-
         try {
             this.dispatcher.killAllSessions();
         } catch (Exception x) {
@@ -141,7 +137,7 @@ public class PipelineConnectorImpl implements PipelineConnector
      * @return True if the session was added, false if the agent is dead, or the session
      *   has already been added.
      */
-    public synchronized boolean addSession( NodeSession session )
+    public boolean addSession( NodeSession session )
     {
         return activeSessions.add( session );
     }
@@ -151,7 +147,7 @@ public class PipelineConnectorImpl implements PipelineConnector
      * @return True if the session was removed, false if the session was not in the list 
      *   of active session.
      */
-    public synchronized boolean removeSession( NodeSession session )
+    public boolean removeSession( NodeSession session )
     {
         return activeSessions.remove( session );
     }
