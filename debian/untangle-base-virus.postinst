@@ -1,5 +1,3 @@
 #! /bin/bash
 
-[ -x /etc/init.d/apache2 ] && /etc/init.d/apache2 reload
-
 exit 0
