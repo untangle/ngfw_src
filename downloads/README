@@ -6,6 +6,7 @@ velocity: used in templates for quarantine email
 commons-fileupload: file upload (uvm & servlets)
 commons-httpclient: settings manager (uvm)
 commons-codec: base64 encoding (uvm & apps)
+commons-io: used for file upload servlets internally in tomcat (not needed for compile, only runtime)
 slf4j: logging
 python-jsonrpc: used by ucli
 dnsjava: used in the untangle-vm

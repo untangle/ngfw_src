@@ -83,6 +83,7 @@ class Jars
 
     const_set(:HttpClient, [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
                             Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
+                            Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
                             Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
               
     const_set(:Jstl, [ Jars.downloadTarget('Ajax/jars/jstl.jar'),
