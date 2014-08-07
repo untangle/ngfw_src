@@ -172,9 +172,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert (found) # test profile not found in remoteServers list
         nodeData['remoteServers']['list'][i]['enabled'] = False
         node.setSettings(nodeData)
-        # time.sleep(10) # wait for vpn tunnel to fall
         remoteHostResult = waitForPing(qaHostVPNLanIP,1)
-        # remoteHostResult = subprocess.call(["ping","-c","1",qaHostVPNLanIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         assert (remoteHostResult)
         tunnelUp = False
         
