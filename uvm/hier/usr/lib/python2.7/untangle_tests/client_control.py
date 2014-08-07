@@ -34,7 +34,7 @@ class ClientControl:
     # returns 0 if the process returned 0, 1 otherwise
     def runCommand(self, command, stdout=False, nowait=False):
 
-        if (ClientControl.verbosity <= 0) and not stdout:
+        if not stdout:
             shellRedirect = " >/dev/null 2>&1 "
         else:
             shellRedirect = ""
@@ -72,7 +72,6 @@ class ClientControl:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
 
-    # FIXME this should be in a test util class
     def isOnline(self):
         result = self.runCommand("wget -O /dev/null -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
         return result
