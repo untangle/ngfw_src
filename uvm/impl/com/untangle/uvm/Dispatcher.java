@@ -5,10 +5,12 @@ package com.untangle.uvm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.nio.ByteBuffer;
+import java.net.InetAddress;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -99,11 +101,17 @@ public class Dispatcher
 
     public void killAllSessions()
     {
-        for ( Iterator<NodeSessionImpl> itr = liveSessions.keySet().iterator() ; itr.hasNext() ; ) {
-            NodeSessionImpl sess = itr.next();
-            itr.remove(); // remove it from hashmap
-            sess.killSession(); // then kill it
-        }
+        UvmContextFactory.context().netcapManager().shutdownMatches( new SessionMatcher() {
+                public boolean isMatch( Long policyId,
+                                        short protocol,
+                                        int clientIntf, int serverIntf,
+                                        InetAddress clientAddr, InetAddress serverAddr,
+                                        int clientPort, int serverPort,
+                                        Map<String,Object> attachments )
+                {
+                    return true;
+                }
+            }, pipelineConnector );
     }
     
     // Called by the new session handler thread.
