@@ -617,6 +617,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
             json.put("storeUrl", this.getStoreUrl());
             json.put("isRegistered", this.isRegistered());
+            json.put("timezone", this.adminManager().getTimeZone());
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);
         }
