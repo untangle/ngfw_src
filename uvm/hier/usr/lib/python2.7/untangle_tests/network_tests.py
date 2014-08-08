@@ -740,6 +740,24 @@ class NetworkTests(unittest2.TestCase):
                 break
         clientControl.runCommand("pkill netcat")
         assert(foundTestSession)
+        
+    def test_140_hostview(self):
+        foundTestSession = False
+        clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",False,True)
+        time.sleep(2) # since we launched netcat in background, give it a second to establish connection
+        result = uvmContext.hostTable().getHosts()
+        sessionList = result['list']
+        # find session generated with netcat in session table.
+        for i in range(len(sessionList)):
+            # print sessionList[i]
+            # print "------------------------------"
+            if (sessionList[i]['hostname'] == ClientControl.hostIP) and \
+                (sessionList[i]['address'] == ClientControl.hostIP) and \
+                (not sessionList[i]['penaltyBoxed']):
+                foundTestSession = True
+                break
+        clientControl.runCommand("pkill netcat")
+        assert(foundTestSession)        
 
     @staticmethod
     def finalTearDown(self):
