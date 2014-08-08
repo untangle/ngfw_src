@@ -147,7 +147,7 @@ class CaptureTests(unittest2.TestCase):
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")   
 
         # remove previous temp files
-        clientControl.runCommand("rm -f /tmp/capture_test_* >/dev/null 2>&1")
+        clientControl.runCommand("rm -f /tmp/capture_test_*")
 
     def test_010_clientIsOnline(self):
         result = clientControl.isOnline()
@@ -167,7 +167,7 @@ class CaptureTests(unittest2.TestCase):
         assert (search == 0)
         # get the IP address of the capture page 
         ipfind = clientControl.runCommand("grep 'Location' /tmp/capture_test_021.log",True)
-        print 'ipFind %s' % ipfind
+        # print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP

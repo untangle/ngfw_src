@@ -75,7 +75,7 @@ class ProtofilterTests(unittest2.TestCase):
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukepatterns()
         assert (result == 0)
         time.sleep(3);
@@ -100,7 +100,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(3);
         flushEvents()
@@ -124,7 +124,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="File Transfer Protocol")
-        result = clientControl.runCommand("wget -4 -t 2 -o /dev/null ftp://test.untangle.com")
+        result = clientControl.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
         assert (result != 0)
         time.sleep(3);
         flushEvents()
@@ -148,7 +148,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=False,
                     category="Web", 
                     description="Domain Name System")
-        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8 >/dev/null 2>&1")
+        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result == 0)
         time.sleep(3);
         flushEvents()
@@ -172,7 +172,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="Domain Name System")
-        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8 >/dev/null 2>&1")
+        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result != 0)
         time.sleep(3);
         flushEvents()

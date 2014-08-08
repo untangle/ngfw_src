@@ -70,7 +70,7 @@ class IpsTests(unittest2.TestCase):
     def test_011_testblock(self):
         nukeRules()
         addRule("GET content test", "tcp any any -> any any (msg:\"FOO\"; content:\"GET\"; sid:1900; rev:10;)", category="aaaaaaa", description="aaaaaaa")
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukeRules()
         assert (result != 0)
 
@@ -78,7 +78,7 @@ class IpsTests(unittest2.TestCase):
         nukeRules()
         randomName = "".join( [random.choice(string.letters) for i in xrange(8)] )
         addRule("GET content test", "tcp any any -> any any (msg:\"FOO\"; content:\"GET\"; sid:1900; rev:10;)", sid=random.randint(10000,99999999), category=randomName, description=randomName)
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(1);
         flushEvents()

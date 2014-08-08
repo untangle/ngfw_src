@@ -242,7 +242,7 @@ def getDownloadSpeed():
 def getUDPSpeed():
     # Use mgen to get UDP speed.  Returns number of packets received.
     # start mgen receiver on radius server.
-    os.system("rm mgen_recv.dat >/dev/null 2>&1")
+    os.system("rm -f mgen_recv.dat")
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm mgen_recv.dat >/dev/null 2>&1\"")
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
     # start the UDP generator on the client behind the Untangle.
@@ -260,15 +260,15 @@ def getUDPSpeed():
 def sendUDPPackets():
     # Use mgen to send UDP packets.  Returns number of packets received.
     # start mgen receiver on client.
-    os.system("rm mgen_recv.dat >/dev/null 2>&1")
-    clientControl.runCommand("rm mgen_recv.dat >/dev/null 2>&1")
-    clientControl.runCommand("mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &")
+    os.system("rm -f mgen_recv.dat")
+    clientControl.runCommand("rm -f mgen_recv.dat")
+    clientControl.runCommand("mgen output mgen_recv.dat port 5000 &")
     # start the UDP generator on the radius server.
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1\"")
     # wait for UDP to finish
     time.sleep(70)
     # kill mgen receiver    
-    clientControl.runCommand("pkill mgen >/dev/null 2>&1")
+    clientControl.runCommand("pkill mgen")
     os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + ClientControl.hostIP + ":mgen_recv.dat ./ >/dev/null 2>&1")
     wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
     # print "wcResults " + str(wcResults)
@@ -489,13 +489,13 @@ class NetworkTests(unittest2.TestCase):
         nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
         nukeBypassRules()
         # verify port 80 is open
-        result1 = clientControl.runCommand("wget -o /dev/null http://test.untangle.com/")
+        result1 = clientControl.runCommand("wget -q -O /dev/null http://test.untangle.com/")
         # Block port 80 and verify it's closed
         appendFWRule(nodeFW, createSingleMatcherRule("DST_PORT","80"))
-        result2 = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
         appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
-        result3 = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result3 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (result1 == 0)
@@ -505,7 +505,7 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP in active and passive modes
     def test_065_ftpModes(self):
         nukeBypassRules()
-        clientControl.runCommand("rm /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file >/dev/null 2>&1")
+        clientControl.runCommand("rm -f /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file")
         # passive
         result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
@@ -518,7 +518,7 @@ class NetworkTests(unittest2.TestCase):
         nukeBypassRules()
         appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
         # --no-passive-ftp
-        clientControl.runCommand("rm /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file >/dev/null 2>&1")
+        clientControl.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
         # passive
         result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
@@ -538,10 +538,10 @@ class NetworkTests(unittest2.TestCase):
         ip_address_playboy = (match.group()).replace('address ','')
         appendRouteRule(createRouteRule(ip_address_playboy,32,"127.0.0.1"))
         # verify other sites are still available.
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
         assert (result == 0)
         # Verify playboy is not accessible 
-        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://www.playboy.com")
+        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.playboy.com")
         assert (result != 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -621,7 +621,7 @@ class NetworkTests(unittest2.TestCase):
             newip = ip + ipStep
             # check to see if the IP is in network range
             if newip in ipaddr.IPv4Network(interfaceNet):
-                pingResult = clientControl.runCommand("ping -c 1 %s >/dev/null 2>&1" % str(newip))
+                pingResult = clientControl.runCommand("ping -c 1 %s" % str(newip))
                 if pingResult:
                     # new IP found
                     vrrpIP = newip
@@ -648,9 +648,9 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(60)
         # Test that the VRRP is pingable
-        pingResult = clientControl.runCommand("ping -c 1 %s >/dev/null 2>&1" % str(vrrpIP))
+        pingResult = clientControl.runCommand("ping -c 1 %s" % str(vrrpIP))
         # check if still online
-        onlineResults = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        onlineResults = clientControl.isOnline()
         # Return to default network state
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pingResult == 0)
@@ -718,7 +718,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
         lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
-        result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle >/dev/null 2>&1")
+        result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 0)
 
@@ -738,7 +738,7 @@ class NetworkTests(unittest2.TestCase):
                (not sessionList[i]['bypassed']):
                 foundTestSession = True
                 break
-        clientControl.runCommand("pkill netcat >/dev/null 2>&1")
+        clientControl.runCommand("pkill netcat")
         assert(foundTestSession)
 
     @staticmethod

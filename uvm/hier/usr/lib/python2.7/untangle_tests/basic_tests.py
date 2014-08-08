@@ -31,15 +31,12 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify connectivity to client
     def test_10_clientConnectivity(self):
-        result = clientControl.runCommand("/bin/true")
-        assert (result == 0)
+        assert ( clientControl.runCommand("/bin/true") == 0 )
 
     # verify client can exec commands and return code
     def test_11_clientShellReturnCode(self):
-        result = clientControl.runCommand("/bin/true")
-        assert (result == 0)
-        result = clientControl.runCommand("/bin/false")
-        assert (result == 1)
+        assert ( clientControl.runCommand("/bin/true") == 0 )
+        assert ( clientControl.runCommand("/bin/false") == 1 )
 
     # verify client can exec commands and return code
     def test_12_clientShellOutput(self):
@@ -48,12 +45,13 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify client has necessary tools
     def test_13_clientHasNecessaryTools(self):
-        result = clientControl.runCommand("which wget >/dev/null")
-        assert (result == 0)
-        result = clientControl.runCommand("which curl >/dev/null")
-        assert (result == 0)
-        result = clientControl.runCommand("which netcat >/dev/null")
-        assert (result == 0)
+        assert ( clientControl.runCommand("which wget") == 0 )
+        assert ( clientControl.runCommand("which curl") == 0 )
+        assert ( clientControl.runCommand("which netcat") == 0 )
+        assert ( clientControl.runCommand("which nmap") == 0 )
+        assert ( clientControl.runCommand("which python") == 0 )
+        assert ( clientControl.runCommand("which mime-construct") == 0 )
+        assert ( clientControl.runCommand("which pidof") == 0 )
         # check for netcat options
         assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
         assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
@@ -61,31 +59,17 @@ class TestEnvironmentTests(unittest2.TestCase):
         assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-l\s'") == 0 )
         assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-4\s'") == 0 )
         assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-p\s'") == 0 )
-        assert (result == 0)
-        result = clientControl.runCommand("which nmap >/dev/null")
-        assert (result == 0)
-        result = clientControl.runCommand("which python >/dev/null")
-        assert (result == 0)
-        result = clientControl.runCommand("which mime-construct >/dev/null")
-        assert (result == 0)
-        result = clientControl.runCommand("which pidof >/dev/null")
-        assert (result == 0)
 
     # verify client is online
     def test_14_clientIsOnline(self):
-        result = clientControl.isOnline()
-        assert (result == 0)
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://google.com/")
-        assert (result == 0)
+        assert ( clientControl.isOnline() == 0 )
+        assert ( clientControl.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://google.com/") == 0 )
 
     # verify client can pass UDP
     def test_20_clientCanPassUDP(self):
-        result = clientControl.runCommand("host cnn.com 8.8.8.8 > /dev/null 2>&1")
-        assert (result == 0)
-        result = clientControl.runCommand("host google.com 8.8.8.8 > /dev/null 2>&1")
-        assert (result == 0)
+        assert ( clientControl.runCommand("host cnn.com 8.8.8.8") == 0 )
+        assert ( clientControl.runCommand("host google.com 8.8.8.8") == 0 )
 
     # verify client is online
     def test_30_clientNotRunningOpenvpn(self):
-        result = clientControl.runCommand("pidof openvpn >/dev/null")
-        assert (result != 0)
+        assert ( clientControl.runCommand("pidof openvpn") != 0 )

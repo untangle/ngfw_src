@@ -291,6 +291,7 @@ class OpenVpnTests(unittest2.TestCase):
         print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
 
         # Shutdown VPN on both sides.
+        # this pkill is launched in the background because once the openvpn process is killed it ssh will lose contact and it will hang as a result
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"sudo pkill openvpn < /dev/null > /dev/null 2>&1 &\"")
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)

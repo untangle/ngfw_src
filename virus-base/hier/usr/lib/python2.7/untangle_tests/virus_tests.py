@@ -47,8 +47,8 @@ class VirusTests(unittest2.TestCase):
         global node,md5StdNum
         if node == None:
             # download eicar and trojan files before installing virus blocker
-            clientControl.runCommand("rm /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file >/dev/null 2>&1")
-            result = clientControl.runCommand("wget http://test.untangle.com/virus/eicar.com -O /tmp/eicar -o /dev/null 2>&1")
+            clientControl.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
+            result = clientControl.runCommand("wget -q -O /dev/null http://test.untangle.com/virus/eicar.com")
             assert (result == 0)
             result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
             assert (result == 0)
@@ -98,7 +98,7 @@ class VirusTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_022_ftpVirusBlocked(self):
-        clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
+        clientControl.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
         result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
@@ -123,7 +123,7 @@ class VirusTests(unittest2.TestCase):
     def test_023_ftpVirusPassSite(self):
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
-        clientControl.runCommand("rm /tmp/temp_022_ftpVirusBlocked_file  >/dev/null 2>&1") 
+        clientControl.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
         result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", True)
@@ -216,7 +216,7 @@ class VirusTests(unittest2.TestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
-        result = clientControl.runCommand("wget -O /tmp/email_script.py http://test.untangle.com/test/email_script.py 1>/dev/null 2>&1")
+        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
         result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -245,7 +245,7 @@ class VirusTests(unittest2.TestCase):
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = clientControl.runCommand("wget -O /tmp/email_script.py http://test.untangle.com/test/email_script.py 1>/dev/null 2>&1")
+        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
         result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -276,7 +276,7 @@ class VirusTests(unittest2.TestCase):
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = clientControl.runCommand("wget -O /tmp/email_script.py http://test.untangle.com/test/email_script.py 1>/dev/null 2>&1")
+        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
         result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)

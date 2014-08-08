@@ -43,14 +43,14 @@ def sendTestmessage():
        return 0
 
 def getLatestMailSender():
-    clientControl.runCommand("rm mailpkg.tar* >/dev/null 2>&1") # remove all previous mail packages
-    results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    clientControl.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
+    results = clientControl.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
+    results = clientControl.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendPhishMail():
-    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180 >/dev/null 2>&1")
+    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")

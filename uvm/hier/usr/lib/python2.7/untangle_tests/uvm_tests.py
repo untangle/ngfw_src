@@ -33,10 +33,10 @@ origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
 def getLatestMailPkg():
-    clientControl.runCommand("rm mailpkg.tar* >/dev/null 2>&1") # remove all previous mail packages
-    results = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    clientControl.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
+    results = clientControl.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = clientControl.runCommand("tar -xvf mailpkg.tar >/dev/null 2>&1")
+    results = clientControl.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 class UvmTests(unittest2.TestCase):
@@ -57,7 +57,7 @@ class UvmTests(unittest2.TestCase):
         pass
 
     def test_010_clientIsOnline(self):
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = clientControl.isOnline()
         assert (result == 0)
 
     def test_011_helpLinks(self):
@@ -139,7 +139,7 @@ class UvmTests(unittest2.TestCase):
         # remove previous smtp log file
         clientControl.runCommand("rm -f test_030_testSMTPSettings.log")
         # Start mail sink
-        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg  >/dev/null 2>&1")
+        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = ClientControl.hostIP
         newMailsettings['smtpPort'] = "6800"
@@ -154,10 +154,10 @@ class UvmTests(unittest2.TestCase):
         time.sleep(5)
 
         # Kill mail sink
-        clientControl.runCommand("pkill -INT python >/dev/null 2>&1")
+        clientControl.runCommand("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
         nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
-        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' test_030_testSMTPSettings.log >/dev/null 2>&1")
+        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' test_030_testSMTPSettings.log")
         assert(result==0)
 
 TestDict.registerNode("uvm", UvmTests)

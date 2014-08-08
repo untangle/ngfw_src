@@ -30,50 +30,49 @@ class ClientControl:
         sys.stdout = self.orig_stdout
         sys.stderr = self.orig_stderr
 
-    # runs a given command
-    # returns 0 if the process returned 0, 1 otherwise
+    # runs a given command on the client
+    # returns the exit code of the command
+    # if stdout=True returns the output of the command
+    # if nowait=True returns the initial output if stdout=True, 0 otherwise
     def runCommand(self, command, stdout=False, nowait=False):
-
-        if not stdout:
-            shellRedirect = " >/dev/null 2>&1 "
-        else:
-            shellRedirect = ""
 
         if (ClientControl.logfile != None):
             self.redirectOutput(ClientControl.logfile)
 
         result = 1
         try:
-            sshCommand = "ssh %s -i %s %s@%s \"%s %s\" %s" % (ClientControl.sshOptions, ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
-            if (ClientControl.verbosity > 1):
-                print "\nRunning command          : %s" % sshCommand
+            sshCommand = "ssh %s -i %s %s@%s \"%s\"" % (ClientControl.sshOptions, ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command)
+            # if (ClientControl.verbosity > 1):
+            #    print "\nSSH cmd : %s" % sshCommand
             if (ClientControl.verbosity > 0):
-                print "\nRunning command on client: %s" % command
+                print "\nCommand : %s" % command
             if (nowait):
                 sshCommand += " & " # don't wait for process to complete
-            if (not stdout):
-                result = os.system(sshCommand)
-                # If nowait, sleep for a second to give time for the ssh to connect and run the command before returning
-                if (nowait):
-                    time.sleep(1)
-                if result == 0:
-                    return 0
+            proc = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            # If nowait, sleep for a second to give time for the ssh to connect and run the command before returning
+            if nowait:
+                time.sleep(1)
+                if stdout:
+                    return proc.communicate()[0].strip()
                 else:
-                    return 1
+                    return 0
+            
+            result = proc.wait()
+            output = proc.communicate()[0].strip()
+            print "Result  : %i"  % result
+            print "Output  : %s"  % output
+            sys.stdout.flush()
+            if stdout:
+                return output
             else:
-                # send command and read stdout
-                rtn_cmd = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE)
-                rtn_stdout = rtn_cmd.communicate()[0].strip()
-                # If nowait, sleep for a second to give time for the ssh to connect and run the command before returning
-                if (nowait):
-                    time.sleep(1)
-                return rtn_stdout 
+                return result
         finally:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
 
     def isOnline(self):
-        result = self.runCommand("wget -O /dev/null -4 -t 2 --timeout=5 -o /dev/null http://test.untangle.com/")
+        result = self.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
         return result
 
     # FIXME this should be in a test util class
