@@ -6,7 +6,7 @@ import traceback
 import platform
 
 OLD_STYLE=False
-if "2.6.26" in platform.platform():
+if "2.6.32" in platform.platform():
     OLD_STYLE=True
 
 def parse_segment(segment):
