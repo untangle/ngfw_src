@@ -6,6 +6,7 @@ package com.untangle.node.reporting;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,6 +77,7 @@ public class ReportingManagerImpl implements ReportingManager
 
     private static final String UVM_REPORTS_DATA = System.getProperty("uvm.web.dir") + "/reports/data";
     private static final String SUBREPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/reporting-generate-subreport.py";
+    private static final String TIMEZONE_FILE = "/etc/timezone";
 
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -87,6 +89,21 @@ public class ReportingManagerImpl implements ReportingManager
         this.node = node;
     }
 
+    public TimeZone getTimeZone()
+    {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            String str = in.readLine();
+            str = str.trim();
+            in.close();
+            TimeZone current = TimeZone.getTimeZone(str);
+            return current;
+        } catch (Exception x) {
+            logger.warn("Unable to get timezone, using java default:" , x);
+            return TimeZone.getDefault();
+        }
+    }
+    
     public List<DateItem> getDates()
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);

@@ -181,7 +181,7 @@ Ext.define('Ung.Reports', {
         this.init();
     },
     init: function() {
-        this.initSemaphore = 3;
+        this.initSemaphore = 4;
         this.progressBar = Ext.MessageBox;
         this.treeNodes =[];
         if(Ext.supports.LocalStorage) {
@@ -249,6 +249,7 @@ Ext.define('Ung.Reports', {
         }
         rpc.reportingManager = result;
         rpc.reportingManager.getDates(Ext.bind(this.completeGetDates,this));
+        rpc.reportingManager.getTimeZone(Ext.bind(this.completeGetTimeZone,this));
         rpc.reportingManager.getReportsCutoff(Ext.bind(function(result,exception){
             if(exception){
                 Ext.MessageBox.alert(i18n._("Failed"), i18n._("Could not retrieve the cutoff date"));
@@ -269,11 +270,23 @@ Ext.define('Ung.Reports', {
         this.postinit();
     },
 
+    completeGetTimeZone: function( result, exception ) {
+        if (exception) {
+            if (!Ung.Util.handleTimeout(exception)) {
+                Ext.MessageBox.alert("Failed", exception.message);
+            }
+            return;
+        }
+        rpc.timezone = result;
+        this.postinit();
+    },
+
     postinit: function() {
         this.initSemaphore--;
         if (this.initSemaphore != 0) {
             return;
         }
+        i18n.timeoffset = (new Date().getTimezoneOffset()*6000)+rpc.timezone.rawOffset+rpc.timezone.DSTSavings;
         if(this.printView===true){
             this.startApplicationPrintView();
         }else{
