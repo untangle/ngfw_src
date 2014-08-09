@@ -25,6 +25,8 @@ nodeDataAD = None
 nodeAD = None
 adHost = "10.111.56.48"
 radiusHost = "10.111.56.71"
+localUserName = 'test20'
+adUserName = 'atsadmin'
 
 # pdb.set_trace()
 
@@ -56,7 +58,7 @@ def createCaptureInternalNicRule():
 def createLocalDirectoryUser():
     return {'javaClass': 'java.util.LinkedList', 
         'list': [{
-            'username': 'test20', 
+            'username': localUserName, 
             'firstName': '[firstName]', 
             'lastName': '[lastName]', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
@@ -112,6 +114,25 @@ def createRadiusSettings():
             "sharedSecret": "chakas"}
         }
 
+def findNameInHostTable (hostname='test'):
+    #  Test for username in session
+    foundTestSession = False
+    clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80",False,True)
+    time.sleep(2) # since we launched netcat in background, give it a second to establish connection
+    hostList = uvmContext.hostTable().getHosts()
+    sessionList = hostList['list']
+    # find session generated with netcat in session table.
+    for i in range(len(sessionList)):
+        print sessionList[i]
+        # print "------------------------------"
+        if (sessionList[i]['address'] == ClientControl.hostIP) and \
+            (sessionList[i]['username'] == hostname) and \
+            (not sessionList[i]['penaltyBoxed']):
+            foundTestSession = True
+            break
+    clientControl.runCommand("pkill netcat")
+    return foundTestSession
+    
 class CaptureTests(unittest2.TestCase):
 
     @staticmethod
@@ -300,13 +321,17 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
-        
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername)        
+
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
         result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_030b.log -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
         assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(not foundUsername)        
 
 
     def test_035_captureADLogin(self):
@@ -332,10 +357,12 @@ class CaptureTests(unittest2.TestCase):
         # check if AD login and password 
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = clientControl.runCommand("wget -a /tmp/capture_test_035a.log -O /tmp/capture_test_035a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=atsadmin&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = clientControl.runCommand("wget -a /tmp/capture_test_035a.log -O /tmp/capture_test_035a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
+        foundUsername = findNameInHostTable(adUserName)
+        assert(foundUsername)        
 
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout  
@@ -343,6 +370,8 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
         search = clientControl.runCommand("grep -q 'logged out' /tmp/capture_test_035b.out")
         assert (search == 0)
+        foundUsername = findNameInHostTable(adUserName)
+        assert(not foundUsername)        
 
         # check extend ascii in login and password 
         result = clientControl.runCommand("wget -a /tmp/capture_test_035c.log -O /tmp/capture_test_035c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
