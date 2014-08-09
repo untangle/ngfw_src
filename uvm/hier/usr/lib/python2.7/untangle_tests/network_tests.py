@@ -751,8 +751,7 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['hostname'] == ClientControl.hostIP) and \
-                (sessionList[i]['address'] == ClientControl.hostIP) and \
+            if (sessionList[i]['address'] == ClientControl.hostIP) and \
                 (not sessionList[i]['penaltyBoxed']):
                 foundTestSession = True
                 break
