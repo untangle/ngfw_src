@@ -2470,7 +2470,7 @@ Ext.define("Ung.GlobalFiltersFeature", {
     globalFilterFn: function(record) {
         //TODO: 1) support regular exppressions
         //2) provide option to search in displayed columns only
-            var inputValue = this.globalFilter.value,
+        var inputValue = this.globalFilter.value,
         caseSensitive = this.globalFilter.caseSensitive;
         if(inputValue.length === 0) {
             return true;
@@ -2487,7 +2487,7 @@ Ext.define("Ung.GlobalFiltersFeature", {
             if(typeof val == 'boolean' || typeof val == 'number') {
                 val=val.toString();
             } else if(typeof val == 'object') {
-                if(val.javaClass =="java.util.Date") {
+                if(val.time != null) {
                     val = i18n.timestampFormat(val);
                 }
             }
@@ -2582,6 +2582,7 @@ Ext.define("Ung.SelectDateTimeWindow", {
         var dateStr ="";
         var buttonLabel = null;
         if(this.date) {
+            this.date.setTime(this.date.getTime()-i18n.timeoffset);
             dateStr = i18n.timestampFormat({time: this.date.getTime()});
             buttonLabel = i18n.timestampFormat({time: this.date.getTime()});
         }
@@ -2834,10 +2835,9 @@ Ext.define("Ung.GridEventLogBase", {
                                 return false;
                             }
                             val = val.getTime();
-
                             for (key in me.fields) {
                                 if (me.fields[key].checked) {
-                                    pickerValue = me.getFieldValue(key).getTime();
+                                    pickerValue = me.getFieldValue(key).getTime()+i18n.timeoffset;
                                     if (key == 'before' && pickerValue <= val) {
                                         return false;
                                     }
