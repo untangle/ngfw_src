@@ -48,7 +48,7 @@ class VirusTests(unittest2.TestCase):
         if node == None:
             # download eicar and trojan files before installing virus blocker
             clientControl.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-            result = clientControl.runCommand("wget -q -O /dev/null http://test.untangle.com/virus/eicar.com")
+            result = clientControl.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
             assert (result == 0)
             result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
             assert (result == 0)
