@@ -375,19 +375,23 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 HeaderToken h = (HeaderToken)token;
                 state.requestPersistent = isPersistent(h);
                 Mode preMode = state.requestMode;
-                h = doRequestHeader( session, h );
-
-                String host = h.getValue("host");
-                state.hosts.put( state.requestLineToken, host );
 
                 /**
                  * Attach metadata
                  */
-                session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
+                String host = h.getValue("host");
+                String referer = h.getValue("referer");
                 String uri = getRequestLine( session ).getRequestUri().normalize().getPath();
+                session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
+                session.globalAttach( NodeSession.KEY_HTTP_REFERER, referer );
                 session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
                 session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
 
+                h = doRequestHeader( session, h );
+
+                host = h.getValue("host");
+                state.hosts.put( state.requestLineToken, host );
+                
                 switch ( state.requestMode ) {
                 case QUEUEING:
                     state.requestQueue.add(h);

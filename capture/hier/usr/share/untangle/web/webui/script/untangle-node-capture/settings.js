@@ -22,6 +22,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
                 {name:"CLIENT_QUOTA_EXCEEDED",displayName: settingsCmp.i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
                 {name:"SERVER_QUOTA_EXCEEDED",displayName: settingsCmp.i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
                 {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+                {name:"HTTP_HOST",displayName: settingsCmp.i18n._("HTTP: Hostname"), type: "text", visible: true},
+                {name:"HTTP_REFERER",displayName: settingsCmp.i18n._("HTTP: Referer"), type: "text", visible: true},
                 {name:"HTTP_USER_AGENT",displayName: settingsCmp.i18n._("HTTP: Client User Agent"), type: "text", visible: true},
                 {name:"HTTP_USER_AGENT_OS",displayName: settingsCmp.i18n._("HTTP: Client User OS"), type: "text", visible: true}
             ];

@@ -69,6 +69,7 @@ public class RuleMatcher implements JSONString, Serializable
             
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
+            HTTP_REFERER, /* "playboy.com" "any" */
             HTTP_URI, /* "/foo.html" "any" */
             HTTP_URL, /* UrlMatcher syntax "playboy.com/foo.html" */
             HTTP_CONTENT_TYPE, /* "image/jpeg" "any" */
@@ -312,6 +313,7 @@ public class RuleMatcher implements JSONString, Serializable
         case CLIENT_HOSTNAME:
         case SERVER_HOSTNAME:
         case HTTP_HOST:
+        case HTTP_REFERER:
         case HTTP_URI:
         case HTTP_CONTENT_TYPE:
         case HTTP_USER_AGENT:
@@ -461,6 +463,12 @@ public class RuleMatcher implements JSONString, Serializable
                 return false;
             return Pattern.matches(regexValue, attachment);
 
+        case HTTP_REFERER:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REFERER);
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment);
+            
         case HTTP_URI:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URI);
             if (attachment == null)
@@ -679,7 +687,7 @@ public class RuleMatcher implements JSONString, Serializable
             return Pattern.matches(regexValue, attachment);
 
         default:
-            logger.error("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
+            logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
             break;
         }
 
@@ -864,7 +872,9 @@ public class RuleMatcher implements JSONString, Serializable
             return Pattern.matches(regexValue, attachment);
 
         default:
-            logger.error("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
+            // this is commented out because some rules are run against sessions and attributes
+            // so they will call this method with unsupported matcher types.
+            // logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
             break;
         }
 
