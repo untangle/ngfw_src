@@ -6,7 +6,10 @@ var testMode = false;
 
 JSONRpcClient.toplevel_ex_handler = function (exception) {
     if (!Ung.Util.handleTimeout(exception)) {
-        Ext.MessageBox.alert("Failed", exception.message);
+        if(exception) {
+            Ext.MessageBox.alert("Failed", exception.message);
+            throw exception;
+        }
     }
 };
 JSONRpcClient.max_req_active = 10;
@@ -286,7 +289,7 @@ Ext.define('Ung.Reports', {
         if (this.initSemaphore != 0) {
             return;
         }
-        i18n.timeoffset = (new Date().getTimezoneOffset()*6000)+rpc.timezone.rawOffset+rpc.timezone.DSTSavings;
+        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timezone.rawOffset+rpc.timezone.DSTSavings;
         if(this.printView===true){
             this.startApplicationPrintView();
         }else{
