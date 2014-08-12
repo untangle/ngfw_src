@@ -4575,7 +4575,7 @@ Ext.define('Ung.Window', {
     validateComponents: function (components) {
         var invalidFields = [];
         var validResult;
-        for( var i = 0; i < components.length; i++ ){
+        for( var i = 0; i < components.length; i++ ) {
             if( ( validResult = ( Ext.isFunction(components[i].isValid) ? components[i].isValid() : Ung.Util.isValid(components[i]) ) ) != true ){
                 invalidFields.push(
                     ( components[i].fieldLabel ? "<b>" +components[i].fieldLabel + "</b>: " : "" ) +
@@ -7340,6 +7340,8 @@ Ext.define('Ung.RuleBuilder', {
                     valObj.value=new_value;
                     record.data.value=new_value;
                 }
+            } else {
+                record.data.value=new_value;
             }
             break;
         }
