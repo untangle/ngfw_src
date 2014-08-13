@@ -1072,6 +1072,28 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
 
         buildSnmp: function() {
+            var passwordValidator = function () {
+                var name = this.name;
+                var confirmPos = name.search("Confirm");
+                if( confirmPos != -1 ){
+                    name = name.substring( 0, confirmPos );
+                }
+                var panel = this.up("panel");
+                var pwd = panel.down('textfield[name="' + name + '"]');
+                var confirmPwd = panel.down('textfield[name="' + name + 'Confirm"]');
+                if(pwd.getValue() != confirmPwd.getValue()) {
+                    pwd.markInvalid();
+                    return i18n._('Passwords do not match');
+                }
+                if( pwd.getValue().length < 8 ){
+                    pwd.markInvalid();
+                    return i18n._('Password is too short.');                    
+                }
+                pwd.clearInvalid();
+                confirmPwd.clearInvalid();
+                return true;
+            };
+
             this.panelSnmp = Ext.create('Ext.panel.Panel',{
                 name: 'panelSnmp',
                 helpSource: 'administration_snmp',
@@ -1086,11 +1108,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: [{
                     title: this.i18n._('SNMP'),
                     defaults: {
-                        labelWidth: 150
+                        labelWidth: 200
                     },
                     items: [{
                         xtype: 'checkbox',
-                        boxLabel: this.i18n._('Enable SNMP Monitoring.'),
+                        boxLabel: this.i18n._('Enable SNMP Monitoring'),
                         hideLabel: true,
                         name: 'snmpEnabled',
                         checked: this.getSystemSettings().snmpSettings.enabled,
@@ -1102,6 +1124,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_snmp_communityString').enable();
                                         Ext.getCmp('administration_snmp_sysContact').enable();
                                         Ext.getCmp('administration_snmp_sysLocation').enable();
+                                        Ext.getCmp('administration_snmp_v3enabled').enable();
+                                        var v3EnabledCmp = Ext.getCmp('administration_snmp_v3enabled');
+                                        if (v3EnabledCmp.getValue()) {
+                                            Ext.getCmp('administration_snmp_v3required').enable();
+                                            Ext.getCmp('administration_snmp_v3username').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationProtocol').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationPassphrase').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationPassphraseConfirm').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyProtocol').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyPassphrase').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyPassphraseConfirm').enable();
+                                        }
                                         Ext.getCmp('administration_snmp_sendTraps').enable();
                                         var sendTrapsCmp = Ext.getCmp('administration_snmp_sendTraps');
                                         if (sendTrapsCmp.getValue()) {
@@ -1113,6 +1147,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_snmp_communityString').disable();
                                         Ext.getCmp('administration_snmp_sysContact').disable();
                                         Ext.getCmp('administration_snmp_sysLocation').disable();
+                                        Ext.getCmp('administration_snmp_v3enabled').disable();
+                                        Ext.getCmp('administration_snmp_v3required').disable();
+                                        Ext.getCmp('administration_snmp_v3username').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationProtocol').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationPassphrase').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationPassphraseConfirm').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyProtocol').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyPassphrase').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyPassphraseConfirm').disable();
                                         Ext.getCmp('administration_snmp_sendTraps').disable();
                                         Ext.getCmp('administration_snmp_trapCommunity').disable();
                                         Ext.getCmp('administration_snmp_trapHost').disable();
@@ -1125,7 +1168,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Community'),
                         name: 'communityString',
-                        itemCls: 'left-indent-1',
+//                        itemCls: 'left-indent-1',
                         id: 'administration_snmp_communityString',
                         value: this.getSystemSettings().snmpSettings.communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME'): this.getSystemSettings().snmpSettings.communityString,
                         allowBlank: false,
@@ -1133,7 +1176,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         disabled: !this.getSystemSettings().snmpSettings.enabled
                     },{
                         xtype: 'textfield',
-                        itemCls: 'left-indent-1',
                         fieldLabel: this.i18n._('System Contact'),
                         name: 'sysContact',
                         id: 'administration_snmp_sysContact',
@@ -1142,7 +1184,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         //vtype: 'email'
                     },{
                         xtype: 'textfield',
-                        itemCls: 'left-indent-1',
                         fieldLabel: this.i18n._('System Location'),
                         name: 'sysLocation',
                         id: 'administration_snmp_sysLocation',
@@ -1150,7 +1191,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         disabled: !this.getSystemSettings().snmpSettings.enabled
                     },{
                         xtype: 'checkbox',
-                        itemCls: 'left-indent-1',
                         boxLabel: this.i18n._('Enable Traps'),
                         hideLabel: true,
                         name: 'sendTraps',
@@ -1175,7 +1215,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype: 'textfield',
-                        itemCls: 'left-indent-2',
                         fieldLabel: this.i18n._('Community'),
                         name: 'trapCommunity',
                         id: 'administration_snmp_trapCommunity',
@@ -1186,7 +1225,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Host'),
-                        itemCls: 'left-indent-2',
                         name: 'trapHost',
                         id: 'administration_snmp_trapHost',
                         value: this.getSystemSettings().snmpSettings.trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST'): this.getSystemSettings().snmpSettings.trapHost,
@@ -1195,7 +1233,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         disabled: !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
                     },{
                         xtype: 'numberfield',
-                        itemCls: 'left-indent-2',
                         fieldLabel: this.i18n._('Port'),
                         name: 'trapPort',
                         id: 'administration_snmp_trapPort',
@@ -1206,6 +1243,145 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         blankText: this.i18n._("You must provide a valid port."),
                         vtype: 'port',
                         disabled: !this.getSystemSettings().snmpSettings.enabled || !this.getSystemSettings().snmpSettings.sendTraps
+                    },{
+                        xtype: 'checkbox',
+                        boxLabel: this.i18n._('Enable SNMP v3'),
+                        hideLabel: true,
+                        name: 'snmpv3Enabled',
+                        id: 'administration_snmp_v3enabled',
+                        checked: this.getSystemSettings().snmpSettings.v3Enabled,
+                        disabled: !this.getSystemSettings().snmpSettings.enabled,
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    this.getSystemSettings().snmpSettings.v3enabled = checked;
+                                    if (checked) {
+                                            Ext.getCmp('administration_snmp_v3required').enable();
+                                            Ext.getCmp('administration_snmp_v3username').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationPassphrase').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationProtocol').enable();
+                                            Ext.getCmp('administration_snmp_v3authenticationPassphraseConfirm').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyProtocol').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyPassphrase').enable();
+                                            Ext.getCmp('administration_snmp_v3privacyPassphraseConfirm').enable();
+                                    } else {
+                                        Ext.getCmp('administration_snmp_v3required').disable();
+                                        Ext.getCmp('administration_snmp_v3username').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationProtocol').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationPassphrase').disable();
+                                        Ext.getCmp('administration_snmp_v3authenticationPassphraseConfirm').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyProtocol').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyPassphrase').disable();
+                                        Ext.getCmp('administration_snmp_v3privacyPassphraseConfirm').disable();
+                                    }
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: 'textfield',
+                        itemCls: 'left-indent-2',
+                        fieldLabel: this.i18n._('Username'),
+                        name: 'snmpv3Username',
+                        id: 'administration_snmp_v3username',
+                        value: this.getSystemSettings().snmpSettings.v3Username,
+                        allowBlank: false,
+                        blankText: this.i18n._("Username must be specified."),
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    },{    
+                        xtype: 'combo',
+                        fieldLabel: this.i18n._('Authentication Protocol'),
+                        name: "snmpv3AuthenticationProtocol",
+                        id: "administration_snmp_v3authenticationProtocol",
+                        store: [
+                            ["sha", this.i18n._("SHA") ],
+                            ["md5", this.i18n._("MD5") ]
+                        ],
+                        editable: false,
+                        queryMode: 'local',
+                        selectOnFocus: true,
+                        value: this.getSystemSettings().snmpSettings.v3AuthenticationProtocol ? this.getSystemSettings().snmpSettings.v3AuthenticationProtocol : "sha",
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
+                        listeners: {
+                            "select": {
+                                fn: Ext.bind(function(elem, record) {
+//                                    this.getSkinSettings().skinName = record[0].data.name;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: 'textfield',
+                        inputType: 'password',
+                        fieldLabel: this.i18n._('Authentication Passphrase'),
+                        name: 'snmpv3AuthenticationPassphrase',
+                        id: 'administration_snmp_v3authenticationPassphrase',
+                        value: this.getSystemSettings().snmpSettings.v3AuthenticationPassphrase,
+                        allowBlank: false,
+                        blankText: this.i18n._("Authentication Passphrase must be specified."),
+                        validator: passwordValidator,
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    },{
+                        xtype: 'textfield',
+                        inputType: 'password',
+                        fieldLabel: this.i18n._('Confirm Authentication Passphrase'),
+                        name: 'snmpv3AuthenticationPassphraseConfirm',
+                        id: 'administration_snmp_v3authenticationPassphraseConfirm',
+//                        value: this.getSystemSettings().snmpSettings.v3AuthenticationPassphrase,
+                        allowBlank: false,
+                        blankText: this.i18n._("Confirm Authentication Passphrase must be specified."),
+                        validator: passwordValidator,
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    },{    
+                        xtype: 'combo',
+                        fieldLabel: this.i18n._('Privacy Protocol'),
+                        name: "snmpv3PrivacyProtocol",
+                        id: "administration_snmp_v3privacyProtocol",
+                        store: [
+                            ["des", this.i18n._("DES") ],
+                            ["aes", this.i18n._("AES") ]
+                        ],
+                        editable: false,
+                        queryMode: 'local',
+                        selectOnFocus: true,
+                        value: this.getSystemSettings().snmpSettings.v3PrivacyProtocol ? this.getSystemSettings().snmpSettings.v3PrivacyProtocol : "des",
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
+                        listeners: {
+                            "select": {
+                                fn: Ext.bind(function(elem, record) {
+//                                    this.getSkinSettings().skinName = record[0].data.name;
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: 'textfield',
+                        inputType: 'password',
+                        fieldLabel: this.i18n._('Privacy Passphrase'),
+                        name: 'snmpv3PrivacyPassphrase',
+                        id: 'administration_snmp_v3privacyPassphrase',
+                        value: this.getSystemSettings().snmpSettings.v3PrivacyPassphrase,
+                        allowBlank: false,
+                        blankText: this.i18n._("Privacy Passphrase must be specified."),
+                        validator: passwordValidator,
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    },{
+                        xtype: 'textfield',
+                        inputType: 'password',
+                        fieldLabel: this.i18n._('Confirm Privacy Passphrase'),
+                        name: 'snmpv3PrivacyPassphraseConfirm',
+                        id: 'administration_snmp_v3privacyPassphraseConfirm',
+//                        value: this.getSystemSettings().snmpSettings.v3PrivacyPassphrase,
+                        allowBlank: false,
+                        blankText: this.i18n._("Confirm Privacy Passphrase must be specified."),
+                        validator: passwordValidator,
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
+                    },{
+                        xtype: 'checkbox',
+                        hideEmptyLabel: false,
+                        boxLabel: this.i18n._('Require only SNMP v3'),
+                        name: 'snmpv3Require',
+                        id: 'administration_snmp_v3required',
+                        checked: this.getSystemSettings().snmpSettings.v3Required,
+                        validator: passwordValidator,
+                        disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled 
                     }]
                 }]
             });
@@ -1457,6 +1633,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
                 }
 
+                var v3EnabledCmp = Ext.getCmp('administration_snmp_v3enabled');
+                var isV3Enabled = v3EnabledCmp.getValue();
+
                 //prepare for save
                 var snmpSysContactCmp = Ext.getCmp('administration_snmp_sysContact');
                 var snmpSysLocationCmp = Ext.getCmp('administration_snmp_sysLocation');
@@ -1470,6 +1649,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.getSystemSettings().snmpSettings.trapHost = snmpTrapHostCmp.getValue();
                     this.getSystemSettings().snmpSettings.trapPort = snmpTrapPortCmp.getValue();
                 }
+
+                this.getSystemSettings().snmpSettings.v3Enabled = isV3Enabled;
+                if( isV3Enabled ){    
+                    this.getSystemSettings().snmpSettings.v3Required = Ext.getCmp('administration_snmp_v3required').getValue();
+                    this.getSystemSettings().snmpSettings.v3Username = Ext.getCmp('administration_snmp_v3username').getValue();
+                    this.getSystemSettings().snmpSettings.v3AuthenticationProtocol = Ext.getCmp('administration_snmp_v3authenticationProtocol').getValue();
+                    this.getSystemSettings().snmpSettings.v3AuthenticationPassphrase = Ext.getCmp('administration_snmp_v3authenticationPassphrase').getValue();
+                    this.getSystemSettings().snmpSettings.v3PrivacyProtocol = Ext.getCmp('administration_snmp_v3privacyProtocol').getValue();
+                    this.getSystemSettings().snmpSettings.v3PrivacyPassphrase = Ext.getCmp('administration_snmp_v3privacyPassphrase').getValue();
+                }
+
             }
             return true;
         },

@@ -3,8 +3,10 @@
  */
 package com.untangle.uvm;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,6 +38,9 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
+    private static final String SNMP_CONF_LIB_FILE_NAME = "/var/lib/snmp/snmpd.conf";
+    private static final String SNMP_CONFIG = "/usr/bin/net-snmp-config";
+    private static final Pattern SNMP_CONF_V3USER_PATTERN = Pattern.compile("usmUser\\s+");
 
     private static final String UPGRADE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-upgrade.py";
     
@@ -103,7 +108,7 @@ public class SystemManagerImpl implements SystemManager
             UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         
         if ( settings.getSnmpSettings().isEnabled() ) 
-            restartDaemon();
+            restartSnmpDaemon();
 
         logger.info("Initialized SystemManager");
     }
@@ -314,6 +319,8 @@ public class SystemManagerImpl implements SystemManager
         snmpSettings.setCommunityString("CHANGE_ME");
         snmpSettings.setSysContact("MY_CONTACT_INFO");
         snmpSettings.setSysLocation("MY_LOCATION");
+        snmpSettings.setV3AuthenticationProtocol("sha");
+        snmpSettings.setV3PrivacyProtocol("aes");
         snmpSettings.setSendTraps(false);
         snmpSettings.setTrapHost("MY_TRAP_HOST");
         snmpSettings.setTrapCommunity("MY_TRAP_COMMUNITY");
@@ -336,7 +343,9 @@ public class SystemManagerImpl implements SystemManager
         
         writeDefaultSnmpCtlFile(snmpSettings);
         writeSnmpdConfFile(snmpSettings);
-        restartDaemon();
+        restartSnmpDaemon();
+        // The SNMPv3 manager does its own snmpd management, if neccessary
+        writeSnmpdV3User( snmpSettings );
     }
 
     private void writeDefaultSnmpCtlFile(SnmpSettings settings)
@@ -400,9 +409,15 @@ public class SystemManagerImpl implements SystemManager
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
             snmpd_config.append("# only connumity.").append(EOL);
-            snmpd_config.append("com2sec local default ").append(settings.getCommunityString()).append(EOL);
-            snmpd_config.append("group MyROGroup v1 local").append(EOL);
-            snmpd_config.append("group MyROGroup v2c local").append(EOL);
+
+            if( ( false == settings.isEnabled() ) ||
+                ( false == settings.isV3Enabled() ) ||
+                 ( false == settings.isV3Required() ) ){
+                snmpd_config.append("com2sec local default ").append(settings.getCommunityString()).append(EOL);
+                snmpd_config.append("group MyROGroup v1 local").append(EOL);
+                snmpd_config.append("group MyROGroup v2c local").append(EOL);
+           }
+
             snmpd_config.append("group MyROGroup usm local").append(EOL);
             //snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
             //snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
@@ -417,13 +432,79 @@ public class SystemManagerImpl implements SystemManager
         strToFile(snmpd_config.toString(), SNMP_CONF_FILE_NAME);
     }
 
+    private void writeSnmpdV3User(SnmpSettings settings)
+    {
+        /*
+         * Modify SNMP library configuration in-place, removing existing users
+         */
+        boolean foundExistingUser = false;
+        StringBuilder snmpdLib_config = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(SNMP_CONF_LIB_FILE_NAME));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = SNMP_CONF_V3USER_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    foundExistingUser = true;
+                    continue;
+                }
+                snmpdLib_config.append(l).append(EOL);
+            }
+        } catch (Exception x) {
+            logger.warn("Unable to open SNMP library configuration file: s" + SNMP_CONF_LIB_FILE_NAME );
+            return;
+        }
+        if( ( false == foundExistingUser ) &&
+            ( false == settings.isV3Enabled() ) ){
+            return;
+        }
+        /*
+         * SNMPv3 management requires explicit server shutdown/startup. 
+         */
+        stopSnmpDaemon();
+
+        if( true == foundExistingUser ){
+            /*
+             * Remove existing user
+             */
+            strToFile(snmpdLib_config.toString(), SNMP_CONF_LIB_FILE_NAME );
+        }
+
+        if( settings.isEnabled() &&
+            settings.isV3Enabled() ){
+            /*
+             * Add v3 user
+             */
+            int retCode = UvmContextFactory.context().execManager().execResult(
+                SNMP_CONFIG + 
+                " --create-snmpv3-user" +
+                " -a " + settings.getV3AuthenticationProtocol() +
+                // !!! escape properly
+                " -A \"" + settings.getV3AuthenticationPassphrase() + "\""  +
+                " -x " + settings.getV3PrivacyProtocol() +
+                // !!! escape properly
+                ( ( settings.getV3PrivacyPassphrase() != null ) &&
+                  !settings.getV3PrivacyPassphrase().isEmpty()
+                    ? " -X \"" + settings.getV3PrivacyPassphrase() + "\"" 
+                    : "" 
+                ) +
+                " " + settings.getV3Username()
+            );
+            if( retCode != 0){
+                logger.warn("Unable run create-snmpv3-user: " + retCode );
+            }
+        }
+
+        startSnmpDaemon();
+
+        return;
+    }
+
     private boolean strToFile(String s, String fileName)
     {
         FileOutputStream fos = null;
         File tmp = null;
         try {
-
-            tmp = File.createTempFile("snmpcf", ".tmp");
+            tmp = File.createTempFile( "snmpcf", ".tmp");
             fos = new FileOutputStream(tmp);
             fos.write(s.getBytes());
             fos.flush();
@@ -446,7 +527,7 @@ public class SystemManagerImpl implements SystemManager
      * intuitive - but trust me.  The "etc/default/snmpd" file which we
      * write controls this.
      */
-    private void restartDaemon()
+    private void restartSnmpDaemon()
     {
         try {
             logger.debug("Restarting the snmpd...");
@@ -462,6 +543,46 @@ public class SystemManagerImpl implements SystemManager
         }
         catch(Exception ex) {
             logger.error("Error restarting snmpd", ex);
+        }
+    }
+
+    private void stopSnmpDaemon()
+    {
+        try {
+            logger.debug("Stopping the snmpd...");
+
+            String result = UvmContextFactory.context().execManager().execOutput( "/etc/init.d/snmpd stop" );
+            try {
+                String lines[] = result.split("\\r?\\n");
+                logger.info("/etc/init.d/snmpd stop: ");
+                for ( String line : lines )
+                    logger.info("/etc/init.d/snmpd stop: " + line);
+            } catch (Exception e) {}
+            // A sleep, of course, is awful.  But for the purposes of managing the snmpv3 user, it must be
+            // completely shut down or net-snmp-config will fail.
+            Thread.sleep(100);
+        }
+        catch(Exception ex) {
+            logger.error("Error stopping snmpd", ex);
+        }
+    }
+
+    private void startSnmpDaemon()
+    {
+        try {
+            logger.debug("Starting the snmpd...");
+
+            String result = UvmContextFactory.context().execManager().execOutput( "/etc/init.d/snmpd start" );
+            try {
+                String lines[] = result.split("\\r?\\n");
+                logger.info("/etc/init.d/snmpd start: ");
+                for ( String line : lines )
+                    logger.info("/etc/init.d/snmpd start: " + line);
+            } catch (Exception e) {}
+
+        }
+        catch(Exception ex) {
+            logger.error("Error starting snmpd", ex);
         }
     }
 

@@ -62,6 +62,15 @@ public class SnmpSettings implements Serializable
     private String communityString;
     private String sysContact;
     private String sysLocation;
+
+    private boolean v3Enabled;
+    private boolean v3Required;
+    private String v3Username;
+    private String v3AuthenticationProtocol;
+    private String v3AuthenticationPassphrase;
+    private String v3PrivacyProtocol;
+    private String v3PrivacyPassphrase;
+
     private boolean sendTraps;
     private String trapHost;
     private String trapCommunity;
@@ -93,6 +102,33 @@ public class SnmpSettings implements Serializable
     public String getSysLocation() { return this.sysLocation; }
     public void setSysLocation(String s) { this.sysLocation = s; }
 
+    /**
+     * SNMP v3
+     */
+    public boolean isV3Enabled() { return this.v3Enabled; }
+    public void setV3Enabled(boolean enabled) { this.v3Enabled = enabled; }
+
+    public boolean isV3Required() { return this.v3Required; }
+    public void setV3Required(boolean enabled) { this.v3Required = enabled; }
+
+    public String getV3Username() { return this.v3Username; }
+    public void setV3Username(String s) { this.v3Username = s; }
+
+    public String getV3AuthenticationProtocol() { return this.v3AuthenticationProtocol; }
+    public void setV3AuthenticationProtocol(String s) { this.v3AuthenticationProtocol = s; }
+
+    public String getV3AuthenticationPassphrase() { return this.v3AuthenticationPassphrase; }
+    public void setV3AuthenticationPassphrase(String s) { this.v3AuthenticationPassphrase = s; }
+
+    public String getV3PrivacyProtocol() { return this.v3PrivacyProtocol; }
+    public void setV3PrivacyProtocol(String s) { this.v3PrivacyProtocol = s; }
+
+    public String getV3PrivacyPassphrase() { return this.v3PrivacyPassphrase; }
+    public void setV3PrivacyPassphrase(String s) { this.v3PrivacyPassphrase = s; }
+
+    /**
+     * Traps
+     */
     public void setSendTraps(boolean sendTraps) { this.sendTraps = sendTraps; }
     public boolean isSendTraps() { return this.sendTraps; }
 

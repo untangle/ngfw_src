@@ -275,6 +275,32 @@ def sendUDPPackets():
     numOfPackets = wcResults.split(' ')[0]
     return numOfPackets
 
+def verifySnmpWalk():
+    snmpwalkResult = clientControl.runCommand("test -x /usr/bin/snmpwalk")  
+    if snmpwalkResult:
+        raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
+
+def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol, v3AuthenticationPassphrase, v3PrivacyProtocol, v3PrivacyPassphrase, v3Required ):
+    settings['v3Enabled'] = v3Enabled
+    settings['v3Username'] = v3Username
+    settings['v3AuthenticationProtocol'] = v3AuthenticationProtocol
+    settings['v3AuthenticationPassphrase'] = v3AuthenticationPassphrase
+    settings['v3PrivacyProtocol'] = v3AuthenticationProtocol
+    settings['v3PrivacyPassphrase'] = v3AuthenticationPassphrase
+    settings['v3Required'] = v3Required
+
+    systemProperties = system_props.SystemProperties()
+    lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+    v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle" 
+    v3command = "snmpwalk -v 3 " + " -u " + v3Username + " -l authNoPriv " + " -a " + v3AuthenticationProtocol + " -A " + v3AuthenticationPassphrase + " -x " + v3PrivacyProtocol
+    if v3PrivacyPassphrase != "":
+        v3command += " -X " + v3PrivacyPassphrase
+    v3command += " " +  lanAdminIP + " | grep untangle"
+
+    print "v1v2command = " + v1v2command
+    return( v1v2command, v3command )
+
+
 class NetworkTests(unittest2.TestCase):
     
     @staticmethod
@@ -702,26 +728,164 @@ class NetworkTests(unittest2.TestCase):
         assert (mtuValue == mtuSetValue)
         assert (mtu2Value == mtuAutoValue)
         
-    # Verify SNMP
-    def test_120_SNMP(self):
-        snmpwalkResult = clientControl.runCommand("test -x /usr/bin/snmpwalk")  
-        if snmpwalkResult:
-            raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
+    # SNMP, v1/v2enabled, v3 disabled
+    def test_120_SNMP_Enabled_V1V2Only(self):
+        verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
-        systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['enabled'] = True
-        systemSettings['snmpSettings']['port'] = 161
-        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
         systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        systemSettings['snmpSettings']['v3Enabled'] = False
+        uvmContext.systemManager().setSettings(systemSettings)
+        systemProperties = system_props.SystemProperties()
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+        v2cResult = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
+        v3Result = clientControl.runCommand("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  lanAdminIP + " | grep untangle")
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 1 )
+
+    def test_121_SNMP_Enabled_V3ShaDesNoPrivacyPassphrase(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_122_SNMP_Enabled_V3Md5DesNoPrivacyPassphrase(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_123_SNMP_Enabled_V3ShaDes(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_124_SNMP_Enabled_V3ShaAes(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_125_SNMP_Enabled_V3Md5Des(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_126_SNMP_Enabled_V3Md5Aes(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 0 )
+        assert( v3Result == 0 )
+
+    def test_127_SNMP_Enabled_V3Required(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = True
+        systemSettings['snmpSettings']['communityString'] = "atstest"
+        systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
+        systemSettings['snmpSettings']['sendTraps'] = True
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['port'] = 161
+        commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
+        uvmContext.systemManager().setSettings(systemSettings)
+        v2cResult = clientControl.runCommand( commands[0] )
+        v3Result = clientControl.runCommand( commands[1] )
+        uvmContext.systemManager().setSettings(origsystemSettings)
+        assert( v2cResult == 1 )
+        assert( v3Result == 0 )
+
+    def test_128_SNMP_Disabled(self):
+        verifySnmpWalk()
+        origsystemSettings = uvmContext.systemManager().getSettings()
+        systemSettings = uvmContext.systemManager().getSettings()
+        systemSettings['snmpSettings']['enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
         lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
         result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
-        assert(result == 0)
+        assert(result == 1)
 
     def test_130_sessionview(self):
         foundTestSession = False
