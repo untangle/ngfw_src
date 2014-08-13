@@ -15,6 +15,7 @@ from uvm import Manager
 from uvm import Uvm
 from untangle_tests import TestDict
 from untangle_tests import ClientControl
+from untangle_tests import MGEMControl
 
 radiusServer = "10.111.56.71"
 ftp_server = "test.untangle.com"
@@ -23,6 +24,7 @@ ftp_file_name = "test.zip"
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
+mgenControl = MGEMControl()
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
@@ -239,42 +241,6 @@ def getDownloadSpeed():
     # print "bandwidth_speed <%s>" % bandwidth_speed
     return bandwidth_speed
     
-def getUDPSpeed():
-    # Use mgen to get UDP speed.  Returns number of packets received.
-    # start mgen receiver on radius server.
-    os.system("rm -f mgen_recv.dat")
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm mgen_recv.dat >/dev/null 2>&1\"")
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
-    # start the UDP generator on the client behind the Untangle.
-    clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log")
-    # wait for UDP to finish
-    time.sleep(70)
-    # kill mgen receiver    
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"pkill mgen >/dev/null 2>&1\"")
-    os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + ":mgen_recv.dat ./ >/dev/null 2>&1")
-    wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
-    # print "wcResults " + str(wcResults)
-    numOfPackets = wcResults.split(' ')[0]
-    return numOfPackets
-    
-def sendUDPPackets():
-    # Use mgen to send UDP packets.  Returns number of packets received.
-    # start mgen receiver on client.
-    os.system("rm -f mgen_recv.dat")
-    clientControl.runCommand("rm -f mgen_recv.dat")
-    clientControl.runCommand("mgen output mgen_recv.dat port 5000 &")
-    # start the UDP generator on the radius server.
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1\"")
-    # wait for UDP to finish
-    time.sleep(70)
-    # kill mgen receiver    
-    clientControl.runCommand("pkill mgen")
-    os.system("scp -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + ClientControl.hostIP + ":mgen_recv.dat ./ >/dev/null 2>&1")
-    wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
-    # print "wcResults " + str(wcResults)
-    numOfPackets = wcResults.split(' ')[0]
-    return numOfPackets
-
 def verifySnmpWalk():
     snmpwalkResult = clientControl.runCommand("test -x /usr/bin/snmpwalk")  
     if snmpwalkResult:
@@ -419,25 +385,20 @@ class NetworkTests(unittest2.TestCase):
 
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
-        # We will use radiusServer for this test. Test to see if we can reach it.
-        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+        # We will use radiusServer and mgen for this test.
+        mgenAvailable = mgenControl.verifyMgen()
+        if (not mgenAvailable):
+            raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
-        mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
-        if mgenResult:
-            # http://www.nrl.navy.mil/itd/ncs/products/mgen
-            raise unittest2.SkipTest("Mgen app needs to be installed on client")
-
         nukePortForwardRules()
         # port forward UDP 5000 to client box
         appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.hostIP,"5000"))
 
         # send UDP packets through the port forward
-        UDP_packets = sendUDPPackets()
+        UDP_packets = mgenControl.sendUDPPackets()
         nukePortForwardRules()
         assert (UDP_packets >  0)
 
@@ -472,24 +433,20 @@ class NetworkTests(unittest2.TestCase):
         raise unittest2.SkipTest('Broken test')
         if clientControl.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping UDP with QoS test")
+        # We will use radiusServer and mgen for this test.
+        mgenAvailable = mgenControl.verifyMgen()
+        if (not mgenAvailable):
+            raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")            
-        mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
-        if mgenResult:
-            # http://www.nrl.navy.mil/itd/ncs/products/mgen
-            raise unittest2.SkipTest("Mgen app needs to be installed on client")
-
         netsettings = uvmContext.networkManager().getNetworkSettings()
         if not netsettings['qosSettings']['qosEnabled']:
             netsettings['qosSettings']['qosEnabled'] = True
             uvmContext.networkManager().setNetworkSettings(netsettings)
         appendBypass(createBypassMatcherRule("DST_PORT","5000"))
         appendQoSRule(createQoSMatcherRule("DST_PORT","5000", 1))
-        pre_UDP_packets = getUDPSpeed()
+        pre_UDP_packets = mgenControl.getUDPSpeed()
 
         # Change UDP priority to limited
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -501,7 +458,7 @@ class NetworkTests(unittest2.TestCase):
                         netsettings['qosSettings']['qosRules']['list'][i]['priority'] = 7
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        post_UDP_packets = getUDPSpeed()
+        post_UDP_packets = mgenControl.getUDPSpeed()
         # print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
         
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
