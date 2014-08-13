@@ -1211,13 +1211,13 @@ public class NetworkManagerImpl implements NetworkManager
          */
         List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
 
-        qosPriorities.add( new QosPriority( 1, "Very High",      50, 100, 50, 100) );
-        qosPriorities.add( new QosPriority( 2, "High",           25, 100, 25, 100) );
-        qosPriorities.add( new QosPriority( 3, "Medium",         12, 100, 12, 100) );
-        qosPriorities.add( new QosPriority( 4, "Low",             6, 100,  6, 100) );
-        qosPriorities.add( new QosPriority( 5, "Limited",         3,  75,  3, 75) );
-        qosPriorities.add( new QosPriority( 6, "Limited More",    2,  50,  2, 50) );
-        qosPriorities.add( new QosPriority( 7, "Limited Severly", 2,  10,  2, 10) );
+        qosPriorities.add( new QosPriority( 1, "Very High",       50, 100, 50, 100) );
+        qosPriorities.add( new QosPriority( 2, "High",            25, 100, 25, 100) );
+        qosPriorities.add( new QosPriority( 3, "Medium",          12, 100, 12, 100) );
+        qosPriorities.add( new QosPriority( 4, "Low",              6, 100,  6, 100) );
+        qosPriorities.add( new QosPriority( 5, "Limited",          3,  75,  3, 75) );
+        qosPriorities.add( new QosPriority( 6, "Limited More",     2,  50,  2, 50) );
+        qosPriorities.add( new QosPriority( 7, "Limited Severely", 2,  10,  2, 10) );
 
         qosSettings.setQosPriorities( qosPriorities );
         
