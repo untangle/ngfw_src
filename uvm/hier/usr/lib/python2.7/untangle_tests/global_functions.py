@@ -10,24 +10,24 @@ radiusServer = "10.111.56.71"
 clientControl = ClientControl()
 systemProperties = SystemProperties()
 
-class MGEMControl:
+class GlobalFunctions:
     # http://www.nrl.navy.mil/itd/ncs/products/mgen
     
     def verifyMgen(self):
         mGenPresent = False
+        # Check to see if mgen endpoint is reachable
         externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # Check to see if some other test is using mgen for UDP testing
+        isMgenNotRunning = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"ps auxww | grep mgen | grep -v grep >/dev/null 2>&1\"")
         # print "externalClientResult <%s>" % externalClientResult
-        if (externalClientResult == 0):
+        if (externalClientResult == 0 and isMgenNotRunning):
             # RADIUS server, the mgen endpoint is reachable, check other requirements
             mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
             # print "mgenResult <%s>" % mgenResult
             if (mgenResult == 0):
-                mgnFileResult = clientControl.runCommand("ls /home/testshell/udp-load-ats.mgn")
-                if (mgnFileResult != 0):
-                    # mgen is present but the test control file is not, try to copy it over.
-                    os.system("scp -3 -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + ":./udp-load-ats.mgn testshell@" + clientControl.hostIP + ":./ >/dev/null 2>&1")
-                    mgnFileResult = clientControl.runCommand("ls /home/testshell/udp-load-ats.mgn")
-                # print "mgnFileResult <%s>" % mgnFileResult
+                # Always get new UDP traffic generator file in case it changes.
+                clientControl.runCommand("rm udp-load-ats.mgn")
+                mgnFileResult = clientControl.runCommand("wget -q http://test.untangle.com/test/udp-load-ats.mgn")
                 if (mgnFileResult == 0):
                     mGenPresent = True
         return mGenPresent
@@ -41,14 +41,14 @@ class MGEMControl:
         # start the UDP generator on the client behind the Untangle.
         clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log")
         # wait for UDP to finish
-        time.sleep(70)
+        time.sleep(25)
         # kill mgen receiver    
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"pkill mgen\"  >/dev/null 2>&1")
         os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + ":mgen_recv.dat ./ >/dev/null 2>&1")
         wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
-        # print "wcResults " + str(wcResults)
+        print "wcResults " + str(wcResults)
         numOfPackets = wcResults.split(' ')[0]
-        return numOfPackets
+        return int(numOfPackets)
 
     def sendUDPPackets(self):
         # Use mgen to send UDP packets.  Returns number of packets received.
@@ -66,5 +66,5 @@ class MGEMControl:
         wcResults = subprocess.Popen(["wc","-l","mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
         # print "wcResults " + str(wcResults)
         numOfPackets = wcResults.split(' ')[0]
-        return numOfPackets
+        return int(numOfPackets)
     
