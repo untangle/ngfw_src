@@ -137,9 +137,9 @@ class UvmTests(unittest2.TestCase):
         # print nodeDataSP
         getLatestMailPkg();
         # remove previous smtp log file
-        clientControl.runCommand("rm -f test_030_testSMTPSettings.log")
+        clientControl.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
         # Start mail sink
-        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
+        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = ClientControl.hostIP
         newMailsettings['smtpPort'] = "6800"
@@ -157,7 +157,7 @@ class UvmTests(unittest2.TestCase):
         clientControl.runCommand("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
         nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
-        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' test_030_testSMTPSettings.log")
+        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' /tmp/test_030_testSMTPSettings.log")
         assert(result==0)
 
 TestDict.registerNode("uvm", UvmTests)
