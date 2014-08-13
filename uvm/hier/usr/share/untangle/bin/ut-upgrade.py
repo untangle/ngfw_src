@@ -21,6 +21,7 @@ os.environ['PATH'] = '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sb
 # apt-get options for various commands
 UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPDATE_OPTS = " --yes --force-yes --purge "
+AUTOREMOVE_OPTS = " --yes --purge "
 
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
 # This isn't enough because this doesn't modify sigprocmask so children of this process still get it
@@ -73,13 +74,12 @@ def update():
 
 def upgrade():
     log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
-
-    # autoUpgradeEnabled = get_uvm_settings_item('system', 'autoUpgrade')
-    # if not autoUpgradeEnabled:
-    #     log("auto-upgrade not enabled.")
-    #     return 0
-
     r = cmd_to_stderr("apt-get dist-upgrade %s" % UPGRADE_OPTS)
+    return 0
+
+def autoremove():
+    log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
+    r = cmd_to_stderr("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return 0
 
 log_date( os.path.basename( sys.argv[0]) )
@@ -89,6 +89,9 @@ update()
 log("")
 
 upgrade()
+log("")
+
+autoremove()
 log("")
 
 log_date( os.path.basename( sys.argv[0]) + " done." )
