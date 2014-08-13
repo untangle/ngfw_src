@@ -2549,7 +2549,12 @@ Ext.define("Ung.SelectDateTimeWindow", {
                         }
                         if (combo.getValue()!=null) {
                             if(!this.date) {
-                                this.date = this.down("datepicker[name=date]").getValue() || (new Date());
+                                var selDate=this.down("datepicker[name=date]").getValue();
+                                if(!selDate) {
+                                    selDate=new Date();
+                                    selDate.setHours(0,0,0,0);
+                                }
+                                this.date = new Date(selDate.getTime()+i18n.timeoffset);
                             }
                             this.date.setHours(combo.getValue().getHours());
                             this.date.setMinutes(combo.getValue().getMinutes());
@@ -2823,7 +2828,7 @@ Ext.define("Ung.GridEventLogBase", {
                         },
                         time: {
                             format: 'H:i:s A',
-                            increment: 1
+                            increment: 30
                         },
                         validateRecord : function (record) {
                             var me = this,
@@ -2837,14 +2842,14 @@ Ext.define("Ung.GridEventLogBase", {
                             val = val.getTime();
                             for (key in me.fields) {
                                 if (me.fields[key].checked) {
-                                    pickerValue = me.getFieldValue(key).getTime()+i18n.timeoffset;
+                                    pickerValue = me.getFieldValue(key).getTime()-i18n.timeoffset;
                                     if (key == 'before' && pickerValue <= val) {
                                         return false;
                                     }
                                     if (key == 'after' && pickerValue >= val) {
                                         return false;
                                     }
-                                    if (key == 'on' && pickerValue != val) {
+                                    if (key == 'on' && (pickerValue-43200000 > val || val > pickerValue+43200000)) { //on piker value for day (selected time -/+12horus)
                                         return false;
                                     }
                                 }
