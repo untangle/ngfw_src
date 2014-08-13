@@ -246,7 +246,7 @@ def getUDPSpeed():
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm mgen_recv.dat >/dev/null 2>&1\"")
     os.system("ssh -o 'StrictHostKeyChecking=no' -i /usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
     # start the UDP generator on the client behind the Untangle.
-    clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1")
+    clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log")
     # wait for UDP to finish
     time.sleep(70)
     # kill mgen receiver    
