@@ -18,8 +18,9 @@ class GlobalFunctions:
         # Check to see if mgen endpoint is reachable
         externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Check to see if some other test is using mgen for UDP testing
-        isMgenNotRunning = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"ps auxww | grep mgen | grep -v grep >/dev/null 2>&1\"")
+        isMgenNotRunning = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"pidof mgen >/dev/null 2>&1\"")
         # print "externalClientResult <%s>" % externalClientResult
+        # print "isMgenNotRunning <%s>" % isMgenNotRunning
         if (externalClientResult == 0 and isMgenNotRunning):
             # RADIUS server, the mgen endpoint is reachable, check other requirements
             mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
