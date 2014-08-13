@@ -180,6 +180,9 @@ class OpenVpnTests(unittest2.TestCase):
         global nodeData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
+        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn\"")
+        if running == 0:
+            raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
         nodeData["serverEnabled"]=True
         siteName = nodeData['siteName']
@@ -246,6 +249,9 @@ class OpenVpnTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
+        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn\"")
+        if running == 0:
+            raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
         nodeData["serverEnabled"]=True
         siteName = nodeData['siteName']  
@@ -279,12 +285,12 @@ class OpenVpnTests(unittest2.TestCase):
 
         # ping the test host behind the Untangle from the remote testbox
         print "vpn address " + vpn_address
-        timeout = 50
+        tries = 6
         result1 = 1
-        while result1 and timeout > 0:
+        while result1 and tries > 0:
             time.sleep(1)
-            timeout -= 1
-            result1 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l\" >/dev/null 2>&1")
+            tries -= 1
+            result1 = os.system("ssh -o 'ConnectTimeout=10' -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ls -l\" >/dev/null 2>&1")
         result2 = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"ping -c 2 " +  ClientControl.hostIP + "\" >/dev/null 2>&1")
         # print "look for block page"
         webresult = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + vpn_address + " \"wget -q -O - http://www.playboy.com | grep -q blockpage\" >/dev/null 2>&1")
