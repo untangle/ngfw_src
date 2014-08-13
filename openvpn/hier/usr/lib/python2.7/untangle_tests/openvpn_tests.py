@@ -180,7 +180,7 @@ class OpenVpnTests(unittest2.TestCase):
         global nodeData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn\"")
+        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn >/dev/null 2>&1\"")
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
@@ -249,7 +249,7 @@ class OpenVpnTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn\"")
+        running = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + qaClientVPN + " \"pidof openvpn >/dev/null 2>&1\"")
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
