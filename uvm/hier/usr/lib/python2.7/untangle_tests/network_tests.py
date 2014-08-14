@@ -18,7 +18,7 @@ import remote_control
 import system_properties
 import global_functions
 
-radiusServer = "10.111.56.71"
+iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
 ftp_file_name = "test.zip"
 
@@ -359,8 +359,8 @@ class NetworkTests(unittest2.TestCase):
 
     # test a port forward from outside if possible
     def test_030_portForwardInbound(self):
-        # We will use radiusServer for this test. Test to see if we can reach it.
-        externalClientResult = subprocess.call(["ping","-c","1",radiusServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # We will use iperfServer for this test. Test to see if we can reach it.
+        externalClientResult = subprocess.call(["ping","-c","1",iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -376,24 +376,24 @@ class NetworkTests(unittest2.TestCase):
 
         # try connecting to netcat on client from "outside" box
         tmp_hostIP = remote_control.clientIP
-        remote_control.clientIP = radiusServer
+        remote_control.clientIP = iperfServer
         result = remote_control.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
         remote_control.clientIP = tmp_hostIP
         assert (result == 0)
 
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
-        # We will use radiusServer and mgen for this test.
-        mgenAvailable = global_functions.verifyMgen()
-        if (not mgenAvailable):
-            raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
+        # We will use iperf server and iperf for this test.
+        iperfAvailable = global_functions.verifyIperf()
+        if (not iperfAvailable):
+            raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
         nukePortForwardRules()
         # port forward UDP 5000 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.clientIP,"5000"))
 
         # send UDP packets through the port forward
         UDP_packets = global_functions.sendUDPPackets(wan_IP)
@@ -428,12 +428,12 @@ class NetworkTests(unittest2.TestCase):
 
     # Test UDP QoS limits speed
     def test_053_testUDPwithQoS(self):
-        if remote_control.quickTestsOnly:
+        if clientControl.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        # We will use radiusServer and mgen for this test.
-        mgenAvailable = global_functions.verifyMgen()
-        if (not mgenAvailable):
-            raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
+        # We will use iperf server and iperf for this test.
+        iperfAvailable = global_functions.verifyIperf()
+        if (not iperfAvailable):
+            raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")            
