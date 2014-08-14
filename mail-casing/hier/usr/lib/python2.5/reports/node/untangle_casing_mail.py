@@ -106,6 +106,13 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.drop_column('reports', 'n_mail_addrs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'n_mail_addrs', 'p2s_bytes')
 
+        # rename old commtouch columns
+        sql_helper.rename_column('reports', 'n_mail_addrs', 'ct_score', 'spamblocker_score')
+        sql_helper.rename_column('reports', 'n_mail_addrs', 'ct_is_spam', 'spamblocker_is_spam')
+        sql_helper.rename_column('reports', 'n_mail_addrs', 'ct_action', 'spamblocker_action')
+        sql_helper.rename_column('reports', 'n_mail_addrs', 'virus_commtouch_clean', 'virus_virusblocker_clean');
+        sql_helper.rename_column('reports', 'n_mail_addrs', 'virus_commtouch_name', 'virus_virusblocker_name')
+
         sql_helper.add_column('reports', 'n_mail_addrs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_mail_addrs', 'sender', 'text')
         sql_helper.add_column('reports', 'n_mail_addrs', 'virus_clam_clean', 'boolean')
@@ -228,6 +235,13 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.drop_column('reports', 'n_mail_msgs', 's2p_bytes')
         sql_helper.drop_column('reports', 'n_mail_msgs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'n_mail_msgs', 'p2s_bytes')
+
+        # rename old commtouch columns
+        sql_helper.rename_column('reports', 'n_mail_msgs', 'ct_score', 'spamblocker_score')
+        sql_helper.rename_column('reports', 'n_mail_msgs', 'ct_is_spam', 'spamblocker_is_spam')
+        sql_helper.rename_column('reports', 'n_mail_msgs', 'ct_action', 'spamblocker_action')
+        sql_helper.rename_column('reports', 'n_mail_msgs', 'virus_commtouch_clean', 'virus_virusblocker_clean');
+        sql_helper.rename_column('reports', 'n_mail_msgs', 'virus_commtouch_name', 'virus_virusblocker_name')
 
         sql_helper.add_column('reports', 'n_mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_mail_msgs', 'sender', 'text')

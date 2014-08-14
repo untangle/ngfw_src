@@ -141,13 +141,13 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
             if auto_commit:
                 connection.rollback()
             raise e
-        
+
         show_error = True
         if re.search(r'^\s*(DROP) ', sql, re.I):
             show_error = False
         if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
             show_error = False
-            
+
         if show_error:
             raise e
 
@@ -177,11 +177,14 @@ def drop_column(schema, tablename, columnname):
     run_sql(sql)
 
 def rename_column(schema, tablename, oldname, newname):
-    if not column_exists(schema, tablename, newname):
+    if column_exists(schema, tablename, newname):
+        logger.debug("rename failed, column alread exists: %s.%s" % (tablename, newname))
+        return
+    if not column_exists(schema, tablename, oldname):
+        logger.debug("rename failed, column missing: %s.%s" % (tablename, oldname))
         return
     sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (schema, tablename, oldname, newname)
     logger.info(sql)
-    run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
     column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema, tablename, columnname, oldtype))
@@ -221,7 +224,7 @@ def drop_index(schema, tablename, columnname, unique=False):
     sql = 'DROP INDEX %s.%s_%s_%sidx' % (schema, tablename, columnname, uniqueStr1 )
     logger.info(sql)
     run_sql(sql)
-                                    
+
 def rename_index(schema, oldname, newname):
     already_exists = run_sql_one("select 1 from pg_class where relname = '%s'" % (oldname))
     if not already_exists:
@@ -247,7 +250,7 @@ def clean_table(schema, tablename, cutoff):
     sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (schema, tablename)
     logger.info(sql)
     run_sql(sql, (cutoff,))
-    
+
 def drop_fact_table(tablename, cutoff_date):
   for t, date in find_fact_tables(tablename):
     if date < cutoff_date:
@@ -263,7 +266,7 @@ def drop_fact_table(tablename, cutoff_date):
 
 def create_fact_table(table_ddl):
     (schema, tablename) = __get_tablename(table_ddl)
-    
+
     if schema:
         schema = SCHEMA
         full_tablename = "%s.%s" % (schema, tablename)
@@ -284,7 +287,7 @@ def get_update_info(tablename, default=None, delay=0):
         curs.execute("""\
 SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE tablename = %s
 """, (tablename,))
-        
+
         row = curs.fetchone()
 
         if row:
@@ -307,7 +310,7 @@ def get_max_timestamp_with_interval(table, time_column='date', interval='1 day')
     except:
         connection.rollback()
         raise
-    
+
     sd = curs.fetchone()
     if not sd or not sd[0]:
         sd = '1-1-1'
@@ -353,7 +356,7 @@ def set_update_info(tablename, last_update, connection=None,
             last_update = last_update_origin
         else:
             last_update = last_update[0]
-            
+
         logger.debug("About to set last_update to %s (last was %s) for %s" % (last_update,
                                                                               last_update_origin,
                                                                               tablename))
@@ -428,7 +431,7 @@ def find_fact_tables(tablename=None):
         prefix = ''
     else:
         prefix = '%s_' % tablename
-        
+
     tables = []
     for t in get_tables(schema=SCHEMA, prefix=prefix):
         m = re.search('%s(\d+)_(\d+)_(\d+)' % prefix, t)
@@ -436,7 +439,7 @@ def find_fact_tables(tablename=None):
             d = mx.DateTime.Date(*map(int, m.groups()))
             tables.append((t, d))
     return tables
-    
+
 def get_date_range(start_date, end_date):
     l = int(round((end_date - start_date).days+1))
     return [end_date - mx.DateTime.DateTimeDelta(i) for i in range(l)]
@@ -474,7 +477,7 @@ def get_averaged_query(sums, table_name, start_date, end_date,
     params_to_quote =  { 'start_date' : DateFromMx(start_date),
                          'end_date' : DateFromMx(end_date),
                          'time_interval' : time_interval }
-    
+
     query = """
 SELECT date(%%(start_date)s) +
        date_trunc('second',
@@ -506,7 +509,7 @@ ORDER BY time ASC"""
 
     if debug:
         logger.debug((query % params_regular) % params_to_quote)
-    
+
     return query % params_regular, params_to_quote
 
 def __tablename_for_date(tablename, date):

@@ -95,6 +95,9 @@ CREATE TABLE reports.n_http_events (
         sql_helper.drop_column('reports', 'n_http_events', 'p2c_bytes')
         sql_helper.drop_column('reports', 'n_http_events', 'p2s_bytes')
 
+        # rename old commtouch columns
+        sql_helper.rename_column("reports", "n_http_events", "virus_commtouchav_clean", "virus_virusblocker_clean");
+        sql_helper.rename_column("reports", "n_http_events", "virus_commtouchav_name", "virus_virusblocker_name");
 
         for vendor in ("untangle", "esoft"):
             sql_helper.drop_column('reports', 'n_http_events', 'wf_%s_action' % vendor)
