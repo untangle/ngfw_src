@@ -195,7 +195,7 @@ class OpenVpnTests(unittest2.TestCase):
         # If VPN tunnel has failed to connect so fail the test,
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = remote_control.runCommand("ping -c 2 " + ClientControl.clientIP, host=vpnClientVpnIP)
+        result = remote_control.runCommand("ping -c 2 " + remote_control.clientIP, host=vpnClientVpnIP)
         
         listOfClients = node.getActiveClients()
         print "address " + listOfClients['list'][0]['address']
@@ -270,7 +270,7 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(1)
             tries -= 1
             result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
-        result2 = remote_control.runCommand("ping -c 2 " + ClientControl.clientIP, host=vpnClientVpnIP)
+        result2 = remote_control.runCommand("ping -c 2 " + remote_control.clientIP, host=vpnClientVpnIP)
 
         # print "look for block page"
         webresult = remote_control.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)

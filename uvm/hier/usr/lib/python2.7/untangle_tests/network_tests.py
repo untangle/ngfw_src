@@ -393,7 +393,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
         nukePortForwardRules()
         # port forward UDP 5000 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.clientIP,"5000"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
 
         # send UDP packets through the port forward
         UDP_packets = global_functions.sendUDPPackets(wan_IP)
