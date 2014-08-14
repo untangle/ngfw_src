@@ -48,10 +48,10 @@ class MailCasing(Node):
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_mail_addrs", cutoff)
-        sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)        
+        sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)
         sql_helper.drop_fact_table("n_mail_msgs", cutoff)
-        sql_helper.drop_fact_table("n_mail_msg_totals", cutoff)        
-        sql_helper.drop_fact_table("email", cutoff)        
+        sql_helper.drop_fact_table("n_mail_msg_totals", cutoff)
+        sql_helper.drop_fact_table("email", cutoff)
 
     @print_timing
     def __create_n_mail_addrs(self):
@@ -64,7 +64,7 @@ CREATE TABLE reports.n_mail_addrs (
     s_server_addr inet,
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
-    policy_id bigint, 
+    policy_id bigint,
     uid text,
     msg_id bigint,
     subject text,
@@ -83,17 +83,17 @@ CREATE TABLE reports.n_mail_addrs (
     sa_score real,
     sa_is_spam boolean,
     sa_action character,
-    ct_score real,
-    ct_is_spam boolean,
-    ct_action character,
+    spamblocker_score real,
+    spamblocker_is_spam boolean,
+    spamblocker_action character,
     virus_kaspersky_clean boolean,
     virus_kaspersky_name text,
     phish_score real,
     phish_is_spam boolean,
     phish_action character,
     vendor text,
-    virus_commtouch_clean boolean,
-    virus_commtouch_name text)""")
+    virus_virusblocker_clean boolean,
+    virus_virusblocker_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_addrs', 'policy_inbound')
@@ -113,17 +113,17 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.add_column('reports', 'n_mail_addrs', 'sa_score', 'real')
         sql_helper.add_column('reports', 'n_mail_addrs', 'sa_is_spam', 'boolean')
         sql_helper.add_column('reports', 'n_mail_addrs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'spamblocker_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'spamblocker_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'spamblocker_action', 'character')
         sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
         sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_name', 'text')
         sql_helper.add_column('reports', 'n_mail_addrs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'n_mail_addrs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'n_mail_addrs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'n_mail_addrs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_virusblocker_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_virusblocker_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
@@ -143,14 +143,14 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.create_index("reports","n_mail_addrs","msg_id", unique=False);
 
         # virus blocker event log query indexes
-        # sql_helper.create_index("reports","n_mail_addrs","virus_commtouch_clean");
+        # sql_helper.create_index("reports","n_mail_addrs","virus_virusblocker_clean");
         # sql_helper.create_index("reports","n_mail_addrs","virus_clam_clean");
         # sql_helper.create_index("reports","n_mail_addrs","virus_kaspersky_clean");
 
         # spam blocker event log query indexes
         # sql_helper.create_index("reports","n_mail_addrs","addr_kind");
         # sql_helper.create_index("reports","n_mail_addrs","sa_action");
-        # sql_helper.create_index("reports","n_mail_addrs","ct_action");
+        # sql_helper.create_index("reports","n_mail_addrs","spamblocker_action");
         # sql_helper.create_index("reports","n_mail_addrs","phish_action");
 
     @print_timing
@@ -191,7 +191,7 @@ CREATE TABLE reports.n_mail_msgs (
     s_server_addr inet,
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
-    policy_id bigint, 
+    policy_id bigint,
     uid text,
     msg_id bigint,
     subject text,
@@ -206,17 +206,17 @@ CREATE TABLE reports.n_mail_msgs (
     sa_score real,
     sa_is_spam boolean,
     sa_action character,
-    ct_score real,
-    ct_is_spam boolean,
-    ct_action character,
+    spamblocker_score real,
+    spamblocker_is_spam boolean,
+    spamblocker_action character,
     virus_kaspersky_clean boolean,
     virus_kaspersky_name text,
     phish_score real,
     phish_is_spam boolean,
     phish_action character,
     vendor text,
-    virus_commtouch_clean boolean,
-    virus_commtouch_name text)""")
+    virus_virusblocker_clean boolean,
+    virus_virusblocker_name text)""")
 
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_mail_msgs', 'policy_inbound')
@@ -236,17 +236,17 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.add_column('reports', 'n_mail_msgs', 'sa_score', 'real')
         sql_helper.add_column('reports', 'n_mail_msgs', 'sa_is_spam', 'boolean')
         sql_helper.add_column('reports', 'n_mail_msgs', 'sa_action', 'character')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_score', 'real')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'spamblocker_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'spamblocker_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'spamblocker_action', 'character')
         sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
         sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_name', 'text')
         sql_helper.add_column('reports', 'n_mail_msgs', 'phish_score', 'real')
         sql_helper.add_column('reports', 'n_mail_msgs', 'phish_is_spam', 'boolean')
         sql_helper.add_column('reports', 'n_mail_msgs', 'phish_action', 'character')
         sql_helper.add_column('reports', 'n_mail_msgs', 'vendor', 'text')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_virusblocker_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_virusblocker_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_msgs","event_id","integer","bigint");

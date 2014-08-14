@@ -24,14 +24,14 @@ class HttpCasing(Node):
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
-                       [Column('hname', 'text'), 
+                       [Column('hname', 'text'),
                         Column('uid', 'text'),
                         Column('host', 'text'),
                         Column('s2c_content_type', 'text')],
                        [Column('hits', 'bigint', 'count(*)'),
                         Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
                         Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
-        
+
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_http_totals', 's2c_bytes')
         sql_helper.drop_column('reports', 'n_http_totals', 'c2s_bytes')
@@ -70,8 +70,8 @@ CREATE TABLE reports.n_http_events (
     wf_untangle_flagged boolean,
     wf_esoft_blocked boolean,
     wf_esoft_flagged boolean,
-    virus_commtouch_clean boolean,
-    virus_commtouch_name text)""")
+    virus_virusblocker_clean boolean,
+    virus_virusblocker_name text)""")
 
         sql_helper.add_column('reports', 'n_http_events', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_http_events', 'ab_action', 'character(1)')
@@ -83,7 +83,7 @@ CREATE TABLE reports.n_http_events (
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_http_events","event_id","integer","bigint");
         sql_helper.convert_column("reports","n_http_events","session_id","integer","bigint");
-        
+
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_http_events', 'policy_inbound')
         sql_helper.drop_column('reports', 'n_http_events', 'c2p_chunks')
@@ -103,7 +103,7 @@ CREATE TABLE reports.n_http_events (
             sql_helper.add_column('reports', 'n_http_events', 'wf_%s_blocked' % vendor, 'boolean')
             sql_helper.add_column('reports', 'n_http_events', 'wf_%s_flagged' % vendor, 'boolean')
 
-        for vendor in ("clam", "kaspersky", "commtouch"):
+        for vendor in ("clam", "kaspersky", "virusblocker"):
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_clean' % vendor, 'boolean')
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_name' % vendor, 'text')
 
@@ -122,7 +122,7 @@ CREATE TABLE reports.n_http_events (
         # If the new index does exist, delete the old one
         if sql_helper.index_exists("reports","n_http_events","event_id", unique=True):
             sql_helper.drop_index("reports","n_http_events","event_id", unique=False);
-        
+
         sql_helper.create_index("reports","n_http_events","session_id");
         sql_helper.create_index("reports","n_http_events","policy_id");
         sql_helper.create_index("reports","n_http_events","time_stamp");
@@ -138,7 +138,7 @@ CREATE TABLE reports.n_http_events (
         # sql_helper.create_index("reports","n_http_events","wf_untangle_category");
 
         # virus blockers(s)
-        # sql_helper.create_index("reports","n_http_events","virus_commtouch_clean");
+        # sql_helper.create_index("reports","n_http_events","virus_virusblocker_clean");
         # sql_helper.create_index("reports","n_http_events","virus_clam_clean");
         # sql_helper.create_index("reports","n_http_events","virus_kaspersky_clean");
 
@@ -151,6 +151,6 @@ CREATE TABLE reports.n_http_events (
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_http_events", cutoff)
-        sql_helper.drop_fact_table("n_http_totals", cutoff)        
+        sql_helper.drop_fact_table("n_http_totals", cutoff)
 
 reports.engine.register_node(HttpCasing())

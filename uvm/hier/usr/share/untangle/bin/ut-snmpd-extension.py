@@ -175,9 +175,9 @@ class SnmpExtensionUvm(SnmpExtension):
             'untangle-node-spyware' : 8,
             'untangle-node-clam' : 9,
             'untangle-node-spamassassin' : 10,
-            'untangle-node-commtouchav' : 11,
+            'untangle-node-virusblocker' : 11,
             'untangle-node-webcache' : 12,
-            'untangle-node-commtouchas' : 13,
+            'untangle-node-spamblocker' : 13,
             'untangle-node-sitefilter' : 14,
             'untangle-node-openvpn' : 15,
             'untangle-node-bandwidth' : 16,
@@ -251,7 +251,7 @@ bwc-foo OBJECT-TYPE
 #       for rack in range(20):
 #         for event in SnmpExtensionUvm.EVENTS:
 #           for count in SnmpExtensionUvm.COUNTS:
-#           print 
+#           print
 
     print "END"
 
@@ -307,7 +307,7 @@ bwc-foo OBJECT-TYPE
             value = v
             oid = Oid(name, type, value)
             self.oids[name] = oid
-            
+
             # aggregate for all racks
             node, rack, event, count = oid.name.split('.')
             if rack == 0:

@@ -118,7 +118,7 @@ public class SpamLogEvent extends LogEvent
      */
     public MessageInfo getMessageInfo() { return messageInfo; }
     public void setMessageInfo( MessageInfo info ) { this.messageInfo = info; }
-    
+
     /**
      * Spam scan score.
      */
@@ -156,22 +156,22 @@ public class SpamLogEvent extends LogEvent
         String sql;
         int i=0;
         java.sql.PreparedStatement pstmt;
-        
+
         String prefix = ""; /* FIXME this is a hack - we should use proper column names */
         if ("spamassassin".equals(getVendorName().toLowerCase()))
             prefix = "sa";
-        else if ("commtouchas".equals(getVendorName().toLowerCase()))
-            prefix = "ct";
+        else if ("spamblocker".equals(getVendorName().toLowerCase()))
+            prefix = "spamblocker";
         else if ("clam".equals(getVendorName().toLowerCase()))
             prefix = "phish";
         else {
             throw new RuntimeException("Unknown vendor name: " + getVendorName());
         }
-        
+
         sql = "UPDATE reports.n_mail_msgs " +
             "SET " +
             prefix + "_is_spam = ?, " +
-            prefix + "_score = ?, " + 
+            prefix + "_score = ?, " +
             prefix + "_action = ? " +
             "WHERE " +
             "msg_id = ? ";
@@ -183,7 +183,7 @@ public class SpamLogEvent extends LogEvent
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
-        
+
         sql = "UPDATE reports.n_mail_addrs " +
             "SET " +
             prefix + "_is_spam = ?, " +
@@ -198,7 +198,7 @@ public class SpamLogEvent extends LogEvent
         pstmt.setString(++i, String.valueOf(getAction().getKey()));
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
-        
+
         return sqlList;
     }
 
@@ -226,5 +226,5 @@ public class SpamLogEvent extends LogEvent
             return "";
         }
     }
-    
+
 }

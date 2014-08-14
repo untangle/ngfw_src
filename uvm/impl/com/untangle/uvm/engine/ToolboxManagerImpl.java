@@ -76,7 +76,7 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             String s = "file://" + System.getProperty("uvm.toolbox.dir") + "/";
             TOOLBOX_URL = new URL(s);
-        } catch (MalformedURLException exn) { 
+        } catch (MalformedURLException exn) {
             /* should never happen */
             throw new RuntimeException("bad toolbox URL", exn);
         }
@@ -97,7 +97,7 @@ class ToolboxManagerImpl implements ToolboxManager
     private volatile boolean removing = false;
 
     protected static ExecManager execManager = null;
-    
+
     private long lastTailKey = System.currentTimeMillis();
 
     private ToolboxManagerImpl()
@@ -136,7 +136,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, PackageDesc> installableLibitems = new HashMap<String, PackageDesc>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<String, License>();
-        
+
         /**
          * First add all available libitems to installableLibitems List
          */
@@ -158,7 +158,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 "untangle-libitem-superbundle-package".equals(name) ||
                 "untangle-libitem-professional-package".equals(name))
                 continue;
-            
+
             if (type == PackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 installableLibitems.put(dn, md);
@@ -194,7 +194,7 @@ class ToolboxManagerImpl implements ToolboxManager
             } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
                 installableNodes.put(dn, md);
-            } 
+            }
         }
 
         /**
@@ -220,7 +220,7 @@ class ToolboxManagerImpl implements ToolboxManager
         for (PackageDesc md : installed) {
             if ("untangle-libitem-premium-package".equals(md.getName())) {
                 boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
-                if ( justATrial ) 
+                if ( justATrial )
                     installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
         }
@@ -231,7 +231,7 @@ class ToolboxManagerImpl implements ToolboxManager
         for (PackageDesc md : installed) {
             if ("untangle-libitem-standard-package".equals(md.getName())) {
                 boolean justATrial = (lm.getLicense(License.POLICY) != null && lm.getLicense(License.POLICY).getValid() && lm.getLicense(License.POLICY).getTrial());
-                if ( justATrial ) 
+                if ( justATrial )
                     installableLibitems.put(md.getDisplayName(), md); /* show it on the left hand pane */
             }
         }
@@ -283,24 +283,24 @@ class ToolboxManagerImpl implements ToolboxManager
                 installableNodes.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
             }
         }
-        
+
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
-            List<Node> commtouchAsNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-commtouchas", policyId);
-            if (commtouchAsNodes != null && commtouchAsNodes.size() > 0) {
+            List<Node> spamBlockerNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-spamblocker", policyId);
+            if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
                 installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
-            License commtouchAsLicense = lm.getLicense(License.COMMTOUCHAS);
-            if ( commtouchAsLicense != null && commtouchAsLicense.getValid() && !commtouchAsLicense.getTrial() ) {
+            License spamBlockerLicense = lm.getLicense(License.SPAMBLOCKER);
+            if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
                 installableLibitems.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
                 installableNodes.remove("Spam Blocker Lite"); /* hide web filter lite from left hand nav */
             }
         }
-        
-        
+
+
         /**
          * Build the list of apps to show on the left hand nav
          */
@@ -318,11 +318,11 @@ class ToolboxManagerImpl implements ToolboxManager
                 logger.debug("Adding app (libitem) : " + l.getName() + " dn: " + l.getDisplayName());
             if (n != null)
                 logger.debug("Adding app (node   ) : " + n.getName() + " dn: " + n.getDisplayName());
-            
+
             Application a = new Application(l, n);
             apps.add(a);
         }
-        
+
         Collections.sort(apps);
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
@@ -339,11 +339,11 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException
     {
-        if(doUpdate && !upgrading && !installing) 
+        if(doUpdate && !upgrading && !installing)
             update();
 
         boolean canupgrade = upgradable.length > 0;
-        
+
         return new UpgradeStatus(updating, upgrading, installing, removing, canupgrade);
     }
 
@@ -361,7 +361,7 @@ class ToolboxManagerImpl implements ToolboxManager
             return false;
         }
     }
-    
+
     // all known packages
     public PackageDesc[] available()
     {
@@ -382,7 +382,7 @@ class ToolboxManagerImpl implements ToolboxManager
     public boolean isInstalled(String name)
     {
         String pkgName = name.trim();
-        
+
         for (PackageDesc md : this.installed) {
             if (md.getName().equals(pkgName)) {
                 return true;
@@ -457,7 +457,7 @@ class ToolboxManagerImpl implements ToolboxManager
             if (pkgDesc == null || uvmDesc == null) {
                 logger.warn("Unable to read package desc");
                 continue; //assume it matches
-            } 
+            }
 
             String[] pkgVers = pkgDesc.getAvailableVersion().split("~");
             String[] uvmVers = uvmDesc.getInstalledVersion().split("~");
@@ -467,7 +467,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 logger.warn("Misunderstood version strings: " + pkgDesc.getAvailableVersion() + " & " + uvmDesc.getInstalledVersion());
                 continue; //assume it matches
             }
-            
+
             String pkgVer = pkgVers[0];
             String uvmVer = uvmVers[0];
             if (pkgVer == null || uvmVer == null) {
@@ -501,7 +501,7 @@ class ToolboxManagerImpl implements ToolboxManager
             installing = false;
         }
 
-        logger.info("install(" + name + ") return"); 
+        logger.info("install(" + name + ") return");
     }
 
     private final Object installAndInstantiateLock = new Object();
@@ -509,7 +509,7 @@ class ToolboxManagerImpl implements ToolboxManager
     public void installAndInstantiate(final String name, final Long policyId) throws PackageInstallException
     {
         logger.info("installAndInstantiate( " + name + ")");
-        
+
         synchronized (installAndInstantiateLock) {
             UvmContextImpl uvmContext = UvmContextImpl.getInstance();
             NodeManager nm = uvmContext.nodeManager();
@@ -531,7 +531,7 @@ class ToolboxManagerImpl implements ToolboxManager
             catch (PackageException e) {
                 throw new PackageInstallException(e);
             }
-            
+
             /**
              * Install the package
              */
@@ -555,7 +555,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     logger.warn("could not register", e);
                 } catch (Exception exn) {
                     logger.warn("could not instantiate", exn);
-                } 
+                }
             }
 
             MessageManager mm = uvmContext.messageManager();
@@ -573,12 +573,12 @@ class ToolboxManagerImpl implements ToolboxManager
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         if (nm == null)
             return;
-        
+
         List<Node> nodeList = nm.nodeInstances(name);
         logger.debug("unloading " + nodeList.size() + " nodes");
 
         for (Node node : nodeList) {
-            nm.unload( node ); 
+            nm.unload( node );
         }
 
         try {
@@ -637,7 +637,7 @@ class ToolboxManagerImpl implements ToolboxManager
             });
 
         UvmContextFactory.context().newThread(f).start();
-        
+
         return;
     }
 
@@ -692,7 +692,7 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("requestUninstall: " + packageName);
         mm.submitMessage(mir);
     }
-    
+
     // registers a new package that has been added to the system
     public void register(String pkgName) throws PackageInstallException
     {
@@ -704,7 +704,7 @@ class ToolboxManagerImpl implements ToolboxManager
         if ( reporting != null ) {
             reporting.createSchemas();
         }
-        
+
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         nm.startAutoStart(packageDesc(pkgName));
     }
@@ -719,7 +719,7 @@ class ToolboxManagerImpl implements ToolboxManager
         List<Node> nodeList = nm.nodeInstances( pkgName );
         logger.debug("unloading " + nodeList.size() + " nodes");
         for (Node node : nodeList) {
-            nm.unload( node ); 
+            nm.unload( node );
         }
     }
 
@@ -936,7 +936,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 String list = this.execManager.execOutput(cmd);
                 instList = readInstalledList(list);
             } catch (IOException exn) {
-                throw new RuntimeException(exn); 
+                throw new RuntimeException(exn);
             }
         }
 
@@ -953,16 +953,16 @@ class ToolboxManagerImpl implements ToolboxManager
             if ( !tok.hasMoreElements()) {
                 continue;
             }
-            
+
             String pkg = tok.nextToken();
-            
+
             if ( !tok.hasMoreElements()) {
                 logger.warn("Ignoring package with missing version string '" + pkg + "'");
                 continue;
             }
-            
+
             String ver = tok.nextToken();
-            
+
             m.put(pkg, ver);
         }
 
@@ -994,7 +994,7 @@ class ToolboxManagerImpl implements ToolboxManager
     private List<String> predictNodeInstall(String pkg) throws PackageException
     {
         logger.info("predictNodeInstall(" + pkg + ")");
-        
+
         List<String> l = new ArrayList<String>();
         String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
 

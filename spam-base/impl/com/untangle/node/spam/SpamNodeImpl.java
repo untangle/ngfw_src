@@ -30,7 +30,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private static final String STAT_DROP = "drop";
     private static final String STAT_MARK = "mark";
     private static final String STAT_QUARANTINE = "quarantine";
-    
+
     private final TarpitEventHandler tarpitHandler = new TarpitEventHandler(this);
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
@@ -53,7 +53,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private EventLogQuery spamEventQuery;
     private EventLogQuery quarantinedEventQuery;
     private EventLogQuery tarpitEventQuery;
-    
+
     private String signatureVersion;
     private Date lastUpdate = new Date();
     private Date lastUpdateCheck = new Date();
@@ -62,47 +62,47 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
 	public SpamNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
     {
         super( nodeSettings, nodeProperties );
-        
+
         this.scanner = scanner;
         saDaemon = new SpamAssassinDaemon();
 
         String vendor = scanner.getVendorName();
         String vendorTag = vendor;
         String badEmailName = "Spam";
-        
-        if (vendor.equals("SpamAssassin")) 
+
+        if (vendor.equals("SpamAssassin"))
             vendorTag = "sa";
-        else if (vendor.equals("CommtouchAs"))
-            vendorTag = "ct";
+        else if (vendor.equals("SpamBlocker"))
+            vendorTag = "spamblocker";
         else if (vendor.equals("Clam")) {
             vendorTag = "phish";
             badEmailName = "Phish";
         }
-        
+
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
                                                "SELECT * FROM reports.n_mail_addrs " +
                                                " WHERE addr_kind IN ('T', 'C')" +
                                                " AND " + vendorTag + "_action IS NOT NULL" +
-                                               " AND policy_id = :policyId" + 
+                                               " AND policy_id = :policyId" +
                                                " ORDER BY time_stamp DESC");
         this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
                                                 "SELECT * FROM reports.n_mail_addrs " +
-                                                " WHERE " + vendorTag + "_is_spam IS TRUE" + 
+                                                " WHERE " + vendorTag + "_is_spam IS TRUE" +
                                                 " AND addr_kind IN ('T', 'C')" +
-                                                " AND policy_id = :policyId" + 
+                                                " AND policy_id = :policyId" +
                                                 " ORDER BY time_stamp DESC");
         this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
                                                        "SELECT * FROM reports.n_mail_addrs " +
-                                                       " WHERE " + vendorTag + "_action = 'Q'" + 
+                                                       " WHERE " + vendorTag + "_action = 'Q'" +
                                                        " AND addr_kind IN ('T', 'C')" +
-                                                       " AND policy_id = :policyId" + 
+                                                       " AND policy_id = :policyId" +
                                                        " ORDER BY time_stamp DESC");
         this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"),
                                                   "SELECT * FROM reports.n_spam_smtp_tarpit_events " +
                                                   "WHERE vendor_name = '" + vendorTag + "' " +
                                                   "AND policy_id = :policyId " +
                                                   "ORDER BY time_stamp DESC");
-        
+
         this.addMetric(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
         this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
@@ -115,7 +115,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     {
         return new EventLogQuery[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
     }
-    
+
     public EventLogQuery[] getTarpitEventQueries()
     {
         return new EventLogQuery[] { this.tarpitEventQuery };
@@ -262,10 +262,10 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     {
         Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
         if (lastSignatureUpdate != null) lastUpdate = lastSignatureUpdate;
-        
+
         Date lastSignatureUpdateCheck = scanner.getLastSignatureUpdateCheck();
         if (lastSignatureUpdateCheck != null) this.lastUpdateCheck = lastSignatureUpdateCheck;
-        
+
         String signatureVersion = scanner.getSignatureVersion();
         if (signatureVersion != null) this.signatureVersion = signatureVersion;
     }

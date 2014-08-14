@@ -46,18 +46,18 @@ public class AlertManagerImpl implements AlertManager
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private I18nUtil i18nUtil;
-    
+
     public AlertManagerImpl()
     {
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-libuvm");
         this.i18nUtil = new I18nUtil(i18nMap);
     }
-    
+
     public List<String> getAlerts()
     {
         LinkedList<String> alertList = new LinkedList<String>();
         boolean dnsWorking = false;
-        
+
         try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -85,7 +85,7 @@ public class AlertManagerImpl implements AlertManager
             }
         } catch (Exception e) {}
     }
-    
+
     /**
      * This test iterates through the DNS settings on each WAN and tests them individually
      * It creates an alert for each non-working DNS server
@@ -95,11 +95,11 @@ public class AlertManagerImpl implements AlertManager
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
         List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
-        
+
         for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
             if (!intf.isWAN())
                 continue;
-            
+
             InetAddress dnsPrimary   = intf.getDns1();
             InetAddress dnsSecondary = intf.getDns2();
 
@@ -119,7 +119,7 @@ public class AlertManagerImpl implements AlertManager
             alertList.add(alertText);
             return false;
         }
-        
+
         return true;
     }
 
@@ -134,7 +134,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("updates.untangle.com",80), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [updates.untangle.com:80]") ); 
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [updates.untangle.com:80]") );
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -143,7 +143,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("license.untangle.com",443), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [license.untangle.com:443]") ); 
+            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [license.untangle.com:443]") );
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -164,7 +164,7 @@ public class AlertManagerImpl implements AlertManager
                 alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
                 return;
             }
-                
+
             long launchTime = new Date(pidFile.lastModified()).getTime();
             long now = new Date().getTime();
 
@@ -172,7 +172,7 @@ public class AlertManagerImpl implements AlertManager
              * if pyconnector was just launched (<300 secs), dont test yet
              * it needs time to connect to cmd.untangle.com
              */
-            if (now - launchTime < 300000) 
+            if (now - launchTime < 300000)
                 return;
 
             int result = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
@@ -182,7 +182,7 @@ public class AlertManagerImpl implements AlertManager
 
         }
     }
-    
+
 
     private void testDiskFree(List<String> alertList)
     {
@@ -208,7 +208,7 @@ public class AlertManagerImpl implements AlertManager
     private void testDupeApps(List<String> alertList)
     {
         LinkedList<NodeSettings> nodeSettingsList = UvmContextFactory.context().nodeManager().getSettings().getNodes();
-        
+
         /**
          * Check each node for dupe nodes
          */
@@ -223,10 +223,10 @@ public class AlertManagerImpl implements AlertManager
                  */
                 if (n1.getPolicyId() == null || n2.getPolicyId() == null) {
                     if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
-                        alertList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() ); 
+                        alertList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() );
                 } else {
                     if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
-                        alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
+                        alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName());
                 }
             }
         }
@@ -242,12 +242,12 @@ public class AlertManagerImpl implements AlertManager
     private void testRendundantApps(List<String> alertList)
     {
         /**
-         * Check for redundant apps 
+         * Check for redundant apps
          */
         List<Node> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
         List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
         List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
-        List<Node> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
+        List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
 
         for (Node node1 : webfilterList) {
             for (Node node2 : sitefilterList) {
@@ -260,7 +260,7 @@ public class AlertManagerImpl implements AlertManager
         }
 
         for (Node node1 : spamassassinList) {
-            for (Node node2 : commtouchasList) {
+            for (Node node2 : spamblockerList) {
                 if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;
 
@@ -278,7 +278,7 @@ public class AlertManagerImpl implements AlertManager
     private void testBridgeBackwards(List<String> alertList)
     {
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
             if (!InterfaceConfiguration.CONFIG_BRIDGE.equals(intf.getConfigType()))
                 continue;
@@ -291,14 +291,14 @@ public class AlertManagerImpl implements AlertManager
                 logger.warn("Unable to locate bridge master: " + intf.getBridgedTo());
                 continue;
             }
-                
+
             logger.debug("testBridgeBackwards: Checking Bridge master: " + master.getSystemName());
             if (master.getSystemName() == null) {
                 logger.warn("Unable to locate bridge master systemName: " + master.getName());
                 continue;
             }
             String bridgeName = "br." + master.getSystemName();
-            
+
             String result = UvmContextFactory.context().execManager().execOutput( "brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
             if (result == null || "".equals(result)) {
                 logger.warn("Unable to build bridge map");
@@ -344,7 +344,7 @@ public class AlertManagerImpl implements AlertManager
                 logger.warn("Unable to determine MAC for " + gatewayIp);
                 return;
             }
-            
+
             /**
              * Lookup gateway bridge port # using brctl showmacs
              */
@@ -372,7 +372,7 @@ public class AlertManagerImpl implements AlertManager
                 logger.warn("Unable to find bridge port " + gatewayPortNo);
                 return;
             }
-            
+
             /**
              * Get the interface configuration for the interface where the gateway lives
              */
@@ -417,7 +417,7 @@ public class AlertManagerImpl implements AlertManager
     private void testInterfaceErrors(List<String> alertList)
     {
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
             if (intf.getSystemName() == null || "tun0".equals(intf.getSystemName()))
                 continue;
@@ -467,22 +467,22 @@ public class AlertManagerImpl implements AlertManager
     private void testSpamDNSServers(List<String> alertList)
     {
         List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
-        List<Node> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
+        List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
         String nodeName = "Spam Blocker";
-        
-        if (spamassassinList.size() == 0 && commtouchasList.size() == 0)
+
+        if (spamassassinList.size() == 0 && spamblockerList.size() == 0)
             return;
         if (spamassassinList.size() > 0)
             nodeName = "Spam Blocker Lite";
-        if (commtouchasList.size() > 0)
+        if (spamblockerList.size() > 0)
             nodeName = "Spam Blocker";
-        
+
         NetworkConfiguration networkConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         for (InterfaceConfiguration intf : networkConf.getInterfaceList()) {
             if (!intf.isWAN())
                 continue;
-            
+
             String dnsPrimary   = (intf.getDns1() != null ? intf.getDns1().getHostAddress() : null);
             String dnsSecondary = (intf.getDns2() != null ? intf.getDns2().getHostAddress() : null);
 
@@ -533,12 +533,12 @@ public class AlertManagerImpl implements AlertManager
     private void testEventWriteTime(List<String> alertList)
     {
         final double MAX_AVG_TIME_WARN = 15.0;
-            
+
         Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         /* if reports not installed - no events - just return */
         if (reporting == null)
             return;
-        
+
         double avgTime = reporting.getAvgWriteTimePerEvent();
         if (avgTime > MAX_AVG_TIME_WARN) {
             String alertText = "";
@@ -558,12 +558,12 @@ public class AlertManagerImpl implements AlertManager
     private void testEventWriteDelay(List<String> alertList)
     {
         final long MAX_TIME_DELAY_SEC = 600; /* 10 minutes */
-            
+
         Reporting reporting = (Reporting) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         /* if reports not installed - no events - just return */
         if (reporting == null)
             return;
-        
+
         long delay = reporting.getWriteDelaySec();
         if (delay > MAX_TIME_DELAY_SEC) {
             String alertText = "";
@@ -576,5 +576,5 @@ public class AlertManagerImpl implements AlertManager
             alertList.add(alertText);
         }
     }
-    
+
 }

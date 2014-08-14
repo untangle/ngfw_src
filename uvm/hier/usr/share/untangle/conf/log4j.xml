@@ -170,11 +170,11 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.commtouchas">
+  <category name="com.untangle.node.spamblocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.commtouchav">
+  <category name="com.untangle.node.virusblocker">
     <priority value="INFO"/>
   </category>
 
@@ -201,7 +201,7 @@
   <category name="com.untangle.node.ipsec">
     <priority value="INFO"/>
   </category>
- 
+
   <category name="com.untangle.node.license">
     <priority value="WARN"/>
   </category>

@@ -1,15 +1,15 @@
 #!/bin/sh
-# untangle-node-webfiter and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
-ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca untangle-casing-mail 
-    untangle-base-virus untangle-base-webfilter untangle-node-adblocker 
+# untangle-node-webfiter and untangle-node-virusblocker are not needed since they rely on base-webfilter and base-virus
+ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca untangle-casing-mail
+    untangle-base-virus untangle-base-webfilter untangle-node-adblocker
     untangle-node-firewall untangle-node-capture
-    untangle-node-ips untangle-node-openvpn untangle-node-phish 
-    untangle-node-protofilter untangle-node-reporting untangle-node-shield 
-    untangle-node-spamassassin untangle-node-spyware 
-    untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup 
-    untangle-node-branding untangle-node-commtouchas 
-    untangle-node-faild untangle-node-ipsec 
-    untangle-node-policy untangle-node-sitefilter untangle-node-splitd 
+    untangle-node-ips untangle-node-openvpn untangle-node-phish
+    untangle-node-protofilter untangle-node-reporting untangle-node-shield
+    untangle-node-spamassassin untangle-node-spyware
+    untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup
+    untangle-node-branding untangle-node-spamblocker
+    untangle-node-faild untangle-node-ipsec
+    untangle-node-policy untangle-node-sitefilter untangle-node-splitd
     untangle-node-support untangle-node-webcache untangle-node-classd'
 OFFICIAL_LANGUAGES='de es fr ja pt_BR zh_CN'
 
@@ -58,10 +58,10 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/faild/impl/com/untangle/node/faild/FailDImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/splitd/impl/com/untangle/node/splitd/SplitDImpl.java 
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/ipsec/impl/com/untangle/node/ipsec/IPsecNodeImpl.java 
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/classd/impl/com/untangle/node/classd/ClassDNodeImpl.java 
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/commtouchas/impl/com/untangle/node/commtouchas/CommtouchAsNode.java 
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/splitd/impl/com/untangle/node/splitd/SplitDImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/ipsec/impl/com/untangle/node/ipsec/IPsecNodeImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/classd/impl/com/untangle/node/classd/ClassDNodeImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/spamblocker/impl/com/untangle/node/spamblocker/SpamBlockerNode.java
     find ../../uvm/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
@@ -156,7 +156,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-sitefilter"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec"|"untangle-node-commtouchas"|"untangle-node-support"|"untangle-node-classd")
+"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-faild"|"untangle-node-policy"|"untangle-node-sitefilter"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec"|"untangle-node-spamblocker"|"untangle-node-support"|"untangle-node-classd")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/src/${moduleName}/po/
     echo 'get new keys'

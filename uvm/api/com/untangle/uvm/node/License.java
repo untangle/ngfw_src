@@ -15,7 +15,7 @@ public class License implements Serializable
 
     public static final String LICENSE_TYPE_TRIAL = "Trial";
     public static final String LICENSE_TYPE_SUBSCRIPTION = "Subscription";
-    
+
     /**
      * Various Names
      */
@@ -23,8 +23,9 @@ public class License implements Serializable
     public static final String BANDWIDTH = "untangle-node-bandwidth";
     public static final String BOXBACKUP = "untangle-node-boxbackup";
     public static final String BRANDING = "untangle-node-branding";
-    public static final String COMMTOUCH = "untangle-node-commtouch";
-    public static final String COMMTOUCHAV = "untangle-node-commtouchav";
+    public static final String VIRUSBLOCKER = "untangle-node-virusblocker";
+    public static final String SPAMBLOCKER = "untangle-node-spamblocker";
+	public static final String COMMTOUCHAV = "untangle-node-commtouchav";
     public static final String COMMTOUCHAS = "untangle-node-commtouchas";
     public static final String FAILD = "untangle-node-faild";
     public static final String IPSEC = "untangle-node-ipsec";
@@ -33,22 +34,22 @@ public class License implements Serializable
     public static final String SPLITD = "untangle-node-splitd";
     public static final String WEBCACHE = "untangle-node-webcache";
     public static final String CLASSD = "untangle-node-classd";
-    
+
     /** Identifier for the product this license is for */
     private String name;
 
     /** The UID for this license */
     private String uid;
-    
+
     /** The human readable name */
     private String displayName;
-    
+
     /** This is the type of license */
     private String type;
 
     /** Start date for the license */
     private long start;
-    
+
     /** End date for the license */
     private long end;
 
@@ -63,7 +64,7 @@ public class License implements Serializable
 
     /** This stores the human-readable form of the status */
     private String status;
-    
+
     public License()
     {
         this.valid = Boolean.FALSE;
@@ -82,7 +83,7 @@ public class License implements Serializable
         this.valid = orig.valid;
         this.status = orig.status;
     }
-    
+
     public License( String name, String uid, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid, String status )
     {
         this.name = name;
@@ -96,7 +97,7 @@ public class License implements Serializable
         this.valid = valid;
         this.status = status;
     }
-        
+
     /**
      * Returns the unique identifier of the product of this license
      */
@@ -117,12 +118,12 @@ public class License implements Serializable
     {
         return this.uid;
     }
-    
+
     public void setUID( String uid )
     {
         this.uid = uid;
     }
-    
+
     /**
      * Returns the human readable name of the product of this license
      */
@@ -150,7 +151,7 @@ public class License implements Serializable
     {
         this.type = type;
     }
-    
+
     /**
      * Get the end of the license, milliseconds.  Stored as a long to
      * insure database timezone changes don't freak it out.
@@ -164,7 +165,7 @@ public class License implements Serializable
     {
         this.start = start;
     }
-    
+
     /**
      * Get the end of the license, milliseconds.  Stored as a long to
      * insure database timezone changes don't freak it out.
@@ -178,7 +179,7 @@ public class License implements Serializable
     {
         this.end = end;
     }
-    
+
     /**
      * Set the key for this license.
      */
@@ -191,7 +192,7 @@ public class License implements Serializable
     {
         this.key = key;
     }
-    
+
     /**
      * Set the key version for this license.
      */
@@ -204,7 +205,7 @@ public class License implements Serializable
     {
         this.keyVersion = keyVersion;
     }
-        
+
     /**
      * Returns the valid state
      * This is a transient value - it is set (or reset) on settings load
@@ -247,7 +248,7 @@ public class License implements Serializable
             return Boolean.TRUE;
         return Boolean.FALSE;
     }
-    
+
     /**
      * Returns true if this license is expired
      * This is a transient value
@@ -261,7 +262,7 @@ public class License implements Serializable
         else
             return Boolean.FALSE;
     }
-    
+
     /**
      * Returns the number of days remaining until end-date
      * This is a transient value
@@ -272,7 +273,7 @@ public class License implements Serializable
         int days = ((int)(getEnd() - now)) / (60*60*24);
         return new Integer(days);
     }
-    
+
     public String toString()
     {
         return "<" + this.uid + "/" + this.name + "/" + this.type + "/" + ">";
