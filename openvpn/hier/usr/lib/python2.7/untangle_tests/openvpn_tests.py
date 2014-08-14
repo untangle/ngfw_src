@@ -10,7 +10,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 from untangle_tests import SystemProperties
 
 uvmContext = Uvm().getUvmContext()
@@ -300,4 +300,4 @@ class OpenVpnTests(unittest2.TestCase):
             uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
             nodeWeb = None
 
-TestDict.registerNode("openvpn", OpenVpnTests)
+test_registry.registerNode("openvpn", OpenVpnTests)

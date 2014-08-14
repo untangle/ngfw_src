@@ -9,7 +9,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -100,4 +100,4 @@ class IpsTests(unittest2.TestCase):
         node = None
         
 
-TestDict.registerNode("ips", IpsTests)
+test_registry.registerNode("ips", IpsTests)

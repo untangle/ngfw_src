@@ -8,7 +8,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 from untangle_tests.spam_tests import SpamTests
-from untangle_tests import TestDict
+import test_registry
 
 #
 # Just extends the spam base tests
@@ -28,4 +28,4 @@ class SpamassassinTests(SpamTests):
         result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
 
-TestDict.registerNode("spamassassin", SpamassassinTests)
+test_registry.registerNode("spamassassin", SpamassassinTests)

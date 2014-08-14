@@ -250,7 +250,7 @@ if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "env
     runTestEnvironmentTests()
 
 if "all" in parser.suitesToRun:
-    parser.suitesToRun = TestDict.allNodes()
+    parser.suitesToRun = test_registry.allNodes()
 
 # remove excluded tests
 for testName in parser.suitesToExclude:
@@ -265,7 +265,7 @@ while True:
     for node in parser.suitesToRun:
         if node == "environment":
             continue
-        testClz = TestDict.test(node)
+        testClz = test_registry.getTest(node)
         if testClz == None:
            print "Unable to find tests for \"%s\"" % node
            exit(1)

@@ -1,9 +1,9 @@
 
 import untangle_tests.remote_control
+import untangle_tests.test_registry
 from untangle_tests.system_props import SystemProperties
 from untangle_tests.global_functions import GlobalFunctions
 from untangle_tests.environment_tests import TestEnvironmentTests
-from untangle_tests.test_dict import TestDict
 from untangle_tests.network_tests import NetworkTests
 from untangle_tests.uvm_tests import UvmTests
 

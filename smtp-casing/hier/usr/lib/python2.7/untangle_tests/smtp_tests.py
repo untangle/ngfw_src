@@ -7,7 +7,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -36,4 +36,4 @@ class SmtpTests(unittest2.TestCase):
             
         
 
-TestDict.registerNode("smtp-casing", SmtpTests)
+test_registry.registerNode("smtp-casing", SmtpTests)

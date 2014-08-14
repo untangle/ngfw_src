@@ -12,7 +12,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -188,4 +188,4 @@ class PhishTests(unittest2.TestCase):
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
 
-TestDict.registerNode("phish", PhishTests)
+test_registry.registerNode("phish", PhishTests)

@@ -18,7 +18,7 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import TestDict
+import test_registry
 import remote_control
 from untangle_tests import SystemProperties
 
@@ -159,4 +159,4 @@ class UvmTests(unittest2.TestCase):
         result = remote_control.runCommand("grep -q 'Untangle Server Test Message' /tmp/test_030_testSMTPSettings.log")
         assert(result==0)
 
-TestDict.registerNode("uvm", UvmTests)
+test_registry.registerNode("uvm", UvmTests)

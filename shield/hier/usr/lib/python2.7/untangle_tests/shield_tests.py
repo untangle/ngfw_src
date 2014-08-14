@@ -9,7 +9,7 @@ from datetime import datetime
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -62,4 +62,4 @@ class ShieldTests(unittest2.TestCase):
         # shield is always installed, do not remove it
         
 
-TestDict.registerNode("shield", ShieldTests)
+test_registry.registerNode("shield", ShieldTests)

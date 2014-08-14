@@ -7,7 +7,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 from untangle_tests.webfilter_base_tests import WebFilterBaseTests
-from untangle_tests import TestDict
+import test_registry
 
 #
 # Just extends the web filter tests
@@ -22,4 +22,4 @@ class WebFilterTests(WebFilterBaseTests):
     def vendorName():
         return "untangle"
 
-TestDict.registerNode("webfilter", WebFilterTests)
+test_registry.registerNode("webfilter", WebFilterTests)

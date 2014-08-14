@@ -8,7 +8,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 from untangle_tests.virus_tests import VirusTests
-from untangle_tests import TestDict
+import test_registry
 
 #
 # Just extends the virus base tests
@@ -28,4 +28,4 @@ class ClamTests(VirusTests):
         result = os.system("ps aux | grep clamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
 
-TestDict.registerNode("clam", ClamTests)
+test_registry.registerNode("clam", ClamTests)

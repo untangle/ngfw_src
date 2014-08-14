@@ -13,7 +13,7 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import TestDict
+import test_registry
 import remote_control
 from untangle_tests import GlobalFunctions
 
@@ -885,4 +885,4 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
 
-TestDict.registerNode("network", NetworkTests)
+test_registry.registerNode("network", NetworkTests)

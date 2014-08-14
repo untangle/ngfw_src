@@ -12,7 +12,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests import TestDict
+import test_registry
 from untangle_tests import SystemProperties
 
 uvmContext = Uvm().getUvmContext()
@@ -450,4 +450,4 @@ class CaptureTests(unittest2.TestCase):
             uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
             nodeAD = None
 
-TestDict.registerNode("capture", CaptureTests)
+test_registry.registerNode("capture", CaptureTests)
