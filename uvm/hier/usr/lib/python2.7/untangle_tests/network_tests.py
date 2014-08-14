@@ -398,7 +398,7 @@ class NetworkTests(unittest2.TestCase):
         appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.clientIP,"5000"))
 
         # send UDP packets through the port forward
-        UDP_packets = globalFunctions.sendUDPPackets()
+        UDP_packets = globalFunctions.sendUDPPackets(wan_IP)
         nukePortForwardRules()
         assert (UDP_packets >  0)
 
