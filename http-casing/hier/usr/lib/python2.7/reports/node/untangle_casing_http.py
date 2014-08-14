@@ -94,6 +94,7 @@ CREATE TABLE reports.http_events (
         if not sql_helper.index_exists("reports","http_events","event_id", unique=True):
             sql_helper.create_index("reports","http_events","event_id", unique=True);
 
+        # rename the old commtouch columns
         sql_helper.rename_column("reports", "http_events", "commtouchav_clean", "virusblocker_clean");
         sql_helper.rename_column("reports", "http_events", "commtouchav_name", "virusblocker_name");
 
