@@ -2,12 +2,14 @@ import unittest2
 import time
 import sys
 import traceback
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -662,7 +664,7 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', True,
@@ -682,7 +684,7 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', False,
@@ -702,7 +704,7 @@ class FirewallTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', False,

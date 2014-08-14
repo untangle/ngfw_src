@@ -7,12 +7,14 @@ import subprocess
 import socket
 import smtplib
 import re
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -117,7 +119,7 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
@@ -145,7 +147,7 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
@@ -173,7 +175,7 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',

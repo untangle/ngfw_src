@@ -6,11 +6,13 @@ import sys
 import os
 import subprocess
 import socket
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -111,7 +113,7 @@ class VirusTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
                                             "c_client_addr", remote_control.clientIP, 
                                             "uri", "fedexvirus.zip",
@@ -135,7 +137,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
                                             "c_client_addr", remote_control.clientIP, 
                                             "uri", "fedexvirus.zip",
@@ -154,7 +156,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
                                             "uri", ("/virus/eicar.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', False )
@@ -171,7 +173,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
                                             "uri", ("/test/test.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', True )
@@ -188,7 +190,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -204,7 +206,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "test.zip",
                                             self.shortName() + '_clean', True )
         assert( found )
@@ -229,7 +231,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', False,
@@ -258,7 +260,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', True,
@@ -289,7 +291,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', True,

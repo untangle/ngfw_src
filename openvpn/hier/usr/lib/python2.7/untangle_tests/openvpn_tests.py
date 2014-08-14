@@ -5,6 +5,7 @@ import pdb
 import os
 import re
 import subprocess
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -12,6 +13,7 @@ from uvm import Uvm
 import remote_control
 import test_registry
 import system_properties
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -218,7 +220,7 @@ class OpenVpnTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'remote_address', vpnClientVpnIP,
                                             'client_name', vpnClientName )
         assert( found )

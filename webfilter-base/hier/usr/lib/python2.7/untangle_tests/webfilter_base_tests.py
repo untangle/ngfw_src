@@ -3,11 +3,13 @@ import time
 import sys
 import datetime
 import re
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -361,7 +363,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', True, 
@@ -382,7 +384,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', False, 
@@ -401,7 +403,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', False, 

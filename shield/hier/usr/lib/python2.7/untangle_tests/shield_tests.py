@@ -3,6 +3,7 @@ import time
 import sys
 import pdb
 import os
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from datetime import datetime
@@ -10,6 +11,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -50,7 +52,7 @@ class ShieldTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
                                             min_date=startTime)
         assert( found )

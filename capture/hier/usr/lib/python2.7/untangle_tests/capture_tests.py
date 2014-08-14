@@ -7,6 +7,7 @@ import re
 import socket
 import subprocess
 import base64
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -14,6 +15,7 @@ from uvm import Uvm
 import remote_control
 import test_registry
 import system_properties
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -199,7 +201,7 @@ class CaptureTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,100)
         assert(events != None)
-        found = remote_control.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', test_untangle_com_ip,
                                             'c_client_addr', remote_control.clientIP,
                                             'capture_blocked', True )
