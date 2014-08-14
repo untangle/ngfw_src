@@ -51,21 +51,22 @@ class GlobalFunctions:
         numOfPackets = wcResults.split(' ')[0]
         return int(numOfPackets)
 
-    def sendUDPPackets(self):
+    def sendUDPPackets(self, targetIP):
         # Use mgen to send UDP packets.  Returns number of packets received.
         # start mgen receiver on client.
-        os.system("rm -f mgen_recv.dat")
         clientControl.runCommand("rm -f mgen_recv.dat")
-        clientControl.runCommand("mgen output mgen_recv.dat port 5000 &")
+        clientControl.runCommand("nohup mgen output mgen_recv.dat port 5000", False, True)
+        # Create a mgen config with client host IP as the target
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm -f udp-load-send.mgn\" >/dev/null 2>&1")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"sed 's/" + radiusServer + "/" + targetIP + "/' udp-load-ats.mgn > udp-load-send.mgn\" >/dev/null 2>&1")
         # start the UDP generator on the radius server.
-        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log >/dev/null 2>&1\"")
+        os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen input /home/testshell/udp-load-send.mgn txlog log mgen_snd.log\" >/dev/null 2>&1")
         # wait for UDP to finish
-        time.sleep(70)
+        time.sleep(25)
         # kill mgen receiver    
         clientControl.runCommand("pkill mgen")
-        os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + ClientControl.clientIP + ":mgen_recv.dat /tmp/mgen_recv.dat >/dev/null 2>&1")
-        wcResults = subprocess.Popen(["wc","-l","/tmp/mgen_recv.dat"], stdout=subprocess.PIPE).communicate()[0]
-        # print "wcResults " + str(wcResults)
+        wcResults = clientControl.runCommand("wc -l mgen_recv.dat", True)
+        print "wcResults " + str(wcResults)
         numOfPackets = wcResults.split(' ')[0]
         return int(numOfPackets)
-    
+        
