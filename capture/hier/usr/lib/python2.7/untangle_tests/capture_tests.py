@@ -13,11 +13,10 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
-from untangle_tests import SystemProperties
+import system_properties
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-systemProperties = SystemProperties()
 nodeData = None
 node = None
 nodeDataAD = None

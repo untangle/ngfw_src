@@ -15,6 +15,7 @@ from uvm import Manager
 from uvm import Uvm
 import test_registry
 import remote_control
+import system_properties
 from untangle_tests import GlobalFunctions
 
 radiusServer = "10.111.56.71"
@@ -254,8 +255,7 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     settings['v3PrivacyPassphrase'] = v3AuthenticationPassphrase
     settings['v3Required'] = v3Required
 
-    systemProperties = system_props.SystemProperties()
-    lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
+    lanAdminIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
     v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle" 
     v3command = "snmpwalk -v 3 " + " -u " + v3Username + " -l authNoPriv " + " -a " + v3AuthenticationProtocol + " -A " + v3AuthenticationPassphrase + " -x " + v3PrivacyProtocol
     if v3PrivacyPassphrase != "":
@@ -696,8 +696,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         systemSettings['snmpSettings']['v3Enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
-        systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
+        lanAdminIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
         v2cResult = remote_control.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         v3Result = remote_control.runCommand("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
@@ -836,8 +835,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings = uvmContext.systemManager().getSettings()
         systemSettings['snmpSettings']['enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
-        systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
+        lanAdminIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
         result = remote_control.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 1)
