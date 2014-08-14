@@ -20,7 +20,7 @@ def verifyIperf():
     # print "isIperfNotRunning <%s>" % isIperfNotRunning
     if (externalClientResult == 0 and isIperfNotRunning):
         # Iperf server, the iperf endpoint is reachable, check other requirements
-        iperfResult = clientControl.runCommand("test -x /usr/bin/iperf")
+        iperfResult = remote_control.runCommand("test -x /usr/bin/iperf")
         # print "iperfResult <%s>" % iperfResult
         if (iperfResult == 0):
             iperfPresent = True
@@ -32,7 +32,7 @@ def getUDPSpeed():
     os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"rm -f iperf_recv.dat\" >/dev/null 2>&1")
     os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"iperf -s -p 5000 -u > iperf_recv.dat &\"")
     # start the UDP generator on the client behind the Untangle.
-    clientControl.runCommand("iperf -c " + iperfServer + " -u -p 5000 -b 10M -t 20")
+    remote_control.runCommand("iperf -c " + iperfServer + " -u -p 5000 -b 10M -t 20")
     # wait for UDP to finish
     time.sleep(25)
     # kill iperf receiver    
@@ -51,14 +51,14 @@ def getUDPSpeed():
 def sendUDPPackets(targetIP):
     # Use iperf to send UDP packets.  Returns number of packets received.
     # start iperf receiver on client.
-    clientControl.runCommand("rm -f iperf_recv.dat")
-    clientControl.runCommand("iperf -s -p 5000 -u > iperf_recv.dat", False, True)
+    remote_control.runCommand("rm -f iperf_recv.dat")
+    remote_control.runCommand("iperf -s -p 5000 -u > iperf_recv.dat", False, True)
     # start the UDP generator on the iperf server.
     os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"iperf -c " + targetIP + " -u -p 5000 -b 10M -t 20\" >/dev/null 2>&1")
     # wait for UDP to finish
     time.sleep(25)
     # kill iperf receiver    
-    clientControl.runCommand("pkill iperf")
+    remote_control.runCommand("pkill iperf")
     f = open('/tmp/iperf_recv.dat')
     results = f.readlines()
     f.close()

@@ -428,7 +428,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test UDP QoS limits speed
     def test_053_testUDPwithQoS(self):
-        if clientControl.quickTestsOnly:
+        if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         iperfAvailable = global_functions.verifyIperf()
