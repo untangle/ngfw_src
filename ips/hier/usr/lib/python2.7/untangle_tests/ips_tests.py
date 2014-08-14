@@ -8,12 +8,11 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 
 def flushEvents():
@@ -64,13 +63,13 @@ class IpsTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_011_testblock(self):
         nukeRules()
         addRule("GET content test", "tcp any any -> any any (msg:\"FOO\"; content:\"GET\"; sid:1900; rev:10;)", category="aaaaaaa", description="aaaaaaa")
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukeRules()
         assert (result != 0)
 
@@ -78,7 +77,7 @@ class IpsTests(unittest2.TestCase):
         nukeRules()
         randomName = "".join( [random.choice(string.letters) for i in xrange(8)] )
         addRule("GET content test", "tcp any any -> any any (msg:\"FOO\"; content:\"GET\"; sid:1900; rev:10;)", sid=random.randint(10000,99999999), category=randomName, description=randomName)
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(1);
         flushEvents()
@@ -88,7 +87,7 @@ class IpsTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             'ips_description', randomName)
         assert( found )
 

@@ -6,7 +6,7 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests.spam_tests import SpamTests
 from untangle_tests import TestDict
 

@@ -11,12 +11,11 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 nodeData = None
 canRelay = True
@@ -43,14 +42,14 @@ def sendTestmessage():
        return 0
 
 def getLatestMailSender():
-    clientControl.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
-    results = clientControl.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    remote_control.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
+    results = remote_control.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = clientControl.runCommand("tar -xvf mailpkg.tar")
+    results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendPhishMail():
-    results = clientControl.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
+    results = remote_control.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -96,7 +95,7 @@ class PhishTests(unittest2.TestCase):
             
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_020_smtpQuarantinedPhishTest(self):
@@ -106,7 +105,7 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 5
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host "+smtpServerHost, True)
+        result = remote_control.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -118,11 +117,11 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.clientIP,
+                                            'c_client_addr', remote_control.clientIP,
                                             'phish_action', 'Q')
         assert( found )
             
@@ -134,7 +133,7 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host "+smtpServerHost, True)
+        result = remote_control.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -146,11 +145,11 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.clientIP,
+                                            'c_client_addr', remote_control.clientIP,
                                             'phish_action', 'M')
         assert( found )
 
@@ -162,7 +161,7 @@ class PhishTests(unittest2.TestCase):
         nodeData['smtpConfig']['msgAction'] = "DROP"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host "+smtpServerHost, True)
+        result = remote_control.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -174,11 +173,11 @@ class PhishTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.clientIP,
+                                            'c_client_addr', remote_control.clientIP,
                                             'phish_action', 'D')
         assert( found )
         

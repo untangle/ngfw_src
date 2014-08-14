@@ -3,10 +3,9 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 
 uvmContext = Uvm().getUvmContext()
-clientControl = ClientControl()
 
 class TestEnvironmentTests(unittest2.TestCase):
 
@@ -31,45 +30,45 @@ class TestEnvironmentTests(unittest2.TestCase):
 
     # verify connectivity to client
     def test_10_clientConnectivity(self):
-        assert ( clientControl.runCommand("/bin/true") == 0 )
+        assert ( remote_control.runCommand("/bin/true") == 0 )
 
     # verify client can exec commands and return code
     def test_11_clientShellReturnCode(self):
-        assert ( clientControl.runCommand("/bin/true") == 0 )
-        assert ( clientControl.runCommand("/bin/false") == 1 )
+        assert ( remote_control.runCommand("/bin/true") == 0 )
+        assert ( remote_control.runCommand("/bin/false") == 1 )
 
     # verify client can exec commands and return code
     def test_12_clientShellOutput(self):
-        result = clientControl.runCommand("echo yay", stdout=True)
+        result = remote_control.runCommand("echo yay", stdout=True)
         assert (result == "yay")
 
     # verify client has necessary tools
     def test_13_clientHasNecessaryTools(self):
-        assert ( clientControl.runCommand("which wget") == 0 )
-        assert ( clientControl.runCommand("which curl") == 0 )
-        assert ( clientControl.runCommand("which netcat") == 0 )
-        assert ( clientControl.runCommand("which nmap") == 0 )
-        assert ( clientControl.runCommand("which python") == 0 )
-        assert ( clientControl.runCommand("which mime-construct") == 0 )
-        assert ( clientControl.runCommand("which pidof") == 0 )
+        assert ( remote_control.runCommand("which wget") == 0 )
+        assert ( remote_control.runCommand("which curl") == 0 )
+        assert ( remote_control.runCommand("which netcat") == 0 )
+        assert ( remote_control.runCommand("which nmap") == 0 )
+        assert ( remote_control.runCommand("which python") == 0 )
+        assert ( remote_control.runCommand("which mime-construct") == 0 )
+        assert ( remote_control.runCommand("which pidof") == 0 )
         # check for netcat options
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-w\s'") == 0 )
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-l\s'") == 0 )
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-4\s'") == 0 )
-        assert ( clientControl.runCommand("netcat -h 2>&1 | grep -q '\-p\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-w\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-l\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-4\s'") == 0 )
+        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-p\s'") == 0 )
 
     # verify client is online
     def test_14_clientIsOnline(self):
-        assert ( clientControl.isOnline() == 0 )
-        assert ( clientControl.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://google.com/") == 0 )
+        assert ( remote_control.isOnline() == 0 )
+        assert ( remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://google.com/") == 0 )
 
     # verify client can pass UDP
     def test_20_clientCanPassUDP(self):
-        assert ( clientControl.runCommand("host cnn.com 8.8.8.8") == 0 )
-        assert ( clientControl.runCommand("host google.com 8.8.8.8") == 0 )
+        assert ( remote_control.runCommand("host cnn.com 8.8.8.8") == 0 )
+        assert ( remote_control.runCommand("host google.com 8.8.8.8") == 0 )
 
     # verify client is online
     def test_30_clientNotRunningOpenvpn(self):
-        assert ( clientControl.runCommand("pidof openvpn") != 0 )
+        assert ( remote_control.runCommand("pidof openvpn") != 0 )

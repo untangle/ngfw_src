@@ -11,11 +11,10 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 nodeData = None
 canRelay = True
@@ -42,14 +41,14 @@ def sendTestmessage():
        return 0
 
 def getLatestMailSender():
-    clientControl.runCommand("rm -f mailpkg.tar") # remove all previous mail packages
-    results = clientControl.runCommand("wget -q http://test.untangle.com/test/mailpkg.tar")
+    remote_control.runCommand("rm -f mailpkg.tar") # remove all previous mail packages
+    results = remote_control.runCommand("wget -q http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = clientControl.runCommand("tar -xvf mailpkg.tar")
+    results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail():
-    clientControl.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
+    remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -96,7 +95,7 @@ class SpamTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_020_smtpTest(self):
@@ -106,7 +105,7 @@ class SpamTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 30
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = clientControl.runCommand("host "+smtpServerHost, True)
+        result = remote_control.runCommand("host "+smtpServerHost, True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -123,12 +122,12 @@ class SpamTests(unittest2.TestCase):
         assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
-        assert(events['list'][0]['c_client_addr'] == ClientControl.clientIP)
+        assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
         if (not 'spamblocker_score' in events['list'][0]):
             assert(events['list'][0]['spamassassin_score'] >= 3.0)
         else:
             assert(events['list'][0]['spamblocker_score'] >= 3.0)
-        assert(events['list'][0]['c_client_addr'] == ClientControl.clientIP)
+        assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
 
     def test_030_adminQuarantine(self):
         if (not canRelay):

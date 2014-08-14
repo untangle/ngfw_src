@@ -7,11 +7,10 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
@@ -85,39 +84,39 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_011_defaultPornIsBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_012_defaultPornIsBlockedWithSubdomain(self):
-        result = clientControl.runCommand("wget -q -O - http://www.penthouse.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://www.penthouse.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_013_defaultPornIsBlockedWithUrl(self):
-        result = clientControl.runCommand("wget -q -O - http://penthouse.com/index.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://penthouse.com/index.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify porn site is blocked in default config
     def test_014_defaultPornIsBlockedWithUrlAndSubdomain(self):
-        result = clientControl.runCommand("wget -q -O - http://www.penthouse.com/index.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://www.penthouse.com/index.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify test site is not blocked in default config
     def test_015_defaultTestSiteIsNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html", True)
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html", stdout=True)
         assert ( "text123" in result )
 
     # verify blocked site url list works
     def test_016_blockedUrl(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should now be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1", True)
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1", stdout=True)
         nukeBlockedUrls()
         assert ( "blockpage" in result )
 
@@ -125,7 +124,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_017_blockedUrl2(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -133,8 +132,8 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_018_blockedUrlRightSideAnchor(self):
         addBlockedUrl("test.untangle.com/test([\\\?/]\.\*)\?$")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result0 = clientControl.runCommand("wget -q -O - http://test.untangle.com/testPage1.html 2>&1 | grep -q text123")
-        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/ 2>&1 | grep -q blockpage")
+        result0 = remote_control.runCommand("wget -q -O - http://test.untangle.com/testPage1.html 2>&1 | grep -q text123")
+        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/ 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result0 == 0)
         assert (result1 == 0)
@@ -143,7 +142,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_019_blockedUrlCapitalization(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (capitalization is different)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testpage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testpage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -151,7 +150,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_030_blockedUrlGlobStar(self):
         addBlockedUrl("test.untangle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -159,7 +158,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_031_blockedUrlGlobStar(self):
         addBlockedUrl("tes*tangle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -167,7 +166,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_032_blockedUrlGlobStar(self):
         addBlockedUrl("*est*angle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -175,7 +174,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_033_blockedUrlGlobStar(self):
         addBlockedUrl("test.untangle.com*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -183,7 +182,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_034_blockedUrlGlobStar(self):
         addBlockedUrl("te*st.untangle.com*")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -191,7 +190,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_035_blockedUrlGlobStar(self):
         addBlockedUrl("test.untangle.com/test/testP*.html")
         # this test URL should NOT be blocked (uri is different)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -199,7 +198,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_036_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("te?t.untangle.com/test/testP?ge1.html")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -207,7 +206,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_037_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -215,7 +214,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_038_blockedUrlGlobArgument(self):
         addBlockedUrl("test.untangle.com/*foo*")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -223,7 +222,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_039_blockedUrlSubdomain(self):
         addBlockedUrl("untangle.com")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -231,7 +230,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_040_blockedUrlSubdomain2(self):
         addBlockedUrl("t.untangle.com")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -240,7 +239,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -249,7 +248,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -257,7 +256,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_050_passedUrlOverridesBlockedCategory(self):
         addPassedUrl("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -qi 'Girls'")
+        result = remote_control.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -qi 'Girls'")
         assert (result == 0)
         nukePassedUrls()
 
@@ -266,7 +265,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedUrl("test.untangle.com")
         addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -277,7 +276,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedMimeType("text/plain")
         addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -288,7 +287,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedExtension("txt")
         addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -298,7 +297,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
         nukeBlockedMimeTypes()
         assert (result == 0)
 
@@ -307,7 +306,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedMimeTypes()
         assert (result == 0)
 
@@ -316,7 +315,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -325,7 +324,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -334,7 +333,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -343,7 +342,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt?argument 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt?argument 2>&1 | grep -q blockpage")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -353,7 +352,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         query = None;
@@ -362,7 +361,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', True, 
@@ -374,7 +373,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedUrls();
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
-        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         query = None;
@@ -383,7 +382,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', False, 
@@ -394,7 +393,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         # specify an argument so it isn't confused with other events
-        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         for q in node.getEventQueries():
@@ -402,7 +401,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
                                             self.shortNodeName() + '_blocked', False, 
@@ -417,13 +416,13 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings["unblockMode"] = "Host"
         node.setSettings(settings)        
         # this test URL should be blocked but allow  
-        clientControl.runCommand("rm -f /tmp/webfilter_base_test_120.log")
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/webfilter_base_test_120.log -O /tmp/webfilter_base_test_120.out http://test.untangle.com/test/testPage1.html")
-        resultButton = clientControl.runCommand("grep -q 'unblock' /tmp/webfilter_base_test_120.out")
-        resultBlock = clientControl.runCommand("grep -q 'blockpage' /tmp/webfilter_base_test_120.out")
+        remote_control.runCommand("rm -f /tmp/webfilter_base_test_120.log")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/webfilter_base_test_120.log -O /tmp/webfilter_base_test_120.out http://test.untangle.com/test/testPage1.html")
+        resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/webfilter_base_test_120.out")
+        resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/webfilter_base_test_120.out")
 
         # get the IP address of the block page 
-        ipfind = clientControl.runCommand("grep 'Location' /tmp/webfilter_base_test_120.log",True)
+        ipfind = remote_control.runCommand("grep 'Location' /tmp/webfilter_base_test_120.log", stdout=True)
         # print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
@@ -433,8 +432,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print "unBlockParameters %s" % unBlockParameters
-        clientControl.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
-        resultUnBlock = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        resultUnBlock = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -450,7 +449,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings = node.getSettings()
         settings["passReferers"] = False
         node.setSettings(settings)
-        resultReferer = clientControl.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -465,7 +464,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         settings = node.getSettings()
         settings["passReferers"] = True
         node.setSettings(settings)
-        resultReferer = clientControl.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
 
         # remove and re-install web app to reset the host unblock list
         uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )

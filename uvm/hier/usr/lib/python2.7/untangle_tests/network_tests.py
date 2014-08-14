@@ -14,7 +14,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import TestDict
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import GlobalFunctions
 
 radiusServer = "10.111.56.71"
@@ -23,7 +23,6 @@ ftp_file_name = "test.zip"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 globalFunctions = GlobalFunctions()
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
@@ -230,7 +229,7 @@ def nukeDynDNS():
 
 def getDownloadSpeed():
     # Download file and record the average speed in which the file was download
-    result = clientControl.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", True)
+    result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
     match = re.search(r'([0-9.]+) [KM]B\/s', result)
     bandwidth_speed =  match.group(1)
     # cast string to float for comparsion.
@@ -242,7 +241,7 @@ def getDownloadSpeed():
     return bandwidth_speed
     
 def verifySnmpWalk():
-    snmpwalkResult = clientControl.runCommand("test -x /usr/bin/snmpwalk")  
+    snmpwalkResult = remote_control.runCommand("test -x /usr/bin/snmpwalk")  
     if snmpwalkResult:
         raise unittest2.SkipTest("Snmpwalk app needs to be installed on client")
 
@@ -256,7 +255,7 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     settings['v3Required'] = v3Required
 
     systemProperties = system_props.SystemProperties()
-    lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
+    lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
     v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle" 
     v3command = "snmpwalk -v 3 " + " -u " + v3Username + " -l authNoPriv " + " -a " + v3AuthenticationProtocol + " -A " + v3AuthenticationPassphrase + " -x " + v3PrivacyProtocol
     if v3PrivacyPassphrase != "":
@@ -290,35 +289,35 @@ class NetworkTests(unittest2.TestCase):
 
     def test_010_clientIsOnline(self):
         # save original network settings
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     # test basic port forward (tcp port 80)
     def test_020_portForward80(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test basic port forward (tcp port 443)
     def test_021_portForward443(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward (changing the port 80 -> 81)
     def test_022_portForwardNewPort(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","81","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4:81/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4:81/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward using DST_LOCAL condition
     def test_023_portForwardDstLocal(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s:81/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s:81/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         assert(result == 0)
 
     # test port forward that uses the http port (move http to different port)
@@ -327,7 +326,7 @@ class NetworkTests(unittest2.TestCase):
         setHttpHttpsPorts( 8080, 4343 )
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
@@ -337,16 +336,16 @@ class NetworkTests(unittest2.TestCase):
         setHttpHttpsPorts( 8080, 4343 )
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
     # test hairpin port forward (back to original client)
     def test_026_portForwardHairPin(self):
         nukePortForwardRules()
-        appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.clientIP,11234))
-        clientControl.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",False,True)
-        result = clientControl.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
+        appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234))
+        remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
+        result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
         assert(result == 0)
 
@@ -354,9 +353,9 @@ class NetworkTests(unittest2.TestCase):
     def test_027_portForwardMultiport(self):
         nukePortForwardRules()
         appendForward(createPortForwardTripleCondition("DST_PORT","80,443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,None))
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
-        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test a port forward from outside if possible
@@ -371,16 +370,16 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
 
         # start netcat on client
-        clientControl.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",False,True)
+        remote_control.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
 
         # port forward 11245 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.clientIP,"11245"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"))
 
         # try connecting to netcat on client from "outside" box
-        tmp_hostIP = ClientControl.clientIP
-        ClientControl.clientIP = radiusServer
-        result = clientControl.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
-        ClientControl.clientIP = tmp_hostIP
+        tmp_hostIP = remote_control.clientIP
+        remote_control.clientIP = radiusServer
+        result = remote_control.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
+        remote_control.clientIP = tmp_hostIP
         assert (result == 0)
 
     # test a port forward from outside if possible
@@ -395,7 +394,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
         nukePortForwardRules()
         # port forward UDP 5000 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.clientIP,"5000"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
 
         # send UDP packets through the port forward
         UDP_packets = globalFunctions.sendUDPPackets(wan_IP)
@@ -430,7 +429,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test UDP QoS limits speed
     def test_053_testUDPwithQoS(self):
-        if clientControl.quickTestsOnly:
+        if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # We will use radiusServer and mgen for this test.
         mgenAvailable = globalFunctions.verifyMgen()
@@ -472,13 +471,13 @@ class NetworkTests(unittest2.TestCase):
         nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
         nukeBypassRules()
         # verify port 80 is open
-        result1 = clientControl.runCommand("wget -q -O /dev/null http://test.untangle.com/")
+        result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
         # Block port 80 and verify it's closed
         appendFWRule(nodeFW, createSingleMatcherRule("DST_PORT","80"))
-        result2 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
-        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.clientIP))
-        result3 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        appendBypass(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP))
+        result3 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (result1 == 0)
@@ -488,43 +487,43 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP in active and passive modes
     def test_065_ftpModes(self):
         nukeBypassRules()
-        clientControl.runCommand("rm -f /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file")
+        remote_control.runCommand("rm -f /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file")
         # passive
-        result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = remote_control.runCommand("wget --timeout=30 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         # active
-        result = clientControl.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = remote_control.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
 
     # Test FTP in active and passive modes with bypass
     def test_066_bypassFtpModes(self):
         nukeBypassRules()
-        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.clientIP))
+        appendBypass(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP))
         # --no-passive-ftp
-        clientControl.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
+        remote_control.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
         # passive
-        result = clientControl.runCommand("wget --timeout=30 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = remote_control.runCommand("wget --timeout=30 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         # active
-        result = clientControl.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        result = remote_control.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         nukeBypassRules()
 
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_070_routes(self):        
         nukeRoutes()
-        clientControl.runCommand("rm -f /tmp/network_test_070a.log")
+        remote_control.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        result = clientControl.runCommand("host www.playboy.com", True)
+        result = remote_control.runCommand("host www.playboy.com", stdout=True)
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_playboy = (match.group()).replace('address ','')
         appendRouteRule(createRouteRule(ip_address_playboy,32,"127.0.0.1"))
         # verify other sites are still available.
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
         assert (result == 0)
         # Verify playboy is not accessible 
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.playboy.com")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.playboy.com")
         assert (result != 0)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -532,7 +531,7 @@ class NetworkTests(unittest2.TestCase):
     def test_080_DNS(self):        
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nukeDNSRules()
-        result = clientControl.runCommand("host test.untangle.com", True)
+        result = remote_control.runCommand("host test.untangle.com", stdout=True)
         # print "result <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = (match.group()).replace('address ','')
@@ -554,7 +553,7 @@ class NetworkTests(unittest2.TestCase):
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        result = clientControl.runCommand("host -4 www.foobar.com " + wan_IP, True)
+        result = remote_control.runCommand("host -4 www.foobar.com " + wan_IP, stdout=True)
         # print "Results of www.foobar.com <%s>" % result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_foobar = (match.group()).replace('address ','')
@@ -569,8 +568,8 @@ class NetworkTests(unittest2.TestCase):
         # Set DynDNS info
         setDynDNS()
         time.sleep(60) # wait a max of 1 minute for dyndns to update.
-        outsideIP = clientControl.runCommand("wget -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",True)
-        result = clientControl.runCommand("host testuntangle.dyndns-pics.com", True)
+        outsideIP = remote_control.runCommand("wget -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        result = remote_control.runCommand("host testuntangle.dyndns-pics.com", stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         dynIP = (match.group()).replace('address ','')
         print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
@@ -579,7 +578,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test VRRP is active
     def test_100_VRRP(self):
-        if clientControl.quickTestsOnly:
+        if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Find a static interface
@@ -604,7 +603,7 @@ class NetworkTests(unittest2.TestCase):
             newip = ip + ipStep
             # check to see if the IP is in network range
             if newip in ipaddr.IPv4Network(interfaceNet):
-                pingResult = clientControl.runCommand("ping -c 1 %s" % str(newip))
+                pingResult = remote_control.runCommand("ping -c 1 %s" % str(newip))
                 if pingResult:
                     # new IP found
                     vrrpIP = newip
@@ -631,9 +630,9 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(60)
         # Test that the VRRP is pingable
-        pingResult = clientControl.runCommand("ping -c 1 %s" % str(vrrpIP))
+        pingResult = remote_control.runCommand("ping -c 1 %s" % str(vrrpIP))
         # check if still online
-        onlineResults = clientControl.isOnline()
+        onlineResults = remote_control.isOnline()
         # Return to default network state
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pingResult == 0)
@@ -693,14 +692,14 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         systemSettings['snmpSettings']['v3Enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
-        v2cResult = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
-        v3Result = clientControl.runCommand("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  lanAdminIP + " | grep untangle")
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
+        v2cResult = remote_control.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
+        v3Result = remote_control.runCommand("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 1 )
@@ -713,12 +712,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -731,12 +730,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -749,12 +748,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -767,12 +766,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -785,12 +784,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -803,12 +802,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -821,12 +820,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
+        systemSettings['snmpSettings']['trapHost'] = remote_control.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = clientControl.runCommand( commands[0] )
-        v3Result = clientControl.runCommand( commands[1] )
+        v2cResult = remote_control.runCommand( commands[0] )
+        v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 1 )
         assert( v3Result == 0 )
@@ -838,14 +837,14 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
-        result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(remote_control.clientIP)
+        result = remote_control.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 1)
 
     def test_130_sessionview(self):
         foundTestSession = False
-        clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",False,True)
+        remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
         result = uvmContext.sessionMonitor().getMergedSessions()
         sessionList = result['list']
@@ -853,18 +852,18 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['preNatClient'] == ClientControl.clientIP) and \
+            if (sessionList[i]['preNatClient'] == remote_control.clientIP) and \
                (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
                (sessionList[i]['postNatServerPort'] == 80) and \
                (not sessionList[i]['bypassed']):
                 foundTestSession = True
                 break
-        clientControl.runCommand("pkill netcat")
+        remote_control.runCommand("pkill netcat")
         assert(foundTestSession)
         
     def test_140_hostview(self):
         foundTestSession = False
-        clientControl.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",False,True)
+        remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
         result = uvmContext.hostTable().getHosts()
         sessionList = result['list']
@@ -872,11 +871,11 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['address'] == ClientControl.clientIP) and \
+            if (sessionList[i]['address'] == remote_control.clientIP) and \
                 (not sessionList[i]['penaltyBoxed']):
                 foundTestSession = True
                 break
-        clientControl.runCommand("pkill netcat")
+        remote_control.runCommand("pkill netcat")
         assert(foundTestSession)        
 
     @staticmethod

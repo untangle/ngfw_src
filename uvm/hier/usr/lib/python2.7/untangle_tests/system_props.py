@@ -11,7 +11,7 @@ import commands
 
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 
 uvmContext = Uvm().getUvmContext()
 
@@ -35,13 +35,13 @@ class SystemProperties():
         return None
 
     def getHttpAdminUrl(self):
-        internalAdmin = self.findInterfaceIPbyIP(ClientControl.clientIP)
+        internalAdmin = self.findInterfaceIPbyIP(remote_control.clientIP)
         httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
         httpAdminUrl = "http://" + internalAdmin + ":" + httpPort + "/"
         return httpAdminUrl
 
     def getHttpsAdminUrl(self):
-        internalAdmin = self.findInterfaceIPbyIP(ClientControl.clientIP)
+        internalAdmin = self.findInterfaceIPbyIP(remote_control.clientIP)
         httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
         httpsAdminUrl = "https://" + internalAdmin + ":" + httpsPort + "/"
         return httpsAdminUrl

@@ -3,11 +3,11 @@ import sys
 import subprocess
 import time
 import datetime
-from untangle_tests import ClientControl
+
+import remote_control
 from untangle_tests import SystemProperties
 
 radiusServer = "10.111.56.71"
-clientControl = ClientControl()
 systemProperties = SystemProperties()
 
 class GlobalFunctions:
@@ -23,12 +23,12 @@ class GlobalFunctions:
         # print "isMgenNotRunning <%s>" % isMgenNotRunning
         if (externalClientResult == 0 and isMgenNotRunning):
             # RADIUS server, the mgen endpoint is reachable, check other requirements
-            mgenResult = clientControl.runCommand("test -x /usr/bin/mgen")
+            mgenResult = remote_control.runCommand("test -x /usr/bin/mgen")
             # print "mgenResult <%s>" % mgenResult
             if (mgenResult == 0):
                 # Always get new UDP traffic generator file in case it changes.
-                clientControl.runCommand("rm udp-load-ats.mgn")
-                mgnFileResult = clientControl.runCommand("wget -q http://test.untangle.com/test/udp-load-ats.mgn")
+                remote_control.runCommand("rm udp-load-ats.mgn")
+                mgnFileResult = remote_control.runCommand("wget -q http://test.untangle.com/test/udp-load-ats.mgn")
                 if (mgnFileResult == 0):
                     mGenPresent = True
         return mGenPresent
@@ -40,7 +40,7 @@ class GlobalFunctions:
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm -f mgen_recv.dat\" >/dev/null 2>&1")
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"/home/fnsadmin/MGEN/mgen output mgen_recv.dat port 5000 >/dev/null 2>&1 &\"")
         # start the UDP generator on the client behind the Untangle.
-        clientControl.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log")
+        remote_control.runCommand("mgen input /home/testshell/udp-load-ats.mgn txlog log mgen_snd.log")
         # wait for UDP to finish
         time.sleep(25)
         # kill mgen receiver    
@@ -54,8 +54,8 @@ class GlobalFunctions:
     def sendUDPPackets(self, targetIP):
         # Use mgen to send UDP packets.  Returns number of packets received.
         # start mgen receiver on client.
-        clientControl.runCommand("rm -f mgen_recv.dat")
-        clientControl.runCommand("nohup mgen output mgen_recv.dat port 5000", False, True)
+        remote_control.runCommand("rm -f mgen_recv.dat")
+        remote_control.runCommand("nohup mgen output mgen_recv.dat port 5000", False, True)
         # Create a mgen config with client host IP as the target
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"rm -f udp-load-send.mgn\" >/dev/null 2>&1")
         os.system("ssh -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + radiusServer + " \"sed 's/" + radiusServer + "/" + targetIP + "/' udp-load-ats.mgn > udp-load-send.mgn\" >/dev/null 2>&1")
@@ -64,8 +64,8 @@ class GlobalFunctions:
         # wait for UDP to finish
         time.sleep(25)
         # kill mgen receiver    
-        clientControl.runCommand("pkill mgen")
-        wcResults = clientControl.runCommand("wc -l mgen_recv.dat", True)
+        remote_control.runCommand("pkill mgen")
+        wcResults = remote_control.runCommand("wc -l mgen_recv.dat", True)
         print "wcResults " + str(wcResults)
         numOfPackets = wcResults.split(' ')[0]
         return int(numOfPackets)

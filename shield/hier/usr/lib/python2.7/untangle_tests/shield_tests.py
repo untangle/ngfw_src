@@ -8,12 +8,11 @@ from jsonrpc import JSONRPCException
 from datetime import datetime
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 
 def flushEvents():
@@ -37,12 +36,12 @@ class ShieldTests(unittest2.TestCase):
             node = uvmContext.nodeManager().node(self.nodeName())
 
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_011_shieldDetectsNmap(self):
         startTime = datetime.now()
-        result = clientControl.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-12000 1.2.3.4 2>&1 >/dev/null")
+        result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
         flushEvents()
         query = None;
@@ -51,8 +50,8 @@ class ShieldTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             min_date=startTime)
         assert( found )
 

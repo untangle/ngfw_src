@@ -9,14 +9,13 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import TestDict
 from untangle_tests import SystemProperties
 
 uvmContext = Uvm().getUvmContext()
 systemProperties = SystemProperties()
 defaultRackId = 1
-clientControl = ClientControl()
 nodeData = None
 node = None
 vpnClientName = "atsclient"
@@ -33,7 +32,6 @@ vpnServerVpnLanIP = "192.168.234.57"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 vpnClientVpnIP = "10.111.56.32"  
-vpnClientControl = ClientControl(vpnClientVpnIP)
 
 tunnelUp = False
 
@@ -104,7 +102,7 @@ class OpenVpnTests(unittest2.TestCase):
         return "Untangle"
         
     def setUp(self):
-        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientControl
+        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult, vpnClientVpnIP
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
@@ -118,11 +116,11 @@ class OpenVpnTests(unittest2.TestCase):
             vpnHostResult = subprocess.call(["ping","-c","1",vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             vpnClientResult = subprocess.call(["ping","-c","1",vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             wanIP = uvmContext.networkManager().getFirstWanAddress()
-            vpnServerResult = vpnClientControl.runCommand("ping -c 1 " + wanIP)
+            vpnServerResult = remote_control.runCommand("ping -c 1 " + wanIP, host=vpnClientVpnIP)
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_020_createVPNTunnel(self):
@@ -167,10 +165,10 @@ class OpenVpnTests(unittest2.TestCase):
         tunnelUp = False
         
     def test_040_createClientVPNTunnel(self):
-        global nodeData, vpnServerResult, vpnClientResult, vpnClientControl
+        global nodeData, vpnServerResult, vpnClientResult, vpnClientVpnIP
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = vpnClientControl.runCommand("pidof openvpn")
+        running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
@@ -187,28 +185,28 @@ class OpenVpnTests(unittest2.TestCase):
         assert (result == 0)
         # copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
         os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
-        vpnClientControl.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/")
-        vpnClientControl.runCommand("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys")
-        vpnClientControl.runCommand("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/")
-        vpnClientControl.runCommand("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &")
+        remote_control.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=vpnClientVpnIP)
+        remote_control.runCommand("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=vpnClientVpnIP)
+        remote_control.runCommand("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=vpnClientVpnIP)
+        remote_control.runCommand("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=vpnClientVpnIP)
 
         timeout = waitForClientVPNtoConnect()
         # If VPN tunnel has failed to connect so fail the test,
         assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
-        result = vpnClientControl.runCommand("ping -c 2 " + ClientControl.clientIP )
+        result = remote_control.runCommand("ping -c 2 " + ClientControl.clientIP, host=vpnClientVpnIP)
         
         listOfClients = node.getActiveClients()
         print "address " + listOfClients['list'][0]['address']
         print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
 
-        host_result = clientControl.runCommand("host test.untangle.com", True)
+        host_result = remote_control.runCommand("host test.untangle.com", True)
         # print "host_result <%s>" % host_result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
         ip_address_testuntangle = (match.group()).replace('address ','')
 
         # stop the vpn tunnel on remote box
-        vpnClientControl.runCommand("sudo pkill openvpn")
+        remote_control.runCommand("sudo pkill openvpn", host=vpnClientVpnIP)
 
         assert(result==0)
         assert(listOfClients['list'][0]['address'] == vpnClientVpnIP)
@@ -221,18 +219,18 @@ class OpenVpnTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             'remote_address', vpnClientVpnIP,
                                             'client_name', vpnClientName )
         assert( found )
         
     def test_050_createClientVPNFullTunnel(self):
-        global nodeData, vpnServerResult, vpnClientResult, vpnClientControl
-        if clientControl.quickTestsOnly:
+        global nodeData, vpnServerResult, vpnClientResult, vpnClientVpnIP
+        if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = vpnClientControl.runCommand("pidof openvpn")
+        running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
         nodeData = node.getSettings()
@@ -251,10 +249,10 @@ class OpenVpnTests(unittest2.TestCase):
         assert (result == 0)
         # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
         os.system("scp -o 'StrictHostKeyChecking=no' -i " + systemProperties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key /tmp/clientconfig.zip testshell@" + vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
-        vpnClientControl.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/")
-        vpnClientControl.runCommand("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys")
-        vpnClientControl.runCommand("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/")
-        vpnClientControl.runCommand("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &")
+        remote_control.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=vpnClientVpnIP)
+        remote_control.runCommand("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=vpnClientVpnIP)
+        remote_control.runCommand("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=vpnClientVpnIP)
+        remote_control.runCommand("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=vpnClientVpnIP)
 
         time.sleep(10) # wait for vpn tunnel to form 
 
@@ -264,7 +262,6 @@ class OpenVpnTests(unittest2.TestCase):
 
         # ping the test host behind the Untangle from the remote testbox
         print "vpn address " + vpnPoolAddressIP
-        vpnClientControl = ClientControl(vpnPoolAddressIP)
 
         result1 = 1
         tries = 10
@@ -272,16 +269,16 @@ class OpenVpnTests(unittest2.TestCase):
             time.sleep(1)
             tries -= 1
             result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
-        result2 = vpnClientControl.runCommand("ping -c 2 " + ClientControl.clientIP)
+        result2 = remote_control.runCommand("ping -c 2 " + ClientControl.clientIP, host=vpnClientVpnIP)
 
         # print "look for block page"
-        webresult = vpnClientControl.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage")
+        webresult = remote_control.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
 
         print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
 
         # Shutdown VPN on both sides.
         # this pkill is launched in the background because once the openvpn process is killed it ssh will lose contact and it will hang as a result
-        vpnClientControl.runCommand("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &")
+        remote_control.runCommand("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
 
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)

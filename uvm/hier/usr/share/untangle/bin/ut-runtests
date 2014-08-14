@@ -229,16 +229,16 @@ script_args = parser.parse_args()
 logfile = open(parser.logfile, 'w')
 
 if (parser.clientIP != None):
-    ClientControl.clientIP       = parser.clientIP
+    remote_control.clientIP       = parser.clientIP
 if (parser.hostUsername != None):
-    ClientControl.hostUsername = parser.hostUsername
+    remote_control.hostUsername = parser.hostUsername
 if (parser.hostKeyFile != None):
-    ClientControl.hostKeyFile  = parser.hostKeyFile
-ClientControl.verbosity   = parser.verbosity
-ClientControl.logfile = logfile
-ClientControl.interface = parser.internalIntfId;
-ClientControl.interfaceExternal = parser.externalIntfId
-ClientControl.quickTestsOnly = parser.quickTestsOnly
+    remote_control.hostKeyFile  = parser.hostKeyFile
+remote_control.verbosity   = parser.verbosity
+remote_control.logfile = logfile
+remote_control.interface = parser.internalIntfId;
+remote_control.interfaceExternal = parser.externalIntfId
+remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;

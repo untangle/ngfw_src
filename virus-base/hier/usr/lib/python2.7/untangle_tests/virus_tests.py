@@ -10,11 +10,10 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 
 def flushEvents():
@@ -47,12 +46,12 @@ class VirusTests(unittest2.TestCase):
         global node,md5StdNum
         if node == None:
             # download eicar and trojan files before installing virus blocker
-            clientControl.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-            result = clientControl.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
+            remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
+            result = remote_control.runCommand("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
             assert (result == 0)
-            result = clientControl.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
+            result = remote_control.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
             assert (result == 0)
-            md5StdNum = clientControl.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
+            md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print "md5StdNum <%s>" % md5StdNum
             assert (result == 0)
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
@@ -63,28 +62,28 @@ class VirusTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     # test that client can http download zip
     def test_011_httpNonVirusNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_012_httpEicarBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_013_httpVirusBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_014_httpEicarPassSite(self):
         addPassSite("test.untangle.com")
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         nukePassSites()
         assert (result == 1)
 
@@ -93,15 +92,15 @@ class VirusTests(unittest2.TestCase):
         adResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (adResult != 0):
             raise unittest2.SkipTest("FTP server not available")
-        result = clientControl.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
+        result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
     def test_022_ftpVirusBlocked(self):
-        clientControl.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
+        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
+        result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
-        md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", True)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum != md5TestNum)
         flushEvents()
@@ -112,9 +111,9 @@ class VirusTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", ClientControl.clientIP, 
+                                            "c_client_addr", remote_control.clientIP, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -123,10 +122,10 @@ class VirusTests(unittest2.TestCase):
     def test_023_ftpVirusPassSite(self):
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
-        clientControl.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://test.untangle.com/virus/fedexvirus.zip")
+        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
+        result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
-        md5TestNum = clientControl.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", True)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum == md5TestNum)
         flushEvents()
@@ -136,9 +135,9 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", ClientControl.clientIP, 
+                                            "c_client_addr", remote_control.clientIP, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -146,7 +145,7 @@ class VirusTests(unittest2.TestCase):
 
     def test_100_eventlog_httpVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
         flushEvents()
         query = None;
@@ -155,7 +154,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
                                             "uri", ("/virus/eicar.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', False )
@@ -163,7 +162,7 @@ class VirusTests(unittest2.TestCase):
 
     def test_101_eventlog_httpNonVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
         assert (result == 0)
         flushEvents()
         query = None;
@@ -172,7 +171,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
                                             "uri", ("/test/test.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', True )
@@ -180,7 +179,7 @@ class VirusTests(unittest2.TestCase):
 
     def test_102_eventlog_ftpVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         flushEvents()
         query = None;
@@ -189,14 +188,14 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
+        result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
         flushEvents()
         query = None;
@@ -205,7 +204,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "uri", "test.zip",
                                             self.shortName() + '_clean', True )
         assert( found )
@@ -216,12 +215,12 @@ class VirusTests(unittest2.TestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
-        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
+        result = remote_control.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
-        result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
+        result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = clientControl.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -230,7 +229,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
+        found = remote_control.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', False,
@@ -242,15 +241,15 @@ class VirusTests(unittest2.TestCase):
     def test_105_eventlog_smtpNonVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
+        result = remote_control.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
+        result = remote_control.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
-        result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
+        result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = clientControl.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (fname, fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -259,7 +258,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', True,
@@ -273,15 +272,15 @@ class VirusTests(unittest2.TestCase):
         addPassSite(ftp_server_IP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
+        result = remote_control.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = clientControl.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
+        result = remote_control.runCommand("wget -q -O /tmp/email_script.py http://test.untangle.com/test/email_script.py")
         assert (result == 0)
-        result = clientControl.runCommand("chmod 775 /tmp/email_script.py")
+        result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = clientControl.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -290,7 +289,7 @@ class VirusTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5, 
+        found = remote_control.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
                                             "subject", str(fname), 
                                             self.shortName() + '_clean', True,

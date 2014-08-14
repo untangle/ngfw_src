@@ -19,7 +19,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import TestDict
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import SystemProperties
 
 node = None
@@ -27,16 +27,15 @@ nodeFW = None
 
 uvmContext = Uvm().getUvmContext()
 systemProperties = SystemProperties()
-clientControl = ClientControl()
 defaultRackId = 1
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
 def getLatestMailPkg():
-    clientControl.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
-    results = clientControl.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    remote_control.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
+    results = remote_control.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = clientControl.runCommand("tar -xvf mailpkg.tar")
+    results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 class UvmTests(unittest2.TestCase):
@@ -57,7 +56,7 @@ class UvmTests(unittest2.TestCase):
         pass
 
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_011_helpLinks(self):
@@ -137,11 +136,11 @@ class UvmTests(unittest2.TestCase):
         # print nodeDataSP
         getLatestMailPkg();
         # remove previous smtp log file
-        clientControl.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
+        remote_control.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
         # Start mail sink
-        clientControl.runCommand("python fakemail.py --host=" + ClientControl.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
+        remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
         newMailsettings = copy.deepcopy(origMailsettings)
-        newMailsettings['smtpHost'] = ClientControl.clientIP
+        newMailsettings['smtpHost'] = remote_control.clientIP
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['useMxRecords'] = False
 
@@ -154,10 +153,10 @@ class UvmTests(unittest2.TestCase):
         time.sleep(5)
 
         # Kill mail sink
-        clientControl.runCommand("pkill -INT python")
+        remote_control.runCommand("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
         nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
-        result = clientControl.runCommand("grep -q 'Untangle Server Test Message' /tmp/test_030_testSMTPSettings.log")
+        result = remote_control.runCommand("grep -q 'Untangle Server Test Message' /tmp/test_030_testSMTPSettings.log")
         assert(result==0)
 
 TestDict.registerNode("uvm", UvmTests)

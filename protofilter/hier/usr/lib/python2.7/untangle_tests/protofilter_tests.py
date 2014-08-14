@@ -8,12 +8,11 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
-from untangle_tests import ClientControl
+import remote_control
 from untangle_tests import TestDict
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-clientControl = ClientControl()
 node = None
 
 def flushEvents():
@@ -65,7 +64,7 @@ class ProtofilterTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = clientControl.isOnline()
+        result = remote_control.isOnline()
         assert (result == 0)
 
     def test_020_testHttpPatternLog(self):
@@ -75,7 +74,7 @@ class ProtofilterTests(unittest2.TestCase):
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukepatterns()
         assert (result == 0)
         time.sleep(3);
@@ -86,8 +85,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             'protofilter_protocol', 'HTTP',
                                             'protofilter_blocked', False )
         assert( found )
@@ -100,7 +99,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(3);
         flushEvents()
@@ -110,8 +109,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             'protofilter_protocol', 'HTTP',
                                             'protofilter_blocked', True )
         assert( found )
@@ -124,7 +123,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="File Transfer Protocol")
-        result = clientControl.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
+        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
         assert (result != 0)
         time.sleep(3);
         flushEvents()
@@ -134,8 +133,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             'protofilter_protocol', 'FTP',
                                             'protofilter_blocked', True )
         assert( found )
@@ -148,7 +147,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=False,
                     category="Web", 
                     description="Domain Name System")
-        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result == 0)
         time.sleep(3);
         flushEvents()
@@ -158,8 +157,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             'protofilter_protocol', 'DNS',
                                             'protofilter_blocked', False )
         assert( found )
@@ -172,7 +171,7 @@ class ProtofilterTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="Domain Name System")
-        result = clientControl.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
         assert (result != 0)
         time.sleep(3);
         flushEvents()
@@ -182,8 +181,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.clientIP,
+        found = remote_control.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
                                             'protofilter_protocol', 'DNS',
                                             'protofilter_blocked', True )
         assert( found )

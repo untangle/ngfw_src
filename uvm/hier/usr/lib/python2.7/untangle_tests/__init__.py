@@ -1,5 +1,5 @@
 
-from untangle_tests.client_control import ClientControl
+import untangle_tests.remote_control
 from untangle_tests.system_props import SystemProperties
 from untangle_tests.global_functions import GlobalFunctions
 from untangle_tests.environment_tests import TestEnvironmentTests
