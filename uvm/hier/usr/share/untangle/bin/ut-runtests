@@ -20,7 +20,7 @@ for f in os.listdir('@PREFIX@/usr/lib/python2.7/untangle_tests'):
 
 class ArgumentParser(object):
     def __init__(self):
-        self.hostIP = None
+        self.clientIP = None
         self.hostUsername = None
         self.hostKeyFile = None
         self.verbosity = 2 # changed to default 2 because jcoffin
@@ -36,8 +36,8 @@ class ArgumentParser(object):
         self.timedTests = False
         self.quickTestsOnly = False
 
-    def set_hostIP( self, arg ):
-        self.hostIP = arg
+    def set_clientIP( self, arg ):
+        self.clientIP = arg
 
     def set_username( self, arg ):
         self.username = arg
@@ -83,7 +83,7 @@ class ArgumentParser(object):
 
     def parse_args( self ):
         handlers = {
-            '-h' : self.set_hostIP,
+            '-h' : self.set_clientIP,
             '-u' : self.set_username,
             '-i' : self.set_keyfile,
             '-l' : self.set_logfile,
@@ -228,8 +228,8 @@ parser = ArgumentParser()
 script_args = parser.parse_args()
 logfile = open(parser.logfile, 'w')
 
-if (parser.hostIP != None):
-    ClientControl.hostIP       = parser.hostIP
+if (parser.clientIP != None):
+    ClientControl.clientIP       = parser.clientIP
 if (parser.hostUsername != None):
     ClientControl.hostUsername = parser.hostUsername
 if (parser.hostKeyFile != None):

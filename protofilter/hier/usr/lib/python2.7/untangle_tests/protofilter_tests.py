@@ -87,7 +87,7 @@ class ProtofilterTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'protofilter_protocol', 'HTTP',
                                             'protofilter_blocked', False )
         assert( found )
@@ -111,7 +111,7 @@ class ProtofilterTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'protofilter_protocol', 'HTTP',
                                             'protofilter_blocked', True )
         assert( found )
@@ -135,7 +135,7 @@ class ProtofilterTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'protofilter_protocol', 'FTP',
                                             'protofilter_blocked', True )
         assert( found )
@@ -159,7 +159,7 @@ class ProtofilterTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'protofilter_protocol', 'DNS',
                                             'protofilter_blocked', False )
         assert( found )
@@ -183,7 +183,7 @@ class ProtofilterTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'protofilter_protocol', 'DNS',
                                             'protofilter_blocked', True )
         assert( found )

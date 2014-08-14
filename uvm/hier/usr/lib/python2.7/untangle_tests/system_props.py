@@ -35,13 +35,13 @@ class SystemProperties():
         return None
 
     def getHttpAdminUrl(self):
-        internalAdmin = self.findInterfaceIPbyIP(ClientControl.hostIP)
+        internalAdmin = self.findInterfaceIPbyIP(ClientControl.clientIP)
         httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
         httpAdminUrl = "http://" + internalAdmin + ":" + httpPort + "/"
         return httpAdminUrl
 
     def getHttpsAdminUrl(self):
-        internalAdmin = self.findInterfaceIPbyIP(ClientControl.hostIP)
+        internalAdmin = self.findInterfaceIPbyIP(ClientControl.clientIP)
         httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
         httpsAdminUrl = "https://" + internalAdmin + ":" + httpsPort + "/"
         return httpsAdminUrl

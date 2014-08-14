@@ -52,7 +52,7 @@ class ShieldTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             min_date=startTime)
         assert( found )
 

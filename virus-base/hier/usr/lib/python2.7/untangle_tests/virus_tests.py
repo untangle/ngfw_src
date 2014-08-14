@@ -114,7 +114,7 @@ class VirusTests(unittest2.TestCase):
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         found = clientControl.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", ClientControl.hostIP, 
+                                            "c_client_addr", ClientControl.clientIP, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -138,7 +138,7 @@ class VirusTests(unittest2.TestCase):
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", ClientControl.hostIP, 
+                                            "c_client_addr", ClientControl.clientIP, 
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )

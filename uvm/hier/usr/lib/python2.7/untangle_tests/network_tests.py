@@ -256,7 +256,7 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     settings['v3Required'] = v3Required
 
     systemProperties = system_props.SystemProperties()
-    lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+    lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
     v1v2command = "snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle" 
     v3command = "snmpwalk -v 3 " + " -u " + v3Username + " -l authNoPriv " + " -a " + v3AuthenticationProtocol + " -A " + v3AuthenticationPassphrase + " -x " + v3PrivacyProtocol
     if v3PrivacyPassphrase != "":
@@ -344,7 +344,7 @@ class NetworkTests(unittest2.TestCase):
     # test hairpin port forward (back to original client)
     def test_026_portForwardHairPin(self):
         nukePortForwardRules()
-        appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,11234))
+        appendForward(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.clientIP,11234))
         clientControl.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",False,True)
         result = clientControl.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
@@ -374,13 +374,13 @@ class NetworkTests(unittest2.TestCase):
         clientControl.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",False,True)
 
         # port forward 11245 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.hostIP,"11245"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",ClientControl.clientIP,"11245"))
 
         # try connecting to netcat on client from "outside" box
-        tmp_hostIP = ClientControl.hostIP
-        ClientControl.hostIP = radiusServer
+        tmp_hostIP = ClientControl.clientIP
+        ClientControl.clientIP = radiusServer
         result = clientControl.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
-        ClientControl.hostIP = tmp_hostIP
+        ClientControl.clientIP = tmp_hostIP
         assert (result == 0)
 
     # test a port forward from outside if possible
@@ -395,7 +395,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
         nukePortForwardRules()
         # port forward UDP 5000 to client box
-        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.hostIP,"5000"))
+        appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",ClientControl.clientIP,"5000"))
 
         # send UDP packets through the port forward
         UDP_packets = globalFunctions.sendUDPPackets()
@@ -477,7 +477,7 @@ class NetworkTests(unittest2.TestCase):
         appendFWRule(nodeFW, createSingleMatcherRule("DST_PORT","80"))
         result2 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
-        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
+        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.clientIP))
         result3 = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -499,7 +499,7 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP in active and passive modes with bypass
     def test_066_bypassFtpModes(self):
         nukeBypassRules()
-        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.hostIP))
+        appendBypass(createBypassMatcherRule("SRC_ADDR",ClientControl.clientIP))
         # --no-passive-ftp
         clientControl.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
         # passive
@@ -693,12 +693,12 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         systemSettings['snmpSettings']['v3Enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
         v2cResult = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         v3Result = clientControl.runCommand("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
@@ -713,7 +713,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -731,7 +731,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -749,7 +749,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -767,7 +767,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -785,7 +785,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -803,7 +803,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -821,7 +821,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['communityString'] = "atstest"
         systemSettings['snmpSettings']['sysContact'] = "qa@untangle.com"
         systemSettings['snmpSettings']['sendTraps'] = True
-        systemSettings['snmpSettings']['trapHost'] = ClientControl.hostIP
+        systemSettings['snmpSettings']['trapHost'] = ClientControl.clientIP
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
         uvmContext.systemManager().setSettings(systemSettings)
@@ -838,7 +838,7 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['enabled'] = False
         uvmContext.systemManager().setSettings(systemSettings)
         systemProperties = system_props.SystemProperties()
-        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.hostIP)
+        lanAdminIP = systemProperties.findInterfaceIPbyIP(ClientControl.clientIP)
         result = clientControl.runCommand("snmpwalk -v 2c -c atstest " +  lanAdminIP + " | grep untangle")
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 1)
@@ -853,7 +853,7 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['preNatClient'] == ClientControl.hostIP) and \
+            if (sessionList[i]['preNatClient'] == ClientControl.clientIP) and \
                (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
                (sessionList[i]['postNatServerPort'] == 80) and \
                (not sessionList[i]['bypassed']):
@@ -872,7 +872,7 @@ class NetworkTests(unittest2.TestCase):
         for i in range(len(sessionList)):
             # print sessionList[i]
             # print "------------------------------"
-            if (sessionList[i]['address'] == ClientControl.hostIP) and \
+            if (sessionList[i]['address'] == ClientControl.clientIP) and \
                 (not sessionList[i]['penaltyBoxed']):
                 foundTestSession = True
                 break

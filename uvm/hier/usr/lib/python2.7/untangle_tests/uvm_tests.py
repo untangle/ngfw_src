@@ -139,9 +139,9 @@ class UvmTests(unittest2.TestCase):
         # remove previous smtp log file
         clientControl.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
         # Start mail sink
-        clientControl.runCommand("python fakemail.py --host=" + ClientControl.hostIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
+        clientControl.runCommand("python fakemail.py --host=" + ClientControl.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
         newMailsettings = copy.deepcopy(origMailsettings)
-        newMailsettings['smtpHost'] = ClientControl.hostIP
+        newMailsettings['smtpHost'] = ClientControl.clientIP
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['useMxRecords'] = False
 

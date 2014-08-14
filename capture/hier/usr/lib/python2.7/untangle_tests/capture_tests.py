@@ -125,7 +125,7 @@ def findNameInHostTable (hostname='test'):
     for i in range(len(sessionList)):
         print sessionList[i]
         # print "------------------------------"
-        if (sessionList[i]['address'] == ClientControl.hostIP) and \
+        if (sessionList[i]['address'] == ClientControl.clientIP) and \
             (sessionList[i]['username'] == hostname) and \
             (not sessionList[i]['penaltyBoxed']):
             foundTestSession = True
@@ -203,7 +203,7 @@ class CaptureTests(unittest2.TestCase):
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
                                             'c_server_addr', test_untangle_com_ip,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'capture_blocked', True )
         assert( found )
 

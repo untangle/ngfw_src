@@ -195,21 +195,21 @@ class FirewallTests(unittest2.TestCase):
     # verify src addr rule with IP works
     def test_031_blockSrcAddrIP(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR",ClientControl.hostIP));
+        appendRule(createSingleMatcherRule("SRC_ADDR",ClientControl.clientIP));
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with CIDR works
     def test_032_blockSrcAddrCIDR(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR",ClientControl.hostIP+"/24"));
+        appendRule(createSingleMatcherRule("SRC_ADDR",ClientControl.clientIP+"/24"));
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with commas works
     def test_033_blockSrcAddrComma(self):
         nukeRules();
-        appendRule(createSingleMatcherRule("SRC_ADDR","4.3.2.1, "+ ClientControl.hostIP + ",  1.2.3.4/31"));
+        appendRule(createSingleMatcherRule("SRC_ADDR","4.3.2.1, "+ ClientControl.clientIP + ",  1.2.3.4/31"));
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -378,11 +378,11 @@ class FirewallTests(unittest2.TestCase):
     def test_067_blockSrcPenaltyBox2(self):
         fname = sys._getframe().f_code.co_name
         nukeRules();
-        uvmContext.hostTable().addHostToPenaltyBox( ClientControl.hostIP, 60, fname );
+        uvmContext.hostTable().addHostToPenaltyBox( ClientControl.clientIP, 60, fname );
         appendRule( createSingleMatcherRule( "CLIENT_IN_PENALTY_BOX", None ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
-        uvmContext.hostTable().releaseHostFromPenaltyBox( ClientControl.hostIP );
+        uvmContext.hostTable().releaseHostFromPenaltyBox( ClientControl.clientIP );
 
     # verify src penalty box wan not blocked
     def test_068_blockDstPenaltyBox(self):
@@ -402,16 +402,16 @@ class FirewallTests(unittest2.TestCase):
     def test_071_blockUserAgent2(self):
         nukeRules();
 
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['httpUserAgent'] = "Mozilla foo bar";
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "HTTP_USER_AGENT", "*Mozilla*" ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['httpUserAgent'] = None;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify bogus user agent OS match not blocked
     def test_072_blockUserAgentOs(self):
@@ -424,16 +424,16 @@ class FirewallTests(unittest2.TestCase):
     def test_073_blockUserAgentOs2(self):
         nukeRules();
 
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['httpUserAgentOs'] = "foobar Linux barbaz" ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "HTTP_USER_AGENT_OS", "*Linux*" ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['httpUserAgentOs'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify bogus hostname match not blocked
     def test_074_blockClientHostname(self):
@@ -447,16 +447,16 @@ class FirewallTests(unittest2.TestCase):
         nukeRules();
 
         hostname = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['hostname'] = hostname
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "CLIENT_HOSTNAME", hostname ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['hostname'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify bogus username match not blocked
     def test_076_blockClientUsername(self):
@@ -471,10 +471,10 @@ class FirewallTests(unittest2.TestCase):
 
         # make sure no username is known for this IP
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = None
         entry['usernameCaptive'] = None
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", "[unauthenticated]" ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
@@ -485,112 +485,112 @@ class FirewallTests(unittest2.TestCase):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", username ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify username matcher works despite rule & username being different case
     def test_079_blockClientUsernameWrongCase1(self):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username.upper()
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", username.lower() ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify username matcher works despite rule & username being different case
     def test_080_blockClientUsernameWrongCase1(self):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username.lower()
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", username.upper() ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify "[authenticated]" matches any username
     def test_081_blockClientUsernameAuthenticated(self):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", '[authenticated]' ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify "A*" matches "abc"
     def test_081_blockClientUsernameLetterStar(self):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username.lower()
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", username[:1].upper()+'*' ) );
 
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
     # verify "*" matches any username but not null
     def test_082_blockClientUsernameStarOnly(self):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", username[:1]+'*' ) );
 
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         entry['usernameAdConnector'] = None ;
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
 
     # verify '' username matches null username (but not all usernames)
@@ -598,17 +598,17 @@ class FirewallTests(unittest2.TestCase):
         nukeRules();
 
         username = clientControl.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         appendRule( createSingleMatcherRule( "USERNAME", '' ) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.hostIP )
+        entry = uvmContext.hostTable().getHostTableEntry( ClientControl.clientIP )
         entry['usernameAdConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( ClientControl.hostIP, entry )
+        uvmContext.hostTable().setHostTableEntry( ClientControl.clientIP, entry )
 
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
@@ -623,21 +623,21 @@ class FirewallTests(unittest2.TestCase):
     # verify rules that a rule with two matching matchers works
     def test_090_dualMatcherRule(self):
         nukeRules();
-        appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.hostIP, "DST_PORT", 80) );
+        appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.clientIP, "DST_PORT", 80) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules that both MUST match for the session to be blocked
     def test_091_dualMatcherRuleAnd(self):
         nukeRules();
-        appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.hostIP, "DST_PORT", 79) );
+        appendRule( createDualMatcherRule("SRC_ADDR", ClientControl.clientIP, "DST_PORT", 79) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify rules evaluated in order
     def test_100_ruleOrder(self):
         nukeRules();
-        appendRule( createSingleMatcherRule("SRC_ADDR", ClientControl.hostIP, blocked=False) );
+        appendRule( createSingleMatcherRule("SRC_ADDR", ClientControl.clientIP, blocked=False) );
         appendRule( createSingleMatcherRule("DST_PORT", "80") );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
@@ -646,7 +646,7 @@ class FirewallTests(unittest2.TestCase):
     def test_101_ruleOrderReverse(self):
         nukeRules();
         appendRule( createSingleMatcherRule("DST_PORT", "80") );
-        appendRule( createSingleMatcherRule("SRC_ADDR", ClientControl.hostIP, blocked=False) );
+        appendRule( createSingleMatcherRule("SRC_ADDR", ClientControl.clientIP, blocked=False) );
         result = clientControl.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -664,7 +664,7 @@ class FirewallTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', True,
                                             'firewall_flagged', True)
@@ -684,7 +684,7 @@ class FirewallTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', False,
                                             'firewall_flagged', True)
@@ -704,7 +704,7 @@ class FirewallTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         found = clientControl.check_events( events.get('list'), 5,
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             's_server_port', 80,
                                             'firewall_blocked', False,
                                             'firewall_flagged', False)

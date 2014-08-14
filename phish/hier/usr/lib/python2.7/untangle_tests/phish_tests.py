@@ -122,7 +122,7 @@ class PhishTests(unittest2.TestCase):
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'phish_action', 'Q')
         assert( found )
             
@@ -150,7 +150,7 @@ class PhishTests(unittest2.TestCase):
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'phish_action', 'M')
         assert( found )
 
@@ -178,7 +178,7 @@ class PhishTests(unittest2.TestCase):
                                             'c_server_addr', ip_address_testuntangle,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
-                                            'c_client_addr', ClientControl.hostIP,
+                                            'c_client_addr', ClientControl.clientIP,
                                             'phish_action', 'D')
         assert( found )
         

@@ -7,7 +7,7 @@ import datetime
 class ClientControl:
 
     # global variables
-    hostIP = "192.168.2.100"
+    clientIP = None
     hostUsername = "testshell"
     hostKeyFile = "/usr/lib/python2.7/untangle_tests/testShell.key"
     logfile = None
@@ -19,6 +19,9 @@ class ClientControl:
 
     # set the key file permissions correctly just in case
     os.system("chmod 600 %s" % hostKeyFile)
+
+    def __init__(self, host=None):
+        self.hostIP = host
 
     def redirectOutput(self, logfile):
         self.orig_stdout = sys.stdout
@@ -35,17 +38,20 @@ class ClientControl:
     # if stdout=True returns the output of the command
     # if nowait=True returns the initial output if stdout=True, 0 otherwise
     def runCommand(self, command, stdout=False, nowait=False):
+        if self.hostIP == None:
+            self.hostIP = ClientControl.clientIP
 
         if (ClientControl.logfile != None):
             self.redirectOutput(ClientControl.logfile)
 
         result = 1
         try:
-            sshCommand = "ssh %s -i %s %s@%s \"%s\"" % (ClientControl.sshOptions, ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command)
+            sshCommand = "ssh %s -i %s %s@%s \"%s\"" % (ClientControl.sshOptions, ClientControl.hostKeyFile, ClientControl.hostUsername, self.hostIP, command)
             # if (ClientControl.verbosity > 1):
             #    print "\nSSH cmd : %s" % sshCommand
             if (ClientControl.verbosity > 0):
-                print "\nCommand : %s" % command
+                print "\nClient  : %s" % self.hostIP
+                print "Command : %s" % command
             if (nowait):
                 sshCommand += " & " # don't wait for process to complete
             proc = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
