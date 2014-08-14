@@ -12,8 +12,8 @@ sys.setdefaultencoding("utf-8")
 import re
 import subprocess
 import ipaddr
-import system_props
 import time
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager

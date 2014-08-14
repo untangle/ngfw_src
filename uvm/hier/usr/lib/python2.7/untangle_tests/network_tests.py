@@ -8,7 +8,7 @@ import re
 import subprocess
 import ipaddr
 import time
-import system_props
+
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -16,7 +16,7 @@ from uvm import Uvm
 import test_registry
 import remote_control
 import system_properties
-from untangle_tests import GlobalFunctions
+import global_functions
 
 radiusServer = "10.111.56.71"
 ftp_server = "test.untangle.com"
@@ -24,7 +24,6 @@ ftp_file_name = "test.zip"
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
-globalFunctions = GlobalFunctions()
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
@@ -385,7 +384,7 @@ class NetworkTests(unittest2.TestCase):
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
         # We will use radiusServer and mgen for this test.
-        mgenAvailable = globalFunctions.verifyMgen()
+        mgenAvailable = global_functions.verifyMgen()
         if (not mgenAvailable):
             raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -397,7 +396,7 @@ class NetworkTests(unittest2.TestCase):
         appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
 
         # send UDP packets through the port forward
-        UDP_packets = globalFunctions.sendUDPPackets(wan_IP)
+        UDP_packets = global_functions.sendUDPPackets(wan_IP)
         nukePortForwardRules()
         assert (UDP_packets >  0)
 
@@ -432,7 +431,7 @@ class NetworkTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # We will use radiusServer and mgen for this test.
-        mgenAvailable = globalFunctions.verifyMgen()
+        mgenAvailable = global_functions.verifyMgen()
         if (not mgenAvailable):
             raise unittest2.SkipTest("Radius server and/or mgen not available, skipping alternate port forwarding test")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -444,7 +443,7 @@ class NetworkTests(unittest2.TestCase):
             uvmContext.networkManager().setNetworkSettings(netsettings)
         appendBypass(createBypassMatcherRule("DST_PORT","5000"))
         appendQoSRule(createQoSMatcherRule("DST_PORT","5000", 1))
-        pre_UDP_packets = globalFunctions.getUDPSpeed()
+        pre_UDP_packets = global_functions.getUDPSpeed()
 
         # Change UDP priority to limited
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -456,7 +455,7 @@ class NetworkTests(unittest2.TestCase):
                         netsettings['qosSettings']['qosRules']['list'][i]['priority'] = 7
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        post_UDP_packets = globalFunctions.getUDPSpeed()
+        post_UDP_packets = global_functions.getUDPSpeed()
         # print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
         
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
