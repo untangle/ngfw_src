@@ -375,10 +375,7 @@ class NetworkTests(unittest2.TestCase):
         appendForward(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"))
 
         # try connecting to netcat on client from "outside" box
-        tmp_hostIP = remote_control.clientIP
-        remote_control.clientIP = iperfServer
-        result = remote_control.runCommand("echo test | netcat -q0 %s 11245" % uvmContext.networkManager().getFirstWanAddress())
-        remote_control.clientIP = tmp_hostIP
+        result = remote_control.runCommand("echo test | netcat -q0 " + wan_IP + " 11245", host=iperfServer)
         assert (result == 0)
 
     # test a port forward from outside if possible
