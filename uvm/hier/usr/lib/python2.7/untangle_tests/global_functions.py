@@ -16,7 +16,7 @@ def verifyIperf():
     # Check to see if iperf endpoint is reachable
     externalClientResult = subprocess.call(["ping","-c","1",iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     # Check to see if some other test is using iperf for UDP testing
-    isIperfNotRunning = os.system("ssh -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"pidof iperf >/dev/null 2>&1\"")
+    isIperfNotRunning = remote_control.runCommand("pidof iperf", host=iperfServer)
     # print "externalClientResult <%s>" % externalClientResult
     # print "isIperfNotRunning <%s>" % isIperfNotRunning
     if (externalClientResult == 0 and isIperfNotRunning):
