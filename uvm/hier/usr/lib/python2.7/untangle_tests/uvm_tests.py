@@ -137,7 +137,7 @@ class UvmTests(unittest2.TestCase):
         # remove previous smtp log file
         remote_control.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
         # Start mail sink
-        remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --bg >/dev/null 2>&1")
+        remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --background")
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = remote_control.clientIP
         newMailsettings['smtpPort'] = "6800"
