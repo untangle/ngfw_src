@@ -52,15 +52,11 @@ def log_date( cmd ):
         log( line.strip() + " " + cmd)
     p.wait()
 
-def cmd_to_stderr(cmd):
+def cmd_to_log(cmd):
     p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE )
     for line in iter(p.stdout.readline, ''):
         log( line.strip() )
-    p.wait()
-    if p.returncode == 0:
-        return 0
-    else:
-        return 1
+    return p.wait()
 
 def update():
     log("apt-get update %s" % UPDATE_OPTS)
@@ -74,12 +70,12 @@ def update():
 
 def upgrade():
     log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
-    r = cmd_to_stderr("apt-get dist-upgrade %s" % UPGRADE_OPTS)
+    r = cmd_to_log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
     return 0
 
 def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
-    r = cmd_to_stderr("apt-get autoremove %s" % AUTOREMOVE_OPTS)
+    r = cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return 0
 
 log_date( os.path.basename( sys.argv[0]) )
