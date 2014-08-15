@@ -3,6 +3,7 @@ import sys
 import subprocess
 import time
 import datetime
+import re
 
 import remote_control
 import system_properties
