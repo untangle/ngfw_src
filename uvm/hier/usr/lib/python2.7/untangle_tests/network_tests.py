@@ -396,9 +396,9 @@ class NetworkTests(unittest2.TestCase):
         appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
 
         # send UDP packets through the port forward
-        UDP_packets = global_functions.sendUDPPackets(wan_IP)
+        UDP_speed = global_functions.sendUDPPackets(wan_IP)
         nukePortForwardRules()
-        assert (UDP_packets >  0)
+        assert (UDP_speed >  0.0)
 
     # Test that QoS limits speed
     def test_050_enableQoS(self):
@@ -443,7 +443,7 @@ class NetworkTests(unittest2.TestCase):
             uvmContext.networkManager().setNetworkSettings(netsettings)
         appendBypass(createBypassMatcherRule("DST_PORT","5000"))
         appendQoSRule(createQoSMatcherRule("DST_PORT","5000", 1))
-        pre_UDP_packets = global_functions.getUDPSpeed()
+        pre_UDP_speed = global_functions.getUDPSpeed()
 
         # Change UDP priority to limited
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -455,11 +455,11 @@ class NetworkTests(unittest2.TestCase):
                         netsettings['qosSettings']['qosRules']['list'][i]['priority'] = 7
             i += 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        post_UDP_packets = global_functions.getUDPSpeed()
-        # print "Pre UDP packets " + str(pre_UDP_packets) + " post_UDP_packets " + str(post_UDP_packets)
+        post_UDP_speed = global_functions.getUDPSpeed()
+        # print "pre_UDP_speed " + str(pre_UDP_speed) + " post_UDP_speed " + str(post_UDP_speed)
         
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert (pre_UDP_packets >  post_UDP_packets)
+        assert (pre_UDP_speed >  post_UDP_speed)
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):

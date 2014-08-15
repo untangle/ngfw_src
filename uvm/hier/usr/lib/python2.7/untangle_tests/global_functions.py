@@ -28,48 +28,41 @@ def verifyIperf():
     return iperfPresent
 
 def getUDPSpeed():
-    # Use iperf to get UDP speed.  Returns number of packets received.
-    # start iperf receiver on iperf server.
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"rm -f iperf_recv.dat\" >/dev/null 2>&1")
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"iperf -s -p 5000 -u > iperf_recv.dat &\"")
+    # Use iperf to get UDP speed.  Returns number the udp speed
+    # start iperf recevier on server
+    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=iperfServer)
     # start the UDP generator on the client behind the Untangle.
-    remote_control.runCommand("iperf -c " + iperfServer + " -u -p 5000 -b 10M -t 20")
-    # wait for UDP to finish
-    time.sleep(25)
+    report=remote_control.runCommand("iperf -c " + iperfServer + " -u -p 5000 -b 10M -t 20 -fK", stdout=True)
     # kill iperf receiver    
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"pkill iperf\"  >/dev/null 2>&1")
-    os.system("scp -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + ":iperf_recv.dat /tmp/iperf_recv.dat >/dev/null 2>&1")
-    f = open('/tmp/iperf_recv.dat')
-    results = f.readlines()
-    f.close()
-    for data in results:
-        if 'bits/sec' in data:
-            match = re.search(r'([0-9.]+) [KM]Bytes', data)
+    remote_control.runCommand("pkill iperf", host=iperfServer)
+
+    lines = report.split("\n")
+    udp_speed = None
+    for line in lines:
+        if '%' in line: # results line contains a '%'
+            match = re.search(r'([0-9.]+) KBytes/sec', line)
             udp_speed =  match.group(1)
             break
     return float(udp_speed)
 
 def sendUDPPackets(targetIP):
-    # Use iperf to send UDP packets.  Returns number of packets received.
+    # Use iperf to send UDP packets.  Returns the udp speed
     # start iperf receiver on client.
-    remote_control.runCommand("rm -f iperf_recv.dat")
-    remote_control.runCommand("iperf -s -p 5000 -u > iperf_recv.dat", False, True)
+    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &")
     # start the UDP generator on the iperf server.
-    os.system("ssh -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + iperfServer + " \"iperf -c " + targetIP + " -u -p 5000 -b 10M -t 20\" >/dev/null 2>&1")
-    # wait for UDP to finish
-    time.sleep(25)
+    report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b 10M -t 20 -fK", host=iperfServer, stdout=True)
     # kill iperf receiver    
     remote_control.runCommand("pkill iperf")
-    f = open('/tmp/iperf_recv.dat')
-    results = f.readlines()
-    f.close()
-    for data in results:
-        if 'bits/sec' in data:
-            match = re.search(r'([0-9.]+) [KM]Bytes', data)
-            numOfPackets =  match.group(1)
+
+    lines = report.split("\n")
+    udp_speed = None
+    for line in lines:
+        if '%' in line: # results line contains a '%'
+            match = re.search(r'([0-9.]+) KBytes/sec', line)
+            udp_speed =  match.group(1)
             break
-    return float(numOfPackets)
-        
+    return float(udp_speed)
+
 def check_events( events, num_events, *args, **kwargs):
     if events == None:
         return False

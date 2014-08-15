@@ -3,6 +3,7 @@ import sys
 import subprocess
 import time
 import datetime
+import re
 
 # exteral global variables
 clientIP = None
@@ -53,6 +54,7 @@ def runCommand( command, host=None, stdout=False, nowait=False):
         if verbosity > 0:
             print "\nClient  : %s" % host
             print "Command : %s" % command
+            sys.stdout.flush()
         if (nowait):
             sshCommand += " & " # don't wait for process to complete
         proc = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
