@@ -19,6 +19,7 @@ node = None
 nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
+fakeSmtpServerHost = '10.111.56.32'
 
 def sendTestmessage():
     sender = 'test@example.com'
@@ -47,8 +48,8 @@ def getLatestMailSender():
     results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
-def sendSpamMail():
-    remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
+def sendSpamMail(host=smtpServerHost):
+    remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -181,6 +182,36 @@ class SpamTests(unittest2.TestCase):
         for checkAddress in curQuarantineList['list']:
             if (checkAddress['address'] == 'qa@example.com') and (checkAddress['totalMails'] > 0): addressFound = True
         assert(not addressFound)
+
+    def test_070_checkForSMTPHeaders(self):
+        externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("Fake SMTP client is unreachable, skipping smtp headers check")
+        nodeData['smtpConfig']['addSpamHeaders'] = True
+        node.setSettings(nodeData)
+        # remove previous smtp log file
+        remote_control.runCommand("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
+        # Start mail sink
+        remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/test_070_checkForSMTPHeaders.log --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
+        sendSpamMail(host=fakeSmtpServerHost)
+        time.sleep(3) # wait for email to arrive
+        # look for added header in delivered email
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        emailContext=remote_control.runCommand("cat /tmp/qa@example.com.1",host=fakeSmtpServerHost, stdout=True)
+        lines = emailContext.split("\n")
+        spamScore = 0
+        requiredScore = 0
+        for line in lines:
+            if 'X-spam-status' in line:
+                print line
+                match = re.search(r'\sscore\=([0-9.]+)\srequired\=([0-9.]+) ', line)
+                spamScore =  match.group(1)
+                requiredScore =  match.group(2)
+                break
+        print "spamScore " + spamScore + " requiredScore " + requiredScore
+        assert(float(spamScore) > 0)
+        assert(float(requiredScore) > 0)
+        assert(float(requiredScore) > float(spamScore))
 
     @staticmethod
     def finalTearDown(self):
