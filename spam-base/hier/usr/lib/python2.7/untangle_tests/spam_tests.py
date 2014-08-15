@@ -105,7 +105,7 @@ class SpamTests(unittest2.TestCase):
         nodeData['smtpConfig']['strength'] = 30
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = remote_control.runCommand("host "+smtpServerHost, True)
+        result = remote_control.runCommand("host "+smtpServerHost, stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
