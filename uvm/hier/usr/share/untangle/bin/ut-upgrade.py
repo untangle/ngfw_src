@@ -53,7 +53,7 @@ def log_date( cmd ):
     p.wait()
 
 def cmd_to_log(cmd):
-    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE )
+    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=None )
     for line in iter(p.stdout.readline, ''):
         log( line.strip() )
     return p.wait()
