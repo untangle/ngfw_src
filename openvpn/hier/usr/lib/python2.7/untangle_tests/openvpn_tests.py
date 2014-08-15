@@ -262,7 +262,7 @@ class OpenVpnTests(unittest2.TestCase):
         vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 
         # ping the test host behind the Untangle from the remote testbox
-        print "vpn address " + vpnPoolAddressIP
+        print "vpn pool address: " + vpnPoolAddressIP
 
         result1 = 1
         tries = 10
@@ -272,14 +272,15 @@ class OpenVpnTests(unittest2.TestCase):
             result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
         result2 = remote_control.runCommand("ping -c 2 " + remote_control.clientIP, host=vpnClientVpnIP)
 
-        # print "look for block page"
-        webresult = remote_control.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
+        # run a web request to internet and make sure it goes through web filter
+        # webresult = remote_control.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
+        webresult = remote_control.runCommand("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnClientVpnIP)
 
         print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
 
         # Shutdown VPN on both sides.
-        # this pkill is launched in the background because once the openvpn process is killed it ssh will lose contact and it will hang as a result
-        remote_control.runCommand("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
+        # remote_control.runCommand("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
+        remote_control.runCommand("sudo pkill openvpn", host=vpnClientVpnIP)
 
         nodeData['remoteClients']['list'][:] = []  
         node.setSettings(nodeData)
