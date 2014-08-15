@@ -21,7 +21,7 @@ os.environ['PATH'] = '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sb
 # apt-get options for various commands
 UPGRADE_OPTS = " -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPDATE_OPTS = " --yes --force-yes --purge "
-AUTOREMOVE_OPTS = " --yes --purge "
+AUTOREMOVE_OPTS = " --yes --force-yes --purge "
 
 # Ignore SIGHUP from parent (this is in case we get launched by the UVM, and then it exits)
 # This isn't enough because this doesn't modify sigprocmask so children of this process still get it
