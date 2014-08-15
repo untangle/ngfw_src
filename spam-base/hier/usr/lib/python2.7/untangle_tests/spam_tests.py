@@ -203,12 +203,12 @@ class SpamTests(unittest2.TestCase):
         requiredScore = 0
         for line in lines:
             if 'X-spam-status' in line:
-                print line
+                # print line
                 match = re.search(r'\sscore\=([0-9.]+)\srequired\=([0-9.]+) ', line)
                 spamScore =  match.group(1)
                 requiredScore =  match.group(2)
                 break
-        print "spamScore " + spamScore + " requiredScore " + requiredScore
+        # print "spamScore " + spamScore + " requiredScore " + requiredScore
         assert(float(spamScore) > 0)
         assert(float(requiredScore) > 0)
         assert(float(requiredScore) > float(spamScore))
