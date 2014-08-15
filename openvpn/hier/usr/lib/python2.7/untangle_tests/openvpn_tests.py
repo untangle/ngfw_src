@@ -201,7 +201,7 @@ class OpenVpnTests(unittest2.TestCase):
         print "address " + listOfClients['list'][0]['address']
         print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
 
-        host_result = remote_control.runCommand("host test.untangle.com", True)
+        host_result = remote_control.runCommand("host test.untangle.com", stdout=True)
         # print "host_result <%s>" % host_result
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', host_result)
         ip_address_testuntangle = (match.group()).replace('address ','')
