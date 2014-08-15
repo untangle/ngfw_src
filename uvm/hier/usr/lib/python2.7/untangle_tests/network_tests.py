@@ -227,19 +227,6 @@ def nukeDynDNS():
     netsettings['dynamicDnsServiceEnabled'] = False
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def getDownloadSpeed():
-    # Download file and record the average speed in which the file was download
-    result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
-    match = re.search(r'([0-9.]+) [KM]B\/s', result)
-    bandwidth_speed =  match.group(1)
-    # cast string to float for comparsion.
-    bandwidth_speed = float(bandwidth_speed)
-    # adjust value if MB or KB
-    if "MB/s" in result:
-        bandwidth_speed *= 1000
-    # print "bandwidth_speed <%s>" % bandwidth_speed
-    return bandwidth_speed
-    
 def verifySnmpWalk():
     snmpwalkResult = remote_control.runCommand("test -x /usr/bin/snmpwalk")  
     if snmpwalkResult:
@@ -381,9 +368,9 @@ class NetworkTests(unittest2.TestCase):
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
         # We will use iperf server and iperf for this test.
-        iperfAvailable = global_functions.verifyIperf()
-        if (not iperfAvailable):
-            raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
+        pingable = remote_control.runCommand("ping -c1 " + global_functions.iperfServer)
+        if pingable != 0:
+            raise unittest2.SkipTest("Iperf server not reachable")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
@@ -392,71 +379,20 @@ class NetworkTests(unittest2.TestCase):
         # port forward UDP 5000 to client box
         appendForward(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"))
 
+        # start netcat on client
+        remote_control.runCommand("rm -f /tmp/netcat.udp.recv.txt")
+        remote_control.runCommand("nohup netcat -l -u -p 5000 >/tmp/netcat.udp.recv.txt",stdout=False,nowait=True)
+
+        remote_control.runCommand("echo test| netcat -q0 -w1 -u " + wan_IP + " 5000",host=global_functions.iperfServer)
+
+        result = remote_control.runCommand("grep test /tmp/netcat.udp.recv.txt")
+
         # send UDP packets through the port forward
-        UDP_speed = global_functions.sendUDPPackets(wan_IP)
+        # UDP_speed = global_functions.getUDPSpeed( receiverIP=remote_control.clientIP, senderIP=global_functions.iperfServer, targetIP=wan_IP )
+        # assert (UDP_speed >  0.0)
+
         nukePortForwardRules()
-        assert (UDP_speed >  0.0)
-
-    # Test that QoS limits speed
-    def test_050_enableQoS(self):
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        if netsettings['qosSettings']['qosEnabled']:
-            netsettings['qosSettings']['qosEnabled'] = False
-            uvmContext.networkManager().setNetworkSettings(netsettings)            
-
-        wget_speed_pre_QoSLimit = getDownloadSpeed()
-        # set limit to 80% of measured speed
-        wanLimit = int((wget_speed_pre_QoSLimit*8) * .8)
-        
-        netsettings['qosSettings']['qosEnabled'] = True
-        i = 0
-        for interface in netsettings['interfaces']['list']:
-            if interface['isWan']:
-                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=wanLimit
-                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=wanLimit
-            i += 1
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        wget_speed_post_QoSLimit= getDownloadSpeed()
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        print "Result of wget_speed_pre_QoSLimit <%s> wget_speed_post_QoSLimit <%s>" % (wget_speed_pre_QoSLimit,wget_speed_post_QoSLimit)
-        assert ((wget_speed_pre_QoSLimit) and (wget_speed_post_QoSLimit))
-        # since the limit is 80% of first measure, check that second measure is < 90% of first measure
-        assert (wget_speed_pre_QoSLimit * .9 >  wget_speed_post_QoSLimit)
-
-    # Test UDP QoS limits speed
-    def test_053_testUDPwithQoS(self):
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-        # We will use iperf server and iperf for this test.
-        iperfAvailable = global_functions.verifyIperf()
-        if (not iperfAvailable):
-            raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")            
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        if not netsettings['qosSettings']['qosEnabled']:
-            netsettings['qosSettings']['qosEnabled'] = True
-            uvmContext.networkManager().setNetworkSettings(netsettings)
-        appendBypass(createBypassMatcherRule("DST_PORT","5000"))
-        appendQoSRule(createQoSMatcherRule("DST_PORT","5000", 1))
-        pre_UDP_speed = global_functions.getUDPSpeed()
-
-        # Change UDP priority to limited
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        i = 0
-        for qosCustomRules in netsettings['qosSettings']['qosRules']['list']:
-            if qosCustomRules['description'] == "test QoS DST_PORT 5000":
-                for qosRule in qosCustomRules['matchers']['list']:
-                    if qosRule["value"] == "5000":
-                        netsettings['qosSettings']['qosRules']['list'][i]['priority'] = 7
-            i += 1
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        post_UDP_speed = global_functions.getUDPSpeed()
-        # print "pre_UDP_speed " + str(pre_UDP_speed) + " post_UDP_speed " + str(post_UDP_speed)
-        
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert (pre_UDP_speed >  post_UDP_speed)
+        assert ( result == 0 )
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):

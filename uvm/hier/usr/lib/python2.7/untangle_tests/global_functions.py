@@ -27,14 +27,19 @@ def verifyIperf():
             iperfPresent = True
     return iperfPresent
 
-def getUDPSpeed():
+def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
+    if targetIP == None:
+        targetIP = receiverIP
+    if targetRate == None:
+        targetRate = "50M"
+
     # Use iperf to get UDP speed.  Returns number the udp speed
-    # start iperf recevier on server
-    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=iperfServer)
+    # start iperf receivier on server
+    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
     # start the UDP generator on the client behind the Untangle.
-    report=remote_control.runCommand("iperf -c " + iperfServer + " -u -p 5000 -b 10M -t 20 -fK", stdout=True)
+    report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
     # kill iperf receiver    
-    remote_control.runCommand("pkill iperf", host=iperfServer)
+    remote_control.runCommand("pkill iperf", host=receiverIP)
 
     lines = report.split("\n")
     udp_speed = None
@@ -45,23 +50,18 @@ def getUDPSpeed():
             break
     return float(udp_speed)
 
-def sendUDPPackets(targetIP):
-    # Use iperf to send UDP packets.  Returns the udp speed
-    # start iperf receiver on client.
-    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &")
-    # start the UDP generator on the iperf server.
-    report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b 10M -t 20 -fK", host=iperfServer, stdout=True)
-    # kill iperf receiver    
-    remote_control.runCommand("pkill iperf")
-
-    lines = report.split("\n")
-    udp_speed = None
-    for line in lines:
-        if '%' in line: # results line contains a '%'
-            match = re.search(r'([0-9.]+) KBytes/sec', line)
-            udp_speed =  match.group(1)
-            break
-    return float(udp_speed)
+def getDownloadSpeed():
+    # Download file and record the average speed in which the file was download
+    result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
+    match = re.search(r'([0-9.]+) [KM]B\/s', result)
+    bandwidth_speed =  match.group(1)
+    # cast string to float for comparsion.
+    bandwidth_speed = float(bandwidth_speed)
+    # adjust value if MB or KB
+    if "MB/s" in result:
+        bandwidth_speed *= 1000
+    # print "bandwidth_speed <%s>" % bandwidth_speed
+    return bandwidth_speed
 
 def check_events( events, num_events, *args, **kwargs):
     if events == None:
