@@ -123,6 +123,7 @@ class UvmTests(unittest2.TestCase):
         assert(match)
 
     def test_030_testSMTPSettings(self):
+        raise unittest2.SkipTest("Disable broken test")
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpamCase())):
             print "smtp case present"
@@ -137,6 +138,7 @@ class UvmTests(unittest2.TestCase):
         # remove previous smtp log file
         remote_control.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
         # Start mail sink
+        # FIXME hangs indefinitely
         remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --background")
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = remote_control.clientIP
