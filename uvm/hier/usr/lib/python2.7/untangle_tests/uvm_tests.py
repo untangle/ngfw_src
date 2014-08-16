@@ -136,10 +136,9 @@ class UvmTests(unittest2.TestCase):
         # print nodeDataSP
         getLatestMailPkg();
         # remove previous smtp log file
-        remote_control.runCommand("rm -f /tmp/test_030_testSMTPSettings.log")
+        remote_control.runCommand("rm -f /tmp/test_030_testSMTPSettings.log /tmp/test@example.com.1")
         # Start mail sink
-        # FIXME hangs indefinitely
-        remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --background")
+        remote_control.runCommand("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --background --path=/tmp/", stdout=False, nowait=True)
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = remote_control.clientIP
         newMailsettings['smtpPort'] = "6800"
@@ -157,7 +156,7 @@ class UvmTests(unittest2.TestCase):
         remote_control.runCommand("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
         nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
-        result = remote_control.runCommand("grep -q 'Untangle Server Test Message' /tmp/test_030_testSMTPSettings.log")
+        result = remote_control.runCommand("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
         assert(result==0)
 
 test_registry.registerNode("uvm", UvmTests)
