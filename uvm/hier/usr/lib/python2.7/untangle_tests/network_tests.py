@@ -401,6 +401,8 @@ class NetworkTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("test.untangle.com is unreachable, skipping custom NAT rule test")
+        if (wan_IP.split(".")[0] != "10"):
+            raise unittest2.SkipTest("Not on 10.x network, skipping")
         myWANs = []
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
