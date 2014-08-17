@@ -401,21 +401,27 @@ class NetworkTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("test.untangle.com is unreachable, skipping custom NAT rule test")
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        # check if more than one WAN
         myWANs = []
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface['isWan']:
-                wanIP = interface['v4StaticAddress']
+                myWANs.append(interface['v4StaticAddress'])
+        if (len(myWANs) < 2):
+            raise unittest2.SkipTest("Need at least two WANS for test_050_customNATRule")
+        # Check if the IP adddress have direct access to test.untangle.com
+        result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        if (result in myWANs):
+            for wanIP in myWANs:
                 # Create Custom NAT rule for port 80
                 appendFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
-        
                 # Determine current outgoing IP
                 result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
                 nukeFirstLevelRule('natRules')
                 # print "result " + result + " wanIP " + wanIP
                 assert (result == wanIP)
+        else:
+            raise unittest2.SkipTest("No direct access to test.untangle.com, skipping")
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
