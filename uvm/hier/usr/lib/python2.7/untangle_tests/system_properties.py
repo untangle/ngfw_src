@@ -60,7 +60,7 @@ def findInterfaceIPbyIP(remoteIP):
             elif (intf['v4ConfigType'] in ['AUTO','PPPOE']):
                 # is this a dynamic IP
                 nicDevice = str(intf['symbolicDev'])
-                testIP = get_ip_address(nicDevice)
+                testIP = __get_ip_address(nicDevice)
                 testMask =  __get_netmask(nicDevice)
                 testRange = testIP + '/' + __get_net_size(testMask)
                 testNet = ipaddr.IPNetwork(testRange)
