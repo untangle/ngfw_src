@@ -284,7 +284,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
                 menuDisabled: true,
                 header: this.i18n._("Delete"),
-                width: 80,
+                width: 50,
                 init:function(grid) {
                     this.grid=grid;
                 },
@@ -484,7 +484,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     header: this.i18n._( "Connected" ),
                     dataIndex: 'connected',
                     sortable: false,
-                    width: 120,
+                    width: 110,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         var divClass = "ua-cell-disabled";
                         var connectedStr = this.i18n._("unknown");
@@ -502,7 +502,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Device"),
                     dataIndex: 'physicalDev',
-                    width:60,
+                    width:50,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         if (record.get("isVlanInterface")) {
                             return record.get("systemDev");
@@ -530,10 +530,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                     dataIndex: 'imqDev',
                     width:80
                 }, {
-                    hidden: true,
                     header: this.i18n._("Speed"),
                     dataIndex: 'mbit',
-                    width: 90
+                    width:50
                 }, {
                     hidden: true,
                     header: this.i18n._( "Duplex" ),
@@ -543,7 +542,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("Config"),
                     dataIndex: 'configType',
-                    width: 100
+                    width: 90
                 }, {
                     header: this.i18n._("Current Address"),
                     dataIndex: 'v4Address',
@@ -556,7 +555,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }, {
                     header: this.i18n._("is WAN"),
                     dataIndex: 'isWan',
-                    width:60,
+                    width:50,
                     renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
                         // only ADDRESSED interfaces can be WANs
                         return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
