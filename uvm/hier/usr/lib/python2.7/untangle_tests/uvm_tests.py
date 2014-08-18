@@ -123,7 +123,6 @@ class UvmTests(unittest2.TestCase):
         assert(match)
 
     def test_030_testSMTPSettings(self):
-        raise unittest2.SkipTest("Disable broken test")
         # Test mail setting in config -> email -> outgoing server
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpamCase())):
             print "smtp case present"

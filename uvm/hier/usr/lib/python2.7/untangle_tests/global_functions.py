@@ -12,20 +12,22 @@ iperfServer = "10.111.56.32"
 
 def verifyIperf():
     # https://iperf.fr/
-    iperfPresent = False
     # Check to see if iperf endpoint is reachable
-    externalClientResult = subprocess.call(["ping","-c","1",iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    iperfServerReachable = subprocess.call(["ping -c 1 " + iperfServer + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
+    if iperfServerReachable != 0:
+        print "iperf Server is unreachable."
+        return False
     # Check to see if some other test is using iperf for UDP testing
-    isIperfNotRunning = remote_control.runCommand("pidof iperf", host=iperfServer)
-    # print "externalClientResult <%s>" % externalClientResult
-    # print "isIperfNotRunning <%s>" % isIperfNotRunning
-    if (externalClientResult == 0 and isIperfNotRunning):
-        # Iperf server, the iperf endpoint is reachable, check other requirements
-        iperfResult = remote_control.runCommand("test -x /usr/bin/iperf")
-        # print "iperfResult <%s>" % iperfResult
-        if (iperfResult == 0):
-            iperfPresent = True
-    return iperfPresent
+    iperfRunning = remote_control.runCommand("pidof iperf", host=iperfServer)
+    if iperfRunning == 0:
+        print "iperf is already running on server."
+        return False
+    # Check that the client has iperf
+    clientHasIperf = remote_control.runCommand("test -x /usr/bin/iperf")
+    if clientHasIperf != 0:
+        print "iperf not installed on client."
+        return False
+    return True
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
