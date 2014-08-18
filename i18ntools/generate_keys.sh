@@ -4,7 +4,7 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-casing
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker
     untangle-node-firewall
     untangle-node-ips untangle-node-openvpn untangle-node-phish
-    untangle-node-protofilter untangle-node-reporting untangle-node-shield
+    untangle-node-protofilter untangle-node-reporting
     untangle-node-spamassassin
     untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup
     untangle-node-branding untangle-node-spamblocker

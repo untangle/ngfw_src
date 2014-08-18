@@ -5,6 +5,7 @@ then
     mkdir pot
 fi    
 
+rm -rf ./pot/*
 
 cp ../uvm/po/untangle-libuvm.pot ./pot/
 cp ../../pkgs/untangle-apache2-config/po/untangle-apache2-config.pot ./pot/
@@ -21,7 +22,7 @@ done
 
 rm -f pot.zip
 zip -r pot.zip ./pot/
-rm -rf ./pot/
+# rm -rf ./pot/
 
 # All done, exit ok
 exit 0
