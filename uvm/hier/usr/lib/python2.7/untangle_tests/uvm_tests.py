@@ -149,7 +149,10 @@ class UvmTests(unittest2.TestCase):
         nodeDataSP = nodeSP.getSmtpNodeSettings()
         nodeSP.setSmtpNodeSettingsWithoutSafelists(nodeDataSP)
         uvmContext.mailSender().sendTestMessage("test@example.com")
-        time.sleep(5)
+        time.sleep(2)
+        # force exim to flush queue
+        subprocess.call(["exim -qff >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
+        time.sleep(10)
 
         # Kill mail sink
         remote_control.runCommand("pkill -INT python")
