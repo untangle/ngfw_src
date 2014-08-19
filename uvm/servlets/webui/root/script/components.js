@@ -5677,7 +5677,7 @@ Ext.define('Ung.EditorGrid', {
                     helpSource: this.rowEditorHelpSource
                 });
             } else if (this.rowEditorConfig != null) {
-                    this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
+                this.rowEditor = Ext.create('Ung.RowEditorWindow', Ext.applyIf( this.rowEditorConfig, {grid: this}));
             }
         }
         if(this.rowEditor!=null) {
