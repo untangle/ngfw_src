@@ -35,6 +35,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 
@@ -163,7 +164,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          * Note: this includes the free apps, however they don't actually check the license so it won't effect behavior
          * The UI will request the license of all app (including free)
          */
-        license = new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "No License Found");
+        license = new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, I18nUtil.marktr("No License Found"));
         this.licenseMap.put(identifier,license); /* add it to the map for faster response next time */
         return license;
     }
