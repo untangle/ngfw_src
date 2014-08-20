@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
+import com.untangle.uvm.util.I18nUtil;
 
 public class DefaultLicenseManagerImpl implements LicenseManager
 {
@@ -54,7 +55,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
          * The UI will request the license of all app (including free)
          */
         logger.info("License Manager is not loaded. Returing invalid license for " + identifier + ".");
-        return new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "Invalid (No License Manager)");
+        return new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, I18nUtil.marktr("No License Found"));
     }
 
     public List<License> getLicenses()
