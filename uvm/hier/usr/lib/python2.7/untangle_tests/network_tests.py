@@ -331,7 +331,7 @@ class NetworkTests(unittest2.TestCase):
     def test_026_portForwardHairPin(self):
         nukeFirstLevelRule('portForwardRules')
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
-        remote_control.runCommand("nohup netcat -l 11234 >/dev/null 2>&1",stdout=False,nowait=True)
+        remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
         result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
         assert(result == 0)
@@ -357,7 +357,7 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
 
         # start netcat on client
-        remote_control.runCommand("nohup netcat -l 11245 >/dev/null 2>&1",stdout=False,nowait=True)
+        remote_control.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
 
         # port forward 11245 to client box
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"),'portForwardRules')
@@ -382,7 +382,7 @@ class NetworkTests(unittest2.TestCase):
 
         # start netcat on client
         remote_control.runCommand("rm -f /tmp/netcat.udp.recv.txt")
-        remote_control.runCommand("nohup netcat -l -u 5000 >/tmp/netcat.udp.recv.txt",stdout=False,nowait=True)
+        remote_control.runCommand("nohup netcat -l -u -p 5000 >/tmp/netcat.udp.recv.txt",stdout=False,nowait=True)
 
         remote_control.runCommand("echo test| netcat -q0 -w1 -u " + wan_IP + " 5000",host=global_functions.iperfServer)
 
