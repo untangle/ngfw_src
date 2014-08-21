@@ -145,12 +145,24 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
 
     private void unparse( NodeTCPSession session, Object obj, boolean s2c )
     {
-        // Casing casing = (Casing)session.attachment();
-
-        Token tok = (Token) obj;
+        Token token = (Token) obj;
 
         try {
-            unparseToken(session, tok);
+            if (token instanceof ReleaseToken) {
+                ReleaseToken release = (ReleaseToken)token;
+
+                if ( s2c )
+                    session.sendDataToClient( release.getData() );
+                else 
+                    session.sendDataToServer( release.getData() );
+                
+                session.release();
+                releaseFlush( session );
+                return;
+            } else {
+                unparse( session, token );
+                return;
+            }
         } catch (Exception exn) {
             logger.error("internal error, closing connection", exn);
 
@@ -161,21 +173,6 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    private void unparseToken( NodeTCPSession session, Token token ) throws Exception
-    {
-        if (token instanceof ReleaseToken) {
-            ReleaseToken release = (ReleaseToken)token;
-
-            session.release();
-
-            releaseFlush( session );
-            return;
-        } else {
-            unparse( session, token );
-            return;
-        }
-    }
-    
     private void unparse( NodeTCPSession session, Token token )
     {
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );

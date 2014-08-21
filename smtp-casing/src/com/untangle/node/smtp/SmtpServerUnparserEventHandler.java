@@ -124,10 +124,28 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
 
     private void unparse( NodeTCPSession session, Object obj, boolean s2c )
     {
-        Token tok = (Token) obj;
+        Token token = (Token) obj;
 
         try {
-            unparseToken(session, tok);
+            if (token instanceof ReleaseToken) {
+                ReleaseToken release = (ReleaseToken)token;
+
+                if ( s2c )
+                    session.sendDataToClient( release.getData() );
+                else 
+                    session.sendDataToServer( release.getData() );
+
+                session.release();
+
+                return;
+            } else if (token instanceof PassThruToken) {
+                logger.debug("Received PassThruToken");
+                declarePassthru( session );// Inform the parser of this state
+                return;
+            } else {
+                doUnparse( session, token );
+                return;
+            }
         } catch (Exception exn) {
             logger.error("internal error, closing connection", exn);
 
@@ -138,24 +156,6 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    private void unparseToken( NodeTCPSession session, Token token ) throws Exception
-    {
-        if (token instanceof ReleaseToken) {
-            ReleaseToken release = (ReleaseToken)token;
-
-            session.release();
-
-            return;
-        } else if (token instanceof PassThruToken) {
-            logger.debug("Received PassThruToken");
-            declarePassthru( session );// Inform the parser of this state
-            return;
-        } else {
-            doUnparse( session, token );
-            return;
-        }
-    }
-    
     protected void doUnparse( NodeTCPSession session, Token token )
     {
         SmtpServerUnparserEventHandlerState state = (SmtpServerUnparserEventHandlerState) session.attachment( SERVER_UNPARSER_STATE_KEY );

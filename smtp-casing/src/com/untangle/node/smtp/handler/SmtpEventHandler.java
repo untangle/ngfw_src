@@ -180,7 +180,9 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
+            session.sendObjectToServer( token );
             session.release();
+            return;
         }
 
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -217,7 +219,9 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
+            session.sendObjectToClient( token );
             session.release();
+            return;
         }
 
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );

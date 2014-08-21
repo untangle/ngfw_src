@@ -109,10 +109,24 @@ class FtpUnparserEventHandler extends AbstractEventHandler
 
     private void unparse( NodeTCPSession session, Object obj, boolean s2c )
     {
-        Token tok = (Token) obj;
+        Token token = (Token) obj;
 
         try {
-            unparseToken(session, tok);
+            if (token instanceof ReleaseToken) {
+                ReleaseToken release = (ReleaseToken)token;
+
+                if ( s2c )
+                    session.sendDataToClient( release.getData() );
+                else 
+                    session.sendDataToServer( release.getData() );
+
+                session.release();
+
+                return;
+            } else {
+                unparse( session, token );
+                return;
+            }
         } catch (Exception exn) {
             logger.error("internal error, closing connection", exn);
 
@@ -123,19 +137,6 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    private void unparseToken( NodeTCPSession session, Token token ) throws Exception
-    {
-        if (token instanceof ReleaseToken) {
-            ReleaseToken release = (ReleaseToken)token;
-
-            session.release();
-            return;
-        } else {
-            unparse( session, token );
-            return;
-        }
-    }
-    
     public void unparse( NodeTCPSession session, Token token )
     {
         InetSocketAddress socketAddress = null;

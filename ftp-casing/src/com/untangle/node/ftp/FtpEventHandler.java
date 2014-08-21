@@ -61,7 +61,9 @@ public abstract class FtpEventHandler extends AbstractEventHandler
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
+            session.sendObjectToClient( token );
             session.release();
+            return;
         }
 
         Fitting serverFitting = session.pipelineConnector().getOutputFitting();
@@ -90,7 +92,9 @@ public abstract class FtpEventHandler extends AbstractEventHandler
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
+            session.sendObjectToServer( token );
             session.release();
+            return;
         }
 
         Fitting clientFitting = session.pipelineConnector().getInputFitting();

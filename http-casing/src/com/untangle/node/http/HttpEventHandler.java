@@ -276,7 +276,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         if (token instanceof ReleaseToken) {
             releaseFlush( session );
             handleTCPFinalized( session );
+            session.sendObjectToClient( token );
             session.release();
+            return;
         }
 
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -297,7 +299,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         if (token instanceof ReleaseToken) {
             releaseFlush( session );
             handleTCPFinalized( session );
+            session.sendObjectToServer( token );
             session.release();
+            return;
         }
 
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
