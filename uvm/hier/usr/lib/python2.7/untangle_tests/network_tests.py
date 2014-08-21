@@ -398,7 +398,6 @@ class NetworkTests(unittest2.TestCase):
     # test a NAT rules
     def test_050_natRule(self):
         # check if more than one WAN
-        raise unittest2.SkipTest("Review changes in test")
         myWANs = []
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
@@ -473,18 +472,15 @@ class NetworkTests(unittest2.TestCase):
         nukeFirstLevelRule('staticRoutes')
         remote_control.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        result = remote_control.runCommand("host www.playboy.com", stdout=True)
-        # print "result <%s>" % result
-        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_playboy = (match.group()).replace('address ','')
-        appendFirstLevelRule(createRouteRule(ip_address_playboy,32,"127.0.0.1"),'staticRoutes')
-        # verify other sites are still available.
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
-        assert (result == 0)
-        # Verify playboy is not accessible 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.playboy.com")
-        assert (result != 0)
+        appendFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
+        wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+        testResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
+        # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        # verify other sites are still available.
+        assert (wwwResult == 0)
+        # Verify test.untangle.com is not accessible 
+        assert (testResult != 0)
 
     # Test static DNS entry
     def test_080_DNS(self):        
