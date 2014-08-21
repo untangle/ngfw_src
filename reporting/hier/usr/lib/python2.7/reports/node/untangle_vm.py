@@ -1,9 +1,9 @@
 import gettext
 import logging
 import mx
-import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
@@ -34,7 +34,7 @@ EVT_TYPE_RENEW    = 1
 EVT_TYPE_EXPIRE   = 2
 EVT_TYPE_RELEASE  = 3
 
-_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
 def N_(message): return message
 
 class UvmNode(Node):

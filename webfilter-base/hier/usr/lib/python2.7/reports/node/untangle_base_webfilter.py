@@ -2,8 +2,8 @@ import gettext
 import logging
 import mx
 import reports.colors as colors
-import reports.i18n_helper
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
@@ -33,7 +33,7 @@ from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 
-_ = reports.i18n_helper.get_translation('untangle-base-webfilter').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-base-webfilter').lgettext
 
 def N_(message): return message
 

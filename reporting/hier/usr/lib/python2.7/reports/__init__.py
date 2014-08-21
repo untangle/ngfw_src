@@ -31,7 +31,7 @@ from reportlab.platypus.tables import TableStyle
 
 import reports.colors
 import reports.sql_helper as sql_helper
-import reports.i18n_helper
+import uvm.i18n_helper
 
 from reports.engine import get_node, get_node_base
 from reports.pdf import STYLESHEET
@@ -47,7 +47,7 @@ URL_LINK = 'URLLink'
 
 OTHERS_STR = 'others'
 
-_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
 
 def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)

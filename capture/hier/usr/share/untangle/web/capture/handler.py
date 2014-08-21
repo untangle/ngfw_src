@@ -11,6 +11,9 @@ import pprint
 import imp
 import sys
 import os
+import uvm.i18n_helper
+
+_ = uvm.i18n_helper.get_translation('untangle-node-capture').lgettext
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called when a client is redirected
@@ -105,11 +108,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 
     # pass the request object and post arguments to the page generator
     if (authResult == 1):
-        page = generate_page(req,captureSettings,args,"Invalid username or password. Please try again.")
+        page = generate_page(req,captureSettings,args, _("Invalid username or password. Please try again.") )
     elif (authResult == 2):
-        page = generate_page(req,captureSettings,args,"You are already logged in from another location.")
+        page = generate_page(req,captureSettings,args, _("You are already logged in from another location.") )
     else:
-        page = generate_page(req,captureSettings,args,"The server returned an unexpected error.")
+        page = generate_page(req,captureSettings,args, _("The server returned an unexpected error.") )
 
     # return the login page we just created
     return(page)
@@ -165,9 +168,9 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
     # pass the request object and post arguments to the page generator
     if (authResult == 1):
-        page = generate_page(req,captureSettings,args,"You must enable the checkbox above to continue.")
+        page = generate_page(req,captureSettings,args, _("You must enable the checkbox above to continue.") )
     else:
-        page = generate_page(req,captureSettings,args,"The server returned an unexpected error.")
+        page = generate_page(req,captureSettings,args, _("The server returned an unexpected error.") )
 
     # return the login page we just created
     return(page)
@@ -192,7 +195,7 @@ def custom_upload(req,upload_file,appid):
 
     # first make sure we got a valid form and filename
     if ((not upload_file) or (not upload_file.filename)):
-        return extjs_reply(False,'Invalid or missing filename in upload request')
+        return extjs_reply(False, _('Invalid or missing filename in upload request') )
 
     # save the zip file that was uploaded
     file = open(tempfile,"w")
@@ -201,7 +204,7 @@ def custom_upload(req,upload_file,appid):
 
     # make sure it's really a zip file
     if (not zipfile.is_zipfile(tempfile)):
-        return extjs_reply(False,"%s is not a valid ZIP file" % upload_file.filename)
+        return extjs_reply(False, _("%s is not a valid ZIP file") % upload_file.filename)
 
     # open the file and look for the custom.html page or custom.py script
     zfile = zipfile.ZipFile("/tmp/custom.upload","r")
@@ -210,7 +213,7 @@ def custom_upload(req,upload_file,appid):
     if ('custom.html' in zlist): checker += 1
     if ('custom.py' in zlist): checker += 1
     if (checker == 0):
-        return extjs_reply(False,'The uploaded ZIP file does not contain custom.html or custom.py')
+        return extjs_reply(False, _('The uploaded ZIP file does not contain custom.html or custom.py') )
 
     # count the number of files and directories for the return status message
     fcount = dcount = 0
@@ -223,10 +226,10 @@ def custom_upload(req,upload_file,appid):
     try:
         zfile.extractall(custpath)
     except:
-        return extjs_reply(False,'The uploaded ZIP file could not be extracted')
+        return extjs_reply(False, _('The uploaded ZIP file could not be extracted') )
 
     # return the status
-    detail = "Extracted %d files and %d directories from %s" % (fcount,dcount,upload_file.filename)
+    detail = _("Extracted %d files and %d directories from %s" ) % (fcount,dcount,upload_file.filename)
 
     return extjs_reply(True,detail,upload_file.filename)
 
@@ -254,9 +257,9 @@ def custom_remove(req,custom_file,appid):
                 os.rmdir(cust + '/' + item)
                 dcount += 1
     except:
-        return extjs_reply(False,"Unknown error removing custom files")
+        return extjs_reply(False, _("Unknown error removing custom files") )
 
-    detail = "Removed %d files and %d directories" % (fcount,dcount)
+    detail = _("Removed %d files and %d directories") % (fcount,dcount)
     return extjs_reply(True,detail)
 
 #-----------------------------------------------------------------------------

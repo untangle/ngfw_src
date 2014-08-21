@@ -5,6 +5,9 @@ from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from uvm import Uvm
 import pprint
+import uvm.i18n_helper
+
+_ = uvm.i18n_helper.get_translation('untangle-node-capture').lgettext
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called for a client logout request
@@ -36,10 +39,10 @@ def index(req):
             exitCount = exitCount + 1
 
     if (exitCount == 0):
-        page = replace_marker(page,'$.ExitMessage.$', 'You were already logged out')
+        page = replace_marker(page,'$.ExitMessage.$', _('You were already logged out') )
         page = replace_marker(page,'$.ExitStyle.$', 'styleProblem')
     else:
-        page = replace_marker(page,'$.ExitMessage.$', 'You have successfully logged out')
+        page = replace_marker(page,'$.ExitMessage.$', _('You have successfully logged out') )
         page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
 
     page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])

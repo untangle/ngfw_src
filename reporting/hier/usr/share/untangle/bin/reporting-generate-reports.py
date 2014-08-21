@@ -124,10 +124,10 @@ pidfile.write("%s\n" % os.getpid())
 pidfile.close()
 logger.info("Wrote pidfile (pid: %s)" % os.getpid())
 
-import reports.i18n_helper
 import reports.engine
 import reports.mailer
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 
 if simulate:
      sql_helper.SCHEMA = 'reports_simulation'

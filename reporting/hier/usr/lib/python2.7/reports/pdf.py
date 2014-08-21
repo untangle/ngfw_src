@@ -45,7 +45,7 @@ from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.rl_config import defaultPageSize
 
 import reports
-import reports.i18n_helper
+import uvm.i18n_helper
 
 from reports.engine import get_node_base
 from reports.sql_helper import print_timing
@@ -55,7 +55,7 @@ logger = getLogger(__name__)
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
 
-_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
 
 def __getStyleSheet():
     """Returns a stylesheet object"""

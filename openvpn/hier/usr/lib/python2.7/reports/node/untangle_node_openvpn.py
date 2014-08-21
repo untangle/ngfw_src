@@ -1,7 +1,7 @@
 import gettext
 import logging
 import mx
-import reports.i18n_helper
+import uvm.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -28,7 +28,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.sql_helper import print_timing
 
-_ = reports.i18n_helper.get_translation('untangle-node-openvpn').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-node-openvpn').lgettext
 def N_(message): return message
 
 class OpenVpn(Node):

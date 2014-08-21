@@ -2,9 +2,9 @@ import gettext
 import logging
 import mx
 import reports.colors as colors
-import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
@@ -30,7 +30,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.sql_helper import print_timing
 
-_ = reports.i18n_helper.get_translation('untangle-base-spam').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-base-spam').lgettext
 
 class SpamBaseNode(Node):
     def __init__(self, node_name, title, short_name, vendor_name, spam_label,

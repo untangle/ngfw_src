@@ -1,9 +1,9 @@
 import gettext
 import logging
 import mx
-import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
@@ -27,7 +27,7 @@ from reports.engine import FactTable
 from reports.engine import Node
 from reports.sql_helper import print_timing
 
-_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
 def N_(message): return message
 
 class ServerNode(Node):

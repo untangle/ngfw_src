@@ -17,8 +17,8 @@ NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
-import reports.i18n_helper
 import reports.engine
+import uvm.i18n_helper
 
 def usage():
      print """\

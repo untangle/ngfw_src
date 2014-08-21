@@ -1,6 +1,6 @@
 import gettext
 
-# $HeadURL$
+# $HeadURL: https://untangle.svn.beanstalkapp.com/ngfw/work/src/uvm/hier/usr/lib/python2.7/uvm/i18n_helper.py $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,8 +15,6 @@ import gettext
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Aaron Read <amread@untangle.com>
 
 import os
 

@@ -40,10 +40,10 @@ import os
 import smtplib
 import reports
 import reports.engine
-import reports.i18n_helper
 import reports.sql_helper as sql_helper
 import tempfile
 import shutil
+import uvm.i18n_helper
 
 from reports.log import *
 logger = getLogger(__name__)
@@ -60,7 +60,7 @@ from uvm.settings_reader import get_settings_item
 from uvm.settings_reader import get_node_settings_item
 from uvm.settings_reader import get_uvm_settings_item
 
-_ = reports.i18n_helper.get_translation('untangle-libuvm').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-libuvm').lgettext
 
 def mail_reports(end_date, report_days, pdf_file, mail_reports, attach_csv, attachment_size_limit):
     if attach_csv:

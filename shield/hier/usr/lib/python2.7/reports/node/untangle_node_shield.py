@@ -2,9 +2,9 @@ import gettext
 import logging
 import mx
 import reports.colors as colors
-import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
+import uvm.i18n_helper
 import sys
 
 from psycopg2.extensions import DateFromMx
@@ -30,7 +30,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
-_ = reports.i18n_helper.get_translation('untangle-node-shield').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-node-shield').lgettext
 
 class Shield(Node):
     def __init__(self):

@@ -2,10 +2,10 @@ import gettext
 import logging
 import mx
 import reports.colors as colors
-import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 import sys
+import uvm.i18n_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
@@ -30,7 +30,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from reports.sql_helper import print_timing
 
-_ = reports.i18n_helper.get_translation('untangle-node-firewall').lgettext
+_ = uvm.i18n_helper.get_translation('untangle-node-firewall').lgettext
 
 class Firewall(Node):
     def __init__(self):
