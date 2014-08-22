@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.security.Security;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -192,6 +193,10 @@ public class Main
         System.setProperty("jdbc.drivers","org.postgresql.Driver");
         // Set log4j config file location
         System.setProperty("log4j.configuration","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
+
+        // Java 7 disables the MD2 certificate algorithm by default but it is still used
+        // in many server certs so we clear the disabled algorithm property to allow everythin
+        Security.setProperty("jdk.certpath.disabledAlgorithms", "");
 
         String uvmHome = System.getProperty("prefix") + "/usr/share/untangle";
         System.setProperty("uvm.home", uvmHome);
