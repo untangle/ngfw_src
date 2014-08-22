@@ -235,12 +235,12 @@ class SpamTests(unittest2.TestCase):
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
         tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
-        print "TLS 1 : " + str(tlsSMTPResult)
+        # print "TLS 1 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult != 0)
         nodeData['smtpConfig']['allowTls'] = True
         node.setSettings(nodeData)
         tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
-        print "TLS 2 : " + str(tlsSMTPResult)
+        # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
         
     @staticmethod
