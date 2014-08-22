@@ -197,6 +197,25 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         return this.settings.getLicenses().size() > 0;
     }
 
+    @Override
+    public int getSeatLimit()
+    {
+        if ( UvmContextFactory.context().isDevel() )
+            return -1;
+
+        int seats = -1;
+        for (License lic : this.settings.getLicenses()) {
+            if ( ! lic.getValid() || lic.getTrial() ) // only count valid non-trials
+                continue;
+            if ( lic.getSeats() <= 0 ) //ignore invalid seat ranges
+                continue;
+            if ( lic.getSeats() > seats && seats > 0 ) //if there is already a lower count limit, ignore this one
+                continue;
+            seats = lic.getSeats();
+        }
+        return seats;
+    }
+
     public void requestTrialLicense( String nodeName ) throws Exception
     {
         // if already have a valid license, just return
