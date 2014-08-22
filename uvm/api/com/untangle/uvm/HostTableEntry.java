@@ -23,7 +23,8 @@ public class HostTableEntry implements Serializable, JSONString
     private long        creationTime;
     private long        lastAccessTime;
     private long        lastSessionTime = 0; /* time of the last new session */
-
+    private boolean     licensed = true;
+    
     private String hostname;
     private String usernameAdConnector;
     private String usernameCapture;
@@ -59,8 +60,11 @@ public class HostTableEntry implements Serializable, JSONString
 
     public long getLastSessionTime() { return this.lastSessionTime; }
     public void setLastSessionTime( long newValue ) { this.lastSessionTime = newValue; updateAccessTime(); }
+
+    public boolean getLicensed() { return this.licensed; }
+    public void setLicensed( boolean newValue ) { this.licensed = newValue; updateAccessTime(); }
     
-    public String getHostname() { return this.hostname; }
+    public String getHostname() { return ( this.licensed ? this.hostname : "unlicensed" ); }
     public void setHostname( String newValue ) { this.hostname = newValue; updateAccessTime(); }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
@@ -104,6 +108,8 @@ public class HostTableEntry implements Serializable, JSONString
     
     public String getUsername()
     {
+        if (! licensed )
+            return "unlicensed";
         if (getUsernameCapture() != null)
             return getUsernameCapture();
         if (getUsernameAdConnector() != null)

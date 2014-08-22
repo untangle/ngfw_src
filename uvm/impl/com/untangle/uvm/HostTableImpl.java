@@ -330,7 +330,7 @@ public class HostTableImpl implements HostTable
         entry.setQuotaRemaining( newRemaning );
 
 
-        if (remaining > 0 && newRemaning <= 0) {
+        if ( remaining > 0 && newRemaning <= 0 ) {
             logger.info("Host " + address.getHostAddress() + " exceeded quota.");
             UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
             return true;
@@ -448,6 +448,13 @@ public class HostTableImpl implements HostTable
         HostTableEntry entry = new HostTableEntry();
         entry.setAddress( address );
 
+        int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
+        // if there is a seat limit, and the size of the table is currently greater than that seatLimit
+        // this host is out of compliance and not licensed
+        if ( seatLimit > 0 && hostTable.size() > seatLimit ) {
+            entry.setLicensed( false );
+        }
+        
         return entry;
     }
 
@@ -544,6 +551,30 @@ public class HostTableImpl implements HostTable
                         }
                     }
 
+                    /**
+                     * if certain hosts are "unlicensed" and show now be licensed, set them back
+                     */
+                    int numUnlicensed = 0;
+                    entries = new LinkedList<HostTableEntry>(hostTable.values());
+                    for (HostTableEntry entry : entries) {
+                        if (!entry.getLicensed())
+                            numUnlicensed++;
+                    }
+                    int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
+                    int excess = hostTable.size() - seatLimit;
+                    // if there number of unlicensed hosts is more than it should be - reduce it
+                    if ( numUnlicensed > excess ) {
+                        int reduction = numUnlicensed - excess;
+                        for (HostTableEntry entry : entries) {
+                            if (!entry.getLicensed()) {
+                                entry.setLicensed( true );
+                                reduction--;
+                                if ( reduction < 1 )
+                                    break;
+                            }
+                        }
+                    }
+                    
                     adjustMaxSizeIfNecessary();
                     
                 } catch (Exception e) {

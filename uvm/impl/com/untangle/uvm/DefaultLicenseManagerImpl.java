@@ -68,14 +68,16 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         return;
     }
     
-    /**
-     * Return true if the user has any premium products.
-     */
     public boolean hasPremiumLicense()
     {
         return false;
     }
 
+    public int getSeatLimit()
+    {
+        return -1;
+    }
+    
     private boolean isGPLApp(String identifier)
     {
         if ("untangle-node-adblocker".equals(identifier)) return true;

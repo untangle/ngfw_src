@@ -42,6 +42,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                         result.list.push({
                             "address": "184.27.239."+(ii%10),
                             "hostname": i%3?("p.twitter.com"+i):null,
+                            "licensed": true,
                             "lastAccessTime": 0,//d.getTime()+(i*86400000),
                             "lastSessionTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
@@ -125,6 +126,9 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "lastSessionTimeDate",
                     mapping: "lastSessionTime",
                     convert: dateConvertFn
+                }, {
+                    name: "licensed",
+                    type: 'boolean'
                 },{
                     name: "username",
                     type: 'string'
@@ -203,6 +207,14 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     },
                     filter: {
                         type: 'date'
+                    }
+                }, {
+                    hidden: true,
+                    header: this.i18n._("Licensed"),
+                    dataIndex: "licensed",
+                    width: 80,
+                    filter: {
+                        type: 'boolean'
                     }
                 }, {
                     header: this.i18n._("Hostname"),
