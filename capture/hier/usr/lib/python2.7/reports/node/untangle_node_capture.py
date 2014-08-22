@@ -3,6 +3,7 @@ import logging
 import mx
 import reports.colors as colors
 import reports.sql_helper as sql_helper
+import reports.engine
 import uvm.i18n_helper
 
 from psycopg2.extensions import DateFromMx
