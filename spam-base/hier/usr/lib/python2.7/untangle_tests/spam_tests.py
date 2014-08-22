@@ -3,10 +3,10 @@ import time
 import subprocess
 import sys
 import os
-import subprocess
 import socket
 import smtplib
 import re
+import system_properties
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -20,6 +20,7 @@ nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
 fakeSmtpServerHost = '10.111.56.32'
+tlsSmtpServerHost = '10.111.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def sendTestmessage():
     sender = 'test@example.com'
@@ -220,6 +221,28 @@ class SpamTests(unittest2.TestCase):
         # assert(float(requiredScore) > 0)
         # assert(float(requiredScore) > float(spamScore))
 
+    def test_080_checkAllowTLS(self):
+        raise unittest2.SkipTest("Review changes in test")
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (wan_IP.split(".")[0] != "10"):
+            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
+        # Get latest TLS test command file
+        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
+        assert(testCopyResult == 0)
+        nodeData['smtpConfig']['scanWanMail'] = True
+        node.setSettings(nodeData)
+        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        print "TLS 1 : " + str(tlsSMTPResult)
+        assert(tlsSMTPResult != 0)
+        nodeData['smtpConfig']['allowTls'] = True
+        node.setSettings(nodeData)
+        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        print "TLS 2 : " + str(tlsSMTPResult)
+        assert(tlsSMTPResult == 0)
+        
     @staticmethod
     def finalTearDown(self):
         global node
