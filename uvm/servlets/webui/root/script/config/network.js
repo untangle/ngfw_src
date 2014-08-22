@@ -4337,7 +4337,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                 }],
                 columnsDefaultSortable: false
             });
-            
+            this.v6ForwardFilterRulesCheckbox = {
+                xtype: "checkbox",
+                fieldLabel: this.i18n._("Block IPv6 forwarding"),
+                checked: this.settings.blockIpv6Forwarding,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.blockIpv6Forwarding = newValue;
+                        }, this)
+                    }
+                }
+            };
             this.panelFilter = Ext.create('Ext.panel.Panel',{
                 name: 'FilterRules',
                 helpSource: 'network_filter_rules',
@@ -4345,7 +4356,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 title: this.i18n._('Filter Rules'),
                 layout: { type: 'vbox', align: 'stretch' },
                 cls: 'ung-panel',
-                items: [this.gridForwardFilterRules, this.gridInputFilterRules]
+                items: [this.gridForwardFilterRules, this.v6ForwardFilterRulesCheckbox, this.gridInputFilterRules]
             });
             this.gridForwardFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
                 sizeToParent: true,
