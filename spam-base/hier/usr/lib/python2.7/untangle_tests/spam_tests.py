@@ -222,7 +222,6 @@ class SpamTests(unittest2.TestCase):
         # assert(float(requiredScore) > float(spamScore))
 
     def test_080_checkAllowTLS(self):
-        raise unittest2.SkipTest("Review changes in test")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (wan_IP.split(".")[0] != "10"):
             raise unittest2.SkipTest("Not on 10.x network, skipping")
