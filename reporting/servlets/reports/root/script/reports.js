@@ -153,17 +153,17 @@ Ung.Util = {
 // Main object class
 Ext.define('Ung.Reports', {
     //The selected reports date
-    reportsDate:null,
+    reportsDate: null,
     //The number of days of data in the report
     numDays: null,
     // the table of contents data for the left side
-    tableOfContents:null,
+    tableOfContents: null,
     //the selected node from the left side tree
     selectedNode: null,
     //the selected application/system node from the left side tree
     selectedApplication: null,
     //report details object
-    reportDetails:null,
+    reportDetails: null,
     //cuttOffdate
     cutOffDateInMillisecs: null,
     // breadcrumbs object for the report details
@@ -476,15 +476,21 @@ Ext.define('Ung.Reports', {
                                     }
                                 });
 
-                            p = Ext.urlDecode(window.location.search.substring(1));
-                            qsDate = p.date;
-                            if (qsDate) {
-                                dp = qsDate.split('-');
-                                d = new Date(parseInt(dp[0], 10), parseInt(dp[1], 10) - 1, parseInt(dp[2], 10));
-                                reports.changeDate({
-                                    javaClass: 'java.util.Date',
-                                    ime: d.getTime()
-                                },1);
+                            var queryStringObj = Ext.urlDecode(window.location.search.substring(1));
+                            var queryStringDate = queryStringObj.date;
+                            if (queryStringDate) {
+                                var dateParts = queryStringDate.split('-');
+                                var customTime = (new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10))).getTime()+i18n.timeoffset;
+                                var dateItem = rpc.dates.list[0];
+                                for (var i = 0; i < rpc.dates.list.length; i++) {
+                                    var item = rpc.dates.list[i];
+                                    if (item.date.time < customTime) {
+                                        break;
+                                    } else {
+                                        dateItem=item;
+                                    }
+                                }
+                                reports.changeDate(dateItem.date, dateItem.numDays);
                             } else if (rpc.dates && rpc.dates.list.length > 0) {
                                 reports.changeDate(rpc.dates.list[0].date,rpc.dates.list[0].numDays);
                             }
@@ -517,7 +523,7 @@ Ext.define('Ung.Reports', {
     getAvailableReportsData: function () {
         return this.reportDatesItems;
     },
-    showReportFor: function(value,numDays) {
+    showReportFor: function(value, numDays) {
         var found = -1,i ;
         for(i=0;i<this.reportDatesItems.length;i++){
             if(value==this.reportDatesItems[i].dt.time && numDays == this.reportDatesItems[i].numDays ){
@@ -729,8 +735,7 @@ Ext.define('Ung.Reports', {
             selModel.fireEvent('selectionchange',selModel,node);
         }
     },
-    changeDate: function(date,numDays) {
-        this.reportsDate=date;
+    changeDate: function(date, numDays) {
         var item, found = false;
         for (var i = 0; i < this.reportDatesItems.length; i++) {
             item = this.reportDatesItems[i];
@@ -745,6 +750,7 @@ Ext.define('Ung.Reports', {
             }
         }
         if(found){
+            this.reportsDate=date;
             this.numDays =  this.reportDatesItems[i].numDays;
             rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
                 if (exception) {
@@ -1254,13 +1260,13 @@ Ext.define('Ung.ReportDetails', {
         //add the print button
         if(reports.printView===false){
             var printargs = [
-                                ['rdate',reports.reportsDate.time].join('='),
-                                ['duration',reports.numDays].join('='),
-                                ['aname',appName].join('='),
-                                ['drillType',drillDownType].join('='),
-                                ['drillValue',drillDownValue].join('='),
-                                ['r',Math.floor(Math.random()*121221121)].join('=')
-                            ].join('&');
+                ['rdate',reports.reportsDate.time].join('='),
+                ['duration',reports.numDays].join('='),
+                ['aname',appName].join('='),
+                ['drillType',drillDownType].join('='),
+                ['drillValue',drillDownValue].join('='),
+                ['r',Math.floor(Math.random()*121221121)].join('=')
+            ].join('&');
             items.push({
                 html:'<a target="_print" href="?'+printargs+'" class="print small-right-margin">'+i18n._('Print')+'</a>',
                 colspan: 2
