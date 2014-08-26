@@ -24,12 +24,15 @@ public class HostTableEntry implements Serializable, JSONString
     private long        lastAccessTime;
     private long        lastSessionTime = 0; /* time of the last new session */
     private boolean     licensed = true;
-    
+
     private String hostname;
     private String usernameAdConnector;
-    private String usernameCapture;
 
-    private boolean captivePortal = false;
+    private boolean markerCapture = false;
+    private boolean markerTunnel = false;
+    private String usernameCapture;
+    private String usernameTunnel;
+    
     private boolean penaltyBoxed = false;
     private long    penaltyBoxExitTime;
     private long    penaltyBoxEntryTime;
@@ -73,8 +76,14 @@ public class HostTableEntry implements Serializable, JSONString
     public String getUsernameCapture() { return this.usernameCapture; }
     public void setUsernameCapture( String newValue ) { this.usernameCapture = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
     
-    public boolean getCaptivePortal() { return this.captivePortal; }
-    public void setCaptivePortal( boolean newValue ) { this.captivePortal = newValue; updateAccessTime(); }
+    public boolean getMarkerCapture() { return this.markerCapture; }
+    public void setMarkerCapture( boolean newValue ) { this.markerCapture = newValue; updateAccessTime(); }
+
+    public String getUsernameTunnel() { return this.usernameTunnel; }
+    public void setUsernameTunnel( String newValue ) { this.usernameTunnel = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
+    
+    public boolean getMarkerTunnel() { return this.markerTunnel; }
+    public void setMarkerTunnel( boolean newValue ) { this.markerTunnel = newValue; updateAccessTime(); }
     
     public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
     public void setPenaltyBoxed( boolean newValue ) { this.penaltyBoxed = newValue; updateAccessTime(); }
@@ -112,6 +121,8 @@ public class HostTableEntry implements Serializable, JSONString
             return "unlicensed";
         if (getUsernameCapture() != null)
             return getUsernameCapture();
+        if (getUsernameTunnel() != null)
+            return getUsernameTunnel();
         if (getUsernameAdConnector() != null)
             return getUsernameAdConnector();
         return null;
@@ -121,6 +132,8 @@ public class HostTableEntry implements Serializable, JSONString
     {
         if (getUsernameCapture() != null)
             return "Captive Portal";
+        if (getUsernameTunnel() != null)
+            return "L2TP/IPsec";
         if (getUsernameAdConnector() != null)
             return "Directory Connector";
         return null;

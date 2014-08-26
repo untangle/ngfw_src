@@ -531,7 +531,7 @@ public class HostTableImpl implements HostTable
                             /**
                              * If this host table entry is storing vital information, don't delete it
                              */
-                            if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() || entry.getCaptivePortal() ) {
+                            if ( entry.getQuotaSize() > 0 || entry.getPenaltyBoxed() || entry.getMarkerCapture() || entry.getMarkerTunnel() ) {
                                 continue;
                             }
                             /**
