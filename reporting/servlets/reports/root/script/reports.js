@@ -480,7 +480,7 @@ Ext.define('Ung.Reports', {
                             var queryStringDate = queryStringObj.date;
                             if (queryStringDate) {
                                 var dateParts = queryStringDate.split('-');
-                                var customTime = (new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10))).getTime()+i18n.timeoffset;
+                                var customTime = (new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10))).getTime()-i18n.timeoffset;
                                 var dateItem = rpc.dates.list[0];
                                 for (var i = 0; i < rpc.dates.list.length; i++) {
                                     var item = rpc.dates.list[i];
