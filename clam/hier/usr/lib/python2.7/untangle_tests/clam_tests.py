@@ -29,7 +29,6 @@ class ClamTests(VirusTests):
         # if clamd is not running check to see freshclam is download new files
         if result != 0:
             freshClamResult = os.system("ps aux | grep freshclam | grep -v grep >/dev/null 2>&1")
-            print "freshClamResult " + str(freshClamResult)
             if (freshClamResult == 0):
                 VirusTests.freshdRunning = True # clamd is downloading definition files skip all tests
                 raise unittest2.SkipTest("Clamd is not finished downloading definition files")
