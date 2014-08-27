@@ -5,7 +5,8 @@ arch = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
 
 jvm = case arch
       when "armel"
-        "jdk-7-oracle-arm-vfp-sflt"
+        # "jdk-7-oracle-arm-vfp-sflt"
+        "java-7-openjdk-armel"
       when "armhf"
         "jdk-7-oracle-arm-vfp-hflt"
       else

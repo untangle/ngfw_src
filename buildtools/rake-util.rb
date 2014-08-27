@@ -80,7 +80,8 @@ class BuildEnv
   #JVM = (ARCH == "armel") ? "jdk-7-oracle-arm-vfp-sflt" : "java-6-sun"
   JVM = case ARCH
     when "armel"
-    "jdk-7-oracle-arm-vfp-sflt"
+#    "jdk-7-oracle-arm-vfp-sflt"
+     "java-7-openjdk-armel"
     when "armhf"
     "jdk-7-oracle-arm-vfp-hflt"
     else
