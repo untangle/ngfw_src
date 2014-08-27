@@ -7,7 +7,8 @@ jvm = case arch
       when "armel"
         "jdk-7-oracle-arm-vfp-sflt"
       when "armhf"
-        "jdk-7-oracle-arm-vfp-hflt"
+#        "jdk-7-oracle-arm-vfp-hflt"
+       "java-7-openjdk-armel"        
       else
         "j2sdk1.7-oracle"
       end
