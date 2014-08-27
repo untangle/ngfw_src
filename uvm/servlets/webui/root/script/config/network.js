@@ -3234,7 +3234,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     width: 200,
                     editor: {
                         xtype:'textfield',
-                        emptyText: this.i18n._("[enter local server]"),
+                        emptyText: this.i18n._("[enter DNS server]"),
                         allowBlank: false,
                         vtype:"ipAddress"
                     }
