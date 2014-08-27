@@ -3178,7 +3178,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Name"),
-                    width: 200,
+                    flex: 1,
                     dataIndex: 'name',
                     editor: {
                         xtype:'textfield',
@@ -3188,7 +3188,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     header: this.i18n._("Address"),
                     dataIndex: 'address',
-                    flex: 1,
+                    width: 200,
                     editor: {
                         xtype:'textfield',
                         emptyText: this.i18n._("[enter address]"),
@@ -3200,7 +3200,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.gridDnsLocalServers = Ext.create( 'Ung.EditorGrid', {
                 flex: 1,
                 margin: '5 0 0 0',
-                name: 'Local DNS Servers',
+                name: 'Domain DNS Servers',
                 settingsCmp: this,
                 paginated: false,
                 hasEdit: false,
@@ -3209,7 +3209,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     "localServer": "1.2.3.4",
                     "javaClass": "com.untangle.uvm.network.DnsLocalServer"
                 },
-                title: this.i18n._("Local DNS Servers"),
+                title: this.i18n._("Domain DNS Servers"),
                 recordJavaClass: "com.untangle.uvm.network.DnsLocalServer",
                 dataExpression:'settings.dnsSettings.localServers.list',
                 fields: [{
@@ -3221,7 +3221,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 columnsDefaultSortable: true,
                 columns: [{
                     header: this.i18n._("Domain"),
-                    width: 200,
+                    flex: 1,
                     dataIndex: 'domain',
                     editor: {
                         xtype:'textfield',
@@ -3229,9 +3229,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         allowBlank:false
                     }
                 },{
-                    header: this.i18n._("Local Server"),
+                    header: this.i18n._("Server"),
                     dataIndex: 'localServer',
-                    flex: 1,
+                    width: 200,
                     editor: {
                         xtype:'textfield',
                         emptyText: this.i18n._("[enter local server]"),
