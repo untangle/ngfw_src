@@ -3479,7 +3479,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 items: [{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable SIP NAT Helper"),
-                    labelStyle: 'width:150px',
+                    labelWidth: 190,
                     checked: this.settings.enableSipNatHelper,
                     listeners: {
                         "change": {
@@ -3491,7 +3491,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Send ICMP Redirects"),
-                    labelStyle: 'width:150px',
+                    labelWidth: 190,
                     checked: this.settings.sendIcmpRedirects,
                     listeners: {
                         "change": {
@@ -3503,7 +3503,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("Enable STP (Spanning Tree) on Bridges"),
-                    labelStyle: 'width:150px',
+                    labelWidth: 190,
                     checked: this.settings.stpEnabled,
                     listeners: {
                         "change": {
@@ -3516,7 +3516,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     xtype: "checkbox",
                     hidden: Ung.Util.hideDangerous,
                     fieldLabel: this.i18n._("Enable Strict ARP mode"),
-                    labelStyle: 'width:150px',
+                    labelWidth: 190,
                     checked: this.settings.strictArpMode,
                     listeners: {
                         "change": {
@@ -3528,7 +3528,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                 },{
                     xtype: "checkbox",
                     fieldLabel: this.i18n._("DHCP Authoritative"),
-                    labelStyle: 'width:150px',
+                    labelWidth: 190,
                     checked: this.settings.dhcpAuthoritative,
                     listeners: {
                         "change": {
@@ -4340,6 +4340,7 @@ if (!Ung.hasResource["Ung.Network"]) {
             this.v6ForwardFilterRulesCheckbox = {
                 xtype: "checkbox",
                 fieldLabel: this.i18n._("Block IPv6 forwarding"),
+                labelWidth: 180,
                 checked: this.settings.blockIpv6Forwarding,
                 listeners: {
                     "change": {
