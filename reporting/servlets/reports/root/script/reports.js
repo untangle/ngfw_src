@@ -4,16 +4,6 @@ var rpc = null;
 var reports = null;
 var testMode = false;
 
-JSONRpcClient.toplevel_ex_handler = function (exception) {
-    if (!Ung.Util.handleTimeout(exception)) {
-        if(exception) {
-            Ext.MessageBox.alert("Failed", exception.message);
-            throw exception;
-        }
-    }
-};
-JSONRpcClient.max_req_active = 10;
-
 Ung.Util = {
     // Load css file Dynamically
     loadCss: function(filename) {
@@ -27,15 +17,22 @@ Ung.Util = {
     loadScript: function(sScriptSrc, handler) {
         var error=null;
         try {
-            var req = (window.XMLHttpRequest)? (new XMLHttpRequest()): (new ActiveXObject("Microsoft.XMLHTTP"));
-            req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
+            var req;
+            if(window.XMLHttpRequest) {
+                req = new XMLHttpRequest();
+            } else {
+                req = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            req.open("GET", sScriptSrc, false);
             req.send(null);
-            if( window.execScript)
+            if( window.execScript) {
                 window.execScript(req.responseText);
-            else
-                window.eval(req.responseText);
+            } else {
+                eval(req.responseText);
+            }
         } catch (e) {
             error=e;
+            console.log("Failed loading script: ", sScriptSrc, e);
         }
         if(handler) {
             handler.call(this);
@@ -64,19 +61,17 @@ Ung.Util = {
             handler.call(this);
         }
     },
-    handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
+    goToStartPage: function () {
+        Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
+        window.location.reload(true);
+    },
+    handleException: function(exception) {
         if(exception) {
             console.error("handleException:", exception);
             if(exception.message == null) {
                 exception.message = "";
             }
             var message = null;
-            var gotoStartPage=false;
-            /* special text for rack error */
-            if (exception.name == "java.lang.Exception" && (exception.message.indexOf("already exists in Policy") != -1)) {
-                message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
-                message += i18n._("Each application can only be installed once in each policy/rack.") + "<br/>";
-            }
             /* handle connection lost */
             if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
                 /* handle connection lost (this happens on windows only for some reason) */
@@ -88,54 +83,108 @@ Ung.Util = {
                 exception.message.indexOf("This application is not currently available") != -1) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
-                if (type !== "noAlert") {
-                    handler = Ung.Util.goToStartPage; //override handler
-                }
+                Ung.Util.showWarningMessage(message, details, Ung.Util.goToStartPage);
+                return true;
             }
             /* worst case - just say something */
-            if (message == null) {
+            if ( exception && exception.message ) {
+                message = i18n._("An error has occurred") + ":" + "<br/>"  + exception.message;
+            } else {
                 message = i18n._("An error has occurred.");
             }
             var details = "";
-            if ( exception ) {
-                if ( exception.javaStack )
-                    exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
-                if ( exception.name )
-                    details += "<b>" + i18n._("Exception name") +":</b> " + exception.name + "<br/><br/>";
-                if ( exception.code )
-                    details += "<b>" + i18n._("Exception code") +":</b> " + exception.code + "<br/><br/>";
-                if ( exception.message )
-                    details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
-                if ( exception.javaStack )
-                    details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
-                if ( exception.stack )
-                    details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
-                if ( rpc.fullVersionAndRevision != null )
-                    details += "<b>" + i18n._("Build") +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
-                details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
-            }
-            if (handler==null) {
-                Ung.Util.showWarningMessage(message, details);
-            } else if(type==null || type== "alertCallback") {
-                Ung.Util.showWarningMessage(message, details, handler);
-            } else if (type== "alert") {
-                Ung.Util.showWarningMessage(message, details);
-                handler();
-            } else if (type== "noAlert") {
-                handler(message, details);
-            }
-            return !continueExecution;
+            if ( exception.javaStack )
+                exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+            if ( exception.name )
+                details += "<b>" + i18n._("Exception name") +":</b> " + exception.name + "<br/><br/>";
+            if ( exception.code )
+                details += "<b>" + i18n._("Exception code") +":</b> " + exception.code + "<br/><br/>";
+            if ( exception.message )
+                details += "<b>" + i18n._("Exception message") + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
+            if ( exception.javaStack )
+                details += "<b>" + i18n._("Exception java stack") +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
+            if ( exception.stack )
+                details += "<b>" + i18n._("Exception js stack") +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+            details +="<b>" + i18n._("Timestamp") +":&nbsp;</b>" + (new Date()).toString() + "<br/>";
+            Ung.Util.showWarningMessage(message, details);
+            return true;
         }
         return false;
     },
-    handleTimeout: function (ex) {
-        if (ex instanceof JSONRpcClient.Exception) {
-            if (ex.code == 550) {
-                setTimeout(function () { location.reload(true);}, 300);
-                return true;
-            }
+    showWarningMessage:function(message, details, errorHandler) {
+        var wnd = Ext.create('Ext.window.Window', {
+            title: i18n._('Warning'),
+            modal:true,
+            closable:false,
+            layout: "fit",
+            items: {
+                xtype: "panel",
+                minWidth: 350,
+                autoScroll: true,
+                items: [{
+                    xtype: "fieldset",
+                    items: [{
+                        xtype: "label",
+                        html: message
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    items: [{
+                        xtype: "button",
+                        name: "details_button",
+                        text: i18n._("Show details"),
+                        hidden: details==null,
+                        handler: function() {
+                            var detailsComp = wnd.down('fieldset[name="details"]');
+                            var detailsButton = wnd.down('button[name="details_button"]');
+                            if(detailsComp.isHidden()) {
+                                if(!wnd.initialHeight) {
+                                    wnd.initialHeight = wnd.getHeight();
+                                    wnd.initialWidth = wnd.getWidth();
+                                }
+                                detailsComp.show();
+                                detailsButton.setText(i18n._('Hide details'));
+                                if(!wnd.expandedHeight) {
+                                    wnd.expandedHeight = wnd.getHeight();
+                                    wnd.expandedWidth = wnd.getWidth()+20;
+                                } else {
+                                    wnd.setHeight(wnd.expandedHeight);
+                                    wnd.setWidth(wnd.expandedWidth);
+                                }
+                                wnd.center();
+                            } else {
+                                detailsComp.hide();
+                                detailsButton.setText(i18n._('Show details'));
+                                wnd.restore();
+                                wnd.setHeight(wnd.initialHeight);
+                                wnd.setWidth(wnd.initialWidth);
+                                wnd.center();
+                            }
+                        },
+                        scope : this
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    name: "details",
+                    hidden: true,
+                    html: details!=null ? details : ''
+                }]
+            },
+            buttons: [{
+                text: i18n._('OK'),
+                handler: function() {
+                    if ( errorHandler) {
+                        errorHandler();
+                    } else {
+                        wnd.close();
+                    }
+                }
+            }]
+        });
+        wnd.show();
+        if(Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();
         }
-        return false;
     },
     getWinHeight: function() {
         if(!window.innerHeight) {
@@ -150,6 +199,10 @@ Ung.Util = {
         return window.innerWidth;
     }
 };
+
+JSONRpcClient.toplevel_ex_handler = Ung.Util.handleException;
+JSONRpcClient.max_req_active = 10;
+
 // Main object class
 Ext.define('Ung.Reports', {
     //The selected reports date
@@ -192,96 +245,59 @@ Ext.define('Ung.Reports', {
         }
         rpc = {};
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
-
         rpc.jsonrpc.ReportsContext.languageManager(Ext.bind(this.completeLanguageManager,this));
         rpc.jsonrpc.ReportsContext.skinManager(Ext.bind(this.completeSkinManager,this));
         rpc.jsonrpc.ReportsContext.reportingManager(Ext.bind(this.completeReportingManager,this));
     },
 
     completeLanguageManager: function( result, exception ) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-        }
+        if(Ung.Util.handleException(exception)) return;
         rpc.languageManager = result;
         // get translations for main module
-        rpc.languageManager.getTranslations(Ext.bind(this.completeGetTranslations,this), "untangle-libuvm");
-    },
-
-    completeGetTranslations: function( result, exception ) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
+        rpc.languageManager.getTranslations(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            i18n = new Ung.I18N({ "map": result.map });
+            this.postinit();
+        }, this), "untangle-libuvm");
+        rpc.languageManager.getLanguageSettings(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.languageSettings = result;
+            var locale = rpc.languageSettings.language;
+            if(locale) {
+                Ung.Util.loadScript('/ext4/locale/ext-lang-' + locale + '.js');
             }
-            return;
-        }
-
-        i18n = new Ung.I18N({ "map": result.map });
-        this.postinit();
-    },
-
-    completeSkinManager: function(result,exception) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-        }
-        rpc.skinManager = result;
-        rpc.skinManager.getSettings(Ext.bind(this.completeGetSkinSettings,this));
-    },
-
-    completeGetSkinSettings: function(result, exception) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-            return;
-        }
-        rpc.skinSettings = result;
-        var rand = Math.floor(Math.random()*121221121);
-        Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/reports.css?r="+rand);
-        this.postinit();
-    },
-
-    completeReportingManager: function(result, exception) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-        }
-        rpc.reportingManager = result;
-        rpc.reportingManager.getDates(Ext.bind(this.completeGetDates,this));
-        rpc.reportingManager.getTimeZone(Ext.bind(this.completeGetTimeZone,this));
-        rpc.reportingManager.getReportsCutoff(Ext.bind(function(result,exception){
-            if(exception){
-                Ext.MessageBox.alert(i18n._("Failed"), i18n._("Could not retrieve the cutoff date"));
-                return;
-            }
-            this.cutOffDateInMillisecs = result.time;
         },this));
     },
 
-    completeGetDates: function( result, exception ) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-            return;
-        }
-        rpc.dates = result;
-        this.postinit();
+    completeSkinManager: function(result,exception) {
+        if(Ung.Util.handleException(exception)) return;
+        rpc.skinManager = result;
+        rpc.skinManager.getSettings(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.skinSettings = result;
+            var rand = Math.floor(Math.random()*121221121);
+            Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/reports.css?r="+rand);
+            this.postinit();
+        },this));
     },
 
-    completeGetTimeZone: function( result, exception ) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed", exception.message);
-            }
-            return;
-        }
-        rpc.timezone = result;
-        this.postinit();
+    completeReportingManager: function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+        rpc.reportingManager = result;
+        rpc.reportingManager.getDates(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.dates = result;
+            this.postinit();
+        }, this));
+        rpc.reportingManager.getTimeZone(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.timezone = result;
+            this.postinit();
+        }, this));
+        rpc.reportingManager.getReportsCutoff(Ext.bind(function(result,exception){
+            if(Ung.Util.handleException(exception)) return;
+            this.cutOffDateInMillisecs = result.time;
+        },this));
     },
 
     postinit: function() {
@@ -328,12 +344,7 @@ Ext.define('Ung.Reports', {
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
         rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
-            if (exception) {
-                if (!Ung.Util.handleTimeout(exception)) {
-                    Ext.MessageBox.alert("Failed", exception.message);
-                }
-                return;
-            }
+            if(Ung.Util.handleException(exception)) return;
             this.tableOfContents = result;
             this.getTreeNodesFromTableOfContent(this.tableOfContents);
             if ( !Ext.isEmpty(this.drillType) && !Ext.isEmpty(this.drillValue)) {
@@ -478,9 +489,18 @@ Ext.define('Ung.Reports', {
 
                             var queryStringObj = Ext.urlDecode(window.location.search.substring(1));
                             var queryStringDate = queryStringObj.date;
+                            var customTime = null;
                             if (queryStringDate) {
                                 var dateParts = queryStringDate.split('-');
-                                var customTime = (new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10))).getTime()-i18n.timeoffset;
+                                if(dateParts.length==3) {
+                                    try {
+                                        customTime = (new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10))).getTime()-i18n.timeoffset;
+                                    } catch (e) {
+                                        console.log("Failed parsing date: ", queryStringDate, e);
+                                    }
+                                }
+                            }
+                            if(Ext.isNumber(customTime)) {
                                 var dateItem = rpc.dates.list[0];
                                 for (var i = 0; i < rpc.dates.list.length; i++) {
                                     var item = rpc.dates.list[i];
@@ -753,12 +773,7 @@ Ext.define('Ung.Reports', {
             this.reportsDate=date;
             this.numDays =  this.reportDatesItems[i].numDays;
             rpc.reportingManager.getTableOfContents( Ext.bind(function(result, exception) {
-                if (exception) {
-                    if (!Ung.Util.handleTimeout(exception)) {
-                        Ext.MessageBox.alert("Failed", exception.message);
-                    }
-                    return;
-                }
+                if(Ung.Util.handleException(exception)) return;
                 this.tableOfContents = result;
                 var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
                 Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
@@ -799,12 +814,7 @@ Ext.define('Ung.Reports', {
         }
     },
     processHiglightsData: function(result,exception,nodeName,numDays) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed",exception.message);
-            }
-            return;
-        }
+        if(Ung.Util.handleException(exception)) return;
         rpc.applicationData=result;
         reports.breadcrumbs.push({ text: this.selectedNode.data.text,
             handler: Ext.bind(this.getApplicationData,this, [nodeName,numDays])
@@ -821,12 +831,7 @@ Ext.define('Ung.Reports', {
         );
     },
     processApplicationData: function (result,exception,nodeName,numDays) {
-        if (exception) {
-            if (!Ung.Util.handleTimeout(exception)) {
-                Ext.MessageBox.alert("Failed",exception.message);
-            }
-            return;
-        }
+        if(Ung.Util.handleException(exception)) return;
         rpc.applicationData=result;
         if(this.selectedNode){
             reports.breadcrumbs.push({
@@ -864,12 +869,7 @@ Ext.define('Ung.Reports', {
         rpc.drilldownValue = value;
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
-            if (exception) {
-                if (!Ung.Util.handleTimeout(exception)) {
-                    Ext.MessageBox.alert("Failed", exception.message);
-                }
-                return;
-            }
+            if(Ung.Util.handleException(exception)) return;
             rpc.applicationData=result;
             reports.breadcrumbs.push({
                 text: value +" "+i18n._("Reports"),
@@ -893,12 +893,7 @@ Ext.define('Ung.Reports', {
         this.selectedApplication = app;
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager[fnName]( Ext.bind(function (result, exception) {
-            if (exception) {
-                if (!Ung.Util.handleTimeout(exception)) {
-                    Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                }
-                return;
-            }
+            if(Ung.Util.handleException(exception)) return;
             if(result==null){
                Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
                return;

@@ -357,10 +357,14 @@ Ung.Util = {
             closable:false,
             layout: "fit",
             setSizeToRack: function () {
-                var objSize = main.viewport.getSize();
-                objSize.width = objSize.width - main.contentLeftWidth;
-                this.setPosition(main.contentLeftWidth, 0);
-                this.setSize(objSize);
+                if(main && main.viewport) {
+                    var objSize = main.viewport.getSize();
+                    objSize.width = objSize.width - main.contentLeftWidth;
+                    this.setPosition(main.contentLeftWidth, 0);
+                    this.setSize(objSize);
+                } else {
+                    wnd.maximize();
+                }
             },
             items: {
                 xtype: "panel",
@@ -545,7 +549,7 @@ Ung.Util = {
             } else {
                 req = new ActiveXObject("Microsoft.XMLHTTP");
             }
-            req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
+            req.open("GET", Ung.Util.addBuildStampToUrl(sScriptSrc), false);
             req.send(null);
             if( window.execScript) {
                 window.execScript(req.responseText);
