@@ -85,6 +85,7 @@ public class AlertManagerImpl implements AlertManager
         try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testLicenseCompliance(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
 
         /**
          * Disabled Tests
@@ -826,8 +827,18 @@ public class AlertManagerImpl implements AlertManager
         } catch (Exception e) {
             logger.warn("Exception testing system: ",e);
         }
-
-
     }
+
+    private void testLicenseCompliance( List<String> alertList )
+    {
+        int currentSize = UvmContextFactory.context().hostTable().getCurrentLicensedSize();
+        int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
+
+        if ( seatLimit > 0 && currentSize > seatLimit ) {
+            String alertText = i18nUtil.tr("Currently the number of devices exceeds the number of licensed devices. (" + currentSize + " > " + seatLimit + ")");
+            alertList.add(alertText);
+        }
+     }
+        
 
 }

@@ -449,9 +449,11 @@ public class HostTableImpl implements HostTable
         entry.setAddress( address );
 
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
+        int currentSize = getCurrentLicensedSize();
+        
         // if there is a seat limit, and the size of the table is currently greater than that seatLimit
         // this host is out of compliance and not licensed
-        if ( seatLimit > 0 && hostTable.size() > seatLimit ) {
+        if ( seatLimit > 0 && currentSize > seatLimit ) {
             entry.setLicensed( false );
         }
         
