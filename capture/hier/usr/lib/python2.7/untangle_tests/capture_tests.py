@@ -364,25 +364,36 @@ class CaptureTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(adUserName)
         assert(foundUsername)        
 
-        # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # logout 
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035b.log -O /tmp/capture_test_035b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035b.out")
         assert (search == 0)
-        foundUsername = findNameInHostTable(adUserName)
-        assert(not foundUsername)        
-
-        # check extend ascii in login and password 
-        result = remote_control.runCommand("wget -a /tmp/capture_test_035c.log -O /tmp/capture_test_035c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        # try second time to login, 
+        result = remote_control.runCommand("wget -a /tmp/capture_test_035c.log -O /tmp/capture_test_035c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
 
         # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout  
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035d.log -O /tmp/capture_test_035d.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035d.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(adUserName)
+        assert(not foundUsername)        
+
+        # check extend ascii in login and password 
+        result = remote_control.runCommand("wget -a /tmp/capture_test_035e.log -O /tmp/capture_test_035e.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_035e.out")
+        assert (search == 0)
+
+        # logout user to clean up test.
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_035f.log -O /tmp/capture_test_035f.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035f.out")
         assert (search == 0)
 
     def test_040_captureRadiusLogin(self):
@@ -429,15 +440,15 @@ class CaptureTests(unittest2.TestCase):
         # check if RADIUS login and password a second time.
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = remote_control.runCommand("wget -a /tmp/capture_test_040a.log -O /tmp/capture_test_040a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
-        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_040a.out")
+        result = remote_control.runCommand("wget -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_040b.out")
         assert (search == 0)
 
         # logout user to clean up test a second time.
         # wget http://<internal IP>/capture/logout  
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040b.log -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_040c.log -O /tmp/capture_test_040c.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040c.out")
         assert (search == 0)
 
     @staticmethod
