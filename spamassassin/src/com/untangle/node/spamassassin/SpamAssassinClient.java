@@ -184,7 +184,7 @@ public final class SpamAssassinClient implements Runnable
 
             // send spamc hdr
             // REPORT SPAMC/1.3
-            // User: spamc
+            // User: spamd
             // Content-length: 1235
             // <blank line>
             byte[] rBuf = REQUEST_CHDR.getBytes();
