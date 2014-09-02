@@ -5989,6 +5989,7 @@ Ext.define('Ung.EditorGrid', {
             this.getStore().loadPage(this.getStore().currentPage, {
                 limit:this.isPaginated() ? this.recordsPerPage: Ung.Util.maxRowCount,
                 callback: function() {
+                    this.enableSorting();
                     this.getView().setLoading(false);
                 },
                 scope: this
@@ -6005,9 +6006,19 @@ Ext.define('Ung.EditorGrid', {
         if (!this.sortingDisabled) {
             var cmConfig = this.columns;
             for (var i in cmConfig) {
+                cmConfig[i].initalSortable = cmConfig[i].sortable;
                 cmConfig[i].sortable = false;
             }
             this.sortingDisabled=true;
+        }
+    },
+    enableSorting: function () {
+        if (this.sortingDisabled) {
+            var cmConfig = this.columns;
+            for (var i in cmConfig) {
+                cmConfig[i].sortable=cmConfig[i].initalSortable;
+            }
+            this.sortingDisabled=false;
         }
     },
     // Update Changed data after an import
