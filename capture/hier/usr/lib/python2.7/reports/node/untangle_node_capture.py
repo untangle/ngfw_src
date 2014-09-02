@@ -415,6 +415,7 @@ class UserDetail(DetailSection):
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+              ColumnDesc('client_addr', _('Client')),
               ColumnDesc('login_name', _('User Name')),
               ColumnDesc('event_info', _('Type'))]
 
@@ -428,7 +429,7 @@ class UserDetail(DetailSection):
             return None
 
         sql = """
-SELECT time_stamp, login_name,
+SELECT time_stamp, client_addr, login_name,
 CASE WHEN event_info = 'LOGIN' THEN '%s'
      WHEN event_info = 'FAILED' THEN '%s'
      WHEN event_info = 'TIMEOUT' THEN '%s'
