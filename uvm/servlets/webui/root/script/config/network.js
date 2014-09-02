@@ -890,7 +890,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                                     margin: '10 0 0 0',
                                     cls: 'description',
                                     title: this.i18n._("How to map Devices with Interfaces"),
-                                    html: this.i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced.")
+                                    html: this.i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.")
                                 }, this.gridMapDevices]
                             }],
                             updateAction: Ext.bind(function() {
