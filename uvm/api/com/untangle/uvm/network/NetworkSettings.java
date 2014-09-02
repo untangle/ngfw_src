@@ -22,6 +22,8 @@ import com.untangle.uvm.network.StaticRoute;
 @SuppressWarnings("serial")
 public class NetworkSettings implements Serializable, JSONString
 {
+    private Integer version;
+
     private List<InterfaceSettings> interfaces = null;
     private List<DeviceSettings> devices = null;
     private List<PortForwardRule> portForwardRules = null;
@@ -57,6 +59,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String dnsmasqOptions;
     
     public NetworkSettings() { }
+
+    public Integer getVersion() { return this.version; }
+    public void setVersion( Integer newValue ) { this.version = newValue ; }
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
     public void setInterfaces( List<InterfaceSettings> newValue ) { this.interfaces = newValue; }

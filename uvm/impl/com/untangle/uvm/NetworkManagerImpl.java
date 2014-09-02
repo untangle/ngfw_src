@@ -106,6 +106,7 @@ public class NetworkManagerImpl implements NetworkManager
         else {
             checkForNewDevices( readSettings );
             conversionVrrpAliasesIfNecessary( readSettings );
+            convertV1toV2( readSettings );
             
             this.networkSettings = readSettings;
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
@@ -559,6 +560,124 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
+    private void convertV1toV2( NetworkSettings netSettings )
+    {
+        if ( netSettings == null )
+            return;
+        if ( netSettings.getInterfaces() == null )
+            return;
+
+        // only convert v1 (and null)
+        if ( netSettings.getVersion() == null || netSettings.getVersion() == 1 )
+            logger.warn("Converting v1 Network Settings to v2...");
+        else
+            return;
+
+        netSettings.setVersion(2);
+
+        List<FilterRule> inputFilterRules = netSettings.getInputFilterRules();
+        int insertLocation = 4;
+        if (inputFilterRules.size() < 5)
+            insertLocation = 0;
+
+        FilterRule filterRuleAhEsp = new FilterRule();
+        filterRuleAhEsp.setReadOnly( true );
+        filterRuleAhEsp.setEnabled( true );
+        filterRuleAhEsp.setDescription( "Allow AH/ESP for IPsec" );
+        filterRuleAhEsp.setBlocked( false );
+        filterRuleAhEsp.setReadOnly( true );
+        List<FilterRuleMatcher> ruleAhEspMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleAhEspMatcher1 = new FilterRuleMatcher();
+        ruleAhEspMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleAhEspMatcher1.setValue("AH,ESP");
+        ruleAhEspMatchers.add(ruleAhEspMatcher1);
+        filterRuleAhEsp.setMatchers( ruleAhEspMatchers );
+
+        FilterRule filterRuleIke = new FilterRule();
+        filterRuleIke.setReadOnly( true );
+        filterRuleIke.setEnabled( true );
+        filterRuleIke.setDescription( "Allow IKE for IPsec" );
+        filterRuleIke.setBlocked( false );
+        filterRuleIke.setReadOnly( true );
+        List<FilterRuleMatcher> ruleIkeMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleIkeMatcher1 = new FilterRuleMatcher();
+        ruleIkeMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleIkeMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleIkeMatcher2 = new FilterRuleMatcher();
+        ruleIkeMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleIkeMatcher2.setValue("500");
+        ruleIkeMatchers.add(ruleIkeMatcher1);
+        ruleIkeMatchers.add(ruleIkeMatcher2);
+        filterRuleIke.setMatchers( ruleIkeMatchers );
+
+        FilterRule filterRuleNatT = new FilterRule();
+        filterRuleNatT.setReadOnly( true );
+        filterRuleNatT.setEnabled( true );
+        filterRuleNatT.setDescription( "Allow NAT-T for IPsec" );
+        filterRuleNatT.setBlocked( false );
+        filterRuleNatT.setReadOnly( true );
+        List<FilterRuleMatcher> ruleNatTMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleNatTMatcher1 = new FilterRuleMatcher();
+        ruleNatTMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleNatTMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleNatTMatcher2 = new FilterRuleMatcher();
+        ruleNatTMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleNatTMatcher2.setValue("4500");
+        ruleNatTMatchers.add(ruleNatTMatcher1);
+        ruleNatTMatchers.add(ruleNatTMatcher2);
+        filterRuleNatT.setMatchers( ruleNatTMatchers );
+
+        FilterRule filterRuleL2tp = new FilterRule();
+        filterRuleL2tp.setReadOnly( true );
+        filterRuleL2tp.setEnabled( true );
+        filterRuleL2tp.setDescription( "Allow L2TP" );
+        filterRuleL2tp.setBlocked( false );
+        filterRuleL2tp.setReadOnly( true );
+        List<FilterRuleMatcher> ruleL2tpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleL2tpMatcher1 = new FilterRuleMatcher();
+        ruleL2tpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleL2tpMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleL2tpMatcher2 = new FilterRuleMatcher();
+        ruleL2tpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleL2tpMatcher2.setValue("1701");
+        ruleL2tpMatchers.add(ruleL2tpMatcher1);
+        ruleL2tpMatchers.add(ruleL2tpMatcher2);
+        filterRuleL2tp.setMatchers( ruleL2tpMatchers );
+
+        FilterRule filterRuleOpenVpn = new FilterRule();
+        filterRuleOpenVpn.setReadOnly( true );
+        filterRuleOpenVpn.setEnabled( true );
+        filterRuleOpenVpn.setDescription( "Allow OpenVPN" );
+        filterRuleOpenVpn.setBlocked( false );
+        filterRuleOpenVpn.setReadOnly( true );
+        List<FilterRuleMatcher> ruleOpenVpnMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleOpenVpnMatcher1 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleOpenVpnMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleOpenVpnMatcher2 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleOpenVpnMatcher2.setValue("1194");
+        FilterRuleMatcher ruleOpenVpnMatcher3 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleOpenVpnMatcher3.setValue("wan");
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher1);
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher2);
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher3);
+        filterRuleOpenVpn.setMatchers( ruleOpenVpnMatchers );
+
+        inputFilterRules.add( insertLocation, filterRuleOpenVpn );
+        inputFilterRules.add( insertLocation, filterRuleL2tp );
+        inputFilterRules.add( insertLocation, filterRuleNatT );
+        inputFilterRules.add( insertLocation, filterRuleIke );
+        inputFilterRules.add( insertLocation, filterRuleAhEsp );
+
+        netSettings.setInputFilterRules( inputFilterRules );
+        logger.warn("Converting v1 Network Settings to v2...done");
+
+        // save settings (and sync)
+        this.setNetworkSettings( netSettings );
+    }
+    
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
@@ -628,6 +747,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
+            newSettings.setVersion( 2 ); // Currently on v2 (as of v11.0)
             newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
@@ -1386,6 +1506,91 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSnmpMatchers.add(ruleSnmpMatcher3);
         filterRuleSnmp.setMatchers( ruleSnmpMatchers );
 
+        FilterRule filterRuleAhEsp = new FilterRule();
+        filterRuleAhEsp.setReadOnly( true );
+        filterRuleAhEsp.setEnabled( true );
+        filterRuleAhEsp.setDescription( "Allow AH/ESP for IPsec" );
+        filterRuleAhEsp.setBlocked( false );
+        filterRuleAhEsp.setReadOnly( true );
+        List<FilterRuleMatcher> ruleAhEspMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleAhEspMatcher1 = new FilterRuleMatcher();
+        ruleAhEspMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleAhEspMatcher1.setValue("AH,ESP");
+        ruleAhEspMatchers.add(ruleAhEspMatcher1);
+        filterRuleAhEsp.setMatchers( ruleAhEspMatchers );
+
+        FilterRule filterRuleIke = new FilterRule();
+        filterRuleIke.setReadOnly( true );
+        filterRuleIke.setEnabled( true );
+        filterRuleIke.setDescription( "Allow IKE for IPsec" );
+        filterRuleIke.setBlocked( false );
+        filterRuleIke.setReadOnly( true );
+        List<FilterRuleMatcher> ruleIkeMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleIkeMatcher1 = new FilterRuleMatcher();
+        ruleIkeMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleIkeMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleIkeMatcher2 = new FilterRuleMatcher();
+        ruleIkeMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleIkeMatcher2.setValue("500");
+        ruleIkeMatchers.add(ruleIkeMatcher1);
+        ruleIkeMatchers.add(ruleIkeMatcher2);
+        filterRuleIke.setMatchers( ruleIkeMatchers );
+
+        FilterRule filterRuleNatT = new FilterRule();
+        filterRuleNatT.setReadOnly( true );
+        filterRuleNatT.setEnabled( true );
+        filterRuleNatT.setDescription( "Allow NAT-T for IPsec" );
+        filterRuleNatT.setBlocked( false );
+        filterRuleNatT.setReadOnly( true );
+        List<FilterRuleMatcher> ruleNatTMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleNatTMatcher1 = new FilterRuleMatcher();
+        ruleNatTMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleNatTMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleNatTMatcher2 = new FilterRuleMatcher();
+        ruleNatTMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleNatTMatcher2.setValue("4500");
+        ruleNatTMatchers.add(ruleNatTMatcher1);
+        ruleNatTMatchers.add(ruleNatTMatcher2);
+        filterRuleNatT.setMatchers( ruleNatTMatchers );
+
+        FilterRule filterRuleL2tp = new FilterRule();
+        filterRuleL2tp.setReadOnly( true );
+        filterRuleL2tp.setEnabled( true );
+        filterRuleL2tp.setDescription( "Allow L2TP" );
+        filterRuleL2tp.setBlocked( false );
+        filterRuleL2tp.setReadOnly( true );
+        List<FilterRuleMatcher> ruleL2tpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleL2tpMatcher1 = new FilterRuleMatcher();
+        ruleL2tpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleL2tpMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleL2tpMatcher2 = new FilterRuleMatcher();
+        ruleL2tpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleL2tpMatcher2.setValue("1701");
+        ruleL2tpMatchers.add(ruleL2tpMatcher1);
+        ruleL2tpMatchers.add(ruleL2tpMatcher2);
+        filterRuleL2tp.setMatchers( ruleL2tpMatchers );
+
+        FilterRule filterRuleOpenVpn = new FilterRule();
+        filterRuleOpenVpn.setReadOnly( true );
+        filterRuleOpenVpn.setEnabled( true );
+        filterRuleOpenVpn.setDescription( "Allow OpenVPN" );
+        filterRuleOpenVpn.setBlocked( false );
+        filterRuleOpenVpn.setReadOnly( true );
+        List<FilterRuleMatcher> ruleOpenVpnMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleOpenVpnMatcher1 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleOpenVpnMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleOpenVpnMatcher2 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleOpenVpnMatcher2.setValue("1194");
+        FilterRuleMatcher ruleOpenVpnMatcher3 = new FilterRuleMatcher();
+        ruleOpenVpnMatcher3.setMatcherType(FilterRuleMatcher.MatcherType.SRC_INTF);
+        ruleOpenVpnMatcher3.setValue("wan");
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher1);
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher2);
+        ruleOpenVpnMatchers.add(ruleOpenVpnMatcher3);
+        filterRuleOpenVpn.setMatchers( ruleOpenVpnMatchers );
+        
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
         filterRuleBlock.setEnabled( true );
@@ -1403,6 +1608,11 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
         rules.add( filterRuleSnmp );
+        rules.add( filterRuleAhEsp );
+        rules.add( filterRuleIke );
+        rules.add( filterRuleNatT );
+        rules.add( filterRuleL2tp );
+        rules.add( filterRuleOpenVpn );
         rules.add( filterRuleBlock );
 
         return rules;

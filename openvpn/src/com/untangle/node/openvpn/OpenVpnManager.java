@@ -602,17 +602,6 @@ public class OpenVpnManager
             iptablesScript.write("ADDR=\"`ip addr show tun0 | awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + "\n");
             iptablesScript.write("\n");
             
-            iptablesScript.write("# Delete old filter rules (if they exist)" + "\n");
-            for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
-                if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
-                    iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p tcp --dport 1194 -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() ) ) + "/0xff " +
-                                         "-j RETURN -m comment --comment \"Allow OpenVPN traffic on WANs\" >/dev/null 2>&1" + "\n");
-                    iptablesScript.write("${IPTABLES} -t filter -D filter-rules-input -p udp --dport 1194 -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() ) ) + "/0xff " +
-                                         "-j RETURN -m comment --comment \"Allow OpenVPN traffic on WANs\" >/dev/null 2>&1" + "\n");
-                }
-            }
-            iptablesScript.write("\n");
-            
             iptablesScript.write("# delete old mark rules (if they exist) (tun0-tun10) " + "\n");
             iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10 ) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
@@ -641,19 +630,6 @@ public class OpenVpnManager
             iptablesScript.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" >/dev/null 2>&1 \n");
             iptablesScript.write("\n");
             
-            iptablesScript.write("# allow traffic to openvpn daemon on WANs" + "\n");
-            iptablesScript.write("if [ ! -z \"`pidof openvpn`\" ] ; then" + "\n");
-            for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
-                if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
-                    iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p tcp --dport 1194 -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() ) ) + "/0xff " +
-                                         "-j RETURN -m comment --comment \"Allow OpenVPN traffic on WANs\"" + "\n");
-                    iptablesScript.write("    ${IPTABLES} -t filter -I filter-rules-input -p udp --dport 1194 -m mark --mark 0x" + Integer.toHexString( (intfSettings.getInterfaceId() ) ) + "/0xff " +
-                                         "-j RETURN -m comment --comment \"Allow OpenVPN traffic on WANs\"" + "\n");
-                }
-            }
-            iptablesScript.write("fi" + "\n");
-            iptablesScript.write("\n");
-
             iptablesScript.write("# mark traffic to/from openvpn interface" + "\n");
             iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices-1) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");

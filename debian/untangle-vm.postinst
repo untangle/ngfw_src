@@ -66,11 +66,6 @@ if [ "`/usr/share/untangle/bin/ut-settings-reader.py uvm system autoUpgrade`" ==
     /bin/rm -f /etc/cron.d/untangle-upgrade
 fi
 
-# 11.0 upgrade (Closes: #11853)
-if dpkg --compare-versions "$oldVersion" le 11.0~ ; then
-  /usr/share/untangle-netd/bin/sync-settings.py -vv
-  /etc/init.d/networking restart
-fi
 # point at stable-11 to get future 11.x upgrades
 sed -e 's/stable-10/stable-11/g' -i /etc/apt/sources.list.d/untangle.list
 
