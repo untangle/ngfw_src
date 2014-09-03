@@ -126,7 +126,21 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         super( nodeSettings, nodeProperties );
 
         this.scanner = scanner;
-        this.connectors = initialConnectors();
+
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
+        this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
+        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+
+        int strength = getStrength();
+
+        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl",  this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength);
+        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength);
+        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http",  this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, strength);
+        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp",  this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, strength);
+        this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
+
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
 
         String nodeName = getName();
@@ -179,12 +193,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
                                                      " WHERE " + nodeName + "_clean IS TRUE" + 
                                                      " AND policy_id = :policyId" + 
                                                      " ORDER BY time_stamp DESC");
-
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
-        this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
-        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
     }
 
     // VirusNode methods -------------------------------------------------
@@ -272,23 +280,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     // Node methods ------------------------------------------------------
 
-    private PipelineConnector[] initialConnectors()
-    {
-        int strength = getStrength();
-
-        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl",  this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, strength);
-        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, strength);
-        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http",  this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, strength);
-        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp",  this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, strength);
-
-        PipelineConnector[] result = new PipelineConnector[] {
-            virusFtpCtl,
-            virusFtpData,
-            virusHttp,
-            virusSmtp
-        };
-        return result;
-    }
 
     public void reconfigure()
     {

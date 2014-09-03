@@ -47,8 +47,11 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         handler = new EventHandler(this);
         statistics = new IpsStatistics();
 
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
+        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        
         // Put the octet stream close to the server so that it is after the http processing.
-
         this.octetConnector = UvmContextFactory.context().pipelineFoundry().create("ips-octet", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 10);
         this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("ips-http", this, null, new IpsHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, 0);
         this.connectors = new PipelineConnector[] { octetConnector, httpConnector };
@@ -67,10 +70,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
-
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
-        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     @Override

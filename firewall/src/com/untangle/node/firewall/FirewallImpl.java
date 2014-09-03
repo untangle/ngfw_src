@@ -90,6 +90,10 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         this.handler = new EventHandler(this);
 
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+
         this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3);
         this.connectors = new PipelineConnector[] { connector };
 
@@ -110,10 +114,6 @@ public class FirewallImpl extends NodeBase implements Firewall
                                                     "WHERE policy_id = :policyId " +
                                                     "AND firewall_blocked IS TRUE " +
                                                     "ORDER BY time_stamp DESC");
-
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     public EventLogQuery[] getEventQueries()

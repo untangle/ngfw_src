@@ -59,10 +59,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final CaptureHttpsHandler httpsHandler = new CaptureHttpsHandler(this);
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
     
-    private final PipelineConnector trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptureTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
-    private final PipelineConnector httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32);
-    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
-    private final PipelineConnector[] connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
+    private final PipelineConnector trafficConnector;
+    private final PipelineConnector httpsConnector;
+    private final PipelineConnector httpConnector;
+    private final PipelineConnector[] connectors;
 
     private final CaptureReplacementGenerator replacementGenerator;
 
@@ -95,6 +95,17 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         replacementGenerator = new CaptureReplacementGenerator(getNodeSettings());
 
+        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
+        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
+        addMetric(new NodeMetric(STAT_SESSQUERY, I18nUtil.marktr("DNS Lookups")));
+        addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
+        addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
+
+        this.trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptureTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
+        this.httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32);
+        this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
+        this.connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
+        
         this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                 "SELECT * FROM reports.capture_user_events " +
                 "WHERE policy_id = :policyId " +
@@ -153,12 +164,6 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 "WHERE policy_id = :policyId " +
                 "AND capture_blocked IS NOT NULL " +
                 "ORDER BY time_stamp DESC");
-
-        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
-        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
-        addMetric(new NodeMetric(STAT_SESSQUERY, I18nUtil.marktr("DNS Lookups")));
-        addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
-        addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
     }
 
 // THIS IS FOR ECLIPSE - @formatter:on

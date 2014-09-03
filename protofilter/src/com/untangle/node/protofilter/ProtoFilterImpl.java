@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -30,8 +32,8 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     private final EventHandler handler = new EventHandler( this );
 
-    private final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("protofilter", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
-    private final PipelineConnector[] connectors = new PipelineConnector[] { connector };
+    private final PipelineConnector connector;
+    private final PipelineConnector[] connectors;
 
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
@@ -42,10 +44,17 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
     
     // constructors -----------------------------------------------------------
 
-    public ProtoFilterImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ProtoFilterImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
+        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("protofilter", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
+        this.connectors = new PipelineConnector[] { connector };
+        
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "SELECT * FROM reports.sessions " + 
                                                "WHERE policy_id = :policyId " +
@@ -57,10 +66,6 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
                                                    "WHERE policy_id = :policyId " +
                                                    "AND protofilter_blocked IS TRUE " +
                                                    "ORDER BY time_stamp DESC");
-
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
-        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
     }
 
     // ProtoFilter methods ----------------------------------------------------

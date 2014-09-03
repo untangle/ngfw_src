@@ -42,8 +42,8 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final Logger logger = Logger.getLogger(getClass());
     
-    protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
-    protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
+    protected final PipelineConnector connector;
+    protected final PipelineConnector[] connectors;
 
     protected final WebFilterReplacementGenerator replacementGenerator;
 
@@ -62,6 +62,14 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         
         this.replacementGenerator = buildReplacementGenerator();
 
+        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
+        this.connectors = new PipelineConnector[] { connector };
+        
         String nodeName = this.getName();
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"),
@@ -84,11 +92,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                                                    "WHERE " + nodeName + "_category = 'unblocked' " +
                                                    "AND policy_id = :policyId " +
                                                    "ORDER BY time_stamp DESC");
-                                                   
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
-        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
         

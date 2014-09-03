@@ -35,9 +35,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     // server for pop/imap).
     // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
     // the casing doesn't have to be initialized.
-    private PipelineConnector smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10);
-    private PipelineConnector tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
-    private PipelineConnector[] connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
+    private final PipelineConnector smtpConnector;
+    private final PipelineConnector tarpitConnector;
+    private final PipelineConnector[] connectors;
 
     private final SpamScanner scanner;
 
@@ -71,6 +71,17 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
             vendorTag = "phish";
             badEmailName = "Phish";
         }
+
+        this.addMetric(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
+        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
+        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
+        this.addMetric(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
+        this.addMetric(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
+        this.addMetric(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
+
+        this.smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10);
+        this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
+        this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
                                                "SELECT * FROM reports.mail_addrs " +
@@ -95,13 +106,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "WHERE vendor_name = '" + vendorTag + "' " +
                                                   "AND policy_id = :policyId " +
                                                   "ORDER BY time_stamp DESC");
-        
-        this.addMetric(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
-        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
-        this.addMetric(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
-        this.addMetric(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
-        this.addMetric(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
     }
 
     public EventLogQuery[] getEventQueries()
