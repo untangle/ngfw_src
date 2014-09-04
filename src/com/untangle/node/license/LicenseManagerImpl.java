@@ -207,6 +207,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         for (License lic : this.settings.getLicenses()) {
             if ( ! lic.getValid() || lic.getTrial() ) // only count valid non-trials
                 continue;
+            if ( lic.getSeats() == null )
+                continue;
             if ( lic.getSeats() <= 0 ) //ignore invalid seat ranges
                 continue;
             if ( lic.getSeats() > seats && seats > 0 ) //if there is already a lower count limit, ignore this one
