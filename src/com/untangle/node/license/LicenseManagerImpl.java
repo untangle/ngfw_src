@@ -496,6 +496,18 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
                     replaceLicense = true;
                 }
 
+                /**
+                 * If the new one has a different seat amount
+                 */
+                if ( license.getSeats() != null && existingLicense.getSeats() == null ) {
+                    logger.info("REFRESH: Replacing license " + license + " - number of seats now specified");
+                    replaceLicense = true;
+                }
+                if ( license.getSeats() != null && existingLicense.getSeats() != null && license.getSeats() > existingLicense.getSeats() ) {
+                    logger.info("REFRESH: Replacing license " + license + " - new one has more seats");
+                    replaceLicense = true;
+                }
+                
                 if (replaceLicense) {
                     itr.remove();
                     insertNewLicense = true;
