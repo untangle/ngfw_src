@@ -77,10 +77,9 @@ class VirusTests(unittest2.TestCase):
 
     # test that client can http download pdf
     def test_013_httpNonVirusPDFNotBlocked(self):
-        raise unittest2.SkipTest("Review changes in test")
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.pdf 2>&1")
+        result = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/test/test.pdf")
         assert (result == 0)
 
     # test that client can block virus http download zip
@@ -118,7 +117,6 @@ class VirusTests(unittest2.TestCase):
 
     # test that client can ftp download PDF
     def test_023_ftpNonVirusPDFNotBlocked(self):
-        raise unittest2.SkipTest("Review changes in test")
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         adResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
