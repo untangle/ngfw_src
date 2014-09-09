@@ -247,7 +247,7 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
             state.byteStuffer = new ByteBufferByteStuffer();
             state.accumulator = bmt.getMIMEAccumulator();
 
-            session.beginServerStream( bmt.toStuffedTCPStreamer( state.byteStuffer ) );
+            session.sendStreamerToServer( bmt.toStuffedTCPStreamer( state.byteStuffer ) );
             return;
         }
 
@@ -256,7 +256,7 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
             logger.debug("Send CompleteMIMEToken to server");
             serverSideSharedState.beginMsgTransmission();
 
-            session.beginServerStream( ((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ) );
+            session.sendStreamerToServer( ((CompleteMIMEToken) token).toStuffedTCPStreamer( true, session ) );
             return;
         }
         // -----------------------------------------------------------

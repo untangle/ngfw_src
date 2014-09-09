@@ -188,9 +188,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     private void shutdownSide( int side, OutgoingSocketQueue out, boolean force )
     {
         if (out != null) {
-            if (crumbs2write[side] != null && !force) {
+            if (writeQueue[side] != null && !force) {
                 // Indicate the need to shutdown
-                addCrumb(side, ShutdownCrumb.getInstance(force));
+                addToWriteQueue(side, ShutdownCrumb.getInstance(force));
                 // we get handled later automatically by tryWrite()
                 return;
             }
@@ -233,28 +233,19 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         // Will result in client's outgoing and incoming socket queue being set to null 
     }
 
-    public void beginStream( int side, TCPStreamer s )
+    public void sendStreamer( int side, TCPStreamer s )
     {
-        if (streamer != null) {
-            String message = "Already streaming";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        if (side == CLIENT)
-            streamer = new TCPStreamer[] { s, null };
-        else
-            streamer = new TCPStreamer[] { null, s };
+        addToWriteQueue(side, s);
     }
 
-    public void beginClientStream( TCPStreamer streamer )
+    public void sendStreamerToClient( TCPStreamer streamer )
     {
-        beginStream(CLIENT, streamer);
+        sendStreamer( CLIENT, streamer );
     }
 
-    public void beginServerStream( TCPStreamer streamer )
+    public void sendStreamerToServer( TCPStreamer streamer )
     {
-        beginStream(SERVER, streamer);
+        sendStreamer( SERVER, streamer );
     }
 
     public void sendDataToServer( ByteBuffer[] bufs2send )
@@ -287,26 +278,9 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     
     public void sendData( int side, ByteBuffer buf2send )
     {
-        byte[] array;
-        int offset = buf2send.position();
-        int size = buf2send.remaining();
-        if (size <= 0) {
-            // already done
-            return;
-        }
-
-        if (buf2send.hasArray()) {
-            array = buf2send.array();
-            offset += buf2send.arrayOffset();
-        } else {
-            logger.warn("out-of-heap byte buffer, had to copy");
-            array = new byte[buf2send.remaining()];
-            buf2send.get(array);
-            buf2send.position(offset);
-            offset = 0;
-        }
-        DataCrumb crumb = new DataCrumb(array, offset, offset + size);
-        addCrumb(side, crumb);
+        DataCrumb crumb = createDataCrumb( buf2send );
+        if ( crumb != null )
+            addToWriteQueue(side, crumb);
     }
     
     public void setClientBuffer( ByteBuffer buf )
@@ -324,21 +298,6 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         readBuf[side] = buf;
     }
     
-    protected void endStream()
-    {
-        IPStreamer cs = streamer[CLIENT];
-        IPStreamer ss = streamer[SERVER];
-
-        if (cs != null) {
-            if (cs.closeWhenDone())
-                shutdownClient();
-        } else if (ss != null) {
-            if (ss.closeWhenDone())
-                shutdownServer();
-        }
-        streamer = null;
-    }
-
     protected boolean isSideDieing( int side, IncomingSocketQueue in )
     {
         return (in.containsReset());
@@ -349,57 +308,46 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         sendRSTEvent(side);
     }
 
-    protected void tryWrite( int side, OutgoingSocketQueue out )
+    protected boolean tryWrite( int side, OutgoingSocketQueue out )
     {
         String sideName = (side == CLIENT ? "client" : "server");
-        if (out == null) {
-            throw new RuntimeException("Invalid arguments");
+
+        if ( out == null ) {
+            logger.error("Invalid arguments");
+            return false;
         }
+
         if (out.isFull()) {
             logger.warn("tryWrite to full outgoing queue");
-        } else {
-            Crumb crumb2send = getNextCrumb2Send(side);
-            if (crumb2send == null)
-                throw new RuntimeException("Missing crumb");
-            int numWritten = sendCrumb(crumb2send, out);
-
-            if (logger.isDebugEnabled())
-                logger.debug("wrote " + numWritten + " to " + sideName);
+            return false;
         }
+        
+        Crumb crumb2send = getNextCrumb2Send(side);
+        if ( crumb2send == null )
+            return false;
+            
+        int numWritten = sendCrumb(crumb2send, out);
+
+        if (logger.isDebugEnabled())
+            logger.debug("wrote " + numWritten + " to " + sideName);
+        return true;
     }
 
-    protected void addStreamBuf( int side, IPStreamer ipStreamer )
+    protected Crumb readStreamer( IPStreamer streamer )
     {
-        TCPStreamer streamer = (TCPStreamer)ipStreamer;
+        TCPStreamer tcpStreamer = (TCPStreamer)streamer;
 
-        String sideName = (side == CLIENT ? "client" : "server");
+        Object obj = tcpStreamer.nextChunk();
 
-
-        Object obj = streamer.nextChunk();
+        if ( obj == null )
+            return null;
+        
         if ( obj instanceof ByteBuffer ) {
-            ByteBuffer buf2send = (ByteBuffer) obj; 
-            if ( buf2send == null ) {
-                logger.debug("end of stream");
-                endStream();
-                return;
-            }
-
-            sendData( side, buf2send );
-
-            if (logger.isDebugEnabled())
-                logger.debug("streamed " + buf2send.remaining() + " to " + sideName);
+            DataCrumb crumb = createDataCrumb( (ByteBuffer) obj );
+            return crumb;
         } else {
-            Object obj2send = obj;
-            if ( obj2send == null ) {
-                logger.debug("end of stream");
-                endStream();
-                return;
-            }
-
-            sendObject( side, obj2send );
-
-            if (logger.isDebugEnabled())
-                logger.debug("streamed " + obj2send + " to " + sideName);
+            ObjectCrumb crumb = new ObjectCrumb( obj );
+            return crumb;
         }
     }
 
@@ -699,4 +647,29 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
             logger.error("Could not attach temp file to session!", e);
         }
     }
+
+    private DataCrumb createDataCrumb( ByteBuffer buf )
+    {
+        byte[] array;
+        int offset = buf.position();
+        int size = buf.remaining();
+        if (size <= 0) {
+            // already done
+            return null;
+        }
+
+        if (buf.hasArray()) {
+            array = buf.array();
+            offset += buf.arrayOffset();
+        } else {
+            logger.warn("out-of-heap byte buffer, had to copy");
+            array = new byte[buf.remaining()];
+            buf.get(array);
+            buf.position(offset);
+            offset = 0;
+        }
+        DataCrumb crumb = new DataCrumb(array, offset, offset + size);
+        return crumb;
+    }
+                                      
 }

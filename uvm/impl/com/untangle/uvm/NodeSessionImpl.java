@@ -64,10 +64,12 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected final Dispatcher dispatcher;
 
+    /**
+     * writeQueue is two queues that represent the items stored to be written to each side (server and client)
+     * currently you can put Crumbs and Streamers only in the write queue
+     */
     @SuppressWarnings({"unchecked","rawtypes"}) //generics array creation not supported java6 || java7
-    protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
-
-    protected IPStreamer[] streamer = null;
+    protected final List<Object>[] writeQueue = new ArrayList[] { null, null };
 
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;
@@ -374,9 +376,13 @@ public abstract class NodeSessionImpl implements NodeSession
                     IncomingSocketQueue oursin = serverIncomingSocketQueue();
                     OutgoingSocketQueue ourcout = clientOutgoingSocketQueue();
                     OutgoingSocketQueue oursout = serverOutgoingSocketQueue();
-                    logger.debug("raze ourcin: " + ourcin +
-                                 ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
-                                 "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
+                    logger.debug("raze " +
+                                 " ourcin: " + ourcin +
+                                 " ourcout: " + ourcout +
+                                 " ourcsin: " + oursin +
+                                 " oursout: " + oursout +
+                                 " writeQueue[CLIENT]: " + writeQueue[CLIENT] +
+                                 " writeQueue[SERVER]: " + writeQueue[SERVER]);
                 }
             }
             closeFinal();
@@ -520,7 +526,7 @@ public abstract class NodeSessionImpl implements NodeSession
         }
 
         ObjectCrumb crumb = new ObjectCrumb( obj );
-        addCrumb(side, crumb);
+        addToWriteQueue(side, crumb);
     }
 
     public void sendObjectsToClient( Object[] objs )
@@ -541,9 +547,9 @@ public abstract class NodeSessionImpl implements NodeSession
             sendObject(side, objs[i]);
     }
     
-    protected void addCrumb(int side, Crumb buf)
+    protected void addToWriteQueue(int side, Object obj)
     {
-        if (buf == null)
+        if ( obj == null )
             return;
 
         OutgoingSocketQueue out;
@@ -558,13 +564,13 @@ public abstract class NodeSessionImpl implements NodeSession
             return;
         }
 
-        List<Crumb> crumbs = crumbs2write[side];
+        List<Object> queue = writeQueue[side];
 
-        if (crumbs == null) {
-            crumbs = new ArrayList<Crumb>();
-            crumbs2write[side] = crumbs;
+        if ( queue == null ) {
+            queue = new ArrayList<Object>();
+            writeQueue[side] = queue;
         }
-        crumbs.add(buf);
+        queue.add( obj );
     }
 
     protected int sendCrumb(Crumb crumb, OutgoingSocketQueue out)
@@ -582,20 +588,52 @@ public abstract class NodeSessionImpl implements NodeSession
 
     protected Crumb getNextCrumb2Send(int side)
     {
-        List<Crumb> crumbs = crumbs2write[side];
-        assert crumbs != null;
-        Crumb result = crumbs.get(0);
-        assert result != null;
-        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
-        // assert result.remaining() > 0 : "Cannot send zero length buffer";
-        int len = crumbs.size() - 1;
-        if (len == 0) {
-            // Check if we sent em all, and if so remove the array.
-            crumbs2write[side] = null;
-        } else {
-            crumbs.remove(0);
+        List<Object> queue = writeQueue[side];
+        if ( queue == null ) {
+            logger.warn("write queue is null");
+            return null;
         }
-        return result;
+        Object result = queue.get(0);
+        if ( result == null ) {
+            logger.warn("Invalid entry in write queue: " + result);
+            return null;
+        }
+
+        if ( result instanceof Crumb ) {
+            Crumb crumb = (Crumb) result;
+            queue.remove(0);
+            if ( queue.size() == 0 )
+                writeQueue[side] = null;
+
+            return crumb;
+        } else if ( result instanceof IPStreamer ) {
+            IPStreamer streamer = (IPStreamer) result;
+            Crumb crumb = readStreamer( streamer );
+            if ( crumb != null )
+                return crumb;
+            
+            // null means its done streaming
+
+            // if "closeWhenDone" then close the side
+            if (streamer.closeWhenDone()) {
+                if (side == CLIENT)
+                    shutdownClient();
+                else
+                    shutdownServer();
+            }
+
+            // remove the streamer from the write queue
+            queue.remove(0);
+            if ( queue.size() == 0 )
+                writeQueue[side] = null;
+
+            return null;
+        } else {
+            logger.error("Unknown object in write queue: " + result.getClass() + " " + result);
+            queue.remove(0);
+        }
+
+        return null;
     }
     
     public void complete()
@@ -793,14 +831,11 @@ public abstract class NodeSessionImpl implements NodeSession
                 return;
             }
 
-            IncomingSocketQueue ourin;
             OutgoingSocketQueue ourout, otherout;
             if (side == CLIENT) {
-                ourin = serverIncomingSocketQueue();
                 ourout = clientOutgoingSocketQueue();
                 otherout = serverOutgoingSocketQueue();
             } else {
-                ourin = clientIncomingSocketQueue();
                 ourout = serverOutgoingSocketQueue();
                 otherout = clientOutgoingSocketQueue();
             }
@@ -808,9 +843,9 @@ public abstract class NodeSessionImpl implements NodeSession
 
             if (logger.isDebugEnabled()) {
                 logger.debug("write(" + sideName + ") out: " + out +
-                             "   /  crumbs, write-queue  " +  crumbs2write[side] + ", " + out.numEvents() +
-                             "(" + out.numBytes() + " bytes)" + "   opp-read-queue: " +
-                             (ourin == null ? null : ourin.numEvents()));
+                             " out.numEvents(): " + out.numEvents() + 
+                             " out.numBytes(): " + out.numBytes() + 
+                             " write-queue: " +  writeQueue[side]);
             }
 
             if (!doWrite(side, ourout)) {
@@ -819,8 +854,9 @@ public abstract class NodeSessionImpl implements NodeSession
                 doWrite(side, ourout);
                 doWrite(1 - side, otherout);
             }
-            if (streamer == null)
-                setupForNormal();
+
+            refreshSocketQueueState();
+
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while writing to " + sideName;
             logger.error(message, x);
@@ -870,28 +906,22 @@ public abstract class NodeSessionImpl implements NodeSession
             assert in == ourin;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("read(" + sideName + ") in: " + in +
-                             "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
-                             (ourout == null ? null : ourout.numEvents()));
+                logger.debug("read(" + sideName + ") in: " + in );
             }
 
-            assert streamer == null : "readEvent when streaming";;
-
-            if (ourout == null || (crumbs2write[1 - side] == null && ourout.isEmpty())) {
-                handleRead(side, in );
-                doWrite(side, otherout);
-                doWrite(1 - side, ourout);
-                if (streamer != null) {
-                    // We do this after the writes so that we try to write out first.
-                    setupForStreaming();
-                    return;
-                }
+            if ( ourout == null || (writeQueue[1 - side] == null && ourout.isEmpty()) ) {
+                handleRead( side, in );
+                doWrite( side, otherout );
+                doWrite( 1 - side, ourout );
             } else {
                 logger.error("Illegal State: read(" + sideName + ") in: " + in +
-                             "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
-                             (ourout == null ? null : ourout.numEvents()));
+                             " ourout: " + ourout +
+                             " writequeue: " + writeQueue[1-side] +
+                             " empty:" + ( ourout == null ? null : ourout.isEmpty() ) );
             }
-            setupForNormal();
+
+            refreshSocketQueueState();
+            
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
             logger.error(message, x);
@@ -970,55 +1000,22 @@ public abstract class NodeSessionImpl implements NodeSession
     }
 
     /**
-     * This one sets up the socket queues for streaming to begin.
-     */
-    private void setupForStreaming()
-    {
-        IncomingSocketQueue cin = clientIncomingSocketQueue();
-        IncomingSocketQueue sin = serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = serverOutgoingSocketQueue();
-        assert (streamer != null);
-
-        if (cin != null)
-            cin.disable();
-        if (sin != null)
-            sin.disable();
-        if (streamer[CLIENT] != null) {
-            if (cout != null)
-                cout.enable();
-            if (sout != null)
-                sout.disable();
-        } else {
-            if (sout != null)
-                sout.enable();
-            if (cout != null)
-                cout.disable();
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
-        }
-    }
-
-    /**
      * This one sets up the socket queues for normal operation; used
      * when streaming ends.
      */
-    private void setupForNormal()
+    private void refreshSocketQueueState()
     {
         IncomingSocketQueue cin = clientIncomingSocketQueue();
         IncomingSocketQueue sin = serverIncomingSocketQueue();
         OutgoingSocketQueue cout = clientOutgoingSocketQueue();
         OutgoingSocketQueue sout = serverOutgoingSocketQueue();
-        assert (streamer == null);
 
         // We take care not to change the state unless it's really
         // changing, as changing the state calls notifymvpoll() every
         // time.
         if (sout != null && !sout.isEnabled())
             sout.enable();
-        if (sout == null || (sout.isEmpty() && crumbs2write[SERVER] == null)) {
+        if (sout == null || (sout.isEmpty() && writeQueue[SERVER] == null)) {
             if (cin != null && !cin.isEnabled())
                 cin.enable();
         } else {
@@ -1027,7 +1024,7 @@ public abstract class NodeSessionImpl implements NodeSession
         }
         if (cout != null && !cout.isEnabled())
             cout.enable();
-        if (cout == null || (cout.isEmpty() && crumbs2write[CLIENT] == null)) {
+        if (cout == null || (cout.isEmpty() && writeQueue[CLIENT] == null)) {
             if (sin != null && !sin.isEnabled())
                 sin.enable();
         } else {
@@ -1045,26 +1042,13 @@ public abstract class NodeSessionImpl implements NodeSession
      */
     private boolean doWrite(int side, OutgoingSocketQueue out)
     {
-        boolean didSomething = false;
-        if (out != null && out.isEmpty()) {
-            if (crumbs2write[side] != null) {
-                // Do this first, before checking streamer, so we
-                // drain out any remaining buffer.
-                tryWrite( side, out );
-                didSomething = true;
-            } else if (streamer != null) {
-                IPStreamer s = streamer[side];
-                if (s != null) {
-                    // It's the right one.
-                    addStreamBuf(side, s);
-                    if (crumbs2write[side] != null) {
-                        tryWrite( side, out );
-                        didSomething = true;
-                    }
-                }
-            }
-        }
-        return didSomething;
+        if (out == null || !out.isEmpty()) // no room
+            return false;
+
+        if (writeQueue[side] == null) // nothing to write
+            return false; 
+
+        return tryWrite( side, out );
     }
 
     /**
@@ -1083,9 +1067,9 @@ public abstract class NodeSessionImpl implements NodeSession
 
     abstract protected void sendCompleteEvent() ;
 
-    abstract protected void tryWrite( int side, OutgoingSocketQueue out );
+    abstract protected boolean tryWrite( int side, OutgoingSocketQueue out );
 
-    abstract protected void addStreamBuf( int side, IPStreamer streamer );
+    abstract protected Crumb readStreamer( IPStreamer streamer );
 
     abstract protected void handleRead( int side, IncomingSocketQueue in );
 

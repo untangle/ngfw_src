@@ -218,7 +218,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
 
         TCPStreamer tcpStreamer = new TokenStreamerAdaptor( streamer, session );
-        session.beginStream( side, tcpStreamer );
+        session.sendStreamer( side, tcpStreamer );
     }
 
     protected void blockRequest( NodeTCPSession session, Token[] response)

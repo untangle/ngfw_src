@@ -293,11 +293,15 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.NodeTCPSession">
+  <category name="com.untangle.uvm.NodeTCPSessionImpl">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.NodeUDPSession">
+  <category name="com.untangle.uvm.NodeUDPSessionImpl">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.NodeSessionImpl">
     <priority value="WARN"/>
   </category>
 

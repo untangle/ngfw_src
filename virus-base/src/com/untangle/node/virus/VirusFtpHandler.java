@@ -137,7 +137,7 @@ class VirusFtpHandler extends FtpEventHandler
             }
             TCPStreamer ts = scan( session );
             if (null != ts) {
-                session.beginServerStream(ts);
+                session.sendStreamerToServer(ts);
             }
             state.file = null;
         } else {
@@ -163,7 +163,7 @@ class VirusFtpHandler extends FtpEventHandler
             }
             TCPStreamer ts = scan( session );
             if (null != ts) {
-                session.beginClientStream(ts);
+                session.sendStreamerToClient(ts);
             }
             state.file = null;
         } else {

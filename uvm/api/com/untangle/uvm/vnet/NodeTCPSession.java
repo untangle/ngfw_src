@@ -142,25 +142,23 @@ public interface NodeTCPSession extends NodeSession
      */
     void resetServer();
 
-    void beginStream(int side, TCPStreamer streamer);
+    /**
+     * Sends a streamer to the specified side
+     * The streamer will be streamed into the side until it is done.
+     * Once it is done the it is remove from the write queue and the next
+     * thing will be written (if there is one)
+     */
+    public void sendStreamer(int side, TCPStreamer streamer);
 
     /**
-     * <code>beginClientStream</code> begins streaming to the client.  While streaming no
-     * other chunk or writable events will be delivered until the stream is finished.  (This
-     * happens when the streamer <code>nextChunk</code> function returns null.
-     *
-     * @param streamer a <code>TCPStreamer</code> value
+     * Sends a streamer to the client
      */
-    void beginClientStream(TCPStreamer streamer);
+    public void sendStreamerToClient(TCPStreamer streamer);
 
     /**
-     * <code>beginServerStream</code> begins streaming to the server.  While streaming no
-     * other chunk or writable events will be delivered until the stream is finished.  (This
-     * happens when the streamer <code>nextChunk</code> function returns null.
-     *
-     * @param streamer a <code>TCPStreamer</code> value
+     * Sends a streamer to the server
      */
-    void beginServerStream(TCPStreamer streamer);
+    public void sendStreamerToServer(TCPStreamer streamer);
     
     /**
      * Delete temp files previously attached to this session, that might have 

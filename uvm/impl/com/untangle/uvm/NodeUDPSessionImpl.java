@@ -184,29 +184,36 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
         }
 
         UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(), array, offset, limit);
-        addCrumb(side, crumb);
+        addToWriteQueue(side, crumb);
     }
 
-    protected void tryWrite(int side, OutgoingSocketQueue out )
+    protected boolean tryWrite(int side, OutgoingSocketQueue out )
     {
-        assert out != null;
+        if ( out == null ) {
+            logger.error("Invalid arguments.");
+            return false;
+        }
+        
         if (out.isFull()) {
             logger.warn("tryWrite to full outgoing queue");
-        } else {
-            Crumb nc = getNextCrumb2Send(side);
-            PacketCrumb packet2send = (PacketCrumb) nc;
-            assert packet2send != null;
-            int numWritten = sendCrumb(packet2send, out);
+            return false;
+        } 
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("wrote " + numWritten + " to " + side);
-            }
+        Crumb nc = getNextCrumb2Send(side);
+        PacketCrumb packet2send = (PacketCrumb) nc;
+        assert packet2send != null;
+        int numWritten = sendCrumb(packet2send, out);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("wrote " + numWritten + " to " + side);
         }
+        return true;
     }
 
-    protected void addStreamBuf(int side, IPStreamer ipStreamer)
+    protected Crumb readStreamer( IPStreamer streamer )
     {
-        logger.error("addStreamBuf() not implemented for UDP", new Exception());
+        logger.error("Streaming not implemented for UDP", new Exception());
+        return null;
     }
 
     protected void sendWritableEvent(int side)
