@@ -75,22 +75,29 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
+    # test that client can http download pdf
+    def test_013_httpNonVirusPDFNotBlocked(self):
+        if (self.freshdRunning):
+            raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.pdf 2>&1 | grep -q text123")
+        assert (result == 0)
+
     # test that client can block virus http download zip
-    def test_012_httpEicarBlocked(self):
+    def test_015_httpEicarBlocked(self):
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_013_httpVirusBlocked(self):
+    def test_017_httpVirusBlocked(self):
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_014_httpEicarPassSite(self):
+    def test_019_httpEicarPassSite(self):
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         addPassSite("test.untangle.com")
@@ -108,8 +115,18 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test.zip")
         assert (result == 0)
 
+    # test that client can ftp download PDF
+    def test_023_ftpNonVirusPDFNotBlocked(self):
+        if (self.freshdRunning):
+            raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
+        adResult = subprocess.call(["ping","-c","1","test.untangle.com"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (adResult != 0):
+            raise unittest2.SkipTest("FTP server not available")
+        result = remote_control.runCommand("wget -q -O /dev/null ftp://test.untangle.com/test/test.pdf")
+        assert (result == 0)
+
     # test that client can block virus ftp download zip
-    def test_022_ftpVirusBlocked(self):
+    def test_025_ftpVirusBlocked(self):
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
@@ -134,7 +151,7 @@ class VirusTests(unittest2.TestCase):
         assert( found )
 
     # test that client can block virus ftp download zip
-    def test_023_ftpVirusPassSite(self):
+    def test_027_ftpVirusPassSite(self):
         if (self.freshdRunning):
             raise unittest2.SkipTest("clamd is downloading definition files skip all tests")
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
