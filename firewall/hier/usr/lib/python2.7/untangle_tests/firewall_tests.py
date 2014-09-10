@@ -17,6 +17,7 @@ node = None
 testsiteIP = "74.123.29.140"
 testsiteIPRange = "74.123.29.139-74.123.29.141"
 testsiteIPRange2 = "74.123.27.139-74.123.30.141"
+dnsServer = "74.123.28.4"
 
 def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True, invert=False ):
     matcherTypeStr = str(matcherType)
@@ -183,7 +184,7 @@ class FirewallTests(unittest2.TestCase):
     def test_028_blockUdpPort53(self):
         nukeRules();
         appendRule(createSingleMatcherRule("DST_PORT","53"));
-        result = remote_control.runCommand("host test.untangle.com 4.2.2.1")
+        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result != 0)
 
     # verify src addr rule with any works
@@ -267,20 +268,20 @@ class FirewallTests(unittest2.TestCase):
     def test_047_blockProtocolUDPnotTCP(self):
         nukeRules();
         appendRule( createDualMatcherRule("PROTOCOL","UDP", "DST_PORT", 53) );
-        result = remote_control.runCommand("host test.untangle.com 4.2.2.1")
+        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result != 0)
         # Use TCP version of DNS lookup.
-        result = remote_control.runCommand("host -T test.untangle.com 4.2.2.1")
+        result = remote_control.runCommand("host -T test.untangle.com " + dnsServer)
         assert (result == 0)
 
     # verify protocol TCP not UDP block rule works
     def test_048_blockProtocolTCPnotUDP(self):
         nukeRules();
         appendRule( createDualMatcherRule("PROTOCOL","TCP", "DST_PORT", 53) );
-        result = remote_control.runCommand("host test.untangle.com 4.2.2.1")
+        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
         assert (result == 0)
         # Use TCP version of DNS lookup.
-        result = remote_control.runCommand("host -T test.untangle.com 4.2.2.1")
+        result = remote_control.runCommand("host -T test.untangle.com " + dnsServer)
         assert (result != 0)
 
     # verify src intf any rule works
