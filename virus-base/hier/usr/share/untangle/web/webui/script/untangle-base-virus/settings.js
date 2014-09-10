@@ -53,6 +53,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
         // Web Panel
         buildWeb: function() {
+
+            this.aboutInfoField = {};
+            if (this.aboutInfo != null)
+                this.aboutInfoField = {
+                    xtype: 'fieldset',
+                    title: this.i18n._('About'),
+                    cls: 'description',
+                    html: this.aboutInfo
+                };
+
             this.panelWeb = Ext.create('Ext.panel.Panel',{
                 name: 'Web',
                 //helpSource: 'virus_blocker_web',
@@ -114,9 +124,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                     cls: 'description',
-                    html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                         (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
-                }],
+                }, this.aboutInfoField],
 
                 onManageExtensions: function() {
                     if (!this.winExtensions) {
