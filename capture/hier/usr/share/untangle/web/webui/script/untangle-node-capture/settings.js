@@ -66,6 +66,7 @@ if (!Ung.hasResource["Ung.Capture"]) {
             this.buildGridCaptiveStatus();
             this.panelCaptiveStatus = Ext.create('Ext.panel.Panel', {
                 name: 'Status',
+                helpSource: 'captive_portal_status',
                 parentId: this.getId(),
                 title: this.i18n._('Status'),
                 layout: { type: 'vbox', align: 'stretch' },
