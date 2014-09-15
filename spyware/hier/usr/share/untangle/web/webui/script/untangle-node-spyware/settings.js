@@ -449,6 +449,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildCookieEventLog: function() {
             this.gridCookieEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'cookie_event_log',
                 eventQueriesFn: this.getRpcNode().getCookieEventQueries,
                 name: "Cookie Event Log",
                 title: i18n._('Cookie Event Log'),
@@ -519,6 +520,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildUrlEventLog: function() {
             this.gridUrlEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'web_event_log',
                 eventQueriesFn: this.getRpcNode().getUrlEventQueries,
                 name: "Web Event Log",
                 title: i18n._('Web Event Log'),
@@ -586,6 +588,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildSuspiciousEventLog: function() {
             this.gridSuspiciousEventLog = Ext.create('Ung.GridEventLog',{
                 settingsCmp: this,
+                helpSource: 'traffic_event_log',
                 eventQueriesFn: this.getRpcNode().getSuspiciousEventQueries,
                 name: "Traffic Event Log",
                 title: i18n._('Traffic Event Log'),
