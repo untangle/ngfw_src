@@ -297,6 +297,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             writeCronFile();
         if (settingsFile.lastModified() > SYSLOG_CONF_FILE.lastModified())
             SyslogManagerImpl.reconfigure(this.settings);
+        SyslogManagerImpl.setEnabled(this.settings);
         
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");

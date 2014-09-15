@@ -93,4 +93,11 @@ public class SyslogManagerImpl
         // restart syslog
         UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
     }
+    
+    public static void setEnabled(ReportingSettings reportingSettings)
+    {
+        enabled = 
+            ( reportingSettings != null && reportingSettings.isSyslogEnabled()) 
+            ? true : false;
+    }
 }
