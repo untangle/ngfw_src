@@ -258,8 +258,10 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_050_passedUrlOverridesBlockedCategory(self):
         addPassedUrl("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result = remote_control.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -qi 'Girls'")
-        assert (result == 0)
+        result = remote_control.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q blockpage")
+        assert (result != 0)
+        result = remote_control.runCommand("wget -q -O - http://www.playboy.com/ 2>&1 | grep -q blockpage")
+        assert (result != 0)
         nukePassedUrls()
 
     # verify that an entry in the pass list overrides a blocked category
