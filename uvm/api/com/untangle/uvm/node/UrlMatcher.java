@@ -19,7 +19,7 @@ public class UrlMatcher implements java.io.Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String  LEFT_SIDE_ANCHOR = "^(\\w*\\.)*";
+    private static final String  LEFT_SIDE_ANCHOR = "^([a-zA-Z_0-9-]*\\.)*";
     private static final String  RIGHT_SIDE_ANCHOR = ".*$";
     
     /**
