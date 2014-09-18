@@ -85,7 +85,7 @@ insert_iptables_rules()
     # Insert redirect table in beginning of PREROUTING
     ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm'
 
-    ${IPTABLES} -I POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
+    ${IPTABLES} -A POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
 
     # We insert one -j DNAT rule for each local address
     # This is necessary so that the destination address is maintained when replying (with the SYN/ACK)
