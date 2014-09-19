@@ -127,6 +127,8 @@ public class OpenVpnManager
         "persist-key",
         /* Do not re-init tun0 after SIGUSR1 */
         "persist-tun",
+        /* notify server when exitting */
+        "explicit-exit-notify 1",
         /* device */
         "dev tun"
     };
