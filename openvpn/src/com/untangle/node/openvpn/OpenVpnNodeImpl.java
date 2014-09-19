@@ -268,17 +268,21 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         }
 
         /**
-         * Generate the zip and exec files
-         */
-        this.openVpnManager.createClientDistribution( settings, client );
-        
-        /**
          * Return the proper link for the requested format
+         * and Generate the zip and exec files
          */
         String fileName = null;
-        if ( "exe".equals(format) ) fileName = "setup.exe";
-        else if ( "zip".equals(format) ) fileName = "config.zip";
-        else throw new RuntimeException("Unknown format: " + format);
+        if ( "exe".equals(format) ) {
+            this.openVpnManager.createClientDistributionExe( settings, client );
+            fileName = "setup.exe";
+        }
+        else if ( "zip".equals(format) ) {
+            this.openVpnManager.createClientDistributionZip( settings, client );
+            fileName = "config.zip";
+        }
+        else {
+            throw new RuntimeException("Unknown format: " + format);
+        }
 
         String key = "";
         String clientNameStr = "";

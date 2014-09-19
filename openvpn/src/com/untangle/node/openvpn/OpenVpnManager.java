@@ -188,13 +188,18 @@ public class OpenVpnManager
         writeRemoteServerFiles( settings );
     }
 
-    /**
-     * Create all of the client configuration files
-     */
-    protected void createClientDistribution( OpenVpnSettings settings, OpenVpnRemoteClient client )
+
+    private void writeConfFiles( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
         writeRemoteClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeRemoteClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
+    }
+    /**
+     * Create all of the client configuration files
+     */
+    protected void createClientDistributionExe( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    {
+        writeConfFiles( settings, client );
 
         String cmdStr;
         ExecManagerResult result;
@@ -208,6 +213,17 @@ public class OpenVpnManager
             for ( String line : lines )
                 logger.info(GENERATE_ZIP_SCRIPT + ": " + line);
         } catch (Exception e) {}
+    }
+
+    /**
+     * Create all of the client configuration files
+     */
+    protected void createClientDistributionZip( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    {
+        writeConfFiles( settings, client );
+
+        String cmdStr;
+        ExecManagerResult result;
 
         cmdStr = GENERATE_EXE_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
         logger.debug( "Executing: " + cmdStr );

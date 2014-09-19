@@ -53,6 +53,14 @@ buildConfigFile() {
     echo "Created ${PACKAGE_DIR}/config-${commonName}.zip"
     popd >/dev/null
 
+    # tell openvpn to connect quickly to reserve client IP
+    # this is necessary so that it writes /etc/openvpn/address-pool-assignments.txt
+    # cd ${outputDir}
+    # openvpn --remote 127.0.0.1 --config ${outputDir}/${siteName}.conf >/tmp/foo 2>&1 &
+    # PID=$!
+    # sleep 5
+    # kill -INT $PID
+
     ## Clean up
     rm -f ${outputDir}/${siteName}.conf
     rm -f ${outputDir}/${siteName}.ovpn
