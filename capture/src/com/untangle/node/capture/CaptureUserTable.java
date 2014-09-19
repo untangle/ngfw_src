@@ -54,7 +54,7 @@ public class CaptureUserTable
         if (anonymous == true) {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
             entry.setUsernameCapture(null);
-            entry.setMarkerCapture(true);
+            entry.setCaptivePortalAuthenticated(true);
         }
 
         // for all other users set the global capture username and also
@@ -62,7 +62,7 @@ public class CaptureUserTable
         else {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
             entry.setUsernameCapture(username);
-            entry.setMarkerCapture(true);
+            entry.setCaptivePortalAuthenticated(true);
         }
 
         return (local);
@@ -78,7 +78,7 @@ public class CaptureUserTable
         // of the captive portal flag so it knows we are all done 
         HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
         entry.setUsernameCapture(null);
-        entry.setMarkerCapture(false);
+        entry.setCaptivePortalAuthenticated(false);
         return (true);
     }
 

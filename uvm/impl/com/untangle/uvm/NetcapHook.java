@@ -131,33 +131,47 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.serverSide().client().port(),
                                                netcapSession.serverSide().server().port());
 
-            /* lookup the user information */
+            /* lookup the host table information */
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-            if ( entry != null )
+            String username = null;
+            String hostname = null;
+
+            if ( entry == null ) {
+                /* if its not in the host table and is a non-WAN client, create a host table entry */
+                InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId( netcapSession.clientSide().interfaceId() );
+                if ( intfSettings != null && ! intfSettings.getIsWan() ) {
+                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
+                }
+                /* include OpenVPN & L2TP clients in host table */
+                if ( netcapSession.clientSide().interfaceId() == 0xfa || netcapSession.clientSide().interfaceId() == 0xfb ) {
+                    entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
+                }
+            } 
+            
+            /* if entry is still not null */
+            if ( entry != null ) {
                 entry.setLastSessionTime( System.currentTimeMillis() );
-            String username = ( entry == null ? null : entry.getUsername() );
-            if (username != null && username.length() > 0 ) { 
-                logger.debug( "user information: " + username );
-                sessionGlobalState.setUser( username );
-                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
-            }
-            /* lookup the hostname information */
-            HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
-            HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
-            String hostname = ( entry == null ? null : entry.getHostname() );
-            if ((hostname == null || hostname.length() == 0) && reporting != null)
-                hostname = reporting.lookupHostname( clientAddr );
-            if ((hostname == null || hostname.length() == 0) && router != null)
-                hostname = router.lookupHostname( clientAddr );
-            if ((hostname == null || hostname.length() == 0))
-                hostname = clientAddr.getHostAddress();
-            if (hostname != null && hostname.length() > 0 ) {
-                sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
-                /* If the hostname isn't known in the host table and its a local host (not from WAN) then set hostname */
-                if ( entry == null || !entry.isHostnameKnown()) {
-                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId( netcapSession.clientSide().interfaceId() );
-                    if ( intfSettings != null && ! intfSettings.getIsWan() ) {
-                        entry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get entry */
+
+                username = entry.getUsername();
+                if (username != null && username.length() > 0 ) { 
+                    logger.debug( "user information: " + username );
+                    sessionGlobalState.setUser( username );
+                    sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
+                }
+                /* lookup the hostname information */
+                HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+                HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                hostname = entry.getHostname();
+                if ((hostname == null || hostname.length() == 0) && reporting != null)
+                    hostname = reporting.lookupHostname( clientAddr );
+                if ((hostname == null || hostname.length() == 0) && router != null)
+                    hostname = router.lookupHostname( clientAddr );
+                if ((hostname == null || hostname.length() == 0))
+                    hostname = clientAddr.getHostAddress();
+                if (hostname != null && hostname.length() > 0 ) {
+                    sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
+                    /* If the hostname isn't known in the host table then set hostname */
+                    if ( !entry.isHostnameKnown()) {
                         entry.setHostname( hostname );
                     }
                 }

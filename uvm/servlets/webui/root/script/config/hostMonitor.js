@@ -47,7 +47,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                             "lastSessionTime": 0,//d.getTime()+(i*86400000),
                             "username": "testuser"+i,
                             "usernameAdConnector": "uad"+ii,
-                            "captivePortal":(ii%2)==1,
+                            "captivePortalAuthenticated":(ii%2)==1,
                             "usernameCapture": "ucap"+(ii%50),
                             "penaltyBoxed":(ii%2)==1,
                             "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
@@ -136,9 +136,15 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     name: "usernameAdConnector",
                     type: 'string'
                 },{
-                    name: "captivePortal"
+                    name: "captivePortalAuthenticated"
                 },{
                     name: "usernameCapture",
+                    type: 'string'
+                },{
+                    name: "usernameTunnel",
+                    type: 'string'
+                },{
+                    name: "usernameOpenvpn",
                     type: 'string'
                 },{
                     name: "penaltyBoxed"
@@ -235,9 +241,7 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     dataIndex: "penaltyBoxed",
                     width: 100,
                     filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        type: 'boolean'
                     }
                 },{
                     hidden: true,
@@ -322,6 +326,22 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     }
                 },{
                     hidden: true,
+                    header: "Captive Portal" + " - " + this.i18n._("Authenticated"),
+                    dataIndex: "captivePortalAuthenticated",
+                    width: 100,
+                    filter: {
+                        type: 'boolean'
+                    }
+                },{
+                    hidden: true,
+                    header: "Captive Portal" + " - " + this.i18n._("Username"),
+                    dataIndex: "usernameCapture",
+                    width: 100,
+                    filter: {
+                        type: 'string'
+                    }
+                },{
+                    hidden: true,
                     header: "Directory Connector" + " - " + this.i18n._("Username"),
                     dataIndex: "usernameAdConnector",
                     width: 100,
@@ -330,18 +350,16 @@ if (!Ung.hasResource["Ung.HostMonitor"]) {
                     }
                 },{
                     hidden: true,
-                    header: "Captive Portal" + " - " + this.i18n._("Authenticated"),
-                    dataIndex: "captivePortal",
+                    header: "L2TP" + " - " + this.i18n._("Username"),
+                    dataIndex: "usernameTunnel",
                     width: 100,
                     filter: {
-                        type: 'boolean',
-                        yesText: 'true',
-                        noText: 'false'
+                        type: 'string'
                     }
                 },{
                     hidden: true,
-                    header: "Captive Portal" + " - " + this.i18n._("Username"),
-                    dataIndex: "usernameCapture",
+                    header: "OpenVPN" + " - " + this.i18n._("Username"),
+                    dataIndex: "usernameOpenvpn",
                     width: 100,
                     filter: {
                         type: 'string'

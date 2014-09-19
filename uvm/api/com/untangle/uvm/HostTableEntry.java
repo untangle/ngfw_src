@@ -26,12 +26,13 @@ public class HostTableEntry implements Serializable, JSONString
     private boolean     licensed = true;
 
     private String hostname;
-    private String usernameAdConnector;
 
-    private boolean markerCapture = false;
-    private boolean markerTunnel = false;
+    private boolean captivePortalAuthenticated = false; /* marks if this user is authenticated with captive portal */
+
     private String usernameCapture;
     private String usernameTunnel;
+    private String usernameOpenvpn;
+    private String usernameAdConnector;
     
     private boolean penaltyBoxed = false;
     private long    penaltyBoxExitTime;
@@ -76,15 +77,15 @@ public class HostTableEntry implements Serializable, JSONString
     public String getUsernameCapture() { return this.usernameCapture; }
     public void setUsernameCapture( String newValue ) { this.usernameCapture = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
     
-    public boolean getMarkerCapture() { return this.markerCapture; }
-    public void setMarkerCapture( boolean newValue ) { this.markerCapture = newValue; updateAccessTime(); }
+    public boolean getCaptivePortalAuthenticated() { return this.captivePortalAuthenticated; }
+    public void setCaptivePortalAuthenticated( boolean newValue ) { this.captivePortalAuthenticated = newValue; updateAccessTime(); }
 
     public String getUsernameTunnel() { return this.usernameTunnel; }
     public void setUsernameTunnel( String newValue ) { this.usernameTunnel = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
-    
-    public boolean getMarkerTunnel() { return this.markerTunnel; }
-    public void setMarkerTunnel( boolean newValue ) { this.markerTunnel = newValue; updateAccessTime(); }
-    
+
+    public String getUsernameOpenvpn() { return this.usernameOpenvpn; }
+    public void setUsernameOpenvpn( String newValue ) { this.usernameOpenvpn = (newValue == null ? null : newValue.toLowerCase()); updateAccessTime(); }
+
     public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
     public void setPenaltyBoxed( boolean newValue ) { this.penaltyBoxed = newValue; updateAccessTime(); }
 
@@ -123,6 +124,8 @@ public class HostTableEntry implements Serializable, JSONString
             return getUsernameCapture();
         if (getUsernameTunnel() != null)
             return getUsernameTunnel();
+        if (getUsernameOpenvpn() != null)
+            return getUsernameOpenvpn();
         if (getUsernameAdConnector() != null)
             return getUsernameAdConnector();
         return null;
@@ -134,6 +137,8 @@ public class HostTableEntry implements Serializable, JSONString
             return "Captive Portal";
         if (getUsernameTunnel() != null)
             return "L2TP/IPsec";
+        if (getUsernameOpenvpn() != null)
+            return "OpenVPN";
         if (getUsernameAdConnector() != null)
             return "Directory Connector";
         return null;

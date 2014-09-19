@@ -28,15 +28,17 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTable;
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 
 
 class OpenVpnMonitor implements Runnable
 {
     /* Poll every 5 seconds */
-    private static final long   SLEEP_TIME_MSEC = 10 * 1000;
+    private static final long   SLEEP_TIME_MSEC = 5 * 1000;
 
-    /* Log every 5 minutes ? */
+    /* Log every 5 minutes */
     private static final long   LOG_TIME_MSEC = 5 * 60 * 1000;
 
     /* Delay a second while the thread is joining */
@@ -327,6 +329,15 @@ class OpenVpnMonitor implements Runnable
             iter.remove();
 
             statusMap.remove( stats.key );
+
+            /* set the openvpn username of the host back to null */
+            if ( stats.key != null ) {
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.key.poolAddress, false );
+                if ( entry != null ) {
+                    entry.setUsernameOpenvpn( null );
+                }
+            }
+            
         }
     }
 
@@ -381,6 +392,13 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
+        // set the global openvpn username in the host table
+        if ( poolAddress != null ) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( poolAddress, true );
+            entry.setHostname( name );
+            entry.setUsernameOpenvpn( name );
+        }
+        
         Key key = new Key( name, address, port, poolAddress, start );
         Stats stats = statusMap.get( key );
 
