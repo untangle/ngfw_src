@@ -197,7 +197,7 @@ public class OpenVpnManager
     /**
      * Create all of the client configuration files
      */
-    protected void createClientDistributionExe( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    protected void createClientDistributionZip( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
         writeConfFiles( settings, client );
 
@@ -218,7 +218,7 @@ public class OpenVpnManager
     /**
      * Create all of the client configuration files
      */
-    protected void createClientDistributionZip( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    protected void createClientDistributionExe( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
         writeConfFiles( settings, client );
 
