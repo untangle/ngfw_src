@@ -70,6 +70,9 @@ def check_events( events, num_events, *args, **kwargs):
         return False
     if num_events == 0:
         return False
+    if len(events) == 0:
+        print "No events in list"
+        return False
     if kwargs.get('min_date') == None:
         min_date = datetime.datetime.now()-datetime.timedelta(minutes=10)
     else:
@@ -80,12 +83,14 @@ def check_events( events, num_events, *args, **kwargs):
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
+            print "failed to find event checked: %i total: %i" % (num_checked, len(events)) 
             break
         event = events[num_checked]
         num_checked += 1
 
         # if event has a date and its too old - ignore the event
         if event.get('time_stamp') != None and datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000) < min_date:
+            print "ignoring old event: %s " % str(event.get('time_stamp'))
             continue
 
         # check each expected value
