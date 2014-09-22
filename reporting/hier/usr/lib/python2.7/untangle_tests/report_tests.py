@@ -97,7 +97,6 @@ class ReportTests(unittest2.TestCase):
         # TODO set email address, send email, check attachment size
 
     def test_040_remoteSyslog(self):
-        raise unittest2.SkipTest("Review changes in test")        
         if (syslogHostResult != 0):
             raise unittest2.SkipTest("No syslog server available")        
         # Install firewall rule to generate syslog events
@@ -148,7 +147,9 @@ class ReportTests(unittest2.TestCase):
                         if str(targetID) in line:
                             matchedFirewallRule = True
          
-        assert(matchedClientIP and matchedBlockedStatus and matchedFirewallRule)
+        assert(matchedClientIP)
+        assert(matchedBlockedStatus)
+        assert(matchedFirewallRule)
 
     @staticmethod
     def finalTearDown(self):
