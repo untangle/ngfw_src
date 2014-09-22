@@ -25,13 +25,9 @@ class ClamTests(VirusTests):
 
     # verify daemon is running
     def test_009_clamdIsRunning(self):
-        result = os.system("ps aux | grep clamd | grep -v grep >/dev/null 2>&1")
-        # if clamd is not running check to see freshclam is download new files
-        if result != 0:
-            freshClamResult = os.system("ps aux | grep freshclam | grep -v grep >/dev/null 2>&1")
-            if (freshClamResult == 0):
-                VirusTests.freshdRunning = True # clamd is downloading definition files skip all tests
-                raise unittest2.SkipTest("Clamd is not finished downloading definition files")
+        # wait for freshclam to finish updating sigs
+        os.system("freshclam >/dev/null 2>&1")
+        result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 
 test_registry.registerNode("clam", ClamTests)
