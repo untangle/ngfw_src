@@ -50,8 +50,8 @@ def getLatestMailSender():
     results = remote_control.runCommand("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
-def sendPhishMail():
-    results = remote_control.runCommand("python mailsender.py --from=test@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
+def sendPhishMail(mailfrom="test"):
+    results = remote_control.runCommand("python mailsender.py --from=" + mailfrom + "@example.com --to=\"qa@example.com\" ./phish-mail/ --host="+smtpServerHost+" --reconnect --series=30:0,150,100,50,25,0,180")
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -111,7 +111,7 @@ class PhishTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
-        sendPhishMail()
+        sendPhishMail("test020")
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -139,7 +139,7 @@ class PhishTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
-        sendPhishMail()
+        sendPhishMail("test030")
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -167,7 +167,7 @@ class PhishTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
-        sendPhishMail()
+        sendPhishMail("test040")
         flushEvents()
         query = None;
         for q in node.getEventQueries():
