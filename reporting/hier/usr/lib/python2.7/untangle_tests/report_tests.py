@@ -142,7 +142,7 @@ class ReportTests(unittest2.TestCase):
                     if str(match.group(1)) in line:
                         if remote_control.clientIP in line:
                             matchedClientIP = True
-                        if '"blocked":true' in line:
+                        if '\"blocked\":true' in line:
                             matchedBlockedStatus = True
                         if str(targetID) in line:
                             matchedFirewallRule = True
