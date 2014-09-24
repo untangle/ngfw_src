@@ -107,7 +107,7 @@ class ReportTests(unittest2.TestCase):
         # Get rule ID
         for rule in rules['list']:
             if rule['enabled'] and rule['block']:
-                targetID = rule['ruleId']
+                targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host
         newSyslogSettings = copy.deepcopy(syslogSettings)
@@ -115,41 +115,30 @@ class ReportTests(unittest2.TestCase):
         newSyslogSettings["syslogEnabled"] = True
         newSyslogSettings["syslogHost"] = syslogHostIP
         node.setSettings(newSyslogSettings)
-        currentTime = time.strftime("%X")
+
+        # clear the logs on server so old events are gone
+        remote_control.runCommand("echo > /var/log/localhost/localhost.log", host=syslogHostIP)
+
+        # create some traffic (blocked by firewall and thus create a syslog event)
         result = remote_control.isOnline()
-        nowtime = datetime.now()
-        currentTime =  nowtime.strftime('%b %d %H:%M')
-        print "currentTime " + currentTime
-        rsyslogResult = remote_control.runCommand("sudo tail -8 /var/log/localhost/localhost.log", host=syslogHostIP, stdout=True)
-        resultList = rsyslogResult.splitlines()
+
+        # give event time to reach server (its UDP so this is required)
+        time.sleep(1)
+
+        # get syslog results on server
+        rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log", host=syslogHostIP, stdout=True)
+
         # remove the firewall rule aet syslog back to original settings
         node.setSettings(syslogSettings)
         rules["list"]=[];
         nodeFirewall.setRules(rules);
         
-        # Get the date and time from the last record 
-        matchedClientIP = False
-        matchedBlockedStatus = False
-        matchedFirewallRule = False
-        match = re.search(r'(\w{3}\s\d\d\s\d\d:\d\d:\d\d).*', resultList[-1])
-        if (match == None):
-            print "Rsyslog did not have any date match"
-        else:
-            # print match.group(1)
-            # Check to see if the logs are in this test's timeframe. 
-            if (currentTime in match.group(1)):
-                for line in reversed(resultList):
-                    if str(match.group(1)) in line:
-                        if remote_control.clientIP in line:
-                            matchedClientIP = True
-                        if '\"blocked\":true' in line:
-                            matchedBlockedStatus = True
-                        if str(targetID) in line:
-                            matchedFirewallRule = True
-         
-        assert(matchedClientIP)
-        assert(matchedBlockedStatus)
-        assert(matchedFirewallRule)
+        # parse the output and look for a rule that matches the expected values
+        found = False
+        for line in rsyslogResult.splitlines():
+            if "FirewallEvent" in line and '\"blocked\":true' in line and str('\"ruleId\":%i' % targetRuleId) in line:
+                found = True
+        assert(found)
 
     @staticmethod
     def finalTearDown(self):
