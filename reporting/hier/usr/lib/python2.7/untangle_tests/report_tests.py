@@ -130,13 +130,16 @@ class ReportTests(unittest2.TestCase):
         # parse the output and look for a rule that matches the expected values
         found = False
         for line in rsyslogResult.splitlines():
-            print "checking FirewallEvent line: %s " % line
-            print "for \"%s\" and \"%s\"" % ('\"blocked\":true' , str('\"ruleId\":%i' % targetRuleId) )
-            if '\"blocked\":true' in line:
-                print "found: %s" % '\"blocked\":true'
-                if str('\"ruleId\":%i' % targetRuleId) in line:
-                    print "found: %s" % str('\"ruleId\":%i' % targetRuleId) 
-                    found = True
+            print "\nchecking line: %s " % line
+            for string in ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]:
+                if not string in line:
+                    print "missing: %s" % string
+                    continue
+                else:
+                    print "found: %s" % string
+            found = True
+            break
+
         assert(found)
 
     @staticmethod
