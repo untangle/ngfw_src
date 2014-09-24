@@ -116,17 +116,11 @@ class ReportTests(unittest2.TestCase):
         newSyslogSettings["syslogHost"] = syslogHostIP
         node.setSettings(newSyslogSettings)
 
-        # clear the logs on server so old events are gone
-        remote_control.runCommand("echo > /var/log/localhost/localhost.log", host=syslogHostIP)
-
         # create some traffic (blocked by firewall and thus create a syslog event)
         result = remote_control.isOnline()
 
-        # give event time to reach server (its UDP so this is required)
-        time.sleep(1)
-
         # get syslog results on server
-        rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log", host=syslogHostIP, stdout=True)
+        rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=syslogHostIP, stdout=True)
 
         # remove the firewall rule aet syslog back to original settings
         node.setSettings(syslogSettings)
@@ -136,8 +130,13 @@ class ReportTests(unittest2.TestCase):
         # parse the output and look for a rule that matches the expected values
         found = False
         for line in rsyslogResult.splitlines():
-            if "FirewallEvent" in line and '\"blocked\":true' in line and str('\"ruleId\":%i' % targetRuleId) in line:
-                found = True
+            print "checking FirewallEvent line: %s " % line
+            print "for \"%s\" and \"%s\"" % ('\"blocked\":true' , str('\"ruleId\":%i' % targetRuleId) )
+            if '\"blocked\":true' in line:
+                print "found: %s" % '\"blocked\":true'
+                if str('\"ruleId\":%i' % targetRuleId) in line:
+                    print "found: %s" % str('\"ruleId\":%i' % targetRuleId) 
+                    found = True
         assert(found)
 
     @staticmethod
