@@ -58,9 +58,9 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable = new Hashtable<InetAddress, HostTableEntry>();
 
-        this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox WHERE true ORDER BY time_stamp DESC");
-        this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates WHERE true ORDER BY time_stamp DESC");
-        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "SELECT * FROM reports.quotas WHERE true ORDER BY time_stamp DESC");
+        this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox ORDER BY time_stamp DESC");
+        this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates ORDER BY time_stamp DESC");
+        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "SELECT * FROM reports.quotas ORDER BY time_stamp DESC");
 
         UvmContextFactory.context().newThread(this.cleaner).start();
         UvmContextFactory.context().newThread(this.reverseLookup).start();

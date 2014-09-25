@@ -66,21 +66,26 @@ public class EventReaderImpl
             } else {
                 queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
             }
-            if (startDate != null || endDate != null){
+            if (startDate != null || endDate != null) {
 
                 queryStr = queryStr.toLowerCase();
-                int i = queryStr.indexOf("order by");
+                int orderByIndex = queryStr.indexOf("order by");
+                int whereIndex   = queryStr.indexOf("where");
                 DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm");
-                if (i > 0) {
-                    String queryPart1 = queryStr.substring(0, i);
-                    String queryPart2 = queryStr.substring(i);
+                if (orderByIndex > 0) {
+                    String queryPart1 = queryStr.substring(0, orderByIndex);
+                    String queryPart2 = queryStr.substring(orderByIndex);
                     queryStr = queryPart1;
+                    if ( whereIndex < 0 )
+                        queryStr += " where true ";
                     if ( endDate != null )
                         queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
                     if ( startDate != null )
                         queryStr += " and time_stamp >= '" + df.format(startDate) + "' ";
                     queryStr += queryPart2;
                 } else {
+                    if ( whereIndex < 0 )
+                        queryStr += " where true ";
                     if ( endDate != null )
                         queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
                     if ( startDate != null )
