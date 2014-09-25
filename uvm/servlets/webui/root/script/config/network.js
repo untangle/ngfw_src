@@ -5109,16 +5109,18 @@ if (!Ung.hasResource["Ung.Network"]) {
                     isValid : function() {
                         var destination = this.destination.getValue();
                         
-                        if ( Ext.isEmpty(destination) /*TODO: verify host or ip
-                             ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
-                               !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
-                            Ext.MessageBox.show({
-                                title : this.settingsCmp.i18n._( "Warning" ),
-                                msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
-                                icon : Ext.MessageBox.WARNING,
-                                buttons : Ext.MessageBox.OK
-                            });
-                            return false;
+                        if( this.advancedToggleButton.pressed == false ){
+                            if ( Ext.isEmpty(destination) /*TODO: verify host or ip
+                                 ( !Ext.form.VTypes.ipAddress( destination, this.destination ) && 
+                                !Ext.form.VTypes.hostname( destination, this.destination ))*/) {
+                                Ext.MessageBox.show({
+                                    title : this.settingsCmp.i18n._( "Warning" ),
+                                    msg : this.settingsCmp.i18n._( "Please enter a valid IP Address or Hostname" ),
+                                    icon : Ext.MessageBox.WARNING,
+                                    buttons : Ext.MessageBox.OK
+                                });
+                                return false;
+                            }
                         }
                         return true;
                     },
