@@ -90,7 +90,7 @@ def check_events( events, num_events, *args, **kwargs):
 
         # if event has a date and its too old - ignore the event
         if event.get('time_stamp') != None and datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000) < min_date:
-            print "ignoring old event: %s " % str(event.get('time_stamp'))
+            print "ignoring old event: %i < %i " % ((event['time_stamp']['time']/1000),min_date)
             continue
 
         # check each expected value
