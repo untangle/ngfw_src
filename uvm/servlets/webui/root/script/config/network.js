@@ -96,6 +96,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     html: this.testDescription,
                     style: "padding-bottom: 10px;"
                 },{
+                    name: 'testpanel',
                     xtype: "panel",
                     style: "margin: 10px 0px 0px 0px",
                     layout: "anchor",
@@ -117,7 +118,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                         hideLabel : true,
                         readOnly : true,
                         anchor : "100% 100%",
-                        cls : "ua-test-output",
+                        fieldCls : "ua-test-output",
                         style : "padding: 8px"
                     })]
                 }]
@@ -4969,6 +4970,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                     testDescription: this.i18n._("The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting."),
                     testErrorMessage : this.i18n._( "Unable to complete the Packet Test." ),
                     testEmptyText: this.i18n._("Packet Test Output"),
+                    testAdvancedText: this.i18n._("tcpdump arguments and expression"),
+                    outputFilename: null,
                     initComponent : function() {
                         var a = this;
                         var timeouts = [[ 5, this.settingsCmp.i18n._( "5 seconds" )],
@@ -5007,7 +5010,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                             width : 100,
                             value : interfaceStore[0][0],
                             store : interfaceStore
-                        }),{
+                        }),this.advancedToggleButton = Ext.create("Ext.button.Button",{
+                            text : this.settingsCmp.i18n._("Advanced"),
+                            toggleHandler : this.onAdvanced,
+                            enableToggle: true,
+                            scope : this,
+                            width: 65
+                        }),
+                        {
                             xtype : "label",
                             html : this.settingsCmp.i18n._("Timeout:"),
                             style : "margin-left: 18px"
@@ -5019,38 +5029,64 @@ if (!Ung.hasResource["Ung.Network"]) {
                             width : 100,
                             store : timeouts
                         })];
+
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
+
+                        var toolbar = this.down('panel>panel[name="testpanel"]').getDockedItems()[0];
+                        this.exportButton = Ext.create( 
+                            "Ext.Button", {
+                            text: i18n._('Export'),
+                            tooltip: i18n._('Export To File'),
+                            iconCls: 'icon-export',
+                            name: 'export',
+                            disabled: true,
+                            parentId: this.getId(),
+                            handler: this.onExport,
+                            scope: this
+                        });
+                        toolbar.add( this.exportButton );
+
+                    },
+                    buildTraceCommand: function(){
+                        var traceFixedOptionsTemplate = [
+                            "-U",
+                            "-l",
+                            "-v"
+                        ];
+                        var traceOverrideOptionsTemplate = [
+                            "-s 65535",
+                            "-i " + this.intf.getValue()
+                        ];
+                        var traceOptions = traceFixedOptionsTemplate.concat( traceOverrideOptionsTemplate );
+                        traceExpression = [];
+                        console.log("traceOptions default=" + traceOptions.join(" "));
+                        if( this.advancedToggleButton.pressed ){
+                            traceExpression = [this.advancedInput.getValue()];
+                        }else{
+                            var destination = this.destination.getValue();
+                            var port = this.port.getValue();
+                            if( destination !== null & destination.toLowerCase() !== "any") {
+                                traceExpression.push( "host " + destination );
+                            }
+                            if( port !== null) {
+                                traceExpression.push( "port " + port );
+                            }
+                        }
+                        var traceArguments = 
+                            traceOptions.join(" ") +
+                            " " +
+                            traceExpression.join( " and ");
+                        console.log( traceArguments );
+                        return traceArguments;
                     },
                     getCommand: function() {
-                        var destination = this.destination.getValue();
-                        var port = this.port.getValue();
-                        var intf = this.intf.getValue();
-                        var timeout = this.timeout.getValue();
-                        if(destination === null || destination.toLowerCase() == "any") {
-                            destination = "";
-                        }
-                        if(port === null) {
-                            port = "";
-                        }
-                        if(destination !== "" && destination != null) {
-                            destination = "host "+destination;
-                        }
-                        if(port !== "") {
-                            port = "port " + port;
-                        }
-                        if(destination !== "" && port !== "") {
-                            port = "and "+port;
-                        }
                         var script = [
-                            'intf_name='+intf+';', // FIXME intf is not systemDev 
-                            'tcpdump -i ${intf_name} -l -q -c 1024 -v -n ' + destination + ' '+port+' 2>&1 & echo "";',
-                            'for t in `seq 1 ' + timeout + '`; do sleep 1;',
-                            '  ps aux | grep -q " $! .*[t]cpdump -i";',
-                            '  if [ "$?" != "0" ]; then break; fi;',
-                            'done;',
-                            'ps aux | grep -q " $! .*[t]cpdump -i" && kill -INT $!;',
-                            'ps aux | grep -q " $! .*[t]cpdump -i" && wait $!;'
+                            '/usr/share/untangle/bin/ut-network-tests-packet.sh'+
+                                ' "' + this.timeout.getValue() + '"' +
+                                ' "' + this.generateExportFilename() + '"' + 
+                                ' "' + this.buildTraceCommand() + '"'
                         ];
+                        console.log(script.join(""));
                         return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
@@ -5059,11 +5095,15 @@ if (!Ung.hasResource["Ung.Network"]) {
                             this.port.enable();
                             this.intf.enable();
                             this.timeout.enable();
+                            this.advancedToggleButton.enable();
+                            this.exportButton.enable();
                         } else {
                             this.destination.disable();
                             this.port.disable();
                             this.intf.disable();
                             this.timeout.disable();
+                            this.advancedToggleButton.disable();
+                            this.exportButton.disable();
                         }
                     },
                     isValid : function() {
@@ -5081,6 +5121,59 @@ if (!Ung.hasResource["Ung.Network"]) {
                             return false;
                         }
                         return true;
+                    },
+                    onAdvanced: function( button, state ){
+                        button.setText( state ? this.settingsCmp.i18n._("Basic") : this.settingsCmp.i18n._("Advanced") );
+                        if( !this.advancedInput ){
+                            var defaultValue = "";
+                            var destination = this.destination.getValue();
+                            var port = this.port.getValue();
+                            var intf = this.intf.getValue();
+                            var timeout = this.timeout.getValue();
+                            if(destination !== null && destination.toLowerCase() != "any") {
+                                defaultValue += "host " + destination;
+                            }
+                            if(port !== null) {
+                                defaultValue += ( defaultValue.length > 0 ? " and ": "") + "port " + port;
+                            }
+
+                            this.advancedInput =Ext.create("Ext.form.field.TextArea", {
+                                name : "advancedInput",
+                                emptyText: this.testAdvancedText,
+                                hideLabel : true,
+                                anchor : "100% 10%",
+                                fieldCls : "ua-test-output",
+                                style : "padding: 8px",
+                                value: defaultValue
+                            });   
+                            var testpanel = this.down('panel>panel[name="testpanel"]');
+                            testpanel.insert(0, this.advancedInput );
+                        }
+                        this.advancedInput.setVisible( state );
+                        if( state ){
+                            this.destination.disable();
+                            this.port.disable();
+                        }else{
+                            this.destination.enable();
+                            this.port.enable();                            
+                        }
+                    },
+                    onExport: function() {
+                        Ext.MessageBox.wait(i18n._("Exporting Packet Dump..."), i18n._("Please wait"));
+                        var downloadForm = document.getElementById('downloadForm');
+                        downloadForm["type"].value="NetworkTestExport";
+                        downloadForm["arg1"].value=this.outputFilename;
+                        downloadForm.submit();
+                        Ext.MessageBox.hide();
+                    },
+                    generateExportFilename: function(){
+                        this.outputFilename = 
+                            "/tmp/network-tests/" + 
+                            "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                                return v.toString(16);
+                            }) + ".pcap";
+                        return this.outputFilename;
                     }
                 });
                 this.subCmps.push(this.packetTest);

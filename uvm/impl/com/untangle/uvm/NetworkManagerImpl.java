@@ -7,10 +7,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.net.InetAddress;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -38,6 +44,7 @@ import com.untangle.uvm.network.DnsStaticEntry;
 import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
  * The Network Manager handles all the network configuration
@@ -61,6 +68,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new NetworkTestDownloadHandler() );
 
         try {
             readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilename );
@@ -1710,5 +1719,47 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         return deviceNames;
+    }
+    private class NetworkTestDownloadHandler implements DownloadHandler
+    {
+        private static final String CHARACTER_ENCODING = "utf-8";
+
+        @Override
+        public String getName()
+        {
+            return "NetworkTestExport";
+        }
+        
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
+        {
+            String name = req.getParameter("arg1");
+
+            if (name == null ) {
+                logger.warn("Invalid parameters: " + name );
+                return;
+            }
+
+            try{
+                resp.setCharacterEncoding(CHARACTER_ENCODING);
+                resp.setHeader("Content-Type","application/vnd.tcpdump.pcap");
+                resp.setHeader("Content-Disposition","attachment; filename="+name+".pcap");
+
+                byte[] buffer = new byte[1024];
+                int read;
+                FileInputStream fis = new FileInputStream(name);
+                OutputStream out = resp.getOutputStream();
+                
+                while ( ( read = fis.read( buffer ) ) > 0 ) {
+                    out.write( buffer, 0, read);
+                }
+
+                fis.close();
+                out.flush();
+                out.close();
+
+            } catch (Exception e) {
+                logger.warn("Failed to export packet trace.",e);
+            }
+        }
     }
 }
