@@ -274,9 +274,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
+            session.sendObjectToClient( token );
             releaseFlush( session );
             handleTCPFinalized( session );
-            session.sendObjectToClient( token );
             session.release();
             return;
         }
@@ -297,9 +297,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
+            session.sendObjectToServer( token );
             releaseFlush( session );
             handleTCPFinalized( session );
-            session.sendObjectToServer( token );
             session.release();
             return;
         }
@@ -328,8 +328,12 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         req = state.requestQueue.toArray(req);
         Token[] resp = new Token[state.responseQueue.size()];
         resp = state.responseQueue.toArray(resp);
-        session.sendObjectsToClient( resp );
-        session.sendObjectsToServer( req );
+        for ( Token tok : resp ) {
+            session.sendDataToClient( tok.getBytes() );
+        }
+        for ( Token tok : req ) {
+            session.sendDataToServer( tok.getBytes() );
+        }
         return;
     }
 

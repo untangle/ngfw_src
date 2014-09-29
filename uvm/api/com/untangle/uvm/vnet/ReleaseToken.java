@@ -11,22 +11,12 @@ import java.nio.ByteBuffer;
  */
 public class ReleaseToken implements Token
 {
-    public static final ReleaseToken EMPTY = new ReleaseToken(ByteBuffer.allocate(0));
+    public static final ByteBuffer EMPTY = ByteBuffer.allocate(0);
 
-    private final ByteBuffer data;
-
-    public ReleaseToken(ByteBuffer data)
-    {
-        this.data = data;
-    }
-
-    public ByteBuffer getData()
-    {
-        return data;
-    }
+    public ReleaseToken() { }
 
     public ByteBuffer getBytes()
     {
-        return data.duplicate();
+        return EMPTY;
     }
 }

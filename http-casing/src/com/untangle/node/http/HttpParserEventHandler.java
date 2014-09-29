@@ -257,9 +257,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
             session.release();
 
             if ( s2c ) {
-                session.sendObjectToClient( new ReleaseToken( dup ) );
+                session.sendObjectToClient( new ReleaseToken() );
+                session.sendDataToClient( dup );
             } else {
-                session.sendObjectToServer( new ReleaseToken( dup ) );
+                session.sendObjectToServer( new ReleaseToken() );
+                session.sendDataToServer( dup );
             }
             return;
         }

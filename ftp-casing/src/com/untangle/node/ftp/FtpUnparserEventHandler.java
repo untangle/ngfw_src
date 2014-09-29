@@ -115,11 +115,6 @@ class FtpUnparserEventHandler extends AbstractEventHandler
             if (token instanceof ReleaseToken) {
                 ReleaseToken release = (ReleaseToken)token;
 
-                if ( s2c )
-                    session.sendDataToClient( release.getData() );
-                else 
-                    session.sendDataToServer( release.getData() );
-
                 session.release();
 
                 return;
