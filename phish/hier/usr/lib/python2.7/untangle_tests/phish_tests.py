@@ -99,6 +99,8 @@ class PhishTests(unittest2.TestCase):
     def test_009_clamdIsRunning(self):
         # wait for freshclam to finish updating sigs
         freshClamResult = os.system("freshclam >/dev/null 2>&1")
+        # wait for clam to get ready - trying to fix occasional failure of later tests
+        time.sleep(5)
         result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 

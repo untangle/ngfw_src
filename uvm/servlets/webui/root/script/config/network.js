@@ -4655,7 +4655,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                     },
                     getCommand: function() {
                         var destination = this.destination.getValue();
-                        return "ping -c 5 "+destination;
+                        return "ping -c 5 " + destination + "";
                     },
                     enableParameters : function( isEnabled ){
                         if ( isEnabled ) {
@@ -4715,8 +4715,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
                     getCommand: function() {
-                        var destination = this.destination.getValue();
-                        var script=['host '+ destination+';',
+                        var destination = this.destination.getValue().replace('\'','');
+                        var script=['host \''+ destination +'\';',
                             'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
                         return ["/bin/bash","-c", script.join("")];
                         
@@ -4788,9 +4788,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
                     getCommand: function() {
-                        var destination = this.destination.getValue();
+                        var destination = this.destination.getValue().replace('\'','');
                         var port = this.port.getValue();
-                        var script=['echo 1 | netcat -q 0 -v -w 15 ' + destination + ' ' + port +';',
+                        var script=['echo 1 | netcat -q 0 -v -w 15 \'' + destination + '\' \'' + port +'\';',
                             'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
                         return ["/bin/bash","-c", script.join("")];
                     },
@@ -4864,9 +4864,9 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
                     getCommand: function() {
-                        var destination = this.destination.getValue();
-                        var protocol = "-" + this.protocol.getValue();
-                        var script = ['traceroute' + ' ' + protocol + ' ' + destination + ' ;',
+                        var destination = this.destination.getValue().replace('\'','');
+                        var protocol = "-" + this.protocol.getValue().replace('\'','');
+                        var script = ['traceroute' + ' \'' + protocol + '\' \'' + destination + '\' ;',
                           'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'];
                         return ["/bin/bash","-c", script.join("")];
                     },
@@ -4931,8 +4931,8 @@ if (!Ung.hasResource["Ung.Network"]) {
                         Ung.NetworkTest.prototype.initComponent.apply(this, arguments);
                     },
                     getCommand: function() {
-                        var url = this.url.getValue();
-                        var script = ['wget --output-document=/dev/null ' + ' ' + url + ' ;'];
+                        var url = this.url.getValue().replace('\'','');
+                        var script = ['wget --output-document=/dev/null ' + ' \'' + url + '\' ;'];
                         return ["/bin/bash","-c", script.join("")];
                     },
                     enableParameters : function( isEnabled ){
@@ -5058,7 +5058,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             "-i " + this.intf.getValue()
                         ];
                         var traceOptions = traceFixedOptionsTemplate.concat( traceOverrideOptionsTemplate );
-                        traceExpression = [];
+                        var traceExpression = [];
                         console.log("traceOptions default=" + traceOptions.join(" "));
                         if( this.advancedToggleButton.pressed ){
                             traceExpression = [this.advancedInput.getValue()];
@@ -5080,11 +5080,14 @@ if (!Ung.hasResource["Ung.Network"]) {
                         return traceArguments;
                     },
                     getCommand: function() {
+                        var timeout = this.timeout.getValue();
+                        var filename = this.generateExportFilename().replace('\'','');
+                        var traceCommand = this.buildTraceCommand().replace('\'','');
                         var script = [
                             '/usr/share/untangle/bin/ut-network-tests-packet.sh'+
-                                ' "' + this.timeout.getValue() + '"' +
-                                ' "' + this.generateExportFilename() + '"' + 
-                                ' "' + this.buildTraceCommand() + '"'
+                                ' \'' + timeout + '\'' +
+                                ' \'' + filename + '\'' + 
+                                ' \'' + traceCommand + '\''
                         ];
                         console.log(script.join(""));
                         return ["/bin/bash","-c", script.join("")];
