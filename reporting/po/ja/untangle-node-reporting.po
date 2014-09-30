@@ -6,266 +6,952 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
-"PO-Revision-Date: 2010-04-04 00:43+0900\n"
-"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
+"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"PO-Revision-Date: 2013-10-26 03:36+0200\n"
+"Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Pootle 1.1.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:55
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:35
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:42
 msgid "Status"
 msgstr "状態"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:71
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:88
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:45
+msgid "Reports are automatically generated each night."
+msgstr "レポートは毎晩自動生成されます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:54
 msgid "View Reports"
 msgstr "レポートを参照する"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:150
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
-msgid "Online Reports"
-msgstr "オンラインレポート"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:63
+msgid "Report generation for the current day can be forced with the "
+msgstr "本日のレポートを強制的に生成させるには、"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:158
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:248
-#, fuzzy
-msgid "Email Reports"
-msgstr "日報"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:63
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:73
+msgid "Generate Today's Reports"
+msgstr "今日のレポートを生成する"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:166
-msgid "change password"
-msgstr "パスワード変更"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:63
+msgid " button."
+msgstr "ボタンをクリックしてください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:183
-msgid "Generation"
-msgstr "ジェネレーション"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:64
+msgid "Caution"
+msgstr "警告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:193
-msgid "Email"
-msgstr "Eメール"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:64
+msgid "Real-time report generation may cause network slowness."
+msgstr "リアルタイムのレポート生成は、ネットワークの速度低下を引き起こす可能性があります。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:199
-msgid "Reports Recipients and Users"
-msgstr "レポート受取人とユーザー"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:77
+msgid "Generating today's reports... This may take a few minutes."
+msgstr "本日のレポートを生成しています...これには数分かかる場合があります。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:231
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:242
-msgid "Email Address (username)"
-msgstr "Eメールアドレス（ユーザ名）"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:237
-msgid "The email address cannot be blank."
-msgstr "Eメールアドレスは空白ではいけません。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:244
-#, fuzzy
-msgid "The email address name cannot be blank."
-msgstr "Eメールアドレスは空白ではいけません。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:259
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:524
-msgid "Password"
-msgstr "パスワード"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:260
-msgid "(required for 'Online Reports')"
-msgstr "（オンラインレポート'が必要）"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:263
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:527
-msgid "The password is shorter than the minimum {0} characters."
-msgstr "パスワードが最低{0} 文字よりも短いです。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:270
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:534
-msgid "Confirm Password"
-msgstr "パスワード確認"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:275
-msgid "Email Attachment Settings"
-msgstr "電子メールの添付ファイルの設定"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:278
-msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
-msgstr "ログの詳細報告を電子メールに添付（CSV形式のZipファイル）"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:291
-msgid "Attachment size limit (MB)"
-msgstr "添付ファイルのサイズ制限（MB）"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:310
-msgid "Daily Reports"
-msgstr "日報"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:315
-msgid ""
-"Daily Reports are generated at midnight and covers events from the previous "
-"24 hours, up to, but not including the day of generation."
-msgstr "日報は夜中に作成され、作成日当日を含まない過去２４時間前までのイベントをカバーします。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:319
-msgid "Generate Daily Reports"
-msgstr "日報の作成"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:320
-msgid "Every Day"
-msgstr "毎日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:331
-msgid "Weekly Reports"
-msgstr "週報"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:336
-msgid ""
-"Weekly Reports are generated at midnight and covers events from the previous "
-"7 days, up to, but not including the day of generation."
-msgstr "週報は夜中に作成され、作成当日を含まない過去７日前からのイベントをカバーします"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:341
-msgid "Generate Weekly Reports"
-msgstr "週報を作成"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:342
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:444
-msgid "Sunday"
-msgstr "日曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:348
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:445
-msgid "Monday"
-msgstr "月曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:356
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:446
-msgid "Tuesday"
-msgstr "火曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:364
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:447
-msgid "Wednesday"
-msgstr "水曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:372
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:448
-msgid "Thursday"
-msgstr "木曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:380
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:449
-msgid "Friday"
-msgstr "金曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:388
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:450
-msgid "Saturday"
-msgstr "土曜日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:394
-msgid "Monthly Reports"
-msgstr "月報"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:399
-msgid ""
-"Monthly Reports are generated at midnight and covers events from the "
-"previous 30 days, up to, but not including the day of generation."
-msgstr "月報は夜中に作成され、作成当日を含まない過去３０日前からのイベントをカバーします"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:407
-msgid "Never"
-msgstr "決して"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:412
-msgid "First Day of Month"
-msgstr "今月の１日目"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:417
-msgid "Everyday"
-msgstr "毎日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:422
-msgid "Once Per Week"
-msgstr "週一"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:460
-msgid "Data Retention"
-msgstr "データリテンション"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:465
-msgid ""
-"Limit Data Retention to a number of days. The smaller the number the lower "
-"the disk space requirements and resource usage during report generation."
-msgstr "データリテンションを日数に制限してください。 その数が少なければ少ないほど、レポート作成のディスク容量とリソース使用量は抑えられます。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:468
-#, fuzzy
-msgid "Limit Data Retention"
-msgstr "データリテンションを制限する"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:487
-msgid "Reports Retention"
-msgstr "レポートの保存"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:492
-msgid "Keep old reports on the server for this number of days."
-msgstr "この日数のサーバー上の古いレポートを保管してください。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:495
-msgid "Reports Retention days"
-msgstr "レポートの保存日"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:547
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:573
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:589
-msgid "Name Map"
-msgstr "ネームマップ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:550
-msgid "[no name]"
-msgstr "[名前無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:551
-msgid "[no description]"
-msgstr "[記述無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:579
-msgid "name"
-msgstr "名前"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:595
-msgid "Name"
-msgstr "名前"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:631
-msgid "Invalid \"IP address\" specified"
-msgstr "指定された\"IPアドレス\"が無効"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:639
-msgid "Validation failed"
-msgstr "検証失敗"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:645
-msgid "Please Try Again"
-msgstr "もう一度やり直してください"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:647
-msgid "Failed"
-msgstr "失敗"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
-msgid "Saving..."
-msgstr "保存中..."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:77
 msgid "Please wait"
 msgstr "しばらくお待ちください"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:756
-msgid "[reports only user]"
-msgstr "[ユーザーだけを報告します]"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:102
+msgid "Generation"
+msgstr "生成"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:111
+msgid "Daily Reports"
+msgstr "日報"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:115
+msgid ""
+"Daily Reports covers the previous day. Daily reports will be generated on "
+"the selected days."
+msgstr "日報は前日分を対象とします。選択した曜日に生成されます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:129
+msgid "Weekly Reports"
+msgstr "週報"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:133
+msgid ""
+"Weekly Reports covers the previous week. Weekly reports will be generated on "
+"the selected days."
+msgstr "週報は前週を対象とします。選択した曜日に生成されます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:147
+msgid "Monthly Reports"
+msgstr "月報"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:151
+msgid "Monthly Reports are generated on the 1st and cover the previous month."
+msgstr "月報は前月を対象とします。1日に生成されます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:155
+msgid "Enabled"
+msgstr "有効"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:175
+msgid "Generation Time"
+msgstr "生成時間"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:172
+msgid "Scheduled time to generate the reports."
+msgstr "レポートを生成する時間を指定します。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:192
+msgid "Data Retention"
+msgstr "データ保持期間"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:197
+msgid ""
+"Keep event data for this number of days. The smaller the number the lower "
+"the disk space requirements and resource usage during report generation."
+msgstr "イベントデータを指定した日数の間保持します。数が小さいほどレポート生成時に必要なディスク容量とリソース使用量が少なくて済みます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
+msgid "Warning"
+msgstr "警告"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
+msgid ""
+"Depending on the server and network, increasing this value may cause "
+"performance issues."
+msgstr "サーバおよびネットワークによっては、この値を増やすとパフォーマンスの問題が引き起こされる可能性があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:204
+msgid "Data Retention days"
+msgstr "データ保持日数"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:232
+msgid "change password"
+msgstr "パスワード変更"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:249
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:258
+msgid "Email"
+msgstr "Eメール"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:263
+msgid "Reporting Users"
+msgstr "レポートするユーザ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:320
+msgid "Email Address (username)"
+msgstr "Eメールアドレス (ユーザ名)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:300
+msgid "The email address cannot be blank."
+msgstr "Eメールアドレスは空白にすることはできません。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:328
+msgid "Email Summaries"
+msgstr "Eメールサマリ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:335
+msgid "Online Access"
+msgstr "オンラインアクセス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:322
+msgid "The email address name cannot be blank."
+msgstr "Eメールアドレス名は空白にすることはできません。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:348
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:616
+msgid "Password"
+msgstr "パスワード"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:351
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:418
+#, python-brace-format
+msgid "The password is shorter than the minimum {0} characters."
+msgstr "パスワードは{0} 文字以上で入力してください。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:354
+msgid "(required for 'Online Access')"
+msgstr " (\"オンラインアクセス\"に必要)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:426
+msgid "Confirm Password"
+msgstr "パスワード確認"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:368
+msgid "Email Attachment Settings"
+msgstr "Eメールの添付ファイル設定"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:371
+msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
+msgstr "詳細なレポートログを Eメールに添付する (CSV形式のZipファイル)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:384
+msgid "Attachment size limit (MB)"
+msgstr "添付ファイルのサイズ制限 (MB)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:435
+msgid "Passwords do not match"
+msgstr "パスワードが一致しません"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:440
+msgid "A password must be set to enable Online Access!"
+msgstr "オンラインレポートを有効にするにはパスワードを設定する必要があります！"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:464
+msgid "Syslog"
+msgstr "Syslog"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:467
+msgid ""
+"If enabled logged events will be sent in real-time to a remote syslog for "
+"custom processing."
+msgstr "この設定が有効な場合、記録されたイベントはカスタム処理のためリモートのsyslogサーバにリアルタイム送信されます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:472
+#, python-brace-format
+msgid "{0}Disable{1} Syslog Events. (This is the default setting.)"
+msgstr "Syslogイベントを{0}無効{1}にする (デフォルト)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:490
+#, python-brace-format
+msgid "{0}Enable{1} Syslog Events."
+msgstr "Syslogイベントを{0}有効{1}にする"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:511
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:571
+#: ../hier/usr/lib/python2.6/reports/__init__.py:354
+msgid "Host"
+msgstr "ホスト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:518
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:577
+msgid "A \"Host\" must be specified."
+msgstr "\"ホスト\"を指定する必要があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:522
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:585
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:504
+msgid "Port"
+msgstr "ポート"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:531
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:593
+msgid "You must provide a valid port."
+msgstr "有効なポートを指定する必要があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:540
+#: ../hier/usr/lib/python2.6/reports/__init__.py:334
+msgid "Protocol"
+msgstr "プロトコル"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:542
+msgid "UDP"
+msgstr "UDP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:543
+msgid "TCP"
+msgstr "TCP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:558
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:567
+msgid "Database"
+msgstr "データベース"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:602
+msgid "User"
+msgstr "ユーザ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:608
+msgid "A \"User\" must be specified."
+msgstr "\"ユーザ\"を指定する必要があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:622
+msgid "A \"Password\" must be specified."
+msgstr "\"パスワード\"を指定する必要があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:630
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:679
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:703
+msgid "Name"
+msgstr "名前"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:636
+msgid "A \"Name\" must be specified."
+msgstr "\"名前\"を指定する必要があります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:652
+msgid "Name Map"
+msgstr "名前マップ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:657
+msgid "[no name]"
+msgstr "[no name]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:671
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:694
+msgid "IP Address"
+msgstr "IPアドレス"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:61
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:107
+msgid "Summary Report"
+msgstr "サマリレポート"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:91
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:143
+msgid "Free Memory"
+msgstr "空きメモリ"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:130
+msgid "Avg Free Memory"
+msgstr "空きメモリの平均"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:133
+msgid "Avg Cached Memory"
+msgstr "キャッシュメモリの平均"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:140
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:216
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:275
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:337
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:397
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:566
+#: ../hier/usr/lib/python2.6/reports/__init__.py:317
+#: ../hier/usr/lib/python2.6/reports/__init__.py:351
+#: ../hier/usr/lib/python2.6/reports/__init__.py:376
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:140
+msgid "Memory (MB)"
+msgstr "メモリ(MB)"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:144
+msgid "Cached Memory"
+msgstr "キャッシュメモリ"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:150
+msgid "Cpu Load"
+msgstr "CPUロード"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:194
+msgid "Avg 1-min Load"
+msgstr "1分間の平均負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:197
+msgid "Max 1-min Load"
+msgstr "1分間の最大負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:200
+msgid "Avg 5-min Load"
+msgstr "5分間の平均負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:203
+msgid "Max 5-min Load"
+msgstr "5分間の最大負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:206
+msgid "Avg 15-min Load"
+msgstr "15分間の平均負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:209
+msgid "Max 15-min Load"
+msgstr "15分間の最大負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:216
+msgid "Load"
+msgstr "負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:219
+msgid "1-min Load"
+msgstr "1分間の負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:220
+msgid "5-min Load"
+msgstr "5分間の負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:221
+msgid "15-min Load"
+msgstr "15分間の負荷"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:227
+msgid "Cpu Usage"
+msgstr "CPU使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:265
+msgid "Avg Cpu User"
+msgstr "平均CPU システム"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:268
+msgid "Avg Cpu System"
+msgstr "平均CPU システム"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:275
+msgid "CPU (%)"
+msgstr "CPU (%)"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:278
+msgid "Cpu User"
+msgstr "CPU ユーザ"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:279
+msgid "Cpu System"
+msgstr "CPU システム"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:285
+msgid "Disk Usage"
+msgstr "ディスク使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:325
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:328
+msgid "Avg Disk Free"
+msgstr "平均空きディスク容量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:337
+msgid "Disk (GB)"
+msgstr "ディスク (GB)"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:341
+msgid "Free Disk"
+msgstr "空きディスク"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:347
+msgid "Swap Usage"
+msgstr "スワップ使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:386
+msgid "Avg Swap Free"
+msgstr "平均スワップ空き容量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:389
+msgid "Avg Swap Used"
+msgstr "平均スワップ使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:397
+msgid "Swap (MB)"
+msgstr "スワップ (MB)"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_server.py:401
+msgid "Swap Used"
+msgstr "スワップ使用"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:274
+msgid "scanned"
+msgstr "スキャン済"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:276
+#: ../hier/usr/lib/python2.6/reports/__init__.py:1042
+msgid "GB"
+msgstr "GB"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:277
+msgid "and"
+msgstr "and"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:278
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:440
+msgid "sessions"
+msgstr "セッション"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:313
+msgid "Bandwidth Usage"
+msgstr "帯域幅の使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:368
+msgid "Avg Data Rate"
+msgstr "平均データ速度"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:372
+msgid "Max Data Rate"
+msgstr "最大データ速度"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:374
+msgid "Data Transferred"
+msgstr "データ転送"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:382
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:446
+msgid "Date"
+msgstr "日付"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:382
+msgid "Throughput (kB/s)"
+msgstr "スループット(KB/秒)"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:385
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:449
+msgid "Usage"
+msgstr "使用量"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:391
+msgid "Sessions per Minute"
+msgstr "毎分あたりのセッション"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:433
+msgid "Avg Sessions/Min"
+msgstr "平均セッション/分"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:435
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:438
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:446
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:498
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:505
+msgid "Sessions"
+msgstr "セッション"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:437
+msgid "Max Sessions/Min"
+msgstr "最大セッション/分"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:440
+msgid "Total Sessions"
+msgstr "総セッション数"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:455
+msgid "Top Destination Ports"
+msgstr "トップの宛先ポート"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:513
+msgid "Top Penalty Box Hosts"
+msgstr "トップのペナルティーボックスホスト"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:546
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:552
+msgid "seconds"
+msgstr "秒"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:552
+msgid "Address"
+msgstr "アドレス"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:560
+msgid "Administrative Login Events"
+msgstr "管理ログインイベント"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:568
+msgid "Client Ip"
+msgstr "クライアントIPアドレス"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:569
+msgid "Login"
+msgstr "ログイン"
+
+#: ../hier/usr/lib/python2.6/reports/node/untangle_vm.py:570
+msgid "Success"
+msgstr "成功"
+
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:359
+msgid "Invalid Settings"
+msgstr "無効な設定"
+
+#: ../src/com/untangle/node/reporting/ReportingNodeImpl.java:359
+msgid "has online access, but no password is set."
+msgstr "オンラインアクセスが設定されていますが、パスワードが設定されていません。"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:318
+msgid "Priority"
+msgstr "優先度"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:319
+msgid "Rule"
+msgstr "ルール"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:320
+#: ../hier/usr/lib/python2.6/reports/__init__.py:353
+msgid "Username"
+msgstr "ユーザ名"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:321
+#: ../hier/usr/lib/python2.6/reports/__init__.py:352
+#: ../hier/usr/lib/python2.6/reports/__init__.py:377
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:322
+msgid "Client port"
+msgstr "クライアントポート"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:323
+#: ../hier/usr/lib/python2.6/reports/__init__.py:325
+#: ../hier/usr/lib/python2.6/reports/__init__.py:366
+#: ../hier/usr/lib/python2.6/reports/__init__.py:378
+#: ../hier/usr/lib/python2.6/reports/__init__.py:379
+msgid "Server"
+msgstr "サーバ"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:324
+#: ../hier/usr/lib/python2.6/reports/__init__.py:326
+#: ../hier/usr/lib/python2.6/reports/__init__.py:367
+msgid "Server Port"
+msgstr "サーバポート"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:327
+msgid "Application"
+msgstr "アプリケーション"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:328
+msgid "ProtoChain"
+msgstr "プロトチェーン"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:329
+msgid "Flagged (Application Control)"
+msgstr "フラグ (Application Control)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:330
+msgid "Blocked (Application Control)"
+msgstr "ブロック (Application Control)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:331
+msgid "Confidence"
+msgstr "信頼"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:332
+msgid "Detail"
+msgstr "詳細"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:333
+msgid "Blocked (Application Control Lite)"
+msgstr "ブロック(Application Control Lite)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:335
+msgid "Rule ID"
+msgstr "ルールID"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:336
+msgid "Status (Https)"
+msgstr "状態（HTTPS）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:337
+msgid "Detail (Https)"
+msgstr "詳細（HTTPS）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:338
+msgid "Rule ID (Https)"
+msgstr "ルールID（HTTPS）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:339
+msgid "Policy Id"
+msgstr "ポリシーID"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:340
+msgid "Blocked (Firewall)"
+msgstr "ブロック（ファイヤーウォール）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:341
+msgid "Flagged (Firewall)"
+msgstr "フラグ（ファイヤーウォール）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:342
+msgid "Rule Id (Firewall)"
+msgstr "ルールID（ファイヤーウォール）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:343
+msgid "Blocked (IPS)"
+msgstr "ブロック (IPS)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:344
+msgid "Rule Id (IPS)"
+msgstr "ルールID (IPS)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:345
+msgid "Rule Description (IPS)"
+msgstr "ルールの説明（IPS）"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:346
+msgid "Rule ID (Captive Portal)"
+msgstr "ルールID (Captive Portal)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:347
+msgid "Captured"
+msgstr "キャプチャした"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:355
+msgid "Hostname"
+msgstr "ホスト名"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:356
+msgid "Uri"
+msgstr "Uri"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:357
+msgid "Url"
+msgstr "URL"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:358
+msgid "Blocked (Webfilter Lite)"
+msgstr "ブロック (Webfilter Lite)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:359
+msgid "Flagged (Webfilter Lite)"
+msgstr "フラグ (Webfilter Lite)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:360
+msgid "Reason For Action (Webfilter Lite)"
+msgstr "動作理由 (Webfilter Lite)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:361
+msgid "Category (Webfilter Lite)"
+msgstr "カテゴリ (Webfilter Lite)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:362
+msgid "Blocked  (Webfilter)"
+msgstr "ブロック  (Webfilter)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:363
+msgid "Flagged (Webfilter)"
+msgstr "フラグ (Webfilter)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:364
+msgid "Reason For Action (Webfilter)"
+msgstr "動作理由 (Webfilter)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:365
+msgid "Category (Webfilter)"
+msgstr "カテゴリ (Webfilter)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:368
+msgid "Action (Ad Blocker)"
+msgstr "動作 (Ad Blocker)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:369
+msgid "Cookie"
+msgstr "クッキー"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:370
+#: ../hier/usr/lib/python2.6/reports/__init__.py:380
+msgid "Virus Name (Clam)"
+msgstr "ウィルス名 (Clam)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:371
+#: ../hier/usr/lib/python2.6/reports/__init__.py:381
+msgid "Virus Name (Commtouchav)"
+msgstr "ウィルス名 (Commtouchav)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:382
+msgid "Receiver"
+msgstr "受信者"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:383
+msgid "Sender"
+msgstr "送信者"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:384
+msgid "Subject"
+msgstr "件名"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:385
+msgid "Action (Spamassassin)"
+msgstr "動作 (Spamassassin)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:386
+msgid "Spam score (Spamassassin)"
+msgstr "スパムスコア (Spamassassin)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:387
+msgid "Action (Commtouchas)"
+msgstr "動作 (Commtouchas)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:388
+msgid "Spam score (Commtouchas)"
+msgstr "スパムスコア (Commtouchas)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:389
+msgid "Action (Phish)"
+msgstr "動作 (Phish)"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:574
+#: ../hier/usr/lib/python2.6/reports/pdf.py:318
+msgid "Highlights"
+msgstr "ハイライト"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:754
+#: ../hier/usr/lib/python2.6/reports/__init__.py:758
+msgid "Key Statistics"
+msgstr "主要な統計"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:999
+msgid "slice"
+msgstr "スライス"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:999
+msgid "value"
+msgstr "値"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:1017
+msgid "Unknown"
+msgstr "不明"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:1034
+msgid "KB"
+msgstr "KB"
+
+#: ../hier/usr/lib/python2.6/reports/__init__.py:1038
+msgid "MB"
+msgstr "MB"
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:130
+msgid "Report Summary"
+msgstr "サマリレポート"
+
+#: ../hier/usr/lib/python2.6/reports/mailer.py:245
+msgid "This report has no detail data."
+msgstr "このレポートは、詳細なデータを持っていません。"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:193
+msgid "Title Page"
+msgstr "タイトルページ"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:197
+#: ../hier/usr/lib/python2.6/reports/pdf.py:218
+msgid "Table of Contents"
+msgstr "目次"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:256
+#, python-format
+msgid "Page %d"
+msgstr "%d ページ"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:268
+msgid "day"
+msgstr "日"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:270
+msgid "days"
+msgstr "日"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:272
+msgid "Report for"
+msgstr "レポートの"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:292
+msgid "Report"
+msgstr "レポート"
+
+#: ../hier/usr/lib/python2.6/reports/pdf.py:317
+msgid "Highlights Summary"
+msgstr "ハイライトの概要"
+
+#, python-format
+#~ msgid "%s %s Report [%s]"
+#~ msgstr "%s %s レポート [%s]"
+
+#~ msgid "Online Reports"
+#~ msgstr "オンラインレポート"
+
+#~ msgid "Email Reports"
+#~ msgstr "Eメールレポート"
+
+#~ msgid "Reports Recipients and Users"
+#~ msgstr "レポート受信者とユーザ"
+
+#~ msgid ""
+#~ "Daily Reports are generated at midnight and covers events from the previous "
+#~ "24 hours, up to, but not including the day of generation."
+#~ msgstr "日報は深夜に作成され、作成日当日を含まない過去２４時間のイベントをカバーします。"
+
+#~ msgid "Generate Daily Reports"
+#~ msgstr "日報の作成"
+
+#~ msgid "Every Day"
+#~ msgstr "毎日"
+
+#~ msgid ""
+#~ "Weekly Reports are generated at midnight and covers events from the previous "
+#~ "7 days, up to, but not including the day of generation."
+#~ msgstr "週報は深夜に作成され、作成当日を含まない過去７日のイベントをカバーします。"
+
+#~ msgid "Generate Weekly Reports"
+#~ msgstr "週報を作成"
+
+#~ msgid "Sunday"
+#~ msgstr "日曜日"
+
+#~ msgid "Monday"
+#~ msgstr "月曜日"
+
+#~ msgid "Tuesday"
+#~ msgstr "火曜日"
+
+#~ msgid "Wednesday"
+#~ msgstr "水曜日"
+
+#~ msgid "Thursday"
+#~ msgstr "木曜日"
+
+#~ msgid "Friday"
+#~ msgstr "金曜日"
+
+#~ msgid "Saturday"
+#~ msgstr "土曜日"
+
+#~ msgid ""
+#~ "Monthly Reports are generated at midnight and covers events from the "
+#~ "previous 30 days, up to, but not including the day of generation."
+#~ msgstr "月報は深夜に作成され、作成当日を含まない過去３０日のイベントをカバーします"
+
+#~ msgid "Never"
+#~ msgstr "いつでも"
+
+#~ msgid "First Day of Month"
+#~ msgstr "今月の１日目"
+
+#~ msgid "Everyday"
+#~ msgstr "毎日"
+
+#~ msgid "Once Per Week"
+#~ msgstr "週一"
+
+#~ msgid "Limit Data Retention"
+#~ msgstr "データ保持を制限"
+
+#~ msgid "Reports Retention"
+#~ msgstr "レポートの保存"
+
+#~ msgid "Keep old reports on the server for this number of days."
+#~ msgstr "この日数のサーバ上の古いレポートを保管してください。"
+
+#~ msgid "Reports Retention days"
+#~ msgstr "レポートの保存日"
+
+#~ msgid "[no description]"
+#~ msgstr "[記述無し]"
+
+#~ msgid "name"
+#~ msgstr "名前"
+
+#~ msgid "Invalid \"IP address\" specified"
+#~ msgstr "指定された\"IPアドレス\"が無効"
+
+#~ msgid "Validation failed"
+#~ msgstr "検証失敗"
+
+#~ msgid "Please Try Again"
+#~ msgstr "もう一度やり直してください"
+
+#~ msgid "Failed"
+#~ msgstr "失敗"
+
+#~ msgid "Saving..."
+#~ msgstr "保存中..."
+
+#~ msgid "[reports only user]"
+#~ msgstr "[ユーザーだけを報告します]"
+
+#~ msgid ""
+#~ "Report generation may cause network slowness on servers with fewer resources."
+#~ msgstr "レポート生成は、リソース時不足によりネットワーク遅延を引き起こす可能性があります。"
+
+#~ msgid "Generating today's reports..."
+#~ msgstr "本日のレポートを生成しています..."
 
 #~ msgid "Recipients"
 #~ msgstr "受信者"
@@ -282,12 +968,12 @@ msgstr "[ユーザーだけを報告します]"
 #~ msgid ""
 #~ "This makes emailed reports larger, but includes information about each "
 #~ "incident/violation."
-#~ msgstr "これはEメールレポートの大きくしますが、個々の事故／違反の情報を含みます。"
+#~ msgstr "これはEメールレポートの大きくしますが、個々の事故/違反の情報を含みます。"
 
 #~ msgid ""
 #~ "Limits data retention to one week, this allows reports to run faster on high "
 #~ "traffic sites."
-#~ msgstr "データリテンションを一週間に制限し、トラフィックがひどいサイトで早くレポートを作成します"
+#~ msgstr "データ保持期間を一週間に制限し、トラフィックがひどいサイトで早くレポートを作成します"
 
 #~ msgid "Keep One Week's Data"
 #~ msgstr "一週間のデータを保持する"
@@ -296,7 +982,4 @@ msgstr "[ユーザーだけを報告します]"
 #~ msgstr "IPアドレス"
 
 #~ msgid "IP address"
-#~ msgstr "IPアドレス"
-
-#~ msgid "IP Address"
 #~ msgstr "IPアドレス"

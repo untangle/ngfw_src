@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-18 15:54-0700\n"
+"POT-Creation-Date: 2014-02-19 21:26+0200\n"
 "PO-Revision-Date: 2008-11-21 22:21-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -15,364 +15,327 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Country: CHINA\n"
 "X-Poedit-Language: Chinese\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Country: CHINA\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:96
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Mark"
 msgstr "标记"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:96
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:98
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Drop"
-msgstr ""
+msgstr "“放下。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:87
 msgid "Quarantine"
 msgstr "隔离"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Low (Threshold: 5.0)"
-msgstr ""
+msgstr "低（阈值：5.0）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Medium (Threshold: 4.3)"
-msgstr ""
+msgstr "中（阈值：4.3）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "High (Threshold: 3.5)"
-msgstr ""
+msgstr "高（阈值：3.5）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Very High (Threshold: 3.3)"
-msgstr ""
+msgstr "非常高（阈值：3.3）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Extreme (Threshold: 3.0)"
-msgstr ""
+msgstr "极限（阈值：3.0）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:90
 msgid "Custom"
 msgstr "定制"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:103
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:93
 msgid "Email"
 msgstr "电子邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:115
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:105
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:121
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:109
 msgid "Scan SMTP"
 msgstr "扫描SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:168
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:492
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:664
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:158
 msgid "Strength"
 msgstr "强度"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:196
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:520
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:692
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:181
 msgid "Strength Value"
 msgstr "强度值"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:204
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:528
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:700
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:189
 msgid "Strength Value must be a number. Smaller value is higher strength."
 msgstr "强度值必须是一个数字。值越小强度越高。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:227
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:550
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:723
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:479
 msgid "Action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:255
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:236
 msgid "Drop Super Spam"
-msgstr ""
+msgstr "删除超级垃圾"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:284
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:265
 msgid "Super Spam Threshold"
-msgstr ""
+msgstr "的超垃圾邮件阈值"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:322
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:303
 msgid "Advanced SMTP Configuration"
-msgstr ""
+msgstr "先进的SMTP配置"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:313
 #, fuzzy
 msgid "Enable tarpitting"
 msgstr "启用SMTP防垃圾陷阱(TarPitting)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:346
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:579
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:751
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:326
 msgid "Add email headers"
-msgstr ""
+msgstr "添加邮件标头"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:359
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:339
 msgid "Close connection on scan failure"
-msgstr ""
+msgstr "关闭连接扫描失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:372
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:352
 msgid "Scan outbound (WAN) SMTP"
-msgstr ""
+msgstr "扫描出站（WAN）SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:364
 msgid "CPU Load Limit"
-msgstr ""
+msgstr "CPU负载限制"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:370
 msgid "Value must be a float."
-msgstr ""
+msgstr "值必须是一个float。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:383
+msgid "Concurrent Scan Limit"
+msgstr "并发扫描限制"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:389
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:408
+msgid "Value must be a integer."
+msgstr "值必须是一个整数。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:402
-msgid "Concurrent Scan Limit"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:408
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:426
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:597
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:769
-msgid "Value must be a integer."
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:420
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:591
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:763
 msgid "Message Size Limit"
-msgstr ""
+msgstr "邮件大小限制"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:440
-msgid "POP3"
-msgstr "POP3"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:446
-msgid "Scan POP3"
-msgstr "扫描POP3"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:568
-msgid "Advanced POP Configuration"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:611
-msgid "IMAP"
-msgstr "IMAP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:617
-msgid "Scan IMAP"
-msgstr "扫描IMAP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:740
-msgid "Advanced IMAP Configuration"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:783
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:423
 msgid "Note"
 msgstr "注释"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:786
-msgid "Spam Blocker was last updated"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:425
+msgid "Spam Blocker Lite last checked for updates"
+msgstr "最后检查更新的垃圾邮件拦截器精简版"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:426
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:428
+msgid "never"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:427
+#, fuzzy
+msgid "Spam Blocker Lite was last updated"
 msgstr "垃圾邮件防护已是最后更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:789
-msgid "unknown"
-msgstr "未知"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:811
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:821
-msgid "pass message"
-msgstr "通过邮件"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:813
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:823
-#, fuzzy
-msgid "mark message"
-msgstr "通过邮件"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:815
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:833
-msgid "unknown action"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:434
+msgid "Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:825
-msgid "drop message"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:827
-msgid "quarantine message"
-msgstr "隔离邮件"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:829
-msgid "safelist message"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:831
-msgid "pass oversize message"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:865
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:940
-msgid "timestamp"
-msgstr "时间戳"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:873
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:948
-msgid "action"
-msgstr "动作"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:878
-msgid "client"
-msgstr "客户端"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:883
-msgid "subject"
-msgstr "主题"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:888
-msgid "receiver"
-msgstr "收件人"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:893
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:953
-msgid "sender"
-msgstr "发件人"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:898
-msgid "spam score"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:903
-msgid "server"
-msgstr "服务器"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:917
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:447
 msgid "Tarpit Event Log"
 msgstr "防垃圾陷阱事件日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:927
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:456
 msgid "skipped"
 msgstr "已跳过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:927
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:456
 msgid "blocked"
 msgstr "已阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:958
-msgid "DNSBL server"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:468
+#, fuzzy
+msgid "Timestamp"
+msgstr "时间戳"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:484
+#, fuzzy
+msgid "Sender"
+msgstr "发件人"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:489
+#, fuzzy
+msgid "DNSBL Server"
 msgstr "DNS黑名单服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:972
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:500
 msgid "Failed"
 msgstr "失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:972
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:500
 msgid "The value of Strength Value field is invalid."
 msgstr "强度值栏的值无效。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:984
-msgid "Saving..."
-msgstr "正在保存..."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:984
-msgid "Please wait"
-msgstr "请等候"
-
-#: ../../spam-base/impl/com/untangle/node/spam/RBLAllFilter.java:27
-#: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
-msgid "All Events"
-msgstr "所有事件"
-
-#: ../../spam-base/impl/com/untangle/node/spam/RBLSkippedFilter.java:27
-msgid "Skipped Events"
-msgstr "已跳过事件"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
-msgid "POP/IMAP Events"
-msgstr "POP/IMAP事件"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:124
-msgid "Messages passed"
-msgstr "已通过信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:124
-msgid "PASS"
-msgstr "通过"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
-#, fuzzy
-msgid "Messages dropped"
-msgstr "已阻止信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
-msgid "DROP"
-msgstr ""
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:126
-msgid "Messages marked"
-msgstr "已标记信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:126
-msgid "MARK"
-msgstr "标记"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
-msgid "Messages quarantined"
-msgstr "已隔离信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
-msgid "QUARANTINE"
-msgstr "隔离"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:128
-msgid "Spam detected"
-msgstr "检测到的垃圾信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:129
-msgid "Messages received"
-msgstr "已收到的信息"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
-msgid "SMTP Events"
-msgstr "SMTP事件"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:27
-msgid "Spam Events"
-msgstr "垃圾信息事件"
-
-#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
-msgid "Identity Theft Events"
-msgstr "身份盗窃事件"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Spam"
-msgstr ""
+msgstr "垃圾邮件"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Clean"
-msgstr ""
+msgstr "清洁"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Hourly Spam Rate"
-msgstr ""
+msgstr "每小时垃圾邮件率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:23
-msgid "Daily Spam Rate"
-msgstr ""
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
+msgid "Spam Rate"
+msgstr "垃圾邮件率"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_spamassassin.py:23
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_spamassassin.py:7
 msgid "Top Ten Spammed"
-msgstr ""
+msgstr "十大垃圾邮件"
+
+#~ msgid "POP3"
+#~ msgstr "POP3"
+
+#~ msgid "Scan POP3"
+#~ msgstr "扫描POP3"
+
+#~ msgid "Advanced POP Configuration"
+#~ msgstr "先进的POP配置"
+
+#~ msgid "IMAP"
+#~ msgstr "IMAP"
+
+#~ msgid "Scan IMAP"
+#~ msgstr "扫描IMAP"
+
+#~ msgid "Advanced IMAP Configuration"
+#~ msgstr "高级IMAP配置"
+
+#~ msgid "unknown"
+#~ msgstr "未知"
+
+#~ msgid "pass message"
+#~ msgstr "通过邮件"
+
+#, fuzzy
+#~ msgid "mark message"
+#~ msgstr "通过邮件"
+
+#~ msgid "drop message"
+#~ msgstr "下降的消息"
+
+#~ msgid "quarantine message"
+#~ msgstr "隔离邮件"
+
+#~ msgid "pass safelist message"
+#~ msgstr "通过安全列表信息"
+
+#~ msgid "pass oversize message"
+#~ msgstr "通过特大型消息"
+
+#~ msgid "pass outbound message"
+#~ msgstr "通过出站邮件"
+
+#~ msgid "unknown action"
+#~ msgstr "未知的行动"
+
+#, fuzzy
+#~ msgid "Receiver"
+#~ msgstr "收件人"
+
+#, fuzzy
+#~ msgid "Subject"
+#~ msgstr "主题"
+
+#~ msgid "Spam score"
+#~ msgstr "垃圾邮件评分"
+
+#, fuzzy
+#~ msgid "Client"
+#~ msgstr "客户端"
+
+#, fuzzy
+#~ msgid "Server"
+#~ msgstr "服务器"
+
+#~ msgid "action"
+#~ msgstr "动作"
+
+#~ msgid "Saving..."
+#~ msgstr "正在保存..."
+
+#~ msgid "Please wait"
+#~ msgstr "请等候"
+
+#~ msgid "All Events"
+#~ msgstr "所有事件"
+
+#~ msgid "Skipped Events"
+#~ msgstr "已跳过事件"
+
+#~ msgid "POP/IMAP Events"
+#~ msgstr "POP/IMAP事件"
+
+#~ msgid "Messages passed"
+#~ msgstr "已通过信息"
+
+#~ msgid "PASS"
+#~ msgstr "通过"
+
+#, fuzzy
+#~ msgid "Messages dropped"
+#~ msgstr "已阻止信息"
+
+#~ msgid "Messages marked"
+#~ msgstr "已标记信息"
+
+#~ msgid "MARK"
+#~ msgstr "标记"
+
+#~ msgid "Messages quarantined"
+#~ msgstr "已隔离信息"
+
+#~ msgid "QUARANTINE"
+#~ msgstr "隔离"
+
+#~ msgid "Spam detected"
+#~ msgstr "检测到的垃圾信息"
+
+#~ msgid "Messages received"
+#~ msgstr "已收到的信息"
+
+#~ msgid "SMTP Events"
+#~ msgstr "SMTP事件"
+
+#~ msgid "Spam Events"
+#~ msgstr "垃圾信息事件"
+
+#~ msgid "Identity Theft Events"
+#~ msgstr "身份盗窃事件"
 
 #~ msgid "mark infection"
 #~ msgstr "感染标记"

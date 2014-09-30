@@ -6,315 +6,377 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
-"PO-Revision-Date: 2010-04-04 00:28+0900\n"
-"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
+"POT-Creation-Date: 2014-02-07 12:52-0800\n"
+"PO-Revision-Date: 2014-03-01 09:56+0200\n"
+"Last-Translator: Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Pootle 1.1.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:19
-msgid "block"
-msgstr "ブロック"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:27
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:35
+msgid "Status"
+msgstr "状態"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
-msgid "log"
-msgstr "ログ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
-msgid "[no category]"
-msgstr "{カテゴリー無し}"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:37
+msgid ""
+"Application Control Lite logs and blocks sessions using custom signatures on "
+"the session content."
+msgstr "セッション内容にカスタムシグネチャを使用してApplication Control Liteのログとセッションをブロック。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:39
+msgid " "
+msgstr " "
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:46
+msgid "Total Signatures Available"
+msgstr "利用可能なシグネチャの総数"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:50
+msgid "Total Signatures Logging"
+msgstr "記録されたシグネチャの総数"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:54
+msgid "Total Signatures Blocking"
+msgstr "ブロックするシグネチャの総数"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:59
+msgid "Note"
+msgstr "注意"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:61
+msgid ""
+"Caution and discretion is advised in configuring Application Control Lite at "
+"the the risk of harmful false positives."
+msgstr "有害には誤認のリスクがあるApplication Control Liteを設定する際に注意と判断をお勧めします。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:75
 msgid "[no protocol]"
-msgstr "{プロトコル無し}"
+msgstr "[no protocol]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:76
+msgid "[no category]"
+msgstr "[no category]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:79
 msgid "[no description]"
-msgstr "{説明無し}"
+msgstr "[no description]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:80
 msgid "[no signature]"
-msgstr "{署名無し}"
+msgstr "[no signature]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
-msgid "Protocol List"
-msgstr "プロトコルリスト"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:82
+msgid "Signatures"
+msgstr "シグネチャ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
-msgid "category"
-msgstr "カテゴリー"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
-msgid "protocol"
-msgstr "プロトコル"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
-msgid "description"
-msgstr "記述"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
-msgid "Category"
-msgstr "カテゴリー"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:114
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:342
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:401
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:662
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:125
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:173
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:259
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:318
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:579
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:120
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:180
+msgid "Category"
+msgstr "カテゴリ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:188
 msgid "Block"
 msgstr "ブロック"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:151
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:194
 msgid "Log"
 msgstr "ログ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:128
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:200
 msgid "Description"
 msgstr "説明"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:208
 msgid "Signature"
-msgstr "署名"
+msgstr "シグネチャ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-msgid "blocked"
-msgstr "ブロック"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
+msgid "Event Log"
+msgstr "イベントログ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-msgid "passed"
-msgstr "パス"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
-msgid "blocked in block list"
-msgstr "ブロックリストでブロックされる"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
-msgid "not blocked in block list"
-msgstr "ブロックリストでブロックされない"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:178
-msgid "timestamp"
-msgstr "タイムスタンプ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:186
-msgid "action"
-msgstr "アクション"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:191
-msgid "client"
-msgstr "クライアント"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:197
-msgid "request"
-msgstr "リクエスト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
-msgid "reason for action"
-msgstr "アクションの理由"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:207
-msgid "server"
-msgstr "サーバー"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
-msgid "Saving..."
-msgstr "保存中..."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
-msgid "Please wait"
-msgstr "しばらくお待ちください"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
-msgid "Protocol Events"
-msgstr "プロトコルイベント"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
-msgid "Blocked Protocol Events"
-msgstr "ブロックされたプロトコルイベント"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-msgid "Sessions scanned"
-msgstr "セッションがスキャンされました"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-msgid "SCAN"
-msgstr "SCAN　（スキャン）"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
-msgid "Sessions blocked"
-msgstr "セッションがブロックされました"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
-msgid "BLOCK"
-msgstr "BLOCK（ブロック）"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "Sessions logged"
-msgstr "セッションがログされました"
-
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "DETECT"
-msgstr "検出"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:69
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:56
 msgid "Summary Report"
-msgstr "サマリーレポート"
+msgstr "サマリレポート"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:134
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:79
 msgid "scanned"
 msgstr "スキャンする"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:135
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:80
 msgid "sessions and detected"
 msgstr "セッションと検出"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:136
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:81
 msgid "protocols of which"
 msgstr "どのプロトコル"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:137
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:82
 msgid "were blocked"
 msgstr "ブロックされた"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:182
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:281
-msgid "Daily Usage"
-msgstr "毎日の使用量"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:127
+msgid "Usage"
+msgstr "使用"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:222
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:189
 msgid "Avg Detections"
 msgstr "平均検出"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:222
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:224
-msgid "detections/day"
-msgstr "検出数/日"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:191
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:194
+msgid "Blocks"
+msgstr "ブロック"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:224
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:193
 msgid "Max Detections"
 msgstr "最大検出"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:282
-msgid "Date"
-msgstr "日付"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:283
-msgid "Detections per Day"
-msgstr "1日あたりの検出数"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:287
-msgid "detections"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:199
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:203
+msgid "Detections"
 msgstr "検出"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:295
-msgid "Top Ten Blocked Protocols By Hits"
-msgstr "ヒット数ではトップ10のブロックプロトコル"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:212
+msgid "Top Blocked Protocols By Hits"
+msgstr "ヒット数によるトップのブロックしたプロトコル"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:334
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:393
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:453
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:513
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:573
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:632
-msgid "hits"
-msgstr "ヒット数"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:251
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:310
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:370
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:430
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:490
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:549
+msgid "Hits"
+msgstr "ヒット"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:341
-msgid "Top Ten Blocked Protocols (by hits)"
-msgstr "トップ10のブロックプロトコル（ヒット数による）"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:258
+msgid "Top Ten Blocked Protocols (by Hits)"
+msgstr "トップ10のブロックしたプロトコル（ヒット数による）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:343
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:402
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:463
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:522
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:582
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:641
-msgid "Blocks per Day"
-msgstr "1日あたりのブロック数"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:260
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:319
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:380
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:439
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:499
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:558
+msgid "Blocks Per Day"
+msgstr "1日あたりのブロック"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:351
-msgid "Top Ten Detected Protocols By Hits"
-msgstr "ヒット数ではトップ10の検出プロトコル"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:268
+msgid "Top Detected Protocols By Hits"
+msgstr "ヒット数によるトップの検出したプロトコル"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:400
-msgid "Top Ten Detected Protocols (by hits)"
-msgstr "トップ10の検出プロトコル（ヒット数による）"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:317
+msgid "Top Ten Detected Protocols (by Hits)"
+msgstr "トップ10の検出したプロトコル（ヒット数による）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:410
-msgid "Top Ten Blocked Hosts By Hits"
-msgstr "ヒット数ではトップ10のブロックホスト"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:327
+msgid "Top Blocked Hosts By Hits"
+msgstr "ヒット数によるトップのブロックしたホスト"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:461
-msgid "Top Ten Blocked Hosts (by hits)"
-msgstr "トップ10のブロックホスト（ヒット数による）"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:378
+msgid "Top Ten Blocked Hosts (by Hits)"
+msgstr "トップ10のブロックしたホスト（ヒット数による）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:462
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:521
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:379
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:438
 msgid "Host"
 msgstr "ホスト"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:472
-msgid "Top Ten Logged Hosts By Hits"
-msgstr "ヒット数ではトップ10のログインホスト"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:389
+msgid "Top Logged Hosts By Hits"
+msgstr "ヒット数によるトップの記録したホスト"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:520
-msgid "Top Ten Logged Hosts (by hits)"
-msgstr "トップ10のログインホスト（ヒット数による）"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:437
+msgid "Top Ten Logged Hosts (by Hits)"
+msgstr "トップ10の記録したホスト（ヒット数による）"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:530
-msgid "Top Ten Blocked Users By Hits"
-msgstr "ヒット数ではトップ10のブロックユーザ"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:447
+msgid "Top Blocked Users By Hits"
+msgstr "ヒット数によるトップのブロックしたユーザ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:580
-msgid "Top Ten Blocked Users (by hits)"
-msgstr "トップ10のブロックユーザー（ヒット数による)"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:497
+msgid "Top Ten Blocked Users (by Hits)"
+msgstr "トップ10のブロックしたユーザ（ヒット数による)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:581
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:640
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:660
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:498
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:557
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:577
 msgid "User"
 msgstr "ユーザ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:590
-msgid "Top Ten Logged Users By Hits"
-msgstr "ヒット数ではトップ10のログインユーザ"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:507
+msgid "Top Logged Users By Hits"
+msgstr "ヒット数によるトップの記録したユーザ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:639
-msgid "Top Ten Logged Users (by hits)"
-msgstr "トップ10のログインユーザー（ヒット数による)"
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:556
+msgid "Top Ten Logged Users (by Hits)"
+msgstr "トップ10の記録したユーザ（ヒット数による)"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:649
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:566
 msgid "Detection Events"
 msgstr "検出イベント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:655
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:572
 msgid "Time"
 msgstr "時間"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:658
-#, fuzzy
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:575
 msgid "Client"
 msgstr "クライアント"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:663
-#, fuzzy
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:580
 msgid "Blocked"
 msgstr "ブロック"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:664
-#, fuzzy
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:581
 msgid "Server"
-msgstr "サーバー"
+msgstr "サーバ"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_node_protofilter.py:665
+#: ../hier/usr/lib/python2.6/reports/node/untangle_node_protofilter.py:582
 msgid "Port"
 msgstr "ポート"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:50
+msgid "All Events"
+msgstr "全てのイベント"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:56
+msgid "Blocked Events"
+msgstr "ブロックされたイベント"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:62
+msgid "Chunks scanned"
+msgstr "スキャンされたチャンク"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:63
+msgid "Sessions logged"
+msgstr "セッションがログされました"
+
+#: ../src/com/untangle/node/protofilter/ProtoFilterImpl.java:64
+msgid "Sessions blocked"
+msgstr "セッションがブロックされました"
+
+#~ msgid ""
+#~ "Application Control Lite uses signatures to detect the protocols of network "
+#~ "traffic. It is useful for detecting unwanted or interesting protocols in use "
+#~ "on the network."
+#~ msgstr ""
+#~ "Application Control Liteは、シグネチャを使用してネットワークトラフィックのプロトコルを検出します。これは、ネットワーク上で使用中の不要な"
+#~ "または注目するプロトコルを検出するのに便利です。"
+
+#~ msgid ""
+#~ "Caution and discretion is advised using block at the the risk of false "
+#~ "positives and intelligent applications shifting protocol usage to avoid "
+#~ "blocking."
+#~ msgstr ""
+#~ "偽陽性のリスクをご考慮ください。"
+
+#~ msgid "Timestamp"
+#~ msgstr "タイムスタンプ"
+
+#~ msgid "Username"
+#~ msgstr "ユーザ名"
+
+#~ msgid "block"
+#~ msgstr "ブロック"
+
+#~ msgid "log"
+#~ msgstr "ログ"
+
+#~ msgid "protocol"
+#~ msgstr "プロトコル"
+
+#~ msgid "category"
+#~ msgstr "カテゴリ"
+
+#~ msgid "description"
+#~ msgstr "説明"
+
+#~ msgid "client"
+#~ msgstr "クライアント"
+
+#~ msgid "blocked"
+#~ msgstr "ブロックされた"
+
+#~ msgid "server"
+#~ msgstr "サーバ"
+
+#~ msgid "Saving..."
+#~ msgstr "保存中..."
+
+#~ msgid "Please wait"
+#~ msgstr "しばらくお待ちください"
+
+#~ msgid "SCAN"
+#~ msgstr "SCAN"
+
+#~ msgid "LOG"
+#~ msgstr "LOG"
+
+#~ msgid "BLOCK"
+#~ msgstr "BLOCK"
+
+#~ msgid "Sessions scanned"
+#~ msgstr "セッションがスキャンされました"
+
+#~ msgid "passed"
+#~ msgstr "パス"
+
+#~ msgid "blocked in block list"
+#~ msgstr "ブロックリストでブロックされる"
+
+#~ msgid "not blocked in block list"
+#~ msgstr "ブロックリストでブロックされない"
+
+#~ msgid "action"
+#~ msgstr "アクション"
+
+#~ msgid "request"
+#~ msgstr "リクエスト"
+
+#~ msgid "reason for action"
+#~ msgstr "アクションの理由"
+
+#~ msgid "Protocol Events"
+#~ msgstr "プロトコルイベント"
+
+#~ msgid "Blocked Protocol Events"
+#~ msgstr "ブロックされたプロトコルイベント"
+
+#~ msgid "Protocol List"
+#~ msgstr "プロトコルリスト"
+
+#~ msgid "Daily Usage"
+#~ msgstr "毎日の使用量"
+
+#~ msgid "detections/day"
+#~ msgstr "検出数/日"
+
+#~ msgid "Date"
+#~ msgstr "日付"
+
+#~ msgid "Detections per Day"
+#~ msgstr "1日あたりの検出数"
+
+#~ msgid "DETECT"
+#~ msgstr "検出"
 
 #, python-format
 #~ msgid "max detections (%s-days)"

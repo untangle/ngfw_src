@@ -6,10 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"POT-Creation-Date: 2014-08-17 16:40-0700\n"
 "PO-Revision-Date: 2008-11-24 18:34-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,475 +18,553 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:44
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:152
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:143
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:195
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:246
 msgid "Web"
 msgstr "Web"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:56
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:77
 msgid "Scan HTTP"
 msgstr "Varrer HTTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:69
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:419
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:90
 msgid "Advanced Settings"
 msgstr "Configurações avançadas"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:76
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:157
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:261
-msgid "File Extensions"
-msgstr "Extensões de arquivos"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:99
+msgid "Edit File Extensions"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:84
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:211
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:332
-msgid "MIME Types"
-msgstr "Tipos MIME"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:109
+msgid "Edit MIME Types"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:91
-msgid "Disable HTTP Resume"
-msgstr "Desabilitar continuação de HTTP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:104
-msgid "Scan trickle rate (1-99)"
-msgstr "Varrer trickle rate (1-99)"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:125
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:459
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:609
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:117
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:453
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:522
 msgid "Virus Blocker signatures were last updated"
 msgstr "As assinaturas do Bloqueador de Vírus foram atualizadas por último em"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:127
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:461
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:611
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:674
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:811
-msgid "Unknown"
-msgstr "Desconhecido"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:118
+msgid "never"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:161
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:215
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:746
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:295
+msgid "File Extensions"
+msgstr "Extensões de arquivos"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:152
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:204
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:255
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:161
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:215
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:746
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:152
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:204
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:255
 msgid "Please wait"
 msgstr "Aguarde"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:247
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:318
-msgid "scan"
-msgstr "varrer"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:200
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:364
+msgid "MIME Types"
+msgstr "Tipos MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:259
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:330
-msgid "[no description]"
-msgstr "[sem descrição]"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:251
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:539
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:600
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:613
+msgid "Pass Sites"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:277
-msgid "file type"
-msgstr "tipo de arquivo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:285
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:356
-msgid "description"
-msgstr "descrição"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:300
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:332
 msgid "File Type"
 msgstr "Tipo de arquivo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:305
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:376
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:333
+msgid "[enter file type]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:341
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:379
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:409
 msgid "Scan"
 msgstr "Varrer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:309
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:380
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:316
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:347
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:414
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:559
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:587
 msgid "Description"
 msgstr "Descrição"
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:322
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:348
-msgid "MIME type"
-msgstr "Tipo MIME"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:565
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:588
+msgid "[no description]"
+msgstr "[sem descrição]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:370
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:369
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:401
 msgid "MIME Type"
 msgstr "Tipo MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:394
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:402
+msgid "[enter MIME type]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:429
 msgid "FTP"
 msgstr "FTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:406
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:439
 msgid "Scan FTP"
 msgstr "Varrer FTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:425
-msgid "Disable FTP Resume"
-msgstr "Desabilitar continuação de FTP"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:454
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:523
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:393
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:456
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:609
+msgid "Unknown"
+msgstr "Desconhecido"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:438
-msgid "Scan trickle rate"
-msgstr "Varrer trickle rate"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:474
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:469
 msgid "Email"
 msgstr "E-mail"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:493
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:486
 msgid "Scan SMTP"
 msgstr "Varrer SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
-msgid "Scan POP3"
-msgstr "Varrer POP3"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:519
-msgid "Scan IMAP"
-msgstr "Varrer IMAP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:539
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:563
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:505
 msgid "Action"
 msgstr "Ação"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:545
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:569
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:592
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:647
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:656
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:507
 msgid "pass message"
 msgstr "permitir mensagem"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:546
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:570
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:593
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:650
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:658
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:508
 msgid "remove infection"
 msgstr "remover infecção"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:547
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:661
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:509
 msgid "block message"
 msgstr "bloquear mensagem"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:636
-msgid "clean"
-msgstr "limpar"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:638
-msgid "cleaned"
-msgstr "limpo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:641
-msgid "blocked"
-msgstr "bloqueado"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:683
-msgid "virus found"
-msgstr "vírus encontrado"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:683
-msgid "no virus found"
-msgstr "nenhum vírus encontrado"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:688
-msgid "timestamp"
-msgstr "marcação de horário"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:696
-msgid "action"
-msgstr "ação"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:701
-msgid "client"
-msgstr "cliente"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:708
-msgid "traffic"
-msgstr "tráfego"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:713
-msgid "reason for action"
-msgstr "motivo para ação"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:718
-msgid "server"
-msgstr "servidor"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:734
-msgid "Warning"
-msgstr "Aviso"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:734
-msgid "Scan trickle rate should be between 1 and 99!"
-msgstr "Varredura de trickle rate deve ser entre 1 e 99"
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:66
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:73
-msgid "Feature is not installed."
-msgstr "O recurso não está instalado."
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:83
-msgid "This request has expired."
-msgstr "Esta solicitação expirou."
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:112
-#, java-format
-msgid "{0} | {1} Warning"
-msgstr "{0} | {1} Aviso"
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:124
-#, java-format
-msgid "{0} Virus Blocker"
-msgstr "{0} Bloqueador de Vírus"
-
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:141
-#, java-format
-msgid "{0}This file was blocked{1} because it contained a virus."
-msgstr "{0}Este arquivo foi bloqueado{1} porque continha um vírus."
-
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
-#, java-format
-msgid "If you have any questions, Please contact {0}."
-msgstr "Caso tenha perguntas, entre em contato {0}."
-
-#: ../impl/com/untangle/node/virus/VirusAllFilter.java:33
-msgid "All Events"
-msgstr "Todos os eventos"
-
-#: ../impl/com/untangle/node/virus/VirusHttpFilter.java:33
-msgid "HTTP Events"
-msgstr "Eventos HTTP"
-
-#: ../impl/com/untangle/node/virus/VirusInfectedFilter.java:33
-msgid "Infected Events"
-msgstr "Eventos infectados"
-
-#: ../impl/com/untangle/node/virus/VirusLogFilter.java:33
-msgid "FTP Events"
-msgstr "Eventos FTP"
-
-#: ../impl/com/untangle/node/virus/VirusMailFilter.java:33
-msgid "POP/IMAP Events"
-msgstr "Eventos POP/IMAP"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:232
-msgid "Documents scanned"
-msgstr "Documentos varridos"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:233
-msgid "SCAN"
-msgstr "VARRER"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:235
-msgid "Documents blocked"
-msgstr "Documentos bloqueados"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:236
-msgid "BLOCK"
-msgstr "BLOQUEAR"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:238
-msgid "Documents passed"
-msgstr "Documentos passados"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:239
-msgid "PASS"
-msgstr "PASSAR"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:241
-msgid "Infections removed"
-msgstr "Infecções removidas"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:242
-msgid "REMOVE"
-msgstr "REMOVER"
-
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:244
-msgid "Passed by policy"
-msgstr "Passado por política"
-
-#: ../impl/com/untangle/node/virus/VirusSmtpFilter.java:33
-msgid "SMTP Events"
-msgstr "Eventos SMTP"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:121
-msgid "Summary Report"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:544
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:574
+msgid "Site"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:256
-msgid "scanned"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:549
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:575
+msgid "[enter site]"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:257
-msgid "documents and detected and blocked"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:554
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:582
+msgid "Pass"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:258
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:676
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:735
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:813
-msgid "viruses"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:614
+msgid "Do not scan traffic to the specified sites.  Use caution!"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:325
-msgid "Daily Viruses Blocked"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:623
+msgid "Web Event Log"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:384
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:550
-msgid "Avg"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:630
+msgid "Email Event Log"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:384
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:386
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:480
-msgid "viruses/day"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:642
+msgid "Ftp Event Log"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:386
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:552
-msgid "Max"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:667
+msgid "Timestamp"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:479
-msgid "Day"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:484
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:623
-msgid "viruses blocked"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:491
-msgid "Hourly Viruses Blocked"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:550
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:552
-msgid "viruses/hour"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:835
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:878
-msgid "Time"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:620
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:741
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:821
-msgid "Viruses"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:630
-msgid "Top Web Viruses Detected"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:684
-msgid "name"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:685
-msgid "count"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:693
-msgid "Top Email Viruses Detected"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:742
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:822
-msgid "Count"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:750
-msgid "Top Viruses Detected"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:831
-msgid "Web Events"
-msgstr ""
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:838
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:840
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:881
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:678
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:636
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:638
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:681
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:683
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:727
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:729
 #, fuzzy
 msgid "Client"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:843
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:845
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:886
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:888
-msgid "User"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:683
+msgid "Username"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:847
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:890
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:688
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:691
+msgid "File Name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:693
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:645
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:690
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:736
 msgid "Virus Name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:848
-#, fuzzy
-msgid "URL"
-msgstr "URL:"
-
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:849
-msgid "Server IP"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:698
+msgid "Server"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:850
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:128
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:151
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:152
+msgid "documents and detected and blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:153
+msgid "viruses"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:237
+msgid "Viruses Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:325
+msgid "Avg Viruses Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:327
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:330
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:336
+msgid "Blocks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:329
+msgid "Max Viruses Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:340
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:395
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:458
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:517
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:523
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:611
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:619
+msgid "Viruses"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:349
+msgid "Top Web Viruses Detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:403
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:466
+msgid "Name"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:404
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:467
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:524
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:620
+msgid "Count"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:412
+msgid "Top Ftp Viruses Detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:475
+msgid "Top Email Viruses Detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:532
+msgid "Top Viruses Detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:629
+msgid "Web Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:633
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:678
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:724
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:641
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:643
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:686
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:688
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:732
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:734
+msgid "User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:646
+msgid "Url"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:647
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:692
+msgid "Server Ip"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:648
 msgid "Server Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:874
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:674
+msgid "Ftp Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:720
 msgid "Mail Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:891
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:737
 msgid "Subject"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:892
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:738
 msgid "Recipient"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:893
-msgid "Client IP"
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:739
+msgid "Client Ip"
 msgstr ""
 
-#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:894
+#: ../hier/usr/lib/python2.7/reports/node/untangle_base_virus.py:740
 msgid "Client Port"
 msgstr ""
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:41
+msgid "Feature is not installed."
+msgstr "O recurso não está instalado."
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:49
+msgid "This request has expired."
+msgstr "Esta solicitação expirou."
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:78
+#, java-format
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} Aviso"
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:90
+#, java-format
+msgid "{0} Virus Blocker"
+msgstr "{0} Bloqueador de Vírus"
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:107
+#, java-format
+msgid "{0}This file was blocked{1} because it contains a virus."
+msgstr ""
+
+#: ../../http-casing/src/com/untangle/node/http/BlockPageUtil.java:73
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr "Caso tenha perguntas, entre em contato {0}."
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:134
+msgid "Scanned Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:139
+msgid "Infected Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:144
+msgid "Clean Web Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:149
+msgid "Scanned Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:155
+msgid "Infected Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:161
+msgid "Clean Email Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:167
+msgid "Scanned Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:172
+msgid "Infected Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:177
+msgid "Clean Ftp Events"
+msgstr ""
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:183
+msgid "Documents scanned"
+msgstr "Documentos varridos"
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:184
+msgid "Documents blocked"
+msgstr "Documentos bloqueados"
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:185
+msgid "Documents passed"
+msgstr "Documentos passados"
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:186
+msgid "Infections removed"
+msgstr "Infecções removidas"
+
+#: ../src/com/untangle/node/virus/VirusNodeImpl.java:187
+msgid "Passed by policy"
+msgstr "Passado por política"
+
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:71
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:75
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:72
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:77
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Reason:"
 msgstr "Motivo:"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:87
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:84
 msgid "Unblock For Now"
 msgstr "Desbloquear por enquanto"
 
-#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:93
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:90
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "Disable HTTP Resume"
+#~ msgstr "Desabilitar continuação de HTTP"
+
+#~ msgid "Scan trickle rate (1-99)"
+#~ msgstr "Varrer trickle rate (1-99)"
+
+#~ msgid "scan"
+#~ msgstr "varrer"
+
+#~ msgid "file type"
+#~ msgstr "tipo de arquivo"
+
+#~ msgid "description"
+#~ msgstr "descrição"
+
+#~ msgid "MIME type"
+#~ msgstr "Tipo MIME"
+
+#~ msgid "Disable FTP Resume"
+#~ msgstr "Desabilitar continuação de FTP"
+
+#~ msgid "Scan trickle rate"
+#~ msgstr "Varrer trickle rate"
+
+#~ msgid "Scan POP3"
+#~ msgstr "Varrer POP3"
+
+#~ msgid "Scan IMAP"
+#~ msgstr "Varrer IMAP"
+
+#~ msgid "clean"
+#~ msgstr "limpar"
+
+#~ msgid "cleaned"
+#~ msgstr "limpo"
+
+#~ msgid "blocked"
+#~ msgstr "bloqueado"
+
+#~ msgid "virus found"
+#~ msgstr "vírus encontrado"
+
+#~ msgid "no virus found"
+#~ msgstr "nenhum vírus encontrado"
+
+#~ msgid "timestamp"
+#~ msgstr "marcação de horário"
+
+#~ msgid "action"
+#~ msgstr "ação"
+
+#~ msgid "client"
+#~ msgstr "cliente"
+
+#~ msgid "traffic"
+#~ msgstr "tráfego"
+
+#~ msgid "reason for action"
+#~ msgstr "motivo para ação"
+
+#~ msgid "server"
+#~ msgstr "servidor"
+
+#~ msgid "Warning"
+#~ msgstr "Aviso"
+
+#~ msgid "Scan trickle rate should be between 1 and 99!"
+#~ msgstr "Varredura de trickle rate deve ser entre 1 e 99"
+
+#~ msgid "{0}This file was blocked{1} because it contained a virus."
+#~ msgstr "{0}Este arquivo foi bloqueado{1} porque continha um vírus."
+
+#~ msgid "All Events"
+#~ msgstr "Todos os eventos"
+
+#~ msgid "HTTP Events"
+#~ msgstr "Eventos HTTP"
+
+#~ msgid "Infected Events"
+#~ msgstr "Eventos infectados"
+
+#~ msgid "FTP Events"
+#~ msgstr "Eventos FTP"
+
+#~ msgid "POP/IMAP Events"
+#~ msgstr "Eventos POP/IMAP"
+
+#~ msgid "SCAN"
+#~ msgstr "VARRER"
+
+#~ msgid "BLOCK"
+#~ msgstr "BLOQUEAR"
+
+#~ msgid "PASS"
+#~ msgstr "PASSAR"
+
+#~ msgid "REMOVE"
+#~ msgstr "REMOVER"
+
+#~ msgid "SMTP Events"
+#~ msgstr "Eventos SMTP"
+
+#, fuzzy
+#~ msgid "URL"
+#~ msgstr "URL:"
