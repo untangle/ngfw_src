@@ -5,7 +5,7 @@ package com.untangle.uvm;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Date;
@@ -38,7 +38,7 @@ public class HostTableImpl implements HostTable
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private Hashtable<InetAddress, HostTableEntry> hostTable;
+    private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
 
     private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
@@ -56,7 +56,7 @@ public class HostTableImpl implements HostTable
     
     protected HostTableImpl()
     {
-        this.hostTable = new Hashtable<InetAddress, HostTableEntry>();
+        this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
 
         this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox ORDER BY time_stamp DESC");
         this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates ORDER BY time_stamp DESC");
