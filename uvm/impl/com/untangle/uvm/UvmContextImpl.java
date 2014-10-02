@@ -226,12 +226,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public LicenseManager licenseManager()
     {
-        LicenseManager lm = (LicenseManager) this.nodeManager().node("untangle-node-license");
-
-        if (lm == null)
+        NodeManager nodeManager = this.nodeManager();
+        if ( nodeManager == null )
             return this.defaultLicenseManager;
-        else
-            return lm;
+        LicenseManager licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
+        if (licenseManager == null)
+            return this.defaultLicenseManager;
+
+        return licenseManager;
     }
 
     public ServletFileManager servletFileManager()

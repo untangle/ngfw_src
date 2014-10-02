@@ -1,0 +1,103 @@
+{
+   java_jvm_call_helper
+   Memcheck:Cond
+   ...
+   fun:*JavaCalls11call_helper*
+   ...
+}
+
+{
+   java_jvm_call_helper
+   Memcheck:Addr4
+   ...
+   fun:*JavaCalls11call_helper*
+   ...
+}
+
+{
+   java_jvm_call_helper
+   Memcheck:Param
+   ...
+   fun:*JavaCalls11call_helper*
+   ...
+}
+
+{
+   java_jvm_thread_loop
+   Memcheck:Cond
+   ...
+   fun:_ZN8VMThread4loopEv
+   ...
+}
+
+{
+   java_jvm_thread_loop
+   Memcheck:Value8
+   ...
+   fun:_ZN8VMThread4loopEv
+   ...
+}
+
+{
+   java_jvm_thread_loop_main
+   Memcheck:Cond
+   ...
+   fun:_ZN10JavaThread17thread_main_innerEv
+   ...
+}
+
+{
+   java_jvm_epoll_nio
+   Memcheck:Param
+   ...
+   fun:Java_sun_nio_ch_EPollArrayWrapper_epollCtl
+   ...
+}
+
+{
+   java_jvm_safepointsynchronize
+   Memcheck:Cond
+   ...
+   fun:_ZN20SafepointSynchronize5blockEP10JavaThread
+   ...
+}
+
+{
+   java_jvm_CMS_thread
+   Memcheck:Cond
+   ...
+   fun:_ZN25ConcurrentMarkSweepThread3runEv
+   ...
+}
+
+{
+   java_jvm_parnew
+   Memcheck:Cond
+   ...
+   fun:_ZN13ParNewGenTask4workEj
+   ...
+}
+
+{
+   java_jvm_gangworker
+   Memcheck:Cond
+   ...
+   fun:_ZN10GangWorker4loopEv
+   ...
+}
+
+{
+   libnetfilter_queue_nfnl
+   Memcheck:Param
+   ...
+   fun:nfnl_talk
+   ...
+}
+
+{
+   libnetfilter_queue_nfnl_2
+   Memcheck:Param
+   ...
+   obj:/usr/lib/libnetfilter_queue.so.1.1.0
+   ...
+}
