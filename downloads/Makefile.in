@@ -19,17 +19,10 @@ dir_target=ensure_dir_target
 src_root    = $(dir $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)))../
 src_root    := $(shell mkdir -p $(src_root)/ 1> /dev/null 2>&1 && cd $(src_root)/ 1> /dev/null 2>&1 && pwd)
 
-# build_dist     ?= /tmp/jdimv
-build_dist     ?= $(src_root)/output
-build_prefix   ?= $(build_dist)
-build_lib_path  = ${build_dist}/usr/lib/mvvm
-build_inc_path  = ${build_dist}/usr/include
-
-JDK_HOME      ?= /opt/jdk
-java_include_base=$(JDK_HOME)/include
-
 # We need to set JAVA_HOME too as the 'ant' binary needs it.
-JAVA_HOME     ?= /usr/lib/jvm/jdsdk1.7-oracle
+JAVAC          = $(shell readlink -f /etc/alternatives/javac)
+JAVAC_DIR      = $(shell dirname ${JAVAC})
+JAVA_HOME     ?= $(shell readlink -f ${JAVAC_DIR}/../)
 
 local_lib_path=lib
 
@@ -58,14 +51,12 @@ DEFINES       = -D_GNU_SOURCE -D_REENTRANT
 WARNINGS      = -Wall
 #OPTIMIZATIONS = -fomit-frame-pointer
 OPTIMIZATIONS =
-INC           = include ${build_dist}/usr/include
-INC_FLAGS     = $(patsubst %,-I%,$(INC))
 LDDIR         = ../lib $(build_lib_path)
 LDDIR_FLAGS   = $(patsubst %,-L%,$(LDDIR))
 LIBS	      =
 LIBS_FLAGS    = -pthread $(patsubst %,-l%,$(LIBS)) --warn-common
 FLAGS        +=
-CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INC_FLAGS) $(LDDIR_FLAGS)
+CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(LDDIR_FLAGS)
 
 RANLIB        = ranlib
 AR            = ar
