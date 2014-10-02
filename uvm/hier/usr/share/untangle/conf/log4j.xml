@@ -210,10 +210,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.mail">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.node.openvpn">
     <priority value="INFO"/>
   </category>
@@ -239,6 +235,10 @@
   </category>
 
   <category name="com.untangle.node.sitefilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.smtp">
     <priority value="INFO"/>
   </category>
 
