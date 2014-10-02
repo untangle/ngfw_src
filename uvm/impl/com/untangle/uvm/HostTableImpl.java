@@ -424,12 +424,15 @@ public class HostTableImpl implements HostTable
          * Only count hosts with getLastSessionTime() is > 0
          * Meaning the UVM has processed sessions for that host
          */
-        for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
-            HostTableEntry entry = i.next();
-            if (entry.getLastSessionTime() > 0)
-                licenseSize++;
+        try {
+            for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
+                HostTableEntry entry = i.next();
+                if (entry.getLastSessionTime() > 0)
+                    licenseSize++;
+            }
         }
-
+        catch (java.util.ConcurrentModificationException e) {} // ignore this, just best effort
+        
         return licenseSize;
     }
     
