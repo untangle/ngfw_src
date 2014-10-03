@@ -81,7 +81,6 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="script/components.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/reports.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">

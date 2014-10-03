@@ -20,7 +20,6 @@
 </c:if>
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
@@ -36,7 +35,6 @@
 --%>
 
     <script type="text/javascript">
-        var storeWindowName='store_window_${storeWindowId}';
         var main;
         function init() {
             main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});

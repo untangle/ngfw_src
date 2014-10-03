@@ -1,1 +1,0 @@
-../../webui/script/components.js

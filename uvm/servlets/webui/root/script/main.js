@@ -1,5 +1,33 @@
 Ext.namespace('Ung');
-// Global Variables
+Ext.Loader.setConfig({
+    enabled: true,
+    paths: {
+        'Ext.ux': '/ext4/examples/ux',
+        'Ung': '/script',
+        'Webui': 'script'
+    }
+});
+
+var rpc=null; // the main json rpc object
+var testMode = false;
+
+Ext.require([
+    'Ext.ux.data.PagingMemoryProxy',
+    'Ext.ux.grid.FiltersFeature',
+    'Webui.extOverrides',
+    'Webui.util',
+    'Ung.window',
+    'Ung.editorGrid',
+    'Ung.eventLog',
+    'Webui.ruleBuilder',
+    'Webui.matcherWindow',
+    'Webui.monitor',
+    'Webui.components'
+]);
+//resources map
+Ung.hasResource = {};
+
+//Global Variables
 // the main object instance
 var main=null;
 // Main object class
