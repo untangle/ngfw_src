@@ -3,7 +3,7 @@
  */
 package com.untangle.node.smtp.handler;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class SmtpTransactionHandler
 
     private int dataResp = -1;// Special case for when we get a negative
 
-    private List<String> txLog = new ArrayList<String>();
+    private LinkedList<String> txLog = new LinkedList<String>();
 
     public static final ResponseCompletion PASSTHRU_RESPONSE_COMPLETION = new ResponseCompletion()
     {
@@ -680,10 +680,11 @@ public class SmtpTransactionHandler
         txLog.add("----Change State " + old + "->" + newState + "-----------");
     }
 
+    @SuppressWarnings("unchecked")
     void dumpToLogger(Level level)
     {
         logger.log(level, "=======BEGIN Transaction Log=============");
-        for (String s : txLog) {
+        for ( String s : (List<String>) txLog.clone() ) {
             logger.log(level, s);
         }
         logger.log(level, "=======ENDOF Transaction Log=============");
