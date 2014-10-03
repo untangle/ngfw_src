@@ -89,7 +89,7 @@ public class SmtpTransactionHandler
 
     SmtpTransactionHandler(SmtpTransaction tx) {
         this.tx = tx;
-        txLog.add("---- Initial state " + state + " (" + new Date() + ") -------");
+        addToTxLog("---- Initial state " + state + " (" + new Date() + ") -------");
         isMessageMaster = false;
     }
 
@@ -106,16 +106,17 @@ public class SmtpTransactionHandler
         // Look for the state we understand. Note I included "INIT"
         // but that should be impossible by definition
         if (state == BufTxState.GATHER_ENVELOPE || state == BufTxState.INIT) {
-            txLog.add("Aborting at client request");
-            stateMachine.transactionEnded(this);
+            addToTxLog("Aborting at client request");
+            stateMachine.transactionEnded( session, this );
             getTransaction().reset();
             stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             changeState(BufTxState.DONE);
             closeMessageResources(false);
         } else {// State/command misalignment
-            txLog.add("Impossible command now: \"" + command + "\"");
+            addToTxLog("Impossible command now: \"" + command + "\"");
+            logger.error("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
-            stateMachine.transactionEnded(this);
+            stateMachine.transactionEnded( session, this );
             stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             changeState(BufTxState.DONE);
         }
@@ -128,18 +129,19 @@ public class SmtpTransactionHandler
         if (state == BufTxState.GATHER_ENVELOPE || state == BufTxState.INIT) {
             if (command.getType() == CommandType.DATA) {
                 // Don't passthru
-                txLog.add("Enqueue synthetic 354 for client");
+                addToTxLog("Enqueue synthetic 354 for client");
                 stateMachine.appendSyntheticResponse( session, new Response(354, RESP_TXT_354), immediateActions);
                 changeState(BufTxState.BUFFERING_MAIL);
             } else {
-                txLog.add("Passthru to client");
+                addToTxLog("Passthru to client");
                 stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
             }
         } else {
-            txLog.add("Impossible command now: \"" + command + "\"");
+            addToTxLog("Impossible command now: \"" + command + "\"");
+            logger.error("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
             stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
-            stateMachine.transactionEnded(this);
+            stateMachine.transactionEnded( session, this );
             changeState(BufTxState.DONE);
         }
     }
@@ -153,13 +155,14 @@ public class SmtpTransactionHandler
             if (state == BufTxState.INIT) {
                 changeState(BufTxState.GATHER_ENVELOPE);
             }
-            txLog.add("Pass " + command.getType() + " command to server, register callback to modify envelope at response");
+            addToTxLog("Pass " + command.getType() + " command to server, register callback to modify envelope at response");
             stateMachine.sendCommandToServer( session, command, compl );
         } else {
-            txLog.add("Impossible command now: \"" + command + "\"");
+            addToTxLog("Impossible command now: \"" + command + "\"");
+            logger.error("Impossible command now: \"" + command + "\"");
             dumpToLogger(Level.ERROR);
             stateMachine.sendCommandToServer( session, command, PASSTHRU_RESPONSE_COMPLETION );
-            stateMachine.transactionEnded(this);
+            stateMachine.transactionEnded( session, this );
             changeState(BufTxState.DONE);
         }
     }
@@ -258,7 +261,8 @@ public class SmtpTransactionHandler
             case INIT:
             case GATHER_ENVELOPE:
             case DONE:
-                txLog.add("Impossible command now: MIME chunk (first? " + isFirst + ", isLast? " + isLast);
+                addToTxLog("Impossible command now: MIME chunk (first? " + isFirst + ", isLast? " + isLast);
+                logger.error("Impossible command now: MIME chunk (first? " + isFirst + ", isLast? " + isLast);
                 dumpToLogger(Level.ERROR);
                 appendChunkToken(continuedToken);
                 changeState(BufTxState.DONE);
@@ -267,7 +271,7 @@ public class SmtpTransactionHandler
                 // ------Page 21--------
                 if (isLast) {
                     // We have the complete message.
-                    txLog.add("Have whole message.  Evaluate");
+                    addToTxLog("Have whole message.  Evaluate");
                     if (continuedToken != null) {
                         appendChunkToken(continuedToken);
                     }
@@ -275,13 +279,13 @@ public class SmtpTransactionHandler
                     BlockOrPassResult action = evaluateMessage( session, true, stateMachine );
                     switch (action) {
                         case PASS:
-                            txLog.add("Message passed evaluation");
+                            addToTxLog("Message passed evaluation");
                             // We're passing the message (or there was a silent parser error)
 
                             // Disable client tokens while we "catch-up" by issuing the DATA command
                             stateMachine.disableClientTokens( session );
 
-                            txLog.add("Send synthetic DATA to server, continue when reply arrives");
+                            addToTxLog("Send synthetic DATA to server, continue when reply arrives");
                             stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                             {
                                 @Override
@@ -294,33 +298,33 @@ public class SmtpTransactionHandler
                             changeState(BufTxState.DONE);
                             break;
                         case DROP:
-                            txLog.add("Message failed evaluation (we're going to block it)");
+                            addToTxLog("Message failed evaluation (we're going to block it)");
                             // Send a fake 250 to client
-                            txLog.add("Enqueue synthetic 250 to client");
+                            addToTxLog("Enqueue synthetic 250 to client");
                             stateMachine.appendSyntheticResponse( session, new Response(250, "OK"), immediateActions);
 
                             // Send REST to server (ignore result)
-                            txLog.add("Send synthetic RSET to server (ignoring the response)");
+                            addToTxLog("Send synthetic RSET to server (ignoring the response)");
                             stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION );
 
                             changeState(BufTxState.DONE);
-                            stateMachine.transactionEnded(this);
+                            stateMachine.transactionEnded( session, this );
                             getTransaction().reset();
                             cleanupTempFile(token);
                             break;
                         case TEMPORARILY_REJECT:
                             // We're blocking the message
-                            txLog.add("Message temporarily rejected");
+                            addToTxLog("Message temporarily rejected");
                             // Send a fake 451 to client
-                            txLog.add("Enqueue synthetic 451 to client");
+                            addToTxLog("Enqueue synthetic 451 to client");
                             stateMachine.appendSyntheticResponse( session, new Response(451, "Please try again later"), immediateActions);
 
                             // Send REST to server (ignore result)
-                            txLog.add("Send synthetic RSET to server (ignoring the response)");
+                            addToTxLog("Send synthetic RSET to server (ignoring the response)");
                             stateMachine.sendCommandToServer( session, new Command(CommandType.RSET), NOOP_RESPONSE_COMPLETION );
 
                             changeState(BufTxState.DONE);
-                            stateMachine.transactionEnded(this);
+                            stateMachine.transactionEnded( session, this );
                             getTransaction().reset();
                             cleanupTempFile(token);
                             break;
@@ -329,7 +333,7 @@ public class SmtpTransactionHandler
                             break;
                     }
                 } else {
-                    txLog.add("Not last MIME chunk, append to the file");
+                    addToTxLog("Not last MIME chunk, append to the file");
                     appendChunkToken(continuedToken);
                     // We go down one of three branches from here. We begin passthru if the
                     // mail is too large or if we've timed out.
@@ -343,14 +347,14 @@ public class SmtpTransactionHandler
                     if (tooBig || (timedOut && !stateMachine.isBufferAndTrickle( session ))) {
                         // Passthru DATA Sent
                         if (tooBig) {
-                            txLog.add("Mail too big for scanning.  Begin trickle");
+                            addToTxLog("Mail too big for scanning.  Begin trickle");
                         } else {
-                            txLog.add("Mail timed-out w/o needing to buffer (trickle, not buffer-and-trickle)");
+                            addToTxLog("Mail timed-out w/o needing to buffer (trickle, not buffer-and-trickle)");
                         }
                         // Disable tokens from client until we get the disposition to the DATA command
                         stateMachine.disableClientTokens( session );
                         // Send the DATA command to the server
-                        txLog.add("Send synthetic DATA to server, continue when response arrives");
+                        addToTxLog("Send synthetic DATA to server, continue when response arrives");
                         // Use the contnuation shared by this and the T_B_READING_MAIL state. The
                         // continuations are 99% the same, except they differ in their next state upon success
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
@@ -364,11 +368,11 @@ public class SmtpTransactionHandler
                         changeState(BufTxState.DONE);
                     } else if (timedOut && stateMachine.isBufferAndTrickle( session )) {
                         // T&B DATA Sent
-                        txLog.add("Mail timed out.  Begin trickle and buffer");
+                        addToTxLog("Mail timed out.  Begin trickle and buffer");
                         // Disable client until we can hear back from the "DATA" command
                         stateMachine.disableClientTokens( session );
                         // Send the DATA command to the server and set-up the callback
-                        txLog.add("Send synthetic DATA to server, continue when response arrives");
+                        addToTxLog("Send synthetic DATA to server, continue when response arrives");
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
                             @Override
@@ -386,10 +390,10 @@ public class SmtpTransactionHandler
                 break;
             case DRAIN_MAIL:
                 // Page 25
-                txLog.add("Pass this chunk on to the server");
+                addToTxLog("Pass this chunk on to the server");
                 if (isLast) {
                     // Make sure we're no longer the active transaction
-                    stateMachine.transactionEnded(this);
+                    stateMachine.transactionEnded( session, this );
 
                     // Install the simple callback handler (doesn't do much)
                     stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
@@ -413,11 +417,11 @@ public class SmtpTransactionHandler
                 // We're just combing through the junk from the client getting to the point where we can NACK
                 if (isLast) {
                     // Make sure we're no longer the active transaction
-                    stateMachine.transactionEnded(this);
+                    stateMachine.transactionEnded( session, this );
                     // Transaction Failed
                     getTransaction().failed();
                     // Pass along same error (whatever it was) to client
-                    txLog.add("End of queued NACK.  Send " + dataResp + " to client");
+                    addToTxLog("End of queued NACK.  Send " + dataResp + " to client");
                     stateMachine.appendSyntheticResponse( session, new Response(dataResp, ""), immediateActions);
                     // We're done
                     changeState(BufTxState.DONE);
@@ -430,12 +434,12 @@ public class SmtpTransactionHandler
                 // Write it to the file regardless
                 appendChunkToken(continuedToken);
                 if (isLast) {
-                    txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
+                    addToTxLog("Trickle and buffer.  Whole message obtained.  Evaluate");
                     BlockOrPassResult action = evaluateMessage( session, false, stateMachine );
 
                     switch (action) {
                         case PASS:
-                            txLog.add("Evaluation passed");
+                            addToTxLog("Evaluation passed");
                             stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                             {
                                 @Override
@@ -447,25 +451,25 @@ public class SmtpTransactionHandler
                             break;
                         case DROP:
                             // Block, the hard way...
-                            txLog.add("Evaluation failed.  Send a \"fake\" 250 to client then shutdown server");
+                            addToTxLog("Evaluation failed.  Send a \"fake\" 250 to client then shutdown server");
                             stateMachine.appendSyntheticResponse( session, new Response(250, "OK"), immediateActions);
-                            stateMachine.transactionEnded(this);
+                            stateMachine.transactionEnded( session, this );
                             // Put a Response handler here, in case the goofy server
                             // sends an ACK to the FIN (which Exim seems to do!?!)
                             stateMachine.sendFINToServer( session, NOOP_RESPONSE_COMPLETION );
-                            txLog.add("Replace SessionHandler with shutdown dummy");
+                            addToTxLog("Replace SessionHandler with shutdown dummy");
                             stateMachine.startShutingDown( session );
 
                             break;
                         case TEMPORARILY_REJECT:
                             // Block, the hard way...
-                            txLog.add("Evaluation failed.  Send a \"fake\" 451 to client then shutdown server");
+                            addToTxLog("Evaluation failed.  Send a \"fake\" 451 to client then shutdown server");
                             stateMachine.appendSyntheticResponse( session, new Response(451, "Please try again later"), immediateActions);
-                            stateMachine.transactionEnded(this);
+                            stateMachine.transactionEnded( session, this );
                             // Put a Response handler here, in case the goofy server
                             // sends an ACK to the FIN (which Exim seems to do!?!)
                             stateMachine.sendFINToServer( session, NOOP_RESPONSE_COMPLETION );
-                            txLog.add("Replace SessionHandler with shutdown dummy");
+                            addToTxLog("Replace SessionHandler with shutdown dummy");
                             stateMachine.startShutingDown( session );
 
                             break;
@@ -478,9 +482,9 @@ public class SmtpTransactionHandler
                 }
                 break;
             default:
-                txLog.add("Error - Unknown State " + state);
+                addToTxLog("Error - Unknown State " + state);
                 changeState(BufTxState.DONE);
-                stateMachine.transactionEnded(this);
+                stateMachine.transactionEnded( session, this );
                 appendChunkToken(continuedToken);
                 if (isLast) {
                     stateMachine.sendContinuedMIMEToServer( session, continuedToken );
@@ -499,20 +503,20 @@ public class SmtpTransactionHandler
     private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpEventHandler stateMachine, Response resp )
     {
         logReceivedResponse(resp);
-        txLog.add("Response to DATA command was " + resp.getCode());
+        addToTxLog("Response to DATA command was " + resp.getCode());
 
         // Save this in a variable, so we can pass it along later (if not positive)
         dataResp = resp.getCode();
 
         stateMachine.enableClientTokens( session );
-        stateMachine.transactionEnded(SmtpTransactionHandler.this);
+        stateMachine.transactionEnded( session, SmtpTransactionHandler.this );
 
         if (resp.getCode() < 400) {
             // Don't forward to client
 
             // Pass either complete MIME or begin/end (if there was a parse error)
             if (msg == null) {
-                txLog.add("Passing along an unparsable MIME message in two tokens");
+                addToTxLog("Passing along an unparsable MIME message in two tokens");
                 isMessageMaster = false;
                 stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo) );
                 stateMachine.sendFinalMIMEToServer( session, new ContinuedMIMEToken(accumulator.createChunkToken(null, true)),
@@ -526,7 +530,7 @@ public class SmtpTransactionHandler
                         });
                 accumulator = null;
             } else {
-                txLog.add("Passing along parsed MIME in one token");
+                addToTxLog("Passing along parsed MIME in one token");
                 if (accumulator != null) {
                     accumulator.closeInput();
                     accumulator = null;
@@ -604,14 +608,14 @@ public class SmtpTransactionHandler
             msg = accumulator.parseBody(messageInfo);
             accumulator.closeInput();
             if (msg == null) {
-                txLog.add("Parse error on MIME.  Assume it passed scanning");
+                addToTxLog("Parse error on MIME.  Assume it passed scanning");
                 return BlockOrPassResult.PASS;
             }
         }
         if (canModify) {
             ScannedMessageResult result = stateMachine.blockPassOrModify( session, msg, getTransaction(), messageInfo );
             if (result.messageModified()) {
-                txLog.add("Evaluation modified MIME message");
+                addToTxLog("Evaluation modified MIME message");
                 msg = result.getMessage();
                 return BlockOrPassResult.PASS;
             } else {
@@ -625,7 +629,7 @@ public class SmtpTransactionHandler
     public void handleMailTransmissionContinuation( NodeTCPSession session, Response resp, SmtpEventHandler stateMachine )
     {
         logReceivedResponse(resp);
-        txLog.add("Response to mail transmission command was " + resp.getCode());
+        addToTxLog("Response to mail transmission command was " + resp.getCode());
 
         if (resp.getCode() < 300) {
             getTransaction().commit();
@@ -633,7 +637,7 @@ public class SmtpTransactionHandler
             getTransaction().failed();
         }
         changeState(BufTxState.DONE);
-        stateMachine.transactionEnded(SmtpTransactionHandler.this);
+        stateMachine.transactionEnded( session, SmtpTransactionHandler.this );
         logger.debug("Sending response " + resp.getCode() + " to client");
         session.sendObjectToClient( resp );
     }
@@ -642,7 +646,7 @@ public class SmtpTransactionHandler
     {
 
         logReceivedResponse(resp);
-        txLog.add("Response to DATA command was " + resp.getCode());
+        addToTxLog("Response to DATA command was " + resp.getCode());
 
         // Save this in a variable, so we can pass it along later (if not positive)
         dataResp = resp.getCode();
@@ -650,7 +654,7 @@ public class SmtpTransactionHandler
         stateMachine.enableClientTokens( session );
 
         if (resp.getCode() < 400) {
-            txLog.add("Begin trickle with BeginMIMEToken");
+            addToTxLog("Begin trickle with BeginMIMEToken");
             stateMachine.sendBeginMIMEToServer( session, new BeginMIMEToken(accumulator, messageInfo) );
             isMessageMaster = false;
             changeState(nextStateIfPositive);
@@ -667,23 +671,29 @@ public class SmtpTransactionHandler
 
     void logReceivedToken(Token token)
     {
-        txLog.add("----Received Token " + token + "--------");
+        addToTxLog("----Received Token " + token + "--------");
     }
 
     void logReceivedResponse(Response resp)
     {
-        txLog.add("----Received Response " + resp.getCode() + "--------");
+        addToTxLog("----Received Response " + resp.getCode() + "--------");
     }
 
     void logRecordStateChange(BufTxState old, BufTxState newState)
     {
-        txLog.add("----Change State " + old + "->" + newState + "-----------");
+        addToTxLog("----Change State " + old + "->" + newState + "-----------");
     }
 
+    void addToTxLog( String str )
+    {
+        //logger.debug("addToTxLog( " + System.identityHashCode(txLog) + " ): " + str );
+        txLog.add( str );
+    }
+    
     @SuppressWarnings("unchecked")
     void dumpToLogger(Level level)
     {
-        logger.log(level, "=======BEGIN Transaction Log=============");
+        logger.log(level, "=======BEGIN Transaction Log============= txLog:" + System.identityHashCode(txLog));
         for ( String s : (List<String>) txLog.clone() ) {
             logger.log(level, s);
         }

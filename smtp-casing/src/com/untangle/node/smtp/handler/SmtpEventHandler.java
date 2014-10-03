@@ -47,13 +47,12 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
 
     private final Logger logger = Logger.getLogger(SmtpEventHandler.class);
 
-    private SmtpTransactionHandler smtpTransactionHandler;
-
     public class SmtpSessionState
     {
         protected long timestamp;
 
         protected boolean isBufferAndTrickle;
+
         protected String heloName = null;
 
         // Time (absolute) when the class should stop being
@@ -65,9 +64,12 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         protected boolean passthru = false;
 
         protected boolean clientTokensEnabled = true;
+
         protected List<Token> queuedClientTokens = new ArrayList<Token>();
 
         protected List<OutstandingRequest> outstandingRequests;
+
+        protected SmtpTransactionHandler smtpTransactionHandler;
     }
 
     public SmtpEventHandler( )
@@ -178,6 +180,9 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     public final void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
         Token token = (Token) obj;
+
+        logger.debug("Received from client: " + obj);
+
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
             session.sendObjectToServer( token );
@@ -217,6 +222,9 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     public final void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
         Token token = (Token) obj;
+
+        logger.debug("Received from server: " + obj);
+        
         if (token instanceof ReleaseToken) {
             handleTCPFinalized( session );
             session.sendObjectToClient( token );
@@ -273,11 +281,11 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
             return;
         }
         if (token instanceof CommandWithEmailAddress && !state.shutingDownMode) {
-            smtpTransactionHandler = getOrCreateTxHandler();
+            state.smtpTransactionHandler = getOrCreateTxHandler( state );
             if (((CommandWithEmailAddress) token).getType() == CommandType.MAIL)
-                smtpTransactionHandler.handleMAILCommand( session, (CommandWithEmailAddress) token, this );
+                state.smtpTransactionHandler.handleMAILCommand( session, (CommandWithEmailAddress) token, this );
             else
-                smtpTransactionHandler.handleRCPTCommand( session, (CommandWithEmailAddress) token, this );
+                state.smtpTransactionHandler.handleRCPTCommand( session, (CommandWithEmailAddress) token, this );
             return;
         }
         if (token instanceof Command) {
@@ -500,22 +508,22 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         }
 
         if ( state.shutingDownMode ) {
-            transactionEnded(smtpTransactionHandler);
+            transactionEnded( session, state.smtpTransactionHandler );
             handleCommandInShutDown( session, cmd );
             return;
         }
-        if (smtpTransactionHandler != null) {
+        if (state.smtpTransactionHandler != null) {
             if (cmd.getType() == CommandType.RSET) {
-                smtpTransactionHandler.handleRSETCommand( session, cmd, this  );
-                smtpTransactionHandler = null;
+                state.smtpTransactionHandler.handleRSETCommand( session, cmd, this  );
+                state.smtpTransactionHandler = null;
             } else {
-                smtpTransactionHandler.handleCommand( session, cmd, this, immediateActions );
+                state.smtpTransactionHandler.handleCommand( session, cmd, this, immediateActions );
             }
         } else {
             // Odd case
             if (cmd.getType() == CommandType.DATA) {
-                smtpTransactionHandler = getOrCreateTxHandler();
-                smtpTransactionHandler.handleCommand( session, cmd, this, immediateActions );
+                state.smtpTransactionHandler = getOrCreateTxHandler( state );
+                state.smtpTransactionHandler.handleCommand( session, cmd, this, immediateActions );
             } else {
 
                 logger.debug("[handleCommand] with command of type \"" + cmd.getType() + "\"");
@@ -560,29 +568,31 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         return false;
     }
 
-    private SmtpTransactionHandler getOrCreateTxHandler()
+    private SmtpTransactionHandler getOrCreateTxHandler( SmtpSessionState state )
     {
-        if (smtpTransactionHandler == null) {
+        if (state.smtpTransactionHandler == null) {
             logger.debug("Creating new Transaction Handler");
-            smtpTransactionHandler = new SmtpTransactionHandler(new SmtpTransaction());
+            state.smtpTransactionHandler = new SmtpTransactionHandler(new SmtpTransaction());
         }
-        return smtpTransactionHandler;
+        return state.smtpTransactionHandler;
     }
 
     private void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token )
     {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         List<Response> immediateActions = new LinkedList<Response>();
-        smtpTransactionHandler = getOrCreateTxHandler();
-        smtpTransactionHandler.handleBeginMIME( session, token, this, immediateActions );
+        state.smtpTransactionHandler = getOrCreateTxHandler( state );
+        state.smtpTransactionHandler.handleBeginMIME( session, token, this, immediateActions );
         followup( session, immediateActions );
     }
 
     private void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token)
     {
         List<Response> immediateActions = new LinkedList<Response>();
-        SmtpTransactionHandler transactionHandler = getOrCreateTxHandler();
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        SmtpTransactionHandler transactionHandler = getOrCreateTxHandler( state );
         if (token.isLast()) {
-            smtpTransactionHandler = null;
+            state.smtpTransactionHandler = null;
         }
         transactionHandler.handleContinuedMIME( session, token, this, immediateActions );
         followup( session, immediateActions );
@@ -609,13 +619,13 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         processSynths( session, or.getAdditionalActions() );
     }
 
-    private void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token)
+    private void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token )
     {
-
-        SmtpTransactionHandler transactionHandler = getOrCreateTxHandler();
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        SmtpTransactionHandler transactionHandler = getOrCreateTxHandler( state );
 
         // Looks odd, but the Transaction is complete so just assign the current handler to null.
-        smtpTransactionHandler = null;
+        state.smtpTransactionHandler = null;
         List<Response> immediateActions = new LinkedList<Response>();
         transactionHandler.handleCompleteMIME( session, token, this, immediateActions );
         followup( session, immediateActions );
@@ -646,8 +656,8 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     public void handleTCPFinalized( NodeTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
-        if (smtpTransactionHandler != null && !state.shutingDownMode) {
-            smtpTransactionHandler.handleFinalized();
+        if (state.smtpTransactionHandler != null && !state.shutingDownMode) {
+            state.smtpTransactionHandler.handleFinalized();
         }
         session.cleanupTempFiles();
     }
@@ -658,11 +668,12 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         session.sendObjectToClient( resp );
     }
 
-    public void transactionEnded(SmtpTransactionHandler handler)
+    public void transactionEnded( NodeTCPSession session, SmtpTransactionHandler handler )
     {
-        if (smtpTransactionHandler == handler) {
+        SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
+        if (state.smtpTransactionHandler == handler) {
             logger.debug("Deregistering transaction handler");
-            smtpTransactionHandler = null;
+            state.smtpTransactionHandler = null;
         }
     }
 
