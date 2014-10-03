@@ -16,7 +16,7 @@ public class SpamAssassinScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final SPAM_SCANNER_USERNAME = "spamd";
+    private static final String SPAM_SCANNER_USERNAME = "spamd";
     
     private static final int timeout = 45000; 
 
