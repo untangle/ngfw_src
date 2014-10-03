@@ -38,6 +38,7 @@ import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.
@@ -70,6 +71,26 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         this.timeout = mailExport.getExportSettings().getSmtpTimeout();
         
         msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
+    }
+    
+    @Override
+    public final void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
+    {
+        SpamSettings spamSettings = node.getSettings();
+        SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
+
+        if( ! spamConfig.getScan() ) {
+            sessionRequest.release();
+            return;
+        }
+
+        int activeCount = node.getScanner().getActiveScanCount();
+        if ( SpamLoadChecker.reject( activeCount, logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit() ) ) {
+            logger.warn("Load too high, rejecting connection from: " + sessionRequest.getOrigClientAddr());
+            sessionRequest.rejectReturnRst();
+        }
+
+        super.handleTCPNewSessionRequest( sessionRequest );
     }
     
     @Override

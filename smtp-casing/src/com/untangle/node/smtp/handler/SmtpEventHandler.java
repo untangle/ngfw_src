@@ -151,7 +151,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public final void handleTCPNewSessionRequest( TCPNewSessionRequest tsr )
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest tsr )
     {
         SmtpSessionState state = new SmtpSessionState();
 
