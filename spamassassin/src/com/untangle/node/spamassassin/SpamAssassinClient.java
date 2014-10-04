@@ -133,10 +133,10 @@ public final class SpamAssassinClient implements Runnable
         }
 
         if (null == this.spamReport) {
-            if (elapsedTime > timeout)
-                logger.warn(dbgName + ", spamc timer expired (timeout:" + timeout + ") (elapsed: " + elapsedTime + ")");
+            if (elapsedTime >= timeout)
+                logger.warn(dbgName + ", spamc timer expired (timeout:" + (timeout/1000) + "s) (elapsed: " + (elapsedTime/1000) + "s)");
             else
-                logger.warn(dbgName + ", spamc returned no result");
+                logger.warn(dbgName + ", spamc returned no result (timeout:" + (timeout/1000) + "s) (elapsed: " + (elapsedTime/1000) + "s)");
             stopScan();
         }
 
@@ -165,6 +165,7 @@ public final class SpamAssassinClient implements Runnable
         Socket socket;
         BufferedOutputStream bufOutputStream;
         BufferedReader bufReader;
+        long startTime = System.currentTimeMillis();
 
         try {
             socket = new Socket(host, port);
@@ -177,14 +178,14 @@ public final class SpamAssassinClient implements Runnable
         }
 
         try {
-            if (true == this.stop) {
+            if ( this.stop ) {
                 logger.warn(dbgName + ", spamc interrupted post socket streams");
                 return; // return after finally
             }
 
             // send spamc hdr
             // REPORT SPAMC/1.3
-            // User: spamd
+            // User: spamc
             // Content-length: 1235
             // <blank line>
             byte[] rBuf = REQUEST_CHDR.getBytes();
@@ -215,7 +216,7 @@ public final class SpamAssassinClient implements Runnable
             fInputStream = null;
             rBuf = null;
 
-            if (true == this.stop) {
+            if ( this.stop ) {
                 logger.warn(dbgName + ", spamc interrupted post spamc header");
                 return; // return after finally
             }
@@ -230,8 +231,8 @@ public final class SpamAssassinClient implements Runnable
                 throw new Exception(dbgName + ", spamd/spamc terminated connection early");
 
             logger.debug(dbgName + ", " + line); // SPAMD/<ver> <retcode> <description>
-            if (true == this.stop) {
-                logger.warn(dbgName + ", spamc interrupted post spamd header response");
+            if ( this.stop ) {
+                logger.warn(dbgName + ", spamc interrupted post spamd header response (elapsed time: " + ((System.currentTimeMillis() - startTime)/1000) + "s)" );
                 return; // return after finally
             }
 
@@ -245,22 +246,21 @@ public final class SpamAssassinClient implements Runnable
             List<String> spamdHdrList = new LinkedList<String>();
             List<String> spamdDtlList = new LinkedList<String>();
             boolean addDetail = false;
-            while (false == this.stop &&
-                   null != (line = bufReader.readLine())) {
+            while ( !this.stop && (line = bufReader.readLine()) != null ) {
                 //logger.debug(dbgName + ", " + line);
-                if (0 == line.length()) {
+                if ( line.length() == 0 ) {
                     addDetail = true; // end of spamd hdr (details follow)
                     continue;
                 }
 
-                if (false == addDetail) {
-                    spamdHdrList.add(line);
-                } else {
+                if ( addDetail ) {
                     spamdDtlList.add(line);
+                } else {
+                    spamdHdrList.add(line);
                 }
             }
 
-            if (true == this.stop) {
+            if ( this.stop ) {
                 logger.warn(dbgName + ", spamc interrupted post spamd header and reply");
                 return; // return after finally
             }
@@ -524,8 +524,7 @@ public final class SpamAssassinClient implements Runnable
                     k = detail.length();
                 riCateg = detail.substring(j + 1, k);
 
-                if (logger.isDebugEnabled())
-                    logger.debug(dbgName + ", add item: " + riScore + ", " + riCateg);
+                if (logger.isDebugEnabled()) logger.debug(dbgName + ", add item: " + riScore + ", " + riCateg);
 
                 reportItem = new ReportItem(Float.parseFloat(riScore), riCateg);
                 reportItemList.add(reportItem);
