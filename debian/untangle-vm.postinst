@@ -69,6 +69,9 @@ fi
 # point at stable-11 to get future 11.x upgrades
 sed -e 's/stable-10/stable-11/g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/squeeze/wheezy/g' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/seagull/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/picanto/d' -i /etc/apt/sources.list.d/untangle.list
+sed -e '/focus/d' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/squeeze/wheezy/g' -i /etc/apt/sources.list
 
 # 11.0 remove obsolete files
