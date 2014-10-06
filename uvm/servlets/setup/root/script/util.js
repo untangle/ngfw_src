@@ -154,5 +154,31 @@ Ung.Util = {
             return true;
         }
         return false;
+    },
+    validateinvalidateItems: function(items, methodname){
+        var rv = true;
+        for(var i=0;i<items.length;i++){
+            switch(items[i].getXType()){
+                case 'fieldset':
+                    if(!Ung.Util.validateinvalidateItems(items[i].items.items, methodname)){
+                        rv = false;
+                    }
+                break;
+                default:
+                    if(items[i].validate){
+                        if(!items[i][methodname].call(items[i])){
+                            rv = false;
+                        }
+                    }
+                break;
+            }
+        }
+        return rv;
+    },
+    invalidateItems: function (items){
+        return Ung.Util.validateinvalidateItems(items,'clearInvalid');
+    },
+    validateItems: function (items){
+        return Ung.Util.validateinvalidateItems(items,'validate');
     }
 };

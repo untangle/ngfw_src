@@ -201,7 +201,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         };
     },
     validateSettings: function() {
-        var rv = _validate(this.panel.items.items);
+        var rv = Ung.Util.validateItems(this.panel.items.items);
         return rv;
     },
     saveSettings: function( handler ) {
@@ -816,7 +816,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     },
 
     validateInternetConnection: function() {
-        return _validate(this.cardPanel.layout.activeItem.items.items);
+        return Ung.Util.validateItems(this.cardPanel.layout.activeItem.items.items);
     },
 
     onSelectConfig: function( combo, record, index ) {
@@ -1163,7 +1163,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 }, {
                     xtype: 'container',
                     componentCls: 'wizard-network-image',
-                    html: '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
+                    html: '<img src="/skins/' + Ung.SetupWizard.CurrentValues.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
             }, {
                 xtype: 'fieldset',
@@ -1184,7 +1184,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 }, {
                     xtype: 'container',
                     cls: 'wizard-network-image',
-                    html: '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
+                    html: '<img src="/skins/' + Ung.SetupWizard.CurrentValues.currentSkin + '/images/admin/wizard/bridge.png"/>'
                 }]
             }]
         });
@@ -1235,7 +1235,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet);
         }
-        _invalidate(ar);
+        Ung.Util.invalidateItems(ar);
     },
 
     getFirstNonWanSettings: function( networkSettings ) {
@@ -1264,7 +1264,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             }
         }
         if ( nic == "router" ) {
-            rv = _validate(this.panel.items.items);
+            rv = Ung.Util.validateItems(this.panel.items.items);
         }
         return rv;
     },

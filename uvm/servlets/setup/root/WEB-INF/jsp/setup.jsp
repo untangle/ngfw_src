@@ -25,8 +25,8 @@
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
-      Ung.SetupWizard.currentSkin = "${skinSettings.skinName}";
       Ung.SetupWizard.CurrentValues = {
+          currentSkin: "${skinSettings.skinName}",
           timezone : "${timezone.ID}",
           languageMap : ${languageMap}
       };

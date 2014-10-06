@@ -56,7 +56,7 @@ Ext.define('Ung.SetupWizard.Language', {
     },
 
     validateSettings: function() {
-        var rv = _validate(this.panel.items.items);
+        var rv = Ung.Util.validateItems(this.panel.items.items);
         return rv;
     },
 
