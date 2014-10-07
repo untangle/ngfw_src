@@ -904,68 +904,48 @@ Ext.define("Ung.Main", {
                 "displayName":i18n._("Network"),
                 "iconClass":"icon-config-network",
                 "helpSource":"network",
-                "className":"Ung.Network",
-                "scriptFile":"network.js",
-                "handler": main.openConfig
+                "className":"Webui.config.network"
             }, {
                 "name":"administration",
                 "displayName":i18n._("Administration"),
                 "iconClass":"icon-config-admin",
                 "helpSource":"administration",
-                "className":"Ung.Administration",
-                "scriptFile":"administration.js",
-                "handler": main.openConfig
+                "className":"Webui.config.administration"
             }, {
                 "name":"email",
                 "displayName":i18n._("Email"),
                 "iconClass":"icon-config-email",
                 "helpSource":"email",
-                "className":"Ung.Email",
-                "scriptFile":"email.js",
-                "handler": main.openConfig
+                "className":"Webui.config.email"
             }, {
                 "name":"localDirectory",
                 "displayName":i18n._("Local Directory"),
                 "iconClass":"icon-config-directory",
                 "helpSource":"local_directory",
-                "className":"Ung.LocalDirectory",
-                "scriptFile":"localDirectory.js",
-                "handler": main.openConfig
+                "className":"Webui.config.localDirectory"
             }, {
                 "name":"upgrade",
                 "displayName":i18n._("Upgrade"),
                 "iconClass":"icon-config-upgrade",
                 "helpSource":"upgrade",
-                "className":"Ung.Upgrade",
-                "scriptFile":"upgrade.js",
-                "handler": main.openConfig
+                "className":"Webui.config.upgrade"
             }, {
                 "name":"system",
                 "displayName":i18n._("System"),
                 "iconClass":"icon-config-setup",
                 "helpSource":"system",
-                "className":"Ung.System",
-                "scriptFile":"system.js",
-                "handler": main.openConfig
+                "className":"Webui.config.system"
             }, {
                 "name":"about",
                 "displayName":i18n._("About"),
                 "iconClass":"icon-config-support",
                 "helpSource":"system_info",
-                "className":"Ung.About",
-                "scriptFile":"about.js",
-                "handler": main.openConfig
+                "className":"Webui.config.about"
             }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
-        this.buildConfig();
-    },
-    // build config buttons
-    buildConfig: function() {
-        var out=[];
         for(var i=0;i<this.config.length;i++) {
-            var item=this.config[i];
-            var appItemCmp=Ext.create('Ung.ConfigItem', {
-                item:item
+            Ext.create('Ung.ConfigItem', {
+                item: this.config[i]
             });
         }
     },
@@ -1034,11 +1014,11 @@ Ext.define("Ung.Main", {
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-        Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), Ext.bind(function() {
+        Ext.Function.defer(function() {
             main.configWin = Ext.create(this.className, this);
             main.configWin.show();
             Ext.MessageBox.hide();
-        }, configItem)]);
+        }, 10, configItem);
     },
     destoyNodes: function () {
         if(this.nodes!==null) {
@@ -1232,40 +1212,28 @@ Ext.define("Ung.Main", {
     },
     showHosts: function() {
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        if ( main.hostMonitorWin == null) {
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.HostMonitor",Ung.Util.getScriptSrc("script/config/hostMonitor.js"), function() {
-                main.hostMonitorWin=Ext.create('Ung.HostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
-                main.hostMonitorWin.show();
-                main.hostMonitorWin.gridCurrentHosts.reload();
-                Ext.MessageBox.hide();
-            }]);
-        } else {
-            Ext.Function.defer(function() {
-                main.hostMonitorWin.show();
-                main.hostMonitorWin.gridCurrentHosts.reload();
-                Ext.MessageBox.hide();
-            }, 10, this);
-        }
+        Ext.Function.defer(function() {
+            if ( main.hostMonitorWin == null) {
+                main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
+            }
+            main.hostMonitorWin.show();
+            main.hostMonitorWin.gridCurrentHosts.reload();
+            Ext.MessageBox.hide();
+        }, 10, this);
     },
     showSessions: function() {
         main.showNodeSessions(0);
     },
     showNodeSessions: function(nodeIdArg) {
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        if ( main.sessionMonitorWin == null) {
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,10, this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
-                main.sessionMonitorWin=Ext.create('Ung.SessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
-                main.sessionMonitorWin.show();
-                main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
-                Ext.MessageBox.hide();
-            }]);
-        } else {
-            Ext.Function.defer(function() {
-                main.sessionMonitorWin.show();
-                main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
-                Ext.MessageBox.hide();
-            }, 10, this);
-        }
+        Ext.Function.defer(function() {
+            if ( main.sessionMonitorWin == null) {
+                main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+            }
+            main.sessionMonitorWin.show();
+            main.sessionMonitorWin.gridCurrentSessions.reload();
+            Ext.MessageBox.hide();
+        }, 10, this);
     },
     showPolicyManager: function() {
         if (main.policyNodeWidget) {

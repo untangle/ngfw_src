@@ -185,11 +185,7 @@ Ext.define("Ung.ConfigItem", {
         if (e!=null) {
             e.stopEvent();
         }
-        if(this.item.handler!=null) {
-            this.item.handler.call(this, this.item);
-        } else {
-            Ext.MessageBox.alert(i18n._("Warning"),"TODO: implement config "+this.item.name);
-        }
+        main.openConfig(this.item);
     },
     setIconCls: function(iconCls) {
         this.getEl().down("div[name=iconCls]").dom.className=iconCls;

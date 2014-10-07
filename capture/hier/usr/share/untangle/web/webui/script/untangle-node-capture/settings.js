@@ -1120,20 +1120,8 @@ if (!Ung.hasResource["Ung.Capture"]) {
             return true;
         },
         configureLocalDirectory: function() {
-            Ext.MessageBox.wait(i18n._("Loading Config..."),
-                                i18n._("Please wait"));
-
-            Ext.defer(Ung.Util.loadResourceAndExecute,1, this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
-
-                main.localDirectoryWin=new Ung.LocalDirectory({
-                    "name": "localDirectory"
-                });
-
-                main.localDirectoryWin.show();
-                Ext.MessageBox.hide();
-            }, this)]);
+            main.openConfig(main.configMap["localDirectory"]);
         },
-
         /* There is no way to select the radius tab because we don't
         get a callback once the settings are loaded. */
         configureRadius: function() {
