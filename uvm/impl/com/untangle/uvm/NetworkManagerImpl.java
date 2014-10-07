@@ -144,16 +144,22 @@ public class NetworkManagerImpl implements NetworkManager
         return this.networkSettings;
     }
 
+    public void setNetworkSettings( NetworkSettings newSettings )
+    {
+        setNetworkSettings( newSettings, true );
+    }
+
     /**
      * Set the network settings
      */
-    public void setNetworkSettings( NetworkSettings newSettings )
+    public void setNetworkSettings( NetworkSettings newSettings, boolean sanityCheck )
     {
         /**
          * validate settings
          * validate: routes can not route traffic to self
          */
-        sanityCheckNetworkSettings( newSettings );
+        if ( sanityCheck )
+            sanityCheckNetworkSettings( newSettings );
         
         /**
          * TODO:
@@ -683,8 +689,8 @@ public class NetworkManagerImpl implements NetworkManager
         netSettings.setInputFilterRules( inputFilterRules );
         logger.warn("Converting v1 Network Settings to v2...done");
 
-        // save settings (and sync)
-        this.setNetworkSettings( netSettings );
+        // save settings (and sync) - do not sanity check in case they have bad settings
+        this.setNetworkSettings( netSettings, false );
     }
     
     private void checkForNewDevices( NetworkSettings netSettings )
