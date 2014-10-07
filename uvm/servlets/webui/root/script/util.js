@@ -673,7 +673,6 @@ Ung.Util = {
         return utftext;
     },
 
-    maxRowCount: 2147483647,
     hideDangerous: true,
     timestampFieldWidth: 135,
     ipFieldWidth: 100,

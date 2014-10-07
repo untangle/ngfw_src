@@ -1,8 +1,6 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
-// the main internationalization object
-var i18n=null;
 // the main json rpc object
 var rpc = {};
 

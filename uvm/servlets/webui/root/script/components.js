@@ -164,6 +164,9 @@ Ext.define("Ung.ConfigItem", {
     item: null,
     renderTo: 'configItems',
     autoEl: 'div',
+    statics: {
+        template: new Ext.Template('<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>')
+    },
     constructor: function(config) {
         this.id = "configItem_" + config.item.name;
         this.callParent(arguments);
@@ -192,8 +195,6 @@ Ext.define("Ung.ConfigItem", {
         this.getEl().down("div[name=iconCls]").dom.className=iconCls;
     }
 });
-Ung.ConfigItem.template = new Ext.Template(
-    '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>');
 
 Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
@@ -206,6 +207,25 @@ Ext.define("Ung.AppItem", {
     progressBar: null,
     subCmps:null,
     download: null,
+    statics: {
+        template: new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>'),
+        buttonTemplate: new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>'),
+        // update state for the app with a displayName
+        updateState: function(displayName, state, options) {
+            var app = Ung.AppItem.getApp(displayName);
+            main.setAppLastState(displayName, state, options, app!=null?app.download:null);
+            if (app != null) {
+                app.setState(state, options);
+            }
+        },
+        // get the app item having a item name
+        getApp: function(displayName) {
+            if (main.apps !== null) {
+                return Ext.getCmp("app-item_" + displayName);
+            }
+            return null;
+        }
+    },
     constructor: function( nodeProperties, renderPosition) {
         this.subCmps=[];
         this.nodeProperties = nodeProperties;
@@ -335,23 +355,6 @@ Ext.define("Ung.AppItem", {
     }
 
 });
-Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>');
-Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>');
-// update state for the app with a displayName
-Ung.AppItem.updateState = function(displayName, state, options) {
-    var app = Ung.AppItem.getApp(displayName);
-    main.setAppLastState(displayName, state, options, app!=null?app.download:null);
-    if (app != null) {
-        app.setState(state, options);
-    }
-};
-// get the app item having a item name
-Ung.AppItem.getApp = function(displayName) {
-    if (main.apps !== null) {
-        return Ext.getCmp("app-item_" + displayName);
-    }
-    return null;
-};
 
 // Node Class
 Ext.define("Ung.Node", {
@@ -383,12 +386,13 @@ Ext.define("Ung.Node", {
         getNonEditableNodeTip: function () {
             return i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.');
         },
-        template: new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
-                                   '<div class="node-faceplate-info">{licenseMessage}</div>',
-                                   '<div class="node-metrics" id="node-metrics_{id}"></div>',
-                                   '<div class="node-state" id="node-state_{id}" name="State"></div>',
-                                   '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
-                                   '<div class="node-buttons" id="node-buttons_{id}"></div>')
+        template: new Ext.Template(
+            '<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
+            '<div class="node-faceplate-info">{licenseMessage}</div>',
+            '<div class="node-metrics" id="node-metrics_{id}"></div>',
+            '<div class="node-state" id="node-state_{id}" name="State"></div>',
+            '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
+            '<div class="node-buttons" id="node-buttons_{id}"></div>')
     },
     autoEl: "div",
     cls: "node",
@@ -407,7 +411,6 @@ Ext.define("Ung.Node", {
     powerOn: null,
     // running state
     runState: null, // RUNNING, INITIALIZED
-
     // settings Component
     settings: null,
     // settings Window
@@ -846,6 +849,9 @@ Ext.define("Ung.NodePreview", {
     extend: "Ext.Component",
     autoEl: 'div',
     cls: 'node',
+    statics: {
+        template: new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>')
+    },
     constructor: function(config) {
         this.id = "node_preview_" + config.name;
         this.callParent(arguments);
@@ -870,7 +876,6 @@ Ext.define("Ung.NodePreview", {
         this.callParent(arguments);
     }
 });
-Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
 
 // Metric Manager object
 Ung.MetricManager = {

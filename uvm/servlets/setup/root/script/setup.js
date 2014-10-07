@@ -1,12 +1,8 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
-// the main internationalization object
-var i18n=null;
 // the main json rpc object
 var rpc = {};
-
-var oemName = "Untangle";
 
 if(typeof console === "undefined") {
     //Prevent console.log triggering errors on browsers without console support
@@ -68,8 +64,6 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             callback: Ext.bind(this.getManagers,this )
         });
     },
-    
-  
     getManagers: function( options, success, response ) {
         if ( success ) {
             // It is very wrong to do this all synchronously
@@ -90,7 +84,6 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
                 }
                 this.handler();
             }, this));
-            
         } else {
             Ext.MessageBox.alert( i18n._( "Unable to save password." ));
         }
@@ -104,16 +97,15 @@ Ext.define('Ung.SetupWizard.Welcome', {
             border: false,
             items: [{
                 xtype: 'container',
-                html: '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
+                html: '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ), rpc.oemName) + '</h2>'
             }, {
                 xtype: 'container',
                 cls: 'noborder',
-                html: Ext.String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'),oemName) +
+                html: Ext.String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'), rpc.oemName) +
                     '<br/><br/>'+
                     Ext.String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
             }]
         });
-        
         this.card = {
             title: i18n._( "Welcome" ),
             panel: panel
@@ -139,7 +131,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                 defaults: {
                     msgTarget: 'side',
                     validationEvent: 'blur',
-                    labelWidth: 150 
+                    labelWidth: 150
                 },
                 items: [{
                     xtype: 'container',
@@ -266,7 +258,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 menuDisabled: true,
                 resizable: false,
                 width: 30,
-                tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>' 
+                tpl: '<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
             }, {
                 header: i18n._( "Device" ),
                 tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
@@ -306,7 +298,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                 var targetData = Ext.decode(Ext.encode(targetRecord.data));
                                 soruceData.deviceName=oldValue;
                                 targetData.deviceName=newValue;
-                                
                                 sourceRecord.set({
                                     "physicalDev": targetData.physicalDev,
                                     "macAddress": targetData.macAddress,
@@ -315,7 +306,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                     "mbit": targetData.mbit,
                                     "connected": targetData.connected
                                 });
-                                
                                 targetRecord.set({
                                     "deviceName": soruceData.deviceName,
                                     "physicalDev": soruceData.physicalDev,
@@ -366,15 +356,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     var text = "";
                     if ( value && value.length > 0 ) {
                         // Build the link for the mac address
-                        text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' + 
+                        text = '<a target="_blank" href="http://standards.ieee.org/cgi-bin/ouisearch?' +
                         value.substring( 0, 8 ).replace( /:/g, "" ) + '">' + value + '</a>';
                     }
-                    return text; 
+                    return text;
                 }
             }]
         });
 
-        
         var panelTitle = i18n._('Identify Network Cards');
         var panelText = "<font color=\"red\"><b>" + i18n._( "Important:") + "</b></font>";
         panelText += i18n._( " This step identifies the external, internal, and other network cards. ");
@@ -384,7 +373,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         panelText += "<b>" + i18n._("Step 1: ") + "</b>";
         panelText += i18n._( "Plug an active cable into one network card to determine which network card it is.");
         panelText += "<br/>";
-        
+
         panelText += "<b>" + i18n._("Step 2: ") + "</b>";
         panelText += "<b>" + i18n._( "Drag and drop") + "</b>" + i18n._(" the network card to map it to the desired interface.");
         panelText += "<br/>";
@@ -392,7 +381,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         panelText += "<b>" + i18n._("Step 3: ") + "</b>";
         panelText += i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.");
         panelText += "<br/>";
-        
+
         var panel = Ext.create('Ext.panel.Panel', {
             defaults: { cls: 'noborder' },
             border: false,
@@ -419,12 +408,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             title: i18n._( "Network Cards" ),
             panel: panel,
             onLoad: Ext.bind(function( complete ) {
-
                 this.refreshInterfaces();
-                
                 this.enableAutoRefresh = true;
                 Ext.defer(this.autoRefreshInterfaces,3000,this);
-                
                 complete();
             }, this ),
             onNext: Ext.bind(this.saveInterfaceList, this ),
@@ -439,7 +425,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         var i = 0;
         var interfaceList=this.networkSettings.interfaces.list;
         this.interfaceStore.each( Ext.bind(function( currentRow ) {
-            //console.log("this.mapDevicesStore.each:",arguments);
             var intf=interfaceList[i];
             currentRow.set({
                 "interfaceId": intf.interfaceId,
@@ -465,7 +450,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             var intf=interfaceList[i];
             if(!intf.isVlanInterface) {
                 intf["physicalDev"]=interfacesMap[intf["interfaceId"]];
-                //console.log("Interface ("+ intf["interfaceId"]+ ") "+intf["name"] +" is mapped with physical device "+intf["physicalDev"]);
             }
         }
         rpc.networkManager.setNetworkSettings( Ext.bind(function( result, exception ) {
@@ -491,7 +475,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         if ( ! this.enableAutoRefresh ) {
             return;
         }
-        
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
             if ( ! this.enableAutoRefresh ) {
                 return; // if auto refresh is now disabled, just return
@@ -509,15 +492,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
                 return;
             }
-            
             var deviceStatus=rpc.networkManager.getDeviceStatus( Ext.bind( function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
+                if ( result == null ) return;
 
-                if ( result == null )
-                    return;
-                
                 var deviceStatusMap = this.createRecordsMap( ( result == null ? [] : result.list ), "deviceName");
-                
                 //update device connected status
                 this.interfaceStore.each( function(currentRow) {
                     var deviceStatus= deviceStatusMap[currentRow.get("physicalDev")];
@@ -525,19 +504,18 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                         currentRow.set("connected", deviceStatus.connected);
                     }
                 });
-                
                 if ( this.enableAutoRefresh ) {
                     Ext.defer(this.autoRefreshInterfaces,3000,this);
                 }
             }, this));
         }, this));
     },
-    
+
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception, "Unable to refresh the interfaces.")) return;
-            
+
             this.networkSettings=result;
             var interfaceList = [];
             var allInterfaces = result.interfaces.list;
@@ -546,27 +524,22 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     interfaceList.push(allInterfaces[i]);
                 }
             }
-            
+
             var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
-                
-                Ext.MessageBox.hide();
 
+                Ext.MessageBox.hide();
                 var deviceStatusMap = this.createRecordsMap( ( result == null ? [] : result.list ), "deviceName");
-                
                 for(var i=0; i<interfaceList.length; i++) {
                     var intf=interfaceList[i];
                     var deviceStatus = deviceStatusMap[intf.physicalDev];
                     Ext.applyIf(intf, deviceStatus);
                 }
-
                 this.interfaceStore.loadData( interfaceList );
                 this.deviceStore.loadData( interfaceList );
-
                 if ( interfaceList.length < 2) {
                     Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
                 }
-
             }, this));
         }, this));
     }
@@ -758,7 +731,6 @@ Ext.define('Ung.SetupWizard.Internet', {
         });
 
         var configureText = i18n._("Configure the Internet Connection");
-        
         var configure = Ext.create('Ext.form.Panel', {
             cls: "untangle-form-panel",
             border: false,
@@ -842,7 +814,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         wanSettings.v4ConfigType = "AUTO";
         wanSettings.v4NatEgressTraffic = true;
-        
+
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
@@ -869,7 +841,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
 
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
+        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
     },
 
     savePPPoE: function( handler, hideWindow ) {
@@ -886,9 +858,9 @@ Ext.define('Ung.SetupWizard.Internet', {
         wanSettings.v4PPPoEPassword = this.pppoePanel.down('textfield[name="password"]').getValue();
 
         this.setFirstWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, wanSettings );
-        
+
         var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
-        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings ); 
+        rpc.networkManager.setNetworkSettings( complete, Ung.SetupWizard.CurrentValues.networkSettings );
     },
 
     complete: function( result, exception, foo, handler, hideWindow ) {
@@ -951,7 +923,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 icon:Ext.MessageBox.INFO
             });
             return;
-        } 
+        }
 
         var message = "";
 
@@ -1012,15 +984,16 @@ Ext.define('Ung.SetupWizard.Internet', {
 
     getFirstWanSettings: function( networkSettings ) {
         for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
-            if (networkSettings['interfaces']['list'][c]['configType'] == "DISABLED")
+            if (networkSettings['interfaces']['list'][c]['configType'] == "DISABLED") {
                 continue;
-            
-            if ( networkSettings['interfaces']['list'][c]['isWan'] )
+            }
+            if ( networkSettings['interfaces']['list'][c]['isWan'] ) {
                 return networkSettings['interfaces']['list'][c];
+            }
         }
         return null;
     },
-    
+
     setFirstWanSettings: function( networkSettings, firstWanSettings ) {
         for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
             if ( firstWanSettings['interfaceId'] == networkSettings['interfaces']['list'][c]['interfaceId'] )
@@ -1046,7 +1019,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        
+
         if ( networkSettings['interfaces'] == null && networkSettings['interfaces']['list'] == null ) {
             console.error("Missing interface information.");
             return;
@@ -1060,7 +1033,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     this.cardPanel.layout.setActiveItem( c );
             }
             this.updateValue( this.card.panel.down('combo[name="v4ConfigType"]'), firstWan.v4ConfigType);
-            
+
             for ( c = 0; c < this.cards.length ; c++ ) {
                 card = this.cards[c];
                 this.updateValue( card.down('textfield[name="ip"]'), firstWanStatus.v4Address );
@@ -1206,9 +1179,10 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             var intfs = networkSettings['interfaces']['list'];
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
                 // find first non-WAN
-                if ( intfs[c]['isWan'] != null && intfs[c]['isWan'] )
+                if ( intfs[c]['isWan'] != null && intfs[c]['isWan'] ) {
                     continue;
-                
+                }
+
                 var bridgeOrRouterRadio=this.panel.query('radio[name="bridgeOrRouter"]');
                 if ( intfs[c].configType == "BRIDGED" ) {
                     bridgeOrRouterRadio[0].setValue(false);
@@ -1222,7 +1196,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 if ( intfs[c]['v4StaticAddress'] != null && intfs[c]['v4StaticPrefix'] != null ) {
                     this.panel.down('textfield[name="network"]').setValue( intfs[c]['v4StaticAddress'] );
                     this.panel.down('combo[name="prefix"]').setValue( intfs[c]['v4StaticPrefix'] );
-                } 
+                }
 
                 break;
             }
@@ -1252,7 +1226,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 networkSettings['interfaces']['list'][c] = intfSettings;
         }
     },
-    
+
     validateInternalNetwork: function() {
         var rv = true;
         var nic = false;
@@ -1281,11 +1255,11 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
-        
+
         if ( value == 'BRIDGED' ) {
             firstNonWan['configType'] = 'BRIDGED';
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
-            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
+            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings );
         } else {
             var network = this.panel.down('textfield[name="network"]').getValue();
             var prefix = this.panel.down('combo[name="prefix"]').getValue();
@@ -1299,7 +1273,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
 
             this.setFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings, firstNonWan );
-            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings ); 
+            rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings );
         }
     },
 
@@ -1333,7 +1307,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                 }, {
                     xtype: 'container',
                     style:'font-weight:normal',
-                    html: Ext.String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
+                    html: Ext.String.format( i18n._('Automatically install new versions of {0} software. '), rpc.oemName) + '<br/>' +
                          i18n._('This is the recommended for most sites.')
                 }]
             }, {
@@ -1350,16 +1324,15 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                 }, {
                     xtype: 'container',
                     style:'font-weight:normal',
-                    html: Ext.String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
+                    html: Ext.String.format( i18n._('Do not automatically install new versions of {0} software.'), rpc.oemName) + '<br/>' +
                         i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
-                        i18n._('Software Upgrades can be applied manually at any time when available.') 
+                        i18n._('Software Upgrades can be applied manually at any time when available.')
                 }, {
                     xtype: 'container',
-                    style:'font-weight:normal',                    
+                    style:'font-weight:normal',
                     html: '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
                         i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
                         i18n._('If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.') + '<br/>'
-                    
                 }]
             }]
         });
@@ -1379,7 +1352,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                 var autoUpgradesRadio=this.panel.query('radio[name="autoUpgradesRadio"]');
                 autoUpgradesRadio[0].setValue(false);
                 autoUpgradesRadio[1].setValue(true);
-            } 
+            }
             complete();
         }, this));
     },
@@ -1419,7 +1392,7 @@ Ext.define('Ung.SetupWizard.Complete', {
                 html: '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             }, {
                 xtype: 'container',
-                html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.' ),oemName),
+                html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.' ), rpc.oemName),
                 cls: 'noborder'
             }]
         });
@@ -1452,14 +1425,12 @@ Ung.Setup = {
         }
         this.isInitialized = true;
 
-        Ext.WindowMgr.zseed = 20000;
-
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         rpc = {};
 
         Ung.SetupWizard.LabelWidth = 180;
         Ung.SetupWizard.LabelWidth2 = 120;
-        
+
         // Initialize the prefix data
         Ung.SetupWizard.getV4NetmaskList = function( includeNull ) {
             var data = [];
@@ -1502,13 +1473,13 @@ Ung.Setup = {
         };
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
-
+        rpc.oemName = "Untangle";
         // Initialize the timezone data
         var timeZonesResult;
         Ung.SetupWizard.TimeZoneStore = [];
         try {
             timeZonesResult = rpc.setup.getTimeZones();
-            oemName = rpc.setup.getOemName();
+            rpc.oemName = rpc.setup.getOemName();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -1518,7 +1489,6 @@ Ung.Setup = {
         }
 
         i18n = new Ung.I18N( { "map": Ung.SetupWizard.CurrentValues.languageMap });
-
         document.title = i18n._( "Setup Wizard" );
 
         var welcome    = Ext.create('Ung.SetupWizard.Welcome', {});
@@ -1529,14 +1499,6 @@ Ung.Setup = {
         var upgrades   = Ext.create('Ung.SetupWizard.AutoUpgrades', {});
         var complete   = Ext.create('Ung.SetupWizard.Complete', {});
 
-        var cards = [];
-        cards.push( welcome.card );
-        cards.push( settings.card );
-        cards.push( interfaces.card );
-        cards.push( internet.card );
-        cards.push( internal.card );
-        cards.push( upgrades.card );
-        cards.push( complete.card );
         Ext.get("container").setStyle("width", "800px");
         this.wizard = Ext.create('Ung.Wizard', {
             height: 500,
@@ -1545,7 +1507,7 @@ Ung.Setup = {
                 labelWidth: Ung.SetupWizard.LabelWidth,
                 cls: 'untangle-form-panel'
             },
-            cards: cards,
+            cards: [welcome.card, settings.card, interfaces.card, internet.card, internal.card, upgrades.card, complete.card],
             disableNext: false,
             renderTo: "container"
         });

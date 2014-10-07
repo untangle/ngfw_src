@@ -34,8 +34,7 @@ var main=null;
 Ext.define("Ung.Main", {
     debugMode: false,
     buildStamp: null,
-    disableThreads: false, // in development environment is useful to disable
-                            // threads.
+    disableThreads: false, // in development environment is useful to disable threads.
     leftTabs: null,
     appsSemaphore: null,
     apps: null,
@@ -1308,7 +1307,6 @@ Ext.define("Ung.Main", {
         var centerSize = Ext.getCmp('center').getSize();
         var centerPosition = Ext.getCmp('center').getPosition();
         var scale = 0.90;
-        
         if ( centerSize.width < 850 ) {
             scale = 1.00; // if we are in a low resolution, use the whole rack screen
             position[0] = centerPosition[0];
@@ -1318,7 +1316,6 @@ Ext.define("Ung.Main", {
             position[0] = centerPosition[0]+Math.round(centerSize.width/20);
             position[1] = centerPosition[1]+Math.round(centerSize.height/20);
         }
-
         iframeWin.show();
 
         iframeWin.setSize({width:centerSize.width*scale,height:centerSize.height*scale});
