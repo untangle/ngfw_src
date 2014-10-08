@@ -775,27 +775,22 @@ Ext.define("Ung.Main", {
             while(i<installableNodes.length || j<main.apps.length) {
                 var appCmp;
                 if(i==installableNodes.length) {
-                    //console.log("destroy", j);
                     Ext.destroy(main.apps[j]);
                     main.apps[j]=null;
                     j++;
                 } else if(j == main.apps.length) {
-                    //console.log("add", i);
                     appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
                     updatedApps.push(appCmp);
                     i++;
                 } else if(installableNodes[i].name == main.apps[j].nodeProperties.name) {
-                    //console.log("unchanged", i, j);
                     updatedApps.push(main.apps[j]);
                     i++;
                     j++;
                 } else if(installableNodes[i].viewPosition < main.apps[j].nodeProperties.viewPosition) {
-                    //console.log("add", i);
                     appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
                     updatedApps.push(appCmp);
                     i++;
                 } else if(installableNodes[i].viewPosition >= main.apps[j].nodeProperties.viewPosition){
-                    //console.log("destroy", j);
                     Ext.destroy(main.apps[j]);
                     main.apps[j]=null;
                     j++;

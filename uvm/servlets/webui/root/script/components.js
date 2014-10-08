@@ -309,9 +309,7 @@ Ext.define("Ung.AppItem", {
             Ext.MessageBox.alert(i18n._("Warning"),"Unknown state: " + newState);
         }
         this.state = newState;
-
     },
-
     // before Destroy
     beforeDestroy: function() {
         this.actionEl.removeAllListeners();
@@ -320,7 +318,6 @@ Ext.define("Ung.AppItem", {
         Ext.each(this.subCmps, Ext.destroy);
         this.callParent(arguments);
     },
-
     // display Buttons xor Progress barr
     displayButtonsOrProgress: function(displayButtons) {
         this.actionEl.setVisible(displayButtons);
@@ -349,7 +346,6 @@ Ext.define("Ung.AppItem", {
         }
         main.installNode(this.nodeProperties, this);
     }
-
 });
 
 // Node Class
