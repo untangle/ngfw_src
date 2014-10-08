@@ -1,8 +1,5 @@
 #! /bin/bash
 
-# used for 11.0 upgrade path, at the bottom of this file
-oldVersion=$2
-
 ourInit() {
 if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
   invoke-rc.d $1 $2
@@ -14,7 +11,6 @@ fi
 UVM_LOGDIR="/var/log/uvm"
 
 # right permissions for log dir
-/bin/chown -R $USER:$GROUP ${UVM_LOGDIR}
 /bin/chmod 775 ${UVM_LOGDIR}
 
 # enable en_US locale (used by java)
@@ -31,9 +27,6 @@ if [ -x "/etc/init.d/untangle-pyconnector" ]; then
     ourInit untangle-pyconnector start >/dev/null 2>&1
 fi
 
-## Nuke the work directory for the servlets.
-rm -rf /usr/share/untangle/work/tomcat
-
 # It's almost never right to just start the untangle-vm after installation, so let
 # the user know what to do next.
 if [ -z "$2" ]; then
@@ -49,28 +42,5 @@ if [ -z "$2" ]; then
 fi
 
 /etc/init.d/apache2 reload
-
-# 10.1 (rewrite sources.list, replace premium with non-free)
-perl -i -pe 's/premium/non-free/' /etc/apt/sources.list.d/untangle.list
-# 10.1 (rewrite sources.list, if non-free specified twice, remove dup)
-perl -i -pe 's/non-free non-free/non-free/' /etc/apt/sources.list.d/untangle.list
-
-# 10.1 (kill old monit processes)
-killall monit-wrapper.sh 2>&1 >/dev/null
-killall monit 2>&1 >/dev/null
-sed -i '/monit-wrapper/d' /etc/inittab ; init q
-rm -f /var/log/uvm/monit.*
-
-# 10.2 auto upgrade bug fix (#11876)
-if [ "`/usr/share/untangle/bin/ut-settings-reader.py uvm system autoUpgrade`" == "False" ] ; then 
-    /bin/rm -f /etc/cron.d/untangle-upgrade
-fi
-
-# point at stable-11 to get future 11.x upgrades
-sed -e 's/stable-10/stable-11/g' -i /etc/apt/sources.list.d/untangle.list
-
-# 11.0 remove obsolete files
-rm -rf /etc/untangle/monit.d
-rm -f /etc/untangle/monit-to-restart
 
 exit 0
