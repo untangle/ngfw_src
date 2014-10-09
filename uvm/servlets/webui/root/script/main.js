@@ -71,7 +71,7 @@ Ext.define("Ung.Main", {
         }
 
         i18n=new Ung.I18N({"map":rpc.translations});
-        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timezone.rawOffset+rpc.timezone.DSTSavings;
+        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset;
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
         if (rpc.skinSettings.outOfDate) {

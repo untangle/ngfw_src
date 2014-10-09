@@ -6,7 +6,6 @@ package com.untangle.node.reporting;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -20,24 +19,24 @@ import com.untangle.node.reporting.items.Highlight;
  */
 public interface ReportingManager
 {
-	TimeZone getTimeZone();
-	
-	List<DateItem> getDates();
+    Integer getTimeZoneOffset();
+
+    List<DateItem> getDates();
 
     List<Highlight> getHighlights(Date d, int numDays);
 
     Date getReportsCutoff();
 
     TableOfContents getTableOfContents(Date d, int numDays);
-    
+
     TableOfContents getTableOfContentsForHost(Date d, int numDays, String hostname);
-    
+
     TableOfContents getTableOfContentsForUser(Date d, int numDays, String username);
-    
+
     TableOfContents getTableOfContentsForEmail(Date d, int numDays, String email);
 
     ApplicationData getApplicationData(Date d, int numDays, String appName, String type, String value);
-    
+
     ApplicationData getApplicationData(Date d, int numDays, String appName);
 
     ApplicationData getApplicationDataForUser(Date d, int numDays, String appName, String username);
