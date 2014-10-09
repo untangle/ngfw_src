@@ -40,4 +40,6 @@ public interface AdminManager
     
     String getTimeZones();
     
+    Integer getTimeZoneOffset();
+    
 }

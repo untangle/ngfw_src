@@ -287,4 +287,26 @@ public class AdminManagerImpl implements AdminManager
             }
     }
 
+    public Integer getTimeZoneOffset()
+    {
+    	try {
+            String tzoffsetStr = UvmContextImpl.context().execManager().execOutput("date +%:z");
+        
+            if (tzoffsetStr == null) {
+                return 0;
+            } else {
+                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
+                if (tzParts.length==2) {
+                    Integer hours= Integer.valueOf(tzParts[0]);
+                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
+                    return hours >= 0 ? tzoffset : -tzoffset;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return 0;
+    }
+
 }

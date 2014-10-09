@@ -77,7 +77,6 @@ public class ReportingManagerImpl implements ReportingManager
 
     private static final String UVM_REPORTS_DATA = System.getProperty("uvm.web.dir") + "/reports/data";
     private static final String SUBREPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/reporting-generate-subreport.py";
-    private static final String TIMEZONE_FILE = "/etc/timezone";
 
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -89,21 +88,28 @@ public class ReportingManagerImpl implements ReportingManager
         this.node = node;
     }
 
-    public TimeZone getTimeZone()
+    public Integer getTimeZoneOffset()
     {
         try {
-            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
-            String str = in.readLine();
-            str = str.trim();
-            in.close();
-            TimeZone current = TimeZone.getTimeZone(str);
-            return current;
-        } catch (Exception x) {
-            logger.warn("Unable to get timezone, using java default:" , x);
-            return TimeZone.getDefault();
+            String tzoffsetStr = UvmContextFactory.context().execManager().execOutput("date +%:z");
+        
+            if (tzoffsetStr == null) {
+                return 0;
+            } else {
+                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
+                if (tzParts.length==2) {
+                    Integer hours= Integer.valueOf(tzParts[0]);
+                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
+                    return hours >= 0 ? tzoffset : -tzoffset;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
         }
+
+        return 0;
     }
-    
+
     public List<DateItem> getDates()
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);

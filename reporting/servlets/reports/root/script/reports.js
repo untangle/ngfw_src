@@ -304,9 +304,9 @@ Ext.define('Ung.Reports', {
             rpc.dates = result;
             this.postinit();
         }, this));
-        rpc.reportingManager.getTimeZone(Ext.bind(function( result, exception ) {
+        rpc.reportingManager.getTimeZoneOffset(Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception)) return;
-            rpc.timezone = result;
+            rpc.timeZoneOffset = result;
             this.postinit();
         }, this));
         rpc.reportingManager.getReportsCutoff(Ext.bind(function(result,exception){
@@ -320,7 +320,7 @@ Ext.define('Ung.Reports', {
         if (this.initSemaphore != 0) {
             return;
         }
-        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timezone.rawOffset+rpc.timezone.DSTSavings;
+        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset;
         if(this.printView===true){
             this.startApplicationPrintView();
         }else{
