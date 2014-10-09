@@ -650,6 +650,7 @@ class Stats
     void fillEvent( OpenVpnStatusEvent event, Timestamp now )
     {
         event.setEnd( now );
+        event.setTimeStamp( now );
         event.setBytesTxTotal( this.bytesTxTotal );
         event.setBytesRxTotal( this.bytesRxTotal );
         event.setBytesTxDelta( this.bytesTxDelta );
