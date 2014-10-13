@@ -18,6 +18,9 @@
 <c:if test="${isDebug==true}">
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
 </c:if>
+    <script type="text/javascript">
+        Ext.buildStamp='${buildStamp}';
+    </script>
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
