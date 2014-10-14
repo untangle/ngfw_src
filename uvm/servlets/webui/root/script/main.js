@@ -494,7 +494,6 @@ Ext.define("Ung.Main", {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return rpc.networkManager;
     },
@@ -506,7 +505,6 @@ Ext.define("Ung.Main", {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return rpc.loggingManager;
     },
@@ -518,7 +516,6 @@ Ext.define("Ung.Main", {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return rpc.certificateManager;
     },
@@ -530,7 +527,6 @@ Ext.define("Ung.Main", {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return rpc.brandingManager;
     },
@@ -542,7 +538,6 @@ Ext.define("Ung.Main", {
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-
         }
         return rpc.oemManager;
     },
