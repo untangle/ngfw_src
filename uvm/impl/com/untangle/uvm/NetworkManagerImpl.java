@@ -1179,7 +1179,7 @@ public class NetworkManagerImpl implements NetworkManager
         List<QosRuleMatcher> rule1Matchers = new LinkedList<QosRuleMatcher>();
         QosRuleMatcher rule1Matcher1 = new QosRuleMatcher();
         rule1Matcher1.setMatcherType(QosRuleMatcher.MatcherType.DST_PORT);
-        rule1Matcher1.setValue("5060");
+        rule1Matcher1.setValue("5060,5061");
         QosRuleMatcher rule1Matcher2 = new QosRuleMatcher();
         rule1Matcher2.setMatcherType(QosRuleMatcher.MatcherType.PROTOCOL);
         rule1Matcher2.setValue("TCP,UDP");
