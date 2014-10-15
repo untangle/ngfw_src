@@ -538,9 +538,8 @@ public class HostTableImpl implements HostTable
                              */
                             if ( entry.getQuotaSize() > 0 ||
                                  entry.getPenaltyBoxed() ||
-                                 entry.getCaptivePortalAuthenticated() || /* check authenticated flag instead of username because anonymous logins don't set username */
-                                 entry.getUsernameTunnel() != null  ||
-                                 entry.getUsernameOpenvpn() != null ) {
+                                 entry.getCaptivePortalAuthenticated() /* check authenticated flag instead of username because anonymous logins don't set username */
+                                 ) {
                                 continue;
                             }
                             /**
