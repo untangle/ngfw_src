@@ -113,7 +113,7 @@ Ext.define('Webui.config.localDirectory', {
                     allowBlank: false
                 },
                 renderer: Ext.bind(function(value, metadata, record) {
-                    if(value.length == 0 && record.get("passwordBase64Hash").length > 0) {
+                    if(Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) {
                         return "*** "+this.i18n._("Unchanged")+" ***";
                     }
                     var result = "";
@@ -298,7 +298,7 @@ Ext.define('Webui.config.localDirectory', {
                 return false;
             }
             // the password is at least one character
-            if (user.passwordBase64Hash.length == 0 && user.password.length == 0) {
+            if (Ext.isEmpty(user.passwordBase64Hash) && Ext.isEmpty(user.password)) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must be at least 1 character long.'), i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
@@ -307,7 +307,7 @@ Ext.define('Webui.config.localDirectory', {
                 return false;
             }
             // the password contains no spaces
-            if (user.password.indexOf(" ") != -1) {
+            if (user.password !=null && user.password.indexOf(" ") != -1) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), Ext.String.format(this.i18n._('The password at row {0} must not contain any space characters.'), i+1),
                     Ext.bind(function () {
                         this.tabs.setActiveTab(this.gridUsers);
@@ -320,11 +320,14 @@ Ext.define('Webui.config.localDirectory', {
     },
     save: function (isApply) {
         // Calculate passwordBase64Hash for changed passwords and remove cleartext password before saving
-        var listUsers = this.gridUsers.getPageList();
+        var user, listUsers = this.gridUsers.getPageList();
         for(var i=0; i<listUsers.length;i++) {
-            if(listUsers[i].password.length > 0) {
-                listUsers[i].passwordBase64Hash = Ung.Util.btoa(listUsers[i].password);
-                listUsers[i].password = "";
+            user = listUsers[i];
+            if(user.password == null) {
+                user.password = "";
+            } else if(user.password.length > 0) {
+                user.passwordBase64Hash = Ung.Util.btoa(user.password);
+                user.password = "";
             }
         }
         main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
