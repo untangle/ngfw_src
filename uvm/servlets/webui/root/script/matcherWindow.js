@@ -1,5 +1,3 @@
-Ext.define('Webui.matcherWindow', {});
-
 // Base matcher pop-up editor window
 Ext.define('Ung.MatcherEditorWindow', {
     extend:'Ung.EditWindow',

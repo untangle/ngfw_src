@@ -1,5 +1,3 @@
-Ext.define('Webui.monitor', {});
-
 // Monitor Grid class
 Ext.define('Ung.MonitorGrid', {
     extend:'Ext.grid.Panel',

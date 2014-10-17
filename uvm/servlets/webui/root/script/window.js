@@ -1,5 +1,3 @@
-Ext.define('Webui.window', {});
-
 // Standard Ung window
 Ext.define('Ung.Window', {
     extend: 'Ext.window.Window',

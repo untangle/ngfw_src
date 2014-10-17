@@ -4,7 +4,6 @@ Ext.Loader.setConfig({
     //disableCaching: false,
     paths: {
         'Ext.ux': '/ext4/examples/ux',
-        'Ung': '/script',
         'Webui': 'script'
     }
 });
@@ -21,17 +20,7 @@ var testMode = false;
 
 Ext.require([
     'Ext.ux.data.PagingMemoryProxy',
-    'Ext.ux.grid.FiltersFeature',
-    'Webui.extOverrides',
-    'Webui.util',
-    'Webui.window',
-    'Ung.baseEventLog',
-    'Webui.editorGrid',
-    'Webui.eventLog',
-    'Webui.ruleBuilder',
-    'Webui.matcherWindow',
-    'Webui.monitor',
-    'Webui.components'
+    'Ext.ux.grid.FiltersFeature'
 ]);
 //resources map
 Ung.hasResource = {};

@@ -1,5 +1,3 @@
-Ext.define('Webui.ruleBuilder', {});
-
 //RuleBuilder
 Ext.define('Ung.RuleBuilder', {
     extend: 'Ext.grid.Panel',

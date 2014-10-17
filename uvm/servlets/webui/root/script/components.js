@@ -1,5 +1,3 @@
-Ext.define('Webui.components', {});
-
 Ext.define("Ung.form.DayOfWeekMatcherField", {
     extend: "Ext.form.CheckboxGroup",
     alias: "widget.udayfield",

@@ -1,5 +1,3 @@
-Ext.define('Webui.util', {});
-
 Ung.Util = {
     isDirty: function (item, depth) {
         if(depth==null) {

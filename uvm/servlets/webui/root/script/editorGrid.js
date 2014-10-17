@@ -1,5 +1,3 @@
-Ext.define('Webui.editorGrid', {});
-
 // Grid edit column
 Ext.define('Ung.grid.EditColumn', {
     extend:'Ext.grid.column.Action',

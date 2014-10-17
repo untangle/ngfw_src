@@ -24,6 +24,16 @@
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/extOverrides.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/window.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/baseEventLog.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/eventLog.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/editorGrid.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/ruleBuilder.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/matcherWindow.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/monitor.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>

@@ -1,5 +1,3 @@
-Ext.define('Webui.eventLog', {});
-
 Ext.define("Ung.GridEventLog", {
     extend: "Ung.GridEventLogBase",
     // the settings component
