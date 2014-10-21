@@ -376,6 +376,76 @@ public class NetworkManagerImpl implements NetworkManager
 
         return null;
     }
+
+    /**
+     * returns a list of networks already used locally
+     * This can be used for verification of settings in app settings
+     */
+    public List<IPMaskedAddress> getCurrentlyUsedNetworks()
+    {
+        List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
+        try {
+        
+            /**
+             * Add static v4 addresses
+             */
+            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                    continue;
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                    continue;
+                if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                    continue;
+                if ( intf.getV4StaticAddress() == null || intf.getV4StaticPrefix() == null )
+                    continue;
+
+                IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
+                addresses.add( intfma );
+
+                for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
+                    IPMaskedAddress aliasma = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                    addresses.add( aliasma );
+                }
+
+            }
+
+            /**
+             * Add dynamic v4 addresses
+             */
+            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                    continue;
+                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                    continue;
+                if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
+                    continue;
+
+                InetAddress address = getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
+                InetAddress netmask = getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
+
+                if ( address == null || netmask == null )
+                    continue;
+
+                IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
+                addresses.add( intfma );
+            }
+
+            InetAddress l2tpAddress = getInterfaceStatus( 251 ).getV4Address();
+            InetAddress l2tpNetmask = getInterfaceStatus( 251 ).getV4Netmask();
+            if ( l2tpAddress != null && l2tpNetmask != null )
+                addresses.add( new IPMaskedAddress ( l2tpAddress, l2tpNetmask ) );
+
+            InetAddress openvpnAddress = getInterfaceStatus( 250 ).getV4Address();
+            InetAddress openvpnNetmask = getInterfaceStatus( 250 ).getV4Netmask();
+            if ( openvpnAddress != null && openvpnNetmask != null )
+                addresses.add( new IPMaskedAddress ( openvpnAddress, openvpnNetmask ) );
+
+        } catch ( Exception e ) {
+            logger.warn( "Exception when computing local networks", e );
+        }
+        
+        return addresses;
+    }
     
     /**
      * This method returns an address where the host should be able to access HTTP.
@@ -394,7 +464,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * Special handling for OpenVPN
          */
-        if ( intfId == 250) {
+        if ( intfId == 250 ) {
             InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }
@@ -402,7 +472,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * Special handling for L2TP
          */
-        if ( intfId == 251) {
+        if ( intfId == 251 ) {
             InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }

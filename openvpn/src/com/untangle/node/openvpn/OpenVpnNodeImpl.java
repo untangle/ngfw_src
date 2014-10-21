@@ -210,7 +210,49 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     public void setSettings( OpenVpnSettings newSettings )
     {
-        this._setSettings( newSettings );
+        /**
+         * Verify Settings
+         */
+        sanityCheckSettings( newSettings );
+
+        /**
+         * Sanitize Settings
+         */
+        sanitizeSettings( newSettings );
+
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save(OpenVpnSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID + ".js", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /**
+         * Sync those settings
+         */
+        this.openVpnManager.configure( this.settings );
+        
+        /**
+         * Restart the daemon
+         */
+        try {
+            if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
+                this.openVpnManager.restart();
+            }
+        } catch ( Exception exn ) {
+            logger.error( "Could not save VPN settings", exn );
+        }
     }
     
     public void incrementPassCount()
@@ -422,53 +464,6 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return newSettings;
     }
 
-    private void _setSettings( OpenVpnSettings newSettings )
-    {
-        /**
-         * Verify Settings
-         */
-        verifySettings( newSettings );
-
-        /**
-         * Sanitize Settings
-         */
-        sanitizeSettings( newSettings );
-
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        try {
-            settingsManager.save(OpenVpnSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID + ".js", newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        /**
-         * Sync those settings
-         */
-        this.openVpnManager.configure( this.settings );
-        
-        /**
-         * Restart the daemon
-         */
-        try {
-            if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
-                this.openVpnManager.restart();
-            }
-        } catch ( Exception exn ) {
-            logger.error( "Could not save VPN settings", exn );
-        }
-    }
-
     private void sanitizeSettings( OpenVpnSettings newSettings )
     {
         /**
@@ -488,33 +483,60 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         }
     }
 
-    private void verifySettings( OpenVpnSettings newSettings )
+    private void sanityCheckSettings( OpenVpnSettings newSettings )
     {
         /**
          * Verify no lists are null
          */
         if ( newSettings.getGroups() == null)
-            throw new RuntimeException("Invalid Settings: null groups list");
+            throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": null groups list");
         if ( newSettings.getRemoteClients() == null)
-            throw new RuntimeException("Invalid Settings: null remote clients list");
+            throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": null remote clients list");
 
         /**
          * Check each client.
          * Check that it has a good name, and the mapped group exist
          */
+        List<IPMaskedAddress> exportedNetworks = new LinkedList<IPMaskedAddress>();
+        exportedNetworks.add( newSettings.getAddressSpace() );
         for ( OpenVpnRemoteClient client : newSettings.getRemoteClients() ) {
             if ( client.getName() == null || client.getName().contains(" ") )
-                throw new RuntimeException("Invalid Settings: Illegal client name: " + client.getName());
+                throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": Illegal client name: " + client.getName());
             boolean foundGroup = false;
             for ( OpenVpnGroup group : newSettings.getGroups() ) {
                 if ( group.getGroupId() == client.getGroupId() )
                     foundGroup = true;
             }
             if (!foundGroup)
-                throw new RuntimeException("Invalid Settings: Missing Group " + client.getGroupId() + " for client: " + client.getName());
+                throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": Missing Group " + client.getGroupId() + " for client: " + client.getName());
+
+            if ( client.getExport() ) {
+                String networks = client.getExportNetwork();
+                for ( String network : networks.split(",") ) {
+                    exportedNetworks.add( new IPMaskedAddress( network ) );
+                }
+            }
         }
 
-            
+        /**
+         * Check that exported remote network do not conflict with Untangle addresses and other exports
+         */
+        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks();
+        for ( IPMaskedAddress export : exportedNetworks ) {
+            for ( IPMaskedAddress used : currentlyUsed ) {
+                if ( export.isIntersecting( used ) ) {
+                    throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with address") + " " + used );
+                }
+            }
+            for ( IPMaskedAddress export2 : exportedNetworks ) {
+                if ( export == export2 )
+                    continue;
+                if ( export.isIntersecting( export2 ) ) {
+                    throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with address") + " " + export2 );
+                }
+            }
+        }
+        
     }
     
     private synchronized void deployWebApp()

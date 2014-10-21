@@ -22,6 +22,7 @@
 
 #include <libnfnetlink/libnfnetlink.h>
 #include <libnetfilter_queue/libnetfilter_queue.h>
+#include <libnetfilter_conntrack/libnetfilter_conntrack.h>
 
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -32,6 +33,93 @@
 #include "netcap_interface.h"
 #include "netcap_nfconntrack.h"
 
+#define NFQNL_COPY_UNTANGLE_MODE 0x10
+#define NETCAP_CTINFO 11
+#define NETCAP_CT_DIR_ORIGINAL 12
+#define NETCAP_CT_DIR_REPLY 13
+#define NETCAP_CT_TUPLE_L3SIZE      4
+
+/* The l3 protocol-specific manipulable parts of the tuple: always in
+   network order! */
+union netcap_conntrack_address {
+        u_int32_t all[NETCAP_CT_TUPLE_L3SIZE];
+        __be32 ip;
+        __be32 ip6[4];
+};
+
+/* The protocol-specific manipulable parts of the tuple: always in
+   network order! */
+union netcap_conntrack_man_proto
+{
+        /* Add other protocols here. */
+        u_int16_t all;
+
+        struct {
+                __be16 port;
+        } tcp;
+        struct {
+                __be16 port;
+        } udp;
+        struct {
+                __be16 id;
+        } icmp;
+        struct {
+                __be16 port;
+        } sctp;
+        struct {
+                __be16 key;     /* GRE key is 32bit, PPtP only uses 16bit */
+        } gre;
+};
+
+/* The manipulable part of the tuple. */
+struct netcap_conntrack_man
+{
+        union netcap_conntrack_address u3;
+        union netcap_conntrack_man_proto u;
+        /* Layer 3 protocol */
+        u_int16_t l3num;
+};
+
+/* This contains the information to distinguish a connection. */
+struct netcap_conntrack_tuple
+{
+        struct netcap_conntrack_man src;
+
+        /* These are the parts of the tuple which are fixed. */
+        struct {
+                union netcap_conntrack_address u3;
+                union {
+                        /* Add other protocols here. */
+                        u_int16_t all;
+
+                        struct {
+                                __be16 port;
+                        } tcp;
+                        struct {
+                                __be16 port;
+                        } udp;
+                        struct {
+                                u_int8_t type, code;
+                        } icmp;
+                        struct {
+                                __be16 port;
+                        } sctp;
+                        struct {
+                                __be16 key;
+                        } gre;
+                } u;
+
+                /* The protocol. */
+                u_int8_t protonum;
+
+                /* The direction (for tuplehash) */
+                u_int8_t dir;
+        } dst;
+};
+
+struct nfq_data {
+        struct nfattr **data;
+};
 
 /*
  * input buffer
@@ -43,7 +131,6 @@
  *         timeval      (8 or 12 octets, only if timing==1)
  *         other data
  */
-
 /* This is passed to the nf_callback using TLS */
 typedef struct
 {
@@ -68,10 +155,9 @@ static struct
     .tls_key  = -1
 };
 
-/* This is a helper function to retrieve the ctinfo
- */
+/* This is a helper function to retrieve the ctinfo*/
+static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, int l3num );
 static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt );
-
 
 /* This is the callback for netfilter queuing */
 static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfa, void *data );
@@ -115,14 +201,25 @@ int  netcap_queue_init (void)
         
         /* set the copy mode */
         /* set untangle copy mode to include conntrack info */
-        if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET|NFQNL_COPY_UNTANGLE_MODE, 0xFFFF ) < 0){
-            return perrlog( "nfq_set_mode" );
+        if ( IS_NEW_KERNEL() ){  
+            if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET, 0xFFFF ) < 0){
+                return perrlog( "nfq_set_mode" );
+            }
+    
+            if (nfq_set_queue_flags(_queue.nfq_qh, NFQA_CFG_F_CONNTRACK,  NFQA_CFG_F_CONNTRACK )){
+                return perrlog( "nfq_set_queue_flags NFQA_CFG_F_CONNTRACK" );
+            }
         }
-
+        else { 
+            if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET|NFQNL_COPY_UNTANGLE_MODE, 0xFFFF ) < 0){
+                return perrlog( "nfq_set_mode" );
+            }
+        }
         /* Retrieve the file descriptor for the netfilter queue */
         if (( _queue.nfq_fd = nfnl_fd( nfq_nfnlh( _queue.nfq_h ))) <= 0 ) {
             return errlog( ERR_CRITICAL, "nfnl_fd/nfq_nfnlh\n" );
         }
+
         int bufsize = 1048576*2; /* 2 meg */
         if ( setsockopt( _queue.nfq_fd, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof( bufsize )) < 0 ) {
             perrlog("setsockopt");
@@ -211,8 +308,7 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
     } else {
         debug( 10, "setting mark to: %#010x\n", mark );
         /* Convert to the proper byte order */
-        mark = htonl( mark );
-        if ( nfq_set_verdict_mark( _queue.nfq_qh, packet_id, nf_verdict, mark, len, buf ) < 0 ) {
+        if ( nfq_set_verdict2( _queue.nfq_qh, packet_id, nf_verdict, mark, len, buf ) < 0 ) {
             return perrlog("nfq_set_verdict_mark");
         }
     }
@@ -230,7 +326,6 @@ int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
         if (( pkt_len = recv( _queue.nfq_fd, buf, buf_len, 0 )) < 0 ) return perrlog( "recv" );
         
         debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
-        
         if ( nfq_handle_packet( _queue.nfq_h, (char*)buf, pkt_len ) < 0 ) {
             return errlog(ERR_WARNING, "nfq_handle_packet\n" );
         }
@@ -286,6 +381,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 {
     u_char* data = NULL;
     int data_len = 0;
+    int l3num = 0;
     struct iphdr* ip_header = NULL;    
     struct nfqnl_msg_packet_hdr *ph = NULL;
     netcap_pkt_t* pkt = NULL;
@@ -304,7 +400,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     pkt->packet_id = ntohl( ph->packet_id );
     
     /* Fill in the values for a packet */
-    if ((( data_len = nfq_get_payload( nfa, (char**)&data )) < 0 ) || ( data == NULL )) {
+    if ((( data_len = nfq_get_payload( nfa, (unsigned char**)&data )) < 0 ) || ( data == NULL )) {
         return perrlog( "nfq_get_payload" );
     }
 
@@ -316,10 +412,22 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
 
-    if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-        netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
-        pkt->packet_id = 0;
-        return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+    if ( IS_NEW_KERNEL() ) {  
+        /*Get the original and reply tuple from conntrack */  
+        l3num = nfmsg->nfgen_family; 
+    
+        if ( _nfq_get_conntrack_info( nfa, pkt, l3num ) < 0 ) {
+            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+            pkt->packet_id = 0;
+            return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+        }
+    }
+    else { 
+        if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
+            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+            pkt->packet_id = 0;
+            return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+        }
     }
 
     debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
@@ -334,6 +442,10 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
            unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
            ntohs( pkt->nat_info.reply.dst_protocol_id ));
 
+    debug( 10, "packet info src= %s -> %s\n",
+            unet_next_inet_ntoa(ip_header->saddr),
+            unet_next_inet_ntoa(ip_header->daddr));
+       
     /**
      * undo any NATing.
      */
@@ -474,10 +586,77 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     return 0;
 }
 
+/*Helper function to get conntrack related info in kernel version >= 3.10*/
+int nfq_get_ct_info(struct nfq_data *nfad, unsigned char **data)
+{
+        *data = (unsigned char *)
+                nfnl_get_pointer_to_data(nfad->data, NFQA_CT, struct nf_conntrack );
+
+        if (*data)
+                return NFA_PAYLOAD(nfad->data[NFQA_CT-1]);
+
+        return -1;
+}
+
+/*This function is used to get conntrack info in kernel version >= 3.10*/
+static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, int l3num )
+{
+    struct nf_conntrack *ct;
+    int ct_len =0;
+    unsigned char *ct_data;
+    
+    ct = nfct_new();
+    if ( !ct ) {
+        errlog( ERR_WARNING, "nfq_get_conntrack could not alloc conntrack info\n" );
+        return -1;
+    }
+
+    ct_len = nfq_get_ct_info(nfad, &ct_data);
+    if ( ct_len <= 0 ) {
+        errlog( ERR_WARNING, "nfq_get_conntrack could not get conntrack data\n" );
+        return -1;
+    }
+
+
+    if (nfct_payload_parse((void *)ct_data, ct_len, l3num, ct ) < 0) {
+        errlog( ERR_WARNING, "nfq_get_conntrack could not parse conntrack data\n" );
+        return -1;
+    }
+
+    /* using the union from the nfqueue structure, doesn't matter if
+     * this is TCP, UDP, whatever, but it is kind of filthy. */
+
+    pkt->nat_info.original.src_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_SRC);
+    pkt->nat_info.original.src_protocol_id = nfct_get_attr_u16(ct,ATTR_ORIG_PORT_SRC);
+    pkt->nat_info.original.dst_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_DST); 
+    pkt->nat_info.original.dst_protocol_id = nfct_get_attr_u16(ct,ATTR_ORIG_PORT_DST); 
+    
+    /* using the union from the nfqueue structure, doesn't matter if
+     * this is TCP, UDP, whatever, but it is kind of filthy. */
+    pkt->nat_info.reply.src_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_SRC);
+    pkt->nat_info.reply.src_protocol_id = nfct_get_attr_u16(ct,ATTR_REPL_PORT_SRC);
+    pkt->nat_info.reply.dst_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_DST);
+    pkt->nat_info.reply.dst_protocol_id = nfct_get_attr_u32(ct,ATTR_REPL_PORT_DST);
+
+    return 0;
+}
+
+/*This function is used to get conntrack info in kernel version <= 3.2 */
+int nfq_get_conntrack(struct nfq_data *nfad, struct netcap_conntrack_tuple** original, struct netcap_conntrack_tuple** reply )
+{
+       *original = nfnl_get_pointer_to_data(nfad->data, NETCAP_CT_DIR_ORIGINAL, struct netcap_conntrack_tuple);
+       if (*original==NULL) return -1;
+       *reply = nfnl_get_pointer_to_data(nfad->data, NETCAP_CT_DIR_REPLY, struct netcap_conntrack_tuple);
+       if (*reply==NULL) return -1;
+
+       return 0;
+}
+
+/*This function is used to get conntrack info in kernel version <= 3.2 */
 static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
 {
-    struct nf_conntrack_tuple* original;
-    struct nf_conntrack_tuple* reply;
+    struct netcap_conntrack_tuple* original;
+    struct netcap_conntrack_tuple* reply;
 
     if ( nfq_get_conntrack( nfad, &original,  &reply ) < 0 ) {
         errlog( ERR_WARNING, "nfq_get_conntrack could not find conntrack info\n" );
@@ -500,4 +679,3 @@ static int _nfq_get_conntrack( struct nfq_data *nfad, netcap_pkt_t* pkt )
 
     return 0;
 }
-
