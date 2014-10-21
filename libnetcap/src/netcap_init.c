@@ -55,7 +55,6 @@ static int _tls_init   ( void* buf, size_t size );
 static int ip_transparent = 19;
 static int ip_saddr = 22; 
 static int ip_sendnfmark = 24;
-static int is_new_kernel = 0;
 
 int netcap_init()
 {
@@ -93,8 +92,6 @@ static int _netcap_init()
     if (uname(&utsn) < 0) {
         return perrlog("uname");
     }
-
-    is_new_kernel = 0;
     if ( strstr(utsn.release,"2.6.26") != NULL) {
         return perrlog( "Unsupported kernel: 2.6.26\n" );
     }
@@ -112,12 +109,6 @@ static int _netcap_init()
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
-    }
-    else if ( strstr(utsn.release,"3.10.49") != NULL ) {
-        ip_transparent = 19;
-        ip_saddr = 24;
-        ip_sendnfmark = 25;
-        is_new_kernel = 1;
     }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
@@ -247,12 +238,6 @@ int IP_SADDR_VALUE ( )
 int IP_SENDNFMARK_VALUE ( )
 {
     return ip_sendnfmark;
-}
-
-int IS_NEW_KERNEL ( )
-{
-    return 0;
-    //return is_new_kernel;
 }
 
 static int _tls_init( void* buf, size_t size )

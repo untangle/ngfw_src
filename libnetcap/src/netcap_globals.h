@@ -42,11 +42,6 @@ int IP_SADDR_VALUE ( );
  */
 int IP_SENDNFMARK_VALUE ( );
 
-/**
- * Returns is_new_kernel constant ( kernel version more than 3.10 set to 1, others 0)
- */
-int IS_NEW_KERNEL ( );
-
 struct ip_sendnfmark_opts {
     u_int32_t on;
     u_int32_t mark;
