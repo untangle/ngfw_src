@@ -91,9 +91,26 @@ public class AdminManagerImpl implements AdminManager
         return this.settings;
     }
 
-    public void setSettings(final AdminSettings settings)
+    public void setSettings( final AdminSettings newSettings )
     {
-        this._setSettings( settings );
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save(AdminSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "admin.js", newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
 
     @Override
@@ -231,12 +248,12 @@ public class AdminManagerImpl implements AdminManager
         }
         final long d = new Date().getTime();
         Collections.sort(all, new Comparator<TimeZone>() {
-                                    @Override
-                                    public int compare(TimeZone o1, TimeZone o2) {
-                                        if ( o1.getOffset(d) < o2.getOffset(d)) return -1;
-                                        if ( o1.getOffset(d) > o2.getOffset(d)) return 1;
-                                        return 0;
-                                    }
+                @Override
+                public int compare(TimeZone o1, TimeZone o2) {
+                    if ( o1.getOffset(d) < o2.getOffset(d)) return -1;
+                    if ( o1.getOffset(d) > o2.getOffset(d)) return 1;
+                    return 0;
+                }
         });
         StringBuffer sb = new StringBuffer();
         sb.append("[");
@@ -253,38 +270,41 @@ public class AdminManagerImpl implements AdminManager
         return sb.toString();
     }
 
-    private void _setSettings( AdminSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        try {
-            settingsManager.save(AdminSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "admin.js", newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
-    }
-
     private void reconfigure() 
     {
         // If timezone on box is different (example: kernel upgrade), reset it:
         TimeZone currentZone = getTimeZone();
-        if (!currentZone.equals(TimeZone.getDefault()))
+        if (!currentZone.equals(TimeZone.getDefault())) {
             try {
                 setTimeZone(currentZone);
             } catch (Exception x) {
                 // Already logged.
             }
+        }
+
+        // Set root password to "admin" password
+        for ( AdminUserSettings user : this.settings.getUsers() ) {
+            if ( "admin".equals( user.getUsername() ) ) {
+                String pass = user.trans_getPassword();
+                if ( pass != null ) {
+                    logger.info("Setting root password");
+                    String cmd = "sudo usermod -p `echo '" + pass + "' | openssl passwd -crypt -stdin -salt '$1'` root";
+                    
+                    // turn down logging so we dont log password
+                    UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
+
+                    ExecManagerResult result = UvmContextImpl.context().execManager().exec( cmd );
+
+                    // turn logging back up
+                    UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.INFO );
+                    
+                    int exitCode = result.getResult();
+                    if ( exitCode != 0 ) {
+                        logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
+                    }
+                }
+            }
+        }
     }
 
     public Integer getTimeZoneOffset()

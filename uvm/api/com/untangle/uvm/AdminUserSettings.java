@@ -17,8 +17,9 @@ public class AdminUserSettings implements Serializable, JSONString
     private String username;
     private String emailAddress;
     private String description;
+    private String password;
     private byte[] passwordHash = null;
-
+    
     public AdminUserSettings() {}
 
     public AdminUserSettings( String username, String password, String description)
@@ -59,6 +60,7 @@ public class AdminUserSettings implements Serializable, JSONString
             return;
         if ( "".equals(password) )
             return;
+        this.password = password;
         this.passwordHash = PasswordUtil.encrypt(password);
     }
 
@@ -79,6 +81,11 @@ public class AdminUserSettings implements Serializable, JSONString
         this.passwordHash = Base64.decodeBase64(passwordHashBase64.getBytes());
     }
 
+    protected String trans_getPassword( )
+    {
+        return this.password;
+    }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
