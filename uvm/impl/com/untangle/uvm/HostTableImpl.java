@@ -423,11 +423,13 @@ public class HostTableImpl implements HostTable
         /**
          * Only count hosts with getLastSessionTime() is > 0
          * Meaning the UVM has processed sessions for that host
+         * and its processes sessions within 24 hours
          */
         try {
+            long cutoffTime = System.currentTimeMillis() - 1000 * 60 * 60 * 24; /* 24 hours ago */
             for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
                 HostTableEntry entry = i.next();
-                if (entry.getLastSessionTime() > 0)
+                if (entry.getLastSessionTime() > cutoffTime)
                     licenseSize++;
             }
         }
@@ -470,10 +472,12 @@ public class HostTableImpl implements HostTable
         /**
          * Only count hosts with getLastSessionTime() is > 0
          * Meaning the UVM has processed sessions for that host
+         * and its processes sessions within 24 hours
          */
+        long cutoffTime = System.currentTimeMillis() - 1000 * 60 * 60 * 24; /* 24 hours ago */
         for ( Iterator<HostTableEntry> i = hostTable.values().iterator() ; i.hasNext() ; ) {
             HostTableEntry entry = i.next();
-            if (entry.getLastSessionTime() > 0)
+            if ( entry.getLastSessionTime() > cutoffTime )
                 realSize++;
         }
         
@@ -544,8 +548,12 @@ public class HostTableImpl implements HostTable
                             }
                             /**
                              * If this host is still reachable/online, don't remove the information
+                             * Limit this check to 3 hops TTL and 500 ms. Sometimes external (but pingable) hosts can get into the host table
+                             * via spoofing and/or SSDP and UPnP and stuff like that.
+                             * We want these hosts to expire once we don't have traffic for them.
+                             * This should ensure that only *local* pingable addresses stay in the host table if they respond to ping.
                              */
-                            if ( entry.getAddress().isReachable( 500 ) ) {
+                            if ( entry.getAddress().isReachable( null, 3, 500 ) ) {
                                 continue;
                             }
                             
