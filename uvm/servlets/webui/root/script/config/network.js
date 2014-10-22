@@ -120,6 +120,16 @@ Ext.define("Webui.config.network", {
         // builds the tab panel with the tabs
         this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelDnsServer, this.panelDhcpServer, this.panelAdvanced, this.panelTroubleshooting ]);
 
+        this.initialAllowSSHEnabled = false;
+        if(this.settings.inputFilterRules && this.settings.inputFilterRules.list) {
+            for( i=0; i<this.settings.inputFilterRules.list.length ; i++ ) {
+                rule = this.settings.inputFilterRules.list[i];
+                if ( rule.description == "Allow SSH" ) {
+                    this.initialAllowSSHEnabled = rule.enabled;
+                    break;
+                }
+            }
+        }
         // Check if QoS is enabled and there are some initial WANs without downloadBandwidthKbps or uploadBandwidthKbps limits set and mark dirty if true,
         // in order to make the user save the valid settings when new WANs are added
         if(this.settings.qosSettings.qosEnabled) {
@@ -5009,7 +5019,7 @@ Ext.define("Webui.config.network", {
         }
         this.packetTest.show();
     },
-    validate: function() {
+    validate: function(isApply) {
         var i;
         var domainNameCmp =this.panelHostName.down('textfield[name="DomainName"]');
         if (!domainNameCmp.isValid()) {
@@ -5048,11 +5058,11 @@ Ext.define("Webui.config.network", {
                 }
             }
         }
-        var found = false;
+        var rule, found = false;
         var rules = this.gridInputFilterRules.getPageList();
         if( rules ) {
             for( i=0; i<rules.length ; i++ ) {
-                var rule = rules[i];
+                rule = rules[i];
                 if ( rule.description == "Block All" ) {
                     found = true;
                     if ( rule.enabled == false ) {
@@ -5062,6 +5072,7 @@ Ext.define("Webui.config.network", {
                         Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is disabled. This is dangerous and not allowed! Refer to the documentation."));
                         return false;
                     }
+                    break;
                 }
             }
         }
@@ -5071,6 +5082,26 @@ Ext.define("Webui.config.network", {
             this.gridInputFilterRules.focus();
             Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("The \"Block All\" rule in \"Input Filter Rules\" is missing. This is dangerous and not allowed! Refer to the documentation."));
             return false;
+        }
+        if(!this.initialAllowSSHEnabled && rules && !this.confirmedAllowSSHEnabled) {
+            for( i=0; i<rules.length ; i++ ) {
+                rule = rules[i];
+                if ( rule.description == "Allow SSH" ) {
+                    if ( rule.enabled == true) {
+                        this.tabs.setActiveTab(this.panelAdvanced);
+                        this.advancedTabPanel.setActiveTab(this.panelFilter);
+                        this.gridInputFilterRules.focus();
+                        Ext.MessageBox.confirm(this.i18n._("Failed"), this.i18n._("The \"Allow SSH\" rule in \"Input Filter Rules\" is enabled. This is dangerous. Do you want to continue anyway?"), Ext.bind(function(btn, text) {
+                            if (btn == 'yes') {
+                                this.confirmedAllowSSHEnabled=true;
+                                this.saveAction(isApply);
+                            }
+                        }, this));
+                        return false;
+                    }
+                    break;
+                }
+            }
         }
         return true;
     },

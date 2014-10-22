@@ -243,7 +243,7 @@ Ext.define("Ung.SettingsWin", {
             }
             return;
         }
-        if(!this.validate()) {
+        if(!this.validate(isApply)) {
             return;
         }
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
