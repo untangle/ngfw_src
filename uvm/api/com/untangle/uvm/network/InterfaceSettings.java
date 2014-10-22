@@ -95,7 +95,6 @@ public class InterfaceSettings implements Serializable, JSONString
     private Boolean vrrpEnabled; /* Is VRRP enabled */
     private Integer vrrpId; /* VRRP ID 1-255 */
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
-    private InetAddress vrrpAddress; /* 10.2 DEPRECATED */
     private List<InterfaceAlias> vrrpAliases = new LinkedList<InterfaceAlias>();
     
     public InterfaceSettings() { }
@@ -261,9 +260,6 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public Integer getVrrpPriority() { return this.vrrpPriority; }
     public void setVrrpPriority( Integer newValue ) { this.vrrpPriority = newValue; }
-
-    public InetAddress getVrrpAddress() { return this.vrrpAddress; }
-    public void setVrrpAddress( InetAddress newValue ) { this.vrrpAddress = newValue; }
 
     public List<InterfaceAlias> getVrrpAliases( ) { return this.vrrpAliases; }
     public void setVrrpAliases( List<InterfaceAlias> newValue ) { this.vrrpAliases = newValue; }
