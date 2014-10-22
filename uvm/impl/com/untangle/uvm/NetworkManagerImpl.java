@@ -202,7 +202,7 @@ public class NetworkManagerImpl implements NetworkManager
         String errorStr = null;
         
         // stop interfaces
-        result = UvmContextFactory.context().execManager().exec( "ifdown -a --exclude=lo" );
+        result = UvmContextFactory.context().execManager().exec( "ifdown -a -v --exclude=lo" );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("ifdown -a: ");
@@ -226,7 +226,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         // start interfaces
-        result = UvmContextFactory.context().execManager().exec( "ifup -a --exclude=lo" );
+        result = UvmContextFactory.context().execManager().exec( "ifup -a -v --exclude=lo" );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("ifup -a: ");
