@@ -121,6 +121,8 @@ class PhishTests(unittest2.TestCase):
         ip_address_testuntangle = match.group()
 
         sendPhishMail("test020")
+        sendPhishMail("test020") # send two - first one fails sometimes on very slow servers
+
         flushEvents()
         query = None;
         for q in node.getEventQueries():
