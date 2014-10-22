@@ -31,10 +31,6 @@ class HttpCasing(Node):
                         Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
                         Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
 
-        # remove obsolete columns
-        sql_helper.drop_column('reports', 'http_totals', 's2c_bytes')
-        sql_helper.drop_column('reports', 'http_totals', 'c2s_bytes')
-
         reports.engine.register_fact_table(ft)
 
     @print_timing
@@ -79,12 +75,6 @@ CREATE TABLE reports.http_events (
     clam_name text,
     virusblocker_clean boolean,
     virusblocker_name text)""")
-
-        # 10.2 conversion, in 10.1 and 10.0 these columns were integers, convert them
-        # Had to disable this conversion - it takes too long
-        # We will just have to leave old installs as integers
-        # sql_helper.convert_column("reports","http_events","s2c_content_length","integer","bigint");
-        # sql_helper.convert_column("reports","http_events","c2s_content_length","integer","bigint");
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","http_events","request_id", unique=True):
