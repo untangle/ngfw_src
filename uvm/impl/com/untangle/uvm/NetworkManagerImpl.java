@@ -381,7 +381,7 @@ public class NetworkManagerImpl implements NetworkManager
      * returns a list of networks already used locally
      * This can be used for verification of settings in app settings
      */
-    public List<IPMaskedAddress> getCurrentlyUsedNetworks()
+    public List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn )
     {
         List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
         try {
@@ -412,33 +412,39 @@ public class NetworkManagerImpl implements NetworkManager
             /**
              * Add dynamic v4 addresses
              */
-            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                    continue;
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
-                    continue;
-                if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
-                    continue;
+            if ( includeDynamic ) {
+                for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+                    if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                        continue;
+                    if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                        continue;
+                    if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
+                        continue;
 
-                InetAddress address = getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
-                InetAddress netmask = getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
+                    InetAddress address = getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
+                    InetAddress netmask = getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
 
-                if ( address == null || netmask == null )
-                    continue;
+                    if ( address == null || netmask == null )
+                        continue;
 
-                IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
-                addresses.add( intfma );
+                    IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
+                    addresses.add( intfma );
+                }
             }
 
-            InetAddress l2tpAddress = getInterfaceStatus( 251 ).getV4Address();
-            InetAddress l2tpNetmask = getInterfaceStatus( 251 ).getV4Netmask();
-            if ( l2tpAddress != null && l2tpNetmask != null )
-                addresses.add( new IPMaskedAddress ( l2tpAddress, l2tpNetmask ) );
+            if ( includeL2tp ) {
+                InetAddress l2tpAddress = getInterfaceStatus( 251 ).getV4Address();
+                InetAddress l2tpNetmask = getInterfaceStatus( 251 ).getV4Netmask();
+                if ( l2tpAddress != null && l2tpNetmask != null )
+                    addresses.add( new IPMaskedAddress ( l2tpAddress, l2tpNetmask ) );
+            }
 
-            InetAddress openvpnAddress = getInterfaceStatus( 250 ).getV4Address();
-            InetAddress openvpnNetmask = getInterfaceStatus( 250 ).getV4Netmask();
-            if ( openvpnAddress != null && openvpnNetmask != null )
-                addresses.add( new IPMaskedAddress ( openvpnAddress, openvpnNetmask ) );
+            if ( includeOpenvpn ) {
+                InetAddress openvpnAddress = getInterfaceStatus( 250 ).getV4Address();
+                InetAddress openvpnNetmask = getInterfaceStatus( 250 ).getV4Netmask();
+                if ( openvpnAddress != null && openvpnNetmask != null )
+                    addresses.add( new IPMaskedAddress ( openvpnAddress, openvpnNetmask ) );
+            }
 
         } catch ( Exception e ) {
             logger.warn( "Exception when computing local networks", e );

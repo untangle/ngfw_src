@@ -521,7 +521,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         /**
          * Check that exported remote network do not conflict with Untangle addresses and other exports
          */
-        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks();
+        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks( true, true, false );
         for ( IPMaskedAddress export : exportedNetworks ) {
             for ( IPMaskedAddress used : currentlyUsed ) {
                 if ( export.isIntersecting( used ) ) {
