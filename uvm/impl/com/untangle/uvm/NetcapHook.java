@@ -175,6 +175,13 @@ public abstract class NetcapHook implements Runnable
                         entry.setHostname( hostname );
                     }
                 }
+            } else {
+                /**
+                 * no entry (probably an external host)
+                 * still need to set hostname
+                 */
+                if ((hostname == null || hostname.length() == 0))
+                    hostname = clientAddr.getHostAddress();
             }
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
