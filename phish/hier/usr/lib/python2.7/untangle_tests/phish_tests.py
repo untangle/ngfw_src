@@ -120,8 +120,15 @@ class PhishTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
+        # sometimes the load is very high >7 and sending mail will fail
+        # sleep for a while for the load to go down
+        try:
+            if float(file("/proc/loadavg","r").readline().split(" ")[0]) > 3:
+                time.sleep(30)
+        except:
+            pass
+                
         sendPhishMail("test020")
-        sendPhishMail("test020") # send two - first one fails sometimes on very slow servers
 
         flushEvents()
         query = None;
