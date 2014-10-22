@@ -89,10 +89,10 @@ debian_distro='wheezy'
 try:
     debian_version_file = open( "/etc/debian_version", "r+" )
     ver = debian_version_file.read()
-    if re.match(r'^6\.*',ver) != None:
-        debian_distro='squeeze'
-    elif re.match(r'^7\.*',ver) != None:
+    if re.match(r'^7\.*',ver) != None:
         debian_distro='wheezy'
+    elif re.match(r'^8\.*',ver) != None:
+        debian_distro='jessie'
     else:
         print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
 except Exception,e:
@@ -100,7 +100,7 @@ except Exception,e:
     print "Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro)
 
 # last two bytes in UID have special meaning 
-platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9' }
+platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9', 'jessie':'3' }
 versions = { 'hardware':'1', 'iso':'2' }
 
 # generate UID (mostly random bytes)
