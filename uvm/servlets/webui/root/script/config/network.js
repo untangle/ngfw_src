@@ -5091,12 +5091,16 @@ Ext.define("Webui.config.network", {
                         this.tabs.setActiveTab(this.panelAdvanced);
                         this.advancedTabPanel.setActiveTab(this.panelFilter);
                         this.gridInputFilterRules.focus();
-                        Ext.MessageBox.confirm(this.i18n._("Failed"), this.i18n._("The \"Allow SSH\" rule in \"Input Filter Rules\" is enabled. This is dangerous. Do you want to continue anyway?"), Ext.bind(function(btn, text) {
-                            if (btn == 'yes') {
-                                this.confirmedAllowSSHEnabled=true;
-                                this.saveAction(isApply);
-                            }
-                        }, this));
+                        Ext.MessageBox.confirm(this.i18n._("Failed"),
+                                               this.i18n._("The \"Allow SSH\" rule in \"Input Filter Rules\" has been enabled.") + "<br/><br/>" +
+                                               this.i18n._("If the admin/root password is poorly chosen, enabling SSH can be very dangerous and compromise the security of the server.") + "<br/><br/>" +
+                                               this.i18n._("Do you want to continue anyway?"),
+                                               Ext.bind(function(btn, text) {
+                                                   if (btn == 'yes') {
+                                                       this.confirmedAllowSSHEnabled=true;
+                                                       this.saveAction(isApply);
+                                                   }
+                                               }, this));
                         return false;
                     }
                     break;
