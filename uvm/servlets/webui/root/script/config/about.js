@@ -71,8 +71,8 @@ if (!Ung.hasResource["Ung.About"]) {
                             this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
                             this.i18n._('History') + ": " + modificationState + "\n" +
                             this.i18n._('Reboots') + ": " + rebootCount + "\n" +
-                            this.i18n._('Current HostTable Size') + ": " + licensedSized + "\n" +
-                            this.i18n._('Max HostTable Size') + ": " + maxLicensedSize
+                            this.i18n._('Current Licensed Devices') + ": " + licensedSized + "\n" +
+                            this.i18n._('Max Licensed Devices') + ": " + maxLicensedSize
 
                     }]
                 }]
