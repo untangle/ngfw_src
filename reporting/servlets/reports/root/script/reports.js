@@ -1244,7 +1244,11 @@ Ext.define('Ung.ReportDetails', {
         url = imagePath + summaryItem.name + imageSuffix;
         return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+');margin-top:0px;margin-bottom:0px;">'+stringTemplate+'</p></div>';
     },
-
+    buildExportHandler: function(exportUrl) {
+        return function() {
+            window.open(exportUrl);
+        };
+    },
     buildSummarySection: function (appName, section) {
         var drillDownType='', drillDownValue='';
         if ( reports.breadcrumbs.length > 1) {
@@ -1253,7 +1257,7 @@ Ext.define('Ung.ReportDetails', {
         }
         var items = [];
         //add the print button
-        if(reports.printView===false){
+        if(reports.printView===false) {
             var printargs = [
                 ['rdate',reports.reportsDate.time].join('='),
                 ['duration',reports.numDays].join('='),
@@ -1269,150 +1273,148 @@ Ext.define('Ung.ReportDetails', {
         }
         for (var i = 0; i < section.summaryItems.list.length; i++) {
             var summaryItem = section.summaryItems.list[i];
+            if (summaryItem.stringTemplate) {
+                str = this.getHighlightHTML(summaryItem,false);
+                columns = [];
+                items.push({html:str,colspan:2,bodyStyle:'padding:10px'});
+            } else {
+                // graph
+                items.push({html:'<img src="'+summaryItem.imageUrl+'" width="338" height="230"/>', bodyStyle:'padding:20px'});
+                // key statistics
+                colors = summaryItem.colors.map;
+                columns = [];
+                var data = [],columnTwoWidth=175;
+                for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
+                    var keyStatistic = summaryItem.keyStatistics.list[j];
+                    data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
+                }
 
-        if (summaryItem.stringTemplate) {
-            str = this.getHighlightHTML(summaryItem,false);
-            columns = [];
-            items.push({html:str,colspan:2,bodyStyle:'padding:10px'});
-        } else {
-            // graph
-            items.push({html:'<img src="'+summaryItem.imageUrl+'" width="338" height="230"/>', bodyStyle:'padding:20px'});
-            // key statistics
-            colors = summaryItem.colors.map;
-            columns = [];
-            var data = [],columnTwoWidth=175;
-            for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
-                var keyStatistic = summaryItem.keyStatistics.list[j];
-                data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
-            }
+                if (summaryItem.plotType == 'pie-chart') {
+                    columnTwoWidth = 135;
+                    columns.push({
+                        header: "Color",
+                        width: 25,
+                        sortable: false,
+                        menuDisabled: true,
+                        dataIndex: 'color',
+                        renderer: Ext.bind(function(value, medata, record) {
+                            return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>';
+                        },this)
+                    });
+                }
 
-            if (summaryItem.plotType == 'pie-chart') {
-                columnTwoWidth = 135;
                 columns.push({
-                    header: "Color",
-                    width: 25,
+                    header: "Label",
+                    width: columnTwoWidth,
                     sortable: false,
                     menuDisabled: true,
-                    dataIndex: 'color',
+                    dataIndex: 'label',
                     renderer: Ext.bind(function(value, medata, record) {
-                        return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>';
+                        var linkType = record.data.linkType;
+                        if (linkType == "UserLink") {
+                            return '<a href="javascript:reports.getDrilldownApplicationData(\'user\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        } else if (linkType == "HostLink") {
+                            return '<a href="javascript:reports.getDrilldownApplicationData(\'host\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        } else if (linkType == "EmailLink") {
+                            return '<a href="javascript:reports.getDrilldownApplicationData(\'email\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
+                        } else if (linkType == "URLLink") {
+                            return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
+                        } else {
+                            return this.i18n._(value);
+                        }
                     },this)
                 });
-            }
 
-            columns.push({
-                header: "Label",
-                width: columnTwoWidth,
-                sortable: false,
-                menuDisabled: true,
-                dataIndex: 'label',
-                renderer: Ext.bind(function(value, medata, record) {
-                    var linkType = record.data.linkType;
-                    if (linkType == "UserLink") {
-                        return '<a href="javascript:reports.getDrilldownApplicationData(\'user\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
-                    } else if (linkType == "HostLink") {
-                        return '<a href="javascript:reports.getDrilldownApplicationData(\'host\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
-                    } else if (linkType == "EmailLink") {
-                        return '<a href="javascript:reports.getDrilldownApplicationData(\'email\', \'' + appName + '\', \'' + value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
-                    } else if (linkType == "URLLink") {
-                        return '<a href="http://' + value + '" target="_new">' + Ext.String.htmlEncode(value) + '</a>';
-                    } else {
-                        return this.i18n._(value);
-                    }
-                },this)
-            });
-
-            columns.push({
-                header: "Value",
-                flex: 1,
-                sortable: false,
-                menuDisabled: true,
-                dataIndex: 'value',
-                renderer: Ext.bind(function (value, medata, record) {
-                    var unit = record.data.unit;
-                    var s;
-                    if (unit && unit.indexOf('bytes') == 0) {
-                        if (value < 1000000) {
-                            value = Math.round(value/1000);
-                            s = unit.split("/");
-                            s[0] = "KB";
-                            unit = s.join("/");
-                        } else if (value < 1000000000) {
-                            value = Math.round(value/1000000);
-                            s = unit.split("/");
-                            s[0] = "MB";
-                            unit = s.join("/");
-                        } else {
-                            value = Math.round(value/1000000000);
-                            s = unit.split("/");
-                            s[0] = "GB";
-                            unit = s.join("/");
-                        }
-                    }
-
-                    var v = this.i18n.numberFormat(value);
-
-                    return unit == null ? v: (v + " " + this.i18n._(unit));
-                }, this)
-            });
-            items.push(Ext.create('Ext.grid.Panel',{
-                style: 'margin-top:10px;margin-right:35px',
-                autoScroll: true,
-                height: 243,
-                border:0,
-                store: Ext.create('Ext.data.ArrayStore',{
-                    fields: [
-                        {name: 'label'},
-                        {name: 'value'},
-                        {name: 'unit'},
-                        {name: 'linkType'},
-                        {name: 'color'}
-                    ],
-                    data: data
-                }),
-                columns: columns,
-                // inline toolbars
-                tbar:[{
-                    xtype: 'label',
-                    text: this.i18n._('Key Statistics'),
-                    style: 'font-weight: bold;padding-left:3px;',
+                columns.push({
+                    header: "Value",
                     flex: 1,
-                }, {
-                    xtype:'button',
-                    tooltip:this.i18n._('Export Excel'),
-                    style: 'padding: 0px 0px 0px 0px;',
-                    iconCls:'export-excel',
-                    text: i18n._('Export Data'),
-                    handler: function () {
-                        window.open(summaryItem.csvUrl);
-                    }
-                }],
-                header: false,
-                stripeRows: true,
-                hideHeaders: true,
-                enableColumnMove: false
+                    sortable: false,
+                    menuDisabled: true,
+                    dataIndex: 'value',
+                    renderer: Ext.bind(function (value, medata, record) {
+                        var unit = record.data.unit;
+                        var s;
+                        if (unit && unit.indexOf('bytes') == 0) {
+                            if (value < 1000000) {
+                                value = Math.round(value/1000);
+                                s = unit.split("/");
+                                s[0] = "KB";
+                                unit = s.join("/");
+                            } else if (value < 1000000000) {
+                                value = Math.round(value/1000000);
+                                s = unit.split("/");
+                                s[0] = "MB";
+                                unit = s.join("/");
+                            } else {
+                                value = Math.round(value/1000000000);
+                                s = unit.split("/");
+                                s[0] = "GB";
+                                unit = s.join("/");
+                            }
+                        }
+
+                        var v = this.i18n.numberFormat(value);
+                        return unit == null ? v: (v + " " + this.i18n._(unit));
+                    }, this)
+                });
+                var exportHandler = this.buildExportHandler(summaryItem.csvUrl);
+                items.push(Ext.create('Ext.grid.Panel',{
+                    style: 'margin-top:10px;margin-right:35px',
+                    autoScroll: true,
+                    height: 243,
+                    border:0,
+                    store: Ext.create('Ext.data.ArrayStore',{
+                        fields: [
+                            {name: 'label'},
+                            {name: 'value'},
+                            {name: 'unit'},
+                            {name: 'linkType'},
+                            {name: 'color'}
+                        ],
+                        data: data
+                    }),
+                    columns: columns,
+                    // inline toolbars
+                    tbar:[{
+                        xtype: 'label',
+                        text: this.i18n._('Key Statistics'),
+                        style: 'font-weight: bold;padding-left:3px;',
+                        flex: 1,
+                    }, {
+                        xtype:'button',
+                        tooltip:this.i18n._('Export Excel'),
+                        style: 'padding: 0px 0px 0px 0px;',
+                        iconCls:'export-excel',
+                        text: i18n._('Export Data'),
+                        handler: exportHandler
+                    }],
+                    header: false,
+                    stripeRows: true,
+                    hideHeaders: true,
+                    enableColumnMove: false
                 }));
             }
         }
-        var cfg={title: section.title,
-                layout:{
-                    type:'table',
-                    columns: 2,
-                    tableAttrs: {
-                        style: {
-                            width: '100%'
-                        }
-                    },
-                    tdAttrs: {
-                        width: '50%'
+        var cfg = {
+            title: section.title,
+            layout:{
+                type:'table',
+                columns: 2,
+                tableAttrs: {
+                    style: {
+                        width: '100%'
                     }
                 },
+                tdAttrs: {
+                    width: '50%'
+                }
+            },
+            border: 0,
+            defaults: {
                 border: 0,
-                defaults: {
-                    border: 0,
-                    cls: 'top-align'
-                },
-                items:items
+                cls: 'top-align'
+            },
+            items:items
         };
         if (reports.printView == true) {
             cfg.style={};
