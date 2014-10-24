@@ -429,7 +429,7 @@ Ung.NodeWin.register = function(nodeName) {
         Ung.hasResource['Webui.'+nodeName+'.settings'] = true;
         Ung.NodeWin.registerClassName(nodeName, 'Webui.'+nodeName+'.settings');
     }
-}
+};
 
 // Config Window (Save/Cancel/Apply)
 Ext.define("Ung.ConfigWin", {
