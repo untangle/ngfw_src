@@ -410,25 +410,11 @@ Ung.NodeWin.loadNodeScript = function(settingsCmp, handler) {
     var scriptFile = Ung.Util.getScriptSrc('settings.js');
     Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, Ext.bind(function() {
         this.settingsClassName = Ung.NodeWin.getClassName(this.name);
-        if(!Ung.NodeWin.dependency[this.name]) {
-            handler.call(this);
-        } else {
-            var dependencyClassName=Ung.NodeWin.getClassName(Ung.NodeWin.dependency[this.name].name);
-            if(!dependencyClassName) {
-                Ung.Util.loadScript('script/' + Ung.NodeWin.dependency[this.name].name + '/' + scriptFile, Ext.bind(function() {
-                    Ung.NodeWin.dependency[this.name].fn.call(this);
-                    handler.call(this);
-                }, this));
-            } else {
-                Ung.NodeWin.dependency[this.name].fn.call(this);
-                handler.call(this);
-            }
-        }
+        handler.call(this);
     },settingsCmp));
 };
 
 Ung.NodeWin.classNames = {};
-Ung.NodeWin.dependency = {};
 // Static function get the settings class name for a node
 Ung.NodeWin.getClassName = function(name) {
     var className = Ung.NodeWin.classNames[name];
@@ -438,6 +424,12 @@ Ung.NodeWin.getClassName = function(name) {
 Ung.NodeWin.registerClassName = function(name, className) {
     Ung.NodeWin.classNames[name] = className;
 };
+Ung.NodeWin.register = function(nodeName) {
+    if (!Ung.hasResource['Webui.'+nodeName+'.settings']) {
+        Ung.hasResource['Webui.'+nodeName+'.settings'] = true;
+        Ung.NodeWin.registerClassName(nodeName, 'Webui.'+nodeName+'.settings');
+    }
+}
 
 // Config Window (Save/Cancel/Apply)
 Ext.define("Ung.ConfigWin", {
