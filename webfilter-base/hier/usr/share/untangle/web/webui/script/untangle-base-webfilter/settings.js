@@ -95,7 +95,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         "checkchange": {
                             fn: Ext.bind(function(elem, rowIndex, checked) {
                                     if (checked) {
-                                        var record = this.NEWgridCategories.getStore().getAt(rowIndex);
+                                        var record = this.gridCategories.getStore().getAt(rowIndex);
                                         record.set('flagged', true);
                                     }
                                 }, this)
@@ -137,7 +137,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         listeners: {
                             "change": {
                                 fn: Ext.bind(function(elem, checked) {
-                                        var rowEditor = this.NEWgridCategories.rowEditor;
+                                        var rowEditor = this.gridCategories.rowEditor;
                                         if (checked) {
                                             rowEditor.down('checkbox[name="Flag"]').setValue(true);
                                         }
