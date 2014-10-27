@@ -617,7 +617,7 @@ public class OpenVpnManager
             iptablesScript.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + "\n");
             iptablesScript.write("\n");
 
-            iptablesScript.write("ADDR=\"`ip addr show tun0 | awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + "\n");
+            iptablesScript.write("ADDR=\"`ip addr show tun0 2>/dev/null| awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + "\n");
             iptablesScript.write("\n");
             
             iptablesScript.write("# delete old mark rules (if they exist) (tun0-tun10) " + "\n");
