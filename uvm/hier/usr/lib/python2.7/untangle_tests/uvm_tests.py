@@ -103,7 +103,7 @@ class UvmTests(unittest2.TestCase):
         assert( match )
 
         version = uvmContext.adminManager().getFullVersionAndRevision()
-        match = re.search(r'\d{1,2}\.\d\.\d\~svn\d{8}r\d{5}main-\w{5,8}',version)
+        match = re.search(r'\d{1,2}\.\d\.\d\~svn\d{8}r\d{5}\w{4,9}(\.\d)?-\w{5,8}',version)
         assert(match)
 
         kernel = uvmContext.adminManager().getKernelVersion()
