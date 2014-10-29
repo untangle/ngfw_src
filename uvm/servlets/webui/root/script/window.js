@@ -29,8 +29,7 @@ Ext.define('Ung.Window', {
     layout: 'anchor',
     defaults: {
         anchor: '100% 100%',
-        autoScroll: true,
-        autoWidth: true
+        autoScroll: true
     },
     constructor: function(config) {
         var defaults = {

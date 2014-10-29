@@ -905,14 +905,16 @@ Ext.define('Ung.ReportDetails', {
         }
         document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
         if (itemsArray && itemsArray.length > 0) {
-            var cfg={anchor: '100% 100%',
-                    autoWidth: true,
-                    border: false,
-                    defaults:{anchor: '100% 100%',
-                        border:false,
-                        autoWidth: true},
-                    activeTab: 0,
-                    items: itemsArray};
+            var cfg = {
+                anchor: '100% 100%',
+                border: false,
+                defaults: {
+                    anchor: '100% 100%',
+                    border: false
+                },
+                activeTab: 0,
+                items: itemsArray
+            };
             if (reports.printView == false) {
                 cfg.defaults.autoScroll = true;
             } else {

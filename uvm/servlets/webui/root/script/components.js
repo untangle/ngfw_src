@@ -514,7 +514,6 @@ Ext.define("Ung.Node", {
             this.subCmps.push(new Ext.ToolTip({
                 html: Ung.Node.getStatusTip(),
                 target: 'node-state_' + this.getId(),
-                autoWidth: true,
                 showDelay: 20,
                 dismissDelay: 0,
                 hideDelay: 0
@@ -522,7 +521,6 @@ Ext.define("Ung.Node", {
             this.subCmps.push(new Ext.ToolTip({
                 html: Ung.Node.getPowerTip(),
                 target: 'node-power_' + this.getId(),
-                autoWidth: true,
                 showDelay: 20,
                 dismissDelay: 0,
                 hideDelay: 0
@@ -531,7 +529,6 @@ Ext.define("Ung.Node", {
                 this.subCmps.push(new Ext.ToolTip({
                     html: Ung.Node.getNonEditableNodeTip(),
                     target: 'node_' + this.nodeId,
-                    autoWidth: true,
                     showDelay: 20,
                     dismissDelay: 0,
                     hideDelay: 0

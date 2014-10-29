@@ -155,7 +155,6 @@ Ext.define('Webui.config.email', {
                         Ext.create('Ext.tip.ToolTip',{
                             html: 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
                             target: 'email_fromAddress',
-                            autoWidth: true,
                             showDelay: 200,
                             dismissDelay: 0,
                             hideDelay: 0
@@ -163,7 +162,6 @@ Ext.define('Webui.config.email', {
                         Ext.create('Ext.tip.ToolTip',{
                             html: 'Some servers may require this but other servers may not support it.',
                             target: 'email_smtpUseAuthentication',
-                            autoWidth: true,
                             showDelay: 200,
                             dismissDelay: 0,
                             hideDelay: 0

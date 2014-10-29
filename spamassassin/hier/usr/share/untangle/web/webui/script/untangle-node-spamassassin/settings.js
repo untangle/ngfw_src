@@ -145,8 +145,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         border: false,
-                        layout:'column',
-                        autoWidth: true,
+                        layout: 'column',
                         items: [{
                             border: false,
                             items: [{

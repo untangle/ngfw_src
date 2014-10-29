@@ -529,7 +529,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         }
                     }, {
                         border: false,
-                        autoWidth: true,
                         items: [{
                             xtype: 'textfield',
                             fieldLabel: this.i18n._('Host'),
