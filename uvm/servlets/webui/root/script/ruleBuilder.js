@@ -11,7 +11,7 @@ Ext.define('Ung.RuleBuilder', {
     initComponent: function() {
         Ext.applyIf(this, {
             height: 220,
-            anchor: "100%"
+            anchor: "99%"
         });
         this.selModel= Ext.create('Ext.selection.Model',{});
         this.tbar = [{
