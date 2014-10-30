@@ -14,13 +14,13 @@
 OEM_NAME="Untangle"
 DESC="${OEM_NAME} VM"
 UVM_LOGDIR=${UVM_LOGDIR:-/var/log/uvm}
-UVM_RUNDIR=${UVM_RUNDIR:-/var/run}
+UVM_RUNDIR=${UVM_RUNDIR:-/tmp}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
 UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
-UVM_PID_FILE="uvm.pid"
+UVM_PID_FILE="/var/run/uvm.pid"
 UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
 UVM_TIMEOUT=300
 
@@ -73,11 +73,11 @@ case "$1" in
             exit
         fi
 
-        if [ -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] ; then
-            pid=`cat ${UVM_RUNDIR}/${UVM_PID_FILE}`
+        if [ -f ${UVM_PID_FILE} ] ; then
+            pid=`cat ${UVM_PID_FILE}`
             if ! ps ax | grep -qE '^'$pid'$' ; then
-                echo -n "Removing Stale PIDfile  (file:`cat ${UVM_RUNDIR}/${UVM_PID_FILE}` pid:$pid) "
-                rm -f ${UVM_RUNDIR}/${UVM_PID_FILE}
+                echo -n "Removing Stale PIDfile  (file:`cat ${UVM_PID_FILE}` pid:$pid) "
+                rm -f ${UVM_PID_FILE}
             else
                 echo "Already started."
 		        log_end_msg 0
@@ -93,7 +93,7 @@ case "$1" in
 
         start-stop-daemon --start \
             --background --make-pidfile -q \
-            --pidfile ${UVM_RUNDIR}/${UVM_PID_FILE} \
+            --pidfile ${UVM_PID_FILE} \
             --chdir ${UVM_RUNDIR} \
             --nicelevel ${UVM_NICENESS} \
             $UVM_CHUSER \
@@ -105,7 +105,7 @@ case "$1" in
 
         echo -n "." ; sleep 1 # wait for initial start
 
-        pid=$(cat ${UVM_RUNDIR}/${UVM_PID_FILE})
+        pid=$(cat ${UVM_PID_FILE})
 
         # Wait for completion
         for i in `seq 1 $UVM_TIMEOUT` ; do
@@ -160,7 +160,7 @@ case "$1" in
     stop)
         log_daemon_msg "Stopping $DESC"
 
-        if [ ! -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] && [ "`uvmStatus`" == "stopped" ]; then
+        if [ ! -f ${UVM_PID_FILE} ] && [ "`uvmStatus`" == "stopped" ]; then
             echo "Not Running."
 	        log_end_msg 0
             exit
@@ -169,12 +169,12 @@ case "$1" in
         updateStatus "[" "Stopping"
 
         # if the pid file is missing, recover it
-        if [ ! -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] ; then
-            uvmWrapperPid > ${UVM_RUNDIR}/${UVM_PID_FILE}
+        if [ ! -f ${UVM_PID_FILE} ] ; then
+            uvmWrapperPid > ${UVM_PID_FILE}
         fi
 
         # Attempt polite kill first
-        start-stop-daemon -s INT --stop -q --pidfile ${UVM_RUNDIR}/${UVM_PID_FILE}
+        start-stop-daemon -s INT --stop -q --pidfile ${UVM_PID_FILE}
         code=$?
 
         # exit if start-stop-daemon failed and the process was not found anyway (it must already be dead)
@@ -182,7 +182,7 @@ case "$1" in
             updateStatusExit "x]\n" "Stopped"
         fi
 
-        rm -f ${UVM_RUNDIR}/${UVM_PID_FILE}  &> /dev/null
+        rm -f ${UVM_PID_FILE}  &> /dev/null
 
         # Wait for completion
         for i in `seq 1 20` ; do
