@@ -1,65 +1,6 @@
 Ung.NetworkSettingsCmp = null;
 Ext.define("Webui.config.network", {
     extend: "Ung.ConfigWin",
-    statics: {
-        getPortForwardMatchers: function (settingsCmp) {
-            return [
-                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true},
-                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
-            ];
-        },
-        getNatRuleMatchers: function (settingsCmp) {
-            return [
-                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
-            ];
-        },
-        getBypassRuleMatchers: function (settingsCmp) {
-            return [
-                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
-            ];
-        },
-        getQosRuleMatchers: function (settingsCmp) {
-            return [
-                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true},
-                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false}
-            ];
-        },
-        getFilterRuleMatchers: function (settingsCmp) {
-            return [
-                {name:"DST_LOCAL",displayName: settingsCmp.i18n._("Destined Local"), type: "boolean", visible: true},
-                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"SRC_MAC" ,displayName: settingsCmp.i18n._("Source MAC"), type: "text", visible: true},
-                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
-                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
-                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
-                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
-            ];
-        }
-    },
     gridPortForwardRules: null,
     gridNatRules: null,
     gridBypassRules: null,
@@ -142,6 +83,63 @@ Ext.define("Webui.config.network", {
             }
         }
         this.callParent(arguments);
+    },
+    getPortForwardMatchers: function () {
+        return [
+            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
+        ];
+    },
+    getNatRuleMatchers: function () {
+        return [
+            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
+        ];
+    },
+    getBypassRuleMatchers: function () {
+        return [
+            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false}
+        ];
+    },
+    getQosRuleMatchers: function () {
+        return [
+            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true, allowInvert: false},
+            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false}
+        ];
+    },
+    getFilterRuleMatchers: function () {
+        return [
+            {name:"DST_LOCAL",displayName: this.i18n._("Destined Local"), type: "boolean", visible: true},
+            {name:"DST_ADDR",displayName: this.i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"DST_PORT",displayName: this.i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: this.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"SRC_MAC" ,displayName: this.i18n._("Source MAC"), type: "text", visible: true},
+            {name:"SRC_ADDR",displayName: this.i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher", allowInvert: false},
+            {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
+            {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
+            {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
+        ];
     },
     // Interfaces Panel
     buildInterfaces: function() {
@@ -2517,7 +2515,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.PortForwardRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getPortForwardMatchers(this)
+                    matchers: this.getPortForwardMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -2667,7 +2665,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.NatRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getNatRuleMatchers(this)
+                    matchers: this.getNatRuleMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -2816,7 +2814,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.BypassRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getBypassRuleMatchers(this)
+                    matchers: this.getBypassRuleMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4000,7 +3998,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.QosRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getQosRuleMatchers(this)
+                    matchers: this.getQosRuleMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4232,7 +4230,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getFilterRuleMatchers(this)
+                    matchers: this.getFilterRuleMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -4274,7 +4272,7 @@ Ext.define("Webui.config.network", {
                     settingsCmp: this,
                     javaClass: "com.untangle.uvm.network.FilterRuleMatcher",
                     dataIndex: "matchers",
-                    matchers: Webui.config.network.getFilterRuleMatchers(this)
+                    matchers: this.getFilterRuleMatchers()
                 }]
             }, {
                 xtype: 'fieldset',
