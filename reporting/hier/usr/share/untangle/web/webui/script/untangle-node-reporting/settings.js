@@ -20,18 +20,28 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.buildSyslog();
             this.buildHostnameMap();
             this.buildDatabase();
+            this.buildAlerts();
 
             // only show DB settings if set to something other than localhost
             if (this.getSettings().dbHost != "localhost") {
-                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelDatabase]);
+                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.panelDatabase]);
             } else {
-                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap]);
+                this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts]);
             }
             this.tabs.setActiveTab(this.panelStatus);
             this.clearDirty();
             this.callParent(arguments);
         },
-
+        getAlertRuleMatchers: function () {
+            /*TODO: 
+            * 1) use an autocomplete or select box for event Types
+            * 2) create field rule Name, Comparator, Value(s) editor
+            */
+            return [
+                {name:"JAVA_CLASS",displayName: this.i18n._("Event Type - javaClass"), type: "text", visible: true, allowInvert: false},
+                {name:"FIELD_RULE",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true, allowInvert: false}
+            ];
+        },
         buildPasswordValidator: function() {
             var thisReporting = this;
             this.passwordValidator = function( fieldValue ){
@@ -747,6 +757,132 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         allowBlank: false,
                         width: 300
                     }]
+            });
+        },
+        // Alerts Panel
+        buildAlerts: function() {
+            this.panelAlerts = Ext.create('Ext.panel.Panel',{
+                name: 'alertRules',
+                helpSource: 'alert_rules',
+                parentId: this.getId(),
+                title: this.i18n._('Alerts'),
+                layout: { type: 'vbox', align: 'stretch' },
+                cls: 'ung-panel',
+                items: [{
+                    xtype: 'fieldset',
+                    cls: 'description',
+                    title: this.i18n._('Note'),
+                    flex: 0,
+                    html: this.i18n._(" <b>Alert Rules</b> defines interesting or important events for you.")
+                },  this.gridAlertRules= Ext.create('Ung.EditorGrid',{
+                    flex: 1,
+                    name: 'Alert Rules',
+                    settingsCmp: this,
+                    paginated: false,
+                    hasReorder: true,
+                    addAtTop: false,
+                    emptyRow: {
+                        "ruleId": 0,
+                        "enabled": true,
+                        "flag": false,
+                        "alert": false,
+                        "description": "",
+                        "javaClass": "com.untangle.node.reporting.AlertRule"
+                    },
+                    title: this.i18n._("Alert Rules"),
+                    recordJavaClass: "com.untangle.node.reporting.AlertRule",
+                    dataProperty:'rules',
+                    fields: [{
+                        name: 'ruleId'
+                    }, {
+                        name: 'enabled'
+                    }, {
+                        name: 'flag'
+                    }, {
+                        name: 'alert'
+                    }, {
+                        name: 'matchers'
+                    },{
+                        name: 'description'
+                    }, {
+                        name: 'javaClass'
+                    }],
+                    columns: [{
+                        header: this.i18n._("Rule Id"),
+                        width: 50,
+                        dataIndex: 'ruleId',
+                        renderer: function(value) {
+                            if (value < 0) {
+                                return i18n._("new");
+                            } else {
+                                return value;
+                            }
+                        }
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Enable"),
+                        dataIndex: 'enabled',
+                        resizable: false,
+                        width:55
+                    }, {
+                        header: this.i18n._("Description"),
+                        width: 200,
+                        dataIndex: 'description',
+                        flex:1
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Log as interesting event"),
+                        dataIndex: 'flag',
+                        resizable: false,
+                        width:55
+                    }, {
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Alert administrators"),
+                        dataIndex: 'alert',
+                        resizable: false,
+                        width:55
+                    }],
+                    columnsDefaultSortable: false,
+                    rowEditorInputLines: [{
+                        xtype:'checkbox',
+                        name: "Enable Rule",
+                        dataIndex: "enabled",
+                        fieldLabel: this.i18n._("Enable Rule")
+                    }, {
+                        xtype:'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
+                        emptyText: this.i18n._("[no description]"),
+                        width: 500
+                    }, {
+                        xtype:'fieldset',
+                        title: this.i18n._("If all of the following conditions are met:"),
+                        items:[{
+                            xtype:'rulebuilder',
+                            settingsCmp: this,
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
+                            dataIndex: "matchers",
+                            matchers: this.getAlertRuleMatchers()
+                        }]
+                    }, {
+                        xtype: 'fieldset',
+                        cls:'description',
+                        title: i18n._('Perform the following action(s):'),
+                        border: false,
+                        items:[{
+                            xtype:'checkbox',
+                            labelWidth: 160,
+                            dataIndex: "flag",
+                            fieldLabel: this.i18n._("Log as interesting event")
+                        }, {
+                            xtype:'checkbox',
+                            labelWidth: 160,
+                            dataIndex: "alert",
+                            fieldLabel: this.i18n._("Alert administrators")
+                        }]
+                    }]
+                })]
             });
         },
         beforeSave: function(isApply,handler) {
