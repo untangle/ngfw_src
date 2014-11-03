@@ -50,4 +50,6 @@ public interface NetworkManager
     List<DeviceStatus> getDeviceStatus( );
 
     List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn );
+
+    boolean isVrrpMaster( int interfaceId );
 }

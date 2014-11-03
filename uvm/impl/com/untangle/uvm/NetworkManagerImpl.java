@@ -540,6 +540,43 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Returns true if the specified interface is currently the master of its VRRP group
+     */
+    public boolean isVrrpMaster( int interfaceId )
+    {
+        InterfaceSettings intfSettings = findInterfaceId( interfaceId );
+        if ( intfSettings == null ) {
+            logger.warn("Unable to find interface settings for interface " + interfaceId );
+            return false;
+        }
+        if ( ! intfSettings.getVrrpEnabled() ) {
+            logger.warn("VRRP not enabled on interface " + interfaceId );
+            return false;
+        }
+        // find any vrrp address
+        InetAddress vrrpAddress = null;
+        for ( InterfaceSettings.InterfaceAlias vrrpAlias : intfSettings.getVrrpAliases() ) {
+            if ( vrrpAlias.getStaticAddress() == null )
+                continue;
+            vrrpAddress = vrrpAlias.getStaticAddress();
+            break;
+        }
+
+        if ( vrrpAddress == null ) {
+            logger.warn("VRRP alias not found on interface " + interfaceId );
+            return false;
+        }
+
+        String command = "ip add list " + intfSettings.getSymbolicDev() + " | grep '" + vrrpAddress.getHostAddress() + "/'";
+        int retCode = UvmContextFactory.context().execManager().execResult( command );
+
+        if ( retCode == 0 )
+            return true;
+        else
+            return false;
+    }
+        
+    /**
      * Return the status of all addressed interfaces
      */
     public List<InterfaceStatus> getInterfaceStatus( )
