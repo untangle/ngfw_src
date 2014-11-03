@@ -1626,10 +1626,12 @@ public class NetworkManagerImpl implements NetworkManager
 
     private LinkedList<String> getEthernetDeviceNames()
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
-        String deviceNamesArr[] = result.getOutput().split("\\r?\\n");
+        ExecManagerResult result;
         LinkedList<String> deviceNames = new LinkedList<String>( );
-        for ( String name : deviceNamesArr ) {
+
+        // add all eth* devices
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
             
@@ -1643,6 +1645,22 @@ public class NetworkManagerImpl implements NetworkManager
             deviceNames.add( devName );
         }
 
+        // add all wlan* devices
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort " );
+        for ( String name : result.getOutput().split("\\r?\\n") ) {
+
+            String devName = name.trim();
+            
+            // ignore vlan devices (ie eth0.3)
+            if ( devName.matches(".*\\.[0-9]+$") )  
+                continue;
+            // ignore blanks
+            if( "".equals( devName ) )
+                continue;
+            
+            deviceNames.add( devName );
+        }
+        
         return deviceNames;
     }
     private class NetworkTestDownloadHandler implements DownloadHandler

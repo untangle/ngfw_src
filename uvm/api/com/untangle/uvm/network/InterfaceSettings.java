@@ -96,6 +96,15 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer vrrpId; /* VRRP ID 1-255 */
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
     private List<InterfaceAlias> vrrpAliases = new LinkedList<InterfaceAlias>();
+
+    private boolean isWirelessInterface;
+    private String wirelessSsid;
+    public static enum WirelessEncryptionType { NONE, WPA1, WPA12, WPA2 };
+    private WirelessEncryptionType wirelessEncryption;
+    private String wirelessPassword;
+    private Integer wirelessChannel;
+    public static enum WirelessRadioModeType { W80211B, W80211BG, W80211BGN, W80211AC };
+    private WirelessRadioModeType wirelessRadioType;
     
     public InterfaceSettings() { }
 
@@ -263,6 +272,24 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public List<InterfaceAlias> getVrrpAliases( ) { return this.vrrpAliases; }
     public void setVrrpAliases( List<InterfaceAlias> newValue ) { this.vrrpAliases = newValue; }
+    
+    public boolean getWirelessInterface( ) { return this.isWirelessInterface; }
+    public void setWirelessInterface( boolean newValue ) { this.isWirelessInterface = newValue; }
+
+    public String getWirelessSsid( ) { return this.wirelessSsid; }
+    public void setWirelessSsid( String newValue ) { this.wirelessSsid = newValue; }
+
+    public WirelessEncryptionType getWirelessEncryption( ) { return this.wirelessEncryption; }
+    public void setWirelessEncryption( WirelessEncryptionType newValue ) { this.wirelessEncryption = newValue; }
+
+    public String getWirelessPassword( ) { return this.wirelessPassword; }
+    public void setWirelessPassword( String newValue ) { this.wirelessPassword = newValue; }
+
+    public Integer getWirelessChannel( ) { return this.wirelessChannel; }
+    public void setWirelessChannel( Integer newValue ) { this.wirelessChannel = newValue; }
+
+    public WirelessRadioModeType getWirelessRadioType( ) { return this.wirelessRadioType; }
+    public void setWirelessRadioType( WirelessRadioModeType newValue ) { this.wirelessRadioType = newValue; }
     
     public static class InterfaceAlias
     {
