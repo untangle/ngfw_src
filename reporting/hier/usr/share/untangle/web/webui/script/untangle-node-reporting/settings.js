@@ -13,7 +13,66 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         gridHostnameMap: null,
         initComponent: function(container, position) {
             this.buildPasswordValidator();
-
+            //FIXME: using a test property for alertRules during backend implementation
+            console.log(this.getSettings());
+            this.getSettings().alertRules= this.getSettings().alertRules || {
+                javaClass: "java.util.LinkedList",
+                list: [{
+                    javaClass: "com.untangle.node.reporting.AlertRule",
+                    ruleId: 1,
+                    enabled: true,
+                    flag: true,
+                    alert: true,
+                    description: "Web Filter Test rule 1",
+                    matchers: {
+                        javaClass: "java.util.LinkedList",
+                        list: [{
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
+                            matcherType: "JAVA_CLASS",
+                            value: "*WebFilterQueryEvent*"
+                        }, {
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
+                            matcherType: "FIELD_RULE",
+                            value: {
+                                field: "host",
+                                comparator: "=",
+                                value: "facebook.com",
+                                javaClass: "com.untangle.node.reporting.AlertRuleField",
+                                toString: function() {
+                                    return Ext.encode(this);
+                                }
+                            }
+                        },{
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
+                            matcherType: "FIELD_RULE",
+                            value: {
+                                field: "cClientAddr",
+                                comparator: "=",
+                                value: "192.168.2.174",
+                                javaClass: "com.untangle.node.reporting.AlertRuleField",
+                                toString: function() {
+                                    return Ext.encode(this);
+                                }
+                            }
+                        }]
+                    }
+                }]
+            };
+/*            
+            //set toString function for "FIELD_RULE" to display them properly in rule builder
+            var i,j, matcher, marchers;
+            for( i = 0; i < this.getSettings().alertRules.list.length; i++ ) {
+                matchers =this.getSettings().alertRules.list[i].matchers;
+                for( j = 0; j < matchers.list.length; j++ ) {
+                    matcher = matchers.list[j];
+                    if(matchers.list[j].matcherType == "FIELD_RULE" && !Ext.isEmpty(matchers.list[j].value)) {
+                        matchers.list[j].toString = function() {
+                            return Ext.encode(this);
+                        }
+                    }
+                }
+            }
+*/
             this.buildStatus();
             this.buildGeneration();
             this.buildEmail();
@@ -33,13 +92,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.callParent(arguments);
         },
         getAlertRuleMatchers: function () {
-            /*TODO: 
-            * 1) use an autocomplete or select box for event Types
-            * 2) create field rule Name, Comparator, Value(s) editor
-            */
             return [
                 {name:"JAVA_CLASS",displayName: this.i18n._("Event Type - javaClass"), type: "text", visible: true, allowInvert: false},
-                {name:"FIELD_RULE",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true, allowInvert: false}
+                {name:"FIELD_RULE",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.FieldRuleWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
             ];
         },
         buildPasswordValidator: function() {
@@ -791,7 +846,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     },
                     title: this.i18n._("Alert Rules"),
                     recordJavaClass: "com.untangle.node.reporting.AlertRule",
-                    dataProperty:'rules',
+                    dataProperty:'alertRules',
                     fields: [{
                         name: 'ruleId'
                     }, {
@@ -828,19 +883,17 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         header: this.i18n._("Description"),
                         width: 200,
                         dataIndex: 'description',
-                        flex:1
+                        flex: 1
                     }, {
                         xtype:'checkcolumn',
                         header: this.i18n._("Log as interesting event"),
                         dataIndex: 'flag',
-                        resizable: false,
-                        width:55
+                        width:150
                     }, {
                         xtype:'checkcolumn',
                         header: this.i18n._("Alert administrators"),
                         dataIndex: 'alert',
-                        resizable: false,
-                        width:55
+                        width:150
                     }],
                     columnsDefaultSortable: false,
                     rowEditorInputLines: [{
@@ -888,6 +941,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         beforeSave: function(isApply,handler) {
             this.getSettings().reportingUsers.list = this.gridReportingUsers.getPageList();
             this.getSettings().hostnameMap.list = this.gridHostnameMap.getPageList();
+            this.getSettings().alertRules.list = this.gridAlertRules.getPageList();
 
             this.getSettings().syslogHost = Ext.getCmp('reporting_syslog_host').getValue();
             this.getSettings().syslogPort = Ext.getCmp('reporting_syslog_port').getValue();

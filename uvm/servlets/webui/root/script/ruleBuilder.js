@@ -4,7 +4,7 @@ Ext.define('Ung.RuleBuilder', {
     settingsCmp: null,
     enableColumnHide: false,
     enableColumnMove: false,
-        dirtyFlag: false,
+    dirtyFlag: false,
     alias: 'widget.rulebuilder',
     javaClass: null,
 
@@ -109,8 +109,8 @@ Ext.define('Ung.RuleBuilder', {
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                     break;
                   case "editor":
-                    res='<input type="text" size="30" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
-                        break;
+                    res='<input type="text" style="width: 90%" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+Ext.String.htmlEncode(value)+'"/>';
+                    break;
                   case "checkgroup":
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
                     var out=[];
@@ -146,7 +146,7 @@ Ext.define('Ung.RuleBuilder', {
             return;
         }
 
-        editor.populate(record, valObj.value, this);
+        editor.populate(record, record.get("value"), this);
         editor.show();
     },
     changeRowType: function(recordId,selObj) {
@@ -156,20 +156,22 @@ Ext.define('Ung.RuleBuilder', {
             Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
             return;
         }
-        var i;
-        // iterate through and make sure there are no other matchers of this type
-        for (i = 0; i < this.store.data.length ; i++) {
-            if (this.store.data.items[i].data.id == recordId)
-                continue;
-            if (this.store.data.items[i].data.name == newName) {
-                Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
-                record.set("name","");
-                selObj.value = "";
-                return;
-            }
-        }
         // find the selected matcher
         var rule=this.matchersMap[newName];
+        var i;
+        // iterate through and make sure there are no other matchers of this type
+        if(!rule.allowMultiple) {
+            for (i = 0; i < this.store.data.length ; i++) {
+                if (this.store.data.items[i].data.id == recordId)
+                    continue;
+                if (this.store.data.items[i].data.name == newName) {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
+                    record.set("name","");
+                    selObj.value = "";
+                    return;
+                }
+            }
+        }
         var newValue="";
         if(rule.type=="boolean") {
             newValue="true";

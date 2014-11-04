@@ -542,3 +542,76 @@ Ext.define('Ung.GroupEditorWindow', {
         }
     }
 });
+
+//matcher pop-up editor for time groups
+Ext.define('Ung.FieldRuleWindow', {
+    extend:'Ung.MatcherEditorWindow',
+    height: 150,
+    width: 500,
+    initComponent: function() {
+        this.inputLines = [{
+            xtype: 'panel',
+            border: false,
+            layout: {
+                type: 'table',
+                columns: 3
+            },
+            defaults: {
+                padding: 3
+            },
+            items: [{
+                xtype: 'label',
+                html: i18n._("Field Name"),
+                columnWidth: 0.3
+            },{
+                xtype: 'label',
+                html: i18n._("Comparator"),
+                columnWidth: 0.2
+            },{
+                xtype: 'label',
+                html: i18n._("Value")
+            },{
+                xtype: 'textfield',
+                name: "field",
+                allowBlank: false
+            },{
+                xtype: 'textfield',
+                name: "comparator",
+                allowBlank: false
+            },{
+                xtype: 'textfield',
+                name: "value"
+            }]
+        }];
+        this.callParent(arguments);
+    },
+    /*populate: function(record, value, rulebuilder) {
+        this.callParent(arguments);
+    },*/
+    setValue: function(value) {
+        var field = "";
+        var comparator = "";
+        var val = "";
+        if(value) {
+            var jsonobj = value;
+            field = jsonobj.field;
+            comparator = jsonobj.comparator;
+            val = jsonobj.value;
+        }
+        this.down('textfield[name="field"]').setValue(field);
+        this.down('textfield[name="comparator"]').setValue(comparator);
+        this.down('textfield[name="value"]').setValue(val);
+    },
+    getValue: function() {
+        var jsonobj = {
+            toString: function() {
+                return Ext.encode(this);
+            },
+            field: this.down('textfield[name="field"]').getValue(),
+            comparator: this.down('textfield[name="comparator"]').getValue(),
+            value: this.down('textfield[name="value"]').getValue(),
+            javaClass: "com.untangle.node.reporting.AlertRuleField"
+        };
+        return jsonobj;
+    }
+});
