@@ -12,7 +12,9 @@ public enum SpamMessageAction
     QUARANTINE('Q', "quarantine message"),
     SAFELIST('S', "pass safelist message"),
     OVERSIZE('Z', "pass oversize message"),
-    OUTBOUND('O', "pass outbound message");
+    OUTBOUND('O', "pass outbound message"),
+    FAILED_BLOCKED('F', "block message (scan failure)"),
+    FAILED_PASSED('G', "pass message (scan failure)");
 
     public static final char PASS_KEY = 'P';
     public static final char MARK_KEY = 'M';
@@ -22,6 +24,8 @@ public enum SpamMessageAction
     public static final char SAFELIST_KEY = 'S'; // special pass case
     public static final char OVERSIZE_KEY = 'Z'; // special pass case
     public static final char OUTBOUND_KEY = 'O'; // special pass case
+    public static final char FAILED_BLOCKED_KEY = 'F';
+    public static final char FAILED_PASSED_KEY = 'G';
 
     private String name;
     private char key;

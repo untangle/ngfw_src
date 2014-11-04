@@ -21,14 +21,6 @@ import com.untangle.node.smtp.MessageInfoAddr;
 @SuppressWarnings("serial")
 public class SpamLogEvent extends LogEvent
 {
-    // action types
-    public static final int PASSED = 0; // pass or clean message
-    public static final int MARKED = 1;
-    public static final int BLOCKED = 2;
-    public static final int QUARANTINED = 3;
-    public static final int SAFELISTED = 4;
-    public static final int OVERSIZED = 5;
-
     private Long messageId;
     private MessageInfo messageInfo;
     private float score;
