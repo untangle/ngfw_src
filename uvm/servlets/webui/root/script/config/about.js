@@ -68,8 +68,8 @@ Ext.define("Webui.config.about", {
                         this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
                         this.i18n._('History') + ": " + modificationState + "\n" +
                         this.i18n._('Reboots') + ": " + rebootCount + "\n" +
-                        this.i18n._('Current Licensed Devices') + ": " + licensedSized + "\n" +
-                        this.i18n._('Max Licensed Devices') + ": " + maxLicensedSize
+                        this.i18n._('Current "licensed" device count') + ": " + licensedSized + "\n" +
+                        this.i18n._('Highest "licensed" device count since reboot') + ": " + maxLicensedSize
 
                 }]
             }]
