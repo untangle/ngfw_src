@@ -93,15 +93,6 @@ public abstract class DecisionEngine
         }
         host = UrlMatchingUtil.normalizeHostname(host);
   
-        //
-        // If restricting google app access, verify google domain and add restrict header.
-        if( node.getSettings().getRestrictGoogleApps() ){
-            UrlMatcher matcher = new UrlMatcher( "*google*" );
-            if( matcher.isMatch( host, uri.toString() ) ){
-              header.addField("X-GoogApps-Allowed-Domains", node.getSettings().getRestrictGoogleAppsDomain() );
-            }
-        }      
-
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings
         GenericRule rule =  UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients());
@@ -111,6 +102,15 @@ public abstract class DecisionEngine
             node.logEvent(hbe);
             return null;
         }
+
+        // restrict google applications
+        // If restricting google app access, verify google domain and add restrict header.
+        if( node.getSettings().getRestrictGoogleApps() ){
+            UrlMatcher matcher = new UrlMatcher( "*google*" );
+            if( matcher.isMatch( host, uri.toString() ) ){
+              header.addField("X-GoogApps-Allowed-Domains", node.getSettings().getRestrictGoogleAppsDomain() );
+            }
+        }      
 
         // check passlisted rules
         // If a site/URL is on the pass list is is passed regardless of any other settings

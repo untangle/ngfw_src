@@ -767,7 +767,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     }
                 },{
                     xtype: "checkbox",
-                    boxLabel: this.i18n._("Block Google applications"),
+                    boxLabel: this.i18n._("Restrict Google applications"),
                     hideLabel: true,
                     name: 'restrictGoogleApps',
                     checked: this.settings.restrictGoogleApps,
@@ -785,13 +785,14 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     hidden: !this.settings.restrictGoogleApps,
                     items: [{
                         xtype: 'displayfield',
-                        value: this.i18n._("NOTE: The HTTPS Inspector must be installed and running with the Inspect Google Traffic configured to Inspect."),
+                        value: this.i18n._("NOTE:") + "&nbsp;" + "<i>HTTPS Inspector</i> " + this.i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
                         style: {
                             marginBottom: '10px'
                         }
                     },{
                         xtype: "textfield",
-                        fieldLabel: "Domain",
+                        fieldLabel: this.i18n._("Allowed Domain(s)"),
+                        labelWidth: 120,
                         tooltip: i18n._("Specify the comma separated list of domains allowed to access non-search Google applications"),
                         passwordField: true,
                         name: "restrictGoogleAppsDomain",
