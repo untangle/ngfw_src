@@ -45,11 +45,11 @@ Ext.define("Webui.config.network", {
         var deviceStatusMap=Ung.Util.createRecordsMap(( deviceStatus == null ? [] : deviceStatus.list ), "deviceName");
         var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
         for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
-            var intf=this.settings.interfaces.list[i];
-            var deviceStatusInner = deviceStatusMap[intf.physicalDev];
-            Ext.applyIf(intf, deviceStatusInner);
-            var interfaceStatusInner = interfaceStatusMap[intf.interfaceId];
-            Ext.applyIf(intf, interfaceStatusInner);
+            var intfb=this.settings.interfaces.list[i];
+            var deviceStatusInner = deviceStatusMap[intfb.physicalDev];
+            Ext.applyIf(intfb, deviceStatusInner);
+            var interfaceStatusInner = interfaceStatusMap[intfb.interfaceId];
+            Ext.applyIf(intfb, interfaceStatusInner);
         }
         rpc.networkSettings = this.settings;
 
