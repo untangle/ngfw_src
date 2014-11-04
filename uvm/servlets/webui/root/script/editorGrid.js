@@ -3,6 +3,7 @@ Ext.define('Ung.grid.EditColumn', {
     extend:'Ext.grid.column.Action',
     menuDisabled: true,
     resizable: false,
+    hideable: false,
     iconCls: 'icon-edit-row',
     hasReadOnly: false,
     constructor: function(config) {
@@ -36,6 +37,7 @@ Ext.define('Ung.grid.DeleteColumn', {
     extend:'Ext.grid.column.Action',
     menuDisabled: true,
     resizable: false,
+    hideable: false,
     iconCls: 'icon-delete-row',
     hasReadOnly: false,
     constructor: function(config) {
@@ -69,6 +71,7 @@ Ext.define('Ung.grid.ReorderColumn', {
     extend:'Ext.grid.column.Template',
     menuDisabled:true,
     resizable: false,
+    hideable: false,
     header: "Reorder",
     width: 55,
     tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
@@ -194,7 +197,9 @@ Ext.define('Ung.EditorGrid', {
         }
         for (var i = 0; i < this.columns.length; i++) {
             var col=this.columns[i];
-            col.menuDisabled = this.columnMenuDisabled ;
+            if( col.menuDisabled == null) {
+                col.menuDisabled = this.columnMenuDisabled;
+            }
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }

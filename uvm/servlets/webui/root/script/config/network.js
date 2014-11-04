@@ -27,14 +27,21 @@ Ext.define("Webui.config.network", {
             title: i18n._('Network')
         }];
         var deviceStatus, interfaceStatus;
+        var i=0;
         try {
             this.settings = main.getNetworkManager().getNetworkSettings();
             deviceStatus=main.getNetworkManager().getDeviceStatus();
             interfaceStatus=main.getNetworkManager().getInterfaceStatus();
+            for( i=0; i<this.settings.interfaces.list.length ; i++) {
+                var intf=this.settings.interfaces.list[i];
+                intf.isVrrpMaster = false;
+                if(intf.vrrpEnabled) {
+                    intf.isVrrpMaster=main.getNetworkManager().isVrrpMaster(intf.interfaceId);
+                }
+            }
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        var i=0;
         var deviceStatusMap=Ung.Util.createRecordsMap(( deviceStatus == null ? [] : deviceStatus.list ), "deviceName");
         var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
         for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
@@ -145,7 +152,9 @@ Ext.define("Webui.config.network", {
     buildInterfaces: function() {
         var settingsCmp = this;
         var deleteVlanColumn = Ext.create('Ext.grid.column.Action', {
-            menuDisabled: true,
+            menuDisabled:true,
+            resizable: false,
+            hideable: false,
             header: this.i18n._("Delete"),
             width: 50,
             init:function(grid) {
@@ -327,6 +336,8 @@ Ext.define("Webui.config.network", {
                 name: "v4Dns2" //from interfaceStatus
             }, {
                 name: "v4PrefixLength" //from interfaceStatus
+            }, {
+                name: "isVrrpMaster" //calculated
             }],
             columns: [{
                 header: this.i18n._("Id"),
@@ -423,6 +434,13 @@ Ext.define("Webui.config.network", {
                     // only ADDRESSED interfaces can be WANs
                     return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
                 }, this)
+            }, {
+                header: this.i18n._("is VRRP Master"),
+                dataIndex: 'isVrrpMaster',
+                width:95,
+                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    return "<div class='"+(value?"ua-cell-enabled": "ua-cell-disabled")+"'></div>";
+                }, this)
             }, deleteVlanColumn],
             plugins: [deleteVlanColumn],
             bbar: ['-',{
@@ -477,7 +495,8 @@ Ext.define("Webui.config.network", {
                         grid.getStore().each(function( currentRow ) {
                             var isDirty = currentRow.dirty;
                             var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
-                            var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
+                            var interfaceId = currentRow.get("interfaceId");
+                            var interfaceStatus = interfaceStatusMap[interfaceId];
                             if(deviceStatus) {
                                 currentRow.set({
                                     "macAddress": deviceStatus.macAddress,
@@ -497,8 +516,15 @@ Ext.define("Webui.config.network", {
                                     "v4PrefixLength": interfaceStatus.v4PrefixLength
                                 });
                             }
+                            var isVrrpMaster = false;
+                            if(currentRow.get("vrrpEnabled")) {
+                                isVrrpMaster=main.getNetworkManager().isVrrpMaster(interfaceId);
+                            }
+                            currentRow.set({
+                                "isVrrpMaster": isVrrpMaster
+                            });
                             //To prevent coloring the row when status is changed
-                            if(!isDirty && deviceStatus || interfaceStatus) {
+                            if(!isDirty && (deviceStatus || interfaceStatus)) {
                                 currentRow.commit();
                             }
                         });
@@ -1055,7 +1081,6 @@ Ext.define("Webui.config.network", {
                 xtype:'checkbox',
                 dataIndex: "isVlanInterface",
                 fieldLabel: this.i18n._("Is VLAN (802.1q) Interface"),
-                //disabled: true,
                 readOnly: true,
                 width: 300
             }, {
