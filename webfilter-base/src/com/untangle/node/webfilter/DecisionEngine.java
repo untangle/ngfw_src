@@ -93,12 +93,23 @@ public abstract class DecisionEngine
         }
         host = UrlMatchingUtil.normalizeHostname(host);
   
-        // check client IP address pass list
+        // check client IP pass list
         // If a client is on the pass list is is passed regardless of any other settings
         GenericRule rule =  UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients());
         String description = (rule != null)? rule.getDescription():null;
         if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getName());
+            node.logEvent(hbe);
+            return null;
+        }
+
+        // check server IP pass list
+        // If a site/URL is on the pass list is is passed regardless of any other settings
+        rule = UrlMatchingUtil.checkSiteList( host, uri.toString(), node.getSettings().getPassedUrls() );
+        description = (rule != null)? rule.getDescription():null;        
+        if ( description != null ) {
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getName());
+            logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
             return null;
         }
@@ -111,18 +122,7 @@ public abstract class DecisionEngine
               header.addField("X-GoogApps-Allowed-Domains", node.getSettings().getRestrictGoogleAppsDomain() );
             }
         }      
-
-        // check passlisted rules
-        // If a site/URL is on the pass list is is passed regardless of any other settings
-        rule = UrlMatchingUtil.checkSiteList( host, uri.toString(), node.getSettings().getPassedUrls() );
-        description = (rule != null)? rule.getDescription():null;        
-        if ( description != null ) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getName());
-            logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
-            node.logEvent(hbe);
-            return null;
-        }
-
+        
         String refererHeader = header.getValue( "referer" );
         if( node.getSettings().getPassReferers() && 
             ( null != refererHeader ) ) {
