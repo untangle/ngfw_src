@@ -97,14 +97,14 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
     private List<InterfaceAlias> vrrpAliases = new LinkedList<InterfaceAlias>();
 
-    private boolean isWirelessInterface;
-    private String wirelessSsid;
-    public static enum WirelessEncryptionType { NONE, WPA1, WPA12, WPA2 };
-    private WirelessEncryptionType wirelessEncryption;
-    private String wirelessPassword;
-    private Integer wirelessChannel;
-    public static enum WirelessRadioModeType { W80211B, W80211BG, W80211BGN, W80211AC };
-    private WirelessRadioModeType wirelessRadioType;
+    private boolean isWirelessInterface = false;
+    private String wirelessSsid = null;
+    public static enum WirelessEncryption { NONE, WPA1, WPA12, WPA2 };
+    private WirelessEncryption wirelessEncryption = null;
+    private String wirelessPassword = null;
+    private Integer wirelessChannel = null;
+    public static enum WirelessRadioMode { W80211B, W80211BG, W80211BGN }; 
+    private WirelessRadioMode wirelessRadioMode = null;
     
     public InterfaceSettings() { }
 
@@ -273,14 +273,14 @@ public class InterfaceSettings implements Serializable, JSONString
     public List<InterfaceAlias> getVrrpAliases( ) { return this.vrrpAliases; }
     public void setVrrpAliases( List<InterfaceAlias> newValue ) { this.vrrpAliases = newValue; }
     
-    public boolean getWirelessInterface( ) { return this.isWirelessInterface; }
-    public void setWirelessInterface( boolean newValue ) { this.isWirelessInterface = newValue; }
+    public boolean getIsWirelessInterface( ) { return this.isWirelessInterface; }
+    public void setIsWirelessInterface( boolean newValue ) { this.isWirelessInterface = newValue; }
 
     public String getWirelessSsid( ) { return this.wirelessSsid; }
     public void setWirelessSsid( String newValue ) { this.wirelessSsid = newValue; }
 
-    public WirelessEncryptionType getWirelessEncryption( ) { return this.wirelessEncryption; }
-    public void setWirelessEncryption( WirelessEncryptionType newValue ) { this.wirelessEncryption = newValue; }
+    public WirelessEncryption getWirelessEncryption( ) { return this.wirelessEncryption; }
+    public void setWirelessEncryption( WirelessEncryption newValue ) { this.wirelessEncryption = newValue; }
 
     public String getWirelessPassword( ) { return this.wirelessPassword; }
     public void setWirelessPassword( String newValue ) { this.wirelessPassword = newValue; }
@@ -288,8 +288,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer getWirelessChannel( ) { return this.wirelessChannel; }
     public void setWirelessChannel( Integer newValue ) { this.wirelessChannel = newValue; }
 
-    public WirelessRadioModeType getWirelessRadioType( ) { return this.wirelessRadioType; }
-    public void setWirelessRadioType( WirelessRadioModeType newValue ) { this.wirelessRadioType = newValue; }
+    public WirelessRadioMode getWirelessRadioMode( ) { return this.wirelessRadioMode; }
+    public void setWirelessRadioMode( WirelessRadioMode newValue ) { this.wirelessRadioMode = newValue; }
     
     public static class InterfaceAlias
     {

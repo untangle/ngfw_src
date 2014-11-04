@@ -196,10 +196,13 @@ Ext.define("Webui.config.network", {
             emptyRow: { //Used only to add VLAN Interfaces
                 "interfaceId": -1,
                 "isVlanInterface": true,
+                "isWirelessInterface": false,
                 "vlanTag": 1,
                 "javaClass": "com.untangle.uvm.network.InterfaceSettings",
                 "v4ConfigType": "STATIC",
-                "v6ConfigType": "DISABLED"
+                "v6ConfigType": "DISABLED",
+                "wirelessRadioMode": null,
+                "wirelessEncryption": null
             },
             fields: [{
                 name: 'interfaceId'
@@ -307,6 +310,18 @@ Ext.define("Webui.config.network", {
                 name: 'vrrpPriority'
             }, {
                 name: 'vrrpAliases'
+            }, {
+                name: 'isWirelessInterface'
+            }, {
+                name: 'wirelessSsid'
+            }, {
+                name: 'wirelessEncryption'
+            }, {
+                name: 'wirelessPassword'
+            }, {
+                name: 'wirelessChannel'
+            }, {
+                name: 'wirelessRadioMode'
             }, {
                 name: 'javaClass'
             },
@@ -1084,6 +1099,12 @@ Ext.define("Webui.config.network", {
                 readOnly: true,
                 width: 300
             }, {
+                xtype:'checkbox',
+                dataIndex: "isWirelessInterface",
+                fieldLabel: this.i18n._("Is Wireless Interface"),
+                readOnly: true,
+                width: 300
+            }, {
                 xtype: "combo",
                 allowBlank: false,
                 dataIndex: "vlanParent",
@@ -1133,6 +1154,71 @@ Ext.define("Webui.config.network", {
                         }, this)
                     }
                 }
+            }, {
+                xtype: 'fieldset',
+                name: 'wireless',
+                border: true,
+                title: this.i18n._("Wireless Configuration"),
+                collapsible: false,
+                collapsed: false,
+                defaults: {
+                    labelWidth: 150
+                },
+                items: [{
+                    xtype:'textfield',
+                    dataIndex: "wirelessSsid",
+                    fieldLabel: this.i18n._("SSID"),
+                    allowBlank: false,
+                    disableOnly: true,
+                    maxLength: 30,
+                    maskRe: /[a-zA-Z0-9\-_=]/,
+                    //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/,
+                    width: 350
+                }, {
+                    xtype: "combo",
+                    allowBlank: false,
+                    dataIndex: "wirelessEncryption",
+                    fieldLabel: this.i18n._("Encryption"),
+                    editable: false,
+                    store: [["NONE", this.i18n._('None')], ["WPA1", this.i18n._('WPA')], ["WPA12", this.i18n._('WPA / WPA2')], ["WPA2", this.i18n._('WPA2')]],
+                    width: 300,
+                    queryMode: 'local',
+                    listeners: {
+                        "select": {
+                            fn: Ext.bind(function(combo, records, eOpts) {
+                                this.gridInterfaces.rowEditor.syncComponents();
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype:'textfield',
+                    dataIndex: "wirelessPassword",
+                    fieldLabel: this.i18n._("Password"),
+                    allowBlank: false,
+                    disableOnly: true,
+                    maxLength: 30,
+                    maskRe: /[a-zA-Z0-9\-_=]/,
+                    //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/,
+                    width: 350
+                }, {
+                    xtype: "combo",
+                    allowBlank: false,
+                    dataIndex: "wirelessChannel",
+                    fieldLabel: this.i18n._("Channel"),
+                    editable: false,
+                    store: [[1, "1"],[2, "2"],[3, "3"],[4, "4"],[5, "5"],[6, "6"],[7, "7"],[8, "8"],[9, "9"],[10, "10"],[11, "11"],[12, "12"]],
+                    width: 300,
+                    queryMode: 'local'
+                }, {
+                    xtype: "combo",
+                    allowBlank: false,
+                    dataIndex: "wirelessRadioMode",
+                    fieldLabel: this.i18n._("Radio Mode"),
+                    editable: false,
+                    store: [["W80211B","802.11b"],["W80211BG","802.11bg"],["W80211BGN","802.11bgn"]], //FIXME what about 802.11ac?
+                    width: 300,
+                    queryMode: 'local'
+                }]
             }, {
                 xtype:'fieldset',
                 name: 'v4Config',
@@ -1679,6 +1765,14 @@ Ext.define("Webui.config.network", {
                         vrrpPriority: this.down('numberfield[dataIndex="vrrpPriority"]'),
                         vrrpAliasesContainer: this.down('container[name="vrrpAliasesContainer"]'),
 
+                        wireless: this.down('fieldset[name="wireless"]'),
+                        isWirelessInterface: this.down('checkbox[dataIndex="isWirelessInterface"]'),
+                        wirelessSsid: this.down('textfield[dataIndex="wirelessSsid"]'),
+                        wirelessEncryption: this.down('combo[dataIndex="wirelessEncryption"]'),
+                        wirelessPassword: this.down('textfield[dataIndex="wirelessPassword"]'),
+                        wirelessChannel: this.down('combo[dataIndex="wirelessChannel"]'),
+                        wirelessRadioMode: this.down('combo[dataIndex="wirelessRadioMode"]'),
+                        
                         bridgedTo: this.down('combo[dataIndex="bridgedTo"]')
                     };
                     this.configType=this.down('combo[dataIndex="configType"]');
@@ -1695,13 +1789,29 @@ Ext.define("Webui.config.network", {
                 var configTypeValue = this.configType.getValue();
                 var isVlanInterfaceValue = this.cmps.isVlanInterface.getValue();
                 var isWanValue = this.cmps.isWan.getValue();
-
+                var isWirelessInterfaceValue = this.cmps.isWirelessInterface.getValue();
+                
                 if ( isVlanInterfaceValue ) {
                     this.cmps.isVlanInterface.status = true;
                     this.cmps.vlanParent.status = true;
                     this.cmps.vlanTag.status = true;
                 }
 
+                // show wireless settings in all cases unless wireless is disabled
+                if ( isWirelessInterfaceValue && configTypeValue != "DISABLED" ) {
+                    this.cmps.isWirelessInterface.status = true;
+                    this.cmps.wireless.status = true;
+                    this.cmps.wirelessSsid.status = true;
+                    this.cmps.wirelessEncryption.status = true;
+                    this.cmps.wirelessChannel.status = true;
+                    this.cmps.wirelessRadioMode.status = true;
+                    if ( this.cmps.wirelessEncryption.getValue() != "NONE" ) {
+                        this.cmps.wirelessPassword.status = true;
+                    } else {
+                        this.cmps.wirelessPassword.status = false;
+                    }
+                }
+                
                 if ( configTypeValue == "DISABLED") {
                     // if config disabled show nothing
                 } else if ( configTypeValue == "BRIDGED") {
