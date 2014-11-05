@@ -343,8 +343,6 @@ Ext.define("Webui.config.network", {
                 name: "v4Dns2" //from interfaceStatus
             }, {
                 name: "v4PrefixLength" //from interfaceStatus
-            }, {
-                name: "isVrrpMaster" //calculated
             }],
             columns: [{
                 header: this.i18n._("Id"),
@@ -868,7 +866,7 @@ Ext.define("Webui.config.network", {
             }],
             setValue: function (value) {
                 var data = [];
-                if(value !== null && value.list !== null) {
+                if(value && value.list) {
                     data=value.list;
                 }
                 this.reload({data:data});
@@ -925,7 +923,7 @@ Ext.define("Webui.config.network", {
             }],
             setValue: function (value) {
                 var data = [];
-                if(value!==null && value.list!==null) {
+                if(value && value.list) {
                     data=value.list;
                 }
                 this.reload({data:data});
@@ -982,7 +980,7 @@ Ext.define("Webui.config.network", {
             }],
             setValue: function (value) {
                 var data = [];
-                if(value !== null && value.list !== null) {
+                if(value && value.list) {
                     data=value.list;
                 }
                 this.reload({data:data});
