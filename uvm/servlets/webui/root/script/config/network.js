@@ -26,19 +26,11 @@ Ext.define("Webui.config.network", {
         }, {
             title: i18n._('Network')
         }];
-        var deviceStatus, interfaceStatus;
-        var i=0;
+        var deviceStatus, interfaceStatus, i;
         try {
             this.settings = main.getNetworkManager().getNetworkSettings();
             deviceStatus=main.getNetworkManager().getDeviceStatus();
             interfaceStatus=main.getNetworkManager().getInterfaceStatus();
-            for( i=0; i<this.settings.interfaces.list.length ; i++) {
-                var intf=this.settings.interfaces.list[i];
-                intf.isVrrpMaster = false;
-                if(intf.vrrpEnabled) {
-                    intf.isVrrpMaster=main.getNetworkManager().isVrrpMaster(intf.interfaceId);
-                }
-            }
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -449,13 +441,6 @@ Ext.define("Webui.config.network", {
                     // only ADDRESSED interfaces can be WANs
                     return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
                 }, this)
-            }, {
-                header: this.i18n._("is VRRP Master"),
-                dataIndex: 'isVrrpMaster',
-                width:95,
-                renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                    return "<div class='"+(value?"ua-cell-enabled": "ua-cell-disabled")+"'></div>";
-                }, this)
             }, deleteVlanColumn],
             plugins: [deleteVlanColumn],
             bbar: ['-',{
@@ -510,8 +495,7 @@ Ext.define("Webui.config.network", {
                         grid.getStore().each(function( currentRow ) {
                             var isDirty = currentRow.dirty;
                             var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
-                            var interfaceId = currentRow.get("interfaceId");
-                            var interfaceStatus = interfaceStatusMap[interfaceId];
+                            var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
                             if(deviceStatus) {
                                 currentRow.set({
                                     "macAddress": deviceStatus.macAddress,
@@ -531,13 +515,6 @@ Ext.define("Webui.config.network", {
                                     "v4PrefixLength": interfaceStatus.v4PrefixLength
                                 });
                             }
-                            var isVrrpMaster = false;
-                            if(currentRow.get("vrrpEnabled")) {
-                                isVrrpMaster=main.getNetworkManager().isVrrpMaster(interfaceId);
-                            }
-                            currentRow.set({
-                                "isVrrpMaster": isVrrpMaster
-                            });
                             //To prevent coloring the row when status is changed
                             if(!isDirty && (deviceStatus || interfaceStatus)) {
                                 currentRow.commit();
@@ -1668,6 +1645,11 @@ Ext.define("Webui.config.network", {
                         }
                     }
                 }, {
+                    xtype: 'displayfield',
+                    fieldLabel: this.i18n._("Is VRRP Master"),
+                    name: 'isVrrpMaster',
+                    value: "<div class='ua-cell-disabled' style='width:16px;'></div>"
+                }, {
                     xtype: "numberfield",
                     dataIndex: "vrrpId",
                     fieldLabel: this.i18n._("VRRP ID"),
@@ -1950,8 +1932,18 @@ Ext.define("Webui.config.network", {
 
                 var vrrp= this.down('fieldset[name="vrrp"]');
                 var vrrpEnabled = this.down('checkbox[dataIndex="vrrpEnabled"]');
+                var isVrrpMaster = this.down('displayfield[name="isVrrpMaster"]');
+                isVrrpMaster.setValue("<div class='ua-cell-disabled' style='width:16px;'></div>");
                 if(vrrpEnabled.getValue()) {
                     vrrp.expand();
+                    if(interfaceId>=0) {
+                        main.getNetworkManager().isVrrpMaster(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            if(result) {
+                                isVrrpMaster.setValue("<div class='ua-cell-enabled' style='width:16px;'></div>");
+                            }
+                        }, true), interfaceId);
+                    }
                 } else {
                     vrrp.collapse();
                 }
