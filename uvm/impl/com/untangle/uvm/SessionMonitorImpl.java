@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.net.InetAddress;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -103,73 +104,87 @@ public class SessionMonitorImpl implements SessionMonitor
             node = UvmContextFactory.context().nodeManager().node(nodeId);
         if (node != null)
             nodeSessions = node.liveSessions();
+
+        HashMap<Tuple,SessionGlobalState> map = new HashMap<Tuple,SessionGlobalState>();
+        for (SessionGlobalState netcapSession : netcapSessions) {
+            com.untangle.uvm.node.SessionTuple clientSide = netcapSession.netcapHook().getClientSide();
+            Tuple clientTuple = new Tuple( clientSide.getProtocol(),
+                                           clientSide.getClientAddr(),
+                                           clientSide.getServerAddr(),
+                                           clientSide.getClientPort(),
+                                           clientSide.getServerPort());
+            com.untangle.uvm.node.SessionTuple serverSide = netcapSession.netcapHook().getServerSide();
+            Tuple serverTuple = new Tuple( serverSide.getProtocol(),
+                                           serverSide.getClientAddr(),
+                                           serverSide.getServerAddr(),
+                                           serverSide.getClientPort(),
+                                           serverSide.getServerPort());
             
+            map.put( clientTuple, netcapSession );
+            map.put( serverTuple, netcapSession );
+        }
+        
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
             session.setPolicy("");             
             session.setClientIntf(Integer.valueOf(-1));
             session.setServerIntf(Integer.valueOf(-1));
             session.setPriority(session.getQosPriority()); 
-            boolean foundUvmSession = false;
-            
-            for (SessionGlobalState netcapSession : netcapSessions) {
-                com.untangle.uvm.node.SessionTuple clientSide = netcapSession.netcapHook().getClientSide();
-                com.untangle.uvm.node.SessionTuple serverSide = netcapSession.netcapHook().getServerSide();
-                int priority = netcapSession.netcapSession().clientQosMark();
 
+            Tuple tuple = _makeTuple( session );
+            SessionGlobalState netcapSession = map.get(tuple); // find corresponding netcap
+
+            if ( netcapSession != null ) {
                 try {
-                    if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
+                    int priority = netcapSession.netcapSession().clientQosMark();
+                    com.untangle.uvm.node.SessionTuple clientSide = netcapSession.netcapHook().getClientSide();
+                    com.untangle.uvm.node.SessionTuple serverSide = netcapSession.netcapHook().getServerSide();
+
+                    NetcapHook hook = netcapSession.netcapHook();
+                    if (hook == null)
+                        continue;
                         
-                        NetcapHook hook = netcapSession.netcapHook();
-                        if (hook == null)
-                            continue;
-                        
-                        Long policyId = hook.getPolicyId();
-                        if (policyId == null)
-                            session.setPolicy("");
-                        else
-                            session.setPolicy(policyId.toString()); 
+                    Long policyId = hook.getPolicyId();
+                    if (policyId == null)
+                        session.setPolicy("");
+                    else
+                        session.setPolicy(policyId.toString()); 
 
-                        session.setSessionId(netcapSession.id());
-                        session.setBypassed(Boolean.FALSE);
-                        session.setClientIntf(new Integer(clientSide.getClientIntf()));
-                        session.setServerIntf(new Integer(serverSide.getServerIntf()));
+                    session.setSessionId(netcapSession.id());
+                    session.setBypassed(Boolean.FALSE);
+                    session.setClientIntf(new Integer(clientSide.getClientIntf()));
+                    session.setServerIntf(new Integer(serverSide.getServerIntf()));
 
-                        /**
-                         * The conntrack entry shows that this session has been redirect to the local host
-                         * We need to overwrite that with the correct info
-                         */
-                        session.setPostNatClient(serverSide.getClientAddr());
-                        session.setPostNatServer(serverSide.getServerAddr());
-                        session.setPostNatClientPort(serverSide.getClientPort());
-                        session.setPostNatServerPort(serverSide.getServerPort());
+                    /**
+                     * The conntrack entry shows that this session has been redirect to the local host
+                     * We need to overwrite that with the correct info
+                     */
+                    session.setPostNatClient(serverSide.getClientAddr());
+                    session.setPostNatServer(serverSide.getServerAddr());
+                    session.setPostNatClientPort(serverSide.getClientPort());
+                    session.setPostNatServerPort(serverSide.getServerPort());
 
-                        /**
-                         * Only have one priority per session
-                         * Assume both client and server are the same
-                         */
-                        if (priority != 0)
-                            session.setPriority(priority);
+                    /**
+                     * Only have one priority per session
+                     * Assume both client and server are the same
+                     */
+                    if (priority != 0)
+                        session.setPriority(priority);
 
-                        session.setAttachments(netcapSession.getAttachments());
-                        
-                        foundUvmSession = true;
-                        break;
-                    }
+                    session.setAttachments(netcapSession.getAttachments());
                 } catch (Exception e) {
                     logger.warn("Exception while searching for session",e);
-                    foundUvmSession = false;
                 }
-            }
-
-            /**
-             * If the session is not bypassed and is not in the UVM
-             * Then it is likely some expired session or some local session (blockpages)
-             * Remove it and dont show it to the user
-             */
-            if ( !session.getBypassed() && !foundUvmSession ) {
-                logger.debug("Ignoring session: " + session);
-                i.remove();
+            } else {
+                /**
+                 * If the session is not bypassed and is not in the UVM
+                 * Then it is likely some expired session or some local session (blockpages)
+                 * Remove it and dont show it to the user
+                 */
+                if ( !session.getBypassed() ) {
+                    logger.debug("Ignoring session: " + session);
+                    i.remove();
+                }
             }
         }
 
@@ -206,7 +221,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     i.remove();
             }
         }
-        
+
         return sessions;
     }
     
@@ -351,6 +366,24 @@ public class SessionMonitorImpl implements SessionMonitor
         return true;
     }
 
+    private Tuple _makeTuple( SessionMonitorEntry session )
+    {
+        short protocol;
+        if ( "TCP".equals(session.getProtocol()) )
+            protocol = Tuple.PROTO_TCP;
+        else if ( "UDP".equals(session.getProtocol()) )
+            protocol = Tuple.PROTO_UDP;
+        else {
+            logger.warn("Unknown protocol: " + session.getProtocol());
+            protocol = 0;
+        }
+        return new Tuple( protocol,
+                          session.getPreNatClient(),
+                          session.getPreNatServer(),
+                          session.getPreNatClientPort(),
+                          session.getPreNatServerPort() );
+    }
+    
     /**
      * This checks first 5-tuple (protocol, src, dst, src_port, dst_port)
      * against the second, returns true if match
@@ -372,6 +405,62 @@ public class SessionMonitorImpl implements SessionMonitor
 
         return true;
     }
-                            
+
+    private class Tuple
+    {
+        public static final short PROTO_TCP = 6;
+        public static final short PROTO_UDP = 17;
+
+        public short protocol;
+        public InetAddress clientAddr;
+        public InetAddress serverAddr;
+        public int clientPort;
+        public int serverPort;
+
+        public Tuple( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
+        {
+            this.protocol = protocol;
+            this.clientAddr = clientAddr;
+            this.serverAddr = serverAddr;
+            this.clientPort = clientPort;
+            this.serverPort = serverPort;
+        }
+
+        public int hashCode()
+        {
+            return protocol + clientAddr.hashCode() + serverAddr.hashCode() * clientPort * serverPort;
+        }
+        
+        public boolean equals( Object o2 )
+        {
+            if ( ! ( o2 instanceof Tuple ) ) {
+                return false;
+            }
+            Tuple o = (Tuple) o2;
+            if ( o.protocol != this.protocol ||
+                 o.clientPort != this.clientPort ||
+                 o.serverPort != this.serverPort ) {
+                return false;
+            }
+            if ( ! ( o.clientAddr == null ? this.clientAddr == null : o.clientAddr.equals(this.clientAddr) ) ) {
+                return false;
+            }
+            if ( ! ( o.serverAddr == null ? this.serverAddr == null : o.serverAddr.equals(this.serverAddr) ) ) {
+                return false;
+            }
+            return true;
+        }
+
+        public String toString()
+        {
+            return this.protocol + "| " +
+                ( this.clientAddr == null ? "null" : this.clientAddr.getHostAddress() ) + ":" +
+                this.clientPort + " -> " +
+                ( this.serverAddr == null ? "null" : this.serverAddr.getHostAddress() ) + ":" +
+                this.serverPort;
+                
+                
+        }
+    }
                             
 }
