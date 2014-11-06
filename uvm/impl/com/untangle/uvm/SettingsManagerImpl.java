@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
-
+import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
 
 public class SettingsManagerImpl implements SettingsManager
@@ -136,6 +136,15 @@ public class SettingsManagerImpl implements SettingsManager
         return _saveImpl(clz, fileName, value, saveVersion);
     }
 
+    public void save( String fileName, String inputFilename, boolean saveVersion) throws SettingsException
+    {
+        if (!_checkLegalName(fileName)) {
+            throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
+        }
+
+        _saveImpl( fileName, inputFilename, saveVersion);
+    }
+
     /**
      * @param serializer
      *            the serializer to set
@@ -225,14 +234,7 @@ public class SettingsManagerImpl implements SettingsManager
      */
     private <T> T _saveImpl( Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException
     {
-        File link = new File( fileName );
-        String outputFileName;
-        if (saveVersion){
-            String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-            outputFileName = fileName + "-version-" + versionString + _findFileExtension( fileName );
-        } else {
-            outputFileName = fileName;
-        }
+        String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
 
         Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
@@ -257,18 +259,7 @@ public class SettingsManagerImpl implements SettingsManager
                 fileWriter.close();
                 fileWriter = null;
 
-                String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName);
-                UvmContextImpl.context().execManager().execResult(formatCmd);
-                
-                if (saveVersion){
-                    /*
-                     * The API for creating symbolic links is in Java 7
-                     */
-                    String[] chops = outputFileName.split(File.separator);
-                    String filename = chops[chops.length - 1];
-                    String linkCmd = "ln -sf ./"+filename + " " + link.toString();
-                    UvmContextImpl.context().execManager().exec(linkCmd);
-                }
+                _saveCommit( fileName, outputFileName, saveVersion );
 
             } catch (IOException e) {
                 logger.warn("Failed to save settings: ", e);
@@ -289,6 +280,68 @@ public class SettingsManagerImpl implements SettingsManager
             }
             return _loadImpl(clz, fileName);
         }
+    }
+
+    /**
+     * Implementation of the save from an existing file, not a json object.
+     *
+     * This serializes the JSON object to a tmp file
+     * Then formats that tmp file and copies it to another file
+     * Then it repoints the symlink
+     */
+    private void _saveImpl( String fileName, String inputFileName, boolean saveVersion) throws SettingsException
+    {
+
+        String outputFileName = _getVersionedFileName( fileName, saveVersion );
+
+        File inputFile = new File(inputFileName);
+        File outputFile = new File(outputFileName);
+        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
+
+        /*
+         * Synchronized on the name of the parent directory, so two files cannot
+         * modify the same file at the same time
+         */
+        synchronized (lock) {
+            try{
+                IOUtil.copyFile( inputFile, outputFile );
+            } catch (IOException e) {
+                logger.warn("Failed to save settings: ", e);
+                throw new SettingsException("Unable to copy the file: '" + inputFileName + "' to '" + outputFileName + "'", e);
+            }finally{
+                IOUtil.delete( inputFile );
+
+                _saveCommit( fileName, outputFileName, saveVersion );
+            }
+        }
+    }
+
+    /**
+     * Reformat the settings file and create its symlink.
+     *
+     * @param fileName
+     *          Live filename.
+     * @param outputFileName
+     *          Versioned filename.
+     * @param saveVersion
+     *          If true, create symlink
+     */
+    private void _saveCommit( String fileName, String outputFileName, boolean saveVersion){
+        File link = new File( fileName );
+
+        String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
+        UvmContextImpl.context().execManager().execResult(formatCmd);
+                
+        if (saveVersion){
+            /*
+             * The API for creating symbolic links is in Java 7
+             */
+            String[] chops = outputFileName.split(File.separator);
+            String filename = chops[chops.length - 1];
+            String linkCmd = "ln -sf ./"+filename + " " + link.toString();
+            UvmContextImpl.context().execManager().exec(linkCmd);
+        }
+        
     }
 
     /**
@@ -349,4 +402,25 @@ public class SettingsManagerImpl implements SettingsManager
 
         return null;
     }
+
+    /**
+     * From the specified base filename, create a versioned name.
+     *
+     * @param filename
+     *          Settings file name.
+     * @param saveVersion
+     *          Indiciates whether to generate a versioned file name.
+     */
+    private String _getVersionedFileName( String fileName, boolean saveVersion )
+    {
+        String outputFileName;
+        if (saveVersion){
+            String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
+            outputFileName = fileName + "-version-" + versionString + _findFileExtension( fileName );
+        } else {
+            outputFileName = fileName;
+        }
+        return outputFileName;
+    }
+
 }

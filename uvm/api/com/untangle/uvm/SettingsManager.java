@@ -52,7 +52,20 @@ public interface SettingsManager
      */
     public <T> T save(Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException;
 
-    
+/**
+     * Move the settings file from its input location and store using a unique identifier.
+     * 
+     * @param fileName
+     *            The filename to save the class to
+     * @param inputFilename
+     *            The source filename to move
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @return Nothing
+     * @throws SettingsException
+     */
+    public void save( String fileName, String inputFileName, boolean saveVersion) throws SettingsException;
+        
     /**
      * Load the settings from the store using a unique identifier.
      * 
