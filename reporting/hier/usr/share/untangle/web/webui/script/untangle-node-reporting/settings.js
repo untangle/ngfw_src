@@ -61,7 +61,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             for( j = 0; j < matchers.list.length; j++ ) {
                 matcher = matchers.list[j];
                 if(matcher.matcherType == "FIELD_RULE" && !Ext.isEmpty(matcher.value)) {
-                    matcher.value.toString = toStringAlertRuleField
+                    matcher.value.toString = toStringAlertRuleField;
                 }
             }
         }
