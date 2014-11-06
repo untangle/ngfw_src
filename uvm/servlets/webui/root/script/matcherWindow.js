@@ -585,9 +585,6 @@ Ext.define('Ung.FieldRuleWindow', {
         }];
         this.callParent(arguments);
     },
-    /*populate: function(record, value, rulebuilder) {
-        this.callParent(arguments);
-    },*/
     setValue: function(value) {
         var field = "";
         var comparator = "";
@@ -605,7 +602,7 @@ Ext.define('Ung.FieldRuleWindow', {
     getValue: function() {
         var jsonobj = {
             toString: function() {
-                return Ext.encode(this);
+                return this.field + " " + this.comparator + " " + this.value;
             },
             field: this.down('textfield[name="field"]').getValue(),
             comparator: this.down('textfield[name="comparator"]').getValue(),
