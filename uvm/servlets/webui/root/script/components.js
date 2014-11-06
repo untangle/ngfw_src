@@ -692,7 +692,11 @@ Ext.define("Ung.Node", {
     },
     //get node settings async before node settings load
     preloadSettings: function(handler) {
-        if(Ext.isFunction(this.rpcNode.getSettings)) {
+        var nodeExtend = Ext.ClassManager.get("Ung.Node." + this.settingsClassName); 
+        if( ( nodeExtend != null ) && 
+            Ext.isFunction( nodeExtend.preloadSettings ) ) {
+            nodeExtend.preloadSettings(this);
+        }else if(Ext.isFunction(this.rpcNode.getSettings)) {
             this.rpcNode.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.openSettings.call(this, result);
