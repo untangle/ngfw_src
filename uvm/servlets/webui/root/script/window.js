@@ -246,11 +246,18 @@ Ext.define("Ung.SettingsWin", {
             return;
         }
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-        if(Ext.isFunction(this.beforeSave)) {
-            this.beforeSave(isApply, this.save);
-        } else {
-            this.save.call(this, isApply);
-        }
+        // Give the browser time to "breath" to bring up save progress bar.
+        Ext.Function.defer(
+            function(){
+                if(Ext.isFunction(this.beforeSave)) {
+                    this.beforeSave(isApply, this.save);
+                } else {
+                    this.save.call(this, isApply);
+                }
+            },
+            100,
+            this
+        );
     },
     //To Override
     save: function(isApply) {
