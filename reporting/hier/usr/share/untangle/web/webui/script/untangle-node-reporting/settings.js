@@ -12,9 +12,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     initComponent: function(container, position) {
         this.buildPasswordValidator();
         //FIXME: using a test property for alertRules during backend implementation
-        toStringAlertRuleField = function () {
-            return this.field + " " + this.comparator + " " + this.value;
-        };
         console.log(this.getSettings());
         this.getSettings().alertRules= this.getSettings().alertRules || {
             javaClass: "java.util.LinkedList",
@@ -52,6 +49,10 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     }]
                 }
             }]
+        };
+        
+        var toStringAlertRuleField = function () {
+            return this.field + " " + this.comparator + " " + this.value;
         };
         //set toString function for "FIELD_RULE" to display them properly in rule builder
         var i,j, matcher, marchers;
