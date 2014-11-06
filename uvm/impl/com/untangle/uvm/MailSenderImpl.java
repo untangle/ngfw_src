@@ -443,6 +443,19 @@ public class MailSenderImpl implements MailSender
                 sb.append("'\n");
 
                 sb.append("dc_smarthost=''\n");
+
+
+                /**
+                 * Substitute the port in the exim template
+                 * Set it back to 25 in case it was previously configured to something else in smarthost
+                 */
+                // remove all "  port = xx"
+                String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
+                UvmContextFactory.context().execManager().exec(cmd1);
+                // insert new "  port = xx"
+                String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g\" -i " + EXIM_TEMPLATE_FILE;
+                UvmContextFactory.context().execManager().exec(cmd2);
+
             } else {
                 /**
                  * Send mail to smarthost
