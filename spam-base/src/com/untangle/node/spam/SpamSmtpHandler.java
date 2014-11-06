@@ -199,12 +199,12 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             if (report == null) { // Handle error case
                 if (node.getSettings().getSmtpConfig().getFailClosed()) {
                     logger.warn("Error scanning message. Failing closed");
-                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.BLOCK);
+                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.FAILED_BLOCKED);
                     node.incrementBlockCount();
                     return new ScannedMessageResult(BlockOrPassResult.TEMPORARILY_REJECT);
                 } else {
                     logger.warn("Error scanning message. Failing open");
-                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
+                    postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.FAILED_PASSED);
                     node.incrementPassCount();
                     return new ScannedMessageResult(BlockOrPassResult.PASS);
                 }
