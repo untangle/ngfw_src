@@ -1003,9 +1003,11 @@ Ext.define("Ung.Main", {
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         Ext.Function.defer(function() {
-            main.configWin = Ext.create(this.className, this);
-            main.configWin.show();
-            Ext.MessageBox.hide();
+            Ext.require([this.className], function() {
+                main.configWin = Ext.create(this.className, this);
+                main.configWin.show();
+                Ext.MessageBox.hide();
+            }, this);
         }, 10, configItem);
     },
     destoyNodes: function () {

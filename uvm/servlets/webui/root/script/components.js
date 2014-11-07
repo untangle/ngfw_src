@@ -672,6 +672,10 @@ Ext.define("Ung.Node", {
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
+        /*this.settingsClassName = 'Webui.'+this.name+'.settings';
+        Ext.require([this.settingsClassName], function() {
+            this.initSettings();
+        }, this);*/
         this.settingsClassName = Ung.NodeWin.getClassName(this.name);
         if (!this.settingsClassName) {
             // Dynamically load node javaScript

@@ -5366,10 +5366,12 @@ Ext.define("Webui.config.network", {
                 Webui.config.network.superclass.closeWindow.call(this);
                 main.openConfig(main.configMap["network"]);
                 Ext.defer(function() {
-                    this.needRackReload=true;
-                    this.tabs.setActiveTab(activeTabIndex);
-                    this.advancedTabPanel.setActiveTab(advancedTabIndex);
-                },10, this);
+                    if(main.configWin && main.configWin.className=="Webui.config.network") {
+                        main.configWin.needRackReload=true;
+                        main.configWin.tabs.setActiveTab(activeTabIndex);
+                        main.configWin.advancedTabPanel.setActiveTab(advancedTabIndex);
+                    }
+                },100, this);
             } else {
                 Ext.MessageBox.hide();
                 this.closeWindow();
