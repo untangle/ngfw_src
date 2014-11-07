@@ -14,9 +14,9 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-testsiteIP = "74.123.29.140"
-testsiteIPRange = "74.123.29.139-74.123.29.141"
-testsiteIPRange2 = "74.123.27.139-74.123.30.141"
+testsiteIP = "206.169.34.22"
+testsiteIPRange = "206.169.34.21-206.169.34.23"
+testsiteIPRange2 = "206.169.35.21-206.169.35.23"
 dnsServer = "74.123.28.4"
 
 def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True, invert=False ):
