@@ -27,7 +27,8 @@ public class ReportingSettings implements Serializable, JSONString
 
     private LinkedList<ReportingHostnameMapEntry> hostnameMap = new LinkedList<ReportingHostnameMapEntry>();
     private LinkedList<ReportingUser> reportingUsers = new LinkedList<ReportingUser>();
-
+    private LinkedList<AlertRule> alertRules = new LinkedList<AlertRule>();
+    
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
     private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");
     private boolean generateMonthlyReports = false;
@@ -69,6 +70,9 @@ public class ReportingSettings implements Serializable, JSONString
     public LinkedList<ReportingUser> getReportingUsers() { return this.reportingUsers; }
     public void setReportingUsers( LinkedList<ReportingUser> reportingUsers ) { this.reportingUsers = reportingUsers; }
 
+    public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
+    public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
+    
     public DayOfWeekMatcher getGenerateDailyReports() { return this.generateDailyReports; }
     public void setGenerateDailyReports( DayOfWeekMatcher generateDailyReports ) { this.generateDailyReports = generateDailyReports; }
 

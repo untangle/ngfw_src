@@ -327,6 +327,39 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     {
         ReportingSettings settings = new ReportingSettings();
 
+        LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
+        
+        LinkedList<AlertRuleMatcher> matchers;
+        AlertRuleMatcher matcher1;
+        AlertRuleMatcher matcher2;
+        AlertRule alertRule;
+        
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*FailDEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "DISCONNECTED" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "WAN is offline" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*ClassDLogEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "protochain", "=", "*BITTORRE*" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*HttpResponseEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "contentLength", ">", "100000000" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download" );
+        rules.add( alertRule );
+        
+        settings.setAlertRules( rules );
+        
         return settings;
     }
     

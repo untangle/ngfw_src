@@ -19,49 +19,54 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 javaClass: "com.untangle.node.reporting.AlertRule",
                 ruleId: 1,
                 enabled: true,
-                flag: true,
+                log: true,
                 alert: true,
                 description: "Web Filter Test rule 1",
                 matchers: {
                     javaClass: "java.util.LinkedList",
                     list: [{
                         javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "JAVA_CLASS",
-                        value: "*WebFilterQueryEvent*"
+                        matcherType: "FIELD_CONDITION",
+                        value: {
+                            field: "javaClass",
+                            comparator: "=",
+                            value: "*WebFilterQueryEvent*",
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
+                        }
                     }, {
                         javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "FIELD_RULE",
+                        matcherType: "FIELD_CONDITION",
                         value: {
                             field: "host",
                             comparator: "=",
                             value: "facebook.com",
-                            javaClass: "com.untangle.node.reporting.AlertRuleField"
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
                         }
                     },{
                         javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "FIELD_RULE",
+                        matcherType: "FIELD_CONDITION",
                         value: {
                             field: "cClientAddr",
                             comparator: "=",
                             value: "192.168.2.174",
-                            javaClass: "com.untangle.node.reporting.AlertRuleField"
+                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
                         }
                     }]
                 }
             }]
         };
         
-        var toStringAlertRuleField = function () {
+        var toStringAlertRuleMatcherField = function () {
             return this.field + " " + this.comparator + " " + this.value;
         };
-        //set toString function for "FIELD_RULE" to display them properly in rule builder
+        //set toString function for "FIELD_CONDITION" to display them properly in rule builder
         var i,j, matcher, marchers;
         for( i = 0; i < this.getSettings().alertRules.list.length; i++ ) {
             matchers =this.getSettings().alertRules.list[i].matchers;
             for( j = 0; j < matchers.list.length; j++ ) {
                 matcher = matchers.list[j];
-                if(matcher.matcherType == "FIELD_RULE" && !Ext.isEmpty(matcher.value)) {
-                    matcher.value.toString = toStringAlertRuleField;
+                if(matcher.matcherType == "FIELD_CONDITION" && !Ext.isEmpty(matcher.value)) {
+                    matcher.value.toString = toStringAlertRuleMatcherField;
                 }
             }
         }
@@ -85,8 +90,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     },
     getAlertRuleMatchers: function () {
         return [
-            {name:"JAVA_CLASS",displayName: this.i18n._("Event Type - javaClass"), type: "text", visible: true, allowInvert: false},
-            {name:"FIELD_RULE",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.FieldRuleWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
+            {name:"FIELD_CONDITION",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.FieldRuleWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
         ];
     },
     buildPasswordValidator: function() {
@@ -828,7 +832,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 emptyRow: {
                     "ruleId": 0,
                     "enabled": true,
-                    "flag": false,
+                    "log": false,
                     "alert": false,
                     "description": "",
                     "javaClass": "com.untangle.node.reporting.AlertRule"
@@ -876,7 +880,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }, {
                     xtype:'checkcolumn',
                     header: this.i18n._("Log as interesting event"),
-                    dataIndex: 'flag',
+                    dataIndex: 'log',
                     width:150
                 }, {
                     xtype:'checkcolumn',
@@ -915,7 +919,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     items:[{
                         xtype:'checkbox',
                         labelWidth: 160,
-                        dataIndex: "flag",
+                        dataIndex: "log",
                         fieldLabel: this.i18n._("Log as interesting event")
                     }, {
                         xtype:'checkbox',
