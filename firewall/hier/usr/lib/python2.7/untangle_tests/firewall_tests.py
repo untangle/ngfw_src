@@ -2,6 +2,8 @@ import unittest2
 import time
 import sys
 import traceback
+import ipaddr
+import socket
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -14,9 +16,17 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-testsiteIP = "206.169.34.22"
-testsiteIPRange = "206.169.34.21-206.169.34.23"
-testsiteIPRange2 = "206.169.35.21-206.169.35.23"
+testsite = "test.untangle.com"
+
+testsiteIP = socket.gethostbyname(testsite)
+ipObj = ipaddr.IPAddress(testsiteIP)
+startRangeIP = ipObj - 1
+stopRangeIP = ipObj + 1
+testsiteIPRange = str(startRangeIP) + "-" + str(stopRangeIP)
+
+startRangeIP2 = ipObj - 255
+stopRangeIP2 = ipObj + 255
+testsiteIPRange2 = str(startRangeIP2) + "-" + str(stopRangeIP2)
 dnsServer = "74.123.28.4"
 
 def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True, invert=False ):
