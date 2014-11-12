@@ -679,6 +679,11 @@ public class NetworkManagerImpl implements NetworkManager
                 interfaceSettings.setIsWan( false );
                 interfaceSettings.setConfigType( InterfaceSettings.ConfigType.DISABLED );
 
+		// Check for wireless interfaces
+		if (deviceName.startsWith("wlan")) {
+		    interfaceSettings.setIsWirelessInterface(true);
+		}
+
                 List<InterfaceSettings> currentList = netSettings.getInterfaces();
                 if (currentList == null) currentList = new LinkedList<InterfaceSettings>();
                 currentList.add( interfaceSettings );
@@ -785,6 +790,12 @@ public class NetworkManagerImpl implements NetworkManager
                 } catch (Exception e) {
                     intf.setName("Interface " + (i + 1));
                 }
+
+		// Check for wireless interfaces
+		if (devName.startsWith("wlan")) {
+		    intf.setIsWirelessInterface(true);
+		}
+
                 intf.setPhysicalDev( devName);
                 intf.setSystemDev( devName );
                 intf.setSymbolicDev( devName );

@@ -1181,7 +1181,7 @@ Ext.define("Webui.config.network", {
                     dataIndex: "wirelessChannel",
                     fieldLabel: this.i18n._("Channel"),
                     editable: false,
-                    store: [[1, "1"],[2, "2"],[3, "3"],[4, "4"],[5, "5"],[6, "6"],[7, "7"],[8, "8"],[9, "9"],[10, "10"],[11, "11"],[12, "12"]],
+                    store: [[1, "1"],[2, "2"],[3, "3"],[4, "4"],[5, "5"],[6, "6"],[7, "7"],[8, "8"],[9, "9"],[10, "10"],[11, "11"]],
                     width: 300,
                     queryMode: 'local'
                 }, {
