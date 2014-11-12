@@ -17,6 +17,8 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
+testsite = "test.untangle.com"
+testsiteIP = socket.gethostbyname(testsite)
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -235,7 +237,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -264,7 +266,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (fname, fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (testsiteIP, fname, fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -295,7 +297,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=74.123.29.140 --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
         flushEvents()
         query = None;
