@@ -43,6 +43,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
     private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
+
+    private static final double LIENENCY_PERCENT = 1.10; /* the enforced seat limit is the license seat limit TIMES this value */
+    private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
     
     private static final String EXPIRED = "expired";
 
@@ -215,6 +218,9 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
                 continue;
             seats = lic.getSeats();
         }
+
+        seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT;
+        
         return seats;
     }
 
