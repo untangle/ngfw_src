@@ -9,7 +9,7 @@ package com.untangle.node.spam;
 @SuppressWarnings("serial")
 public class SpamSmtpConfig
 {
-    public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 18;
+    public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 20;
     public static final int DEFAULT_STRENGTH = 43;
     public static final boolean DEFAULT_ADD_SPAM_HEADERS = false;
     public static final boolean DEFAULT_SCAN = false;
