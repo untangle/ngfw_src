@@ -10,66 +10,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     gridReportingUsers: null,
     gridHostnameMap: null,
     initComponent: function(container, position) {
+        this.initFieldConditionsToString();
         this.buildPasswordValidator();
-        //FIXME: using a test property for alertRules during backend implementation
-        console.log(this.getSettings());
-        this.getSettings().alertRules= this.getSettings().alertRules || {
-            javaClass: "java.util.LinkedList",
-            list: [{
-                javaClass: "com.untangle.node.reporting.AlertRule",
-                ruleId: 1,
-                enabled: true,
-                log: true,
-                alert: true,
-                description: "Web Filter Test rule 1",
-                matchers: {
-                    javaClass: "java.util.LinkedList",
-                    list: [{
-                        javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "FIELD_CONDITION",
-                        value: {
-                            field: "javaClass",
-                            comparator: "=",
-                            value: "*WebFilterQueryEvent*",
-                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
-                        }
-                    }, {
-                        javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "FIELD_CONDITION",
-                        value: {
-                            field: "host",
-                            comparator: "=",
-                            value: "facebook.com",
-                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
-                        }
-                    },{
-                        javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        matcherType: "FIELD_CONDITION",
-                        value: {
-                            field: "cClientAddr",
-                            comparator: "=",
-                            value: "192.168.2.174",
-                            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
-                        }
-                    }]
-                }
-            }]
-        };
-        
-        var toStringAlertRuleMatcherField = function () {
-            return this.field + " " + this.comparator + " " + this.value;
-        };
-        //set toString function for "FIELD_CONDITION" to display them properly in rule builder
-        var i,j, matcher, marchers;
-        for( i = 0; i < this.getSettings().alertRules.list.length; i++ ) {
-            matchers =this.getSettings().alertRules.list[i].matchers;
-            for( j = 0; j < matchers.list.length; j++ ) {
-                matcher = matchers.list[j];
-                if(matcher.matcherType == "FIELD_CONDITION" && !Ext.isEmpty(matcher.value)) {
-                    matcher.value.toString = toStringAlertRuleMatcherField;
-                }
-            }
-        }
         this.buildStatus();
         this.buildGeneration();
         this.buildEmail();
@@ -88,9 +30,25 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.clearDirty();
         this.callParent(arguments);
     },
+    initFieldConditionsToString: function () {
+        var toStringAlertRuleMatcherField = function () {
+            return this.field + " " + this.comparator + " " + this.value;
+        };
+        //set toString function for "FIELD_CONDITION" to display them properly in rule builder
+        var i,j, matcher, marchers;
+        for( i = 0; i < this.getSettings().alertRules.list.length; i++ ) {
+            matchers =this.getSettings().alertRules.list[i].matchers;
+            for( j = 0; j < matchers.list.length; j++ ) {
+                matcher = matchers.list[j];
+                if(matcher.matcherType == "FIELD_CONDITION" && !Ext.isEmpty(matcher.value)) {
+                    matcher.value.toString = toStringAlertRuleMatcherField;
+                }
+            }
+        }
+    },
     getAlertRuleMatchers: function () {
         return [
-            {name:"FIELD_CONDITION",displayName: this.i18n._("Field rule"), type: "editor", editor: Ext.create('Ung.FieldRuleWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
+            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
         ];
     },
     buildPasswordValidator: function() {
@@ -830,7 +788,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 hasReorder: true,
                 addAtTop: false,
                 emptyRow: {
-                    "ruleId": 0,
+                    "ruleId": null,
                     "enabled": true,
                     "log": false,
                     "alert": false,
@@ -941,6 +899,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.getSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();
 
         handler.call(this, isApply);
+    },
+    afterSave: function() {
+        this.initFieldConditionsToString();
     },
     validate: function () {
         var components = this.query("component[toValidate]");

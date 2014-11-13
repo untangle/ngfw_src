@@ -544,7 +544,7 @@ Ext.define('Ung.GroupEditorWindow', {
 });
 
 //matcher pop-up editor for time groups
-Ext.define('Ung.FieldRuleWindow', {
+Ext.define('Ung.FieldConditionWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 150,
     width: 500,
@@ -607,7 +607,7 @@ Ext.define('Ung.FieldRuleWindow', {
             field: this.down('textfield[name="field"]').getValue(),
             comparator: this.down('textfield[name="comparator"]').getValue(),
             value: this.down('textfield[name="value"]').getValue(),
-            javaClass: "com.untangle.node.reporting.AlertRuleField"
+            javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
         };
         return jsonobj;
     }
