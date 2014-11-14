@@ -221,6 +221,14 @@ def createVLANInterface( physicalInterface, symInterface, sysInterface, ipV4addr
             "vrrpEnabled": False
         }
  
+def createAlias(ipAddress,ipNetmask,ipPrefix):
+    return {
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+            "staticAddress": ipAddress,
+            "staticNetmask": ipNetmask,
+            "staticPrefix": ipPrefix
+        }
+
 
 def getHttpHttpsPorts():
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -285,7 +293,38 @@ def appendVLAN(parentInterfaceName):
                     ipFound = True
         netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,symbolicDev,systemDev,str(testVLANIP)))
         uvmContext.networkManager().setNetworkSettings(netsettings)
-
+        
+def appendAliases(parentInterfaceName):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    # find ten IP addresses if interface is addresssed.
+    successfullyAdded = False
+    for i in range(len(netsettings['interfaces']['list'])):
+        if netsettings['interfaces']['list'][i]['name'] == parentInterfaceName:
+            # Alias are only added if the interface is addressed and has an IP address.
+            if netsettings['interfaces']['list'][i]['addressed'] and netsettings['interfaces']['list'][i]['v4StaticAddress']:
+                # verify the IPs are not used
+                unitIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
+                unitIPnodes = unitIP.split('.')
+                unitIPnodes[-1] = "0" # replace last octet with start of range 
+                unitIPBase = ".".join(unitIPnodes)
+                testAliasIP = ipaddr.IPAddress(unitIPBase)
+                aliasIPList = []
+                for j in range(254):
+                    testAliasIP +=1
+                    testIPResult = subprocess.call(["ping","-c","1",str(testAliasIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                    if (testIPResult != 0):
+                        aliasIPList.append(str(testAliasIP))
+                        if len(aliasIPList) == 10:
+                            break
+            break  # Found the interface
+    for testAliasIP in aliasIPList:
+        successfullyAdded = True
+        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(createAlias(testAliasIP,
+                                                                         netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                         netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+    return aliasIPList[0]
+    
 def nukeFirstLevelRule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'][:] = []
@@ -355,13 +394,21 @@ class NetworkTests(unittest2.TestCase):
         global orig_netsettings
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        # Add a test static VLAN to check for issues saving VLANs
-        # For review
-        # appendVLAN('Internal')
 
     def test_010_clientIsOnline(self):
-        # save original network settings
         result = remote_control.isOnline()
+        assert (result == 0)
+
+    def test_015_addVLANsAndAliases(self):
+        raise unittest2.SkipTest("Review changes in test")        
+        # Add a test static VLAN and Aliases to check for issues saving VLANs
+        appendVLAN('Internal')
+        lastAliasIP = appendAliases('Internal')
+        if lastAliasIP:
+            result = remote_control.runCommand("ping -c 1 %s" % lastAliasIP)
+        else:
+            # No alias IP added so just pass
+            result = 0
         assert (result == 0)
 
     # test basic port forward (tcp port 80)
