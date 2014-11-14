@@ -9,6 +9,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     panelDatabase: null,
     gridReportingUsers: null,
     gridHostnameMap: null,
+    gridInterestingEventLog: null,
     initComponent: function(container, position) {
         this.initFieldConditionsToString();
         this.buildPasswordValidator();
@@ -19,12 +20,13 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildHostnameMap();
         this.buildDatabase();
         this.buildAlerts();
+        this.buildInterestingEventLog();
 
         // only show DB settings if set to something other than localhost
         if (this.getSettings().dbHost != "localhost") {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.panelDatabase]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.gridInterestingEventLog, this.panelDatabase]);
         } else {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.gridInterestingEventLog ]);
         }
         this.tabs.setActiveTab(this.panelStatus);
         this.clearDirty();
@@ -803,7 +805,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }, {
                     name: 'enabled'
                 }, {
-                    name: 'flag'
+                    name: 'log'
                 }, {
                     name: 'alert'
                 }, {
@@ -887,6 +889,46 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     }]
                 }]
             })]
+        });
+    },
+    // Event Log
+    buildInterestingEventLog: function() {
+        this.gridInterestingEventLog = Ext.create('Ung.GridEventLog',{
+            settingsCmp: this,
+            name: "event-log",
+            helpSource: "reporting_interesting_event_log",
+            eventQueriesFn: this.getRpcNode().getEventQueries,
+            title: this.i18n._("Interesting Event Log"),
+            // the list of fields
+            fields: [{
+                name: "time_stamp",
+                sortType: Ung.SortTypes.asTimestamp
+            },{
+                name: "text"
+            },{
+                name: "json"
+            }],
+            // the list of columns
+            columns: [{
+                header: this.i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            },{
+                header: this.i18n._("Text"),
+                flex: 1,
+                width: 500,
+                sortable: true,
+                dataIndex: "text"
+            },{
+                header: this.i18n._("JSON"),
+                width: 500,
+                sortable: true,
+                dataIndex: "json"
+            }]
         });
     },
     beforeSave: function(isApply,handler) {

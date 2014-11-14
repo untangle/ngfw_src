@@ -31,6 +31,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
@@ -53,6 +54,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     private static EventReaderImpl eventReader = null;
     private static ReportingManagerImpl reportingManager = null;
 
+    private EventLogQuery interestingEventsQuery;
+    
     private ReportingSettings settings;
 
     public ReportingNodeImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
@@ -68,6 +71,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
+
+        this.interestingEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                                        "SELECT * FROM reports.interesting " + 
+                                                        "WHERE true " +
+                                                        "ORDER BY time_stamp DESC");   
+        
     }
 
     public void setSettings( final ReportingSettings newSettings )
@@ -102,6 +111,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     public ReportingSettings getSettings()
     {
         return this.settings;
+    }
+
+    public EventLogQuery[] getEventQueries()
+    {
+        return new EventLogQuery[] { this.interestingEventsQuery };
     }
 
     public void createSchemas()

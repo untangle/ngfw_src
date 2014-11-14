@@ -263,17 +263,19 @@ public class EventWriterImpl implements Runnable
          */
         try {
             JSONObject jsonObject = event.toJSONObject();
-            
-            for ( AlertRule rule : node.getSettings().getAlertRules() ) {
-                if ( ! rule.getEnabled() )
-                    continue;
+            if ( ! ( event instanceof InterestingEvent ) ) {
+                for ( AlertRule rule : node.getSettings().getAlertRules() ) {
+                    if ( ! rule.getEnabled() )
+                        continue;
                 
-                if ( rule.isMatch( jsonObject ) ) {
-                    logger.warn("XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString());
-                    /* FIXME */
-                    /* FIXME */
-                    /* FIXME */
-                    /* IMPLEMENT ME */
+                    if ( rule.isMatch( jsonObject ) ) {
+                        logger.warn( "XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+                        if ( rule.getLog() )
+                            logEvent( new InterestingEvent( "FIXME", jsonObject ) );
+                        if ( rule.getAlert() )
+                            logger.warn( "FIXME alert:" + jsonObject.toString() );
+                    }
                 }
             }
         } catch ( Exception e ) {
