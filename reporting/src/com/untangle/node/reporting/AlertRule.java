@@ -71,11 +71,13 @@ public class AlertRule implements JSONString, Serializable
         return jO.toString();
     }
 
-    public boolean isMatch( Object obj )
+    public boolean isMatch( JSONObject obj )
     {
-        /**
-         * FIXME
-         */
-        return false;
+        for ( AlertRuleMatcher matcher : matchers ) {
+            if ( ! matcher.isMatch ( obj ) )
+                return false;
+        }
+        
+        return true;
     }
 }

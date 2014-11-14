@@ -335,7 +335,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         AlertRule alertRule;
         
         matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*FailDEvent*" ) );
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*FailDEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "DISCONNECTED" ) );
         matchers.add( matcher2 );
@@ -343,7 +343,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*ClassDLogEvent*" ) );
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*ClassDLogEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "protochain", "=", "*BITTORRE*" ) );
         matchers.add( matcher2 );
@@ -351,7 +351,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "javaClass", "=", "*HttpResponseEvent*" ) );
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*HttpResponseEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "contentLength", ">", "100000000" ) );
         matchers.add( matcher2 );

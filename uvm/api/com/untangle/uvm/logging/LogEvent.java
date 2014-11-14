@@ -76,4 +76,10 @@ public abstract class LogEvent implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    public JSONObject toJSONObject()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO;
+    }
 }

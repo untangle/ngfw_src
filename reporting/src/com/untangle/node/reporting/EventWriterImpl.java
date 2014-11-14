@@ -3,9 +3,10 @@
  */
 package com.untangle.node.reporting;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -256,6 +257,29 @@ public class EventWriterImpl implements Runnable
         } catch (Exception exn) { 
             logger.warn("failed to send syslog", exn);
         }
+
+        /**
+         * Run alert rules
+         */
+        try {
+            JSONObject jsonObject = event.toJSONObject();
+            
+            for ( AlertRule rule : node.getSettings().getAlertRules() ) {
+                if ( ! rule.getEnabled() )
+                    continue;
+                
+                if ( rule.isMatch( jsonObject ) ) {
+                    logger.warn("XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString());
+                    /* FIXME */
+                    /* FIXME */
+                    /* FIXME */
+                    /* IMPLEMENT ME */
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate alert rules.", e);
+        }
+                
     }
 
     public double getAvgWriteTimePerEvent()

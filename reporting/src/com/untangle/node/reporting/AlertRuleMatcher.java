@@ -3,6 +3,10 @@
  */
 package com.untangle.node.reporting;
 
+import org.json.JSONObject;
+
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.RuleMatcher;
 
 /**
@@ -13,6 +17,8 @@ import com.untangle.uvm.node.RuleMatcher;
 @SuppressWarnings("serial")
 public class AlertRuleMatcher
 {
+    private static final Logger logger = Logger.getLogger( AlertRuleMatcher.class );
+
     private MatcherType matcherType;
     private AlertRuleMatcherField value;
     
@@ -35,4 +41,13 @@ public class AlertRuleMatcher
 
     public AlertRuleMatcherField getValue() { return value; }
     public void setValue( AlertRuleMatcherField newValue ) { this.value = newValue; }
+
+    public boolean isMatch( JSONObject obj )
+    {
+        if ( value == null )
+            return false;
+        
+        return value.isMatch( obj );
+    }
+
 }
