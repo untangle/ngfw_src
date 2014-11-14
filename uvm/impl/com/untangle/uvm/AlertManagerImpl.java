@@ -835,7 +835,7 @@ public class AlertManagerImpl implements AlertManager
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
 
         if ( seatLimit > 0 && currentSize > seatLimit ) {
-            String alertText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + seatLimit + ")");
+            String alertText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + seatLimit + ")";
             alertList.add(alertText);
         }
      }
