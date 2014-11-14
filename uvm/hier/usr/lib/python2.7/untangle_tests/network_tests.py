@@ -174,6 +174,54 @@ def createDNSRule( networkAddr, name):
         "name": name
          }
 
+def createVLANInterface( physicalInterface, symInterface, sysInterface, ipV4address):
+    return {
+            "addressed": True,
+            "bridged": False,
+            "configType": "ADDRESSED",
+            "dhcpEnabled": False,
+            "dhcpOptions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "disabled": False,
+            "interfaceId": 100,
+            "isVlanInterface": True,
+            "isWan": False,
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+            "name": "network_tests_010",
+            "physicalDev": physicalInterface, #"eth1",
+            "raEnabled": False,
+            "symbolicDev": symInterface, #"eth1.1",
+            "systemDev": sysInterface, #"eth1.1",
+            "v4Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v4ConfigType": "STATIC",
+            "v4NatEgressTraffic": False,
+            "v4NatIngressTraffic": False,
+            "v4PPPoEPassword": "",
+            "v4PPPoEUsePeerDns": False,
+            "v4PPPoEUsername": "",
+            "v4StaticAddress": ipV4address, #"192.168.14.1",
+            "v4StaticNetmask": "255.255.255.0",
+            "v4StaticPrefix": 24,
+            "v6Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v6ConfigType": "STATIC",
+            "vlanParent": 2,
+            "vlanTag": 1,
+            "vrrpAliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "vrrpEnabled": False
+        }
+ 
+
 def getHttpHttpsPorts():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     return (netsettings['httpPort'], netsettings['httpsPort'])
@@ -203,6 +251,40 @@ def appendDNSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
+
+def appendVLAN(parentInterfaceName):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    # find the physicalDev of the interface passed in.
+    for interface in netsettings['interfaces']['list']:
+        if interface['name'] == parentInterfaceName:
+            physicalDev = interface['physicalDev']
+            symbolicDev = interface['symbolicDev']
+            systemDev = interface['systemDev']
+            break
+    # only add VLAN if ethX is found
+    if physicalDev:
+        # Check if the sample network of 192.168.201.0/24 and ethX.1 is available
+        ipFound = True
+        interfaceFound = True
+        loopLimit = 254
+        ethIndex = 0
+        testVLANIP = ipaddr.IPAddress("192.168.201.0")
+        while ((ipFound or interfaceFound) and loopLimit > 0):
+            loopLimit -= 1
+            if ipFound:
+                testVLANIP += 1
+            if interfaceFound:
+                ethIndex += 1
+            testEth = physicalDev + str(ethIndex)
+            ipFound = False
+            interfaceFound = False
+            for interface in netsettings['interfaces']['list']:
+                if (interface['physicalDev'] == testEth) or  (interface['symbolicDev'] == testEth) or (interface['systemDev'] == testEth):
+                    interfaceFound = True
+                if (interface['v4StaticAddress'] == str(testVLANIP)):
+                    ipFound = True
+        netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,symbolicDev,systemDev,str(testVLANIP)))
+        uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def nukeFirstLevelRule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -273,6 +355,9 @@ class NetworkTests(unittest2.TestCase):
         global orig_netsettings
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        # Add a test static VLAN to check for issues saving VLANs
+        # For review
+        # appendVLAN('Internal')
 
     def test_010_clientIsOnline(self):
         # save original network settings
