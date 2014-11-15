@@ -163,6 +163,11 @@ public class EventWriterImpl implements Runnable
                         logger.warn("OVERLOAD: Low Water Mark reached. Continuing normal operation.");
                         this.overloadedFlag = false;
                     }
+
+                    /**
+                     * Run alert rules
+                     */
+                    AlertHandler.runAlertRules( node.getSettings().getAlertRules(), logQueue );
                     
                     /**
                      * If there is anything to log, log it to the database
@@ -257,31 +262,6 @@ public class EventWriterImpl implements Runnable
         } catch (Exception exn) { 
             logger.warn("failed to send syslog", exn);
         }
-
-        /**
-         * Run alert rules
-         */
-        try {
-            JSONObject jsonObject = event.toJSONObject();
-            if ( ! ( event instanceof InterestingEvent ) ) {
-                for ( AlertRule rule : node.getSettings().getAlertRules() ) {
-                    if ( ! rule.getEnabled() )
-                        continue;
-                
-                    if ( rule.isMatch( jsonObject ) ) {
-                        logger.warn( "XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString() );
-
-                        if ( rule.getLog() )
-                            logEvent( new InterestingEvent( "FIXME", jsonObject ) );
-                        if ( rule.getAlert() )
-                            logger.warn( "FIXME alert:" + jsonObject.toString() );
-                    }
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate alert rules.", e);
-        }
-                
     }
 
     public double getAvgWriteTimePerEvent()

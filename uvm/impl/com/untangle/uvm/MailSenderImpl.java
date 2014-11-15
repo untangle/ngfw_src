@@ -210,7 +210,8 @@ public class MailSenderImpl implements MailSender
         return MAIL_SENDER;
     }
 
-    public void sendMessageWithAttachments(String[] recipients, String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
+    public void sendMessageWithAttachments(String[] recipients, String subject, String bodyHTML, List<String> extraLocations, List<File> extras)
+    {
         if (extraLocations == null && extras == null) {
             // Do this simplest thing.  Shouldn't be used. XX
             sendSimple(mailSession, recipients, subject, bodyHTML, null, null);
@@ -257,7 +258,8 @@ public class MailSenderImpl implements MailSender
     /*
      * See doc on interface
      */
-    public boolean sendMessage(InputStream msgStream) {
+    public boolean sendMessage(InputStream msgStream)
+    {
         //TODO bscott Need better error handling
         //TODO bscott by using JavaMail, we don't seem to be able to have
         //     a null ("<>") MAIL FROM.  This is a violation of some spec
@@ -288,7 +290,6 @@ public class MailSenderImpl implements MailSender
      */
     public boolean sendMessage(InputStream msgStream, String...rcptStrs)
     {
-
         //First, convert the addresses
         Address[] addresses = parseAddresses(rcptStrs);
         if(addresses == null || addresses.length == 0) {
