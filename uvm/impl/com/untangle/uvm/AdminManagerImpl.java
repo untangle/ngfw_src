@@ -72,7 +72,7 @@ public class AdminManagerImpl implements AdminManager
             logger.warn("No settings found - Initializing new settings.");
 
             AdminSettings newSettings = new AdminSettings();
-            newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION));
+            newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION, ""));
             this.setSettings(newSettings);
         }
         else {
@@ -270,6 +270,19 @@ public class AdminManagerImpl implements AdminManager
         return sb.toString();
     }
 
+    public String getAdminEmail()
+    {
+        try {
+            for ( AdminUserSettings user : getSettings().getUsers() ) {
+                if ( "admin".equals( user.getUsername() ) )
+                    return user.getEmailAddress();
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to find admin email", e);
+        }
+        return null;
+    }
+    
     private void reconfigure() 
     {
         // If timezone on box is different (example: kernel upgrade), reset it:

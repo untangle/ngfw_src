@@ -38,7 +38,8 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
     savePassword: function() {
         // New Password
         this.password = this.panel.down('textfield[name="password"]').getValue();
-        rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password );
+        this.adminEmail = this.panel.down('textfield[name="adminEmail"]').getValue();
+        rpc.setup.setAdminPassword( Ext.bind(this.saveTimeZone, this), this.password, this.adminEmail );
     },
 
     saveTimeZone: function( result, exception ) {
@@ -166,6 +167,26 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                 }]
             }, {
                 xtype: 'fieldset',
+                
+                border: false,
+                items: [{
+                    xtype: 'container',
+                    html: '<b>'+i18n._( 'Configure administrator email.')+'</b>',
+                    border: false
+                }, {
+                    xtype: 'textfield',
+                    inputType: 'text',
+                    fieldLabel: i18n._('Admin Email'),
+                    name: 'adminEmail',
+                    allowBlank: true,
+                    width: 300,
+                    vtype: 'email',
+                    cls: 'small-top-margin'
+
+                }]
+            }, {
+                xtype: 'fieldset',
+                
                 border: false,
                 items: [{
                     xtype: 'container',
@@ -188,6 +209,12 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         this.card = {
             title: i18n._( "Settings" ),
             panel: this.panel,
+            onLoad: Ext.bind(function( complete ) {
+                var emailField=this.panel.query('textfield[name="adminEmail"]');
+                if ( emailField[0].getValue() == null || emailField[0].getValue() == "" )
+                    emailField[0].setValue( rpc.adminEmail );
+                complete();
+            }, this ),
             onNext: Ext.bind(this.saveSettings, this ),
             onValidate: Ext.bind(this.validateSettings,this)
         };
@@ -1480,6 +1507,7 @@ Ung.Setup = {
         try {
             timeZonesResult = rpc.setup.getTimeZones();
             rpc.oemName = rpc.setup.getOemName();
+            rpc.adminEmail = rpc.setup.getAdminEmail();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }

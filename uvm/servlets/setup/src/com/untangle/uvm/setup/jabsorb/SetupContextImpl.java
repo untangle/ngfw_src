@@ -39,7 +39,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         lm.setLanguageSettings( ls );
     }
     
-    public void setAdminPassword( String password ) throws TransactionRolledbackException
+    public void setAdminPassword( String password, String email ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
         AdminUserSettings admin = null;
@@ -58,9 +58,10 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
          * If not found, create it, otherwise just set the existing admin user's password
          */
         if ( admin == null ) {
-            admin = new AdminUserSettings( INITIAL_USER_LOGIN, password, INITIAL_USER_NAME );
+            admin = new AdminUserSettings( INITIAL_USER_LOGIN, password, INITIAL_USER_NAME, email );
             adminSettings.addUser( admin );
         } else {
+            admin.setEmailAddress( email );
             admin.setPassword( password );
         }
 
@@ -75,6 +76,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     public String getTimeZones()
     {
         return this.context.adminManager().getTimeZones( );
+    }
+
+    public String getAdminEmail()
+    {
+        return this.context.adminManager().getAdminEmail( );
     }
     
     public String getOemName()

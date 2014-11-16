@@ -22,12 +22,12 @@ public class AdminUserSettings implements Serializable, JSONString
     
     public AdminUserSettings() {}
 
-    public AdminUserSettings( String username, String password, String description)
+    public AdminUserSettings( String username, String password, String description, String emailAddress )
     {
         setUsername( username );
         setPassword( password );
         setDescription( description );
-        this.emailAddress = null;
+        setEmailAddress( emailAddress );
     }
     
     public String getUsername() { return this.username; }

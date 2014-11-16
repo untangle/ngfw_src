@@ -38,8 +38,9 @@ public interface AdminManager
 
     String getKernelVersion();
     
+    String getAdminEmail();
+
     String getTimeZones();
-    
+
     Integer getTimeZoneOffset();
-    
 }
