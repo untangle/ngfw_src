@@ -609,6 +609,7 @@ class NetworkTests(unittest2.TestCase):
             wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
             if (wwwResult == 0):
                 break
+            time.sleep(1)
         testResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
