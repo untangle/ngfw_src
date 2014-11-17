@@ -605,7 +605,10 @@ class NetworkTests(unittest2.TestCase):
         remote_control.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         appendFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
-        wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+        for i in range(0, 10):
+            wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+            if (wwwResult == 0):
+                break
         testResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
