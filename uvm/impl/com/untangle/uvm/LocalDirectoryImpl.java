@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Formatter;
 import java.io.FileWriter;
 
 /**
@@ -28,6 +29,9 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
+    
+    private final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle Local Directory.\n" +
+                                            "# If you modify this file manually, your changes will be overwritten!\n\n";
 
     private LinkedList<LocalDirectoryUser> currentList;
 
@@ -185,7 +189,8 @@ public class LocalDirectoryImpl implements LocalDirectory
             return;
         }
 
-        // update the chap-secrets file for L2TP
+        // update xauth.secrets and chap-secrets for IPsec
+        updateXauthSecrets(list);
         updateChapSecrets(list);
         this.currentList = list;
     }
@@ -209,8 +214,9 @@ public class LocalDirectoryImpl implements LocalDirectory
             this.saveUsersList(new LinkedList<LocalDirectoryUser>());
         }
 
-        // settings loaded so assign to currentList and write chap secrets
+        // settings loaded so assign to currentList and write IPsec secrets
         else {
+            updateXauthSecrets(users);
             updateChapSecrets(users);
             this.currentList = users;
         }
@@ -251,6 +257,37 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         catch (Exception exn) {
             logger.error("Exception creating L2TP chap-secrets file", exn);
+        }
+    }
+
+    private void updateXauthSecrets(LinkedList<LocalDirectoryUser> list)
+    {
+        /**
+         * The IPsec Xauth feature uses LocalDirectory for login credentials so
+         * any time we load or save the list we'll call this function which will
+         * export all of the user/pass info to the xauth.secrets file
+         */
+
+        String authFile = "/etc/xauth.secrets";
+
+        try {
+            // put all the username/password pairs into a for IPsec/Xauth
+            FileWriter auth = new FileWriter(authFile, false);
+            
+            auth.write(FILE_DISCLAIMER);
+
+            for (LocalDirectoryUser user : list) {
+                byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+                String userPassword = new String(rawPassword);
+                auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
+            }
+
+            auth.flush();
+            auth.close();
+        }
+
+        catch (Exception exn) {
+            logger.error("Exception creating IPsec xauth.secrets file", exn);
         }
     }
 
@@ -297,5 +334,25 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return null;
+    }
+
+    private String stringHexify(String source)
+    {
+        // we convert the source to a hex string that can handle CR, LF, and
+        // other characters and symbols that would otherwise break parsing
+        // of the xauth.secrets file. This has the added benefit that the
+        // plaintext passwords aren't directly visible in the file.
+        StringBuilder secbuff = new StringBuilder();
+        Formatter secform = new Formatter(secbuff);
+        int val = 0;
+
+        for (int l = 0; l < source.length(); l++) {
+            // get the char as an integer and mask the sign bit
+            // so we get character values between 0 and 255
+            val = (source.charAt(l) & 0xff);
+            secform.format("%02X", val);
+        }
+
+        return (secbuff.toString());
     }
 }
