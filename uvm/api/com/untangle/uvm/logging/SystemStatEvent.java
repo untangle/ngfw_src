@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.logging;
 
+import com.untangle.uvm.util.I18nUtil;
+
 /**
  * Log event for system stats.
  *
@@ -91,5 +93,19 @@ public class SystemStatEvent extends LogEvent
         pstmt.setLong(++i, swapTotal);
         pstmt.setLong(++i, swapFree);
         return pstmt;
+    }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = I18nUtil.marktr("The current system state is") + ": " + "[ " +
+            I18nUtil.marktr("Load (1-minute)") + ": " + getLoad1() + ", " + 
+            I18nUtil.marktr("Load (5-minute)") + ": " + getLoad5() + ", " +
+            I18nUtil.marktr("Load (15-minute)") + ": " + getLoad15() + ", " +
+            I18nUtil.marktr("Memory Free") + ": " + (getMemFree()/(1024*1024)) + "MB" + ", " +
+            I18nUtil.marktr("Disk Free") + ": " + (getDiskFree()/(1024*1024)) + "MB" + ", " +
+            I18nUtil.marktr("Swap Free") + ": " + (getSwapFree()/(1024*1024)) + "MB" + " ]";
+
+        return summary;
     }
 }

@@ -48,6 +48,7 @@ public abstract class LogEvent implements Serializable, JSONString
     }
     
     public abstract PreparedStatement getDirectEventSql( Connection conn ) throws Exception;
+    public abstract String toSummaryString();
 
     /**
      * Default just returns one item with the result of getDirectEventSql

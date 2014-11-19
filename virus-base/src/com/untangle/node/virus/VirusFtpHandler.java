@@ -247,7 +247,7 @@ class VirusFtpHandler extends FtpEventHandler
         }
 
         String fileName = (String) session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME);
-        node.logEvent( new VirusFtpEvent( session.sessionEvent(), result, node.getName(), fileName ) );
+        node.logEvent( new VirusFtpEvent( session.sessionEvent(), result.isClean(), result.getVirusName(), node.getName(), fileName ) );
 
         if ( result.isClean() ) {
             node.incrementPassCount();

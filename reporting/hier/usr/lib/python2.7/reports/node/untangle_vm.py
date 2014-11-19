@@ -182,7 +182,8 @@ CREATE TABLE reports.sessions (
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.interesting (
         time_stamp timestamp NOT NULL,
-        text text NOT NULL,
+        description text NOT NULL,
+        summary_text text NOT NULL,
         json text NOT NULL)""")
 
     @print_timing

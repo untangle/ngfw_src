@@ -14,6 +14,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.node.smtp.AddressKind;
 import com.untangle.node.smtp.MessageInfo;
 import com.untangle.node.smtp.MessageInfoAddr;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Event for Spam events.
@@ -208,8 +209,6 @@ public class SpamLogEvent extends LogEvent
         return sqlList;
     }
 
-    // internal methods ---------------------------------------------------------
-
     protected String get(AddressKind kind)
     {
         MessageInfo messageInfo = getMessageInfo();
@@ -231,6 +230,20 @@ public class SpamLogEvent extends LogEvent
 
             return "";
         }
+    }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( vendorName ) {
+        case "spamassassin": appName = "Spam Blocker Lite"; break;
+        case "spamblocker": appName = "Spam Blocker"; break;
+        default: appName = "Spam Blocker"; break;
+        }
+
+        String summary = appName + " " + I18nUtil.marktr("scored") + " "  + messageInfo.toSummaryString() + " " + I18nUtil.marktr("as") + " " + getScore() + " " + ( isSpam() ? "(spam)" : "(ham)" );
+        return summary;
     }
     
 }

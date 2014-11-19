@@ -7,6 +7,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -189,6 +190,18 @@ public class SessionEvent extends LogEvent
         return "SessionEvent: [" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
     }
 
+    @Override
+    public String toSummaryString()
+    {
+        String clientAddr = (getCClientAddr() != null ? getCClientAddr().getHostAddress() : "null");
+        String serverAddr = (getSServerAddr() != null ? getSServerAddr().getHostAddress() : "null");
+        String clientPort = (getCClientPort() != null ? getCClientPort().toString() : "null");
+        String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
+        String protocol  = getProtocolName();
+
+        return I18nUtil.marktr("Session") + " " + "[" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
+    }
+    
     public int hashCode()
     {
         return getSessionId().hashCode();

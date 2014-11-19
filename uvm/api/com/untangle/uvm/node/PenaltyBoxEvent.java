@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * PenaltyBox event
@@ -96,4 +97,12 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             throw new RuntimeException("Unknown action: " + action);
         }
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = address.getHostAddress() + " " + I18nUtil.marktr("penalty boxed") + " " + I18nUtil.marktr("because") + " " + reason;
+        return summary;
+    }
+    
 }

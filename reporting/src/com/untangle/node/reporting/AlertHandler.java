@@ -43,10 +43,10 @@ public class AlertHandler
                             logger.warn( "XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
                             if ( rule.getLog() )
-                                UvmContextFactory.context().logEvent( new InterestingEvent( "FIXME", jsonObject, event ) );
+                                UvmContextFactory.context().logEvent( new InterestingEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
                             if ( rule.getAlert() ) 
                                 sendAlertForEvent( rule, event );
-                        }
+                        } 
                     }
                 }
             } catch ( Exception e ) {
@@ -67,8 +67,9 @@ public class AlertHandler
         String messageBody = I18nUtil.marktr("An following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
             "\r\n\r\n" +
             rule.getDescription() + ":" + "\r\n" +
-            event.toString() /* FIXME */ +
+            event.toSummaryString() +
             "\r\n\r\n" +
+            event.toJSONObject().toString() + 
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
@@ -79,6 +80,8 @@ public class AlertHandler
 
             try {
                 String[] recipients = new String[]{ admin.getEmailAddress() };
+                logger.warn("Sending alert to " + admin.getEmailAddress());
+                
                 UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
             } catch ( Exception e) {
                 logger.warn("Failed to send mail.",e);

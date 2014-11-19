@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Quota event for the bandwidth control.  
@@ -70,4 +71,21 @@ public class QuotaEvent extends LogEvent implements Serializable
         pstmt.setLong(++i, getQuotaSize());
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String actionStr;
+        switch ( getAction() ) {
+        case 1: actionStr = I18nUtil.marktr("given quota of"); break;
+        case 2: actionStr = I18nUtil.marktr("exceeded quota of"); break;
+        default: actionStr = I18nUtil.marktr("unknown"); break;
+            
+        }
+            
+        String summary = address.getHostAddress() + " " + action + " " + (quotaSize/(1024*1024)) + " " + "MB";
+        return summary;
+    }
+    
+
 }

@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for a request.
@@ -141,4 +142,15 @@ public class HttpRequestEvent extends LogEvent
     {
         return "HttpRequestEvent length: " + requestUri.toString().length() + " (" + super.toString() + ")";
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = sessionEvent.getCClientAddr().getHostAddress() + " " + I18nUtil.marktr("requested") +
+            " (" + getMethod().toString() + ") " + 
+            ( sessionEvent.getSServerPort() == 443 ? "https" : "http" ) + "://" +
+            getHost() + getRequestUri();
+        return summary;
+    }
+    
 }

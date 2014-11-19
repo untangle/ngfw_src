@@ -17,6 +17,7 @@ import javax.mail.internet.MimeUtility;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log e-mail message info.
@@ -276,4 +277,13 @@ public class MessageInfo extends LogEvent implements Serializable
 
         return sqlList;
     }
+
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = "[ " + I18nUtil.marktr("sender") + ": \""  + getSender() + "\", " + I18nUtil.marktr("subject") + ": \""  + getSubject() + "\" ]";
+        return summary;
+    }
+    
 }

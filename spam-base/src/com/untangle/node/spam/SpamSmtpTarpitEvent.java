@@ -7,6 +7,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log for Spam SMTP Tarpit events.
@@ -77,5 +78,19 @@ public class SpamSmtpTarpitEvent extends LogEvent
         pstmt.setLong(++i, sessionEvent.getPolicyId());
 
         return pstmt;
+    }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( vendorName ) {
+        case "spamassassin": appName = "Spam Blocker Lite"; break;
+        case "spamblocker": appName = "Spam Blocker"; break;
+        default: appName = "Spam Blocker"; break;
+        }
+
+        String summary = appName + " " + I18nUtil.marktr("tarpit") + " " + I18nUtil.marktr("blocked") + " " + sessionEvent.toSummaryString();
+        return summary;
     }
 }

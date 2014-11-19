@@ -9,6 +9,7 @@ import java.util.Date;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Used to record the Session stats at session end time.
@@ -121,5 +122,18 @@ public class SessionStatsEvent extends LogEvent
         pstmt.setLong(++i,getSessionId());
         
         return pstmt;
+    }
+
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = I18nUtil.marktr("Session Stats") + " " + 
+            I18nUtil.marktr("client-side") + "-" + I18nUtil.marktr("from-client bytes") + ": " + getC2pBytes() + ", " +
+            I18nUtil.marktr("client-side") + "-" + I18nUtil.marktr("to-client bytes") + ": " + getP2cBytes() + ", " +
+            I18nUtil.marktr("server-side") + "-" + I18nUtil.marktr("from-server bytes") + ": " + getS2pBytes() + ", " +
+            I18nUtil.marktr("server-side") + "-" + I18nUtil.marktr("to-server bytes") + ": " + getP2sBytes();
+
+        return summary;
     }
 }

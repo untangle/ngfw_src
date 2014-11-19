@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log e-mail message info.
@@ -25,7 +26,8 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     public MessageInfoAddr() {
     }
 
-    public MessageInfoAddr(MessageInfo messageInfo, int position, AddressKind kind, String addr, String personal) {
+    public MessageInfoAddr(MessageInfo messageInfo, int position, AddressKind kind, String addr, String personal)
+    {
         this.messageInfo = messageInfo;
         this.position = position;
         this.messageId = messageInfo.getMessageId();
@@ -42,18 +44,8 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * The MessageId object.
-     */
-    public Long getMessageId()
-    {
-        return messageId;
-    }
-
-    public void setMessageId(Long id)
-    {
-        this.messageId = id;
-    }
+    public Long getMessageId() { return messageId; }
+    public void setMessageId(Long id) { this.messageId = id; }
 
     /**
      * The email address, in RFC822 format
@@ -107,10 +99,10 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     }
 
     private static String sql = "INSERT INTO reports.mail_addrs " + "(time_stamp, "
-            + "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
-            + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id,  " + "username,  "
-            + "msg_id, subject, server_type,  " + "addr_pos, addr, addr_name, addr_kind,  " + "sender,  "
-            + "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+        + "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
+        + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id,  " + "username,  "
+        + "msg_id, subject, server_type,  " + "addr_pos, addr, addr_name, addr_kind,  " + "sender,  "
+        + "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
@@ -145,4 +137,26 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        switch ( getKind().getKey() ) {
+        case 'F': action = I18nUtil.marktr("sent"); break; // from
+        case 'G': action = I18nUtil.marktr("sent"); break; // envelope from
+        case 'T': action = I18nUtil.marktr("received"); break; // to
+        case 'C': action = I18nUtil.marktr("received"); break; // cc
+        case 'B': action = I18nUtil.marktr("received"); break; // envelope to
+        default: action = I18nUtil.marktr("involved in");
+        }
+          
+        String summary = messageInfo.getSessionEvent().toSummaryString() + "\n" +
+            addr + " " + action + " " + I18nUtil.marktr("email") + ":\n" +
+            I18nUtil.marktr("subject") + ": "  + messageInfo.getSubject() + "\n" +
+            I18nUtil.marktr("sender") + ": "  + messageInfo.getSender();
+
+        return summary;
+    }
+
 }

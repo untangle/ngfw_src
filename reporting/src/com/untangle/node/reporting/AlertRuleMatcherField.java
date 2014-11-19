@@ -91,19 +91,25 @@ public class AlertRuleMatcherField
             return false;
         }
 
+
         /**
          * If its not a number treat it as a string
          */
         if ( ! "=".equals( comparator ) ) // String only supports "=" operator
             return false;
         String actualValueStr = actualValueObj.toString().toLowerCase();
+        //logger.warn("XXX check: " + actualValueStr + " against " + value );
 
         if ( this.stringGlobMatcher == null )
             this.stringGlobMatcher = new GlobMatcher( value );
         if ( this.stringGlobMatcher == null )
             return false;
 
-        return this.stringGlobMatcher.isMatch( actualValueStr );
+        boolean result = this.stringGlobMatcher.isMatch( actualValueStr );
+
+        //logger.warn("XXX check: " + actualValueStr + " against " + value + " result: " + result );
+        return result;
+
     }
 
 }

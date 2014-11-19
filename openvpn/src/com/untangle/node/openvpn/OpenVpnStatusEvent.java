@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * OpenVPN client status event
@@ -135,4 +136,12 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = "OpenVPN" + " " + I18nUtil.marktr("status") + ": " + getClientName() + " rx:" + getBytesRxTotal() + " tx: " + getBytesTxTotal();
+        return summary;
+    }
+
 }

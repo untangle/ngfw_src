@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.smtp.MessageInfo;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log for SMTP Virus events.
@@ -18,80 +19,37 @@ public class VirusSmtpEvent extends LogEvent
 {
     private Long messageId;
     private MessageInfo messageInfo;
-    private VirusScannerResult result;
+    private boolean clean;
+    private String virusName;
     private String action;
     private String nodeName;
 
     public VirusSmtpEvent() { }
 
-    public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result, String action, String nodeName)
+    public VirusSmtpEvent(MessageInfo messageInfo, boolean clean, String virusName, String action, String nodeName)
     {
         this.messageId = messageInfo.getMessageId();
         this.messageInfo = messageInfo;
-        this.result = result;
+        this.clean = clean;
+        this.virusName = virusName;
         this.action = action;
         this.nodeName = nodeName;
     }
 
-    /**
-     * Associate e-mail message info with event.
-     *
-     * @return e-mail message info.
-     */
-    public Long getMessageId()
-    {
-        return messageId;
-    }
+    public Long getMessageId() { return messageId; }
+    public void setMessageId(Long messageId) { this.messageId = messageId; }
 
-    public void setMessageId(Long messageId)
-    {
-        this.messageId = messageId;
-    }
+    public boolean getClean() { return clean; }
+    public void setClean(boolean clean) { this.clean = clean; }
 
-    /**
-     * Virus scan result.
-     *
-     * @return the scan result.
-     */
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
+    public String getVirusName() { return virusName; }
+    public void SetVirusName(String newValue) { this.virusName = newValue; }
 
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
 
-    /**
-     * The action taken
-     *
-     * @return action.
-     */
-    public String getAction()
-    {
-        return action;
-    }
-
-    public void setAction(String action)
-    {
-        this.action = action;
-    }
-
-    /**
-     * Spam scanner node.
-     *
-     * @return the node
-     */
-    public String getNodeName()
-    {
-        return nodeName;
-    }
-
-    public void setNodeName(String nodeName)
-    {
-        this.nodeName = nodeName;
-    }
+    public String getNodeName() { return nodeName; }
+    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
@@ -115,8 +73,8 @@ public class VirusSmtpEvent extends LogEvent
             "msg_id = ? " ;
         pstmt = conn.prepareStatement( sql );
         i=0;
-        pstmt.setBoolean(++i, getResult().isClean());
-        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setBoolean(++i, getClean());
+        pstmt.setString(++i, getVirusName());
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
         
@@ -128,11 +86,32 @@ public class VirusSmtpEvent extends LogEvent
             "msg_id = ? " ;
         pstmt = conn.prepareStatement( sql );
         i=0;
-        pstmt.setBoolean(++i, getResult().isClean());
-        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setBoolean(++i, getClean());
+        pstmt.setString(++i, getVirusName());
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
 
         return sqlList;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( getNodeName().toLowerCase() ) {
+        case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
+        case "virus_blocker": appName = "Virus Blocker"; break;
+        default: appName = "Virus Blocker"; break;
+        }
+
+        String actionStr;
+        if ( getClean() )
+            actionStr = I18nUtil.marktr("scanned");
+        else
+            actionStr = I18nUtil.marktr("found virus") + " [" + getVirusName() + "]";
+
+        String summary = appName + " " + action + " " + messageInfo.toSummaryString();
+        return summary;
+    }
+    
 }

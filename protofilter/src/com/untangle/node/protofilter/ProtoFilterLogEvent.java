@@ -5,6 +5,7 @@ package com.untangle.node.protofilter;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for a proto filter match.
@@ -16,8 +17,6 @@ public class ProtoFilterLogEvent extends LogEvent
     private String protocol;
     private boolean blocked;
 
-    // constructors -----------------------------------------------------------
-
     public ProtoFilterLogEvent() { }
 
     public ProtoFilterLogEvent(SessionEvent sessionEvent, String protocol, boolean blocked)
@@ -27,37 +26,11 @@ public class ProtoFilterLogEvent extends LogEvent
         this.blocked = blocked;
     }
 
-    // accessors --------------------------------------------------------------
+    public String getProtocol() { return protocol; }
+    public void setProtocol(String protocol) { this.protocol = protocol; }
 
-    /**
-     * The protocol, as determined by the protocol filter.
-     *
-     * @return the protocol name.
-     */
-    public String getProtocol()
-    {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol)
-    {
-        this.protocol = protocol;
-    }
-
-    /**
-     * Whether or not we blocked it.
-     *
-     * @return whether or not the session was blocked (closed)
-     */
-    public boolean getBlocked()
-    {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked)
-    {
-        this.blocked = blocked;
-    }
+    public boolean getBlocked() { return blocked; }
+    public void setBlocked(boolean blocked) { this.blocked = blocked; }
 
     public Long getSessionId()
     {
@@ -87,4 +60,18 @@ public class ProtoFilterLogEvent extends LogEvent
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        if ( getBlocked() )
+            action = I18nUtil.marktr("blocked");
+        else
+            action = I18nUtil.marktr("identified");
+            
+        String summary = "Application Control Lite" + " " + action + " " + sessionEvent.toSummaryString() + " " + getProtocol();
+        return summary;
+    }
+
 }

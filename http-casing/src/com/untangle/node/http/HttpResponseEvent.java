@@ -4,6 +4,7 @@
 package com.untangle.node.http;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for response.
@@ -90,4 +91,12 @@ public class HttpResponseEvent extends LogEvent
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = requestLine.getHttpRequestEvent().getSessionEvent().getCClientAddr().getHostAddress() + " " + I18nUtil.marktr("downloaded") + " " + requestLine.getUrl();
+        return summary;
+    }
+
 }

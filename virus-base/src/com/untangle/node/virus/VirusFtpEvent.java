@@ -5,6 +5,7 @@ package com.untangle.node.virus;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log for FTP virus events.
@@ -13,75 +14,36 @@ import com.untangle.uvm.node.SessionEvent;
 public class VirusFtpEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
-    private VirusScannerResult result;
+    private boolean clean;
+    private String virusName;
     private String nodeName;
     private String uri;
 
     public VirusFtpEvent() { }
 
-    public VirusFtpEvent(SessionEvent pe, VirusScannerResult result, String nodeName, String uri)
+    public VirusFtpEvent(SessionEvent pe, boolean clean, String virusName, String nodeName, String uri)
     {
         this.sessionEvent = pe;
-        this.result = result;
         this.nodeName = nodeName;
+        this.clean = clean;
+        this.virusName = virusName;
         this.uri = uri;
     }
 
-    /**
-     * Get the session Id
-     *
-     * @return the the session Id
-     */
-    public Long getSessionId()
-    {
-        return sessionEvent.getSessionId();
-    }
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    public void setSessionId( Long sessionId )
-    {
-        this.sessionEvent.setSessionId(sessionId);
-    }
+    public boolean getClean() { return clean; }
+    public void setClean(boolean clean) { this.clean = clean; }
 
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
-
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
-
-    /**
-     * Virus scan result.
-     *
-     * @return the scan result.
-     */
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
-
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
-
-    /**
-     * Spam scanner node.
-     *
-     * @return the node
-     */
-    public String getNodeName()
-    {
-        return nodeName;
-    }
-
-    public void setNodeName(String nodeName)
-    {
-        this.nodeName = nodeName;
-    }
+    public String getVirusName() { return virusName; }
+    public void SetVirusName(String newValue) { this.virusName = newValue; }
     
+    public String getNodeName() { return nodeName; }
+    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+
+    public String getUri() { return uri; }
+    public void setUri(String uri) { this.uri = uri; }
     
     private static String sql = "INSERT INTO reports.ftp_events " + "(time_stamp, "
             + "session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, "
@@ -110,9 +72,30 @@ public class VirusFtpEvent extends LogEvent
         pstmt.setString(++i, getSessionEvent().getUsername());
         pstmt.setString(++i, getSessionEvent().getHostname());
         pstmt.setString(++i, uri);
-        pstmt.setBoolean(++i,getResult().isClean());
-        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setBoolean(++i,getClean());
+        pstmt.setString(++i, getVirusName());
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( getNodeName().toLowerCase() ) {
+        case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
+        case "virus_blocker": appName = "Virus Blocker"; break;
+        default: appName = "Virus Blocker"; break;
+        }
+
+        String actionStr;
+        if ( getClean() )
+            actionStr = I18nUtil.marktr("scanned");
+        else
+            actionStr = I18nUtil.marktr("found virus") + " [" + getVirusName() + "]";
+            
+        String summary = appName + " " + actionStr + " " + getUri();
+        return summary;
+    }
+    
 }

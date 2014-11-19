@@ -5,6 +5,7 @@ package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for a blocked request.
@@ -84,4 +85,17 @@ public class IpsLogEvent extends LogEvent
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        if ( getBlocked() )
+            action = I18nUtil.marktr("blocked");
+        else
+            action = I18nUtil.marktr("detected");
+        String summary = "Intrusion Prevention" + " " + action + " \"" + getMessage() + "\" " + sessionEvent.toSummaryString();
+        return summary;
+    }
+
 }

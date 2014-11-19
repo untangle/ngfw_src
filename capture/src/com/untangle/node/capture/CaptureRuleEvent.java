@@ -6,6 +6,7 @@ package com.untangle.node.capture;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 @SuppressWarnings("serial")
 public class CaptureRuleEvent extends LogEvent
@@ -31,35 +32,14 @@ public class CaptureRuleEvent extends LogEvent
         this.captured = captured;
     }
 
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
+    public boolean getCaptured() { return captured; }
+    public void setCaptured(boolean captured) { this.captured = captured; }
 
-    public boolean getCaptured()
-    {
-        return (captured);
-    }
-
-    public void setCaptured(boolean captured)
-    {
-        this.captured = captured;
-    }
-
-    public Integer getRuleId()
-    {
-        return (ruleid);
-    }
-
-    public void setRuleId(Integer ruleid)
-    {
-        this.ruleid = ruleid;
-    }
+    public Integer getRuleId() { return ruleid; }
+    public void setRuleId(Integer ruleid) { this.ruleid = ruleid; }
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
@@ -96,4 +76,18 @@ public class CaptureRuleEvent extends LogEvent
         string += (")");
         return string;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        if ( getCaptured() )
+            action = I18nUtil.marktr("captured");
+        else
+            action = I18nUtil.marktr("passed");
+
+        String summary = "Captive Portal " + action + " " + sessionEvent.toSummaryString();
+        return summary;
+    }
+
 }

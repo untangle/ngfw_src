@@ -6,6 +6,7 @@ package com.untangle.node.virus;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log for HTTP Virus events.
@@ -15,40 +16,30 @@ public class VirusHttpEvent extends LogEvent
 {
     private Long requestId;
     private RequestLine requestLine;
-    private VirusScannerResult result;
+    private boolean clean;
+    private String virusName;
     private String nodeName;
-
-    // constructors -------------------------------------------------------
 
     public VirusHttpEvent() { }
 
-    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result, String nodeName)
+    public VirusHttpEvent(RequestLine requestLine, boolean clean, String virusName, String nodeName)
     {
         this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
-        this.result = result;
+        this.clean = clean;
+        this.virusName = virusName;
         this.nodeName = nodeName;
     }
 
-    // accessors ----------------------------------------------------------
-
-    /**
-     * Corresponding request line.
-     *
-     * @return the request line.
-     */
     public Long getRequestId() { return requestId; }
     public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
-    /**
-     * Virus scan result.
-     */
-    public VirusScannerResult getResult() { return result; }
-    public void setResult( VirusScannerResult result ) { this.result = result; }
+    public boolean getClean() { return clean; }
+    public void setClean(boolean clean) { this.clean = clean; }
 
-    /**
-     * Virus node.
-     */
+    public String getVirusName() { return virusName; }
+    public void SetVirusName(String newValue) { this.virusName = newValue; }
+
     public String getNodeName() { return nodeName; }
     public void setNodeName( String nodeName ) { this.nodeName = nodeName; }
 
@@ -65,9 +56,30 @@ public class VirusHttpEvent extends LogEvent
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
         
         int i = 0;
-        pstmt.setBoolean(++i,getResult().isClean());
-        pstmt.setString(++i, getResult().getVirusName());
+        pstmt.setBoolean(++i, getClean());
+        pstmt.setString(++i, getVirusName());
         pstmt.setLong(++i, getRequestId());
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( getNodeName().toLowerCase() ) {
+        case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
+        case "virus_blocker": appName = "Virus Blocker"; break;
+        default: appName = "Virus Blocker"; break;
+        }
+
+        String actionStr;
+        if ( getClean() )
+            actionStr = I18nUtil.marktr("scanned");
+        else
+            actionStr = I18nUtil.marktr("found virus") + " [" + getVirusName() + "]";
+        
+        String summary = appName + " " + actionStr + " " + requestLine.getUrl();
+        return summary;
+    }
+
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for the shield rejection.
@@ -101,4 +102,13 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
 
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String summary = I18nUtil.marktr("The shield blocked host") + " " + getClientAddr().getHostAddress() +
+            " " + I18nUtil.marktr("with reputation") + " " + getReputation();
+        return summary;
+    }
+    
 }

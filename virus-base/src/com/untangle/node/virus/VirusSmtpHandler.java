@@ -136,7 +136,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 actionTaken = configuredAction;
 
             // Make log report
-            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.node.getName());
+            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), actionTaken, this.node.getName());
             this.node.logEvent(event);
 
             if (scanResult.isClean()) {
@@ -245,8 +245,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 foundVirus = true;
 
                 // Make log report
-                VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, scanResult.isClean() ? "pass" : action,
-                        this.node.getName());
+                VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), scanResult.isClean() ? "pass" : action, this.node.getName());
                 this.node.logEvent(event);
 
                 if ("pass".equals(action)) {

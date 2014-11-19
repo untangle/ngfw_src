@@ -1,13 +1,13 @@
 /**
  * $Id$
  */
-
 package com.untangle.node.capture;
 
 import java.net.InetAddress;
 
 import com.untangle.node.capture.CaptureSettings.AuthenticationType;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 @SuppressWarnings("serial")
 public class CaptureUserEvent extends LogEvent
@@ -23,8 +23,6 @@ public class CaptureUserEvent extends LogEvent
     private String eventValue;
     private Long policyId;
 
-    // constructors --------------------------------------------------------
-
     public CaptureUserEvent()
     {
     }
@@ -38,77 +36,26 @@ public class CaptureUserEvent extends LogEvent
         setEvent(event);
     }
 
-    // accessors -----------------------------------------------------------
+    public InetAddress getClientAddr() { return clientAddr; }
+    public void setClientAddr(InetAddress clientAddr) { this.clientAddr = clientAddr; }
 
-    public InetAddress getClientAddr()
-    {
-        return clientAddr;
-    }
+    public String getLoginName() { return loginName; }
+    public void setLoginName(String loginName) { this.loginName = loginName; }
 
-    public void setClientAddr(InetAddress clientAddr)
-    {
-        this.clientAddr = clientAddr;
-    }
+    private String getEventValue() { return eventValue; }
+    private void setEventValue(String eventValue) { this.eventValue = eventValue; }
 
-    public String getLoginName()
-    {
-        return loginName;
-    }
+    public EventType getEvent() { return EventType.valueOf(this.eventValue); }
+    public void setEvent(EventType newEvent) { this.eventValue = newEvent.toString(); }
 
-    public void setLoginName(String loginName)
-    {
-        this.loginName = loginName;
-    }
+    public Long getPolicyId() { return policyId; }
+    public void setPolicyId(Long policyId) { this.policyId = policyId; }
 
-    private String getEventValue()
-    {
-        return eventValue;
-    }
+    private String getAuthenticationTypeValue() { return authenticationTypeValue; }
+    private void setAuthenticationTypeValue(String newValue) { this.authenticationTypeValue = newValue; }
 
-    private void setEventValue(String eventValue)
-    {
-        this.eventValue = eventValue;
-    }
-
-    public EventType getEvent()
-    {
-        return EventType.valueOf(this.eventValue);
-    }
-
-    public void setEvent(EventType newEvent)
-    {
-        this.eventValue = newEvent.toString();
-    }
-
-    public Long getPolicyId()
-    {
-        return policyId;
-    }
-
-    public void setPolicyId(Long policyId)
-    {
-        this.policyId = policyId;
-    }
-
-    private String getAuthenticationTypeValue()
-    {
-        return authenticationTypeValue;
-    }
-
-    private void setAuthenticationTypeValue(String newValue)
-    {
-        this.authenticationTypeValue = newValue;
-    }
-
-    public AuthenticationType getAuthenticationType()
-    {
-        return AuthenticationType.valueOf(this.authenticationTypeValue);
-    }
-
-    public void setAuthenticationType(AuthenticationType newValue)
-    {
-        this.authenticationTypeValue = newValue.toString();
-    }
+    public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
+    public void setAuthenticationType(AuthenticationType newValue) { this.authenticationTypeValue = newValue.toString(); }
 
     private static String sql = "INSERT INTO reports.capture_user_events " + "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " + "values ( ?, ?, ?, ?, ?, ? )";
 
@@ -126,4 +73,23 @@ public class CaptureUserEvent extends LogEvent
         pstmt.setString(++i, getClientAddr().getHostAddress().toString());
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        switch (getEvent()) {
+        case LOGIN: action = I18nUtil.marktr("logged in"); break;
+        case FAILED: action = I18nUtil.marktr("failed to login"); break;
+        case TIMEOUT: action = I18nUtil.marktr("timed out"); break;
+        case INACTIVE: action = I18nUtil.marktr("timed out (inactivity)"); break;
+        case USER_LOGOUT: action = I18nUtil.marktr("logged out"); break;
+        case ADMIN_LOGOUT: action = I18nUtil.marktr("logged out (admin forced)"); break;
+        default: action = I18nUtil.marktr("unknown"); break;
+        }
+
+        String summary = "Captive Portal: " + I18nUtil.marktr("User") + " " + getLoginName() + " " + action;
+        return summary;
+    }
+
 }

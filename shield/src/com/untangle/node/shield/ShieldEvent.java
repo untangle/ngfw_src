@@ -5,6 +5,7 @@ package com.untangle.node.shield;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for the shield.
@@ -45,5 +46,18 @@ public class ShieldEvent extends LogEvent
         pstmt.setLong(++i, getSessionId());
 
         return pstmt;
+    }
+
+    @Override
+    public String toSummaryString()
+    {
+        String action;
+        if ( getBlocked() )
+            action = I18nUtil.marktr("blocked");
+        else
+            action = I18nUtil.marktr("passed");
+
+        String summary = I18nUtil.marktr("The shield") + " " + action + " " + sessionEvent.toSummaryString();
+        return summary;
     }
 }

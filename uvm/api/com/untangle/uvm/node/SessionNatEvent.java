@@ -7,6 +7,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * This event updates the addresses and intf attributes
@@ -116,6 +117,17 @@ public class SessionNatEvent extends LogEvent
         return "SessionNatEvent " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
     }
 
+    @Override
+    public String toSummaryString()
+    {
+        String clientAddr = (getSClientAddr() != null ? getSClientAddr().getHostAddress() : "null");
+        String serverAddr = (getSServerAddr() != null ? getSServerAddr().getHostAddress() : "null");
+        String clientPort = (getSClientPort() != null ? getSClientPort().toString() : "null");
+        String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
+
+        return I18nUtil.marktr("Session NAT") + " " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
+    }
+    
     public int hashCode()
     {
         return getSessionId().hashCode();

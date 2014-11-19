@@ -904,7 +904,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 name: "time_stamp",
                 sortType: Ung.SortTypes.asTimestamp
             },{
-                name: "text"
+                name: "description"
+            },{
+                name: "summary_text"
             },{
                 name: "json"
             }],
@@ -918,11 +920,16 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     return i18n.timestampFormat(value);
                 }
             },{
-                header: this.i18n._("Text"),
+                header: this.i18n._("Description"),
+                width: 200,
+                sortable: true,
+                dataIndex: "description"
+            },{
+                header: this.i18n._("Summary Text"),
                 flex: 1,
                 width: 500,
                 sortable: true,
-                dataIndex: "text"
+                dataIndex: "summary_text"
             },{
                 header: this.i18n._("JSON"),
                 width: 500,

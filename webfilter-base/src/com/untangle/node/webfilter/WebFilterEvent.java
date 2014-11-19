@@ -5,6 +5,7 @@ package com.untangle.node.webfilter;
 
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for a web filter cation
@@ -12,27 +13,24 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class WebFilterEvent extends LogEvent
 {
-    private Long requestId;
+    private RequestLine requestLine;
     private Boolean blocked;
     private Boolean flagged;
     private Reason  reason;
     private String  category;
     private String  nodeName;
-
+    
     public WebFilterEvent() { }
 
     public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason, String category, String nodeName)
     {
-        this.requestId = requestLine.getRequestId();
+        this.requestLine = requestLine;
         this.blocked = blocked;
         this.flagged = flagged;
         this.reason = reason;
         this.category = category;
         this.nodeName = nodeName;
     }
-
-    public Long getRequestId() { return requestId; }
-    public void setRequestId( Long requestId ) { this.requestId = requestId; }
 
     public Boolean getBlocked() { return blocked; }
     public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
@@ -68,7 +66,28 @@ public class WebFilterEvent extends LogEvent
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
         pstmt.setString(++i, getCategory());
-        pstmt.setLong(++i, getRequestId());
+        pstmt.setLong(++i, requestLine.getRequestId());
         return pstmt;
     }
+
+    @Override
+    public String toSummaryString()
+    {
+        String appName;
+        switch ( getNodeName().toLowerCase() ) {
+        case "webfilter": appName = "Web Filter Lite"; break;
+        case "sitefilter": appName = "Web Filter"; break;
+        default: appName = "Web Filter"; break;
+        }
+
+        String actionStr;
+        if ( getBlocked() )
+            actionStr = I18nUtil.marktr("blocked");
+        else
+            actionStr = I18nUtil.marktr("passed");
+
+        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + " " + getReason() + ")";
+        return summary;
+    }
+
 }

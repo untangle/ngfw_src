@@ -221,7 +221,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
 
         RequestLine requestLine = getResponseRequest( session ).getRequestLine();
-        node.logEvent( new VirusHttpEvent(requestLine, result, node.getName()) );
+        node.logEvent( new VirusHttpEvent(requestLine, result.isClean(), result.getVirusName(), node.getName()) );
 
         if (result.isClean()) {
             node.incrementPassCount();
