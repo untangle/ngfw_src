@@ -28,8 +28,10 @@ public class LocalDirectoryImpl implements LocalDirectory
 
     private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
 
+    private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
+
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
-    
+
     private final String FILE_DISCLAIMER =  "# This file is created and maintained by the Untangle Local Directory.\n" +
                                             "# If you modify this file manually, your changes will be overwritten!\n\n";
 
@@ -119,9 +121,9 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         LinkedList<LocalDirectoryUser> users = this.getUsers();
         user.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
-        user.setPassword(""); //remove cleartext 
+        user.setPassword(""); //remove cleartext
         users.add(user);
-        
+
         this.saveUsersList(users);
     }
 
@@ -273,7 +275,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         try {
             // put all the username/password pairs into a for IPsec/Xauth
             FileWriter auth = new FileWriter(authFile, false);
-            
+
             auth.write(FILE_DISCLAIMER);
 
             for (LocalDirectoryUser user : list) {
@@ -284,6 +286,11 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             auth.flush();
             auth.close();
+
+            /*
+             * Tell IPsec to reload the secrets
+             */
+            UvmContextFactory.context().execManager().exec(IPSEC_RELOAD_SECRETS);
         }
 
         catch (Exception exn) {
@@ -312,7 +319,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         byte[] pass = Base64.decodeBase64( base64.getBytes() );
         return new String(pass);
     }
-        
+
     private String calculateHash(String password, String hashAlgo)
     {
         try {
