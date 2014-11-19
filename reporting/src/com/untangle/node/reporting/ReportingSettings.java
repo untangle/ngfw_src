@@ -27,7 +27,7 @@ public class ReportingSettings implements Serializable, JSONString
 
     private LinkedList<ReportingHostnameMapEntry> hostnameMap = new LinkedList<ReportingHostnameMapEntry>();
     private LinkedList<ReportingUser> reportingUsers = new LinkedList<ReportingUser>();
-    private LinkedList<AlertRule> alertRules = new LinkedList<AlertRule>();
+    private LinkedList<AlertRule> alertRules = null;
     
     private DayOfWeekMatcher generateDailyReports = new DayOfWeekMatcher("any");
     private DayOfWeekMatcher generateWeeklyReports = new DayOfWeekMatcher("sunday");

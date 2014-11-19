@@ -189,7 +189,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     
     public void initializeSettings()
     {
-        setSettings( initSettings() );
+        setSettings( defaultSettings() );
     }
 
     public String lookupHostname( InetAddress address )
@@ -302,6 +302,13 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
+        /**
+         * 11.1 conversion
+         */
+        if ( settings.getAlertRules() == null ) {
+            settings.setAlertRules( defaultAlertRules() );
+        }
+        
         /* intialize schema (if necessary) */
         this.createSchemas();
 
@@ -337,10 +344,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
     }
     
-    private ReportingSettings initSettings()
+    private LinkedList<AlertRule> defaultAlertRules()
     {
-        ReportingSettings settings = new ReportingSettings();
-
         LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
         
         LinkedList<AlertRuleMatcher> matchers;
@@ -371,9 +376,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download" );
         rules.add( alertRule );
-        
-        settings.setAlertRules( rules );
-        
+
+        return rules;
+    }
+
+    private ReportingSettings defaultSettings()
+    {
+        ReportingSettings settings = new ReportingSettings();
+        settings.setAlertRules( defaultAlertRules() );
         return settings;
     }
     
