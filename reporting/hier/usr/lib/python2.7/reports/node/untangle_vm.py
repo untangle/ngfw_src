@@ -51,7 +51,7 @@ class UvmNode(Node):
         self.__build_penaltybox_table()
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
-        self.__build_interesting_events_table()
+        self.__build_alert_events_table()
 
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
@@ -99,7 +99,7 @@ CREATE TABLE reports.admin_logins (
         sql_helper.drop_fact_table("penaltybox", cutoff)
         sql_helper.drop_fact_table("quotas", cutoff)
         sql_helper.drop_fact_table("host_table_updates", cutoff)
-        sql_helper.drop_fact_table("interesting", cutoff)
+        sql_helper.drop_fact_table("alerts", cutoff)
 
     def get_report(self):
         sections = []
@@ -178,9 +178,9 @@ CREATE TABLE reports.sessions (
         sql_helper.create_index("reports","sessions","time_stamp");
 
     @print_timing
-    def __build_interesting_events_table( self ):
+    def __build_alerts_events_table( self ):
         sql_helper.create_fact_table("""\
-CREATE TABLE reports.interesting (
+CREATE TABLE reports.alerts (
         time_stamp timestamp NOT NULL,
         description text NOT NULL,
         summary_text text NOT NULL,

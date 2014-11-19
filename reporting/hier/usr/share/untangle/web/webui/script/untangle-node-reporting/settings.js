@@ -9,7 +9,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     panelDatabase: null,
     gridReportingUsers: null,
     gridHostnameMap: null,
-    gridInterestingEventLog: null,
+    gridAlertEventLog: null,
     initComponent: function(container, position) {
         this.initFieldConditionsToString();
         this.buildPasswordValidator();
@@ -19,14 +19,14 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildSyslog();
         this.buildHostnameMap();
         this.buildDatabase();
-        this.buildAlerts();
-        this.buildInterestingEventLog();
+        this.buildAlertRules();
+        this.buildAlertEventLog();
 
         // only show DB settings if set to something other than localhost
         if (this.getSettings().dbHost != "localhost") {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.gridInterestingEventLog, this.panelDatabase]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog, this.panelDatabase]);
         } else {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlerts, this.gridInterestingEventLog ]);
+            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog ]);
         }
         this.tabs.setActiveTab(this.panelStatus);
         this.clearDirty();
@@ -767,13 +767,13 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }]
         });
     },
-    // Alerts Panel
-    buildAlerts: function() {
-        this.panelAlerts = Ext.create('Ext.panel.Panel',{
+    // AlertRules Panel
+    buildAlertRules: function() {
+        this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
-            helpSource: 'alert_rules',
+            helpSource: 'reports_alert_rules',
             parentId: this.getId(),
-            title: this.i18n._('Alerts'),
+            title: this.i18n._('Alert Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
@@ -781,7 +781,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 cls: 'description',
                 title: this.i18n._('Note'),
                 flex: 0,
-                html: this.i18n._(" <b>Alert Rules</b> defines interesting or important events for you.")
+                html: this.i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
             },  this.gridAlertRules= Ext.create('Ung.EditorGrid',{
                 flex: 1,
                 name: 'Alert Rules',
@@ -839,12 +839,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     flex: 1
                 }, {
                     xtype:'checkcolumn',
-                    header: this.i18n._("Log as interesting event"),
+                    header: this.i18n._("Log Alert"),
                     dataIndex: 'log',
                     width:150
                 }, {
                     xtype:'checkcolumn',
-                    header: this.i18n._("Alert administrators"),
+                    header: this.i18n._("Send Alert"),
                     dataIndex: 'alert',
                     width:150
                 }],
@@ -880,25 +880,25 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         xtype:'checkbox',
                         labelWidth: 160,
                         dataIndex: "log",
-                        fieldLabel: this.i18n._("Log as interesting event")
+                        fieldLabel: this.i18n._("Log Alert")
                     }, {
                         xtype:'checkbox',
                         labelWidth: 160,
                         dataIndex: "alert",
-                        fieldLabel: this.i18n._("Alert administrators")
+                        fieldLabel: this.i18n._("Send Alert")
                     }]
                 }]
             })]
         });
     },
     // Event Log
-    buildInterestingEventLog: function() {
-        this.gridInterestingEventLog = Ext.create('Ung.GridEventLog',{
+    buildAlertEventLog: function() {
+        this.gridAlertEventLog = Ext.create('Ung.GridEventLog',{
             settingsCmp: this,
             name: "event-log",
-            helpSource: "reporting_interesting_event_log",
+            helpSource: "reports_alert_event_log",
             eventQueriesFn: this.getRpcNode().getEventQueries,
-            title: this.i18n._("Interesting Event Log"),
+            title: this.i18n._("Alert Event Log"),
             // the list of fields
             fields: [{
                 name: "time_stamp",

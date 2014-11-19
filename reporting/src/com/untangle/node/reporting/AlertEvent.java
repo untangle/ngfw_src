@@ -1,5 +1,5 @@
 /**
- * $Id: InterestingEvent.java 34225 2013-03-10 20:38:45Z dmorris $
+ * $Id: AlertEvent.java 34225 2013-03-10 20:38:45Z dmorris $
  */
 package com.untangle.node.reporting;
 
@@ -10,19 +10,19 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * Log event for an "interesting" event
+ * Log event for an "alert" event
  */
 @SuppressWarnings("serial")
-public class InterestingEvent extends LogEvent
+public class AlertEvent extends LogEvent
 {
     private String description;
     private String summaryText;
     private JSONObject json;
     private LogEvent cause;
     
-    public InterestingEvent() { }
+    public AlertEvent() { }
 
-    public InterestingEvent( String description, String summaryText, JSONObject json, LogEvent cause )
+    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause )
     {
         this.description = description;
         this.summaryText = summaryText;
@@ -43,7 +43,7 @@ public class InterestingEvent extends LogEvent
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
     
-    private static String sql = "INSERT INTO reports.interesting " +
+    private static String sql = "INSERT INTO reports.alert " +
         "(time_stamp, description, summary_text, json) " +
         "values " +
         "(?, ?, ?, ?); ";
@@ -65,7 +65,7 @@ public class InterestingEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        String summary = I18nUtil.marktr("Interesting Event") + " " + ( cause != null ? cause.toSummaryString() : "" );
+        String summary = I18nUtil.marktr("Alert Event") + " " + ( cause != null ? cause.toSummaryString() : "" );
 
         return summary;
     }

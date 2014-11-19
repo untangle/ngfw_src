@@ -34,7 +34,7 @@ public class AlertHandler
     {
             try {
                 JSONObject jsonObject = event.toJSONObject();
-                if ( ! ( event instanceof InterestingEvent ) ) {
+                if ( ! ( event instanceof AlertEvent ) ) {
                     for ( AlertRule rule : alertRules ) {
                         if ( ! rule.getEnabled() )
                             continue;
@@ -43,7 +43,7 @@ public class AlertHandler
                             logger.warn( "XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
                             if ( rule.getLog() )
-                                UvmContextFactory.context().logEvent( new InterestingEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
+                                UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
                             if ( rule.getAlert() ) 
                                 sendAlertForEvent( rule, event );
                         } 
