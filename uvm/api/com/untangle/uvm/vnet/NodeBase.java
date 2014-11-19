@@ -90,16 +90,20 @@ public abstract class NodeBase implements Node
 
     protected void connectPipelineConnectors()
     {
-        for ( PipelineConnector connector : getConnectors() ) {
-            UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( connector );
+        if ( getConnectors() != null ) {
+            for ( PipelineConnector connector : getConnectors() ) {
+                UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( connector );
+            }
         }
     }
 
     protected void disconnectPipelineConnectors()
     {
-        for ( PipelineConnector connector : getConnectors() ) {
-            UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( connector );
-            connector.destroy();
+        if ( getConnectors() != null ) {
+            for ( PipelineConnector connector : getConnectors() ) {
+                UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( connector );
+                connector.destroy();
+            }
         }
     }
     
