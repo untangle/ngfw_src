@@ -10,8 +10,9 @@ Ext.Loader.setConfig({
 
 Ext.Loader.loadScriptFileInitial=Ext.Loader.loadScriptFile;
 Ext.Loader.loadScriptFile=Ext.bind(function() {
-    arguments[0]=arguments[0]+"?_dc="+Ext.buildStamp;
-    Ext.Loader.loadScriptFileInitial.apply(this, arguments);
+    var args = arguments;
+    args[0]=arguments[0]+"?_dc="+Ext.buildStamp;
+    Ext.Loader.loadScriptFileInitial.apply(this, args);
 }, Ext.Loader);
 
 var rpc=null; // the main json rpc object
