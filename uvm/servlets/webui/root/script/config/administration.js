@@ -1700,4 +1700,4 @@ Ext.define("Webui.config.administration", {
         }
     }
 });
-//@ sourceURL=administration.js
+//# sourceURL=administration.js

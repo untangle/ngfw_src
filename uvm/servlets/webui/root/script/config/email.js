@@ -1351,4 +1351,4 @@ Ext.define('Webui.config.email.EmailAddressDetails', {
         this.callParent(arguments);
     }
 });
-//@ sourceURL=email.js
+//# sourceURL=email.js

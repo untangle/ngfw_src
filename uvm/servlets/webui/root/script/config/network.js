@@ -5525,4 +5525,4 @@ Ext.define("Webui.config.network.NetworkTest", {
     enableParameters: function( isEnabled ){
     }
 });
-//@ sourceURL=network.js
+//# sourceURL=network.js

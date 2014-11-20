@@ -409,8 +409,6 @@ Ext.define("Ung.NodeWin", {
         nodeWidget.onSettingsAction();
     }
 });
-//TODO: remove call from all node settings
-Ung.NodeWin.register = function(nodeName) {};
 
 // Config Window (Save/Cancel/Apply)
 Ext.define("Ung.ConfigWin", {

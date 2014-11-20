@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-base-virus');
-
 Ext.define('Webui.untangle-base-virus.settings', {
     extend:'Ung.NodeWin',
     panelWeb:null,
@@ -707,4 +705,4 @@ Ext.define('Webui.untangle-base-virus.settings', {
         });
     }
 });
-//@ sourceURL=virus-settings.js
+//# sourceURL=virus-settings.js

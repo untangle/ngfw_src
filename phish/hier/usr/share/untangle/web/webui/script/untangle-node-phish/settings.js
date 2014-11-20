@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-phish');
-
 Ext.define('Webui.untangle-node-phish.settings', {
     extend:'Ung.NodeWin',
     lastUpdate: null,
@@ -103,4 +101,4 @@ Ext.define('Webui.untangle-node-phish.settings', {
     }
 
 });
-//@ sourceURL=phish-settings.js
+//# sourceURL=phish-settings.js

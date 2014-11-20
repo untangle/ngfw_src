@@ -230,4 +230,4 @@ Ext.define('Webui.config.upgrade', {
         }, this), this.getSystemSettings());
     }
  });
-//@ sourceURL=upgrade.js
+//# sourceURL=upgrade.js

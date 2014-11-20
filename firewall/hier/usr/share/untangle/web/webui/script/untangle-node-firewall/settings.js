@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-firewall');
-
 Ext.define('Webui.untangle-node-firewall.settings', {
     extend:'Ung.NodeWin',
     panelRules: null,
@@ -180,4 +178,4 @@ Ext.define('Webui.untangle-node-firewall.settings', {
         }, this));
     }
 });
-//@ sourceURL=firewall-settings.js
+//# sourceURL=firewall-settings.js

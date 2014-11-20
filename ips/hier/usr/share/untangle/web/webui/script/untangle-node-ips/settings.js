@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-ips');
-
 Ext.define('Webui.untangle-node-ips.settings', {
     extend:'Ung.NodeWin',
     panelStatus: null,
@@ -336,4 +334,4 @@ Ext.define('Webui.untangle-node-ips.settings', {
         this.statistics = this.getRpcNode().getStatistics();
     }
 });
-//@ sourceURL=ips-settings.js
+//# sourceURL=ips-settings.js

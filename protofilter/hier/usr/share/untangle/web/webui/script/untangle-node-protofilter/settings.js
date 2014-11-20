@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-protofilter');
-
 Ext.define('Webui.untangle-node-protofilter.settings', {
     extend: 'Ung.NodeWin',
     panelStatus: null,
@@ -215,4 +213,4 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
         handler.call(this, isApply);
     }
 });
-//@ sourceURL=protofilter-settings.js
+//# sourceURL=protofilter-settings.js

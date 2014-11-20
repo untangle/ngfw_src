@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-openvpn');
-
 Ext.define('Webui.untangle-node-openvpn.DownloadClient', {
     extend: 'Ung.Window',
     constructor: function( config ) {
@@ -1360,4 +1358,4 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
         }
     }
 });
-//@ sourceURL=openvpn-settings.js
+//# sourceURL=openvpn-settings.js

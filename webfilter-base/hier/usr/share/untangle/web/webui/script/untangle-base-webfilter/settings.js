@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-base-webfilter');
-
 Ext.define('Webui.untangle-base-webfilter.settings', {
     extend:'Ung.NodeWin',
     // called when the component is rendered
@@ -883,4 +881,4 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         return value.trim();
     }
 });
-//@ sourceURL=base-webfilter-settings.js
+//# sourceURL=base-webfilter-settings.js

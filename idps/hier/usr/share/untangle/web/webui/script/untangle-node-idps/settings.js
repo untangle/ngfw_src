@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-idps');
-
 var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
     groupHeaderTpl: 'Category: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})',
     startCollapsed: true
@@ -697,4 +695,4 @@ Ext.define('Webui.untangle-node-idps.settings', {
 //            this.statistics = this.getRpcNode().getStatistics();
     }
 });
-//@ sourceURL=ips-settings.js
+//# sourceURL=ips-settings.js

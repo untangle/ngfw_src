@@ -686,4 +686,4 @@ Ext.define('Webui.config.hostMonitor', {
         });
     }
 });
-//@ sourceURL=hostMonitor.js
+//# sourceURL=hostMonitor.js

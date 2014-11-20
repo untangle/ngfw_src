@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-capture');
-
 Ext.define('Webui.untangle-node-capture.settings', {
     extend:'Ung.NodeWin',
     panelCaptiveStatus: null,
@@ -1117,4 +1115,4 @@ Ext.define('Webui.untangle-node-capture.settings', {
         }
     }
 });
-//@ sourceURL=capture-settings.js
+//# sourceURL=capture-settings.js

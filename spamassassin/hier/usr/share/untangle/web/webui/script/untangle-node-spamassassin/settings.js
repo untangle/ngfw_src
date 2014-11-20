@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-spamassassin');
-
 Ext.define('Webui.untangle-node-spamassassin.settings', {
     extend:'Ung.NodeWin',
     emailPanel: null,
@@ -484,4 +482,4 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
         return this.validateComponents(components);
     }
 });
-//@ sourceURL=spamassassin-settings.js
+//# sourceURL=spamassassin-settings.js

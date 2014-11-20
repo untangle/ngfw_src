@@ -1,5 +1,3 @@
-Ung.NodeWin.register('untangle-node-reporting');
-
 Ext.define('Webui.untangle-node-reporting.settings', {
     extend:'Ung.NodeWin',
     panelStatus: null,
@@ -957,4 +955,4 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         return this.validateComponents(components);
     }
 });
-//@ sourceURL=reporting-settings.js
+//# sourceURL=reporting-settings.js
