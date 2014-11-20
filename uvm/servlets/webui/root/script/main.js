@@ -12,7 +12,7 @@ Ext.Loader.loadScriptFileInitial=Ext.Loader.loadScriptFile;
 Ext.Loader.loadScriptFile=Ext.bind(function() {
     arguments[0]=arguments[0]+"?_dc="+Ext.buildStamp;
     Ext.Loader.loadScriptFileInitial.apply(this, arguments);
-}, Ext.Loader)
+}, Ext.Loader);
 
 var rpc=null; // the main json rpc object
 var testMode = false;
