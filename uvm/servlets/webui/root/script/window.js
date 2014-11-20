@@ -409,33 +409,8 @@ Ext.define("Ung.NodeWin", {
         nodeWidget.onSettingsAction();
     }
 });
-Ung.NodeWin._nodeScripts = {};
-
-// Dynamically loads javascript file for a node
-Ung.NodeWin.loadNodeScript = function(settingsCmp, handler) {
-    var scriptFile = Ung.Util.getScriptSrc('settings.js');
-    Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, Ext.bind(function() {
-        this.settingsClassName = Ung.NodeWin.getClassName(this.name);
-        handler.call(this);
-    },settingsCmp));
-};
-
-Ung.NodeWin.classNames = {};
-// Static function get the settings class name for a node
-Ung.NodeWin.getClassName = function(name) {
-    var className = Ung.NodeWin.classNames[name];
-    return className === undefined ? null: className;
-    };
-// Static function to register a settings class name for a node
-Ung.NodeWin.registerClassName = function(name, className) {
-    Ung.NodeWin.classNames[name] = className;
-};
-Ung.NodeWin.register = function(nodeName) {
-    if (!Ung.hasResource['Webui.'+nodeName+'.settings']) {
-        Ung.hasResource['Webui.'+nodeName+'.settings'] = true;
-        Ung.NodeWin.registerClassName(nodeName, 'Webui.'+nodeName+'.settings');
-    }
-};
+//TODO: remove call from all node settings
+Ung.NodeWin.register = function(nodeName) {};
 
 // Config Window (Save/Cancel/Apply)
 Ext.define("Ung.ConfigWin", {

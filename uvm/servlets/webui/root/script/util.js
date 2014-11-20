@@ -293,14 +293,6 @@ Ung.Util = {
         }
         return error;
     },
-    // Load a resource if not loaded and execute a callback function
-    loadResourceAndExecute: function(resource,sScriptSrc, handler) {
-        if(Ung.hasResource[resource]) {
-            handler.call(this);
-        } else {
-            Ung.Util.loadScript(sScriptSrc, handler);
-        }
-    },
     loadModuleTranslations: function(moduleName, handler) {
         if(!Ung.i18nModuleInstances[moduleName]) {
             rpc.languageManager.getTranslations(Ext.bind(function(result, exception, opt, moduleName, handler) {

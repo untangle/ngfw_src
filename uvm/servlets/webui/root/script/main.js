@@ -1,20 +1,19 @@
 Ext.namespace('Ung');
 Ext.Loader.setConfig({
     enabled: true,
-    //disableCaching: false,
+    disableCaching: false,
     paths: {
         'Ext.ux': '/ext4/examples/ux',
         'Webui': 'script'
     }
 });
-/*
+
 Ext.Loader.loadScriptFileInitial=Ext.Loader.loadScriptFile;
 Ext.Loader.loadScriptFile=Ext.bind(function() {
     arguments[0]=arguments[0]+"?_dc="+Ext.buildStamp;
-    //console.log(arguments);
     Ext.Loader.loadScriptFileInitial.apply(this, arguments);
 }, Ext.Loader)
-*/
+
 var rpc=null; // the main json rpc object
 var testMode = false;
 
