@@ -672,20 +672,10 @@ Ext.define("Ung.Node", {
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
-        /*this.settingsClassName = 'Webui.'+this.name+'.settings';
+        this.settingsClassName = 'Webui.'+this.name+'.settings';
         Ext.require([this.settingsClassName], function() {
             this.initSettings();
-        }, this);*/
-        this.settingsClassName = Ung.NodeWin.getClassName(this.name);
-        if (!this.settingsClassName) {
-            // Dynamically load node javaScript
-            Ung.NodeWin.loadNodeScript(this, Ext.bind(function() {
-                this.settingsClassName = Ung.NodeWin.getClassName(this.name);
-                this.initSettings();
-            }, this));
-        } else {
-            this.initSettings();
-        }
+        }, this);
     },
     // init settings
     initSettings: function() {
@@ -696,11 +686,10 @@ Ext.define("Ung.Node", {
     },
     //get node settings async before node settings load
     preloadSettings: function(handler) {
-        var nodeExtend = Ext.ClassManager.get("Ung.Node." + this.settingsClassName); 
-        if( ( nodeExtend != null ) && 
-            Ext.isFunction( nodeExtend.preloadSettings ) ) {
-            nodeExtend.preloadSettings(this);
-        }else if(Ext.isFunction(this.rpcNode.getSettings)) {
+        var nodeClass = Ext.ClassManager.get(this.settingsClassName);
+        if( nodeClass != null && Ext.isFunction( nodeClass.preloadSettings ) ) {
+            nodeClass.preloadSettings(this);
+        } else if(Ext.isFunction(this.rpcNode.getSettings)) {
             this.rpcNode.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.openSettings.call(this, result);
