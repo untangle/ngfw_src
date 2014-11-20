@@ -33,6 +33,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
     constructor: function( panel, handler ) {
         this.panel = panel;
         this.handler = handler;
+        rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
     },
 
     savePassword: function() {
