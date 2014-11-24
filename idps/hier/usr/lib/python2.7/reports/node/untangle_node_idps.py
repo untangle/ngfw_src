@@ -41,6 +41,7 @@ class Idps(Node):
 
     @print_timing
     def setup(self):
+        self.__create_idps_events(  )
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('idps_blocks', 'integer', "count(CASE WHEN NOT idps_blocked ISNULL THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('idps_description', 'text'))
@@ -66,6 +67,26 @@ class Idps(Node):
 
     def reports_cleanup(self, cutoff):
         pass
+    
+    @print_timing
+    def __create_idps_events(self):
+        sql_helper.create_fact_table("""\
+CREATE TABLE reports.idps_events (
+        time_stamp timestamp NOT NULL,
+        sig_id int8,
+        gen_id int8,
+        class_id int8,
+        source_addr inet,
+        source_port int4,
+        dest_addr inet,
+        dest_port int4,
+        protocol int4,
+        blocked boolean)""")
+        
+        sql_helper.create_index("reports","sessions","time_stamp");
+        sql_helper.create_index("reports","sessions","blocked");
+        sql_helper.create_index("reports","sessions","sig_id");
+        sql_helper.create_index("reports","sessions","class_id");
 
 class IdpsHighlight(Highlight):
     def __init__(self, name):

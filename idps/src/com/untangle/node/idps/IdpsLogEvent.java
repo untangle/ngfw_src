@@ -3,74 +3,36 @@
  */
 package com.untangle.node.idps;
 
+import java.sql.Timestamp;
+
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+import com.untangle.node.idps.IdpsSnortUnified2IdsEvent;
+
 /**
- * Log event for a blocked request.
+ * Log intrusion event
  */
 @SuppressWarnings("serial")
 public class IdpsLogEvent extends LogEvent
 {
-    private SessionEvent sessionEvent;
-    private String classification;
-    private String message;
-    private boolean blocked;
-//    private IpsRule rule;
+    private IdpsSnortUnified2IdsEvent idpsEvent;
 
     // constructors -----------------------------------------------------------
 
-    public IdpsLogEvent() { }
-
-//    public IdpsLogEvent(SessionEvent sessionEvent, IpsRule rule, String classification, String message, boolean blocked)
-//    {
-//        this.sessionEvent = sessionEvent;
-//        this.rule = rule;
-//        this.classification = classification;
-//        this.message = message;
-//        this.blocked = blocked;
-//    }
+    // Pass event object
+    public IdpsLogEvent( IdpsSnortUnified2IdsEvent idpsEvent )
+    {
+        this.idpsEvent = idpsEvent;
+    }
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * the rule that fired this event.
-     */
-//    public IpsRule getRule() { return this.rule; }
-//    public void setRule( IpsRule rule ) { this.rule = rule; }
-
-    /**
-     * Classification of signature that generated this event.
-     */
-    public String getClassification() { return classification; }
-    public void setClassification( String classification ) { this.classification = classification; }
-
-    /**
-     * Message of signature that generated this event.
-     */
-    public String getMessage() { return message; }
-    public void setMessage( String message ) { this.message = message; }
-
-    /**
-     * Was it blocked.
-     */
-    public boolean getBlocked() { return blocked; }
-    public void setBlocked( boolean blocked ) { this.blocked = blocked; }
-
-    public Long getSessionId() { return sessionEvent.getSessionId(); }
-    public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
-
-    public SessionEvent getSessionEvent() { return sessionEvent; }
-    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
-
-    private static String sql =
-        "UPDATE reports.sessions " + 
-        "SET " +
-        " idps_blocked = ?, " + 
-        " idps_ruleid = ?, " + 
-        " idps_description = ? " + 
-        "WHERE session_id = ? " ;
+    private static String sql = "INSERT INTO reports.idps_events " +
+        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked )" +
+        " values " +
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
@@ -78,10 +40,18 @@ public class IdpsLogEvent extends LogEvent
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
-        pstmt.setBoolean(++i, getBlocked());
-//        pstmt.setInt(++i, getRule().getSid());
-//        pstmt.setString(++i, getRule().getDescription());
-        pstmt.setLong(++i, sessionEvent.getSessionId());
+
+        Timestamp ts = new Timestamp( (long) ( idpsEvent.getEventSecond() * 1000 ) + (idpsEvent.getEventMicrosecond() / 1000 ) );
+        pstmt.setTimestamp(++i, ts );
+        pstmt.setLong(++i, idpsEvent.getSignatureId() );
+        pstmt.setLong(++i, idpsEvent.getGeneratorId() );
+        pstmt.setLong(++i, idpsEvent.getClassificationId() );
+        pstmt.setObject(++i, idpsEvent.getIpSource().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, idpsEvent.getSportItype() );
+        pstmt.setObject(++i, idpsEvent.getIpDestination().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setInt(++i, idpsEvent.getDportIcode() );
+        pstmt.setInt(++i, idpsEvent.getProtocol() );
+        pstmt.setBoolean(++i, ( idpsEvent.getBlocked() == 1 ) ? true : false  );
 
         return pstmt;
     }

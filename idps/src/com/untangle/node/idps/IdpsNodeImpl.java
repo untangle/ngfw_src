@@ -43,10 +43,13 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private static final String STAT_BLOCK = "block";
     
     private final EventHandler handler;
+    private final PipelineConnector connector;
     private final PipelineConnector [] connectors;
+    private final IdpsEventMonitor idpsEventMonitor;    
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
+
 
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -60,43 +63,22 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         
-        this.connectors = null;
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("idps", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
+        this.connectors = new PipelineConnector[] { connector };
 
-        this.allEventQuery = new EventLogQuery(
-            I18nUtil.marktr("All Events"),
-            "SELECT e.timestamp as time_stamp," +
-                " i.ip_src as username," +
-                " i.ip_src as c_client_addr," +
-                " i.ip_dst as s_server_addr," +
-                " e.blocked as idps_blocked," + 
-                " s.sig_sid as idps_ruleid," + 
-                " s.sig_name as idps_description" + 
-            " FROM snort.event as e" + 
-                " inner join snort.iphdr i" +
-                    " on e.cid = i.cid and e.sid = i.sid"+
-                " inner join snort.signature s" +
-                " on e.signature = s.sig_id" +
-            " ORDER BY time_stamp DESC"
-        );
+        this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
-        this.blockedEventQuery = new EventLogQuery(
-            I18nUtil.marktr("Blocked Events"),
-            "SELECT e.timestamp as time_stamp, " +
-                " i.ip_src as username, " +
-                " i.ip_src as c_client_addr, " +
-                " i.ip_dst as s_server_addr, " +
-                " e.blocked as idps_blocked, " + 
-                " s.sig_sid as idps_ruleid, " + 
-                " s.sig_name as idps_description" + 
-            " FROM snort.event as e " + 
-                " inner join snort.iphdr i" +
-                    " on e.cid = i.cid and e.sid = i.sid"+
-                " inner join snort.signature s" +
-                " on e.signature = s.sig_id" +
-            " WHERE" +
-                "e.blocked = 1" +
-            " ORDER BY time_stamp DESC"
-        );
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                               "SELECT * FROM reports.sessions " + 
+                                               "WHERE policy_id = :policyId " +
+                                               "AND ips_description IS NOT NULL " +
+                                               "ORDER BY time_stamp DESC");
+
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+                                                   "SELECT * FROM reports.sessions " + 
+                                                   "WHERE policy_id = :policyId " +
+                                                   "AND ips_blocked IS TRUE " +
+                                                   "ORDER BY time_stamp DESC");
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }
@@ -119,6 +101,17 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     protected void preStart()
     {
         logger.info("Pre Start");
+        this.idpsEventMonitor.start();
+        this.idpsEventMonitor.enable();
+    }
+
+    protected void preStop()
+    {
+        try{
+            this.idpsEventMonitor.disable();
+        }catch( Exception e ){
+            logger.warn( "Error disabling IDPS Event Monitor", e );
+        }
     }
 
     protected void postInit()
@@ -208,25 +201,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
         }
-
-        // synchronized(this) {
-        //     String configCmd = new String(System.getProperty("uvm.bin.dir") + "/idps-create-config" + " --node " + node);
-        //     String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-        //     try{
-        //         String lines[] = result.split("\\r?\\n");
-        //         logger.warn("idps config: ");
-        //         for ( String line : lines ){
-        //             logger.warn("idps config: " + line);
-        //         }
-        //     }catch( Exception e ){}
-                        
-        //     try{
-        //         // Must fork for...reasons?
-        //         ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil("/etc/init.d/snort restart");
-        //     }catch( Exception ex ){
-        //         logger.error("Error restarting snort", ex);
-        //     }
-        // }
     }
 
     private class IdpsSettingsDownloadHandler implements DownloadHandler
