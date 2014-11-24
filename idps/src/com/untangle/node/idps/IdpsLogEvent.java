@@ -41,7 +41,7 @@ public class IdpsLogEvent extends LogEvent
 
         int i=0;
 
-        Timestamp ts = new Timestamp( (long) ( idpsEvent.getEventSecond() * 1000 ) + (idpsEvent.getEventMicrosecond() / 1000 ) );
+        Timestamp ts = new Timestamp( ( idpsEvent.getEventSecond() * 1000 ) + ( idpsEvent.getEventMicrosecond() / 1000 ) );
         pstmt.setTimestamp(++i, ts );
         pstmt.setLong(++i, idpsEvent.getSignatureId() );
         pstmt.setLong(++i, idpsEvent.getGeneratorId() );
@@ -60,11 +60,11 @@ public class IdpsLogEvent extends LogEvent
     public String toSummaryString()
     {
         String action;
-        if ( getBlocked() )
+        if ( idpsEvent.getBlocked() == 1 ? true : false )
             action = I18nUtil.marktr("blocked");
         else
             action = I18nUtil.marktr("detected");
-        String summary = "Intrusion Prevention" + " " + action + " \"" + getMessage() + "\" " + sessionEvent.toSummaryString();
+        String summary = "Intrusion Prevention" + " " + action;
         return summary;
     }
     

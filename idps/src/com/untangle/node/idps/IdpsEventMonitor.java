@@ -201,9 +201,9 @@ class IdpsEventMonitor implements Runnable
         }
             
         boolean found;
-        Iterator it = fileLastPositions.entrySet().iterator();
+        Iterator<?> it = fileLastPositions.entrySet().iterator();
         while( it.hasNext() ){
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
             File flpf = (File) pair.getKey();
             found = false;
             for( File f: files ){
