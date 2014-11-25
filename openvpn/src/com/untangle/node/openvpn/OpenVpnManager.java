@@ -628,7 +628,8 @@ public class OpenVpnManager
             iptablesScript.write("\n");
 
             iptablesScript.write("# delete old global NAT rule" + "\n");
-            iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("${IPTABLES} -t nat -D nat-rules -i tun0 -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\" >/dev/null 2>&1" + "\n");
+
             for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
                 if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
                     iptablesScript.write("# delete old WAN NAT rule" + "\n");
@@ -666,9 +667,9 @@ public class OpenVpnManager
             iptablesScript.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" \n");
             iptablesScript.write("\n");
             
-            if ( settings.getNatOpenVpnTraffic() ) {
-                iptablesScript.write("# NAT traffic from openvpn interfaces" + "\n");
-                iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic\"" + "\n");
+            if ( settings.getServerEnabled() && settings.getNatOpenVpnTraffic() ) {
+                iptablesScript.write("# NAT traffic from the server openvpn interface" + "\n");
+                iptablesScript.write("${IPTABLES} -t nat -I nat-rules -i tun0 -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + "\n");
             } else {
                 for ( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
                     if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {

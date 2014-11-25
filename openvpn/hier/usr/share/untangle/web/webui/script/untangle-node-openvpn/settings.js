@@ -1027,6 +1027,8 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             Ext.getCmp('openvpn_options_protocol').disable();
             Ext.getCmp('openvpn_options_cipher').disable();
             Ext.getCmp('openvpn_options_addressSpace').disable();
+            Ext.getCmp('openvpn_options_nat').disable();
+            Ext.getCmp('openvpn_options_nat_comment').hide();
             if (newValue) {
                 this.tabPanel.enable();
                 Ext.getCmp('openvpn_options_client_to_client').enable();
@@ -1034,6 +1036,8 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 Ext.getCmp('openvpn_options_protocol').enable();
                 Ext.getCmp('openvpn_options_cipher').enable();
                 Ext.getCmp('openvpn_options_addressSpace').enable();
+                Ext.getCmp('openvpn_options_nat').enable();
+                Ext.getCmp('openvpn_options_nat_comment').show();
             }
         }, this);
 
@@ -1144,20 +1148,29 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                         }
                     }
                 }, {
-                    xtype: 'textfield',
+                    xtype: "combo",
                     hidden: Ung.Util.hideDangerous,
+                    editable: false,
                     labelWidth: 160,
                     labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Protocol'),
                     name: 'Protocol',
+                    store: [["udp", "UDP"], ["tcp", "TCP"]],
                     value: this.getSettings().protocol,
                     id: 'openvpn_options_protocol',
                     allowBlank: false,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().protocol = newValue;
+                                Ext.MessageBox.confirm(this.i18n._("Warning"),
+                                                       this.i18n._("Changing the protocol will require redistributing ALL of the openvpn clients.") + "<br/><br/>" +
+                                                       this.i18n._("Do you want to continue anyway?"),
+                                                       Ext.bind(function(btn, text) {
+                                                           if (btn == 'yes') {
+                                                               this.getSettings().protocol = newValue;
+                                                           }
+                                                       }, this));
                             }, this)
                         }
                     }
@@ -1198,19 +1211,29 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                         }
                     }
                 }, {
-                    xtype: 'checkbox',
-                    hidden: Ung.Util.hideDangerous,
-                    labelWidth: 160,
-                    name: "NAT OpenVPN Traffic",
-                    fieldLabel: this.i18n._("NAT All OpenVPN Traffic"),
-                    checked: this.getSettings().natOpenVpnTraffic,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.getSettings().natOpenVpnTraffic = newValue;
-                            }, this)
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [, {
+                        xtype: 'checkbox',
+                        labelWidth: 160,
+                        name: "NAT OpenVPN Traffic",
+                        fieldLabel: this.i18n._("NAT OpenVPN Traffic"),
+                        checked: this.getSettings().natOpenVpnTraffic,
+                        id: 'openvpn_options_nat',
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, newValue) {
+                                    this.getSettings().natOpenVpnTraffic = newValue;
+                                }, this)
+                            }
                         }
-                    }
+                    }, {
+                        xtype: 'label',
+                        id: 'openvpn_options_nat_comment',
+                        html: "(" + this.i18n._("NAT all LAN-bound OpenVPN traffic to a local address") + ")",
+                        cls: 'boxlabel'
+                    }]
                 }]
             }, this.tabPanel]
         });
@@ -1351,6 +1374,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 Ext.getCmp( "openvpn_options_protocol" ).setValue( this.getSettings().protocol );
                 Ext.getCmp( "openvpn_options_cipher" ).setValue( this.getSettings().cipher );
                 Ext.getCmp( "openvpn_options_addressSpace" ).setValue( this.getSettings().addressSpace );
+                Ext.getCmp( "openvpn_options_nat" ).setValue( this.getSettings().natOpenVpnTraffic );
 
                 this.clearDirty();
                 Ext.MessageBox.hide();
