@@ -364,6 +364,16 @@ Ext.define("Ung.Main", {
             },
             ip4AddressText: i18n._('Invalid IPv4 Address.'),
 
+            ip4AddressList:  function(v) {
+                var addr = v.split(",");
+                for ( var i = 0 ; i < addr.length ; i++ ) {
+                    if ( ! ip4AddrMaskRe.test(addr[i]) )
+                        return false;
+                }
+                return true;
+            },
+            ip4AddressListText: i18n._('Invalid IPv4 Address(es).'),
+
             ip6Address: function(val) {
                 return ip6AddrMaskRe.test(val);
             },

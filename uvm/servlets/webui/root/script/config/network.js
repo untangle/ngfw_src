@@ -1612,7 +1612,7 @@ Ext.define("Webui.config.network", {
                         xtype:'textfield',
                         dataIndex: "dhcpDnsOverride",
                         fieldLabel: this.i18n._("DNS Override"),
-                        vtype: "ip4Address",
+                        vtype: "ip4AddressList",
                         disableOnly: true,
                         width: 350
                     }, {
