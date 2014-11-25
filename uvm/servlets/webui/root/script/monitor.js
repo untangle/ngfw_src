@@ -14,8 +14,6 @@ Ext.define('Ung.MonitorGrid', {
     groupField: null,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable: true,
-    // paginate the grid by default
-    paginated: false,
     async: true,
     //an applicaiton selector
     appList: null,

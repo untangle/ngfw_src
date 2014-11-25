@@ -21,7 +21,7 @@ Ext.apply(Ext.form.field.VTypes, {
     ipAddressRegex: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
 
     passwordConfirmCheck: function(val,field) {
-            var pass_original = Ext.getCmp(field.comparePasswordField);
+        var pass_original = Ext.getCmp(field.comparePasswordField);
         return val == pass_original.getValue();
     },
     passwordConfirmCheckText: 'Passwords do not match'

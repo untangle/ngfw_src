@@ -642,8 +642,9 @@ Ext.define("Webui.config.system", {
                 items: [{
                     html: this.i18n._("Time is automatically synced via NTP")
                 }, {
-                    id: "system_regionalSettings_currentTime",
-                    html: ".",//rpc.adminManager.getDate(),
+                    xtype: 'container',
+                    name: 'currentTime',
+                    html: ".",
                     listeners: {
                         "afterrender": {
                             fn: Ext.bind(function(elem) {
@@ -832,9 +833,9 @@ Ext.define("Webui.config.system", {
         if(this.isVisible()) {
             rpc.adminManager.getDate(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                var currentTimeObj = Ext.getCmp("system_regionalSettings_currentTime");
-                if (currentTimeObj && currentTimeObj.body) {
-                    currentTimeObj.body.update(result);
+                var currentTimeObj = this.panelRegional.down('container[name="currentTime"]');
+                if (currentTimeObj) {
+                    currentTimeObj.update(result);
                     if ( this.timeUpdateId != -1) {
                         // Clear timeout for any previously defined deferred call.
                         // This is used because this function is called for updating the time after applying changes and without this multiple deffered calls will accumulate
