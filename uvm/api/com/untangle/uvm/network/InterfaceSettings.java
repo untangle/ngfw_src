@@ -84,7 +84,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
-    private InetAddress dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
+    private String dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     private List<DhcpOption> dhcpOptions; /* DHCP dnsmasq options */
     
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
@@ -238,8 +238,8 @@ public class InterfaceSettings implements Serializable, JSONString
     public Integer getDhcpPrefixOverride() { return this.dhcpPrefixOverride; }
     public void setDhcpPrefixOverride( Integer newValue ) { this.dhcpPrefixOverride = newValue; }
 
-    public InetAddress getDhcpDnsOverride() { return this.dhcpDnsOverride; }
-    public void setDhcpDnsOverride( InetAddress newValue ) { this.dhcpDnsOverride = newValue; }
+    public String getDhcpDnsOverride() { return this.dhcpDnsOverride; }
+    public void setDhcpDnsOverride( String newValue ) { this.dhcpDnsOverride = newValue; }
 
     public List<DhcpOption> getDhcpOptions() { return this.dhcpOptions; }
     public void setDhcpOptions( List<DhcpOption> newValue ) { this.dhcpOptions = newValue; }

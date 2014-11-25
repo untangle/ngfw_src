@@ -1669,7 +1669,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             xtype:'textfield',
                             dataIndex: "dhcpDnsOverride",
                             fieldLabel: this.i18n._("DNS Override"),
-                            vtype: "ip4Address",
+                            vtype: "ip4AddressList",
                             disableOnly: true,
                             width: 350
                         }, {
