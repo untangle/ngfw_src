@@ -6,6 +6,8 @@
 timeout=$1
 filename=$2
 tcpdumpArguments=$3
+trace_pid_filename=$filename.pid
+trap "cat $trace_pid_filename | xargs kill -9" SIGHUP SIGINT SIGTERM
 
 ##
 ## Read contents of current pcp file and count last read location.
@@ -49,6 +51,7 @@ tcpdumpstderr=$filename.stderr
 ##
 tcpdump $tcpdumpArguments -w $filename > $tcpdumpstderr 2>&1 & echo -n "";
 trace_pid=$!;
+echo $trace_pid > $trace_pid_filename
 for t in `seq 1 $timeout`; do 
     sleep 1;
     if [ $t -eq 1 -a \
