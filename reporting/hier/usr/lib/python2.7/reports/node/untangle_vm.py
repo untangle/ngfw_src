@@ -51,7 +51,7 @@ class UvmNode(Node):
         self.__build_penaltybox_table()
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
-        self.__build_alert_events_table()
+        self.__build_alerts_events_table()
 
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
