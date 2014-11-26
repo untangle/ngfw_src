@@ -5020,7 +5020,6 @@ Ext.define("Webui.config.network", {
                     ];
                     var traceOptions = traceFixedOptionsTemplate.concat( traceOverrideOptionsTemplate );
                     var traceExpression = [];
-                    console.log("traceOptions default=" + traceOptions.join(" "));
                     if( this.advancedToggleButton.pressed ){
                         traceExpression = [this.advancedInput.getValue()];
                     }else{
@@ -5034,7 +5033,6 @@ Ext.define("Webui.config.network", {
                         }
                     }
                     var traceArguments = traceOptions.join(" ") + " " + traceExpression.join( " and ");
-                    console.log( traceArguments );
                     return traceArguments;
                 },
                 getCommand: function() {
@@ -5047,7 +5045,6 @@ Ext.define("Webui.config.network", {
                             ' \'' + filename + '\'' +
                             ' \'' + traceCommand + '\''
                     ];
-                    console.log(script.join(""));
                     return ["/bin/bash","-c", script.join("")];
                 },
                 enableParameters : function( isEnabled ){
