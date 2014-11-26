@@ -5054,6 +5054,7 @@ if (!Ung.hasResource["Ung.Network"]) {
                             "-v"
                         ];
                         var traceOverrideOptionsTemplate = [
+                            "-n",
                             "-s 65535",
                             "-i " + this.intf.getValue()
                         ];
