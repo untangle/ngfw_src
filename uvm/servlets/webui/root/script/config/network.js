@@ -27,22 +27,13 @@ Ext.define("Webui.config.network", {
             title: i18n._('Network')
         }];
         var deviceStatus, interfaceStatus, i;
+        
         try {
             this.settings = main.getNetworkManager().getNetworkSettings();
-            deviceStatus=main.getNetworkManager().getDeviceStatus();
-            interfaceStatus=main.getNetworkManager().getInterfaceStatus();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        var deviceStatusMap=Ung.Util.createRecordsMap(( deviceStatus == null ? [] : deviceStatus.list ), "deviceName");
-        var interfaceStatusMap=Ung.Util.createRecordsMap(interfaceStatus.list, "interfaceId");
-        for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
-            var intfb=this.settings.interfaces.list[i];
-            var deviceStatusInner = deviceStatusMap[intfb.physicalDev];
-            Ext.applyIf(intfb, deviceStatusInner);
-            var interfaceStatusInner = interfaceStatusMap[intfb.interfaceId];
-            Ext.applyIf(intfb, interfaceStatusInner);
-        }
+        
         rpc.networkSettings = this.settings;
 
         // builds the tabs
@@ -82,6 +73,7 @@ Ext.define("Webui.config.network", {
             }
         }
         this.callParent(arguments);
+        this.loadDeviceAndInterfaceStatus(false);
     },
     getPortForwardMatchers: function () {
         return [
@@ -139,6 +131,63 @@ Ext.define("Webui.config.network", {
             {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true, allowInvert: false},
             {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true, allowInvert: false}
         ];
+    },
+    //asynchronous load of device status and interface status
+    loadDeviceAndInterfaceStatus: function(refresh) {
+        if(refresh) {
+            Ext.MessageBox.wait(this.i18n._("Refreshing..."), i18n._("Please wait"));
+        }
+        main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
+            main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
+                if(!refresh) { //update network settings object
+                    for(var i=0 ; i<this.settings.interfaces.list.length ; i++) {
+                        var intfb=this.settings.interfaces.list[i];
+                        var deviceStatusInner = deviceStatusMap[intfb.physicalDev];
+                        Ext.applyIf(intfb, deviceStatusInner);
+                        var interfaceStatusInner = interfaceStatusMap[intfb.interfaceId];
+                        Ext.applyIf(intfb, interfaceStatusInner);
+                    }
+                }
+                var grid = this.gridInterfaces;
+                grid.getStore().suspendEvents();
+                grid.getStore().each(function( currentRow ) {
+                    var isDirty = currentRow.dirty;
+                    var deviceStatus = deviceStatusMap[currentRow.get("physicalDev")];
+                    var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
+                    if(deviceStatus) {
+                        currentRow.set({
+                            "macAddress": deviceStatus.macAddress,
+                            "duplex": deviceStatus.duplex,
+                            "vendor": deviceStatus.vendor,
+                            "mbit": deviceStatus.mbit,
+                            "connected": deviceStatus.connected
+                        });
+                    }
+                    if(interfaceStatus) {
+                        currentRow.set({
+                            "v4Address": interfaceStatus.v4Address,
+                            "v4Netmask": interfaceStatus.v4Netmask,
+                            "v4Gateway": interfaceStatus.v4Gateway,
+                            "v4Dns1": interfaceStatus.v4Dns1,
+                            "v4Dns2": interfaceStatus.v4Dns2,
+                            "v4PrefixLength": interfaceStatus.v4PrefixLength
+                        });
+                    }
+                    //To prevent coloring the row when status is changed
+                    if(!isDirty && (deviceStatus || interfaceStatus)) {
+                        currentRow.commit();
+                    }
+                });
+                grid.getStore().resumeEvents();
+                grid.getView().refresh();
+                if(refresh) {
+                    Ext.MessageBox.hide();
+                }
+            }, this));
+        }, this));
     },
     // Interfaces Panel
     buildInterfaces: function() {
@@ -365,6 +414,7 @@ Ext.define("Webui.config.network", {
                 sortable: false,
                 width: 110,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                    if (Ext.isEmpty(value)) return "";
                     var divClass = "ua-cell-disabled";
                     var connectedStr = this.i18n._("unknown");
                     if ( value == "CONNECTED" ) {
@@ -427,8 +477,7 @@ Ext.define("Webui.config.network", {
                 dataIndex: 'v4Address',
                 width:130,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                    if (Ext.isEmpty(value))
-                        return "";
+                    if (Ext.isEmpty(value)) return "";
                     return value + "/" + record.data.v4PrefixLength;
                 }, this)
             }, {
@@ -455,7 +504,7 @@ Ext.define("Webui.config.network", {
                 iconCls: 'icon-refresh',
                 text: this.i18n._("Refresh"),
                 handler: function() {
-                    this.gridInterfaces.onRefreshStatus();
+                    this.loadDeviceAndInterfaceStatus(true);
                 },
                 scope : this
             },'-',{
@@ -481,49 +530,6 @@ Ext.define("Webui.config.network", {
                 },
                 scope : this
             }],
-            onRefreshStatus: function() {
-                var grid = this;
-                Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), i18n._("Please wait"));
-                main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
-                    main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
-                        var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
-                        grid.getStore().suspendEvents();
-                        grid.getStore().each(function( currentRow ) {
-                            var isDirty = currentRow.dirty;
-                            var deviceStatus = deviceStatusMap[currentRow.get("deviceName")];
-                            var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
-                            if(deviceStatus) {
-                                currentRow.set({
-                                    "macAddress": deviceStatus.macAddress,
-                                    "duplex": deviceStatus.duplex,
-                                    "vendor": deviceStatus.vendor,
-                                    "mbit": deviceStatus.mbit,
-                                    "connected": deviceStatus.connected
-                                });
-                            }
-                            if(interfaceStatus) {
-                                currentRow.set({
-                                    "v4Address": interfaceStatus.v4Address,
-                                    "v4Netmask": interfaceStatus.v4Netmask,
-                                    "v4Gateway": interfaceStatus.v4Gateway,
-                                    "v4Dns1": interfaceStatus.v4Dns1,
-                                    "v4Dns2": interfaceStatus.v4Dns2,
-                                    "v4PrefixLength": interfaceStatus.v4PrefixLength
-                                });
-                            }
-                            //To prevent coloring the row when status is changed
-                            if(!isDirty && (deviceStatus || interfaceStatus)) {
-                                currentRow.commit();
-                            }
-                        });
-                        grid.getStore().resumeEvents();
-                        grid.getView().refresh();
-                        Ext.MessageBox.hide();
-                    }, this));
-                }, this.settingsCmp));
-            },
             onMapDevices: Ext.bind(function() {
                 Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
                 if (!this.winMapDevices) {
