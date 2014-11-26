@@ -5015,6 +5015,7 @@ Ext.define("Webui.config.network", {
                         "-v"
                     ];
                     var traceOverrideOptionsTemplate = [
+                        "-n",
                         "-s 65535",
                         "-i " + this.intf.getValue()
                     ];
