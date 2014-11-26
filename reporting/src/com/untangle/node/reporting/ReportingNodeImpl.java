@@ -73,7 +73,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
 
         this.interestingEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                                        "SELECT * FROM reports.interesting " + 
+                                                        "SELECT * FROM reports.alerts " + 
                                                         "WHERE true " +
                                                         "ORDER BY time_stamp DESC");   
         
@@ -377,6 +377,62 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download" );
         rules.add( alertRule );
 
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*PenaltyBoxEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "ENTER" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*PenaltyBoxEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "1" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "load1", ">", "20" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Server load is very high" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "diskFreePercent", "<", ".2" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Free disk space is low" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".2" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*CaptureUserEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "event", "=", "FAILED" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login" );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*VirusHttpEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "clean", "=", "False" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked" );
+        rules.add( alertRule );
+        
         return rules;
     }
 

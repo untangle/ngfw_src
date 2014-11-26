@@ -157,6 +157,7 @@ public class MetricManagerImpl implements MetricManager
             long time = System.nanoTime();
             if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
                 SystemStatEvent sse = new SystemStatEvent();
+                sse.setMemTotal(Long.parseLong(m.get("MemTotal").toString()));
                 sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
                 sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
                 sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));

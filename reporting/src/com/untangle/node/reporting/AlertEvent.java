@@ -43,7 +43,7 @@ public class AlertEvent extends LogEvent
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
     
-    private static String sql = "INSERT INTO reports.alert " +
+    private static String sql = "INSERT INTO reports.alerts " +
         "(time_stamp, description, summary_text, json) " +
         "values " +
         "(?, ?, ?, ?); ";

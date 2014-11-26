@@ -48,13 +48,17 @@ public class AlertRuleMatcherField
     {
         if ( field == null || comparator == null || value == null )
             return false;
-        if ( ! obj.has(  field ) )
+        if ( ! obj.has(  field ) ) {
+            //logger.warn("DEBUG missing field: " + field );
             return false;
+        }
         Object actualValueObj;
         try {
             actualValueObj = obj.get( field );
-            if ( actualValueObj == null )
+            if ( actualValueObj == null ) {
+                //logger.warn("DEBUG missing actual field: " + actualValueObj );
                 return false;
+            }
         } catch (Exception e) {
             return false;
         }
@@ -64,9 +68,13 @@ public class AlertRuleMatcherField
          * Number is handled specially > and < operators
          */
         if ( actualValueObj instanceof Number ) {
+            //logger.warn("DEBUG number eval: " + actualValueObj);
+            
             try {
                 long specifiedValue = Long.parseLong( value );
                 long actualValue = (long) actualValueObj;
+                //logger.warn("DEBUG long check: " + specifiedValue + " against " + actualValueObj );
+
                 if ( "=".equals(comparator) ) {
                     return (actualValue == specifiedValue);
                 } else if ( ">".equals(comparator) ) {
@@ -74,11 +82,15 @@ public class AlertRuleMatcherField
                 } else if ( "<".equals(comparator) ) {
                     return (actualValue < specifiedValue);
                 }
-            } catch ( Exception e ) {}
+            } catch ( Exception e ) {
+                //logger.warn("DEBUG Exception",e );
+            }
 
             try {
                 double specifiedValue = Double.parseDouble( value );
                 double actualValue = (double)actualValueObj;
+                //logger.warn("DEBUG double check: " + specifiedValue + " against " + actualValueObj );
+
                 if ( "=".equals(comparator) ) {
                     return (actualValue == specifiedValue);
                 } else if ( ">".equals(comparator) ) {
@@ -86,7 +98,25 @@ public class AlertRuleMatcherField
                 } else if ( "<".equals(comparator) ) {
                     return (actualValue < specifiedValue);
                 }
-            } catch ( Exception e ) {}
+            } catch ( Exception e ) {
+                //logger.warn("DEBUG Exception",e );
+            }
+
+            try {
+                float specifiedValue = Float.parseFloat( value );
+                float actualValue = (float)actualValueObj;
+                //logger.warn("DEBUG float check: " + specifiedValue + " against " + actualValueObj );
+
+                if ( "=".equals(comparator) ) {
+                    return (actualValue == specifiedValue);
+                } else if ( ">".equals(comparator) ) {
+                    return (actualValue > specifiedValue);
+                } else if ( "<".equals(comparator) ) {
+                    return (actualValue < specifiedValue);
+                }
+            } catch ( Exception e ) {
+                //logger.warn("DEBUG Exception",e );
+            }
 
             return false;
         }
@@ -98,7 +128,7 @@ public class AlertRuleMatcherField
         if ( ! "=".equals( comparator ) ) // String only supports "=" operator
             return false;
         String actualValueStr = actualValueObj.toString().toLowerCase();
-        //logger.warn("XXX check: " + actualValueStr + " against " + value );
+        //logger.warn("DEBUG string check: " + actualValueStr + " against " + value );
 
         if ( this.stringGlobMatcher == null )
             this.stringGlobMatcher = new GlobMatcher( value );
@@ -107,7 +137,7 @@ public class AlertRuleMatcherField
 
         boolean result = this.stringGlobMatcher.isMatch( actualValueStr );
 
-        //logger.warn("XXX check: " + actualValueStr + " against " + value + " result: " + result );
+        //logger.warn("DEBUG check: " + actualValueStr + " against " + value + " result: " + result );
         return result;
 
     }

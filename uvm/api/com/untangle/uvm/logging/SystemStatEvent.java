@@ -12,6 +12,7 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class SystemStatEvent extends LogEvent
 {
+    private long memTotal;
     private long memFree;
     private long memCache;
     private long memBuffers;
@@ -30,6 +31,9 @@ public class SystemStatEvent extends LogEvent
     private long swapTotal;
 
     public SystemStatEvent() { }
+
+    public long getMemTotal() { return memTotal; }
+    public void setMemTotal(long newMemTotal) { this.memTotal = newMemTotal; }
 
     public long getMemFree() { return memFree; }
     public void setMemFree(long newMemFree) { this.memFree = newMemFree; }
@@ -67,6 +71,16 @@ public class SystemStatEvent extends LogEvent
     public long getSwapTotal() { return swapTotal; }
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
 
+    public float getDiskFreePercent()
+    {
+        return ( ((float)getDiskFree()) / ((float)getDiskTotal()) );
+    }
+
+    public float getMemFreePercent()
+    {
+        return ( ((float)getMemFree()) / ((float)getMemTotal()) );
+    }
+    
     private static String sql =
         "INSERT INTO reports.server_events " +
         "(time_stamp, mem_free, mem_cache, mem_buffers, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free) " +
