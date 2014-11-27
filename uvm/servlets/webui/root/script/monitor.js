@@ -2,8 +2,6 @@
 Ext.define('Ung.MonitorGrid', {
     extend:'Ext.grid.Panel',
     selType: 'rowmodel',
-    // record per page
-    recordsPerPage: 500,
     // settings component
     settingsCmp: null,
     // the default sort field
@@ -20,7 +18,6 @@ Ext.define('Ung.MonitorGrid', {
     // the total number of records
     totalRecords: null,
     autoRefreshEnabled: false,
-    verticalScrollerType: 'paginggridscroller',
     stateful: true,
     plugins: {
         ptype: 'bufferedrenderer',
@@ -37,8 +34,6 @@ Ext.define('Ung.MonitorGrid', {
     constructor: function(config) {
         var defaults = {
             data: [],
-            plugins: [
-            ],
             viewConfig: {
                 enableTextSelection: true,
                 stripeRows: true,

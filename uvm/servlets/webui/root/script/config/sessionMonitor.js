@@ -23,6 +23,7 @@ Ext.define('Webui.config.sessionMonitor', {
              handler({javaClass:"java.util.LinkedList", list:[]});
              return;
         }
+        var aaa=0, initTime=(new Date()).getTime();
         rpc.sessionMonitor.getMergedSessions(Ext.bind(function(result, exception) {
             if(exception) {
                 handler(result, exception);
@@ -30,7 +31,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
             var sessions = result.list;
             if(testMode) {
-                var testSessionsSize=400 + Math.floor((Math.random()*150));
+                var testSessionsSize=5000;//400 + Math.floor((Math.random()*150));
                 for(var t=0;t<testSessionsSize;t++) {
                     var ii=t+Math.floor((Math.random()*5));
                     sessions.push({
@@ -56,7 +57,7 @@ Ext.define('Webui.config.sessionMonitor', {
                                 "sitefilter-best-category-id": null,
                                 "http-uri": "/t.gif",
                                 "platform-username": "rbooroojian"+t,
-                                "http-hostname": "p.twitter.com"+t
+                                "http-hostname": "p.twitter.com"+(t%500)
                             },
                             "javaClass": "java.util.HashMap"
                         },
@@ -77,10 +78,11 @@ Ext.define('Webui.config.sessionMonitor', {
                 }
             }
             // iterate through each session and change its attachments map to properties
-            for (var i = 0; i < sessions.length ; i++) {
+            var i, prop;
+            for (i = 0; i < sessions.length ; i++) {
                 var session = sessions[i];
-                if (session.attachments != null) {
-                    for (var prop in session.attachments.map) {
+                if (session.attachments) {
+                    for (prop in session.attachments.map) {
                         session[prop] = session.attachments.map[prop];
                     }
                 }
