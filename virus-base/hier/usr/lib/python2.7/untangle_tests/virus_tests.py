@@ -6,7 +6,6 @@ import sys
 import os
 import subprocess
 import socket
-import re
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -18,7 +17,8 @@ import global_functions
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 node = None
-ip_address_testdestination  = None
+testsite = "test.untangle.com"
+testsiteIP = socket.gethostbyname(testsite)
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -47,7 +47,7 @@ class VirusTests(unittest2.TestCase):
         return "untangle"
 
     def setUp(self):
-        global node,md5StdNum,ip_address_testdestination
+        global node,md5StdNum
         if node == None:
             # download eicar and trojan files before installing virus blocker
             remote_control.runCommand("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
@@ -58,9 +58,6 @@ class VirusTests(unittest2.TestCase):
             md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print "md5StdNum <%s>" % md5StdNum
             assert (result == 0)
-            result = remote_control.runCommand("host test.untangle.com", stdout=True)
-            match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-            ip_address_testdestination  = match.group()            
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
@@ -240,7 +237,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=" + ip_address_testdestination + " --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -269,7 +266,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=" + ip_address_testdestination + " --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (fname, fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/attachment-%s" % (testsiteIP, fname, fname))
         assert (result == 0)
         flushEvents()
         query = None;
@@ -300,7 +297,7 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=" + ip_address_testdestination + " --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (fname))
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
         assert (result == 0)
         flushEvents()
         query = None;
