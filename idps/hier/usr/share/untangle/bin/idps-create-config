@@ -15,7 +15,7 @@ def main(argv):
     global _debug
     _debug = 0
     settings_file = ""
-    snort_file = "/usr/local/etc/snort/snort.conf"
+    snort_file = "/etc/snort/snort.conf"
     node = 0
 	
 	## we know settings directory
@@ -69,7 +69,7 @@ def update_snort_rules( policy_id, settings ):
 
     gid_policy_id = str( int(policy_id) + 10000000 )
 
-    snort_rules_file = "/usr/local/etc/snort/rules/policy_" + policy_id + ".rules"
+    snort_rules_file = "/etc/snort/rules/policy_" + policy_id + ".rules"
     snort_rules_file_new = open( snort_rules_file + ".tmp", "w" )
     for rule in settings['rules']['list']:
         if rule['log'] == True and rule['live'] == True:
