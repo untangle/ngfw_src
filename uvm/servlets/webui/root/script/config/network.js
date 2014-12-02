@@ -422,7 +422,7 @@ Ext.define("Webui.config.network", {
                 sortable: false,
                 width: 110,
                 renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
-                    if (Ext.isEmpty(value)) return "";
+                    if (Ext.isEmpty(value)) return "<div style='height:16px;'></div>";
                     var divClass = "ua-cell-disabled";
                     var connectedStr = this.i18n._("unknown");
                     if ( value == "CONNECTED" ) {
