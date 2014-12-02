@@ -4229,8 +4229,6 @@ Ext.define('Ung.MonitorGrid', {
     constructor: function(config) {
         var defaults = {
             data: [],
-            plugins: [
-            ],
             viewConfig: {
                 enableTextSelection: true,
                 stripeRows: true,
