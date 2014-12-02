@@ -23,7 +23,6 @@ Ext.define('Webui.config.sessionMonitor', {
              handler({javaClass:"java.util.LinkedList", list:[]});
              return;
         }
-        var aaa=0, initTime=(new Date()).getTime();
         rpc.sessionMonitor.getMergedSessions(Ext.bind(function(result, exception) {
             if(exception) {
                 handler(result, exception);
