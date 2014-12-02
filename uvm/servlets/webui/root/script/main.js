@@ -1016,7 +1016,7 @@ Ext.define("Ung.Main", {
             main.configWin = Ext.create(config.className, config);
             main.configWin.show();
             Ext.MessageBox.hide();
-        }
+        };
         Ext.Function.defer(function() {
             Ext.require([this.className], function() {
                 var configClass = Ext.ClassManager.get(this.className);
