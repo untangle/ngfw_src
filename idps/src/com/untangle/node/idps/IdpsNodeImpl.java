@@ -96,11 +96,12 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void postStop()
     {
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
     }
 
     protected void preStart()
     {
-        logger.info("Pre Start");
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         this.idpsEventMonitor.start();
         this.idpsEventMonitor.enable();
     }
