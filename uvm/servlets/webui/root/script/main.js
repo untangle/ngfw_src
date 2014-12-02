@@ -1012,11 +1012,19 @@ Ext.define("Ung.Main", {
     },
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+        var createWinFn= function(config) {
+            main.configWin = Ext.create(config.className, config);
+            main.configWin.show();
+            Ext.MessageBox.hide();
+        }
         Ext.Function.defer(function() {
             Ext.require([this.className], function() {
-                main.configWin = Ext.create(this.className, this);
-                main.configWin.show();
-                Ext.MessageBox.hide();
+                var configClass = Ext.ClassManager.get(this.className);
+                if( configClass != null && Ext.isFunction( configClass.preload ) ) {
+                    configClass.preload(this, createWinFn);
+                } else {
+                    createWinFn(this);
+                }
             }, this);
         }, 10, configItem);
     },

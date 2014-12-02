@@ -1,6 +1,15 @@
 Ung.NetworkSettingsCmp = null;
 Ext.define("Webui.config.network", {
     extend: "Ung.ConfigWin",
+    statics: {
+        preload: function(config, handler) {
+            main.getNetworkManager().getNetworkSettings(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                config.settings = result;
+                handler(config);
+            });
+        }
+    },
     gridPortForwardRules: null,
     gridNatRules: null,
     gridBypassRules: null,
@@ -26,14 +35,6 @@ Ext.define("Webui.config.network", {
         }, {
             title: i18n._('Network')
         }];
-        var deviceStatus, interfaceStatus, i;
-        
-        try {
-            this.settings = main.getNetworkManager().getNetworkSettings();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        
         rpc.networkSettings = this.settings;
 
         // builds the tabs
@@ -52,6 +53,7 @@ Ext.define("Webui.config.network", {
         this.buildTabPanel([ this.panelInterfaces, this.panelHostName, this.panelServices, this.panelPortForwardRules, this.panelNatRules, this.panelBypassRules, this.panelRoutes, this.panelDnsServer, this.panelDhcpServer, this.panelAdvanced, this.panelTroubleshooting ]);
 
         this.initialAllowSSHEnabled = false;
+        var i;
         if(this.settings.inputFilterRules && this.settings.inputFilterRules.list) {
             for( i=0; i<this.settings.inputFilterRules.list.length ; i++ ) {
                 rule = this.settings.inputFilterRules.list[i];
@@ -73,7 +75,13 @@ Ext.define("Webui.config.network", {
             }
         }
         this.callParent(arguments);
-        this.loadDeviceAndInterfaceStatus(false);
+        Ext.defer(function() {
+            this.loadDeviceAndInterfaceStatus(false);
+            if(!Ext.isEmpty(this.activeTabIndex)) {
+                this.tabs.setActiveTab(this.activeTabIndex);
+                this.advancedTabPanel.setActiveTab(this.advancedTabIndex);
+            }
+        },100, this);
     },
     getPortForwardMatchers: function () {
         return [
@@ -5365,17 +5373,14 @@ Ext.define("Webui.config.network", {
         if (this.saveSemaphore === 0) {
             if(isApply) {
                 //On apply we have to reload all and keep selected tabs
-                var activeTabIndex = this.tabs.items.findIndex('id', this.tabs.getActiveTab().id);
-                var advancedTabIndex =this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id);
+                var configNetwork = Ext.clone(main.configMap["network"]);
+                Ext.apply(configNetwork, {
+                    needRackReload: true,
+                    activeTabIndex: this.tabs.items.findIndex('id', this.tabs.getActiveTab().id),
+                    advancedTabIndex: this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id)
+                });
                 Webui.config.network.superclass.closeWindow.call(this);
-                main.openConfig(main.configMap["network"]);
-                Ext.defer(function() {
-                    if(main.configWin && main.configWin.className=="Webui.config.network") {
-                        main.configWin.needRackReload=true;
-                        main.configWin.tabs.setActiveTab(activeTabIndex);
-                        main.configWin.advancedTabPanel.setActiveTab(advancedTabIndex);
-                    }
-                },100, this);
+                main.openConfig(configNetwork);
             } else {
                 Ext.MessageBox.hide();
                 this.closeWindow();
