@@ -92,7 +92,7 @@ Description: Intrusion Prevention
 
 Package: untangle-node-idps
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-snort-rules snort
+Depends: untangle-vm, untangle-casing-http, untangle-snort-rules, snort
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
