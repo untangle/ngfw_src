@@ -12,6 +12,7 @@ class SnortConf:
     var_regex = re.compile(r'^(ipvar|portvar|var)\s+([^\s+]+)\s+([^\s+]+)')
     include_regex = re.compile(r'^(\#|)\s*include ([^\s]+)')
     include_rulepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
+    output_regex = re.compile(r'^output\s+([^:]+)')
     
     def __init__( self, _debug = False ):
         self.conf = []
@@ -33,6 +34,7 @@ class SnortConf:
         conf_file = open( temp_file_name, "w" )
         self.save_variables()
         self.save_includes()
+        self.save_output()
         for line in self.conf:
             conf_file.write( line + "\n" );
         conf_file.close()
@@ -94,7 +96,23 @@ class SnortConf:
                     prefix = "#" + prefix
                             
                 self.conf[last_positions[include["path"]]] = self.conf[last_positions[include["path"]]] + "\n" + prefix + include["file_name"]
+
+    def save_output(self):
+        unified_found = False
+        last_output_position = 0
+        for i,line in enumerate( self.conf ):
+            match_output = re.search( SnortConf.output_regex, line )
+            if match_output:
+                last_output_position = i
+                
+                if match_output.group(1) == "unified2":
+                    unified_found = True
+                else:
+                    self.conf[i] = "#" + self.conf[i]
         
+        if unified_found == False:
+            self.conf[last_output_position] = self.conf[last_output_position] + "\n" + "output unified2: filename snort.log,limit 128, mpls_event_types, vlan_event_types"
+                
     def get_variables(self):
         #
         # Pull default snort variable names, values, and descriptions.
