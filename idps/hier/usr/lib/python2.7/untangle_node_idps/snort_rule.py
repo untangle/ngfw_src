@@ -5,7 +5,7 @@ class SnortRule:
     # Process rules from the snort format.
     #
     text_regex = re.compile(r'^([#\s]+|)([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)')
-    
+
     def __init__( self, regex_match, category ):
         self.category = category
         self.enabled = True
@@ -18,37 +18,29 @@ class SnortRule:
         self.dir = regex_match.group(6)
         self.rnet = regex_match.group(7)
         self.rport = regex_match.group(8)
+        self.options_raw = regex_match.group(9);
         self.options = { 
             "sid": -1,
             "classtype": "uncategoried",
-            "description": ""
+            "msg": ""
         }
+        self.content_modifiers = {}
         for option in regex_match.group(9).split(';'):
             option = option.strip()
             if option == "":
                 continue
+            key = option
+            value = None
             if option.find(':') > -1:
                 key,value = option.split( ':', 1 );
-                self.options[key] = value
-            else:
-                self.options[option] = None
-
+            
+            self.options[key] = value
+                
     def dump(self):
         print "rule dump"
         for property, value in vars(self).iteritems():
             print property, ": ", value
 
-    def build_options(self):
-        options_string = ""
-        for key in self.options.keys():
-            value = self.options[key]
-            if isinstance( value, str ) == False:
-                options_string += key
-            else:
-                options_string += key + ":" + value
-            options_string += "; "
-        return options_string
-            
     def set_description( self, description ):
         self.description = description
         
@@ -69,4 +61,4 @@ class SnortRule:
         self.sid = sid
         
     def build( self ):
-        return self.action + " " + self.protocol + " " + self.lnet + " " + " " + self.lport + " " + self.dir + " " + self.rnet + " " + self.rport + " ( " + self.build_options() + " )"
+        return self.action + " " + self.protocol + " " + self.lnet + " " + " " + self.lport + " " + self.dir + " " + self.rnet + " " + self.rport + " ( " + self.options_raw + " )"

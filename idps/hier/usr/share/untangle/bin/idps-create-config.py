@@ -57,7 +57,6 @@ def main(argv):
         else:
             print "error with rule"
     rules.save()
-    snort_conf.set_include( "$RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
 	
     for settings_variable in settings.get_variables():
         snort_conf.set_variable( settings_variable["variable"], settings_variable["definition"] )
@@ -66,6 +65,7 @@ def main(argv):
 		match_include_rule = re.search( untangle_node_idps.SnortConf.include_rulepath_regex, include["file_name"] )
 		if match_include_rule:
 			snort_conf.set_include( include["file_name"], False )
+    snort_conf.set_include( "$RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
 			
     snort_conf.save()
 	
