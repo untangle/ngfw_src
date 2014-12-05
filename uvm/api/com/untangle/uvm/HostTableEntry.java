@@ -68,7 +68,8 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getLicensed() { return this.licensed; }
     public void setLicensed( boolean newValue ) { this.licensed = newValue; updateAccessTime(); }
     
-    public String getHostname() { return ( this.licensed ? this.hostname : "unlicensed" ); }
+    //public String getHostname() { return ( this.licensed ? this.hostname : "unlicensed" ); } // disabled for now
+    public String getHostname() { return this.hostname; }
     public void setHostname( String newValue ) { this.hostname = newValue; updateAccessTime(); }
 
     public String getUsernameAdConnector() { return this.usernameAdConnector; }
@@ -118,8 +119,9 @@ public class HostTableEntry implements Serializable, JSONString
     
     public String getUsername()
     {
-        if (! licensed )
-            return "unlicensed";
+        // disabled for now
+        //if (! licensed )
+        //    return "unlicensed"; 
         if (getUsernameCapture() != null)
             return getUsernameCapture();
         if (getUsernameTunnel() != null)
