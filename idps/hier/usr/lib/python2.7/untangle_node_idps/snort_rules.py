@@ -45,7 +45,8 @@ class SnortRules:
             if rule.category != category:
                 category = rule.category
                 rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
-            rules_file.write( rule.build() + "\n" );
+            if rule.get_enabled() == True:
+                rules_file.write( rule.build() + "\n" );
         rules_file.close()
         
         if os.path.isfile( self.file_name ):

@@ -9,7 +9,7 @@ class SnortRule:
     def __init__( self, regex_match, category ):
         self.category = category
         self.enabled = True
-        if regex_match.group(1):
+        if regex_match.group(1) == "#":
             self.enabled = False
         self.action = regex_match.group(2)
         self.protocol = regex_match.group(3)
@@ -59,6 +59,13 @@ class SnortRule:
         
     def set_sid( self, sid ):
         self.sid = sid
-        
+
+    def get_enabled( self ):
+        return self.enabled
+    
     def build( self ):
-        return self.action + " " + self.protocol + " " + self.lnet + " " + " " + self.lport + " " + self.dir + " " + self.rnet + " " + self.rport + " ( " + self.options_raw + " )"
+        if self.enabled == True:
+            enabled = ""
+        else:
+            enabled = "#"
+        return enabled + self.action + " " + self.protocol + " " + self.lnet + " " + " " + self.lport + " " + self.dir + " " + self.rnet + " " + self.rport + " ( " + self.options_raw + " )"
