@@ -291,7 +291,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             }catch( Exception e ){
 
             }
-
+            UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
+            UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         }
     }
 }
