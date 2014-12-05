@@ -84,6 +84,14 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.sanityCheck( newSettings );
 
         /**
+         * Set the Alert Rules IDs
+         */
+        int idx = 0;
+        for (AlertRule rule : newSettings.getAlertRules()) {
+            rule.setRuleId(++idx);
+        }
+        
+        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -358,7 +366,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "DISCONNECTED" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "WAN is offline" );
+        alertRule = new AlertRule( true, matchers, true, true, "WAN is offline", false, 0 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -366,7 +374,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "protochain", "=", "*BITTORRE*" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent" );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -374,15 +382,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "contentLength", ">", "100000000" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download" );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*PenaltyBoxEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "ENTER" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box" );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -390,7 +390,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "1" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box" );
+        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -398,7 +398,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "load1", ">", "20" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Server load is very high" );
+        alertRule = new AlertRule( false, matchers, true, true, "Server load is very high", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -406,7 +406,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "diskFreePercent", "<", ".2" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free disk space is low" );
+        alertRule = new AlertRule( false, matchers, true, true, "Free disk space is low", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -414,7 +414,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".2" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low" );
+        alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -422,7 +422,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "event", "=", "FAILED" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login" );
+        alertRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login", false, 0 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
@@ -430,7 +430,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "clean", "=", "False" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked" );
+        alertRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked", false, 0 );
         rules.add( alertRule );
         
         return rules;

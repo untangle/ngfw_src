@@ -30,21 +30,27 @@ public class AlertRule implements JSONString, Serializable
     private Boolean enabled;
     private Boolean log;
     private Boolean alert;
+    private Boolean alertLimitFrequency = false;
+    private Integer alertLimitFrequencyMinutes = 0;
     private String description;
 
+    private long lastAlertTime = 0; /* stores the last time this rule sent an alert */
+    
     private List<AlertRuleMatcher> matchers;
 
     public AlertRule()
     {
     }
 
-    public AlertRule( boolean enabled, List<AlertRuleMatcher> matchers, boolean log, boolean alert, String description )
+    public AlertRule( boolean enabled, List<AlertRuleMatcher> matchers, boolean log, boolean alert, String description, boolean frequencyLimit, int frequencyMinutes )
     {
         this.setEnabled( enabled );
         this.setMatchers( matchers );
         this.setLog( log );
         this.setAlert( alert );
         this.setDescription( description );
+        this.setAlertLimitFrequency( frequencyLimit );
+        this.setAlertLimitFrequencyMinutes( frequencyMinutes );
     }
 
     public List<AlertRuleMatcher> getMatchers() { return this.matchers; }
@@ -61,10 +67,26 @@ public class AlertRule implements JSONString, Serializable
 
     public Boolean getAlert() { return alert; }
     public void setAlert( Boolean newValue ) { this.alert = newValue; }
+
+    public Boolean getAlertLimitFrequency() { return alertLimitFrequency; }
+    public void setAlertLimitFrequency( Boolean newValue ) { this.alertLimitFrequency = newValue; }
+
+    public Integer getAlertLimitFrequencyMinutes() { return alertLimitFrequencyMinutes; }
+    public void setAlertLimitFrequencyMinutes( Integer newValue ) { this.alertLimitFrequencyMinutes = newValue; }
     
     public String getDescription() { return description; }
     public void setDescription( String newValue ) { this.description = newValue; }
 
+    public long lastAlertTime()
+    {
+        return this.lastAlertTime;
+    }
+
+    public void updateAlertTime()
+    {
+        this.lastAlertTime = System.currentTimeMillis();
+    }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

@@ -56,6 +56,17 @@ public class AlertHandler
 
     private static void sendAlertForEvent( AlertRule rule, LogEvent event )
     {
+        if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
+            long currentTime = System.currentTimeMillis();
+            long lastAlertTime = rule.lastAlertTime();
+            long secondsSinceLastAlert = ( currentTime - lastAlertTime ) / 1000;
+            // if not enough time has elapsed, just return
+            if ( secondsSinceLastAlert < ( rule.getAlertLimitFrequencyMinutes() * 60 ) )
+                return;
+        }
+
+        rule.updateAlertTime();
+
         String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
         String serverName = companyName + " " + I18nUtil.marktr("Server");

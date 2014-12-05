@@ -792,6 +792,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     "enabled": true,
                     "log": false,
                     "alert": false,
+                    "alertLimitFrequency": false,
+                    "alertLimitFrequencyMinutes": 0,
                     "description": "",
                     "javaClass": "com.untangle.node.reporting.AlertRule"
                 },
@@ -806,6 +808,10 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     name: 'log'
                 }, {
                     name: 'alert'
+                }, {
+                    name: 'alertLimitFrequency'
+                }, {
+                    name: 'alertLimitFrequencyMinutes'
                 }, {
                     name: 'matchers'
                 },{
@@ -884,6 +890,50 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         labelWidth: 160,
                         dataIndex: "alert",
                         fieldLabel: this.i18n._("Send Alert")
+                        // listeners: {
+                        //     "afterrender": {
+                        //         fn: Ext.bind(function(elem) {
+                        //             this.down('checkbox[name=alertLimitFrequency]').setDisabled(!elem.getValue());
+                        //             this.down('numberfield[name=alertLimitFrequencyMinutes]').setDisabled(!elem.getValue());
+                        //         }, this)
+                        //     },
+                        //     "change": {
+                        //         fn: Ext.bind(function(elem, newValue) {
+                        //             this.down('checkbox[name=alertLimitFrequency]').setDisabled(!newValue);
+                        //             this.down('numberfield[name=alertLimitFrequencyMinutes]').setDisabled(!newValue);
+                        //         }, this)
+                        //     }
+                        // }
+                    },{
+                        xtype:'fieldset',
+                        collapsible: false,
+                        items: [{
+                            xtype:'checkbox',
+                            name: 'alertLimitFrequency',
+                            labelWidth: 160,
+                            dataIndex: "alertLimitFrequency",
+                            fieldLabel: this.i18n._("Limit Send Frequency")
+                        },{
+                            xtype: 'container',
+                            layout: 'column',
+                            margin: '0 0 5 0',
+                            items: [{
+                                xtype: 'numberfield',
+                                name: 'alertLimitFrequencyMinutes',
+                                labelWidth: 160,
+                                width: 230,
+                                dataIndex: "alertLimitFrequencyMinutes",
+                                allowDecimals: false,
+                                allowBlank: false,
+                                minValue: 0,
+                                maxValue: 24*60*7, // 1 weeks
+                                fieldLabel: this.i18n._('To once per')
+                            }, {
+                                xtype: 'label',
+                                html: this.i18n._("(minutes)"),
+                                cls: 'boxlabel'
+                            }]
+                        }]
                     }]
                 }]
             })]
