@@ -275,24 +275,24 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 }catch( IOException e ){
                     logger.warn("Failed to save IDPS settings");
                 }
-            }
 
-            String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-                "/idps-create-config.py" + 
-                " --node " + nodeId
-            );
-            String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-            try{
-                String lines[] = result.split("\\r?\\n");
-                logger.warn("idps config: ");
-                for ( String line : lines ){
-                    logger.warn("idps config: " + line);
+                String configCmd = new String(System.getProperty("uvm.bin.dir") + 
+                    "/idps-create-config.py" + 
+                    " --node " + nodeId
+                );
+                String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+                try{
+                    String lines[] = result.split("\\r?\\n");
+                    logger.warn("idps config: ");
+                    for ( String line : lines ){
+                        logger.warn("idps config: " + line);
+                    }
+                }catch( Exception e ){
+
                 }
-            }catch( Exception e ){
-
+                UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
+                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
             }
-            UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
-            UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         }
     }
 }
