@@ -24,7 +24,7 @@ node = None
 nodeDataAD = None
 nodeAD = None
 adHost = "10.111.56.48"
-radiusHost = "10.111.56.71"
+radiusHost = "10.112.56.71"
 localUserName = 'test20'
 adUserName = 'atsadmin'
 
