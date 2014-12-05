@@ -169,11 +169,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String tempFileName = "/tmp/settings_" + getNodeSettings().getNodeName() + "_" + nodeId + ".js";
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-            "/idps-sync-settings" + 
-            " --node " + nodeId +
-            " --rules /usr/local/etc/snort/snort.rules" + 
-            " --conf=/usr/local/etc/snort/snort.conf" +
-            " --settings=" + tempFileName
+            "/idps-sync-settings.py" + 
+            " --nodeId " + nodeId +
+            " --rules /usr/local/etc/snort/snort.rules"
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
         try{
@@ -278,6 +276,22 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     logger.warn("Failed to save IDPS settings");
                 }
             }
+
+            String configCmd = new String(System.getProperty("uvm.bin.dir") + 
+                "/idps-create-config.py" + 
+                " --node " + nodeId
+            );
+            String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+            try{
+                String lines[] = result.split("\\r?\\n");
+                logger.warn("idps config: ");
+                for ( String line : lines ){
+                    logger.warn("idps config: " + line);
+                }
+            }catch( Exception e ){
+
+            }
+
         }
     }
 }
