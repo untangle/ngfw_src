@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -147,6 +149,8 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
+        String downCommand, upCommand;
+
         /**
          * validate settings
          * validate: routes can not route traffic to self
@@ -192,16 +196,19 @@ public class NetworkManagerImpl implements NetworkManager
         ExecManagerResult result;
         boolean errorOccurred = false;
         String errorStr = null;
+
+        String[] commands = getAppropriateNetworkRestartCommand( newSettings );
+        downCommand = commands[0];
+        upCommand = commands[1];
         
-        // stop interfaces
-        result = UvmContextFactory.context().execManager().exec( "ifdown -a -v --exclude=lo" );
+        // run down command (usually ifdown)
+        result = UvmContextFactory.context().execManager().exec( downCommand );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifdown -a: ");
             for ( String line : lines )
-                logger.info("ifdown: " + line);
+                logger.info( downCommand + ": " + line );
         } catch (Exception e) {}
-    
+
         // Now sync those settings to the OS
         String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
@@ -217,18 +224,17 @@ public class NetworkManagerImpl implements NetworkManager
             errorStr = "sync-settings.py failed: returned " + result.getResult();
         }
         
-        // start interfaces
-        result = UvmContextFactory.context().execManager().exec( "ifup -a -v --exclude=lo" );
+        // run up command (usually ifup)
+        result = UvmContextFactory.context().execManager().exec( upCommand );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifup -a: ");
             for ( String line : lines )
-                logger.info("ifup: " + line);
+                logger.info( upCommand + ": " + line );
         } catch (Exception e) {}
 
         if ( result.getResult() != 0 ) {
             errorOccurred = true;
-            errorStr = "if-up failed: returned " + result.getResult();
+            errorStr = upCommand + " failed: returned " + result.getResult();
         }
         
         // notify interested parties that the settings have changed
@@ -1711,6 +1717,125 @@ public class NetworkManagerImpl implements NetworkManager
         
         return deviceNames;
     }
+
+    /**
+     * This method predicts the files that will change when syncing the new settings to the O/S
+     * It returns a list of files that will change (in content)
+     * If the prediction fails, null is returned
+     */
+    private LinkedList<String> predictUpdatedFiles( NetworkSettings newSettings )
+    {
+        ExecManagerResult result;
+        int retCode;
+        LinkedList<String> changedFiles = new LinkedList<String>();
+        Path tmpDir = null;
+        String cmd;
+        
+        try {
+            tmpDir = Files.createTempDirectory( "tmp-sync-settings" );
+
+            // apply settings in new dir
+            cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + " -p " + tmpDir.getFileName();
+            retCode = UvmContextFactory.context().execManager().execResult( cmd );
+
+            if ( retCode != 0 ) {
+                logger.warn( "sync-settings.py failed: returned " + retCode );
+                return null;
+            }
+
+            cmd = "diff -rqP / " + tmpDir + " | grep -v '^Only in' | awk '{print $2}'";
+            result = UvmContextFactory.context().execManager().exec( cmd );
+            
+            if ( result.getResult() != 0 ) {
+                logger.warn( "diff failed: returned " + result.getResult() );
+                return null;
+            }
+            try {
+                String lines[] = result.getOutput().split("\\r?\\n");
+                for ( String line : lines ) {
+                    String filename = line.replaceAll("\\s","");
+                    if ( ! "".equals( filename ) )
+                        changedFiles.add( filename );
+                }
+            } catch (Exception e) {}
+        } catch ( Exception e ) {
+            logger.warn( "Failed to predict changed files", e );
+            try { Files.delete( tmpDir ); } catch ( Exception exc ) { logger.warn("Failed to delete directory " + tmpDir, exc); }
+        }
+
+        return changedFiles;
+    }
+
+    /**
+     * Usually when saving network settings we need to restart all of networking.
+     * However, in a few cases we can get away with just restarting a daemon or two.
+     *
+     * This method computes what is necessary for the provided new NetworkSettings.
+     * 
+     * Returns a string array. The first entry is the command to run before
+     * syncing settings, the second is the command to run after syncing settings
+     */
+    private String[] getAppropriateNetworkRestartCommand( NetworkSettings newSettings )
+    {
+        // default fullRestartCommands are full restart
+        //String[] fullRestartCommands = {"ifdown -a --exclude=lo", "ifup -a --exclude=lo"};
+        String[] fullRestartCommands = {"ifdown -a -v --exclude=lo", "ifup -a -v --exclude=lo"};
+
+        try {
+            LinkedList<String> changedFiles = predictUpdatedFiles( newSettings );
+
+            /**
+             * prediction failed, just do a full restart
+             */
+            if ( changedFiles == null )
+                return fullRestartCommands;
+
+            /**
+             * If nothing is new, we still do a full networking restart
+             * This is because conversions and the ability to resync by toggling settings
+             * This is for safety, when in doubt, do a full sync.
+             */
+            if ( changedFiles.size() == 0 ) {
+                logger.info("No config files changed. Syncing settings anyway...");
+                return fullRestartCommands;
+            }
+
+            for ( String filename : changedFiles )
+                logger.info("Changing file: " + filename);
+
+            /**
+             * If only /etc/hosts and /etc/hosts.dnsmasq have been written, nothing is needed!
+             */
+            if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+            }
+
+            /**
+             * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
+             */
+            if ( changedFiles.contains("/etc/dnsmasq.conf") && changedFiles.size() == 1 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+            }
+
+            /**
+             * If only /etc/untangle-netd/iptables-rules.d/* files are changed, just restart iptables rules
+             */
+            int count = 0;
+            for ( String changedFile : changedFiles ) {
+                if ( changedFile.startsWith("/etc/untangle-netd/iptables-rules.d/") )
+                    count++;
+            }
+            if ( count == changedFiles.size() ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/960-iptables"};
+            }
+        }
+        catch ( Exception e ) {
+            logger.warn("Exception",e);
+        }
+        
+        return fullRestartCommands;
+    }
+    
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
