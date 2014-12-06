@@ -414,8 +414,9 @@ public class EventWriterImpl implements Runnable
         }
     }
 
-    protected void start()
+    protected void start( ReportingNodeImpl node )
     {
+        this.node = node;
         UvmContextFactory.context().newThread(this).start();
     }
 

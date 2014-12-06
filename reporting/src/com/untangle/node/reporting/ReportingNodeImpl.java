@@ -338,7 +338,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             postInit();
         }
 
-        ReportingNodeImpl.eventWriter.start();
+        ReportingNodeImpl.eventWriter.start( this );
     }
 
     protected void postStop()

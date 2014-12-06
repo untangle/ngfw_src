@@ -40,7 +40,7 @@ public class AlertHandler
                             continue;
                 
                         if ( rule.isMatch( jsonObject ) ) {
-                            logger.warn( "XXX MATCH: " + rule.getDescription() + " matches " + jsonObject.toString() );
+                            logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
                             if ( rule.getLog() )
                                 UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
