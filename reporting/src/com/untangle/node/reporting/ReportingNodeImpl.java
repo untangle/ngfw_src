@@ -370,6 +370,30 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "load1", ">", "20" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "Server load is very high", true, 60 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "diskFreePercent", "<", ".2" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "Free disk space is low", true, 60 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".2" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( true, matchers, true, true, "Free Memory is low", true, 60 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleMatcher>();
         matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*ClassDLogEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "protochain", "=", "*BITTORRE*" ) );
@@ -378,45 +402,21 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*HttpResponseEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "contentLength", ">", "100000000" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleMatcher>();
         matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*PenaltyBoxEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "action", "=", "1" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
+        alertRule = new AlertRule( true, matchers, true, true, "Host put in penalty box", false, 0 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
+        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*HttpResponseEvent*" ) );
         matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "load1", ">", "20" ) );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "contentLength", ">", "1000000000" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Server load is very high", true, 60 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
         rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "diskFreePercent", "<", ".2" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free disk space is low", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleMatcher>();
-        matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".2" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low", true, 60 );
-        rules.add( alertRule );
-
+        
         matchers = new LinkedList<AlertRuleMatcher>();
         matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*CaptureUserEvent*" ) );
         matchers.add( matcher1 );
