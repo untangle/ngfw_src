@@ -39,7 +39,8 @@ def N_(message): return message
 
 class UvmNode(Node):
     def __init__(self):
-        Node.__init__(self, 'untangle-vm', 'Untangle NGFW')
+        self.branded_name = self.__get_branded_name() or "Untangle"
+        Node.__init__(self, 'untangle-vm', self.branded_name + " " + _("Server"))
 
     @print_timing
     def setup(self):
@@ -113,6 +114,7 @@ CREATE TABLE reports.admin_logins (
 
         sections.append(s)
         sections.append(AdministrativeLoginsDetail())
+        sections.append(AlertEventsDetail())
 
         return Report(self, sections)
 
@@ -284,7 +286,10 @@ class VmHighlight(Highlight):
                            "%(traffic)s" + " " +
                            _("GB") +
                            " " + _("and") + " " +
-                           "%(sessions)s" + " " + _("sessions"))
+                           "%(sessions)s" + " " + _("sessions") +
+                           " " + _("and") + " " + 
+                           _("logged") + " " + 
+                           "%(alerts)s" + " " + _("alerts"))
 
     @print_timing
     def get_highlights(self, end_date, report_days,
@@ -301,14 +306,17 @@ SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::num
         WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS traffic,
        (SELECT COALESCE(sum(num_sessions), 0)::int
         FROM reports.session_counts
-        WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS sessions"""
+        WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS sessions,
+       (SELECT COALESCE(count(*), 0)::int
+        FROM reports.alerts
+        WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone) AS alerts"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
 
         h = {}
         try:
-            curs.execute(query, (one_week, ed, one_week, ed))
+            curs.execute(query, (one_week, ed, one_week, ed, one_week, ed))
 
             h = sql_helper.get_result_dictionary(curs)
 
@@ -582,5 +590,37 @@ WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timesta
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         return sql + " ORDER BY time_stamp DESC"
+
+class AlertEventsDetail(DetailSection):
+    def __init__(self):
+        DetailSection.__init__(self, 'alert-events', _('Alert Events'))
+
+    def get_columns(self, host=None, user=None, email=None):
+        if host or user or email:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        rv += [ColumnDesc('description', _('Description')),
+               ColumnDesc('summary_text', _('Summary')),
+               ColumnDesc('json', _('JSON'))]
+
+        return rv
+    
+    def get_all_columns(self, host=None, user=None, email=None):
+        return self.get_columns(host, user, email)
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = """\
+SELECT time_stamp, description, summary_text, json
+FROM reports.alerts
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+""" % (DateFromMx(start_date), DateFromMx(end_date))
+
+        return sql + " ORDER BY time_stamp DESC"
+
 
 reports.engine.register_node(UvmNode())
