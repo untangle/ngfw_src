@@ -49,10 +49,10 @@ public class MessageInfo extends LogEvent implements Serializable
     private static long nextId = 0;
 
     /* constructors */
-    public MessageInfo() {
-    }
+    public MessageInfo() {}
 
-    public MessageInfo(SessionEvent pe, int serverPort, String subject) {
+    public MessageInfo(SessionEvent pe, int serverPort, String subject)
+    {
         sessionEvent = pe;
 
         if (subject == null)
@@ -100,6 +100,21 @@ public class MessageInfo extends LogEvent implements Serializable
         return;
     }
 
+    public String trans_getAddress( AddressKind kind )
+    {
+        if ( kind == null )
+            return null;
+        
+        for ( MessageInfoAddr addr : addresses ) {
+            if ( kind.equals( addr.getKind() ) ) {
+                return addr.getAddr();
+            }
+        }
+
+        return null;
+    }
+
+        
     /* public methods */
 
     /**

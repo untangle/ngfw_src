@@ -9,14 +9,16 @@ public class ScannedMessageResult
     private MimeMessage m_newMsg;
     private final BlockOrPassResult action;
 
-    public ScannedMessageResult(BlockOrPassResult action) {
+    public ScannedMessageResult(BlockOrPassResult action)
+    {
         this.action = action;
     }
 
     /**
      * Constructor used to create a result indicating that the message has been modified. This implicitly is not a block.
      */
-    public ScannedMessageResult(MimeMessage newMsg) {
+    public ScannedMessageResult(MimeMessage newMsg)
+    {
         action = BlockOrPassResult.PASS;
         m_newMsg = newMsg;
     }

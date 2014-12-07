@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -27,6 +28,7 @@ import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
+import com.untangle.node.smtp.AddressKind;
 import com.untangle.node.smtp.handler.ScannedMessageResult;
 import com.untangle.node.smtp.handler.SmtpEventHandler;
 import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
@@ -59,6 +61,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
+    private static Map<GreyListKey,Boolean> greylist = Collections.synchronizedMap(new GreyListMap<GreyListKey,Boolean>());
+    
     public SpamSmtpHandler( SpamNodeImpl node )
     {
         super();
@@ -153,9 +157,30 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     {
         logger.debug("[handleMessageCanBlock]");
 
-        // I'm incrementing the count, even if the message is too big or cannot be converted to file
-        // node.incrementScanCount();
+        boolean isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
 
+        // If greylist is enable, check greylist
+        if ( node.getSettings().getSmtpConfig().getGreylist() && !isWanBound ) { 
+            InetAddress client = session.getClientAddr();
+            String from = msgInfo.trans_getAddress( AddressKind.ENVELOPE_FROM );
+            String to = msgInfo.trans_getAddress( AddressKind.ENVELOPE_TO );
+            
+            GreyListKey key = new GreyListKey( client, from, to );
+            logger.debug( "greylist: check message " + key );
+            
+            Boolean found = SpamSmtpHandler.greylist.get( key );
+            if ( found == null ) {
+                logger.info( "greylist: missed. adding new key: " + key );
+
+                SpamSmtpHandler.greylist.put( key, Boolean.TRUE );
+
+                return new ScannedMessageResult(BlockOrPassResult.TEMPORARILY_REJECT);
+            }
+            else {
+                logger.warn( "greylist: hit. " + key );
+            }
+        }
+        
         // Scan the message
         File f = null;
         try {
@@ -182,9 +207,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             }
 
             try {
-                boolean isWan = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf())
-                        .getIsWan();
-                if (!node.getSettings().getSmtpConfig().getScanWanMail() && isWan) {
+                if (!node.getSettings().getSmtpConfig().getScanWanMail() && isWanBound) {
                     logger.debug("Ignoring WAN-bound SMTP mail");
                     postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OUTBOUND);
                     node.incrementPassCount();
@@ -318,15 +341,15 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
 
         // Anything going out External MARK instead of QUARANTINE
-        boolean isWan = false;
+        boolean isWanBound = false;
         try {
-            isWan = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
+            isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
         } catch (Exception e) {
             logger.warn("Unable to lookup destination interface", e);
         }
 
         try {
-            if (!node.getSettings().getSmtpConfig().getScanWanMail() && isWan) {
+            if (!node.getSettings().getSmtpConfig().getScanWanMail() && isWanBound) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
                 node.incrementPassCount();
@@ -354,7 +377,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
         SpamMessageAction action = node.getSettings().getSmtpConfig().getMsgAction();
 
-        if (action == SpamMessageAction.QUARANTINE && isWan) {
+        if (action == SpamMessageAction.QUARANTINE && isWanBound) {
             // Change action now, as it'll make the event logs
             // more accurate
             logger.debug("Implicitly converting policy from \"QUARANTINE\""

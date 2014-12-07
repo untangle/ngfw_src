@@ -51,16 +51,17 @@ public final class SmtpTransaction implements TemplateValues
         OPEN, COMMITTED, RESET, FAILED
     }
 
-    private TransactionState m_state = TransactionState.OPEN;
-    private InternetAddress m_from;
-    private boolean m_fromConfirmed;
-    private List<EmailAddressWithStatus> m_recipients;
-    private boolean m_hasAtLeastOneRecipient = false;
+    private TransactionState state = TransactionState.OPEN;
+    private InternetAddress from;
+    private boolean fromConfirmed;
+    private List<EmailAddressWithStatus> recipients;
+    private boolean hasAtLeastOneRecipient = false;
 
-    public SmtpTransaction() {
-        m_recipients = new ArrayList<EmailAddressWithStatus>();
-        m_from = null;
-        m_fromConfirmed = false;
+    public SmtpTransaction()
+    {
+        this.recipients = new ArrayList<EmailAddressWithStatus>();
+        this.from = null;
+        this.fromConfirmed = false;
     }
 
     /**
@@ -68,7 +69,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public TransactionState getState()
     {
-        return m_state;
+        return this.state;
     }
 
     /**
@@ -76,7 +77,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void commit()
     {
-        m_state = TransactionState.COMMITTED;
+        this.state = TransactionState.COMMITTED;
     }
 
     /**
@@ -84,7 +85,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void reset()
     {
-        m_state = TransactionState.RESET;
+        this.state = TransactionState.RESET;
     }
 
     /**
@@ -92,7 +93,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void failed()
     {
-        m_state = TransactionState.FAILED;
+        this.state = TransactionState.FAILED;
     }
 
     /**
@@ -100,7 +101,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public boolean isOpen()
     {
-        return m_state == TransactionState.OPEN;
+        return this.state == TransactionState.OPEN;
     }
 
     /**
@@ -114,7 +115,7 @@ public final class SmtpTransaction implements TemplateValues
     public List<InternetAddress> getRecipients(boolean confirmedOnly)
     {
         List<InternetAddress> ret = new ArrayList<InternetAddress>();
-        for (EmailAddressWithStatus eaws : m_recipients) {
+        for (EmailAddressWithStatus eaws : this.recipients) {
             if ((confirmedOnly && eaws.confirmed) || (!confirmedOnly)) {
                 ret.add(eaws.addr);
             }
@@ -127,7 +128,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void toRequest(InternetAddress addr)
     {
-        m_recipients.add(new EmailAddressWithStatus(addr));
+        this.recipients.add(new EmailAddressWithStatus(addr));
     }
 
     /**
@@ -140,17 +141,17 @@ public final class SmtpTransaction implements TemplateValues
     public void toResponse(InternetAddress addr, boolean accept)
     {
         // In case someone (dumb) attempts to request the same recipient twice, scan from top-down for the to
-        m_hasAtLeastOneRecipient = true;
+        this.hasAtLeastOneRecipient = true;
 
-        for (int i = 0; i < m_recipients.size(); i++) {
-            EmailAddressWithStatus eaws = m_recipients.get(i);
+        for (int i = 0; i < this.recipients.size(); i++) {
+            EmailAddressWithStatus eaws = this.recipients.get(i);
             if (!eaws.addr.equals(addr)) {
                 continue;
             }
             if (accept) {
                 eaws.confirmed = true;
             } else {
-                m_recipients.remove(i);
+                this.recipients.remove(i);
             }
             return;
         }
@@ -158,7 +159,7 @@ public final class SmtpTransaction implements TemplateValues
         logger.warn("Did not find email address "+addr.getAddress());
         EmailAddressWithStatus eaws = new EmailAddressWithStatus(addr);
         eaws.confirmed = true;
-        m_recipients.add(eaws);
+        this.recipients.add(eaws);
     }
 
     /**
@@ -168,7 +169,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public boolean hasAtLeastOneConfirmedRecipient()
     {
-        return m_hasAtLeastOneRecipient;
+        return this.hasAtLeastOneRecipient;
     }
 
     /**
@@ -177,8 +178,8 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void fromRequest(InternetAddress addr)
     {
-        m_from = addr;
-        m_fromConfirmed = false;
+        this.from = addr;
+        this.fromConfirmed = false;
     }
 
     /**
@@ -189,15 +190,15 @@ public final class SmtpTransaction implements TemplateValues
      */
     public void fromResponse(InternetAddress addr, boolean accept)
     {
-        if (m_from == null) {
-            logger.warn("m_from is null ");
+        if (this.from == null) {
+            logger.warn("this.from is null ");
             return;
         }
         if (accept) {
-            m_fromConfirmed = true;
+            this.fromConfirmed = true;
         } else {
-            m_from = null;
-            m_fromConfirmed = false;
+            this.from = null;
+            this.fromConfirmed = false;
         }
     }
 
@@ -206,7 +207,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public InternetAddress getFrom()
     {
-        return m_from;
+        return this.from;
     }
 
     /**
@@ -214,7 +215,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public boolean isFromConfirmed()
     {
-        return m_fromConfirmed;
+        return this.fromConfirmed;
     }
 
     /**
@@ -227,13 +228,13 @@ public final class SmtpTransaction implements TemplateValues
             key = key.substring(SMTP_TX_TEMPLATE_PREFIX.length());
             if (key.equals(TO_TV)) {
                 StringBuilder sb = new StringBuilder();
-                for (EmailAddressWithStatus eaws : m_recipients) {
+                for (EmailAddressWithStatus eaws : this.recipients) {
                     sb.append(MIMEUtil.toSMTPString(eaws.addr));
                     sb.append(CRLF);
                 }
                 return sb.toString();
             } else if (key.equals(FROM_TV)) {
-                return (m_from == null || m_from.getAddress()==null || m_from.getAddress().trim().length()==0) ? "<>" : MIMEUtil.toSMTPString(m_from);
+                return (this.from == null || this.from.getAddress()==null || this.from.getAddress().trim().length()==0) ? "<>" : MIMEUtil.toSMTPString(this.from);
             }
         }
         return null;

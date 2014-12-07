@@ -16,6 +16,7 @@ public class SpamSmtpConfig
     public static final String DEFAULT_HEADER_NAME = "X-Spam-Flag";
 
     public static final int DEFAULT_SUPER_STRENGTH = 200;
+    public static final boolean DEFAULT_GREYLIST = false;
     public static final boolean DEFAULT_TARPIT = false;
     public static final int DEFAULT_TARPIT_TIMEOUT = 15;
     public static final boolean DEFAULT_FAIL_CLOSED = true;
@@ -39,6 +40,7 @@ public class SpamSmtpConfig
     private int msgSizeLimit = DEFAULT_MESSAGE_SIZE_LIMIT;
     private String headerName = DEFAULT_HEADER_NAME;
     private boolean tarpit = DEFAULT_TARPIT;
+    private boolean greylist = DEFAULT_GREYLIST;
     private int tarpit_timeout = DEFAULT_TARPIT_TIMEOUT;
     private SpamMessageAction msgAction = SpamMessageAction.QUARANTINE;
     private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
@@ -144,6 +146,14 @@ public class SpamSmtpConfig
      */
     public SpamMessageAction getMsgAction() { return msgAction; }
     public void setMsgAction( SpamMessageAction newValue ) { this.msgAction = newValue; }
+
+    /**
+     * greylist: a boolean specifying whether or not to greylist
+     *
+     * @return whether or not to reject a spammer
+     */
+    public boolean getGreylist() { return greylist; }
+    public void setGreylist( boolean newValue ) { this.greylist = newValue; }
 
     /**
      * tarpit: a boolean specifying whether or not to reject a
