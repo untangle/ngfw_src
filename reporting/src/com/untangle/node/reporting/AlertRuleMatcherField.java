@@ -79,8 +79,12 @@ public class AlertRuleMatcherField
                     return (actualValue == specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
+                } else if ( ">=".equals(comparator) ) {
+                    return (actualValue >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
                     return (actualValue < specifiedValue);
+                } else if ( "<=".equals(comparator) ) {
+                    return (actualValue <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -95,8 +99,12 @@ public class AlertRuleMatcherField
                     return (actualValue == specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
+                } else if ( ">=".equals(comparator) ) {
+                    return (actualValue >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
                     return (actualValue < specifiedValue);
+                } else if ( "<=".equals(comparator) ) {
+                    return (actualValue <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -111,8 +119,12 @@ public class AlertRuleMatcherField
                     return (actualValue == specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
+                } else if ( ">=".equals(comparator) ) {
+                    return (actualValue >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
                     return (actualValue < specifiedValue);
+                } else if ( "<=".equals(comparator) ) {
+                    return (actualValue <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );

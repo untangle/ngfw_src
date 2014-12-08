@@ -432,7 +432,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked", false, 0 );
         rules.add( alertRule );
-        
+
         return rules;
     }
 
