@@ -77,6 +77,8 @@ public class AlertRuleMatcherField
 
                 if ( "=".equals(comparator) ) {
                     return (actualValue == specifiedValue);
+                } else if ( "!=".equals(comparator) ) {
+                    return (actualValue != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
@@ -97,6 +99,8 @@ public class AlertRuleMatcherField
 
                 if ( "=".equals(comparator) ) {
                     return (actualValue == specifiedValue);
+                } else if ( "!=".equals(comparator) ) {
+                    return (actualValue != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
@@ -117,6 +121,8 @@ public class AlertRuleMatcherField
 
                 if ( "=".equals(comparator) ) {
                     return (actualValue == specifiedValue);
+                } else if ( "!=".equals(comparator) ) {
+                    return (actualValue != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
                     return (actualValue > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
@@ -137,7 +143,7 @@ public class AlertRuleMatcherField
         /**
          * If its not a number treat it as a string
          */
-        if ( ! "=".equals( comparator ) ) // String only supports "=" operator
+        if ( ! ( "=".equals( comparator ) || "!=".equals( comparator ) ) ) // String only supports "=" or "!=" operator
             return false;
         String actualValueStr = actualValueObj.toString().toLowerCase();
         //logger.warn("DEBUG string check: " + actualValueStr + " against " + value );
@@ -147,11 +153,15 @@ public class AlertRuleMatcherField
         if ( this.stringGlobMatcher == null )
             return false;
 
-        boolean result = this.stringGlobMatcher.isMatch( actualValueStr );
-
-        //logger.warn("DEBUG check: " + actualValueStr + " against " + value + " result: " + result );
-        return result;
-
+        boolean match = this.stringGlobMatcher.isMatch( actualValueStr );
+        if ( "=".equals(comparator) ) {
+            return match;
+        } else if ( "!=".equals(comparator) ) {
+            return !match;
+        }
+        
+        logger.warn("constraint failed");
+        return false;
     }
 
 }
