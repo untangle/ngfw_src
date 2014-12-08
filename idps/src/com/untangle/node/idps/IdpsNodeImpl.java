@@ -171,7 +171,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-sync-settings.py" + 
             " --nodeId " + nodeId +
-            " --rules /etc/snort/snort.rules"
+            " --rules /etc/snort/snort.rules" +
+            " --settings " + tempFileName
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
         try{
