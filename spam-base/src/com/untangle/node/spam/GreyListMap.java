@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 @SuppressWarnings("serial")
 public class GreyListMap<K,V> extends LinkedHashMap<K,V>
 {
-    private static final int MAX_ENTRIES = 10000;
+    private static final int MAX_ENTRIES = 200000;
 
     protected boolean removeEldestEntry(Map.Entry<K,V> eldest)
     {
