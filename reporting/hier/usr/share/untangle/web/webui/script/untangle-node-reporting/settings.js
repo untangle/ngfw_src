@@ -799,6 +799,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 },
                 title: this.i18n._("Alert Rules"),
                 recordJavaClass: "com.untangle.node.reporting.AlertRule",
+                columnsDefaultSortable: false,
                 dataProperty:'alertRules',
                 fields: [{
                     name: 'ruleId'
@@ -851,93 +852,90 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     header: this.i18n._("Send Alert"),
                     dataIndex: 'alert',
                     width:150
-                }],
-                columnsDefaultSortable: false,
-                rowEditorInputLines: [{
-                    xtype:'checkbox',
-                    name: "Enable Rule",
-                    dataIndex: "enabled",
-                    fieldLabel: this.i18n._("Enable Rule")
-                }, {
-                    xtype:'textfield',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    emptyText: this.i18n._("[no description]"),
-                    width: 500
-                }, {
-                    xtype:'fieldset',
-                    title: this.i18n._("If all of the following conditions are met:"),
-                    items:[{
-                        xtype:'rulebuilder',
-                        settingsCmp: this,
-                        javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
-                        dataIndex: "matchers",
-                        matchers: this.getAlertRuleMatchers()
-                    }]
-                }, {
-                    xtype: 'fieldset',
-                    cls:'description',
-                    title: i18n._('Perform the following action(s):'),
-                    border: false,
-                    items:[{
-                        xtype:'checkbox',
-                        labelWidth: 160,
-                        dataIndex: "log",
-                        fieldLabel: this.i18n._("Log Alert")
-                    }, {
-                        xtype:'checkbox',
-                        labelWidth: 160,
-                        dataIndex: "alert",
-                        fieldLabel: this.i18n._("Send Alert")
-                        // listeners: {
-                        //     "afterrender": {
-                        //         fn: Ext.bind(function(elem) {
-                        //             this.down('checkbox[name=alertLimitFrequency]').setDisabled(!elem.getValue());
-                        //             this.down('numberfield[name=alertLimitFrequencyMinutes]').setDisabled(!elem.getValue());
-                        //         }, this)
-                        //     },
-                        //     "change": {
-                        //         fn: Ext.bind(function(elem, newValue) {
-                        //             this.down('checkbox[name=alertLimitFrequency]').setDisabled(!newValue);
-                        //             this.down('numberfield[name=alertLimitFrequencyMinutes]').setDisabled(!newValue);
-                        //         }, this)
-                        //     }
-                        // }
-                    },{
-                        xtype:'fieldset',
-                        collapsible: false,
-                        items: [{
-                            xtype:'checkbox',
-                            name: 'alertLimitFrequency',
-                            labelWidth: 160,
-                            dataIndex: "alertLimitFrequency",
-                            fieldLabel: this.i18n._("Limit Send Frequency")
-                        },{
-                            xtype: 'container',
-                            layout: 'column',
-                            margin: '0 0 5 0',
-                            items: [{
-                                xtype: 'numberfield',
-                                name: 'alertLimitFrequencyMinutes',
-                                labelWidth: 160,
-                                width: 230,
-                                dataIndex: "alertLimitFrequencyMinutes",
-                                allowDecimals: false,
-                                allowBlank: false,
-                                minValue: 0,
-                                maxValue: 24*60*7, // 1 weeks
-                                fieldLabel: this.i18n._('To once per')
-                            }, {
-                                xtype: 'label',
-                                html: this.i18n._("(minutes)"),
-                                cls: 'boxlabel'
-                            }]
-                        }]
-                    }]
                 }]
             })]
         });
+        this.gridAlertRules.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            inputLines: [{
+                xtype:'checkbox',
+                name: "Enable Rule",
+                dataIndex: "enabled",
+                fieldLabel: this.i18n._("Enable Rule")
+            }, {
+                xtype:'textfield',
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: this.i18n._("Description"),
+                emptyText: this.i18n._("[no description]"),
+                width: 500
+            }, {
+                xtype:'fieldset',
+                title: this.i18n._("If all of the following conditions are met:"),
+                items:[{
+                    xtype:'rulebuilder',
+                    settingsCmp: this,
+                    javaClass: "com.untangle.node.reporting.AlertRuleMatcher",
+                    dataIndex: "matchers",
+                    matchers: this.getAlertRuleMatchers()
+                }]
+            }, {
+                xtype: 'fieldset',
+                cls:'description',
+                title: i18n._('Perform the following action(s):'),
+                border: false,
+                items:[{
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    dataIndex: "log",
+                    fieldLabel: this.i18n._("Log Alert")
+                }, {
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    dataIndex: "alert",
+                    fieldLabel: this.i18n._("Send Alert"),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.gridAlertRules.rowEditor.syncComponents();
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype:'fieldset',
+                    collapsible: false,
+                    items: [{
+                        xtype:'checkbox',
+                        labelWidth: 160,
+                        dataIndex: "alertLimitFrequency",
+                        fieldLabel: this.i18n._("Limit Send Frequency")
+                    },{
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'numberfield',
+                            labelWidth: 160,
+                            width: 230,
+                            dataIndex: "alertLimitFrequencyMinutes",
+                            allowDecimals: false,
+                            allowBlank: false,
+                            minValue: 0,
+                            maxValue: 24*60*7, // 1 weeks
+                            fieldLabel: this.i18n._('To once per')
+                        }, {
+                            xtype: 'label',
+                            html: this.i18n._("(minutes)"),
+                            cls: 'boxlabel'
+                        }]
+                    }]
+                }]
+            }],
+            syncComponents: function () {
+                var sendAlert=this.down('checkbox[dataIndex=alert]').getValue();
+                this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendAlert);
+                this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
+            }
+        }));
     },
     // Event Log
     buildAlertEventLog: function() {
