@@ -25,6 +25,7 @@ def main(argv):
     global _debug
     _debug = False
     rules_file_name = ""
+    settings_file_name = ""
     nodeId = 0
 	
     try:
@@ -40,11 +41,14 @@ def main(argv):
              _debug = True
         elif opt in ( "-n", "--nodeId"):
             nodeId = arg
-        elif opt in ( "-s", "--rules"):
+        elif opt in ( "-r", "--rules"):
             rules_file_name = arg
+        elif opt in ( "-s", "--settings"):
+            settings_file_name = arg
 
     if _debug == True:
         print "rules_file_name = " + rules_file_name
+        print "settings_file_name = " + settings_file_name
         print "node = " + nodeId
         print "_debug = ",  _debug
 
@@ -53,7 +57,7 @@ def main(argv):
     snort_rules = untangle_node_idps.SnortRules( nodeId, path_filename[0], path_filename[1] )
     snort_rules.load()
 
-    settings = untangle_node_idps.IdpsSettings( nodeId )
+    settings = untangle_node_idps.IdpsSettings( nodeId, settings_file_name )
     if settings.exists() == False:
         settings.create( snort_conf, snort_rules )
         settings.save()

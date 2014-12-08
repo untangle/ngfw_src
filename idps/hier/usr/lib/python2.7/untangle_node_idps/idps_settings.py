@@ -8,9 +8,13 @@ class IdpsSettings:
     #
     # NGFW settings management
     #
-    def __init__( self, nodeId ):
+    def __init__( self, nodeId, save_file_name = "" ):
         self.nodeId = nodeId
         self.file_name = "/usr/share/untangle/settings/untangle-node-idps/settings_" + self.nodeId + ".js"
+        if save_file_name != "":
+            self.save_file_name = save_file_name
+        else:
+            self.save_file_name = self.file_name
 
     def load( self ):
         self.settings_file = open( self.file_name )
@@ -88,7 +92,7 @@ class IdpsSettings:
             } );
         
     def save( self ):
-        settings_file = open( self.file_name, "w" )
+        settings_file = open( self.save_file_name, "w" )
         json.dump( self.settings, settings_file, False, True, True, True, None, 0 )
         settings_file.close()
 
