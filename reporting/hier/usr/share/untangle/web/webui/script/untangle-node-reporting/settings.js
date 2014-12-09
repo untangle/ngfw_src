@@ -9,7 +9,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     gridHostnameMap: null,
     gridAlertEventLog: null,
     initComponent: function(container, position) {
-        this.initFieldConditionsToString();
         this.buildPasswordValidator();
         this.buildStatus();
         this.buildGeneration();
@@ -30,25 +29,15 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.clearDirty();
         this.callParent(arguments);
     },
-    initFieldConditionsToString: function () {
-        var toStringAlertRuleMatcherField = function () {
-            return this.field + " " + this.comparator + " " + this.value;
-        };
-        //set toString function for "FIELD_CONDITION" to display them properly in rule builder
-        var i,j, matcher, marchers;
-        for( i = 0; i < this.getSettings().alertRules.list.length; i++ ) {
-            matchers =this.getSettings().alertRules.list[i].matchers;
-            for( j = 0; j < matchers.list.length; j++ ) {
-                matcher = matchers.list[j];
-                if(matcher.matcherType == "FIELD_CONDITION" && !Ext.isEmpty(matcher.value)) {
-                    matcher.value.toString = toStringAlertRuleMatcherField;
-                }
-            }
-        }
-    },
     getAlertRuleMatchers: function () {
         return [
-            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false}
+            {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false, formatValue: function(value) {
+                var result= "";
+                if(value) {
+                    result = value.field + " " + value.comparator + " " + value.value;
+                }
+                return result;
+            }}
         ];
     },
     buildPasswordValidator: function() {
@@ -994,9 +983,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.getSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();
 
         handler.call(this, isApply);
-    },
-    afterSave: function() {
-        this.initFieldConditionsToString();
     },
     validate: function () {
         var components = this.query("component[toValidate]");

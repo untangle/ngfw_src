@@ -575,9 +575,11 @@ Ext.define('Ung.FieldConditionWindow', {
                 name: "field",
                 allowBlank: false
             },{
-                xtype: 'textfield',
+                xtype: 'combo',
                 name: "comparator",
-                allowBlank: false
+                editable: false,
+                allowBlank: false,
+                store: [["=","="], ["!=","!="], ["<","<"], ["<=","<="], [">",">"], [">=",">="]]
             },{
                 xtype: 'textfield',
                 name: "value"
@@ -596,16 +598,13 @@ Ext.define('Ung.FieldConditionWindow', {
             val = jsonobj.value;
         }
         this.down('textfield[name="field"]').setValue(field);
-        this.down('textfield[name="comparator"]').setValue(comparator);
+        this.down('combo[name="comparator"]').setValue(comparator);
         this.down('textfield[name="value"]').setValue(val);
     },
     getValue: function() {
         var jsonobj = {
-            toString: function() {
-                return this.field + " " + this.comparator + " " + this.value;
-            },
             field: this.down('textfield[name="field"]').getValue(),
-            comparator: this.down('textfield[name="comparator"]').getValue(),
+            comparator: this.down('combo[name="comparator"]').getValue(),
             value: this.down('textfield[name="value"]').getValue(),
             javaClass: "com.untangle.node.reporting.AlertRuleMatcherField"
         };

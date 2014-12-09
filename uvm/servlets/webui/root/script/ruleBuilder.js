@@ -109,7 +109,8 @@ Ext.define('Ung.RuleBuilder', {
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                     break;
                   case "editor":
-                    res='<input type="text" style="width: 90%" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+Ext.String.htmlEncode(value)+'"/>';
+                    var displayValue= Ext.isFunction(rule.formatValue) ? Ext.String.htmlEncode(rule.formatValue(value)) : Ext.String.htmlEncode(value);
+                    res='<input type="text" style="width: 90%" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+displayValue+'"/>';
                     break;
                   case "checkgroup":
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
