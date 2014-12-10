@@ -39,7 +39,13 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     # start iperf receivier on server
     remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
     # start the UDP generator on the client behind the Untangle.
-    report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
+    iperf_tries = 5
+    while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
+        report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
+        if '%' in report:
+            break
+        else:
+            iperf_tries -= 1
     # kill iperf receiver    
     remote_control.runCommand("pkill iperf", host=receiverIP)
 
@@ -47,10 +53,13 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     udp_speed = None
     for line in lines:
         if '%' in line: # results line contains a '%'
-            match = re.search(r'([0-9.]+) KBytes/sec', line)
+            match = re.search(r'([0-9.]+) ([KM])Bytes/sec', line)
             udp_speed =  match.group(1)
+            udp_speed = float(udp_speed)
+            if match.group(2) == "M":
+                udp_speed *= 1000
             break
-    return float(udp_speed)
+    return udp_speed
 
 def getDownloadSpeed():
     # Download file and record the average speed in which the file was download
