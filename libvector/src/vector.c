@@ -127,9 +127,11 @@ int       vector_init ( vector_t* vec, list_t* chain )
     if (pipe(vec->msg_pipe)<0) {
         return perrlog("pipe");
     }
-
-    /* Set the write set to non-blocking */
+    
+    /* Set both read & write fd to non-blocking */
     if ( unet_blocking_disable( vec->msg_pipe[0] ) < 0 )
+        errlog( ERR_CRITICAL, "unet_blocking_disable" );
+    if ( unet_blocking_disable( vec->msg_pipe[1] ) < 0 )
         errlog( ERR_CRITICAL, "unet_blocking_disable" );
 
     return 0;
