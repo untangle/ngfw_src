@@ -7,11 +7,23 @@ import re
 
 import remote_control
 import system_properties
+import ipaddr
 
-iperfServer = "10.111.56.32"
+iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
+                ('10.112.0.0/16','10.112.56.44')] # ATS VM
+iperfServer = ""
 
-def verifyIperf():
+def verifyIperf(wanIP):
     # https://iperf.fr/
+    global iperfServer
+    # check if there is an iperf server on the same network
+    for iperfServerSet in iperfServers:
+        if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(iperfServerSet[0]):
+            iperfServer = iperfServerSet[1]
+            break
+    if iperfServer == "":
+        print "No iperf server in the same network"
+        return False
     # Check to see if iperf endpoint is reachable
     iperfServerReachable = subprocess.call(["ping -c 1 " + iperfServer + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
     if iperfServerReachable != 0:
