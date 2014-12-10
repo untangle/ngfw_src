@@ -101,3 +101,21 @@
    obj:/usr/lib/libnetfilter_queue.so.1.1.0
    ...
 }
+
+{
+   thread_attach
+   Memcheck:Cond
+   ...
+   fun:attach_current_thread
+   ...
+}
+
+{
+   epoll_wrapper
+   Memcheck:Param
+   epoll_ctl(event)
+   fun:epoll_ctl
+   fun:Java_sun_nio_ch_EPollArrayWrapper_epollCtl
+   ...
+   obj:*
+}
