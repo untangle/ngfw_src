@@ -75,12 +75,12 @@ public class Vector
         return vector(vec_ptr);
     }
 
-    public void print()
+    public synchronized void print()
     {
         vector_print(vec_ptr);
     }
 
-    public void compress( Sink sink, Source source )
+    public synchronized void compress( Sink sink, Source source )
     {
         vector_compress( vec_ptr, sink.snk_ptr(), source.src_ptr() );
     }
@@ -88,12 +88,12 @@ public class Vector
     /**
      * Set the vector timeout in msec
      */
-    public void timeout(int msec)
+    public synchronized void timeout(int msec)
     {
         vector_set_timeout(vec_ptr, msec);
     }
 
-    public void raze()
+    public synchronized void raze()
     {
         if ( vec_ptr != 0 ) vector_raze( vec_ptr );
         vec_ptr = 0;
@@ -103,7 +103,7 @@ public class Vector
         list_ptr = 0;
     }
 
-    public boolean isRazed()
+    public synchronized boolean isRazed()
     {
         if ( vec_ptr == 0L )
             return true;
@@ -111,7 +111,7 @@ public class Vector
             return false;
     }
 
-    public void shutdown()
+    public synchronized void shutdown()
     {
         if ( vec_ptr == 0 ) return;
         vector_send_msg( vec_ptr, MSG_SHUTDOWN, 0L );
