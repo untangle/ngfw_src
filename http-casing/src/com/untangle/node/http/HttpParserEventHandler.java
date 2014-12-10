@@ -234,8 +234,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
             } else if (message != null && message.contains("expected")) {
                 logger.info("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
             } else if (message != null && message.contains("data trapped")) {
-                logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints, exn);
-                // "data trapped" means that we've already buffered data, and have no discovered its probably not
+                logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints);
+                // "data trapped" means that we've already buffered data, and have now discovered its probably not
                 // a protocol we can understand.
                 // Since we've already buffered data we need to reset the bytebuffer to send the data we've already buffered
                 // to do se reset the position to zero, and the the limit to the current position.

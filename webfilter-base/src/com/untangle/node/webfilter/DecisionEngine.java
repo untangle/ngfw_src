@@ -124,12 +124,11 @@ public abstract class DecisionEngine
         }      
         
         String refererHeader = header.getValue( "referer" );
-        if( node.getSettings().getPassReferers() && 
-            ( null != refererHeader ) ) {
-            try{
+        if( node.getSettings().getPassReferers() && ( refererHeader != null ) ) {
+            try {
                 URI refererUri = new URI( refererHeader.replaceAll("(?<!:)/+", "/") );
                 String refererHost = refererUri.getHost();
-                if (null == refererHost ) {
+                if ( refererHost == null ) {
                     refererHost = host;
                 }
                 refererHost = UrlMatchingUtil.normalizeHostname(refererHost);
@@ -142,8 +141,8 @@ public abstract class DecisionEngine
                     node.logEvent(hbe);
                     return null;
                 }
-            }catch( URISyntaxException e) {
-                logger.error("Could not parse referer URI '" + refererHeader + "'", e);
+            } catch( URISyntaxException e) {
+                logger.warn("Could not parse referer URI '" + refererHeader + "' " + e.getClass());
             }
         }   
 
