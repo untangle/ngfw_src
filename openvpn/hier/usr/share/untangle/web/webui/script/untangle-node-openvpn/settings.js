@@ -334,7 +334,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             name: "Event Log",
             title: i18n._('Event Log'),
             fields: [{
-                name: 'start_time',
+                name: 'time_stamp',
                 sortType: Ung.SortTypes.asTimestamp
             }, {
                 name: 'end_time',
@@ -362,7 +362,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 header: this.i18n._("Start Time"),
                 width: Ung.Util.timestampFieldWidth,
                 sortable: true,
-                dataIndex: 'start_time',
+                dataIndex: 'time_stamp',
                 renderer: Ext.bind(function(value) {
                     return i18n.timestampFormat(value);
                 }, this ),

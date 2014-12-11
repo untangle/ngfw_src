@@ -69,28 +69,28 @@ public class EventReaderImpl
             if (startDate != null || endDate != null) {
 
                 queryStr = queryStr.toLowerCase();
-                int orderByIndex = queryStr.indexOf("order by");
                 int whereIndex   = queryStr.indexOf("where");
+                int groupByIndex = queryStr.indexOf("group by");
+                int orderByIndex = queryStr.indexOf("order by");
+                int insertIndex;
+                if ( groupByIndex > 0 )
+                    insertIndex = groupByIndex; // insert the where clause before "group by"
+                else if ( orderByIndex > 0 )
+                    insertIndex = orderByIndex; // insert the where clause before "order by"
+                else
+                    insertIndex = queryStr.length() - 1; // insert the where clause at the end
                 DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm");
-                if (orderByIndex > 0) {
-                    String queryPart1 = queryStr.substring(0, orderByIndex);
-                    String queryPart2 = queryStr.substring(orderByIndex);
-                    queryStr = queryPart1;
-                    if ( whereIndex < 0 )
-                        queryStr += " where true ";
-                    if ( endDate != null )
-                        queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
-                    if ( startDate != null )
-                        queryStr += " and time_stamp >= '" + df.format(startDate) + "' ";
-                    queryStr += queryPart2;
-                } else {
-                    if ( whereIndex < 0 )
-                        queryStr += " where true ";
-                    if ( endDate != null )
-                        queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
-                    if ( startDate != null )
-                        queryStr += " and time_stamp >= '" + df.format(startDate) + "' ";
-                }
+
+                String queryPart1 = queryStr.substring(0, insertIndex);
+                String queryPart2 = queryStr.substring(insertIndex);
+                queryStr = queryPart1;
+                if ( whereIndex < 0 )
+                    queryStr += " where true ";
+                if ( endDate != null )
+                    queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
+                if ( startDate != null )
+                    queryStr += " and time_stamp >= '" + df.format(startDate) + "' ";
+                queryStr += queryPart2;
             }
             if (limit > 0)
                 queryStr += " LIMIT " + limit + " ";
