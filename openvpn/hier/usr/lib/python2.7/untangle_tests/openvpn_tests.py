@@ -110,6 +110,7 @@ class OpenVpnTests(unittest2.TestCase):
                 raise Exception('node %s already instantiated' % self.nodeName())
             node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
             node.start()
+            nodeWeb = None
             if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
                 print "ERROR: Node %s already installed" % self.nodeWebName()
                 raise Exception('node %s already instantiated' % self.nodeWebName())
