@@ -634,10 +634,10 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         if (headers == null) {
-            return new MessageInfo(session.sessionEvent(), session.getServerPort(), "");
+            return new MessageInfo( session.sessionEvent(), "" );
         }
 
-        MessageInfo ret = new MessageInfo(session.sessionEvent(), session.getServerPort(), "");
+        MessageInfo ret = new MessageInfo( session.sessionEvent(),  "" );
 
         ret.setSubject(headers.getHeader(HeaderNames.SUBJECT, ""));
         // Drain all TO and CC

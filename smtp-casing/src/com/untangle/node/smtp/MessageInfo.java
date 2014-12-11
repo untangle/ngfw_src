@@ -25,33 +25,23 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class MessageInfo extends LogEvent implements Serializable
 {
-
-    /* constants */
-    public static final int SMTP_PORT = 25;
-
     // How big a varchar() do we get for default String fields.
     public static final int MAX_STRING_SIZE = 255;
 
     /* columns */
     private SessionEvent sessionEvent;
     private String subject;
-    private char serverType;
-    private String sender;
     private Long messageId;
     private File tmpFile;
 
     /* Senders/Receivers */
     private Set<MessageInfoAddr> addresses = new HashSet<MessageInfoAddr>();
 
-    /* non-persistent fields */
-    public Map<AddressKind, Integer> counts = new HashMap<AddressKind, Integer>();
-
     private static long nextId = 0;
 
-    /* constructors */
     public MessageInfo() {}
 
-    public MessageInfo(SessionEvent pe, int serverPort, String subject)
+    public MessageInfo( SessionEvent pe, String subject )
     {
         sessionEvent = pe;
 
@@ -63,59 +53,37 @@ public class MessageInfo extends LogEvent implements Serializable
         }
         this.subject = decodeText(subject);
 
-        switch (serverPort) {
-            case SMTP_PORT:
-                serverType = 'S';
-                break;
-            default:
-                serverType = 'U';
-                break;
-        }
-
         synchronized (this) {
             if (nextId == 0)
-                nextId = pe.getSessionId(); /*
-                                             * borrow the session Id as a starting point
-                                             */
+                nextId = pe.getSessionId(); /* borrow the session Id as a starting point */
             this.messageId = nextId++;
         }
     }
 
-    /* Business methods */
     public void addAddress(AddressKind kind, String rawAddress, String rawPersonal)
     {
-        Integer p = counts.get(kind);
-        if (null == p) {
-            p = 0;
-        }
-        counts.put(kind, ++p);
-        
-        String address = decodeText(rawAddress);
+        String address = decodeText(rawAddress).toLowerCase();
         String personal = decodeText(rawPersonal);
         
-        MessageInfoAddr newAddr = new MessageInfoAddr(this, p, kind, address, personal);
+        MessageInfoAddr newAddr = new MessageInfoAddr(this, kind, address, personal);
+
         addresses.add(newAddr);
-        if (AddressKind.FROM.equals(kind))
-            setSender(address);
         return;
     }
 
-    public String trans_getAddress( AddressKind kind )
+    public String getAddress( AddressKind kind )
     {
         if ( kind == null )
             return null;
         
         for ( MessageInfoAddr addr : addresses ) {
             if ( kind.equals( addr.getKind() ) ) {
-                return addr.getAddr();
+                return addr.getAddr().toLowerCase();
             }
         }
 
         return null;
     }
-
-        
-    /* public methods */
 
     /**
      * Set of the addresses involved (to, from, etc) in the email.
@@ -127,7 +95,7 @@ public class MessageInfo extends LogEvent implements Serializable
         return addresses;
     }
 
-    public void trans_setAddresses(Set<MessageInfoAddr> s)
+    public void setAddresses(Set<MessageInfoAddr> s)
     {
         addresses = s;
         return;
@@ -191,33 +159,28 @@ public class MessageInfo extends LogEvent implements Serializable
         return;
     }
 
-    /**
-     * Identify server type (SMTP, POP3, or IMAP4).
-     * 
-     * @return server type.
-     */
-    public char getServerType()
-    {
-        return serverType;
-    }
-
-    public void setServerType(char serverType)
-    {
-        this.serverType = serverType;
-        return;
-    }
-
-    /**
-     * The email sender
-     */
     public String getSender()
     {
-        return sender;
+        String envelopeSender = getAddress( AddressKind.ENVELOPE_FROM );
+        if ( envelopeSender != null )
+            return envelopeSender;
+        else
+            return getAddress( AddressKind.FROM );
     }
 
-    public void setSender(String sender)
+    public String getReceiver()
     {
-        this.sender = decodeText(sender);
+        return getAddress( AddressKind.ENVELOPE_TO );
+    }
+
+    public String getEnvelopeFromAddress()
+    {
+        return getAddress( AddressKind.ENVELOPE_FROM );
+    }
+
+    public String getEnvelopeToAddress()
+    {
+        return getAddress( AddressKind.ENVELOPE_TO );
     }
     
     public File getTmpFile()
@@ -280,7 +243,7 @@ public class MessageInfo extends LogEvent implements Serializable
         pstmt.setString(++i, (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()));
         pstmt.setLong(++i, getMessageId());
         pstmt.setString(++i, getSubject());
-        pstmt.setString(++i, String.valueOf(getServerType()));
+        pstmt.setString(++i, "S");
         pstmt.setString(++i, getSender());
         pstmt.setString(++i, getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname());
 

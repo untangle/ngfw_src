@@ -17,7 +17,6 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 {
     private Long messageId; /* msg_id */
     private MessageInfo messageInfo;
-    private int position;
     private AddressKind kind;
     private String addr;
     private String personal;
@@ -26,10 +25,9 @@ public class MessageInfoAddr extends LogEvent implements Serializable
     public MessageInfoAddr() {
     }
 
-    public MessageInfoAddr(MessageInfo messageInfo, int position, AddressKind kind, String addr, String personal)
+    public MessageInfoAddr(MessageInfo messageInfo, AddressKind kind, String addr, String personal)
     {
         this.messageInfo = messageInfo;
-        this.position = position;
         this.messageId = messageInfo.getMessageId();
         this.kind = kind;
         if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
@@ -127,8 +125,8 @@ public class MessageInfoAddr extends LogEvent implements Serializable
         pstmt.setString(++i, (se.getUsername() == null ? "" : se.getUsername()));
         pstmt.setLong(++i, messageInfo.getMessageId());
         pstmt.setString(++i, messageInfo.getSubject());
-        pstmt.setString(++i, String.valueOf(messageInfo.getServerType()));
-        pstmt.setInt(++i, position);
+        pstmt.setString(++i, "S");
+        pstmt.setInt(++i, 0);
         pstmt.setString(++i, addr);
         pstmt.setString(++i, personal);
         pstmt.setString(++i, Character.toString(kind.getKey()));

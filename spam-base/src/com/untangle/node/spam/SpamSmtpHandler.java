@@ -162,8 +162,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         // If greylist is enable, check greylist
         if ( node.getSettings().getSmtpConfig().getGreylist() && !isWanBound ) { 
             InetAddress client = session.getClientAddr();
-            String from = msgInfo.trans_getAddress( AddressKind.ENVELOPE_FROM );
-            String to = msgInfo.trans_getAddress( AddressKind.ENVELOPE_TO );
+            String from = msgInfo.getEnvelopeFromAddress();
+            String to = msgInfo.getEnvelopeToAddress();
             
             GreyListKey key = new GreyListKey( client, from, to );
             logger.debug( "greylist: check message " + key );
