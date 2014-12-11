@@ -9,6 +9,7 @@ import remote_control
 import system_properties
 import ipaddr
 
+officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
@@ -132,5 +133,12 @@ def check_events( events, num_events, *args, **kwargs):
 
         if allMatched:
             return True
+    return False
+
+def isInOfficeNetwork(wanIP):
+    for officeNetworkTest in officeNetworks:
+        if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(officeNetworkTest):
+            return True
+            break
     return False
 
