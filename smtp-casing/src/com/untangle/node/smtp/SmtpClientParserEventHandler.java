@@ -372,7 +372,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
                     logger.debug("Adding the BeginMIMEToken");
                     clientSideSharedState.beginMsgTransmission();
-                    toks.add(new BeginMIMEToken( state.sac.accumulator, createMessageInfo( session, headers )) );
+                    toks.add(new BeginMIMEToken( state.sac.accumulator, createSmtpMessageEvent( session, headers )) );
                     state.sac.noLongerAccumulatorMaster();
                     state.currentState = SmtpClientState.BODY;
                     if ( state.sac.scanner.isEmptyMessage() ) {
@@ -605,7 +605,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
-    private boolean addRecipientsFromHeader(String[] rcpts, MessageInfo ret, AddressKind recipientType)
+    private boolean addRecipientsFromHeader(String[] rcpts, SmtpMessageEvent ret, AddressKind recipientType)
     {
         boolean hasRecipient = false;
         if (rcpts != null) {
@@ -626,18 +626,18 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
     }
     
     /**
-     * Helper method to break-out the creation of a MessageInfo
+     * Helper method to break-out the creation of a SmtpMessageEvent
      */
-    private MessageInfo createMessageInfo( NodeTCPSession session, InternetHeaders headers )
+    private SmtpMessageEvent createSmtpMessageEvent( NodeTCPSession session, InternetHeaders headers )
     {
         SmtpClientParserEventHandlerSessionState state = (SmtpClientParserEventHandlerSessionState) session.attachment( CLIENT_PARSER_STATE_KEY );
         SmtpSharedState clientSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
         if (headers == null) {
-            return new MessageInfo( session.sessionEvent(), "" );
+            return new SmtpMessageEvent( session.sessionEvent(), "" );
         }
 
-        MessageInfo ret = new MessageInfo( session.sessionEvent(),  "" );
+        SmtpMessageEvent ret = new SmtpMessageEvent( session.sessionEvent(),  "" );
 
         ret.setSubject(headers.getHeader(HeaderNames.SUBJECT, ""));
         // Drain all TO and CC

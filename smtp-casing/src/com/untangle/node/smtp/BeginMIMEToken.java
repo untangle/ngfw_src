@@ -20,18 +20,18 @@ public class BeginMIMEToken extends MetadataToken
 {
 
     private MIMEAccumulator m_accumulator;
-    private MessageInfo m_messageInfo;
+    private SmtpMessageEvent m_messageInfo;
 
-    public BeginMIMEToken(MIMEAccumulator accumulator, MessageInfo messageInfo)
+    public BeginMIMEToken(MIMEAccumulator accumulator, SmtpMessageEvent messageInfo)
     {
         m_accumulator = accumulator;
         m_messageInfo = messageInfo;
     }
 
     /**
-     * Accessor for the MessageInfo of the email being transmitted.
+     * Accessor for the SmtpMessageEvent of the email being transmitted.
      */
-    public MessageInfo getMessageInfo()
+    public SmtpMessageEvent getSmtpMessageEvent()
     {
         return m_messageInfo;
     }

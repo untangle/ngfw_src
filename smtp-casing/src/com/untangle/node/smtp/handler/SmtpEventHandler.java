@@ -18,7 +18,7 @@ import com.untangle.node.smtp.CommandType;
 import com.untangle.node.smtp.CommandWithEmailAddress;
 import com.untangle.node.smtp.CompleteMIMEToken;
 import com.untangle.node.smtp.ContinuedMIMEToken;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.node.smtp.SmtpTransaction;
@@ -789,7 +789,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         session.sendObjectToClient( new Response(421, "Service not available, closing transmission channel") );
     }
 
-    public abstract ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, MessageInfo messageInfo );
+    public abstract ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
 
-    public abstract BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, MessageInfo messageInfo );
+    public abstract BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
 }

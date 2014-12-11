@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.smtp.MailExport;
 import com.untangle.node.smtp.MailExportFactory;
 import com.untangle.node.smtp.SmtpNodeSettings;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
@@ -153,7 +153,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     public int getGiveUpSz( NodeTCPSession session ) { return node.getSettings().getSmtpConfig().getMsgSizeLimit(); }
     
     @Override
-    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo )
+    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo )
     {
         logger.debug("[handleMessageCanBlock]");
 
@@ -310,7 +310,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
 
         logger.debug("[handleMessageCanNotBlock]");
@@ -478,7 +478,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     /**
      * ...name says it all...
      */
-    private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action)
+    private void postSpamEvent(SmtpMessageEvent msgInfo, SpamReport report, SpamMessageAction action)
     {
         String testsString = "";
         boolean first = true;

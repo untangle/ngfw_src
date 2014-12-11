@@ -208,6 +208,7 @@ CREATE TABLE reports.mail_msgs (
     hostname text,
     event_id bigserial,
     sender text,
+    receiver text,
     clam_clean boolean,
     clam_name text,
     spamassassin_score real,
@@ -246,6 +247,7 @@ CREATE TABLE reports.mail_msgs (
 
         sql_helper.add_column('reports', 'mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'mail_msgs', 'sender', 'text')
+        sql_helper.add_column('reports', 'mail_msgs', 'receiver', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'clam_clean', 'boolean')
         sql_helper.add_column('reports', 'mail_msgs', 'clam_name', 'text')
         sql_helper.add_column('reports', 'mail_msgs', 'spamassassin_score', 'real')

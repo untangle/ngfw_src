@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SmtpMessageAddressEvent.java 39268 2014-12-11 18:07:09Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -13,34 +13,30 @@ import com.untangle.uvm.util.I18nUtil;
  * Log e-mail message info.
  */
 @SuppressWarnings("serial")
-public class MessageInfoAddr extends LogEvent implements Serializable
+public class SmtpMessageAddressEvent extends LogEvent implements Serializable
 {
     private Long messageId; /* msg_id */
-    private MessageInfo messageInfo;
+    private SmtpMessageEvent messageInfo;
     private AddressKind kind;
     private String addr;
     private String personal;
 
-    /* constructors */
-    public MessageInfoAddr() {
-    }
+    public SmtpMessageAddressEvent() { }
 
-    public MessageInfoAddr(MessageInfo messageInfo, AddressKind kind, String addr, String personal)
+    public SmtpMessageAddressEvent( SmtpMessageEvent messageInfo, AddressKind kind, String addr, String personal )
     {
         this.messageInfo = messageInfo;
         this.messageId = messageInfo.getMessageId();
         this.kind = kind;
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.addr = addr;
-        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null && personal.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            personal = personal.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.personal = personal;
     }
-
-    // accessors --------------------------------------------------------------
 
     public Long getMessageId() { return messageId; }
     public void setMessageId(Long id) { this.messageId = id; }
@@ -57,8 +53,8 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     public void setAddr(String addr)
     {
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.addr = addr;
     }
@@ -75,8 +71,8 @@ public class MessageInfoAddr extends LogEvent implements Serializable
 
     public void setPersonal(String personal)
     {
-        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null && personal.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            personal = personal.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.personal = personal;
     }

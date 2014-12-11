@@ -12,8 +12,8 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.node.smtp.AddressKind;
-import com.untangle.node.smtp.MessageInfo;
-import com.untangle.node.smtp.MessageInfoAddr;
+import com.untangle.node.smtp.SmtpMessageEvent;
+import com.untangle.node.smtp.SmtpMessageAddressEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -23,7 +23,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class SpamLogEvent extends LogEvent
 {
     private Long messageId;
-    private MessageInfo messageInfo;
+    private SmtpMessageEvent messageInfo;
     private float score;
     private boolean isSpam;
     private SpamMessageAction action;
@@ -34,7 +34,7 @@ public class SpamLogEvent extends LogEvent
 
     public SpamLogEvent() { }
 
-    public SpamLogEvent(MessageInfo messageInfo, float score, boolean isSpam, SpamMessageAction action, String vendorName, String testsString)
+    public SpamLogEvent(SmtpMessageEvent messageInfo, float score, boolean isSpam, SpamMessageAction action, String vendorName, String testsString)
     {
         this.messageInfo = messageInfo;
         this.messageId = messageInfo.getMessageId();
@@ -57,45 +57,45 @@ public class SpamLogEvent extends LogEvent
 
     public String getSubject()
     {
-        return null == getMessageInfo() ? "" : getMessageInfo().getSubject();
+        return null == getSmtpMessageEvent() ? "" : getSmtpMessageEvent().getSubject();
     }
 
     public InetAddress getClientAddr()
     {
-        if (null == getMessageInfo()) {
+        if (null == getSmtpMessageEvent()) {
             return null;
         } else {
-            SessionEvent pe = getMessageInfo().getSessionEvent();
+            SessionEvent pe = getSmtpMessageEvent().getSessionEvent();
             return null == pe ? null : pe.getCClientAddr();
         }
     }
 
     public int getClientPort()
     {
-        if (null == getMessageInfo()) {
+        if (null == getSmtpMessageEvent()) {
             return -1;
         } else {
-            SessionEvent pe = getMessageInfo().getSessionEvent();
+            SessionEvent pe = getSmtpMessageEvent().getSessionEvent();
             return null == pe ? -1 : pe.getCClientPort();
         }
     }
 
     public InetAddress getServerAddr()
     {
-        if (null == getMessageInfo()) {
+        if (null == getSmtpMessageEvent()) {
             return null;
         } else {
-            SessionEvent pe = getMessageInfo().getSessionEvent();
+            SessionEvent pe = getSmtpMessageEvent().getSessionEvent();
             return null == pe ? null : pe.getSServerAddr();
         }
     }
 
     public int getServerPort()
     {
-        if (null == getMessageInfo()) {
+        if (null == getSmtpMessageEvent()) {
             return -1;
         } else {
-            SessionEvent pe = getMessageInfo().getSessionEvent();
+            SessionEvent pe = getSmtpMessageEvent().getSessionEvent();
             return null == pe ? -1 : pe.getSServerPort();
         }
     }
@@ -111,8 +111,8 @@ public class SpamLogEvent extends LogEvent
     /**
      * Associate e-mail message info with event.
      */
-    public MessageInfo getMessageInfo() { return messageInfo; }
-    public void setMessageInfo( MessageInfo newValue ) { this.messageInfo = newValue; }
+    public SmtpMessageEvent getSmtpMessageEvent() { return messageInfo; }
+    public void setSmtpMessageEvent( SmtpMessageEvent newValue ) { this.messageInfo = newValue; }
     
     /**
      * Spam scan score.
@@ -211,13 +211,13 @@ public class SpamLogEvent extends LogEvent
 
     protected String get(AddressKind kind)
     {
-        MessageInfo messageInfo = getMessageInfo();
+        SmtpMessageEvent messageInfo = getSmtpMessageEvent();
 
         if (null == messageInfo) {
             return "";
         } else {
-            for (Iterator<MessageInfoAddr> i = messageInfo.trans_getAddresses().iterator(); i.hasNext(); ) {
-                MessageInfoAddr mi = i.next();
+            for (Iterator<SmtpMessageAddressEvent> i = messageInfo.getAddresses().iterator(); i.hasNext(); ) {
+                SmtpMessageAddressEvent mi = i.next();
 
                 if (mi.getKind() == kind) {
                     String addr = mi.getAddr();

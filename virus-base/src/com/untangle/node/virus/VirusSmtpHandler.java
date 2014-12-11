@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MailExport;
 import com.untangle.node.smtp.MailExportFactory;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.TemplateTranslator;
 import com.untangle.node.smtp.WrappedMessageGenerator;
@@ -91,7 +91,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo )
+    public ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo )
     {
         this.logger.debug("[handleMessageCanBlock] called");
         this.node.incrementScanCount();
@@ -191,7 +191,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, MessageInfo msgInfo)
+    public BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         this.logger.debug("[handleMessageCanNotBlock]");
         this.node.incrementScanCount();

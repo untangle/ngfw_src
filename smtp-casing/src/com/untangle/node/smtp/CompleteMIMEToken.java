@@ -25,9 +25,9 @@ public class CompleteMIMEToken extends MetadataToken
     private final Logger m_logger = Logger.getLogger(CompleteMIMEToken.class);
 
     private final MimeMessage m_msg;
-    private final MessageInfo m_msgInfo;
+    private final SmtpMessageEvent m_msgInfo;
 
-    public CompleteMIMEToken(MimeMessage msg, MessageInfo msgInfo) {
+    public CompleteMIMEToken(MimeMessage msg, SmtpMessageEvent msgInfo) {
         m_msg = msg;
         m_msgInfo = msgInfo;
     }
@@ -41,9 +41,9 @@ public class CompleteMIMEToken extends MetadataToken
     }
 
     /**
-     * Get the MessageInfo associated with this email
+     * Get the SmtpMessageEvent associated with this email
      */
-    public MessageInfo getMessageInfo()
+    public SmtpMessageEvent getSmtpMessageEvent()
     {
         return m_msgInfo;
     }
@@ -86,7 +86,7 @@ public class CompleteMIMEToken extends MetadataToken
         private ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
         private boolean m_readLast = false;
 
-        StuffingMIMETCPStreamer(MimeMessage msg, MessageInfo messageInfo, boolean disposeWhenComplete, NodeTCPSession session)
+        StuffingMIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, boolean disposeWhenComplete, NodeTCPSession session)
         {
             super(msg, messageInfo, 0, disposeWhenComplete, session);
             m_logger.debug("Created Complete MIME message streamer (Stuffing)");

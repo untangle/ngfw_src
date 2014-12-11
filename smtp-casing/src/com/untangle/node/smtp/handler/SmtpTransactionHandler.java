@@ -19,7 +19,7 @@ import com.untangle.node.smtp.CommandType;
 import com.untangle.node.smtp.CommandWithEmailAddress;
 import com.untangle.node.smtp.CompleteMIMEToken;
 import com.untangle.node.smtp.ContinuedMIMEToken;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;
 import com.untangle.node.smtp.mime.MIMEAccumulator;
@@ -50,7 +50,7 @@ public class SmtpTransactionHandler
     private BufTxState state = BufTxState.INIT;
 
     private MIMEAccumulator accumulator;
-    private MessageInfo messageInfo;
+    private SmtpMessageEvent messageInfo;
     private MimeMessage msg;
     private boolean isMessageMaster;// Flag indicating if this handler is the "master" of the message (accumulator or
                                     // MIMEMessage). The master is defined as the last node to receive the object in
@@ -202,7 +202,7 @@ public class SmtpTransactionHandler
         logReceivedToken(token);
 
         accumulator = token.getMIMEAccumulator();
-        messageInfo = token.getMessageInfo();
+        messageInfo = token.getSmtpMessageEvent();
         isMessageMaster = true;
 
         handleMIMEChunkToken( session, true, false, null, stateMachine, immediateActions );
@@ -221,7 +221,7 @@ public class SmtpTransactionHandler
         logReceivedToken(token);
 
         msg = token.getMessage();
-        messageInfo = token.getMessageInfo();
+        messageInfo = token.getSmtpMessageEvent();
         isMessageMaster = true;
         accumulator = null;
 

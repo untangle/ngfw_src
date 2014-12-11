@@ -17,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
@@ -399,7 +399,7 @@ public class MIMEAccumulator
      * 
      * @return a parsed MIMEMEssage, or null if an error occured. If there is an error, it has been logged.
      */
-    public MimeMessage parseBody(MessageInfo messageInfo)
+    public MimeMessage parseBody(SmtpMessageEvent messageInfo)
     {
         if (m_mimeMessage != null) {
             return m_mimeMessage;

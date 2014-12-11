@@ -4,7 +4,7 @@
 package com.untangle.node.smtp.safelist;
 
 import java.io.Serializable;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 
 /**
  * Setting for safelist (recipient and sender pair).
@@ -33,8 +33,8 @@ public class SafelistSettings implements Serializable
 
     public void setRecipient(String addr)
     {
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.recipient = addr;
 
@@ -51,8 +51,8 @@ public class SafelistSettings implements Serializable
 
     public void setSender(String addr)
     {
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
-            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > SmtpMessageEvent.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, SmtpMessageEvent.DEFAULT_STRING_SIZE);
         }
         this.sender = addr;
 

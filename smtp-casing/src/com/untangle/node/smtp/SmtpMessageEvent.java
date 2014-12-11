@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: SmtpMessageEvent.java 39268 2014-12-11 18:07:09Z dmorris $
  */
 package com.untangle.node.smtp;
 
@@ -23,7 +23,7 @@ import com.untangle.uvm.util.I18nUtil;
  * Log e-mail message info.
  */
 @SuppressWarnings("serial")
-public class MessageInfo extends LogEvent implements Serializable
+public class SmtpMessageEvent extends LogEvent implements Serializable
 {
     // How big a varchar() do we get for default String fields.
     public static final int MAX_STRING_SIZE = 255;
@@ -35,13 +35,13 @@ public class MessageInfo extends LogEvent implements Serializable
     private File tmpFile;
 
     /* Senders/Receivers */
-    private Set<MessageInfoAddr> addresses = new HashSet<MessageInfoAddr>();
+    private Set<SmtpMessageAddressEvent> addresses = new HashSet<SmtpMessageAddressEvent>();
 
     private static long nextId = 0;
 
-    public MessageInfo() {}
+    public SmtpMessageEvent() {}
 
-    public MessageInfo( SessionEvent pe, String subject )
+    public SmtpMessageEvent( SessionEvent pe, String subject )
     {
         sessionEvent = pe;
 
@@ -60,12 +60,12 @@ public class MessageInfo extends LogEvent implements Serializable
         }
     }
 
-    public void addAddress(AddressKind kind, String rawAddress, String rawPersonal)
+    public void addAddress( AddressKind kind, String rawAddress, String rawPersonal )
     {
         String address = decodeText(rawAddress).toLowerCase();
         String personal = decodeText(rawPersonal);
         
-        MessageInfoAddr newAddr = new MessageInfoAddr(this, kind, address, personal);
+        SmtpMessageAddressEvent newAddr = new SmtpMessageAddressEvent(this, kind, address, personal);
 
         addresses.add(newAddr);
         return;
@@ -76,7 +76,7 @@ public class MessageInfo extends LogEvent implements Serializable
         if ( kind == null )
             return null;
         
-        for ( MessageInfoAddr addr : addresses ) {
+        for ( SmtpMessageAddressEvent addr : addresses ) {
             if ( kind.equals( addr.getKind() ) ) {
                 return addr.getAddr().toLowerCase();
             }
@@ -90,35 +90,23 @@ public class MessageInfo extends LogEvent implements Serializable
      * 
      * @return the set of the email addresses involved in the email
      */
-    public Set<MessageInfoAddr> trans_getAddresses()
-    {
-        return addresses;
-    }
-
-    public void setAddresses(Set<MessageInfoAddr> s)
-    {
-        addresses = s;
-        return;
-    }
+    public Set<SmtpMessageAddressEvent> getAddresses() { return addresses; }
+    public void setAddresses( Set<SmtpMessageAddressEvent> newValue ) { this.addresses = newValue; }
 
     /**
      * The message id
      */
-    public Long getMessageId()
-    {
-        return messageId;
-    }
-
-    public void setMessageId(Long id)
-    {
-        this.messageId = id;
-    }
+    public Long getMessageId() { return messageId; }
+    public void setMessageId( Long newValue ) { this.messageId = newValue; }
 
     /**
      * Get the SessionEvent.
      * 
      * @return the SessionEvent.
      */
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
+
     public Long getSessionId()
     {
         return sessionEvent.getSessionId();
@@ -129,16 +117,6 @@ public class MessageInfo extends LogEvent implements Serializable
         this.sessionEvent.setSessionId(sessionId);
     }
 
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
-
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
-
     /**
      * Identify RFC822 Subject.
      * 
@@ -146,7 +124,7 @@ public class MessageInfo extends LogEvent implements Serializable
      */
     public String getSubject()
     {
-        return subject;
+        return this.subject;
     }
 
     public void setSubject(String rawSubject)
@@ -193,20 +171,6 @@ public class MessageInfo extends LogEvent implements Serializable
         this.tmpFile = tmpFile;
     }
     
-    
-    private String decodeText(String rawValue)
-    {
-        if (rawValue == null)
-            return null;
-        String value = null;
-        try {
-            value = MimeUtility.decodeText(rawValue);
-        } catch (UnsupportedEncodingException e) {
-            value = rawValue;
-        }
-        return value;
-    }
-
     private static String sql = "INSERT INTO reports.mail_msgs "
             + "(time_stamp, session_id, client_intf, server_intf, "
             + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
@@ -249,13 +213,12 @@ public class MessageInfo extends LogEvent implements Serializable
 
         sqlList.add(pstmt);
 
-        for (MessageInfoAddr addr : this.addresses) {
+        for (SmtpMessageAddressEvent addr : this.addresses) {
             sqlList.add(addr.getDirectEventSql(conn));
         }
 
         return sqlList;
     }
-
 
     @Override
     public String toSummaryString()
@@ -263,5 +226,17 @@ public class MessageInfo extends LogEvent implements Serializable
         String summary = "[ " + I18nUtil.marktr("sender") + ": \""  + getSender() + "\", " + I18nUtil.marktr("subject") + ": \""  + getSubject() + "\" ]";
         return summary;
     }
-    
+
+    private String decodeText(String rawValue)
+    {
+        if (rawValue == null)
+            return null;
+        String value = null;
+        try {
+            value = MimeUtility.decodeText(rawValue);
+        } catch (UnsupportedEncodingException e) {
+            value = rawValue;
+        }
+        return value;
+    }
 }

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.node.smtp.MessageInfo;
+import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -18,7 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class VirusSmtpEvent extends LogEvent
 {
     private Long messageId;
-    private MessageInfo messageInfo;
+    private SmtpMessageEvent messageInfo;
     private boolean clean;
     private String virusName;
     private String action;
@@ -26,7 +26,7 @@ public class VirusSmtpEvent extends LogEvent
 
     public VirusSmtpEvent() { }
 
-    public VirusSmtpEvent(MessageInfo messageInfo, boolean clean, String virusName, String action, String nodeName)
+    public VirusSmtpEvent(SmtpMessageEvent messageInfo, boolean clean, String virusName, String action, String nodeName)
     {
         this.messageId = messageInfo.getMessageId();
         this.messageInfo = messageInfo;
