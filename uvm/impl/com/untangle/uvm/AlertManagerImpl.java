@@ -74,6 +74,7 @@ public class AlertManagerImpl implements AlertManager
         try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { if (dnsWorking) testConnector(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDiskFree(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testDiskErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testDupeApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testRendundantApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
         try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
@@ -198,9 +199,6 @@ public class AlertManagerImpl implements AlertManager
 
     private void testDiskFree(List<String> alertList)
     {
-        if ( UvmContextFactory.context().isDevel() ) /* dont test dev boxes */
-            return;
-
         String result = this.execManager.execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
 
         try {
@@ -213,6 +211,15 @@ public class AlertManagerImpl implements AlertManager
 
     }
 
+    private void testDiskErrors(List<String> alertList)
+    {
+        ExecManagerResult result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'" );
+
+        if ( result.getResult() == 0 ) {
+            alertList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
+        }
+    }
+    
     /**
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
