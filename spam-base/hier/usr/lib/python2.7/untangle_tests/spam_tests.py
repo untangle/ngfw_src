@@ -120,7 +120,7 @@ class SpamTests(unittest2.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert( events != None )
         # Verify Quarantined events occurred..
-        assert(events['list'][0]['c_server_addr'] == ip_address_testuntangle)
+        assert(events['list'][0]['c_server_addr'] == test_untangle_IP)
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
