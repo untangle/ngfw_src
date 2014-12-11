@@ -22,6 +22,7 @@ Ext.define("Webui.config.about", {
         this.callParent(arguments);
     },
     buildServer: function() {
+        var me = this;
         var serverUID, fullVersionAndRevision, kernelVersion, modificationState, rebootCount, licensedSized, maxLicensedSize;
         try {
             serverUID = rpc.jsonrpc.UvmContext.getServerUID();
@@ -53,8 +54,8 @@ Ext.define("Webui.config.about", {
                     readOnly: true,
                     style: 'font-weight: bold;',
                     width: 600,
-                    height: 40,
-                    value: this.i18n._('Do not publicly post or share the UID.') + "\n" +
+                    height: 60,
+                    value: this.i18n._('Do not publicly post or share the UID or account information.') + "\n" +
                         this.i18n._('UID')+": " + serverUID
                 }, {
                     xtype: 'textarea',
@@ -63,7 +64,7 @@ Ext.define("Webui.config.about", {
                     readOnly: true,
                     style: 'font-weight: bold;',
                     width: 600,
-                    height: 400,
+                    height: 300,
                     value: this.i18n._('Build') + ": " + fullVersionAndRevision + "\n" + 
                         this.i18n._('Kernel') + ": " + kernelVersion + "\n" +
                         this.i18n._('History') + ": " + modificationState + "\n" +
@@ -73,6 +74,19 @@ Ext.define("Webui.config.about", {
 
                 }]
             }]
+        });
+        Ext.data.JsonP.request({
+            url: rpc.storeUrl + "?" + "action=find_account&uid="+serverUID,
+            type: 'GET',
+            success: function(response, opts) {
+                if( response!=null && response.account) {
+                    var uidComponent = me.panelServer.down('textarea[name="UID"]');
+                    uidComponent.setValue(uidComponent.getValue() + "\n" + this.i18n._('Account') + ": " + response.account);
+                }
+            },
+            failure: function(response, opts) {
+                console.log("Failed to get account info fro UID:", serverUID);
+            }
         });
     },
     buildLicenseAgreement: function() {
