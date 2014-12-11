@@ -7,6 +7,7 @@ import socket
 import smtplib
 import re
 import system_properties
+import global_functions
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -20,7 +21,7 @@ nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
 fakeSmtpServerHost = '10.111.56.32'
-tlsSmtpServerHost = '10.111.56.44' # Vcenter VM Debian-ATS-TLS 
+tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def sendTestmessage():
     sender = 'test@example.com'
@@ -186,8 +187,8 @@ class SpamTests(unittest2.TestCase):
 
     def test_070_checkForSMTPHeaders(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("Fake SMTP client is unreachable, skipping smtp headers check")
@@ -223,8 +224,8 @@ class SpamTests(unittest2.TestCase):
 
     def test_080_checkAllowTLS(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
         externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
         if (externalClientResult != 0):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
