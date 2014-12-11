@@ -485,8 +485,8 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
 
         # start netcat on client
         remote_control.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
@@ -501,13 +501,12 @@ class NetworkTests(unittest2.TestCase):
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
         # We will use iperf server and iperf for this test.
-        pingable = remote_control.runCommand("ping -c1 " + global_functions.iperfServer)
-        if pingable != 0:
-            raise unittest2.SkipTest("Iperf server not reachable")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
+        if not global_functions.verifyIperf(wan_IP):
+            raise unittest2.SkipTest("Iperf server not reachable")
         nukeFirstLevelRule('portForwardRules')
         # port forward UDP 5000 to client box
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
@@ -530,17 +529,19 @@ class NetworkTests(unittest2.TestCase):
     # test a NAT rules
     def test_050_natRule(self):
         # check if more than one WAN
-        myWANs = []
+        myWANs = {}
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             # if its not a static WAN its not testable
+            detectedIPlist =[]
             if interface['isWan'] and interface['v4ConfigType'] == "STATIC" and interface['v4StaticAddress'] != None:
                 addr = interface['v4StaticAddress']
                 # Check if WAN address is recognized by test.untangle.com
                 detectedIP =  subprocess.check_output(["wget -4 -q --bind-address=" + addr + " -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py"],shell=True)
                 detectedIP = detectedIP.rstrip()  # strip return character
-                if detectedIP == addr:
-                    myWANs.append(addr)
+                if detectedIP not in detectedIPlist:
+                    detectedIPlist.append(detectedIP)
+                    myWANs[addr] = detectedIP
         if (len(myWANs) < 2):
             raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
         for wanIP in myWANs:
@@ -549,8 +550,8 @@ class NetworkTests(unittest2.TestCase):
             # Determine current outgoing IP
             result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             nukeFirstLevelRule('natRules')
-            # print "result " + result + " wanIP " + wanIP
-            assert (result == wanIP)
+            # print "result " + result + " wanIP " + myWANs[wanIP]
+            assert (result == myWANs[wanIP])
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
@@ -688,9 +689,9 @@ class NetworkTests(unittest2.TestCase):
         ipStep = 1
         loopCounter = 10
         vrrpIP = None
+        ip = ipaddr.IPAddress(interfaceIP)
         while vrrpIP == None and loopCounter:
             # get next IP and test that it is unused
-            ip = ipaddr.IPAddress(interfaceIP)
             newip = ip + ipStep
             # check to see if the IP is in network range
             if newip in ipaddr.IPv4Network(interfaceNet):
