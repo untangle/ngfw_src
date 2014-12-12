@@ -1282,9 +1282,9 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         var delegate = Ext.bind(this.complete, this, [ handler ], true );
         var firstNonWan = this.getFirstNonWanSettings( Ung.SetupWizard.CurrentValues.networkSettings );
-
+        var changed;
         if ( value == 'BRIDGED' ) {
-            var changed = (firstNonWan['configType'] != 'BRIDGED');
+            changed = (firstNonWan['configType'] != 'BRIDGED');
             if(changed) {
                 firstNonWan['configType'] = 'BRIDGED';
                 rpc.networkManager.setNetworkSettings( delegate, Ung.SetupWizard.CurrentValues.networkSettings );
@@ -1296,7 +1296,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             var network = this.panel.down('textfield[name="network"]').getValue();
             var prefix = this.panel.down('combo[name="prefix"]').getValue();
             var enableDhcpServer = this.panel.down('checkbox[name="enableDhcpServer"]').getValue();
-            var changed = (firstNonWan['configType'] != 'ADDRESSED' || firstNonWan['v4ConfigType'] != 'STATIC' || firstNonWan['v4StaticAddress'] != network || firstNonWan['v4StaticPrefix'] != prefix || firstNonWan['dhcpEnabled'] != enableDhcpServer);
+            changed = (firstNonWan['configType'] != 'ADDRESSED' || firstNonWan['v4ConfigType'] != 'STATIC' || firstNonWan['v4StaticAddress'] != network || firstNonWan['v4StaticPrefix'] != prefix || firstNonWan['dhcpEnabled'] != enableDhcpServer);
             if(changed) {
                 firstNonWan['configType'] = 'ADDRESSED';
                 firstNonWan['v4ConfigType'] = 'STATIC';
