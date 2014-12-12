@@ -1450,7 +1450,7 @@ Ext.define('Ung.SetupWizard.Complete', {
         rpc.jsonrpc.UvmContext.wizardComplete(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
           //now open the UI
-            window.location.href="/webui/startPage.do?firstTimeRun=true";
+            window.location.href="/webui/startPage.do";
         }, this));
     }
 });

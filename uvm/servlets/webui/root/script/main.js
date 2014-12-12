@@ -49,7 +49,6 @@ Ext.define("Ung.Main", {
     version: null,
     iframeWin: null,
     IEWin: null,
-    firstTimeRun: null,
     policyNodeWidget:null,
     initialScreenAlreadyShown: false,
 
@@ -70,7 +69,6 @@ Ext.define("Ung.Main", {
         if(Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
-        this.firstTimeRun = Ung.Util.getQueryStringParam("firstTimeRun");
         this.target = Ung.Util.getQueryStringParam("target");
         this.appsLastState = {};
         this.nodePreviews = {};
