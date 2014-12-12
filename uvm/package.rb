@@ -78,9 +78,14 @@ if BuildEnv::SRC.isDevel
     File.open( uidFile, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
 
-  wizardCompleteFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/wizard-complete-flag"
-  file wizardCompleteFile do
-    File.open( wizardCompleteFile, "w" ) { |f| f.puts( "true" ) }
+  wizardSettingsFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/wizard.js"
+  file wizardSettingsFile do
+    File.open( wizardSettingsFile, "w" ) { |f| f.puts('
+{
+    "javaClass": "com.untangle.uvm.WizardSettings",
+    "wizardComplete": true
+}
+') }
   end
 
   isRegisteredFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/is-registered-flag"
@@ -89,7 +94,7 @@ if BuildEnv::SRC.isDevel
   end
 
   BuildEnv::SRC.installTarget.register_dependency(uidFile)
-  BuildEnv::SRC.installTarget.register_dependency(wizardCompleteFile)
+  BuildEnv::SRC.installTarget.register_dependency(wizardSettingsFile)
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 

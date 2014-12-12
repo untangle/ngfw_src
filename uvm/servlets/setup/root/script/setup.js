@@ -669,9 +669,25 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldLabel: i18n._( "Primary DNS" ),
                     allowBlank: false
                 }, {
-                    name: "dns2",
-                    fieldLabel: i18n._( "Secondary DNS (optional)"),
-                    allowBlank: true
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 0 0',
+                    items: [{
+                        xtype: 'textfield',
+                        labelWidth: Ung.SetupWizard.LabelWidth,
+                        disabled: false,
+                        msgTarget: 'side',
+                        validationEvent: 'blur',
+                        maskRe: /(\d+|\.)/,
+                        vtype: 'ipAddress',
+                        name: "dns2",
+                        fieldLabel: i18n._( "Secondary DNS"),
+                        allowBlank: true
+                    },{
+                        xtype: 'label',
+                        html: i18n._("(optional)"),
+                        cls: 'boxlabel'
+                    }]
                 }]
             }],
             buttonAlign: 'center',
@@ -1507,6 +1523,7 @@ Ung.Setup = {
         Ung.SetupWizard.TimeZoneStore = [];
         try {
             timeZonesResult = rpc.setup.getTimeZones();
+            rpc.wizardSettings = rpc.setup.getWizardSettings();
             rpc.oemName = rpc.setup.getOemName();
             rpc.adminEmail = rpc.setup.getAdminEmail();
         } catch (e) {
@@ -1520,13 +1537,33 @@ Ung.Setup = {
         i18n = new Ung.I18N( { "map": Ung.SetupWizard.CurrentValues.languageMap });
         document.title = i18n._( "Setup Wizard" );
 
-        var welcome    = Ext.create('Ung.SetupWizard.Welcome', {});
-        var settings   = Ext.create('Ung.SetupWizard.ServerSettings', {});
-        var interfaces = Ext.create('Ung.SetupWizard.Interfaces', {});
-        var internet   = Ext.create('Ung.SetupWizard.Internet', {});
-        var internal   = Ext.create('Ung.SetupWizard.InternalNetwork', {});
-        var upgrades   = Ext.create('Ung.SetupWizard.AutoUpgrades', {});
-        var complete   = Ext.create('Ung.SetupWizard.Complete', {});
+        var cards = [];
+
+        // just in case 
+        if ( rpc.wizardSettings.steps == null ) {
+            rpc.wizardSettings.steps = [
+                'Ung.SetupWizard.Welcome',
+                'Ung.SetupWizard.ServerSettings',
+                'Ung.SetupWizard.Interfaces',
+                'Ung.SetupWizard.Internet',
+                'Ung.SetupWizard.InternalNetwork',
+                'Ung.SetupWizard.AutoUpgrades',
+                'Ung.SetupWizard.Complete'
+            ];
+        }
+
+        for ( var j = 0; j < rpc.wizardSettings.steps.length; j++ ) {
+            var className = rpc.wizardSettings.steps[j];
+            var clazz = Ext.create(className, {});
+            cards.push( clazz.card );
+        }
+        // var welcome    = Ext.create('Ung.SetupWizard.Welcome', {});
+        // var settings   = Ext.create('Ung.SetupWizard.ServerSettings', {});
+        // var interfaces = Ext.create('Ung.SetupWizard.Interfaces', {});
+        // var internet   = Ext.create('Ung.SetupWizard.Internet', {});
+        // var internal   = Ext.create('Ung.SetupWizard.InternalNetwork', {});
+        // var upgrades   = Ext.create('Ung.SetupWizard.AutoUpgrades', {});
+        // var complete   = Ext.create('Ung.SetupWizard.Complete', {});
 
         Ext.get("container").setStyle("width", "800px");
         this.wizard = Ext.create('Ung.Wizard', {
@@ -1536,7 +1573,8 @@ Ung.Setup = {
                 labelWidth: Ung.SetupWizard.LabelWidth,
                 cls: 'untangle-form-panel'
             },
-            cards: [welcome.card, settings.card, interfaces.card, internet.card, internal.card, upgrades.card, complete.card],
+            //cards: [welcome.card, settings.card, interfaces.card, internet.card, internal.card, upgrades.card, complete.card],
+            cards: cards,
             disableNext: false,
             renderTo: "container"
         });

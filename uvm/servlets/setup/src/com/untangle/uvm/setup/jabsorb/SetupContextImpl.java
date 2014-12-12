@@ -13,6 +13,7 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.util.JsonClient;
 
@@ -66,6 +67,16 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         }
 
         this.context.adminManager().setSettings( adminSettings );
+    }
+
+    public WizardSettings getWizardSettings()
+    {
+        return this.context.getWizardSettings();
+    }
+
+    public void setWizardSettings( WizardSettings newSettings )
+    {
+        this.context.setWizardSettings( newSettings );
     }
     
     public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException

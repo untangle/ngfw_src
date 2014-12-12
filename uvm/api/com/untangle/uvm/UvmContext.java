@@ -280,8 +280,8 @@ public interface UvmContext
     /**
      * Thread utilities
      */
-    Thread newThread(Runnable runnable);
-    Thread newThread(Runnable runnable, String name);
+    Thread newThread( Runnable runnable );
+    Thread newThread( Runnable runnable, String name );
 
     /**
      * The pipeline compiler.
@@ -294,9 +294,22 @@ public interface UvmContext
     /**
      * Returns true if the setup wizard has been completed
      *
-     * @return a <code>boolean</code> value
+     * @return a <code>boolean</code> valuett
      */
     boolean isWizardComplete();
+
+    /**
+     * Returns the current wizard settings
+     * This initializes settings if none exist
+     *
+     * @return a <code>WizardSettings</code> value
+     */
+    WizardSettings getWizardSettings();
+
+    /**
+     * Sets the wizard settings
+     */
+    void setWizardSettings( WizardSettings wizardSettings );
 
     /**
      * Returns true if this server is registered with store account
@@ -337,13 +350,21 @@ public interface UvmContext
      * Check if store is available
      */
     boolean isStoreAvailable();
+
     /**
      * Convenience method, log an event to the database
      */
-    
     void logEvent(LogEvent evt);
 
+    /**
+     * Convenience method to load all the object the webUI needs in one object to avoid
+     * multiple calls
+     */
     org.json.JSONObject getWebuiStartupInfo();
     
+    /**
+     * Convenience method to load all the object the webUI needs in one object to avoid
+     * multiple calls
+     */
     org.json.JSONObject getSetupStartupInfo();
 }

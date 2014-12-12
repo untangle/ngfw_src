@@ -730,28 +730,26 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }],
             columnsDefaultSortable: true,
             // the row input lines used by the row editor window
-            rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "Subnet",
-                    dataIndex: "address",
-                    fieldLabel: this.i18n._("IP Address"),
-                    emptyText: this.i18n._("[enter IP address]"),
-                    vtype: 'ipAddress',
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    name: "Name",
-                    dataIndex: "hostname",
-                    fieldLabel: this.i18n._("Name"),
-                    emptyText: this.i18n._("[enter name]"),
-                    regex: /^[^'"]+$/,
-                    regexText: this.i18n._("Quotes and double quotes are not allowed"),
-                    allowBlank: false,
-                    width: 300
-                }]
+            rowEditorInputLines: [{
+                xtype:'textfield',
+                name: "Subnet",
+                dataIndex: "address",
+                fieldLabel: this.i18n._("IP Address"),
+                emptyText: this.i18n._("[enter IP address]"),
+                vtype: 'ipAddress',
+                allowBlank: false,
+                width: 300
+            },{
+                xtype:'textfield',
+                name: "Name",
+                dataIndex: "hostname",
+                fieldLabel: this.i18n._("Name"),
+                emptyText: this.i18n._("[enter name]"),
+                regex: /^[^'"]+$/,
+                regexText: this.i18n._("Quotes and double quotes are not allowed"),
+                allowBlank: false,
+                width: 300
+            }]
         });
     },
     // AlertRules Panel

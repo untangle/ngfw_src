@@ -73,7 +73,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
-    private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
+    private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
 
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
@@ -413,8 +413,50 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public boolean isWizardComplete()
     {
-        File keyFile = new File(WIZARD_COMPLETE_FLAG_FILE);
-        return keyFile.exists();
+        return getWizardSettings().getWizardComplete();
+    }
+
+    public void wizardComplete()
+    {
+        WizardSettings wizardSettings = getWizardSettings();
+        wizardSettings.setWizardComplete( true );
+        setWizardSettings( wizardSettings );
+    }
+    
+    public WizardSettings getWizardSettings()
+    {
+        WizardSettings wizardSettings = null;
+        try {
+            wizardSettings = settingsManager.load( WizardSettings.class, WIZARD_SETTINGS_FILE );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+
+        if ( wizardSettings == null ) {
+            wizardSettings = new WizardSettings();
+
+            /* If the old flag file exists, the wizard is complete */
+            try {
+                File wizardCompleteFlagFile = new File( System.getProperty("uvm.conf.dir") + "/wizard-complete-flag" );
+                if (wizardCompleteFlagFile.exists())
+                    wizardSettings.setWizardComplete( true );
+            } catch (Exception e) {}
+
+            setWizardSettings( wizardSettings );
+        }
+
+
+        return wizardSettings;
+    }
+    
+    public void setWizardSettings( WizardSettings wizardSettings )
+    {
+        String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
+        try {
+            settingsManager.save( WizardSettings.class, WIZARD_SETTINGS_FILE, wizardSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
     }
 
     public boolean isRegistered()
@@ -467,21 +509,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         return false;
-    }
-
-    public void wizardComplete()
-    {
-        File wizardCompleteFlagFile = new File(WIZARD_COMPLETE_FLAG_FILE);
-
-        try {
-            if (wizardCompleteFlagFile.exists())
-                return;
-            else
-                wizardCompleteFlagFile.createNewFile();
-        } catch (Exception e) {
-            logger.error("Unable to create wizard complete flag", e);
-        }
-
     }
 
     public Map<String, String> getTranslations(String module)

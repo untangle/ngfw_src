@@ -108,6 +108,10 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
 
+        public com.untangle.uvm.WizardSettings getWizardSettings( );
+
+        public void setWizardSettings( com.untangle.uvm.WizardSettings newSettings );
+
         public String getOemName( );
 
         public String getTimeZones( );
