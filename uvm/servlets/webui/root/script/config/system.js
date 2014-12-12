@@ -227,7 +227,7 @@ Ext.define("Webui.config.system", {
                 items: [{
                     border: false,
                     cls: "description",
-                    html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>", rpc.companyName)
+                    html: this.i18n._("Reboot the server.")
                 },{
                     xtype: "button",
                     text: this.i18n._("Reboot"),
@@ -255,7 +255,7 @@ Ext.define("Webui.config.system", {
                 items: [{
                     border: false,
                     cls: "description",
-                    html: Ext.String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>", rpc.companyName)
+                    html: this.i18n._("Power off the server.")
                 },{
                     xtype: "button",
                     text: this.i18n._("Shutdown"),
@@ -283,7 +283,7 @@ Ext.define("Webui.config.system", {
                 items: [{
                     border: false,
                     cls: "description",
-                    html: this.i18n._("Clicking this button will launch the Setup Wizard.")
+                    html: this.i18n._("Launch the Setup Wizard.")
                 },{
                     xtype: "button",
                     text: this.i18n._("Setup Wizard"),
@@ -291,12 +291,55 @@ Ext.define("Webui.config.system", {
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                           Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
-                           Ext.bind(function(btn) {
-                               if (btn == "yes") {
-                                   main.openSetupWizardScreen();
-                               }
-                           }, this));
+                                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
+                                               Ext.bind(function(btn) {
+                                                   if (btn == "yes") {
+                                                       main.openSetupWizardScreen();
+                                                   }
+                                               }, this));
+                    }, this)
+                }]
+            },{
+                xtype: "fieldset",
+                title: this.i18n._("Factory Defaults"),
+                items: [{
+                    border: false,
+                    cls: "description",
+                    html: this.i18n._("Reset all settings to factory defaults.")
+                },{
+                    xtype: "button",
+                    text: this.i18n._("Reset to Factory Defaults"),
+                    name: "Factory Defaults",
+                    iconCls: "reboot-icon",
+                    handler: Ext.bind(function() {
+                        Ext.MessageBox.confirm(this.i18n._("Reset to Factory Defaults Warning"),
+                                               this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
+                                               Ext.bind(function(btn) {
+                                                   if (btn == "yes") {
+
+                                                       Ung.MetricManager.stop();
+
+                                                       main.getExecManager().exec(Ext.bind(function(result, exception) {
+                                                           Ext.MessageBox.hide();
+                                                           var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                                               minProgressWidth: 360
+                                                           });
+                                                           resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"), {
+                                                               interval: 500,
+                                                               increment: 120,
+                                                               duration: 45000,
+                                                               scope: this,
+                                                               fn: function() {
+                                                                   console.log("Reset to factory defaults. Press ok to go to the Start Page...");
+                                                                   Ext.MessageBox.hide();
+                                                                   Ext.MessageBox.alert(
+                                                                       i18n._("Factory Defaults"),
+                                                                       i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
+                                                               }
+                                                           });
+                                                       }, this), "/usr/share/untangle/bin/factory-defaults");
+                                                   }
+                                               }, this));
                     }, this)
                 }]
             }]
@@ -832,7 +875,7 @@ Ext.define("Webui.config.system", {
     timeUpdate: function() {
         if(this.isVisible()) {
             rpc.adminManager.getDate(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
+                if( exception != null ) return; // ignore exception
                 var currentTimeObj = this.panelRegional.down('container[name="currentTime"]');
                 if (currentTimeObj) {
                     currentTimeObj.update(result);
