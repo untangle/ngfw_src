@@ -69,16 +69,13 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "SELECT * FROM reports.sessions " + 
-                                               "WHERE policy_id = :policyId " +
-                                               "AND ips_description IS NOT NULL " +
+                                               "SELECT * FROM reports.idps_events " + 
                                                "ORDER BY time_stamp DESC");
 
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                   "SELECT * FROM reports.sessions " + 
-                                                   "WHERE policy_id = :policyId " +
-                                                   "AND ips_blocked IS TRUE " +
-                                                   "ORDER BY time_stamp DESC");
+                                               "SELECT * FROM reports.idps_events " + 
+                                               "WHERE blocked IS TRUE " +
+                                               "ORDER BY time_stamp DESC");
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }
