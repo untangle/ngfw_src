@@ -1,5 +1,5 @@
 var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-    groupHeaderTpl: 'Category: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})',
+    groupHeaderTpl: 'Classification: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})',
     startCollapsed: true
 });
 
@@ -329,11 +329,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
     // called when the component is rendered
     initComponent: function() {
 //            this.statistics = this.getRpcNode().getStatistics();
-        this.buildStatus();
+//        this.buildStatus();
         this.buildRules();
         this.buildEventLog();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
+//        this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
+        this.buildTabPanel([this.panelConfiguration, this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
     },
     // Status Panel
@@ -398,7 +399,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             items: [this.gridRules = Ext.create('Ung.RuleEditorGrid', {
                 flex: 1,
             features: [groupingFeature],
-            groupField: 'category',
+            groupField: 'classification',
                 style: "margin-bottom:10px;",
                 name: 'Rules',
                 settingsCmp: this,
@@ -444,7 +445,24 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'string'
                 }],
                 columns: [{
-                    header: this.i18n._("category"),
+                    header: this.i18n._("Id"),
+                    width: 70,
+                    dataIndex: 'sid',
+                    editor: null
+                },{
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Log"),
+                    dataIndex: 'log',
+                    resizable: false,
+                    width:55
+                },{
+                    xtype:'checkcolumn',
+                    header: this.i18n._("Block"),
+                    dataIndex: 'live',
+                    resizable: false,
+                    width:55
+                }, {
+                    header: this.i18n._("Category"),
                     width: 180,
                     dataIndex: 'category',
                     editor: {
@@ -452,45 +470,20 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         emptyText: this.i18n._("[enter category]"),
                         allowBlank: false
                     }
-                },
-                {
-                    xtype:'checkcolumn',
-                    header: this.i18n._("block"),
-                    dataIndex: 'live',
-                    resizable: false,
-                    width:55
-                },
-                {
-                    xtype:'checkcolumn',
-                    header: this.i18n._("log"),
-                    dataIndex: 'log',
-                    resizable: false,
-                    width:55
-                },
-                {
-                    header: this.i18n._("description"),
+                },{
+                    header: this.i18n._("Classification"),
+                    width: 200,
+                    dataIndex: 'classification',
+                    flex:1,
+                    editor: null
+                },{
+                    header: this.i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
                     flex:1,
-                    editor: null,
-                    renderer: function(value, metadata, record) {
-                        var description = "";
-                        if (record.data.classification != null)
-                        {
-                            description += record.data.classification + " ";
-                        }
-                        if (record.data.description != null) {
-                            description += "(" + record.data.description + ")";
-                        }
-                        return description;
-                    }
-                }, {
-                    header: this.i18n._("id"),
-                    width: 70,
-                    dataIndex: 'sid',
                     editor: null
                 }, {
-                    header: this.i18n._("info"),
+                    header: this.i18n._("Info"),
                     width: 70,
                     dataIndex: 'URL',
                     editor: null,
@@ -499,7 +492,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         return (value == null || value.length == 0) ? "no info": "<a href='" + value + "' target='_blank'>info</a>";
                     }
                 }],
-                sortField: 'category',
+                sortField: 'classification',
                 columnsDefaultSortable: true,
                 rowEditorInputLines: [
                 {
@@ -648,10 +641,169 @@ Ext.define('Webui.untangle-node-idps.settings', {
     },
     // Event Log
     buildEventLog: function() {
-        this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'),
-            'intrusion_detection_prevention_event_log',
-            ['time_stamp','username','c_client_addr','s_server_addr','idps_blocked','idps_ruleid','idps_description'],
-            this.getRpcNode().getEventQueries);
+        // this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'),
+        //     'intrusion_detection_prevention_event_log',
+        //     ['time_stamp','sig_id', 'gen_id', 'class_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'description' ],
+        //     this.getRpcNode().getEventQueries);
+        // buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
+        var settingsCmpParam = this;
+        var nameParam = 'EventLog';
+        var titleParam = i18n._('Event Log');
+        var helpSourceParam = 'intrusion_detection_prevention_event_log';
+        var visibleColumnsParam = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'description' ];
+        var eventQueriesFnParam = this.getRpcNode().getEventQueries;
+        this.gridEventLog = Ext.create('Ung.GridEventLog',{
+            name: nameParam,
+            settingsCmp: settingsCmpParam,
+            helpSource: helpSourceParam,
+            eventQueriesFn: eventQueriesFnParam,
+            title: titleParam,
+            fields: [{
+                name: 'time_stamp',
+                sortType: Ung.SortTypes.asTimestamp
+            }, {
+                name: 'sig_id',
+                sortType: 'asInt'
+            }, {
+                name: 'gen_id',
+                sortType: 'asInt'
+            }, {
+                name: 'class_id',
+                sortType: 'asInt'
+            }, {
+                name: 'source_addr',
+                sortType: Ung.SortTypes.asIp
+            }, {
+                name: 'source_port',
+                sortType: 'asInt'
+            }, {
+                name: 'dest_addr',
+                sortType: Ung.SortTypes.asIp
+            }, {
+                name: 'dest_port',
+                sortType: 'asInt'
+            }, {
+                name: 'protocol',
+                sortType: 'asInt'
+            }, {
+                name: 'blocked',
+                type: 'boolean'
+            }, {
+                name: 'category',
+                type: 'string'
+            }, {
+                name: 'classtype',
+                type: 'string'
+            }, {
+                name: 'description',
+                type: 'string'
+            }],
+            columns: [{
+                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                header: i18n._("Timestamp"),
+                width: Ung.Util.timestampFieldWidth,
+                sortable: true,
+                dataIndex: 'time_stamp',
+                renderer: function(value) {
+                    return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('sig_id') < 0,
+                header: i18n._("Signature ID"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'sig_id',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('gen_id') < 0,
+                header: i18n._("Generator ID"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'gen_id',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('class_id') < 0,
+                header: i18n._("Class ID"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'class_id',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('source_addr') < 0,
+                header: i18n._("Source Address"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'source_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('source_port') < 0,
+                header: i18n._("Source port"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 'source_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('dest_addr') < 0,
+                header: i18n._("Destination Address"),
+                width: Ung.Util.ipFieldWidth,
+                sortable: true,
+                dataIndex: 'dest_addr'
+            }, {
+                hidden: visibleColumnsParam.indexOf('dest_port') < 0,
+                header: i18n._("Destination port"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 'dest_port',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('protocol') < 0,
+                header: i18n._("Protocol"),
+                width: 70,
+                sortable: true,
+                dataIndex: 'protocol',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('blocked') < 0,
+                header: i18n._("Blocked"),
+                width: Ung.Util.booleanFieldWidth,
+                sortable: true,
+                dataIndex: 'blocked',
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('category') < 0,
+                header: i18n._("Category"),
+                width: 200,
+                sortable: true,
+                dataIndex: 'category'
+            }, {
+                hidden: visibleColumnsParam.indexOf('classtype') < 0,
+                header: i18n._("Classtype"),
+                width: 200,
+                sortable: true,
+                dataIndex: 'classtype'
+            }, {
+                hidden: visibleColumnsParam.indexOf('description') < 0,
+                header: i18n._("Description"),
+                width: 200,
+                sortable: true,
+                dataIndex: 'description'
+            }]
+        });
     },
     applyAction: function(){
         this.callParent();
