@@ -53,7 +53,7 @@ def main(argv):
         print "_debug = ",  _debug
 
     snort_conf = untangle_node_idps.SnortConf()
-    path_filename = os.path.split( rules_file_name );
+    path_filename = os.path.split( rules_file_name ); 
     snort_rules = untangle_node_idps.SnortRules( nodeId, path_filename[0], path_filename[1] )
     snort_rules.load()
 

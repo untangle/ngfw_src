@@ -57,6 +57,8 @@ def main(argv):
         else:
             print "error with rule"
     rules.save()
+    idps_event_map = untangle_node_idps.IdpsEventMap( rules )
+    idps_event_map.save()
 	
     for settings_variable in settings.get_variables():
         snort_conf.set_variable( settings_variable["variable"], settings_variable["definition"] )
