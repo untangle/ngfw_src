@@ -81,13 +81,17 @@ class IdpsSettings:
             } );
          
         for rule in rules.get_rules():
+            description = rule.options["msg"]
+            if description.startswith('"') and description.endswith('"'):
+                description = description[1:-1]
             self.settings["rules"]["list"].append( { 
                 "sid": rule.options["sid"],
                 "name": rule.options["sid"],
-                "description": rule.options["msg"],
+                "description": description,
                 "live": False,
                 "log": rule.enabled == True and rule.action == "alert",
-                "category": rule.options["classtype"],
+                "category": rule.category,
+                "classification": rule.options["classtype"],
                 "text": rule.build()
             } );
         

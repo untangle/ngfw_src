@@ -42,6 +42,8 @@ class SnortRule:
             print property, ": ", value
 
     def set_description( self, description ):
+        if description.startswith('"') and description.endswith('"'):
+            description = description[1:-1]
         self.description = description
         
     def set_action( self, log, block  ):
