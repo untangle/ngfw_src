@@ -30,6 +30,10 @@ class IdpsSnortUnified2IdsEvent {
     private long mplsLabel;
     private int vlanId;
     private int padding;
+
+    private String description;
+    private String classtype;
+    private String category;
 	
 	public long getEventType() { return this.eventType; }
 	public void setEventType(long eventType) { this.eventType = eventType; }
@@ -94,6 +98,15 @@ class IdpsSnortUnified2IdsEvent {
 	public int getPadding() { return this.padding; }
 	public void setPadding( int padding ) { this.padding = padding; }
 	
+	public String getDescription() { return this.description; }
+	public void setDescription( String description) { this.description = description; }
+	
+	public String getCategory() { return this.category; }
+	public void setCategory( String category) { this.category = category; }
+	
+	public String getClasstype() { return this.classtype; }
+	public void setClasstype( String classtype) { this.classtype = classtype; }
+	
 	public void clear() {
 	    this.eventType = 0;
 	    this.sensorId = 0;
@@ -116,5 +129,9 @@ class IdpsSnortUnified2IdsEvent {
         this.mplsLabel = 0;
         this.vlanId = 0;
         this.padding = 0;
+
+        this.description = "";
+        this.classtype = "";
+        this.category = "";
 	}
 }

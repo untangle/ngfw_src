@@ -30,9 +30,9 @@ public class IdpsLogEvent extends LogEvent
     // accessors --------------------------------------------------------------
 
     private static String sql = "INSERT INTO reports.idps_events " +
-        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked )" +
+        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, description)" +
         " values " +
-        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
+        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
@@ -52,6 +52,10 @@ public class IdpsLogEvent extends LogEvent
         pstmt.setInt(++i, idpsEvent.getDportIcode() );
         pstmt.setInt(++i, idpsEvent.getProtocol() );
         pstmt.setBoolean(++i, ( idpsEvent.getBlocked() == 1 ) ? true : false  );
+
+        pstmt.setString(++i, idpsEvent.getCategory() );
+        pstmt.setString(++i, idpsEvent.getClasstype() );
+        pstmt.setString(++i, idpsEvent.getDescription() );
 
         return pstmt;
     }

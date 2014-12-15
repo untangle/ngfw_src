@@ -3,7 +3,12 @@
  */
 package com.untangle.node.idps;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -12,8 +17,14 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+import org.jabsorb.JSONSerializer;
+import org.jabsorb.serializer.UnmarshallException;
+
+
 import com.untangle.node.idps.IdpsNode;
 import com.untangle.node.idps.IdpsLogEvent;
+import com.untangle.node.idps.IdpsEventMap;
+import com.untangle.node.idps.IdpsEventMapRule;
 
 public class IdpsSnortUnified2Parser {
 
@@ -27,6 +38,7 @@ public class IdpsSnortUnified2Parser {
     
     private IdpsSnortUnified2SerialHeader serialHeader;
     private IdpsSnortUnified2IdsEvent idsEvent;
+    private IdpsEventMap idpsEventMap;
     
     /* Serial Header */
     public static final int SERIAL_HEADER_TYPE_SIZE = 4;
@@ -91,7 +103,66 @@ public class IdpsSnortUnified2Parser {
         serialHeader.clear();
 		idsEvent = new IdpsSnortUnified2IdsEvent();
         idsEvent.clear();
-	}
+
+        idpsEventMap = new IdpsEventMap();
+        File f = new File( "/etc/snort/idps.event.map.conf" );
+        if (f.exists()) {
+            InputStream is = null;
+            try {
+                is = new FileInputStream(f);
+            }
+            catch (java.io.FileNotFoundException e) {
+//                throw new SettingsException("File not found: " + f);
+            }
+
+//            Object lock = this.getLock(f.getParentFile().getAbsolutePath());
+//            synchronized(lock) {
+//                return _loadInputStream(clz, is);
+//            }
+            BufferedReader reader = null;
+            try {
+                StringBuilder jsonString = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonString.append(line+"\n");
+                }
+
+                JSONSerializer serializer = new JSONSerializer();
+                try{
+                    serializer.registerDefaultSerializers();
+                }catch( Exception e){
+                    logger.warn("registerDefaultSerializers exception=" + e);
+                }
+                serializer.setFixupDuplicates(false);
+                serializer.setMarshallNullAttributes(false);
+
+                logger.warn("serializing/marshalizing");
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+              idpsEventMap = (IdpsEventMap) serializer.fromJSON(jsonString.toString());
+            } catch (IOException e) {
+                logger.warn("IOException: ",e);
+//                throw new SettingsException("Unable to the settings: '" + is + "'", e);
+          } catch (UnmarshallException e) {
+              logger.warn("UnmarshallException: ",e);
+              for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
+                  logger.warn("Exception cause: ", cause);
+              }
+              logger.warn("Unable to unamarshall=" + e );
+//              throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                    logger.warn( idpsEventMap.getRules() );
+                    logger.warn("LENGTH OF idEventMap.rules=" + idpsEventMap.getRules().size() );
+                } catch (Exception e) {}
+            }
+         }
+
+    }
     
     public long parse( File file, long startPosition, IdpsNode idpsNode ){
         fc = null;
@@ -304,6 +375,13 @@ public class IdpsSnortUnified2Parser {
         
 		    idsEvent.setPadding( bufIdsEvent.getShort( pos ) );
             pos += IDS_EVENTV2_PADDING_SIZE;
+        }
+
+        IdpsEventMapRule mapRule = idpsEventMap.getRuleBySignatureId( idsEvent.getSignatureId() );
+        if( mapRule != null ){
+            idsEvent.setDescription( mapRule.getDescription() );
+            idsEvent.setClasstype( mapRule.getClasstype() );
+            idsEvent.setCategory( mapRule.getCategory() );
         }
 	}
 
