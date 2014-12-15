@@ -76,7 +76,10 @@ CREATE TABLE reports.idps_events (
         dest_addr inet,
         dest_port int4,
         protocol int4,
-        blocked boolean)""")
+        blocked boolean,
+        category text,
+        classtype text,
+        description text)""")
         
         sql_helper.create_index("reports","sessions","time_stamp");
         sql_helper.create_index("reports","sessions","blocked");
