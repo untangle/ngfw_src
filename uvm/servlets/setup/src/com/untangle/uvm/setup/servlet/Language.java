@@ -55,6 +55,7 @@ public class Language extends HttpServlet
         String url="/WEB-INF/jsp/language.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
+        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(request, response);
     }
 }

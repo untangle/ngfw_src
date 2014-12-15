@@ -43,6 +43,7 @@ public class SetupServlet extends HttpServlet
         String url="/WEB-INF/jsp/setup.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
+        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(request, response);
     }
 }
