@@ -34,16 +34,12 @@ public class SetupServlet extends HttpServlet
         throws ServletException, IOException 
     {
         UvmContext context = UvmContextFactory.context();
+        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         request.setAttribute( "skinSettings", context.skinManager().getSettings());
-        request.setAttribute( "timezone", context.adminManager().getTimeZone());
-
-        Map<String,String> languageMap = context.languageManager().getTranslations( "untangle-libuvm" );
-        request.setAttribute( "languageMap", new JSONObject( languageMap ).toString());
 
         String url="/WEB-INF/jsp/setup.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(request, response);
     }
 }

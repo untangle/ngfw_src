@@ -110,12 +110,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
         public com.untangle.uvm.WizardSettings getWizardSettings( );
 
-        public void setWizardSettings( com.untangle.uvm.WizardSettings newSettings );
-
-        public String getOemName( );
-
-        public String getTimeZones( );
-
-        public String getAdminEmail( );
+        /**
+         * Convenience method to load in one call all the properties needed to initialize the setup wizard
+         */
+        public org.json.JSONObject getSetupWizardStartupInfo();
     }
 }

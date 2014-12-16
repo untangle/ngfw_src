@@ -16,14 +16,15 @@ import org.json.JSONString;
 public class WizardSettings implements Serializable, JSONString
 {
     private boolean wizardComplete = false;
+    private String completedStep;
     private String[] steps = new String[] {
-        "Ung.SetupWizard.Welcome",
-        "Ung.SetupWizard.ServerSettings",
-        "Ung.SetupWizard.Interfaces",
-        "Ung.SetupWizard.Internet",
-        "Ung.SetupWizard.InternalNetwork",
-        "Ung.SetupWizard.AutoUpgrades",
-        "Ung.SetupWizard.Complete"
+        "Welcome",
+        "ServerSettings",
+        "Interfaces",
+        "Internet",
+        "InternalNetwork",
+        "AutoUpgrades",
+        "Complete"
     };
     
     public WizardSettings() { }
@@ -39,4 +40,8 @@ public class WizardSettings implements Serializable, JSONString
     
     public boolean getWizardComplete() { return wizardComplete; }
     public void setWizardComplete( boolean newValue ) { this.wizardComplete = newValue; }
+    
+    public String getCompletedStep() { return this.completedStep; }
+    public void setCompletedStep( String newValue ) { this.completedStep = newValue; }
+
 }

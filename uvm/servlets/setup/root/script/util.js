@@ -12,6 +12,9 @@ Ung.Util = {
                 var objXY = Ext.get("container").getXY();
                 this.setPosition(objXY);
                 this.setSize(objSize);
+                if(objSize.height<100 || objSize.width<100) {
+                    this.maximize();
+                }
             },
             items: {
                 xtype: "panel",

@@ -30,8 +30,8 @@ public class Language extends HttpServlet
         throws ServletException, IOException 
     {
         UvmContext context = UvmContextFactory.context();
+        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         request.setAttribute( "skinSettings", context.skinManager().getSettings());
-        request.setAttribute( "timezone", context.adminManager().getTimeZone());
 
         /* Retrieve the list of languages and serialize it for the setup wizard. */
 
@@ -55,7 +55,6 @@ public class Language extends HttpServlet
         String url="/WEB-INF/jsp/language.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        request.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(request, response);
     }
 }

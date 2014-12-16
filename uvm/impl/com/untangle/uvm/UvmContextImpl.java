@@ -670,7 +670,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("rackManager", this.rackManager());
             json.put("systemManager", this.systemManager());
             json.put("mailSender", this.mailSender());
-            json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
         } catch (Exception e) {
             logger.error("Error generating Setup startup object", e);
         }

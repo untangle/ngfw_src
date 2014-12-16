@@ -17,6 +17,8 @@ import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.util.JsonClient;
 
+import org.json.JSONObject;
+
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -74,29 +76,34 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         return this.context.getWizardSettings();
     }
 
-    public void setWizardSettings( WizardSettings newSettings )
-    {
-        this.context.setWizardSettings( newSettings );
-    }
-    
     public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException
     {
         this.context.adminManager().setTimeZone( timeZone );
     }
 
-    public String getTimeZones()
+    /**
+     * This call returns one big JSONObject with references to all the important
+     * information This is used to avoid lots of separate synchornous calls via
+     * the Setup Wizards UI. Reducing all these seperate calls to initialize the UI
+     * reduces startup time
+     */
+    public org.json.JSONObject getSetupWizardStartupInfo()
     {
-        return this.context.adminManager().getTimeZones( );
-    }
+        org.json.JSONObject json = new org.json.JSONObject();
 
-    public String getAdminEmail()
-    {
-        return this.context.adminManager().getAdminEmail( );
-    }
-    
-    public String getOemName()
-    {
-        return this.context.oemManager().getOemName();
+        try {
+            json.put("skinName", this.context.skinManager().getSettings().getSkinName());
+            json.put("timezoneID", this.context.adminManager().getTimeZone().getID());
+            json.put("timezones", this.context.adminManager().getTimeZones());
+            json.put("oemName", this.context.oemManager().getOemName());
+            json.put("fullVersionAndRevision", this.context.adminManager().getFullVersionAndRevision());
+            json.put("adminEmail", this.context.adminManager().getAdminEmail());
+            json.put("translations", this.context.languageManager().getTranslations("untangle-libuvm"));
+            json.put("wizardSettings", this.context.getWizardSettings());
+        } catch (Exception e) {
+            logger.error("Error generating WebUI startup object", e);
+        }
+        return json;
     }
 
     public static UtJsonRpcServlet.SetupContext makeSetupContext()

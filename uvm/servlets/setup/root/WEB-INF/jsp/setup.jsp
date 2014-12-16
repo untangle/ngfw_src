@@ -25,12 +25,12 @@
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
-      Ung.SetupWizard.CurrentValues = {
-          currentSkin: "${skinSettings.skinName}",
-          timezone : "${timezone.ID}",
-          languageMap : ${languageMap}
+      var setup;
+      function init() {
+          setup=new Ung.Setup({});
+          setup.init();
       };
-      Ext.onReady(Ung.Setup.init);
+      Ext.onReady(init);
     </script>
   </head>
   <body class="wizard">
