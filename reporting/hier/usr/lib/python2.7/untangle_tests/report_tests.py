@@ -19,7 +19,8 @@ defaultRackId = 1
 node = None
 nodeFirewall = None
 # special box with testshell in the sudoer group  - used to connect to as client
-syslogHostIP = "10.111.56.32"  
+syslogHostIP = "10.111.56.32"
+testEmailAddress = "qa@untangletest.com"
 
 # pdb.set_trace()
 
@@ -44,7 +45,23 @@ def createFirewallSingleMatcherRule( matcherType, value, blocked=True ):
                     }
                 ]
             }
-        };
+        }
+
+def createReportProfile(profile_email=testEmailAddress):
+    return  {
+            "emailAddress": profile_email,
+            "emailSummaries": True,
+            "javaClass": "com.untangle.node.reporting.ReportingUser",
+            "onlineAccess": False,
+            "passwordHashBase64": ""
+    }
+
+def createDNSRule( networkAddr, name):
+    return {
+        "address": networkAddr, 
+        "javaClass": "com.untangle.uvm.network.DnsStaticEntry", 
+        "name": name
+         }
 
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
@@ -91,14 +108,42 @@ class ReportTests(unittest2.TestCase):
         assert (result == 0)
     
     def test_020_sendReportOut(self):
+        if (syslogHostResult != 0):
+            raise unittest2.SkipTest("Mail sink server unreachable")        
+        # test if PDF is mailed out.
         settings = node.getSettings()
+        orig_settings = copy.deepcopy(settings)
         settings["attachmentSizeLimit"] = 5
+        settings["reportingUsers"]["list"].append(createReportProfile())
         node.setSettings(settings)
-        # TODO set email address, send email, check attachment size
-
+        # set untangletest email to get to syslogHostIP where fake SMTP sink is running
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = copy.deepcopy(netsettings)
+        netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        
+        # Remote old email and log files.
+        remote_control.runCommand("rm /tmp/test_020_sendReportOut*", host=syslogHostIP, stdout=False, nowait=True)
+        remote_control.runCommand("rm /tmp/qa@untangletest.com*", host=syslogHostIP, stdout=False, nowait=True)
+        remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/test_020_sendReportOut.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
+        report_date = time.strftime("%Y-%m-%d")
+        # print "report_date %s" % report_date
+        report_results = subprocess.call(["/usr/share/untangle/bin/reporting-generate-reports.py", "-r", "1", "-d",report_date],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # print "report_results %s" % report_results
+        time.sleep(10) # wait for email to arrive
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
+        emailContext=remote_control.runCommand("grep 'Untangle PDF Summary Reports' /tmp/qa@untangletest.com.1",host=syslogHostIP, stdout=True)
+        emailContext2=remote_control.runCommand("grep 'Content-Disposition' /tmp/qa@untangletest.com.1",host=syslogHostIP, stdout=True)
+        # reset all settings to base.
+        node.setSettings(orig_settings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        # test if PDF is attached
+        assert(("are attached" in emailContext) and ("pdf" in emailContext2))
+        
     def test_040_remoteSyslog(self):
         if (syslogHostResult != 0):
-            raise unittest2.SkipTest("No syslog server available")        
+            raise unittest2.SkipTest("Mail sink server unreachable")        
         # Install firewall rule to generate syslog events
         rules = nodeFirewall.getRules()
         rules["list"].append(createFirewallSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
