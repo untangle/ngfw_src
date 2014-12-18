@@ -19,7 +19,6 @@ def main(argv):
     global _debug
     _debug = False
     settings_file = ""
-    snort_file = "/etc/snort/snort.conf"
     nodeId = 0
 	
     try:
@@ -78,12 +77,13 @@ def main(argv):
     snort_debian_conf = untangle_node_idps.SnortDebianConf( _debug=_debug )
 	
     snort_debian_conf.set_variable("HOME_NET", settings.get_variable("HOME_NET") )
-    snort_debian_conf.set_variable("OPTIONS", "--daq afpacket --daq-var buffer_size_mb=64 -Q" )
+    snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=1 -Q" )
     interface_pairs = []
     interface_first = settings.get_interfaces()[0]
-    for interface_second in settings.get_interfaces()[1:]:
-        interface_pairs.append(interface_first + ":" + interface_second );
-    snort_debian_conf.set_variable("INTERFACE", "::".join( interface_pairs ) )
+#    for interface_second in settings.get_interfaces()[1:]:
+#        interface_pairs.append(interface_first + ":" + interface_second );
+#    snort_debian_conf.set_variable("INTERFACE", "::".join( interface_pairs ) )
+    snort_debian_conf.set_variable("INTERFACE", "eth0" )
     snort_debian_conf.save()
 
 if __name__ == "__main__":
