@@ -38,7 +38,8 @@ class IdpsSettings:
             },
             "interfaces": {
                 "list": []
-            }
+            },
+            "nfqueueQueueNum": 2930
         }
         
         network_settings_file = open( "/usr/share/untangle/settings/untangle-vm/network.js" )
@@ -113,3 +114,6 @@ class IdpsSettings:
 
     def get_interfaces( self ):
         return self.settings["interfaces"]["list"]
+
+    def get_nfqueue_queue_num( self ):
+        return self.settings["nfqueueQueueNum"]
