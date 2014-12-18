@@ -202,17 +202,19 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     private synchronized void handleDaemonCheck(DaemonObject object)
     {
         // run a spiffy command to count the number of process instances
-        String result = UvmContextFactory.context().execManager().execOutput("ps -e | grep " + object.searchString + " | wc -l");
+        String result = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString + " | wc -l");
 
         // parseInt is very finicky so we use replaceAll with
         // a regex to strip out anything that is not a digit 
         int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
-
+        logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
+        
         // if we find the process running just return
         if (count > 0)
             return;
 
         // process does not seem to be running so log and restart
+        logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
         logger.warn("Restarting failed daemon: " + object.daemonName);
         execDaemonControl(object.daemonName, "restart");
     }
