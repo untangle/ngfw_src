@@ -36,7 +36,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     private static final String STAT_SCAN = "scan";
     private static final String STAT_BLOCK = "block";
     private static final String STAT_PASS = "pass";
-    private static final String STAT_PASS_POLICY = "pass-policy";
     
     protected static int deployCount = 0;
 
@@ -65,7 +64,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
-        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 1);
         this.connectors = new PipelineConnector[] { connector };
@@ -298,11 +296,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     public void incrementPassCount()
     {
         this.incrementMetric(STAT_PASS);
-    }
-
-    public void incrementPassLogCount()
-    {
-        this.incrementMetric(STAT_PASS_POLICY);
     }
 
     protected WebFilterReplacementGenerator buildReplacementGenerator()

@@ -48,13 +48,15 @@ public class WebFilterHandler extends HttpEventHandler
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
-        if (null == nonce) {
+        if ( nonce == null ) {
+            node.incrementPassCount();
+            
             releaseRequest( sess );
         } else {
             node.incrementBlockCount();
-            String uri = getRequestLine( sess ).getRequestUri().toString();
-            Token[] response = node.generateResponse(nonce, sess, uri, requestHeader );
 
+            String uri = getRequestLine( sess ).getRequestUri().toString();
+            Token[] response = node.generateResponse( nonce, sess, uri, requestHeader );
             blockRequest( sess, response );
         }
 
@@ -89,13 +91,14 @@ public class WebFilterHandler extends HttpEventHandler
                 logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
             }
 
-            if (null == nonce) {
+            if ( nonce == null ) {
                 node.incrementPassCount();
 
                 releaseResponse( sess );
             } else {
                 node.incrementBlockCount();
-                Token[] response = node.generateResponse(nonce, sess);
+
+                Token[] response = node.generateResponse( nonce, sess );
                 blockResponse( sess, response );
             }
         }
