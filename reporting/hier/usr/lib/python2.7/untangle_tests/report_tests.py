@@ -13,6 +13,7 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
+import global_functions
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -209,6 +210,7 @@ class ReportTests(unittest2.TestCase):
         assert(found)
 
     def test_080_alerts(self):
+        raise unittest2.SkipTest("Review changes in test")        
         if (syslogHostResult != 0):
             raise unittest2.SkipTest("Mail sink server unreachable")        
         settings = node.getSettings()
@@ -288,7 +290,15 @@ class ReportTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(orig_adminsettings)
         assert(emailFound)
         assert(("Server Alert" in emailContext) and ("WAN is offline" in emailContext2))
-
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'summary_text', 'WAN went offline')
+        assert(found)
 
     @staticmethod
     def finalTearDown(self):
