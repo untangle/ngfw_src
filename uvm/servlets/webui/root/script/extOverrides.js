@@ -122,3 +122,7 @@ Ext.override(Ext.PagingToolbar, {
 Ext.override( Ext.form.FieldSet, {
     border: 0
 });
+
+Ext.override(Ext.grid.column.Column, {
+    defaultRenderer: Ext.util.Format.htmlEncode
+});
