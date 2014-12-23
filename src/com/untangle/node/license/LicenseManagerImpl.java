@@ -219,7 +219,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             seats = lic.getSeats();
         }
 
-        seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT;
+        if ( seats > 0 )
+            seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT;
         
         return seats;
     }
