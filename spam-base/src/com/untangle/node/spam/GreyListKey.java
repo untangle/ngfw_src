@@ -22,7 +22,9 @@ public class GreyListKey
 
     public int hashCode()
     {
-        return client.hashCode() + envelopeFrom.hashCode() + envelopeTo.hashCode();
+        return ( client == null ? 0 : client.hashCode() ) +
+            ( envelopeFrom == null ? 0 : envelopeFrom.hashCode() ) +
+            ( envelopeTo == null ? 0 : envelopeTo.hashCode() );
     }
         
     public boolean equals( Object o2 )
