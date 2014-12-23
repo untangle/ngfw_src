@@ -384,20 +384,34 @@ public class NodeManagerImpl implements NodeManager
         logger.info("Initialized NodeManager");
     }
 
-    protected void destroy()
+    protected synchronized void destroy()
     {
-        synchronized (this) {
-            live = false;
+        List<Runnable> tasks = new ArrayList<Runnable>();
 
-            for ( Node node : loadedNodesMap.values() ) {
-                logger.info("Stopping: " + node.getNodeProperties().getName());
-                ((NodeBase)node).stopIfRunning( );
-                loadedNodesMap.remove( node.getNodeSettings().getId() );
-            }
+        for ( final Node node : loadedNodesMap.values() ) {
+            Runnable r = new Runnable() {
+                    public void run()
+                    {
+                        logger.info("Stopping: " + node.getNodeProperties().getName());
+                        ((NodeBase)node).stopIfRunning( );
+                        loadedNodesMap.remove( node.getNodeSettings().getId() );
+                    }
+                };
+            tasks.add(r);
+        }
 
-            if ( loadedNodesMap.size() > 0 ) {
-                logger.warn("node instances not destroyed: " + loadedNodesMap.size());
+        List<Thread> threads = new ArrayList<Thread>(tasks.size());
+        try {
+            for (Iterator<Runnable> taskIterator = tasks.iterator() ; taskIterator.hasNext() ; ) {
+                Thread t = UvmContextFactory.context().newThread(taskIterator.next(), "STOP_THREAD");
+                threads.add(t);
+                t.start();
             }
+            // Must wait for them to start before we can go on to next wave.
+            for (Thread t : threads)
+                t.join();
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted while starting nodes");
         }
 
         logger.info("NodeManager destroyed");
@@ -513,41 +527,19 @@ public class NodeManagerImpl implements NodeManager
             } 
         }
 
-        Set<Thread> threads = new HashSet<Thread>(restarters.size());
-        int loadLimit = Runtime.getRuntime().availableProcessors() * 2;
+        List<Thread> threads = new ArrayList<Thread>(restarters.size());
         try {
             for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
-                while (getRunnableCount(threads) < loadLimit && riter.hasNext()) {
-                    Thread t = UvmContextFactory.context().newThread(riter.next(), "START_" + startThreadNum++);
-                    threads.add(t);
-                    t.start();
-                }
-                if (riter.hasNext())
-                    Thread.sleep(200);
+                Thread t = UvmContextFactory.context().newThread(riter.next(), "START_" + startThreadNum++);
+                threads.add(t);
+                t.start();
             }
-            // Must wait for them to start before we can go on to next wave.
+            // Must wait for them to finish starting
             for (Thread t : threads)
                 t.join();
         } catch (InterruptedException exn) {
-            logger.error("Interrupted while starting transforms"); // Give up
+            logger.error("Interrupted while starting nodes"); // Give up
         }
-    }
-
-    private int getRunnableCount(Set<Thread> threads) {
-        int result = 0;
-        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
-            Thread t = iter.next();
-            if (!t.isAlive()) {
-                // logger.info("Thread " + t.getName() + " is dead, removing.");
-                iter.remove();
-            } else {
-                Thread.State state = t.getState();
-                // logger.info("Thread " + t.getName() + " is in state " + t.getState());
-                if (state == Thread.State.RUNNABLE)
-                    result++;
-            }
-        }
-        return result;
     }
 
     private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
