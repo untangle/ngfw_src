@@ -4181,6 +4181,10 @@ Ung.CustomEventLog = {
             return i18n._("pass oversize message");
         } else if (value == 'O') { // OUTBOUND
             return i18n._("pass outbound message");
+        } else if (value == 'F') { 
+            return i18n._("block message (scan failure)");
+        } else if (value == 'G') { 
+            return i18n._("pass message (scan failure)");
         } else {
             return i18n._("unknown action");
         }
