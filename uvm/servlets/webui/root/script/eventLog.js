@@ -1172,22 +1172,26 @@ Ung.CustomEventLog = {
         return null;
     },
     mailEventConvertAction: function(value, rec) {
-        if (value == 'P') { // PASSED
+        if (value == 'P') { 
             return i18n._("pass message");
-        } else if (value == 'M') { // MARKED
+        } else if (value == 'M') { 
             return i18n._("mark message");
-        } else if (value == 'D') { // DROP
+        } else if (value == 'D') { 
             return i18n._("drop message");
-        } else if (value == 'B') { // DROP
+        } else if (value == 'B') { 
             return i18n._("block message");
-        } else if (value == 'Q') { // QUARANTINED
+        } else if (value == 'Q') { 
             return i18n._("quarantine message");
-        } else if (value == 'S') { // SAFELISTED
+        } else if (value == 'S') { 
             return i18n._("pass safelist message");
-        } else if (value == 'Z') { // OVERSIZE
+        } else if (value == 'Z') { 
             return i18n._("pass oversize message");
-        } else if (value == 'O') { // OUTBOUND
+        } else if (value == 'O') { 
             return i18n._("pass outbound message");
+        } else if (value == 'F') { 
+            return i18n._("block message (scan failure)");
+        } else if (value == 'G') { 
+            return i18n._("pass message (scan failure)");
         } else {
             return i18n._("unknown action");
         }
