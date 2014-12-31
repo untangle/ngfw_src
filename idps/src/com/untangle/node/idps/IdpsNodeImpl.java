@@ -134,6 +134,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     private void reconfigure()
     {
+        // 
     }
 
     public void incrementScanCount()
@@ -168,7 +169,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-sync-settings.py" + 
             " --nodeId " + nodeId +
-            " --rules /etc/snort/snort.rules" +
+            " --rules /etc/snort/updates/rules/current/rules" +
             " --settings " + tempFileName
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -288,8 +289,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 }catch( Exception e ){
 
                 }
-                UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
-                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
+                UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
+                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untange" );
             }
         }
     }
