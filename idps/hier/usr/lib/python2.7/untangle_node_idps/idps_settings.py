@@ -4,6 +4,9 @@ import os
 import re
 from netaddr import IPNetwork, IPAddress
 
+from untangle_node_idps.snort_rule import SnortRule
+from untangle_node_idps.snort_rules import SnortRules
+
 class IdpsSettings:
     #
     # NGFW settings management
@@ -15,20 +18,38 @@ class IdpsSettings:
             self.save_file_name = save_file_name
         else:
             self.save_file_name = self.file_name
+            
+        self.rules = SnortRules( nodeId )
 
     def load( self ):
         self.settings_file = open( self.file_name )
         self.settings = json.load( self.settings_file )
         self.settings_file.close()
+
+        ## Convert rules to snort rules object
+        for settings_rule in self.settings["rules"]["list"]:
+#            match_rule = re.search( SnortRule.text_regex, settings_rule["text"] )
+            match_rule = re.search( SnortRule.text_regex, settings_rule["rule"] )
+            if match_rule:
+                rule = SnortRule( match_rule, settings_rule["category"] )
+                rule.set_description( settings_rule["description"] )
+                rule.set_action( settings_rule["log"], settings_rule["live"] )
+                rule.set_name( settings_rule["name"] )
+                rule.set_sid( settings_rule["sid"] )
+                self.rules.addRule( rule )
+            else:
+                print "error with rule:" + settings_rule["text"]
         
     def exists( self ):
         return os.path.exists( self.file_name )
 
-    def create( self, conf, rules ):
+    def initialize( self, conf, rules ):
         #
         # Create a new settings file based on the processed
         # rule set and default variables from snort configuration.
         #
+        
+        ## create in proper internal way...
         self.settings = { 
             "variables": {
                 "list": []
@@ -59,7 +80,8 @@ class IdpsSettings:
 
         self.settings["interfaces"]["list"] = default_interfaces
         default_home_net = set(default_home_net)
-        
+
+        ## new internal format for variables?
         for variable in rules.get_variables():
             definition = "default value"
             description = "default description"
@@ -80,29 +102,45 @@ class IdpsSettings:
                 "definition": definition,
                 "description": description
             } );
-         
-        for rule in rules.get_rules():
+            
+        self.rules = rules
+        
+    def save( self ):
+        self.settings["rules"] = {
+            "list": []
+        }
+        for rule in self.rules.get_rules().values():
+            if rule.get_category() == "deleted":
+                continue
             description = rule.options["msg"]
             if description.startswith('"') and description.endswith('"'):
                 description = description[1:-1]
             self.settings["rules"]["list"].append( { 
+#                "sid": rule.options["sid"],
+#                "name": rule.options["sid"],
+#                "description": description,
+#                "live": False,
+#                "log": rule.enabled == True and rule.action == "alert",
+#                "category": rule.category,
+#                "classification": rule.options["classtype"],
+#                "text": rule.build()
+#                "id": rule.options["sid"],
                 "sid": rule.options["sid"],
-                "name": rule.options["sid"],
-                "description": description,
-                "live": False,
                 "log": rule.enabled == True and rule.action == "alert",
+                "block" : False,
                 "category": rule.category,
-                "classification": rule.options["classtype"],
-                "text": rule.build()
+                "classtype": rule.options["classtype"],
+                "name" : description,
+                "rule": rule.build()
             } );
         
-    def save( self ):
         settings_file = open( self.save_file_name, "w" )
         json.dump( self.settings, settings_file, False, True, True, True, None, 0 )
         settings_file.close()
 
     def get_rules( self ):
-       return self.settings["rules"]["list"]
+#       return self.settings["rules"]["list"]
+       return self.rules
 
     def get_variables( self ):
         return self.settings["variables"]["list"]

@@ -4,15 +4,15 @@ class SnortRule:
     #
     # Process rules from the snort format.
     #
-    text_regex = re.compile(r'^([#\s]+|)([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)')
+    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)')
 
     def __init__( self, regex_match, category ):
         self.category = category
         self.enabled = True
         if len( regex_match.group(1) ) > 0 and regex_match.group(1)[0] == "#":
             self.enabled = False
-        self.action = regex_match.group(2)
-        self.protocol = regex_match.group(3)
+        self.action = regex_match.group(2).lower()
+        self.protocol = regex_match.group(3).lower()
         self.lnet = regex_match.group(4)
         self.lport = regex_match.group(5)
         self.dir = regex_match.group(6)
@@ -64,6 +64,9 @@ class SnortRule:
 
     def get_enabled( self ):
         return self.enabled
+    
+    def get_category(self):
+        return self.category
     
     def build( self ):
         if self.enabled == True:

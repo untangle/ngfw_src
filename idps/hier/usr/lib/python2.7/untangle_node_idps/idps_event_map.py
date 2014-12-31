@@ -27,7 +27,7 @@ class IdpsEventMap:
             }
         }
         
-        for rule in self.rules.get_rules():
+        for rule in self.rules.get_rules().values():
             description = rule.options["msg"]
             if description.startswith('"') and description.endswith('"'):
                 description = description[1:-1]

@@ -47,18 +47,22 @@ def main(argv):
 
     snort_conf = untangle_node_idps.SnortConf( _debug=_debug )
 
-    rules = untangle_node_idps.SnortRules( nodeId, snort_conf.get_variable( "RULE_PATH" ) )
-    for settings_rule in settings.get_rules():
-        match_rule = re.search( untangle_node_idps.SnortRule.text_regex, settings_rule["text"] )
-        if match_rule:
-            rule = untangle_node_idps.SnortRule( match_rule, settings_rule["category"] )
-            rule.set_description( settings_rule["description"] )
-            rule.set_action( settings_rule["log"], settings_rule["live"] )
-            rule.set_name( settings_rule["name"] )
-            rule.set_sid( settings_rule["sid"] )
-            rules.addRule( rule )
-        else:
-            print "error with rule"
+    rules = settings.get_rules()
+    rules.set_path( snort_conf.get_variable( "RULE_PATH" ) )
+#    rules = untangle_node_idps.SnortRules( nodeId, snort_conf.get_variable( "RULE_PATH" ) )
+#    for settings_rule in settings.get_rules():
+#    for rule in settings.get_rules():
+#        match_rule = re.search( untangle_node_idps.SnortRule.text_regex, settings_rule["text"] )
+#        if match_rule:
+#            rule = untangle_node_idps.SnortRule( match_rule, settings_rule["category"] )
+#            rule.set_description( settings_rule["description"] )
+#            rule.set_action( settings_rule["log"], settings_rule["live"] )
+#            rule.set_name( settings_rule["name"] )
+#            rule.set_sid( settings_rule["sid"] )
+#            rules.addRule( rule )
+#        else:
+#            print "error with rule"
+#        rules.addRule( rule )
     rules.save()
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
