@@ -1,8 +1,3 @@
-var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-    groupHeaderTpl: 'Classification: {name} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})',
-    startCollapsed: true
-});
-
 Ext.define('Ung.RuleEditorGrid', {
     extend: 'Ung.EditorGrid',
     requires: [
@@ -20,101 +15,85 @@ Ext.define('Ung.RuleEditorGrid', {
 
     /**
      * @private
-     * The row indexes where matching strings are found. (used by previous and next buttons)
-     */
-    indexes: [],
-
-    /**
-     * @private
-     * The row index of the first search, it could change if next or previous buttons are used.
-     */
-    currentIndex: null,
-
-    /**
-     * @private
      * The generated regular expression used for searching.
      */
     searchRegExp: null,
 
-    /**
-     * @private
-     * Regular expression mode.
-     */
-    regExpMode: false,
+    defaultStatusText: i18n._('Loading...'),
 
-    /**
-     * @cfg {String} matchCls
-     * The matched string css classe.
+    /*
+     * @public
+     * store fields to search
      */
-    matchCls: 'x-livesearch-match',
+    searchFields:[
+        'category',
+        'rule'
+    ],
 
-    defaultStatusText: 'Nothing Found',
+    /*
+     * @public
+     * Minimum number of characters to start search
+     */
+    searchMinimumCharacters: 2,
 
     // Component initialization override: adds the top and bottom toolbars and setup headers renderer.
     initComponent: function() {
         var me = this;
-        me.tbar = ['Search',{
-                 xtype: 'textfield',
-                 name: 'searchField',
-                 hideLabel: true,
-                 width: 200,
-                 listeners: {
-                     change: {
-                         fn: me.onTextFieldChange,
-                         scope: this,
-                         buffer: 100
-                     }
-                 }
-            }, {
-                xtype: 'button',
-                text: '<',
-                tooltip: 'Find Previous Row',
-                handler: me.onPreviousClick,
-                scope: me
+        me.bbar = [
+            i18n._('Search'),
+            {
+                xtype: 'textfield',
+                name: 'searchField',
+                hideLabel: true,
+                width: 200,
+                listeners: {
+                change: {
+                    fn: me.onTextFieldChange,
+                        scope: this,
+                        buffer: 100
+                    }
+                }
             },{
-                xtype: 'button',
-                text: '>',
-                tooltip: 'Find Next Row',
-                handler: me.onNextClick,
-                scope: me
-            }, '-', {
-                xtype: 'checkbox',
-                hideLabel: true,
-                margin: '0 0 0 4px',
-                handler: me.regExpToggle,
-                scope: me
-            }, 'Regular expression', {
-                xtype: 'checkbox',
-                hideLabel: true,
-                margin: '0 0 0 4px',
-                handler: me.caseSensitiveToggle,
-                scope: me
-            }, 'Case sensitive'];
-
-        me.bbar = Ext.create('Ext.ux.StatusBar', {
-            defaultText: me.defaultStatusText,
-            name: 'searchStatusBar'
-        });
+                xtype: 'statusbar',
+                defaultText: me.defaultStatusText,
+                name: 'searchStatusBar',
+                border: 0
+            }
+        ];
 
         me.callParent(arguments);
+
     },
 
     // afterRender override: it adds textfield and statusbar reference and start monitoring keydown events in textfield input
     afterRender: function() {
         var me = this;
         me.callParent(arguments);
-        me.textField = me.down('textfield[name=searchField]');
-        me.statusBar = me.down('statusbar[name=searchStatusBar]');
+
+        me.searchTextField = me.down('textfield[name=searchField]');
+        me.searchStatusBar = me.down('statusbar[name=searchStatusBar]');
     },
-    // detects html tag
-    tagsRe: /<[^>]*>/gm,
 
-    // DEL ASCII code
-    tagsProtect: '\x0f',
+    afterDataBuild: function(handler){
+        var me = this;
+        me.callParent(arguments);
+        me.searchStatusBar.setStatus({
+            text: me.store.count() + ' ' + i18n._('total rules'),
+            iconCls: 'x-status-valid'
+        });
+    },
 
-    // detects regexp reserved word
-    regExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
+    /*
+     * @private
+     * DEL ASCII code
+    */
+    searchTagsProtect: '\x0f',
 
+    /*
+     * @private 
+     * detects regexp reserved word
+     */
+    searchRegExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
     /**
      * In normal mode it returns the value with protected regexp characters.
      * In regular expression mode it returns the raw value except if the regexp is invalid.
@@ -123,35 +102,17 @@ Ext.define('Ung.RuleEditorGrid', {
      */
     getSearchValue: function() {
         var me = this,
-            value = me.textField.getValue();
-
-        console.log("getSearchValue, text value=" + me.textField.getValue() );
+            value = me.searchTextField.getValue();
 
         if (value === '') {
             return null;
         }
-        if (!me.regExpMode) {
-            value = value.replace(me.regExpProtect, function(m) {
-                return '\\' + m;
-            });
-        } else {
-            try {
-                new RegExp(value);
-            } catch (error) {
-                me.statusBar.setStatus({
-                    text: error.message,
-                    iconCls: 'x-status-error'
-                });
-                return null;
-            }
-            // this is stupid
-            if (value === '^' || value === '$') {
-                return null;
-            }
-        }
+        value = value.replace(me.searchRegExpProtect, function(m) {
+            return '\\' + m;
+        });
 
         var length = value.length,
-            resultArray = [me.tagsProtect + '*'],
+            resultArray = [me.searchTagsProtect + '*'],
             i = 0,
             c;
 
@@ -159,7 +120,7 @@ Ext.define('Ung.RuleEditorGrid', {
             c = value.charAt(i);
             resultArray.push(c);
             if (c !== '\\') {
-                resultArray.push(me.tagsProtect + '*');
+                resultArray.push(me.searchTagsProtect + '*');
             }
         }
         return resultArray.join('');
@@ -169,129 +130,54 @@ Ext.define('Ung.RuleEditorGrid', {
      * Finds all strings that matches the searched value in each grid cells.
      * @private
      */
-     onTextFieldChange: function() {
-         var me = this,
-             count = 0;
+    onTextFieldChange: function() {
+        var me = this;
 
-         me.view.refresh();
-         // reset the statusbar
-         me.statusBar.setStatus({
-             text: me.defaultStatusText,
-             iconCls: ''
-         });
+        me.store.clearFilter(false);
+        me.searchValue = me.getSearchValue();
+        if( ( me.searchValue !== null ) &&
+            ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ){
 
-         me.searchValue = me.getSearchValue();
-         me.indexes = [];
-         me.currentIndex = null;
+            me.searchRegExp = new RegExp(me.searchValue, 'g' + 'i');
 
-         if (me.searchValue !== null) {
-//                 me.searchRegExp = new RegExp(me.searchValue, 'g' + (me.caseSensitive ? '' : 'i'));
-             me.searchRegExp = new RegExp(me.searchValue, 'g' + 'i');
-             console.log("search value=" + me.searchValue);
-
-             var walkedCount = 0;
-             me.store.each(function(record, idx) {
-                if( Ext.fly(me.view.getNode(idx)) != null ){
-                 var td = Ext.fly(me.view.getNode(idx)).down('td'),
-                     cells, cell, matches, cellHTML;
-                 while(td) {
-                     cells = td.query('.x-grid-cell-inner');
-                     if( cells.length == 0 ){
-                        break;
-                     }
-                     for( var i = 0; i < cells.length; i++ ){
-                        cell = cells[i];
-                        matches = cell.innerHTML.match(me.tagsRe);
-                        cellHTML = cell.innerHTML.replace(me.tagsRe, me.tagsProtect);
-
-                        // populate indexes array, set currentIndex, and replace wrap matched string in a span
-                        cellHTML = cellHTML.replace(me.searchRegExp, function(m) {
-                            count += 1;
-                            if (Ext.Array.indexOf(me.indexes, idx) === -1) {
-                                me.indexes.push(idx);
-                            }
-                            if (me.currentIndex === null) {
-                                me.currentIndex = idx;
-                            }
-                            return '<span class="' + me.matchCls + '">' + m + '</span>';
-                        });
-                        // restore protected tags
-                        Ext.each(matches, function(match) {
-                            cellHTML = cellHTML.replace(me.tagsProtect, match);
-                        });
-                        walkedCount++;
-                        cell.innerHTML = cellHTML;
+            me.store.filterBy( function( record, id ) {
+                me = this;
+                for( var i = 0 ; i < me.searchFields.length; i++){
+                    if( me.searchRegExp.test( record.get( me.searchFields[i] )) ){
+                        return true;
                     }
-                    td = td.next();
-                 }
                 }
-             }, me);
-            console.log("search count=" + count + ", walkedCount=" + walkedCount);
+                return false;
+            }, me );
 
-             // results found
-             if (me.currentIndex !== null) {
-                 me.getSelectionModel().select(me.currentIndex);
-                 me.statusBar.setStatus({
-                     text: count + ' matche(s) found.',
-                     iconCls: 'x-status-valid'
-                 });
-             }
-         }
-
-         // no results found
-         if (me.currentIndex === null) {
-             me.getSelectionModel().deselectAll();
+            var count = me.store.count();
+            me.searchStatusBar.setStatus({
+                text: count ? count + ' ' + i18n._(' matche(s) found') : i18n._('No matches found') ,
+                iconCls: 'x-status-valid'
+            });
+         }else{
+            if( ( me.searchValue !== null ) &&
+                ( me.searchTextField.getValue().length < ( me.searchMinimumCharacters + 1 ) ) ){
+                me.searchStatusBar.setStatus({
+                    text: i18n._("(type more than 2 characters)"),
+                    iconCls: 'x-status-valid'
+                });
+            }else{
+                me.searchStatusBar.setStatus({
+                    text: me.store.count() + ' ' + i18n._('total rules'),
+                    iconCls: 'x-status-valid'
+                });
+            }
          }
 
          // force textfield focus
-         me.textField.focus();
+         me.searchTextField.focus();
      },
 
-    /**
-     * Selects the previous row containing a match.
-     * @private
-     */
-    onPreviousClick: function() {
-        var me = this,
-            idx;
-
-        if ((idx = Ext.Array.indexOf(me.indexes, me.currentIndex)) !== -1) {
-            me.currentIndex = me.indexes[idx - 1] || me.indexes[me.indexes.length - 1];
-            me.getSelectionModel().select(me.currentIndex);
-         }
-    },
-
-    /**
-     * Selects the next row containing a match.
-     * @private
-     */
-    onNextClick: function() {
-         var me = this,
-             idx;
-
-         if ((idx = Ext.Array.indexOf(me.indexes, me.currentIndex)) !== -1) {
-            me.currentIndex = me.indexes[idx + 1] || me.indexes[0];
-            me.getSelectionModel().select(me.currentIndex);
-         }
-    },
-
-    /**
-     * Switch to case sensitive mode.
-     * @private
-     */
-    caseSensitiveToggle: function(checkbox, checked) {
-        this.caseSensitive = checked;
-        this.onTextFieldChange();
-    },
-
-    /**
-     * Switch to regular expression mode
-     * @private
-     */
-    regExpToggle: function(checkbox, checked) {
-        this.regExpMode = checked;
-        this.onTextFieldChange();
-    }
+     getPageList: function(useId, useInternalId) {
+        this.store.clearFilter(true);
+        return this.callSuper( useId, useInternalId );
+     }
 });
 
 Ext.define('Webui.untangle-node-idps.settings', {
@@ -395,248 +281,232 @@ Ext.define('Webui.untangle-node-idps.settings', {
             border: false,
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
-//                items: [this.gridRules = Ext.create('Ung.EditorGrid', {
-            items: [this.gridRules = Ext.create('Ung.RuleEditorGrid', {
-                flex: 1,
-            features: [groupingFeature],
-            groupField: 'classification',
-                style: "margin-bottom:10px;",
-                name: 'Rules',
-                settingsCmp: this,
-                plugins: {
-                    ptype: 'bufferedrenderer',
-                    trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
-                    leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
-                },
-                emptyRow: {
-                    "category": "",
-                    "name": "",
-                    "text": "",
-                    "sid": "0",
-                    "live": true,
-                    "log": true,
-                    "description": ""
-                },
-                title: this.i18n._("Rules"),
-                recordJavaClass: "com.untangle.node.idps.IpsRule",
-                dataProperty: 'rules',
-                paginated: false,
-                fields: [{
-                    name: 'id'
-                }, {
-                    name: 'text'
-                }, {
-                    name: 'sid'
-                }, {
-                    name: 'name'
-                }, {
-                    name: 'category',
-                    type: 'string'
-                }, {
-                    name: 'classification'
-                }, {
-                    name: 'URL'
-                }, {
-                    name: 'live'
-                }, {
-                    name: 'log'
-                }, {
-                    name: 'description',
-                    type: 'string'
-                }],
-                columns: [{
-                    header: this.i18n._("Id"),
-                    width: 70,
-                    dataIndex: 'sid',
-                    editor: null
-                },{
-                    xtype:'checkcolumn',
-                    header: this.i18n._("Log"),
-                    dataIndex: 'log',
-                    resizable: false,
-                    width:55
-                },{
-                    xtype:'checkcolumn',
-                    header: this.i18n._("Block"),
-                    dataIndex: 'live',
-                    resizable: false,
-                    width:55
-                }, {
-                    header: this.i18n._("Category"),
-                    width: 180,
-                    dataIndex: 'category',
-                    editor: {
-                        xtype:'texfield',
-                        emptyText: this.i18n._("[enter category]"),
-                        allowBlank: false
-                    }
-                },{
-                    header: this.i18n._("Classification"),
-                    width: 200,
-                    dataIndex: 'classification',
-                    flex:1,
-                    editor: null
-                },{
-                    header: this.i18n._("Description"),
-                    width: 200,
-                    dataIndex: 'description',
-                    flex:1,
-                    editor: null
-                }, {
-                    header: this.i18n._("Info"),
-                    width: 70,
-                    dataIndex: 'URL',
-                    editor: null,
-                    sortable: false,
-                    renderer: function(value) {
-                        return (value == null || value.length == 0) ? "no info": "<a href='" + value + "' target='_blank'>info</a>";
-                    }
-                }],
-                sortField: 'classification',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "Category",
-                    dataIndex: "category",
-                    fieldLabel: this.i18n._("Category"),
-                    emptyText: this.i18n._("[enter category]"),
-                    allowBlank: false,
-                    width: 400
-                },
-                {
-                    xtype:'textfield',
-                    name: "Signature",
-                    dataIndex: "text",
-                    fieldLabel: this.i18n._("Signature"),
-                    emptyText: this.i18n._("[enter signature]"),
-                    allowBlank: false,
-                    width: 450
-                },
-                {
-                    xtype:'textfield',
-                    name: "Name",
-                    dataIndex: "name",
-                    fieldLabel: this.i18n._("Name"),
-                    emptyText: this.i18n._("[enter name]"),
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    name: "SID",
-                    dataIndex: "sid",
-                    fieldLabel: this.i18n._("SID"),
-                    allowBlank: false,
-                    width: 150
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Block",
-                    dataIndex: "live",
-                    fieldLabel: this.i18n._("Block")
-                },
-                {
-                    xtype:'checkbox',
-                    name: "Log",
-                    dataIndex: "log",
-                    fieldLabel: this.i18n._("Log")
-                },
-                {
-                    xtype:'textfield',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    emptyText: this.i18n._("[enter description]"),
-                    allowBlank: false,
-                    width: 500
-                }]
-            }),
-            this.gridVariables = Ext.create('Ung.EditorGrid', {
-                flex: 1,
-                name: 'Variables',
-                settingsCmp: this,
-                emptyRow: {
-                    "variable": "",
-                    "definition": "",
-                    "description": ""
-                },
-                title: this.i18n._("Variables"),
-                recordJavaClass: "com.untangle.node.idps.IpsVariable",
-                dataProperty: 'variables',
-                fields: [{
-                    name: 'id'
-                }, {
-                    name: 'variable',
-                    type: 'string'
-                }, {
-                    name: 'definition',
-                    type: 'string'
-                }, {
-                    name: 'description',
-                    type: 'string'
-                }],
-                columns: [{
-                    header: this.i18n._("name"),
-                    width: 170,
-                    dataIndex: 'variable',
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: this.i18n._("[enter name]"),
-                        allowBlank: false
-                        }
+            items: [
+                this.gridRules = Ext.create('Ung.RuleEditorGrid', {
+                    name: 'Rules',
+                    flex: 1,
+                    groupField: 'classtype',
+                    sortField: 'category',
+                    style: "margin-bottom:10px;",
+                    settingsCmp: this,
+                    title: this.i18n._("Rules"),
+                    recordJavaClass: "com.untangle.node.idps.IpsRule",
+                    dataProperty: 'rules',
+                    paginated: false,
+                    columnsDefaultSortable: true,
+                    plugins: {
+                        ptype: 'bufferedrenderer',
+                        trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
+                        leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
                     },
-                    {
-                    id: 'definition',
-                    header: this.i18n._("pass"),
-                    width: 300,
-                    dataIndex: 'definition',
-                    editor: {
+                    features: [ 
+                        Ext.create('Ext.grid.feature.Grouping',{
+                            groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
+                            startCollapsed: true
+                        })            
+                    ] ,
+                    fields: [{
+                        name: 'sid',
+                        sortType: 'asInt'
+                    },{
+                        name: 'category'
+                    },{
+                        name: 'classtype'
+                    },{
+                        name: 'name'
+                    },{
+                        name: 'rule'
+                    },{
+                        name: 'log'
+                    },{
+                        name: 'block'
+                    }],
+                    emptyRow: {
+                        "log": true,
+                        "block": false,
+                        "category": "",
+                        "classtype": "",
+                        "name" : "",
+                        "rule": ""
+                    },
+                    columns: [{
+                        header: this.i18n._("Id"),
+                        dataIndex: 'sid',
+                        sortable: true,
+                        width: 70,
+                        editor: null,
+                        menuDisabled: false
+                    },{
+                        header: this.i18n._("Classtype"),
+                        dataIndex: 'classtype',
+                        sortable: true,
+                        width: 100,
+                        flex:1,
+                        editor: null,
+                        menuDisabled: false
+                    },{
+                        header: this.i18n._("Category"),
+                        dataIndex: 'category',
+                        sortable: true,
+                        width: 100,
+                        flex:1,
+                        editor: {
+                            xtype:'texfield',
+                            emptyText: this.i18n._("[enter category]"),
+                            allowBlank: false
+                        },
+                        menuDisabled: false
+                    },{
+                        header: this.i18n._("Name"),
+                        dataIndex: 'name',
+                        sortable: true,
+                        width: 200,
+                        flex:3,
+                        editor: null,
+                        menuDisabled: false
+                    },{
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Log"),
+                        dataIndex: 'log',
+                        sortable: true,
+                        resizable: false,
+                        width:55,
+                        menuDisabled: false
+                    },{
+                        xtype:'checkcolumn',
+                        header: this.i18n._("Block"),
+                        dataIndex: 'block',
+                        sortable: true,
+                        resizable: false,
+                        width:55,
+                        menuDisabled: false
+                    }],
+                    rowEditorInputLines: [{
                         xtype:'textfield',
+                        name: "Category",
+                        dataIndex: "category",
+                        fieldLabel: this.i18n._("Category"),
+                        emptyText: this.i18n._("[enter category]"),
+                        allowBlank: false,
+                        width: 400
+                    },{
+                        xtype:'textfield',
+                        name: "Class",
+                        dataIndex: "classtype",
+                        fieldLabel: this.i18n._("Class"),
+                        emptyText: this.i18n._("[enter class]"),
+                        allowBlank: false,
+                        width: 400
+                    },{
+                        xtype:'textfield',
+                        name: "Name",
+                        dataIndex: "name",
+                        fieldLabel: this.i18n._("Name"),
+                        emptyText: this.i18n._("[enter name]"),
+                        allowBlank: false,
+                        width: 400
+                    },{
+                        xtype:'textfield',
+                        name: "Rule",
+                        dataIndex: "rule",
+                        fieldLabel: this.i18n._("Rule"),
+                        emptyText: this.i18n._("[enter rule]"),
+                        allowBlank: false,
+                        width: 1000
+                    },{
+                        xtype:'checkbox',
+                        name: "Block",
+                        dataIndex: "block",
+                        fieldLabel: this.i18n._("Block")
+                    },{
+                        xtype:'checkbox',
+                        name: "Log",
+                        dataIndex: "log",
+                        fieldLabel: this.i18n._("Log")
+                    }]
+                }),
+                this.gridVariables = Ext.create('Ung.EditorGrid', {
+                    flex: 1,
+                    name: 'Variables',
+                    settingsCmp: this,
+                    emptyRow: {
+                        "variable": "",
+                        "definition": "",
+                        "description": ""
+                    },
+                    title: this.i18n._("Variables"),
+                    recordJavaClass: "com.untangle.node.idps.IpsVariable",
+                    dataProperty: 'variables',
+                    fields: [{
+                        name: 'id'
+                    },{
+                        name: 'variable',
+                        type: 'string'
+                    },{
+                        name: 'definition',
+                        type: 'string'
+                    },{
+                        name: 'description',
+                        type: 'string'
+                    }],
+                    columns: [{
+                        header: this.i18n._("name"),
+                        width: 170,
+                        dataIndex: 'variable',
+                        editor: {
+                            xtype:'textfield',
+                            emptyText: this.i18n._("[enter name]"),
+                            allowBlank: false
+                        }
+                    },{
+                        id: 'definition',
+                        header: this.i18n._("pass"),
+                        width: 300,
+                        dataIndex: 'definition',
+                        editor: {
+                            xtype:'textfield',
+                            emptyText: this.i18n._("[enter definition]"),
+                            allowBlank: false
+                        }
+                    },{
+                        header: this.i18n._("description"),
+                        width: 300,
+                        dataIndex: 'description',
+                        flex:1,
+                        editor: {
+                            xtype:'textfield',
+                            emptyText: this.i18n._("[enter description]"),
+                            allowBlank: false
+                        }
+                    }],
+                    sortField: 'variable',
+                    columnsDefaultSortable: true,
+                    rowEditorInputLines: [{
+                        xtype:'textfield',
+                        name: "Name",
+                        dataIndex: "variable",
+                        fieldLabel: this.i18n._("Name"),
+                        emptyText: this.i18n._("[enter name]"),
+                        allowBlank: false,
+                        width: 300
+                    },{
+                        xtype:'textfield',
+                        name: "Pass",
+                        dataIndex: "definition",
+                        fieldLabel: this.i18n._("Pass"),
                         emptyText: this.i18n._("[enter definition]"),
-                        allowBlank: false
-                    }
-                }, {
-                    header: this.i18n._("description"),
-                    width: 300,
-                    dataIndex: 'description',
-                    flex:1,
-                    editor: {
+                        allowBlank: false,
+                        width: 400
+                    },{
                         xtype:'textfield',
+                        name: "Description",
+                        dataIndex: "description",
+                        fieldLabel: this.i18n._("Description"),
                         emptyText: this.i18n._("[enter description]"),
-                        allowBlank: false
-                    }
-                }],
-                sortField: 'variable',
-                columnsDefaultSortable: true,
-                rowEditorInputLines: [{
-                    xtype:'textfield',
-                    name: "Name",
-                    dataIndex: "variable",
-                    fieldLabel: this.i18n._("Name"),
-                    emptyText: this.i18n._("[enter name]"),
-                    allowBlank: false,
-                    width: 300
-                },
-                {
-                    xtype:'textfield',
-                    name: "Pass",
-                    dataIndex: "definition",
-                    fieldLabel: this.i18n._("Pass"),
-                    emptyText: this.i18n._("[enter definition]"),
-                    allowBlank: false,
-                    width: 400
-                },
-                {
-                    xtype:'textfield',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    emptyText: this.i18n._("[enter description]"),
-                    allowBlank: false,
-                    width: 400
-                }]
-            })
+                        allowBlank: false,
+                        width: 400
+                    }]
+                })
         ]});
     },
     // Event Log
