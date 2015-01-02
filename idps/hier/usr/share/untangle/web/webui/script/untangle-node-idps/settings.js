@@ -62,7 +62,6 @@ Ext.define('Ung.RuleEditorGrid', {
         ];
 
         me.callParent(arguments);
-
     },
 
     // afterRender override: it adds textfield and statusbar reference and start monitoring keydown events in textfield input
@@ -77,10 +76,33 @@ Ext.define('Ung.RuleEditorGrid', {
     afterDataBuild: function(handler){
         var me = this;
         me.callParent(arguments);
+
         me.searchStatusBar.setStatus({
             text: me.store.count() + ' ' + i18n._('total rules'),
             iconCls: 'x-status-valid'
         });
+
+        me.storeCategories = Ext.create('Ext.data.Store', {
+            fields: ['id', 'value']
+        });
+        me.storeClasstypes = Ext.create('Ext.data.Store', {
+            fields: ['id', 'value']
+        });
+        me.store.each(
+            function( record ){
+                var category = record.get("category");
+                if( this.storeCategories.find( 'id', category ) == -1 ){
+                    this.storeCategories.add( { id: category, value: category } );
+                }
+                var classtype = record.get("classtype");
+                if( this.storeClasstypes.find( 'id', classtype ) == -1 ){
+                    this.storeClasstypes.add( { id: classtype, value: classtype } );
+                }
+            },
+            this
+        );
+        me.rowEditor.down('combo[name=Classtype]').bindStore(me.storeClasstypes);
+        me.rowEditor.down('combo[name=Category]').bindStore(me.storeCategories);
     },
 
     /*
@@ -382,21 +404,27 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         menuDisabled: false
                     }],
                     rowEditorInputLines: [{
-                        xtype:'textfield',
-                        name: "Category",
-                        dataIndex: "category",
-                        fieldLabel: this.i18n._("Category"),
-                        emptyText: this.i18n._("[enter category]"),
-                        allowBlank: false,
-                        width: 400
-                    },{
-                        xtype:'textfield',
-                        name: "Class",
+                        name: "Classtype",
                         dataIndex: "classtype",
-                        fieldLabel: this.i18n._("Class"),
+                        fieldLabel: this.i18n._("Classtype"),
                         emptyText: this.i18n._("[enter class]"),
                         allowBlank: false,
-                        width: 400
+                        width: 400,
+                        xtype: 'combo',
+                        queryMode: 'local',
+                        valueField: 'id',
+                        displayField: 'value'
+                  },{
+                        name: "Category",
+                        fieldLabel: this.i18n._("Category"),
+                        dataIndex: "category",
+                        emptyText: this.i18n._("[enter category]"),
+                        allowBlank: false,
+                        width: 400,
+                        xtype: 'combo',
+                        queryMode: 'local',
+                        valueField: 'id',
+                        displayField: 'value'
                     },{
                         xtype:'textfield',
                         name: "Name",
