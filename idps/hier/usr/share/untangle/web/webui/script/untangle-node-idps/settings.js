@@ -335,7 +335,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     },{
                         name: 'classtype'
                     },{
-                        name: 'name'
+                        name: 'msg'
                     },{
                         name: 'rule'
                     },{
@@ -379,8 +379,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         },
                         menuDisabled: false
                     },{
-                        header: this.i18n._("Name"),
-                        dataIndex: 'name',
+                        header: this.i18n._("Msg"),
+                        dataIndex: 'msg',
                         sortable: true,
                         width: 200,
                         flex:3,
@@ -434,14 +434,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         allowBlank: false,
                         width: 400
                     },{
-                        xtype:'textfield',
-                        name: "Rule",
-                        dataIndex: "rule",
-                        fieldLabel: this.i18n._("Rule"),
-                        emptyText: this.i18n._("[enter rule]"),
-                        allowBlank: false,
-                        width: 1000
-                    },{
                         xtype:'checkbox',
                         name: "Block",
                         dataIndex: "block",
@@ -451,6 +443,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         name: "Log",
                         dataIndex: "log",
                         fieldLabel: this.i18n._("Log")
+                    },{
+                        xtype:'textfield',
+                        name: "Rule",
+                        dataIndex: "rule",
+                        fieldLabel: this.i18n._("Rule"),
+                        emptyText: this.i18n._("[enter rule]"),
+                        allowBlank: false,
+                        width: 1000
                     }]
                 }),
                 this.gridVariables = Ext.create('Ung.EditorGrid', {

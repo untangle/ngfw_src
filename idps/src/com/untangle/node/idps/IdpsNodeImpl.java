@@ -277,7 +277,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
                 String configCmd = new String(System.getProperty("uvm.bin.dir") + 
                     "/idps-create-config.py" + 
-                    " --node " + nodeId
+                    " --nodeId " + nodeId
                 );
                 String result = UvmContextFactory.context().execManager().execOutput(configCmd );
                 try{

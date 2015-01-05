@@ -379,7 +379,7 @@ public class IdpsSnortUnified2Parser {
 
         IdpsEventMapRule mapRule = idpsEventMap.getRuleBySignatureId( idsEvent.getSignatureId() );
         if( mapRule != null ){
-            idsEvent.setDescription( mapRule.getDescription() );
+            idsEvent.setMsg( mapRule.getMsg() );
             idsEvent.setClasstype( mapRule.getClasstype() );
             idsEvent.setCategory( mapRule.getCategory() );
         }

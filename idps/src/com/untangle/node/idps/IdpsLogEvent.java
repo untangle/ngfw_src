@@ -30,7 +30,7 @@ public class IdpsLogEvent extends LogEvent
     // accessors --------------------------------------------------------------
 
     private static String sql = "INSERT INTO reports.idps_events " +
-        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, description)" +
+        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
         " values " +
         "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
 
@@ -55,7 +55,7 @@ public class IdpsLogEvent extends LogEvent
 
         pstmt.setString(++i, idpsEvent.getCategory() );
         pstmt.setString(++i, idpsEvent.getClasstype() );
-        pstmt.setString(++i, idpsEvent.getDescription() );
+        pstmt.setString(++i, idpsEvent.getMsg() );
 
         return pstmt;
     }

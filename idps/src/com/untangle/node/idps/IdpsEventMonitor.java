@@ -239,6 +239,7 @@ class IdpsEventMonitor implements Runnable
                 }
             } 
         );
+        // !!! check to see if files exist
         Arrays.sort( files, 
             new Comparator<File>()
             {

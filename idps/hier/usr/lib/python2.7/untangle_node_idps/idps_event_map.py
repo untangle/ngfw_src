@@ -28,14 +28,14 @@ class IdpsEventMap:
         }
         
         for rule in self.rules.get_rules().values():
-            description = rule.options["msg"]
-            if description.startswith('"') and description.endswith('"'):
-                description = description[1:-1]
+            msg = rule.options["msg"]
+            if msg.startswith('"') and msg.endswith('"'):
+                msg = msg[1:-1]
             self.settings["rules"]["list"].append( { 
                 "javaClass" : "com.untangle.node.idps.IdpsEventMapRule",
                 "sid": int(rule.options["sid"]),
                 "category": rule.category,
-                "description": description,
+                "msg": msg,
                 "category": rule.category,
                 "classtype": rule.options["classtype"],
             } );

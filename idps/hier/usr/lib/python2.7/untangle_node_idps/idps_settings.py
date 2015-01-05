@@ -32,9 +32,8 @@ class IdpsSettings:
             match_rule = re.search( SnortRule.text_regex, settings_rule["rule"] )
             if match_rule:
                 rule = SnortRule( match_rule, settings_rule["category"] )
-                rule.set_description( settings_rule["description"] )
-                rule.set_action( settings_rule["log"], settings_rule["live"] )
-                rule.set_name( settings_rule["name"] )
+                rule.set_action( settings_rule["log"], settings_rule["block"] )
+                rule.set_msg( settings_rule["msg"] )
                 rule.set_sid( settings_rule["sid"] )
                 self.rules.addRule( rule )
             else:
@@ -112,25 +111,16 @@ class IdpsSettings:
         for rule in self.rules.get_rules().values():
             if rule.get_category() == "deleted":
                 continue
-            description = rule.options["msg"]
-            if description.startswith('"') and description.endswith('"'):
-                description = description[1:-1]
+            msg = rule.options["msg"]
+            if msg.startswith('"') and msg.endswith('"'):
+                msg = msg[1:-1]
             self.settings["rules"]["list"].append( { 
-#                "sid": rule.options["sid"],
-#                "name": rule.options["sid"],
-#                "description": description,
-#                "live": False,
-#                "log": rule.enabled == True and rule.action == "alert",
-#                "category": rule.category,
-#                "classification": rule.options["classtype"],
-#                "text": rule.build()
-#                "id": rule.options["sid"],
                 "sid": rule.options["sid"],
                 "log": rule.enabled == True and rule.action == "alert",
                 "block" : False,
                 "category": rule.category,
                 "classtype": rule.options["classtype"],
-                "name" : description,
+                "msg" : msg,
                 "rule": rule.build()
             } );
         

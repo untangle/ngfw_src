@@ -41,11 +41,6 @@ class SnortRule:
         for property, value in vars(self).iteritems():
             print property, ": ", value
 
-    def set_description( self, description ):
-        if description.startswith('"') and description.endswith('"'):
-            description = description[1:-1]
-        self.description = description
-        
     def set_action( self, log, block  ):
         action = "alert"
         if log == True and block == True:
@@ -56,11 +51,19 @@ class SnortRule:
             self.enabled = False
         self.action = action
         
-    def set_name( self, name ):
-        self.name = name
+    def set_msg( self, msg ):
+        if msg.startswith('"') and msg.endswith('"'):
+            msg = msg[1:-1]
+        self.options["msg"] = msg
+        ## update options_raw
         
     def set_sid( self, sid ):
-        self.sid = sid
+        self.options["sid"] = sid
+        ## update options_raw
+
+    def set_classtype( self, classtype ):
+        self.options["classtype"] = classtype
+        ## update options_raw
 
     def get_enabled( self ):
         return self.enabled

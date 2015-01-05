@@ -79,7 +79,7 @@ CREATE TABLE reports.idps_events (
         blocked boolean,
         category text,
         classtype text,
-        description text)""")
+        msg text)""")
         
         sql_helper.create_index("reports","sessions","time_stamp");
         sql_helper.create_index("reports","sessions","blocked");
