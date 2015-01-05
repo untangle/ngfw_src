@@ -20,9 +20,11 @@ def main(argv):
     _debug = False
     settings_file = ""
     nodeId = 0
+    classtypes = []
+    categories = []
 	
     try:
-		opts, args = getopt.getopt(argv, "hsin:d", ["help", "nodeId=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsinca:d", ["help", "nodeId=", "classtypes=", "categories=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -34,6 +36,10 @@ def main(argv):
              _debug = True
         elif opt in ( "-n", "--nodeId"):
             nodeId = arg
+        elif opt in ( "-c", "--classtypes"):
+            classtypes = arg.split(",")
+        elif opt in ( "-a", "--categories"):
+            categories = arg.split(",")
 
     if _debug == True:
 		print "nodeId = " + nodeId
@@ -49,7 +55,7 @@ def main(argv):
 
     rules = settings.get_rules()
     rules.set_path( snort_conf.get_variable( "RULE_PATH" ) )
-    rules.save()
+    rules.save( classtypes, categories )
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
 	

@@ -68,12 +68,16 @@ class SnortRules:
                     rule_count = rule_count + 1
         rules_file.close()
             
-    def save(self):
+    def save(self, classtypes = [], categories = [] ):
         temp_file_name = self.file_name + ".tmp"
         rules_file = open( temp_file_name, "w" )
         category = "undefined"
         # ? order by category
         for rule in self.rules.values():
+            if len(classtypes) > 0 and rule.options["classtype"] not in classtypes:
+                continue
+            if len(categories) > 0 and rule.category not in categories:
+                continue
             if rule.category != category:
                 category = rule.category
                 rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")

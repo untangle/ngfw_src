@@ -55,10 +55,10 @@ class SnortRule:
 
     def set_options( self, key, value ):
         self.options[key] = value
-        options_raw_match_re = re.compile( key + ":([^;]+);")
+        options_raw_match_re = re.compile( r'\s+' + key + ":([^;]+);")
         match_rule = re.search( options_raw_match_re, self.options_raw )
         if match_rule:
-            self.options_raw = options_raw_match_re.sub( key + ":" + value + ";", self.options_raw )
+            self.options_raw = options_raw_match_re.sub( " " + key + ":" + value + ";", self.options_raw )
         
     def set_msg( self, msg ):
         if msg.startswith('"') and msg.endswith('"'):
