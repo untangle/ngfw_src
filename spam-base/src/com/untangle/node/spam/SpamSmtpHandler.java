@@ -106,7 +106,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                               + " $MIMEMessage:FROM$\r\n"
                               + i18nUtil.tr("was determined by the Spam Blocker to be spam based on a score of")
                               + " $SPAMReport:SCORE$\r\n" + i18nUtil.tr("where anything above")
-                              + " $SPAMReport:SCORE$ " + i18nUtil.tr("is spam.") + "\r\n";
+                              + " $SPAMReport:THRESHOLD$ " + i18nUtil.tr("is spam.") + "\r\n";
         return bodyTemplate;
     }
     
