@@ -193,6 +193,7 @@ class SpamTests(unittest2.TestCase):
         nodeData['smtpConfig']['addSpamHeaders'] = True
         node.setSettings(nodeData)
         # remove previous smtp log file
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
         remote_control.runCommand("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
         # Start mail sink
         remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/test_070_checkForSMTPHeaders.log --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
