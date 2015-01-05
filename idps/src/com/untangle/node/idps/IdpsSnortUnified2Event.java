@@ -31,7 +31,7 @@ class IdpsSnortUnified2IdsEvent {
     private int vlanId;
     private int padding;
 
-    private String description;
+    private String msg;
     private String classtype;
     private String category;
 	
@@ -98,8 +98,8 @@ class IdpsSnortUnified2IdsEvent {
 	public int getPadding() { return this.padding; }
 	public void setPadding( int padding ) { this.padding = padding; }
 	
-	public String getDescription() { return this.description; }
-	public void setDescription( String description) { this.description = description; }
+	public String getMsg() { return this.msg; }
+	public void setMsg( String msg) { this.msg = msg; }
 	
 	public String getCategory() { return this.category; }
 	public void setCategory( String category) { this.category = category; }
@@ -130,7 +130,7 @@ class IdpsSnortUnified2IdsEvent {
         this.vlanId = 0;
         this.padding = 0;
 
-        this.description = "";
+        this.msg = "";
         this.classtype = "";
         this.category = "";
 	}
