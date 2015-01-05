@@ -344,6 +344,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         name: 'block'
                     }],
                     emptyRow: {
+                        "sid": "0",
                         "log": true,
                         "block": false,
                         "category": "",
@@ -352,7 +353,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         "rule": ""
                     },
                     columns: [{
-                        header: this.i18n._("Id"),
+                        header: this.i18n._("Sid"),
                         dataIndex: 'sid',
                         sortable: true,
                         width: 70,
@@ -431,6 +432,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         dataIndex: "msg",
                         fieldLabel: this.i18n._("Msg"),
                         emptyText: this.i18n._("[enter name]"),
+                        allowBlank: false,
+                        width: 400
+                    },{
+                        xtype:'textfield',
+                        name: "Sid",
+                        dataIndex: "sid",
+                        fieldLabel: this.i18n._("Sid"),
+                        emptyText: this.i18n._("[enter sid]"),
                         allowBlank: false,
                         width: 400
                     },{
