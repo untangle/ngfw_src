@@ -428,8 +428,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     },{
                         xtype:'textfield',
                         name: "Name",
-                        dataIndex: "name",
-                        fieldLabel: this.i18n._("Name"),
+                        dataIndex: "msg",
+                        fieldLabel: this.i18n._("Msg"),
                         emptyText: this.i18n._("[enter name]"),
                         allowBlank: false,
                         width: 400
