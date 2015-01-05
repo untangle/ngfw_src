@@ -28,6 +28,8 @@ class IdpsEventMap:
         }
         
         for rule in self.rules.get_rules().values():
+            if rule.options["sid"] == "":
+                continue
             msg = rule.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]

@@ -18,12 +18,14 @@ class SnortRule:
         self.dir = regex_match.group(6)
         self.rnet = regex_match.group(7)
         self.rport = regex_match.group(8)
-        self.options_raw = regex_match.group(9);
+        
+        self.options_raw = regex_match.group(9)
         self.options = { 
             "sid": -1,
             "classtype": "uncategoried",
             "msg": ""
         }
+        
         self.content_modifiers = {}
         for option in regex_match.group(9).split(';'):
             option = option.strip()
@@ -50,20 +52,24 @@ class SnortRule:
         if log == False and block == False:
             self.enabled = False
         self.action = action
+
+    def set_options( self, key, value ):
+        self.options[key] = value
+        options_raw_match_re = re.compile( key + ":([^;]+);")
+        match_rule = re.search( options_raw_match_re, self.options_raw )
+        if match_rule:
+            self.options_raw = options_raw_match_re.sub( key + ":" + value + ";", self.options_raw )
         
     def set_msg( self, msg ):
         if msg.startswith('"') and msg.endswith('"'):
             msg = msg[1:-1]
-        self.options["msg"] = msg
-        ## update options_raw
+        self.set_options( "msg", '"' + msg + '"' )
         
     def set_sid( self, sid ):
-        self.options["sid"] = sid
-        ## update options_raw
+        self.set_options( "sid", sid )
 
     def set_classtype( self, classtype ):
-        self.options["classtype"] = classtype
-        ## update options_raw
+        self.set_options( "classtype", classtype )
 
     def get_enabled( self ):
         return self.enabled
