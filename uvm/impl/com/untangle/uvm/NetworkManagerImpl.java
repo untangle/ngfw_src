@@ -911,6 +911,13 @@ public class NetworkManagerImpl implements NetworkManager
             }
             entries.add( entry.getMacAddress() );
         }
+        LinkedList<InetAddress> addrEntries = new LinkedList<InetAddress>();
+        for ( DhcpStaticEntry entry : networkSettings.getStaticDhcpEntries() ) {
+            if ( addrEntries.contains( entry.getAddress() ) ) {
+                throw new RuntimeException( "Duplicate DHCP reservation: " + ( entry.getAddress() == null ? "null" : entry.getAddress().getHostAddress() ) );
+            }
+            addrEntries.add( entry.getAddress() );
+        }
         
         /**
          * Check that no IP is configured twice anywhere
