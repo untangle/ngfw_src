@@ -68,28 +68,36 @@ class SnortRules:
                     rule_count = rule_count + 1
         rules_file.close()
             
-    def check_write_rule( self, rule, classtypes, categories ):
-        if len(classtypes) == 0 and len(categories) == 0:
-            return True
+    def check_write_rule( self, rule, classtypes, categories, msgs ):
+        if len(classtypes) == 0 or rule.options["classtype"] in classtypes:
+            classtype_match = True
+        else:
+            classtype_match = False
         
-        if len(classtypes) > 0 and len(categories) == 0 and rule.options["classtype"] in classtypes:
-            return True
-                
-        if len(categories) > 0 and len(classtypes) == 0 and rule.category in categories:
-            return True
-            
-        if rule.options["classtype"] in classtypes and rule.category in categories:
-            return True
-            
-        return False
+        if len(categories) == 0 or rule.category in categories:
+            category_match = True
+        else:
+            category_match = False
+
+        if len(msgs) == 0:
+            msgs_match = True
+        else:
+            msgs_match = False
         
-    def save(self, classtypes = [], categories = [] ):
+        for msg_substring in msgs:
+            if rule.options["msg"].lower().find( msg_substring.lower() ) != -1:
+                msgs_match = True
+                break
+        
+        return classtype_match and category_match and msgs_match
+        
+    def save(self, classtypes = [], categories = [], msgs = [] ):
         temp_file_name = self.file_name + ".tmp"
         rules_file = open( temp_file_name, "w" )
         category = "undefined"
         # ? order by category
         for rule in self.rules.values():
-            if self.check_write_rule( rule, classtypes, categories ) == False:
+            if self.check_write_rule( rule, classtypes, categories, msgs ) == False:
                 continue
 
             if rule.category != category:

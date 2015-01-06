@@ -22,9 +22,10 @@ def main(argv):
     nodeId = 0
     classtypes = []
     categories = []
+    msgs = []
 	
     try:
-		opts, args = getopt.getopt(argv, "hsinca:d", ["help", "nodeId=", "classtypes=", "categories=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsinca:d", ["help", "nodeId=", "classtypes=", "categories=", "msgs=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -40,6 +41,8 @@ def main(argv):
             classtypes = arg.split(",")
         elif opt in ( "-a", "--categories"):
             categories = arg.split(",")
+        elif opt in ( "-m", "--msgs"):
+            msgs = arg.split(",")
 
     if _debug == True:
 		print "nodeId = " + nodeId
@@ -55,7 +58,7 @@ def main(argv):
 
     rules = settings.get_rules()
     rules.set_path( snort_conf.get_variable( "RULE_PATH" ) )
-    rules.save( classtypes, categories )
+    rules.save( classtypes, categories, msgs )
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
 	
