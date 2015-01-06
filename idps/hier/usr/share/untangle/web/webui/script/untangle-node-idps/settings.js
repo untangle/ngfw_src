@@ -548,16 +548,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
     },
     // Event Log
     buildEventLog: function() {
-        // this.gridEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'EventLog', i18n._('Event Log'),
-        //     'intrusion_detection_prevention_event_log',
-        //     ['time_stamp','sig_id', 'gen_id', 'class_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'description' ],
-        //     this.getRpcNode().getEventQueries);
-        // buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
         var settingsCmpParam = this;
         var nameParam = 'EventLog';
         var titleParam = i18n._('Event Log');
         var helpSourceParam = 'intrusion_detection_prevention_event_log';
-        var visibleColumnsParam = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'description' ];
+        var visibleColumnsParam = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg' ];
         var eventQueriesFnParam = this.getRpcNode().getEventQueries;
         this.gridEventLog = Ext.create('Ung.GridEventLog',{
             name: nameParam,
@@ -602,7 +597,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 name: 'classtype',
                 type: 'string'
             }, {
-                name: 'description',
+                name: 'msg',
                 type: 'string'
             }],
             columns: [{
@@ -704,11 +699,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 sortable: true,
                 dataIndex: 'classtype'
             }, {
-                hidden: visibleColumnsParam.indexOf('description') < 0,
-                header: i18n._("Description"),
+                hidden: visibleColumnsParam.indexOf('msg') < 0,
+                header: i18n._("Msg"),
                 width: 200,
                 sortable: true,
-                dataIndex: 'description'
+                dataIndex: 'msg'
             }]
         });
     },
