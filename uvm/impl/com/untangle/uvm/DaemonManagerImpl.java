@@ -89,34 +89,39 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
-    public synchronized void incrementUsageCount(String daemonName)
+    public void incrementUsageCount(String daemonName)
     {
-        int newUsageCount = getUsageCount(daemonName) + 1;
-        setUsageCount(daemonName, newUsageCount);
+        DaemonObject daemonObject = getDaemonObject( daemonName );
+        synchronized( daemonObject ) {
+            int newUsageCount = daemonObject.usageCount + 1;
+            daemonObject.usageCount = newUsageCount;
 
-        if (newUsageCount == 1) {
-            execDaemonControl(daemonName, "start");
+            if (newUsageCount == 1) {
+                execDaemonControl(daemonName, "start");
+            }
         }
     }
 
-    public synchronized void decrementUsageCount(String daemonName)
+    public void decrementUsageCount(String daemonName)
     {
-        int newUsageCount = getUsageCount(daemonName) - 1;
+        DaemonObject daemonObject = getDaemonObject( daemonName );
+        synchronized( daemonObject ) {
+            int newUsageCount = daemonObject.usageCount - 1;
+            daemonObject.usageCount = newUsageCount;
 
-        if (newUsageCount < 0) {
-            logger.warn("Invalid daemon usageCount for " + daemonName + ": " + newUsageCount);
-        }
+            if (newUsageCount < 0) {
+                logger.warn("Invalid daemon usageCount for " + daemonName + ": " + newUsageCount);
+            }
 
-        setUsageCount(daemonName, newUsageCount);
-
-        if (newUsageCount < 1) {
-            // first we should disable any monitoring that was enabled
-            disableAllMonitoring(daemonName);
-            execDaemonControl(daemonName, "stop");
+            if (newUsageCount < 1) {
+                // first we should disable any monitoring that was enabled
+                disableAllMonitoring(daemonName);
+                execDaemonControl(daemonName, "stop");
+            }
         }
     }
 
-    public synchronized boolean enableDaemonMonitoring(String daemonName, long secondInterval, String searchString)
+    public boolean enableDaemonMonitoring(String daemonName, long secondInterval, String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null)
@@ -129,7 +134,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
-    public synchronized boolean enableRequestMonitoring(String daemonName, long secondInterval, String hostString, int hostPort, String transmitString, String searchString)
+    public boolean enableRequestMonitoring(String daemonName, long secondInterval, String hostString, int hostPort, String transmitString, String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null)
@@ -145,7 +150,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return (true);
     }
 
-    public synchronized boolean disableAllMonitoring(String daemonName)
+    public boolean disableAllMonitoring(String daemonName)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null)
@@ -163,20 +168,8 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
     // these function are private since they should not be access externally
 
-    private synchronized int getUsageCount(String daemonName)
+    private synchronized DaemonObject getDaemonObject( String daemonName )
     {
-        DaemonObject daemonObject = daemonHashMap.get(daemonName);
-        if (daemonObject == null) {
-            daemonObject = new DaemonObject(daemonName);
-            daemonHashMap.put(daemonName, daemonObject);
-        }
-
-        return daemonObject.usageCount;
-    }
-
-    private synchronized void setUsageCount(String daemonName, int usageCount)
-    {
-        logger.info("Daemon " + daemonName + " usageCount: " + usageCount);
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
 
         if (daemonObject == null) {
@@ -184,104 +177,115 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             daemonHashMap.put(daemonName, daemonObject);
         }
 
-        daemonObject.usageCount = usageCount;
+        return daemonObject;
     }
 
-    private synchronized void execDaemonControl(String daemonName, String command)
+    private void execDaemonControl(String daemonName, String command)
     {
         String cmd = "/etc/init.d/" + daemonName + " " + command;
-        String output = UvmContextFactory.context().execManager().execOutput(cmd);
+        //String output = UvmContextFactory.context().execManager().execOutput(cmd);
+        // try {
+        //     String lines[] = output.split("\\r?\\n");
+        //     for (String line : lines)
+        //         logger.info(cmd + ": " + line);
+        // } catch (Exception e) {
+        // }
         try {
-            String lines[] = output.split("\\r?\\n");
-            for (String line : lines)
-                logger.info(cmd + ": " + line);
-        } catch (Exception e) {
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            reader.waitFor();
+        }
+        catch( Exception e ) {
+            logger.warn("Failed to run command: " + command, e);
         }
     }
 
-    private synchronized void handleDaemonCheck(DaemonObject object)
+    private void handleDaemonCheck(DaemonObject object)
     {
-        // run a spiffy command to count the number of process instances
-        String result = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString + " | wc -l");
+        synchronized( object ) {
+            // run a spiffy command to count the number of process instances
+            String result = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString + " | wc -l");
 
-        // parseInt is very finicky so we use replaceAll with
-        // a regex to strip out anything that is not a digit 
-        int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
-        logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
+            // parseInt is very finicky so we use replaceAll with
+            // a regex to strip out anything that is not a digit 
+            int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+            logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
         
-        // if we find the process running just return
-        if (count > 0)
-            return;
+            // if we find the process running just return
+            if (count > 0)
+                return;
 
-        // process does not seem to be running so log and restart
-        logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
-        logger.warn("Restarting failed daemon: " + object.daemonName);
-        execDaemonControl(object.daemonName, "restart");
+            // process does not seem to be running so log and restart
+            logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
+            logger.warn("Restarting failed daemon: " + object.daemonName);
+            execDaemonControl(object.daemonName, "restart");
+        }
     }
 
-    private synchronized void handleRequestCheck(DaemonObject object)
+    private void handleRequestCheck(DaemonObject object)
     {
-        DataOutputStream txstream = null;
-        DataInputStream rxstream = null;
-        Socket socket = null;
-        boolean restart = false;
-        byte buffer[] = new byte[4096];
-        int txcount = 0;
-        int rxcount = 0;
+        synchronized( object ) {
+            DataOutputStream txstream = null;
+            DataInputStream rxstream = null;
+            Socket socket = null;
+            boolean restart = false;
+            byte buffer[] = new byte[4096];
+            int txcount = 0;
+            int rxcount = 0;
 
-        // connect, send the command, and get the response using the old
-        // school socket stuff so we use short timeout values which is
-        // important since the stuff we monitor may be dead or unresponsive
+            // connect, send the command, and get the response using the old
+            // school socket stuff so we use short timeout values which is
+            // important since the stuff we monitor may be dead or unresponsive
 
-        try {
-            InetSocketAddress address = new InetSocketAddress(object.hostString, object.hostPort);
-            socket = new Socket();
-            socket.connect(address, 1000);
-            socket.setSoTimeout(1000);
-            txstream = new DataOutputStream(socket.getOutputStream());
-            rxstream = new DataInputStream(socket.getInputStream());
-            txstream.writeBytes(object.transmitString);
-            txcount = txstream.size();
-            rxcount = rxstream.read(buffer);
-        }
+            try {
+                InetSocketAddress address = new InetSocketAddress(object.hostString, object.hostPort);
+                socket = new Socket();
+                socket.connect(address, 1000);
+                socket.setSoTimeout(1000);
+                txstream = new DataOutputStream(socket.getOutputStream());
+                rxstream = new DataInputStream(socket.getInputStream());
+                txstream.writeBytes(object.transmitString);
+                txcount = txstream.size();
+                rxcount = rxstream.read(buffer);
+            }
 
-        // catch and log any exceptions and set the restart flag
-        catch (Exception exn) {
-            String reason = exn.getMessage();
-            if (reason == null)
-                reason = exn.getCause().toString();
-            if (reason == null)
-                reason = exn.getClass().toString();
-            if (reason == null)
-                reason = "unknown";
+            // catch and log any exceptions and set the restart flag
+            catch (Exception exn) {
+                String reason = exn.getMessage();
+                if (reason == null)
+                    reason = exn.getCause().toString();
+                if (reason == null)
+                    reason = exn.getClass().toString();
+                if (reason == null)
+                    reason = "unknown";
 
-            logger.warn("Exception (" + reason + ") while checking " + object.hostString + ":" + object.hostPort);
-            restart = true;
-        }
-
-        // make sure the streams and socket all get closed ignoring exceptions
-        try {
-            if (txstream != null)
-                txstream.close();
-            if (rxstream != null)
-                rxstream.close();
-            if (socket != null)
-                socket.close();
-        } catch (Exception exn) {
-        }
-
-        // if no exceptions then we check the response for the search string
-        if (restart == false) {
-            String haystack = new String(buffer, 0, rxcount);
-            if (haystack.contains(object.searchString) == false)
+                logger.warn("Exception (" + reason + ") while checking " + object.hostString + ":" + object.hostPort);
                 restart = true;
+            }
+
+            // make sure the streams and socket all get closed ignoring exceptions
+            try {
+                if (txstream != null)
+                    txstream.close();
+                if (rxstream != null)
+                    rxstream.close();
+                if (socket != null)
+                    socket.close();
+            } catch (Exception exn) {
+            }
+
+            // if no exceptions then we check the response for the search string
+            if (restart == false) {
+                String haystack = new String(buffer, 0, rxcount);
+                if (haystack.contains(object.searchString) == false)
+                    restart = true;
+            }
+
+            // if restart is we can just return
+            if (restart == false)
+                return;
+
+            logger.warn("Restarting failed daemon: " + object.daemonName);
+            execDaemonControl(object.daemonName, "restart");
         }
-
-        // if restart is we can just return
-        if (restart == false)
-            return;
-
-        logger.warn("Restarting failed daemon: " + object.daemonName);
-        execDaemonControl(object.daemonName, "restart");
     }
 }

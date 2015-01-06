@@ -124,7 +124,7 @@ public class ExecManagerImpl implements ExecManager
             for (int i = 0 ; i < cmd.length; i++) {
                 cmdStr = cmdStr.concat(cmd[i] + " ");
             }
-            logger.info("ExecManager.execEvil(" + cmdStr + ")");
+            logger.info("ExecManager.execEvil( " + cmdStr + ")");
         }
         try {
             return new ExecManagerResultReader(Runtime.getRuntime().exec(cmd, null, null));
