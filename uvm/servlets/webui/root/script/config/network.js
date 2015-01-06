@@ -2232,7 +2232,7 @@ Ext.define("Webui.config.network", {
         });
 
         this.gridPortForwardRules = Ext.create( 'Ung.EditorGrid', {
-            flex: 1,
+            flex: 3,
             name: 'Port Forward Rules',
             settingsCmp: this,
             paginated: false,
@@ -2445,18 +2445,21 @@ Ext.define("Webui.config.network", {
         });
 
         //Build port forward warnings
-        var portForwardWarningsHtml=[this.i18n._('The following ports are currently reserved and can not be forwarded:') + "<br/>"];
+        var portForwardWarningsHtml=[];
+        var hasReservedPorts = false;
         var i;
         var intf;
         for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
             intf = this.settings.interfaces.list[i];
             if (intf.v4Address) {
+                hasReservedPorts = true;
                 portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
             }
         }
         for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
             intf = this.settings.interfaces.list[i];
             if (intf.v4Address && !intf.isWan) {
+                hasReservedPorts = true;
                 portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
             }
         }
@@ -2466,11 +2469,13 @@ Ext.define("Webui.config.network", {
                 for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
                     var sub_intf = this.settings.interfaces.list[j];
                     if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
+                        hasReservedPorts = true;
                         portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
                     }
                 }
             }
         }
+        
         var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP"],[ "UDP", "UDP"]];
         var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
         this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
@@ -2487,10 +2492,16 @@ Ext.define("Webui.config.network", {
                 html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."),
                 style: "margin-bottom: 10px;"
             }, this.gridPortForwardRules, {
-                xtype: 'label',
-                flex: 0,
+                xtype: 'fieldset',
+                cls: 'description',
+                flex: 2,
+                border: true,
+                collapsible: true,
+                collapsed: !hasReservedPorts,
+                title: this.i18n._('The following ports are currently reserved and can not be forwarded:'),
                 html: portForwardWarningsHtml.join(""),
-                style: 'margin: 10px;'
+                autoScroll: true,
+                style: "margin-top: 10px;"
             }]
         });
         var settingsCmp = this;
