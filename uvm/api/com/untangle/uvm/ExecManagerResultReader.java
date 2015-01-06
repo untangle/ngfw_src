@@ -34,6 +34,15 @@ public class ExecManagerResultReader
         }
         return retVal;
     }
+
+    public int waitFor()
+    {
+        while (true) {
+            try {
+                return process.waitFor();
+            } catch ( InterruptedException e ) {}
+        }
+    }
     
     /**
      * Reads a single line from stdout and returns it.

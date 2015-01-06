@@ -522,8 +522,8 @@ public class NodeManagerImpl implements NodeManager
                                 long endTime   = System.currentTimeMillis();
 
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
+
                                 loadedNodesMap.put( nodeSettings.getId(), node );
-                                logger.info("Added     : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + name, exn);
                             } catch (LinkageError err) {
