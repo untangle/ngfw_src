@@ -392,8 +392,17 @@ public class NodeManagerImpl implements NodeManager
             Runnable r = new Runnable() {
                     public void run()
                     {
-                        logger.info("Stopping: " + node.getNodeProperties().getName());
+                        String name = node.getNodeProperties().getName();
+                        Long id = node.getNodeSettings().getId();
+                        
+                        logger.info("Stopping  : " + name + " (" + id + ")");
+
+                        long startTime = System.currentTimeMillis();
                         ((NodeBase)node).stopIfRunning( );
+                        long endTime = System.currentTimeMillis();
+
+                        logger.info("Stopped   : " + name + " (" + id + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
+                        
                         loadedNodesMap.remove( node.getNodeSettings().getId() );
                     }
                 };
@@ -507,8 +516,12 @@ public class NodeManagerImpl implements NodeManager
                             NodeBase node = null;
                             try {
                                 logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
+
+                                long startTime = System.currentTimeMillis();
                                 node = (NodeBase) NodeBase.loadClass(nodeProps, nodeSettings, false);
-                                logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ")");
+                                long endTime   = System.currentTimeMillis();
+
+                                logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
                                 loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Added     : " + name + " (" + nodeSettings.getId() + ")");
                             } catch (Exception exn) {
