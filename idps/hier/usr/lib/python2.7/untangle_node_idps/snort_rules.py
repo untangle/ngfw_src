@@ -49,8 +49,7 @@ class SnortRules:
         # e.g., web-cgi = web
         path, name = os.path.split( file_name )
         name, ext = os.path.splitext( name )
-        names = name.split("-")
-        category = names[0]
+        category = name
 
         # ? Special handling for "deleted"?
         
