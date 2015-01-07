@@ -21,11 +21,6 @@ locale-gen
 if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 95 5 > /dev/null
 fi
-# set pyconnector to start at boot
-if [ -x "/etc/init.d/untangle-pyconnector" ]; then
-    update-rc.d untangle-pyconnector defaults 95 5 >/dev/null 
-    ourInit untangle-pyconnector start >/dev/null 2>&1
-fi
 
 # It's almost never right to just start the untangle-vm after installation, so let
 # the user know what to do next.

@@ -149,6 +149,18 @@ public class SystemManagerImpl implements SystemManager
             if ( CRON_FILE.exists() )
                 UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         }
+
+        /**
+         * If support access in enabled, start pyconnector and enable on startup.
+         * If not, stop it and disable on startup
+         */
+        if ( settings.getSupportEnabled() ) {
+            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector defaults 95 5" );
+            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector restart" );
+        } else {
+            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector remove" );
+            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector stop" );
+        }
     }
 
     /**
