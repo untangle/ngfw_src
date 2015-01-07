@@ -22,13 +22,13 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
 {
     private static final String MOD_SUB_TEMPLATE = "[PHISH] $MIMEMessage:SUBJECT$";
    
-    private static WrappedMessageGenerator msgGenerator;
+    private WrappedMessageGenerator msgGenerator;
     
     protected PhishSmtpHandler( PhishNode node )
     {
         super( node );
 
-        PhishSmtpHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,getTranslatedBodyTemplate(), this);
+        msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,getTranslatedBodyTemplate(), this);
     }
     
     @Override
@@ -39,8 +39,8 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
         String bodyTemplate = i18nUtil.tr("The attached message from")
                               + " $MIMEMessage:FROM$\r\n"
                               + i18nUtil
-                                  .tr("was determined by the Phish Blocker to be PHISH (a fraudulent email intended to steal information).  ")
-                              + "\n\r" + i18nUtil.tr("The kind of PHISH that was found was") + " $SPAMReport:FULL$";
+                                  .tr("was determined by the Phish Blocker to be phish (a fraudulent email intended to steal information).  ")
+                              + "\n\r" + i18nUtil.tr("The kind of phish that was found was") + " $SPAMReport:FULL$";
         return bodyTemplate;
     }
     
@@ -65,7 +65,7 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler
     @Override
     protected WrappedMessageGenerator getMsgGenerator()
     {
-        return PhishSmtpHandler.msgGenerator;
+        return msgGenerator;
     }
 
 }

@@ -51,7 +51,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
     private static final String MOD_SUB_TEMPLATE = "[SPAM] $MIMEMessage:SUBJECT$";
 
-    private static WrappedMessageGenerator msgGenerator;
+    private final WrappedMessageGenerator msgGenerator;
 
     private final SpamNodeImpl node;
     private final QuarantineNodeView quarantine;
