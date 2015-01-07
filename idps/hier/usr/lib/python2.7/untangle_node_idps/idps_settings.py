@@ -59,6 +59,10 @@ class IdpsSettings:
             "interfaces": {
                 "list": []
             },
+            "active_rules": {
+                "classtypes": [],
+                "categories": []
+            },
             "nfqueueQueueNum": 2930
         }
         
@@ -145,3 +149,10 @@ class IdpsSettings:
 
     def get_nfqueue_queue_num( self ):
         return self.settings["nfqueueQueueNum"]
+    
+    def get_active_rules_categories( self ):
+        return self.settings["active_rules"]["categories"]
+    
+    def get_active_rules_classtypes( self ):
+        return self.settings["active_rules"]["classtypes"]
+
