@@ -301,7 +301,6 @@ Ext.define("Webui.config.network", {
                 "javaClass": "com.untangle.uvm.network.InterfaceSettings",
                 "v4ConfigType": "STATIC",
                 "v6ConfigType": "DISABLED",
-                "wirelessRadioMode": null,
                 "wirelessEncryption": null
             },
             fields: [{
@@ -420,8 +419,6 @@ Ext.define("Webui.config.network", {
                 name: 'wirelessPassword'
             }, {
                 name: 'wirelessChannel'
-            }, {
-                name: 'wirelessRadioMode'
             }, {
                 name: 'javaClass'
             },
@@ -1249,15 +1246,6 @@ Ext.define("Webui.config.network", {
                     store: [[1, "1"],[2, "2"],[3, "3"],[4, "4"],[5, "5"],[6, "6"],[7, "7"],[8, "8"],[9, "9"],[10, "10"],[11, "11"]],
                     width: 300,
                     queryMode: 'local'
-                }, {
-                    xtype: "combo",
-                    allowBlank: false,
-                    dataIndex: "wirelessRadioMode",
-                    fieldLabel: this.i18n._("Radio Mode"),
-                    editable: false,
-                    store: [["W80211B","802.11b"],["W80211BG","802.11bg"],["W80211BGN","802.11bgn"]], //FIXME what about 802.11ac?
-                    width: 300,
-                    queryMode: 'local'
                 }]
             }, {
                 xtype:'fieldset',
@@ -1816,7 +1804,6 @@ Ext.define("Webui.config.network", {
                         wirelessEncryption: this.down('combo[dataIndex="wirelessEncryption"]'),
                         wirelessPassword: this.down('textfield[dataIndex="wirelessPassword"]'),
                         wirelessChannel: this.down('combo[dataIndex="wirelessChannel"]'),
-                        wirelessRadioMode: this.down('combo[dataIndex="wirelessRadioMode"]'),
                         
                         bridgedTo: this.down('combo[dataIndex="bridgedTo"]')
                     };
@@ -1849,7 +1836,6 @@ Ext.define("Webui.config.network", {
                     this.cmps.wirelessSsid.status = true;
                     this.cmps.wirelessEncryption.status = true;
                     this.cmps.wirelessChannel.status = true;
-                    this.cmps.wirelessRadioMode.status = true;
                     if ( this.cmps.wirelessEncryption.getValue() != "NONE" ) {
                         this.cmps.wirelessPassword.status = true;
                     } else {

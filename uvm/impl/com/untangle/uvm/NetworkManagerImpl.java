@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -1842,7 +1844,70 @@ public class NetworkManagerImpl implements NetworkManager
         
         return fullRestartCommands;
     }
-    
+
+    /**
+     * Query a wireless card for a list of supported channels
+     */
+
+    public List<Integer> getWirelessChannels( String systemDev )
+    {
+	List<Integer> channels = new LinkedList<Integer>();
+
+	String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
+
+	String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
+	String channelDisabledPattern = "passive scanning|no IBSS|disabled";
+	String wiphyPattern = ".*wiphy (\\d)";
+	Pattern channelRegex = Pattern.compile(channelPattern);
+	Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
+	Pattern wiphyRegex = Pattern.compile(wiphyPattern);
+	Integer maxChannel = 0;
+
+	channels.add(new Integer(-1));
+
+	String wiphyId = "";
+
+	try {
+            String lines[] = infoResult.split("\\n");
+            for ( String line : lines ) {
+		Matcher match = wiphyRegex.matcher(line);
+		if ( match.find() ) {
+		    wiphyId = match.group(1);
+                }
+            }
+        } catch (Exception e) {
+            logger.error( "Error parsing wiphy", e );
+            return channels;
+        }
+
+	if ( wiphyId.length() == 0 ) {
+	    logger.error( "Error parsing wiphy for dev: " + systemDev );
+	    return channels;
+	}
+
+	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw wiphy" + wiphyId + " info" );
+
+	try {
+            String lines[] = channelResult.split("\\n");
+            for ( String line : lines ) {
+		Matcher match = channelRegex.matcher(line);
+		Matcher disabledMatch = channelDisabledRegex.matcher(line);
+		if ( match.find() && !disabledMatch.find() ) {
+		    Integer channel = Integer.valueOf(match.group(3));
+		    channels.add(channel);
+		    if (channel > maxChannel) maxChannel = channel;
+                }
+            }
+        } catch (Exception e) {
+            logger.error( "Error parsing wireless channels", e );
+            return channels;
+        }
+	
+	if (maxChannel > 11) channels.add(1, new Integer( -2 ));
+
+	return channels;
+    }
+
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
