@@ -67,8 +67,8 @@ Ext.define("Webui.config.network", {
         // in order to make the user save the valid settings when new WANs are added
         if(this.settings.qosSettings.qosEnabled) {
             for( i=0 ; i<this.settings.interfaces.list.length ; i++) {
-                var intfx =this.settings.interfaces.list[i];
-                if(intfx.isWan && (Ext.isEmpty(intfx.downloadBandwidthKbps) || Ext.isEmpty(intfx.uploadBandwidthKbps))) {
+                var intf =this.settings.interfaces.list[i];
+                if(intf.isWan && (Ext.isEmpty(intf.downloadBandwidthKbps) || Ext.isEmpty(intf.uploadBandwidthKbps))) {
                     this.markDirty();
                     break;
                 }
@@ -150,13 +150,33 @@ Ext.define("Webui.config.network", {
             var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
             main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
                 var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
-                if(!refresh) { //update network settings object
-                    for(var i=0 ; i<this.settings.interfaces.list.length ; i++) {
-                        var intfb=this.settings.interfaces.list[i];
-                        var deviceStatusInner = deviceStatusMap[intfb.physicalDev];
-                        Ext.applyIf(intfb, deviceStatusInner);
-                        var interfaceStatusInner = interfaceStatusMap[intfb.interfaceId];
-                        Ext.applyIf(intfb, interfaceStatusInner);
+                var i, intf, devSt, intfSt;
+                for(i=0 ; i<this.settings.interfaces.list.length ; i++) {
+                    intf=this.settings.interfaces.list[i];
+                    devSt = deviceStatusMap[intf.physicalDev];
+                    if(devSt) {
+                        Ext.apply(intf, {
+                            "deviceName": devSt.deviceName,
+                            "macAddress": devSt.macAddress,
+                            "duplex": devSt.duplex,
+                            "vendor": devSt.vendor,
+                            "mbit": devSt.mbit,
+                            "connected": devSt.connected
+                        });
+                    }
+                    intfSt = interfaceStatusMap[intf.interfaceId];
+                    if(intfSt) {
+                        Ext.apply(intf, {
+                            "v4Address": intfSt.v4Address,
+                            "v4Netmask": intfSt.v4Netmask,
+                            "v4Gateway": intfSt.v4Gateway,
+                            "v4Dns1": intfSt.v4Dns1,
+                            "v4Dns2": intfSt.v4Dns2,
+                            "v4PrefixLength": intfSt.v4PrefixLength,
+                            "v6Address": intfSt.v6Address,
+                            "v6Gateway": intfSt.v6Gateway,
+                            "v6PrefixLength": intfSt.v6PrefixLength
+                        });
                     }
                 }
                 var grid = this.gridInterfaces;
@@ -181,7 +201,10 @@ Ext.define("Webui.config.network", {
                             "v4Gateway": interfaceStatus.v4Gateway,
                             "v4Dns1": interfaceStatus.v4Dns1,
                             "v4Dns2": interfaceStatus.v4Dns2,
-                            "v4PrefixLength": interfaceStatus.v4PrefixLength
+                            "v4PrefixLength": interfaceStatus.v4PrefixLength,
+                            "v6Address": interfaceStatus.v6Address,
+                            "v6Gateway": interfaceStatus.v6Gateway,
+                            "v6PrefixLength": interfaceStatus.v6PrefixLength
                         });
                     }
                     //To prevent coloring the row when status is changed
@@ -191,6 +214,34 @@ Ext.define("Webui.config.network", {
                 });
                 grid.getStore().resumeEvents();
                 grid.getView().refresh();
+                
+                //--Build port forward reservations warnings--
+                var portForwardWarningsHtml=[];
+                for (i = 0; i < this.settings.interfaces.list.length; i++) {
+                    intf = this.settings.interfaces.list[i];
+                    if (intf.v4Address) {
+                        portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
+                    }
+                }
+                for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                    intf = this.settings.interfaces.list[i];
+                    if (intf.v4Address && !intf.isWan) {
+                        portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
+                    }
+                }
+                for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
+                    intf = this.settings.interfaces.list[i];
+                    if (intf.v4Address && intf.isWan) {
+                        for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
+                            var sub_intf = this.settings.interfaces.list[j];
+                            if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
+                                portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
+                            }
+                        }
+                    }
+                }
+                this.panelPortForwardRules.down('label[name="portForwardWarnings"]').setText(portForwardWarningsHtml.join(""), false);
+                //--------
                 if(refresh) {
                     Ext.MessageBox.hide();
                 }
@@ -2444,38 +2495,6 @@ Ext.define("Webui.config.network", {
             }, this)
         });
 
-        //Build port forward warnings
-        var portForwardWarningsHtml=[];
-        var hasReservedPorts = false;
-        var i;
-        var intf;
-        for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-            intf = this.settings.interfaces.list[i];
-            if (intf.v4Address) {
-                hasReservedPorts = true;
-                portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTPS services."),intf.v4Address, this.settings.httpsPort)+"<br/>");
-            }
-        }
-        for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-            intf = this.settings.interfaces.list[i];
-            if (intf.v4Address && !intf.isWan) {
-                hasReservedPorts = true;
-                portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> for HTTP services."),intf.v4Address, this.settings.httpPort)+"<br/>");
-            }
-        }
-        for ( i = 0 ; i < this.settings.interfaces.list.length ; i++) {
-            intf = this.settings.interfaces.list[i];
-            if (intf.v4Address && intf.isWan) {
-                for ( var j = 0 ; j < this.settings.interfaces.list.length ; j++) {
-                    var sub_intf = this.settings.interfaces.list[j];
-                    if (sub_intf.configType == "BRIDGED" && sub_intf.bridgedTo == intf.interfaceId) {
-                        hasReservedPorts = true;
-                        portForwardWarningsHtml.push( Ext.String.format(this.i18n._("<b>{0}:{1}</b> on {2} interface for HTTP services."),intf.v4Address, this.settings.httpPort, sub_intf.name)+"<br/>");
-                    }
-                }
-            }
-        }
-        
         var protocolStore =[[ "TCP,UDP",  "TCP & UDP"],[ "TCP",  "TCP"],[ "UDP", "UDP"]];
         var portStore =[[ "21", "FTP (21)" ],[ "25", "SMTP (25)" ],[ "53", "DNS (53)" ],[ "80", "HTTP (80)" ],[ "110", "POP3 (110)" ],[ "143", "IMAP (143)" ],[ "443", "HTTPS (443)" ],[ "1723", "PPTP (1723)" ],[ "-1", this.i18n._("Other") ]];
         this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
@@ -2497,9 +2516,13 @@ Ext.define("Webui.config.network", {
                 flex: 2,
                 border: true,
                 collapsible: true,
-                collapsed: !hasReservedPorts,
+                collapsed: false,
                 title: this.i18n._('The following ports are currently reserved and can not be forwarded:'),
-                html: portForwardWarningsHtml.join(""),
+                items: [{
+                    xtype: 'label',
+                    name: 'portForwardWarnings',
+                    html: ' '
+                }],
                 autoScroll: true,
                 style: "margin-top: 10px;"
             }]
