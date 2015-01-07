@@ -3300,7 +3300,9 @@ Ext.define("Webui.config.network", {
                 editor: {
                     xtype:'textfield',
                     emptyText: this.i18n._("[enter MAC address]"),
-                    allowBlank:false
+                    allowBlank:false,
+                    vtype:"macAddress",
+                    maskRe: /[a-fA-F0-9:]/
                 }
             },{
                 header: this.i18n._("Address"),
