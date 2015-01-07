@@ -489,6 +489,14 @@ public class NetworkManagerImpl implements NetworkManager
             InetAddress address = getInterfaceStatus( intfId ).getV4Address();
             return address;
         }
+
+        /**
+         * Xauth doesn't get an interface so we just use the first WAN address
+         */
+        if ( intfId == 252 ) {
+            InetAddress address = getFirstWanAddress();
+            return address;
+        }
         
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {

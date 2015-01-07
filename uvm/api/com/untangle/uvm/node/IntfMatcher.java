@@ -99,6 +99,16 @@ public class IntfMatcher
             intfSettings.setInterfaceId( 251 );
             intfSettings.setIsWan( false );
         }
+        /**
+         * Xauth (252) interface special handling
+         * Create a fake "interface settings" object
+         * because Xauth interface doesnt have settings
+         */
+        if ( interfaceId == 0xfc ) {
+            intfSettings = new InterfaceSettings();
+            intfSettings.setInterfaceId( 252 );
+            intfSettings.setIsWan( false );
+        }
 
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);

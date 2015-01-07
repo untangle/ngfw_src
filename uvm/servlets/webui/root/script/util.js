@@ -376,6 +376,7 @@ Ung.Util = {
         } else {
             data.push( [ 250, "OpenVPN" ] );
             data.push( [ 251, "L2TP" ] );
+            data.push( [ 252, "Xauth" ] );
         }
         if (wanMatchers) {
             data.unshift( ["wan",i18n._("Any WAN")] );
