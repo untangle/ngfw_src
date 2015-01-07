@@ -97,7 +97,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             daemonObject.usageCount = newUsageCount;
 
             if (newUsageCount == 1) {
-                execDaemonControl(daemonName, "start");
+                execDaemonControlEvil(daemonName, "start");
             }
         }
     }
@@ -116,7 +116,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             if (newUsageCount < 1) {
                 // first we should disable any monitoring that was enabled
                 disableAllMonitoring(daemonName);
-                execDaemonControl(daemonName, "stop");
+                execDaemonControlEvil(daemonName, "stop");
             }
         }
     }
@@ -180,16 +180,12 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         return daemonObject;
     }
 
-    private void execDaemonControl(String daemonName, String command)
+    /**
+     * executes daemon control command using execEvil
+     */
+    private void execDaemonControlEvil(String daemonName, String command)
     {
         String cmd = "/etc/init.d/" + daemonName + " " + command;
-        //String output = UvmContextFactory.context().execManager().execOutput(cmd);
-        // try {
-        //     String lines[] = output.split("\\r?\\n");
-        //     for (String line : lines)
-        //         logger.info(cmd + ": " + line);
-        // } catch (Exception e) {
-        // }
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             reader.waitFor();
@@ -199,6 +195,22 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         }
     }
 
+    /**
+     * executes daemon control command using execOutput()
+     * execOutput() is safer but the execManager can only run one at at time
+     */
+    private void execDaemonControl(String daemonName, String command)
+    {
+        String cmd = "/etc/init.d/" + daemonName + " " + command;
+        String output = UvmContextFactory.context().execManager().execOutput(cmd);
+        try {
+            String lines[] = output.split("\\r?\\n");
+            for (String line : lines)
+                logger.info(cmd + ": " + line);
+        } catch (Exception e) {
+        }
+    }
+    
     private void handleDaemonCheck(DaemonObject object)
     {
         synchronized( object ) {
