@@ -491,10 +491,11 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
-         * Xauth doesn't get an interface so we just use the first WAN address
+         * Xauth doesn't get an interface but there are port forwards in place
+         * for L2TP clients so we'll just have Xauth clients use the same address
          */
         if ( intfId == 252 ) {
-            InetAddress address = getFirstWanAddress();
+            InetAddress address = getInterfaceStatus( 251 ).getV4Address();
             return address;
         }
         
