@@ -198,9 +198,19 @@ class SpamTests(unittest2.TestCase):
         # Start mail sink
         remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/test_070_checkForSMTPHeaders.log --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
         sendSpamMail(host=fakeSmtpServerHost)
-        time.sleep(3) # wait for email to arrive
-        # look for added header in delivered email
+        # check for email file if there is no timeout
+        emailFound = False
+        timeout = 120
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            emailfile = remote_control.runCommand("test -f /tmp/qa@example.com.1",host=fakeSmtpServerHost)
+            if (emailfile == 0):
+                emailFound = True
+        # Either found email file or timed out so kill mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        assert (timeout != 0)
+        # look for added header in delivered email
         emailContext=remote_control.runCommand("cat /tmp/qa@example.com.1",host=fakeSmtpServerHost, stdout=True)
         lines = emailContext.split("\n")
         spamScore = 0
