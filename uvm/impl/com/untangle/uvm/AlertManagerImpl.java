@@ -182,15 +182,17 @@ public class AlertManagerImpl implements AlertManager
             if ( UvmContextFactory.context().isDevel() )
                 return;
 
-            File pidFile = new File("/var/run/ut-pyconnector.pid");
-            if ( !pidFile.exists() ) {
-                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
-                return;
-            }
+            if ( UvmContextFactory.context().systemManager().getSettings().getSupportEnabled() ) {
+                File pidFile = new File("/var/run/ut-pyconnector.pid");
+                if ( !pidFile.exists() ) {
+                    alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+                    return;
+                }
 
-            int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
-            if (result != 0)
-                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+                int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
+                if (result != 0)
+                    alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+            }
         } catch (Exception e) {
 
         }
