@@ -107,7 +107,7 @@ class UvmTests(unittest2.TestCase):
         assert(match)
 
         kernel = uvmContext.adminManager().getKernelVersion()
-        match = re.search(r'\d\.\d\.\d.*', kernel)
+        match = re.search(r'\d.*', kernel)
         assert(match)
 
         reboot_count = uvmContext.adminManager().getRebootCount()
