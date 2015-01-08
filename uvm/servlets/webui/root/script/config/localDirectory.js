@@ -113,6 +113,8 @@ Ext.define('Webui.config.localDirectory', {
                     allowBlank: false
                 },
                 renderer: Ext.bind(function(value, metadata, record) {
+                    if (record.get("passwordBase64Hash") == null)
+                        return "";
                     if(Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) {
                         return "*** "+this.i18n._("Unchanged")+" ***";
                     }
