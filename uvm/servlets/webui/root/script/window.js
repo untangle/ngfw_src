@@ -67,10 +67,13 @@ Ext.define('Ung.Window', {
     },
     // on show position and size
     onShow: function() {
+        this.doSize();
+        this.callParent(arguments);
+    },
+    doSize: function() {
         if (this.sizeToRack) {
             this.setSizeToRack();
         }
-        this.callParent(arguments);
     },
     setSizeToRack: function () {
         var objSize = main.viewport.getSize();

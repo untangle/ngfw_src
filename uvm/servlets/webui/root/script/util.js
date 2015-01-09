@@ -91,7 +91,15 @@ Ung.Util = {
                     this.setPosition(main.contentLeftWidth, 0);
                     this.setSize(objSize);
                 } else {
-                    wnd.maximize();
+                    this.maximize();
+                }
+            },
+            doSize: function() {
+                var detailsComp = this.down('fieldset[name="details"]');
+                if(!detailsComp.isHidden()) {
+                    this.setSizeToRack();
+                } else {
+                    this.center();
                 }
             },
             items: {
@@ -522,11 +530,11 @@ Ung.Util = {
         return Math.round(value/10000)/100;
     },
     resizeWindows: function() {
-        Ext.WindowMgr.each(Ung.Util.setSizeToRack);
+        Ext.WindowMgr.each(Ung.Util.doSize);
     },
-    setSizeToRack: function (win) {
-        if(win && win.sizeToRack) {
-            win.setSizeToRack();
+    doSize: function (win) {
+        if(win && win.doSize) {
+            win.doSize();
         }
     },
     defaultRenderer: function (value) {

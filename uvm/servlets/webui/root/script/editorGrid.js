@@ -1057,6 +1057,9 @@ Ext.define('Ung.RowEditorWindow', {
     },
     show: function() {
         Ung.UpdateWindow.superclass.show.call(this);
+        this.doSize();
+    },
+    doSize: function() {
         if(!this.sizeToComponent) {
             if(this.sizeToParent) {
                 this.sizeToComponent=this.grid.findParentByType("panel");
