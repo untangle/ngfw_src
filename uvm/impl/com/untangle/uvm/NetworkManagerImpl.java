@@ -856,6 +856,10 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
     {
+        if ( networkSettings == null ) {
+                throw new RuntimeException("null settings");
+        }
+        
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if (intf.getV4ConfigType() == null)
                 throw new RuntimeException("Missing V4 Config Type");
