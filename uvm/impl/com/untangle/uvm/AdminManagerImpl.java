@@ -246,6 +246,14 @@ public class AdminManagerImpl implements AdminManager
         for (String tz: timezones) {
             all.add( TimeZone.getTimeZone(tz));
         }
+        // remove TZs that the OS doesnt know
+        for ( Iterator<TimeZone> iter = all.iterator(); iter.hasNext() ; ) {
+            TimeZone tz = iter.next();
+            String path = "/usr/share/zoneinfo/" + tz.getID();
+            if ( ! ( new File(path).exists() ) ) {
+                iter.remove();
+            }
+        }
         final long d = new Date().getTime();
         Collections.sort(all, new Comparator<TimeZone>() {
                 @Override
