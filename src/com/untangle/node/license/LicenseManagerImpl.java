@@ -201,7 +201,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     }
 
     @Override
-    public int getSeatLimit()
+    public int getSeatLimit( )
+    {
+        return getSeatLimit( true );
+    }
+
+    @Override
+    public int getSeatLimit( boolean lienency )
     {
         if ( UvmContextFactory.context().isDevel() )
             return -1;
@@ -219,7 +225,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             seats = lic.getSeats();
         }
 
-        if ( seats > 0 )
+        if ( seats > 0 && lienency )
             seats = ((int)Math.round(((double)seats)*LIENENCY_PERCENT)) + LIENENCY_CONSTANT;
         
         return seats;
