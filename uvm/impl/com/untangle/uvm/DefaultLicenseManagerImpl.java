@@ -77,6 +77,11 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     {
         return -1;
     }
+
+    public int getSeatLimit( boolean lienency )
+    {
+        return -1;
+    }
     
     private boolean isGPLApp(String identifier)
     {

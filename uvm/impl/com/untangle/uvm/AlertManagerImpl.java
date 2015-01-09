@@ -841,10 +841,11 @@ public class AlertManagerImpl implements AlertManager
     private void testLicenseCompliance( List<String> alertList )
     {
         int currentSize = UvmContextFactory.context().hostTable().getCurrentLicensedSize();
-        int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
+        int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( true );
+        int actualSeatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( false );
 
         if ( seatLimit > 0 && currentSize > seatLimit ) {
-            String alertText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + seatLimit + ")";
+            String alertText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + actualSeatLimit + ")";
             alertList.add(alertText);
         }
      }

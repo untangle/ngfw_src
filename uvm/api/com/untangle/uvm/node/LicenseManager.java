@@ -37,6 +37,13 @@ public interface LicenseManager
      * If there are no valid non-trial premium liecnses, it will return -1
      */
     public int getSeatLimit();
+
+    /**
+     * Returns the max number of seats of the smallest valid non-trial premium license
+     * If there are no valid non-trial premium liecnses, it will return -1
+     * boolean specified if lienency should be applied to the seat
+     */
+    public int getSeatLimit( boolean lienency );
     
     /**
      * Requests a trial license from license server and refreshes licenses.
