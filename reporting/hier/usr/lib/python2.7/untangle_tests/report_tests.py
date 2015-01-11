@@ -20,8 +20,9 @@ defaultRackId = 1
 node = None
 nodeFirewall = None
 nodeFaild = None
+nodeWeb = None
 # special box with testshell in the sudoer group  - used to connect to as client
-syslogHostIP = "10.111.56.32"
+syslogHostIP = "10.112.56.30"
 testEmailAddress = "qa@untangletest.com"
 
 # pdb.set_trace()
@@ -95,11 +96,15 @@ class ReportTests(unittest2.TestCase):
         return "untangle-node-faild"
 
     @staticmethod
+    def nodeWebName():
+        return "untangle-node-sitefilter"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFirewall, nodeFaild, syslogSettings, syslogHostResult
+        global node, nodeFirewall, nodeFaild, nodeWeb, syslogSettings, syslogHostResult
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "Node %s already installed" % self.nodeName()
@@ -108,6 +113,7 @@ class ReportTests(unittest2.TestCase):
                 node = uvmContext.nodeManager().node(self.nodeName())
             else:
                 node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+
         if nodeFirewall == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeFWName())):
                 print "Node %s already installed" % self.nodeFWName()
@@ -121,8 +127,15 @@ class ReportTests(unittest2.TestCase):
             else:
                 nodeFaild = uvmContext.nodeManager().instantiate(self.nodeFDName(), defaultRackId)
 
-            syslogSettings = node.getSettings()
-            syslogHostResult = subprocess.call(["ping","-c","1",syslogHostIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if nodeWeb == None:
+            if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
+                print "Node %s already installed" % self.nodeWebName()
+                nodeWeb = uvmContext.nodeManager().node(self.nodeWebName())
+            else:
+                nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
+
+        syslogSettings = node.getSettings()
+        syslogHostResult = subprocess.call(["ping","-c","1",syslogHostIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
            
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -209,7 +222,7 @@ class ReportTests(unittest2.TestCase):
 
         assert(found)
 
-    def test_080_alerts(self):
+    def test_080_WAN_alerts(self):
         raise unittest2.SkipTest("Review changes in test")        
         if (syslogHostResult != 0):
             raise unittest2.SkipTest("Mail sink server unreachable")        
@@ -297,12 +310,68 @@ class ReportTests(unittest2.TestCase):
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 'summary_text', 'WAN went offline')
+        found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
+        assert(found)
+
+    def test_082_download_alerts(self):
+        raise unittest2.SkipTest("Review changes in test")        
+        if (syslogHostResult != 0):
+            raise unittest2.SkipTest("Mail sink server unreachable")        
+        settings = node.getSettings()
+        orig_settings = copy.deepcopy(settings)
+        settings["attachmentSizeLimit"] = 5
+        settings["reportingUsers"]["list"].append(createReportProfile())
+        node.setSettings(settings)
+        # set untangletest email to get to syslogHostIP where fake SMTP sink is running
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = copy.deepcopy(netsettings)
+        netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        # set admin email to get alerts
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser())
+        uvmContext.adminManager().setSettings(adminsettings)
+        # Remove old email and log files.
+        remote_control.runCommand("sudo rm /tmp/test_080_alerts*", host=syslogHostIP)
+        remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP)
+        remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/test_080_alerts.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
+
+        # start download
+        global_functions.getDownloadSpeed()
+
+        emailFound = False
+        timeout = 120
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            emailfile = remote_control.runCommand("ls -l /tmp/qa@untangletest.com*",host=syslogHostIP)
+            if (emailfile == 0):
+                emailFound = True
+        emailContext=remote_control.runCommand("grep -i 'alert' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
+        emailContext2=remote_control.runCommand("grep -i 'Host is doing' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
+
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
+        # reset all settings to base.
+        node.setSettings(orig_settings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        uvmContext.adminManager().setSettings(orig_adminsettings)
+        assert(emailFound)
+        assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeFirewall, nodeFaild
+        global node, nodeFirewall, nodeFaild, nodeWeb
         # no need to uninstall reports
         # if node != None:
         # uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
@@ -314,5 +383,8 @@ class ReportTests(unittest2.TestCase):
         if nodeFaild != None:
             uvmContext.nodeManager().destroy( nodeFaild.getNodeSettings()["id"] )
         nodeFaild = None
+        if nodeWeb != None:
+            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+        nodeWeb = None
 
 test_registry.registerNode("reporting", ReportTests)
