@@ -20,7 +20,7 @@ node = None
 nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
-fakeSmtpServerHost = '10.111.56.32'
+fakeSmtpServerHost = '10.112.56.30'
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def sendTestmessage():
@@ -190,25 +190,31 @@ class SpamTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("Fake SMTP client is unreachable, skipping smtp headers check")
+        nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['addSpamHeaders'] = True
+        nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
         # remove previous smtp log file
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
         remote_control.runCommand("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
         # Start mail sink
-        remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/test_070_checkForSMTPHeaders.log --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
+        remote_control.runCommand("sudo python fakemail.py --host " + fakeSmtpServerHost + " --log /tmp/test_070_checkForSMTPHeaders.log --port 25 --path /tmp/ --background", host=fakeSmtpServerHost, stdout=False, nowait=True)
         sendSpamMail(host=fakeSmtpServerHost)
         # check for email file if there is no timeout
         emailFound = False
-        timeout = 120
+        timeout = 60
         while not emailFound and timeout > 0:
             timeout -= 1
             time.sleep(1)
-            emailfile = remote_control.runCommand("test -f /tmp/qa@example.com.1",host=fakeSmtpServerHost)
-            if (emailfile == 0):
+            # Check to see if the delivered email file is present
+            email_file = remote_control.runCommand("test -f /tmp/qa@example.com.1",host=fakeSmtpServerHost)
+            if (email_file == 0):
                 emailFound = True
+                
         # Either found email file or timed out so kill mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        nodeData['smtpConfig']['msgAction'] = "QUARANTINE"
+        node.setSettings(nodeData)
         assert (timeout != 0)
         # look for added header in delivered email
         emailContext=remote_control.runCommand("cat /tmp/qa@example.com.1",host=fakeSmtpServerHost, stdout=True)
