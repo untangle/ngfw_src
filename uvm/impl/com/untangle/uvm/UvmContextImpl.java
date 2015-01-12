@@ -593,7 +593,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit)
     {
-        return this.reportingNode.getEvents(query, policyId, 1000);
+        return this.reportingNode.getEvents(query, policyId, limit);
     }
 
     public Object getEventsResultSet(final String query, final Long policyId, final int limit)
