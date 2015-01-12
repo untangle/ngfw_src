@@ -6,7 +6,7 @@ fi
 
 NFQUEUE_QUEUE_NUM=$(python -c "from uvm.settings_reader import get_node_settings_item; print get_node_settings_item('untangle-node-idps','nfqueueQueueNum');")
 
-QUEUE_RULE="-j NFQUEUE --queue-num $NFQUEUE_QUEUE_NUM --queue-bypass -m mark ! --mark 0x1000000/0x1000000"
+QUEUE_RULE="-j NFQUEUE --queue-num $NFQUEUE_QUEUE_NUM --queue-bypass -m mark ! --mark 0x1000000/0x1000000 -m comment --comment \"Snort\""
 
-${IPTABLES} -D FORWARD $QUEUE_RULE
-${IPTABLES} -I FORWARD $QUEUE_RULE
+${IPTABLES} -D FORWARD $QUEUE_RULE > /dev/null 2>&1
+${IPTABLES} -I FORWARD $QUEUE_RULE > /dev/null 2>&1
