@@ -673,15 +673,20 @@ class NetworkTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
+        # skip the test if interface named External is disabled since it is probably a buffalo
+        if netsettings['interfaces']['list'][remote_control.interfaceExternal]['disabled']:
+            raise unittest2.SkipTest("External is disabled")
         # Find a static interface
         i=0
+        interfaceNotFound = True
         for interface in netsettings['interfaces']['list']:
-            if interface['v4ConfigType'] == "STATIC":
+            if (interface['v4ConfigType'] == "STATIC" and not netsettings['interfaces']['list'][i]['disabled']):
+                interfaceNotFound = False
                 break
             i += 1
         # Verify interface is found
-        if (netsettings['interfaces']['list'][i]['v4ConfigType'] != "STATIC"):
-            raise unittest2.SkipTest("No static interface found")
+        if interfaceNotFound:
+            raise unittest2.SkipTest("No static enabled interface found")
         interfaceIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
         interfacePrefix = netsettings['interfaces']['list'][i]['v4StaticPrefix']
         interfaceNet = interfaceIP + "/" + str(interfacePrefix)
