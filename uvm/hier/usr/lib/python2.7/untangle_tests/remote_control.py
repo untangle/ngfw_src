@@ -4,6 +4,8 @@ import subprocess
 import time
 import datetime
 import re
+from uvm import Manager
+from uvm import Uvm
 
 # exteral global variables
 clientIP = None
@@ -21,6 +23,15 @@ __orig_stderr = None
 
 # set the key file permissions correctly just in case
 os.system("chmod 600 %s" % hostKeyFile)
+
+uvmContext = Uvm().getUvmContext()
+netsettings = uvmContext.networkManager().getNetworkSettings()
+i = 0
+for interface in netsettings['interfaces']['list']:
+    if interface['name'] == "External":
+        interfaceExternal = i
+        break
+    i += 1
 
 def __redirectOutput( logfile ):
     global __orig_stderr, __orig_stdout
