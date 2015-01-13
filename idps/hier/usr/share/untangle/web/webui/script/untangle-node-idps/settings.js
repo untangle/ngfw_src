@@ -216,13 +216,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 },
                 scope: node,
                 success: function(response){
-                    // console.log("success, response=");
-                    // console.log(response);
                     this.openSettings.call(this, Ext.decode( response.responseText ) );
                 },
                 failure: function(response){
-                    // console.log("failure, response=");
-                    // console.log(response);
                     this.openSettings.call(this, null );
                 }
             });
@@ -236,14 +232,134 @@ Ext.define('Webui.untangle-node-idps.settings', {
     statistics: null,
     // called when the component is rendered
     initComponent: function() {
+
+        this.classtypesStore = Ext.create(
+            'Ext.data.ArrayStore', {
+            fields: [ 'name', 'description', 'priority' ],
+            data: [
+                [ "attempted-admin", this.i18n._("Attempted Administrator Privilege Gain"), "high"],
+                [ "attempted-user", this.i18n._("Attempted User Privilege Gain"), "high" ],
+                [ "inappropriate-content", this.i18n._("Inappropriate Content was Detected"), "high" ],
+                [ "policy-violation", this.i18n._("Potential Corporate Privacy Violation"), "high" ],
+                [ "shellcode-detect", this.i18n._("Executable code was detected"), "high" ],
+                [ "successful-admin", this.i18n._("Successful Administrator Privilege Gain"), "high" ],
+                [ "successful-user", this.i18n._("Successful User Privilege Gain"), "high" ],
+                [ "trojan-activity", this.i18n._("A Network Trojan was detected"), "high" ],
+                [ "unsuccessful-user", this.i18n._("Unsuccessful User Privilege Gain"), "high" ],
+                [ "web-application-attack", this.i18n._("Web Application Attack"), "high" ],
+
+                [ "attempted-dos", this.i18n._("Attempted Denial of Service"), "medium" ],
+                [ "attempted-recon", this.i18n._("Attempted Information Leak"), "medium" ],
+                [ "bad-unknown", this.i18n._("Potentially Bad Trafﬁc"), "medium" ],
+                [ "default-login-attempt", this.i18n._("Attempt to login by a default username and password"), "medium" ],
+                [ "denial-of-service", this.i18n._("Detection of a Denial of Service Attack"), "medium" ],
+                [ "misc-attack", this.i18n._("Misc Attack"), "medium" ],
+                [ "non-standard-protocol", this.i18n._("Detection of a non-standard protocol or event"), "medium" ],
+                [ "rpc-portmap-decode", this.i18n._("Decode of an RPC Query"), "medium" ],
+                [ "successful-dos", this.i18n._("Denial of Service"), "medium" ],
+                [ "successful-recon-largescale", this.i18n._("Large Scale Information Leak"), "medium" ],
+                [ "successful-recon-limited", this.i18n._("Information Leak"), "medium" ],
+                [ "suspicious-filename-detect", this.i18n._("A suspicious filename was detected"), "medium" ],
+                [ "suspicious-login", this.i18n._("An attempted login using a suspicious username was detected"), "medium" ],
+                [ "system-call-detect", this.i18n._("A system call was detected"), "medium" ],
+                [ "unusual-client-port-connection", this.i18n._("A client was using an unusual port"), "medium" ],
+                [ "web-application-activity", this.i18n._("Access to a potentially vulnerable web application"), "medium" ],
+
+                [ "icmp-event", this.i18n._("Generic ICMP event"), "low" ],
+                [ "misc-activity", this.i18n._("Misc activity"), "low" ],
+                [ "network-scan", this.i18n._("Detection of a Network Scan"), "low" ],
+                [ "not-suspicious", this.i18n._("Not Suspicious Traffic"), "low" ],
+                [ "protocol-command-decode", this.i18n._("Generic Protocol Command Decode"), "low" ],
+                [ "string-detect", this.i18n._("A suspicious string was detected"), "low" ],
+                [ "unknown", this.i18n._("Unknown Trafﬁc"), "low" ],
+
+                [ "tcp-connection", this.i18n._("A TCP connection was detected"), "low" ]
+            ]
+        });
+
+        this.categoriesStore = Ext.create(
+            'Ext.data.ArrayStore', {
+            fields: [ 'name', 'description' ],
+            data: [
+            [ "app-detect", this.i18n._("This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.") ],
+            [ "blacklist", this.i18n._("This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.") ],
+            [ "browser-chrome", this.i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the “browser-webkit” category, as Chrome has enough vulnerabilities to be broken out into it’s own, and while it uses the Webkit rendering engine, there’s a lot of other features to Chrome.)") ],
+            [ "browser-firefox", this.i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the “Gecko” engine. (Thunderbird email client, etc)") ],
+            [ "browser-ie", this.i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
+            [ "browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple’s Safari, RIM’s mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
+            [ "browser-other", this.i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
+            [ "browser-plugins", this.i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
+            [ "content-replace", this.i18n._("This category containt any rule that utilizes the “replace” functionality inside of Snort.") ],
+            [ "deleted", this.i18n._("When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.") ],
+            [ "exploit", this.i18n._("This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.") ],
+            [ "exploit-kit", this.i18n._("This category contains rules that are specifically tailored to detect exploit kit activity. This does not include “post-compromise” rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.") ],
+            [ "file-executable", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.") ],
+            [ "file-flash", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.") ],
+            [ "file-image", this.i18n._("This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)") ],
+            [ "file-identify", this.i18n._("This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.") ],
+            [ "file-multimedia", this.i18n._("This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)") ],
+            [ "file-office", this.i18n._("This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)") ],
+            [ "file-pdf", this.i18n._("This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)") ],
+            [ "file-other", this.i18n._("This category contains rules for vulnerabilities present inside a file, that doesn’t fit into the other categories above.") ],
+            [ "indicator-compromise", this.i18n._("This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.") ],
+            [ "indicator-obfuscation", this.i18n._("This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.") ],
+            [ "indicator-shellcode", this.i18n._("This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old ”shellcode.rules”.") ],
+            [ "malware-backdoor", this.i18n._("This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.") ],
+            [ "malware-cnc", this.i18n._("This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from “Master to Zombie” type stuff will also be here.") ],
+            [ "malware-tools", this.i18n._("This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.") ],
+            [ "malware-other", this.i18n._("This category contains rules that are malware related, but don’t fit into one of the other ’malware’ categories.") ],
+            [ "os-linux", this.i18n._("This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.") ],
+            [ "os-solaris", this.i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
+            [ "os-windows", this.i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
+            [ "os-other", this.i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
+            [ "policy-multimedia", this.i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
+            [ "policy-social", this.i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
+            [ "policy-other", this.i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
+            [ "policy-spam", this.i18n._("This category is for rules that may indicate the presence of spam on the network.") ],
+            [ "protocol-finger", this.i18n._("This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.") ],
+            [ "protocol-ftp", this.i18n._("This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.") ],
+            [ "protocol-icmp", this.i18n._("This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.") ],
+            [ "protocol-imap", this.i18n._("This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.") ],
+            [ "protocol-pop", this.i18n._("This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.") ],
+            [ "protocol-services", this.i18n._("This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.") ],
+            [ "protocol-voip", this.i18n._("This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.") ],
+            [ "pua-adware", this.i18n._("This category deals with “pua” or Potentially Unwanted Applications that deal with adware or spyware.") ],
+            [ "pua-p2p", this.i18n._("This category deals with “pua” or Potentially Unwanted Applications that deal with p2p.") ],
+            [ "pua-toolbars", this.i18n._("This category deals with “pua” or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)") ],
+            [ "pua-other", this.i18n._("This category deals with “pua” or Potentially Unwanted Applications that don’t fit into one of the categories shown above.") ],
+            [ "server-apache", this.i18n._("This category deals with vulnerabilities in or attacks against the Apache Web Server.") ],
+            [ "server-iis", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.") ],
+            [ "server-mssql", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft SQL Server.") ],
+            [ "server-mysql", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle’s MySQL server.") ],
+            [ "server-oracle", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle’s Oracle DB Server.") ],
+            [ "server-webapp", this.i18n._("This category deals with vulnerabilities in or attacks against Web based applications on servers.") ],
+            [ "server-mail", this.i18n._("This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.") ],
+            [ "server-other", this.i18n._("This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.") ]
+            ]
+        });
+
+//        console.log(this);
 //            this.statistics = this.getRpcNode().getStatistics();
-//        this.buildStatus();
+        this.buildStatus();
         this.buildRules();
         this.buildEventLog();
         // builds the tab panel with the tabs
-//        this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
-        this.buildTabPanel([this.panelConfiguration, this.panelRules, this.gridEventLog]);
+        this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
+//        this.buildTabPanel([this.panelConfiguration, this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
+
+
+        if( this.settings.configured == false &&
+            !this.wizardWindow ){
+            var launchWizard = Ext.create( 
+                'Ext.util.DelayedTask', 
+                function(){
+                    this.setupWizard();
+                },
+                this
+            );
+            launchWizard.delay(100);
+        }
     },
     // Status Panel
     buildStatus: function() {
@@ -284,6 +400,18 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     labelAlign:'left',
 //                        value: this.statistics.totalBlocking
                 }]
+            }, {
+                title: this.i18n._("Setup Wizard"),
+                items: [
+                    {
+                        xtype: "button",
+                        name: 'setup_wizard_button',
+                        text: this.i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
+                        iconCls: "action-icon",
+                        handler: Ext.bind(function() {
+                            this.setupWizard();
+                        }, this)
+                    }]
             }, {
                 title: this.i18n._('Note'),
                 cls: 'description',
@@ -707,14 +835,82 @@ Ext.define('Webui.untangle-node-idps.settings', {
             }]
         });
     },
+    setupWizard: function() {
+        var i;
+        if (this.wizardWindow) {
+            Ext.destroy(this.wizardWindow);
+        }
+        var welcomeCard = Ext.create('Webui.untangle-node-idps.Wizard.Welcome', {
+            i18n: this.i18n,
+            node: this.getRpcNode(),
+            gui: this
+        });
+        var classtypesCard = Ext.create('Webui.untangle-node-idps.Wizard.Classtypes', {
+            i18n: this.i18n,
+            node: this.getRpcNode(),
+            gui: this
+        });
+        var categoriesCard = Ext.create('Webui.untangle-node-idps.Wizard.Categories', {
+            i18n: this.i18n,
+            node: this.getRpcNode(),
+            gui: this
+        });
+        var congratulationsCard = Ext.create('Webui.untangle-node-idps.Wizard.Congratulations', {
+            i18n: this.i18n,
+            node: this.getRpcNode(),
+            nodeWidget: this.node,
+            gui: this
+        });
+        var setupWizard = Ext.create('Ung.Wizard',{
+            modalFinish: true,
+            hasCancel: true,
+            cardDefaults: {
+                labelWidth: 200,
+                cls: 'untangle-form-panel'
+            },
+            cards: [welcomeCard, classtypesCard, categoriesCard, congratulationsCard]
+        });
+        this.wizardWindow = Ext.create('Ung.Window',{
+            title: this.i18n._("Intrusion Prevention Setup Wizard"),
+            closeAction: "cancelAction",
+            wizard: setupWizard,
+            layout: "fit",
+            items: setupWizard,
+            endAction: Ext.bind(function() {
+                this.wizardWindow.hide();
+                Ext.destroy(this.wizardWindow);
+//                this.reload();
+            }, this),
+            cancelAction: Ext.bind(function() {
+                this.wizardWindow.wizard.cancelAction();
+            }, this)
+        });
+
+        setupWizard.cancelAction=Ext.bind(function() {
+            if(!this.wizardWindow.wizard.finished) {
+                Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
+                    this.wizardWindow.endAction();
+                }, this));
+            } else {
+                this.wizardWindow.endAction();
+            }
+        }, this);
+
+        this.wizardWindow.show();
+        setupWizard.goToPage(0);
+    },
     applyAction: function(){
         this.callParent();
     },
     beforeSave: function(isApply,handler) {
-        this.settings.rules.list = null;
-        this.settings.variables.list = null;
-        this.settings.rules.list = this.gridRules.getPageList();
-        this.settings.variables.list = this.gridVariables.getPageList();
+        if( this.wizard ){
+            this.wizard = false;
+        }else{
+            this.settings.rules.list = null;
+            this.settings.variables.list = null;
+            this.settings.rules.list = this.gridRules.getPageList();
+            this.settings.variables.list = this.gridVariables.getPageList();
+        }
         handler.call(this, isApply);
     },
     save: function(isApply) {
@@ -749,4 +945,452 @@ Ext.define('Webui.untangle-node-idps.settings', {
 //            this.statistics = this.getRpcNode().getStatistics();
     }
 });
-//# sourceURL=ips-settings.js
+
+/* IDPS wizard configuration cards. */
+Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
+    constructor: function( config ) {
+        this.i18n = config.i18n;
+        this.node = config.node;
+        this.gui = config.gui;
+
+        var items = [{
+            xtype: 'container',
+            html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>'
+        },{
+            xtype: 'container',
+            html: 
+                this.i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
+            cls: 'description',
+            bodyStyle: 'padding-bottom:10px',
+            border: false
+        },{
+            xtype: 'container',
+            html: 
+                this.i18n._("This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."),
+            cls: 'description',
+            bodyStyle: 'padding-bottom:10px',
+            border: false
+        },{
+            xtype: 'container',
+            html: 
+                this.i18n._("It is highly suggested that you use Recommended values."),
+            cls: 'description',
+            bodyStyle: 'padding-bottom:10px',
+            border: false
+        }];
+
+        if( this.gui.getSettings().configured == true ){
+            items.push({
+                html: this.i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
+                cls: 'description warning',
+                border: false
+            });
+        }
+
+        this.title = this.i18n._("Welcome");
+        this.panel = Ext.create('Ext.form.Panel',{
+            border: false,
+            items: items
+        });
+
+        this.onNext = Ext.bind( this.loadDefaultSettings, this );
+        this.initialLoad = true;
+
+    },
+
+    loadDefaultSettings: function(handler){
+        if( this.initialLoad == true ){
+            this.initialLoad = false;
+            handler();
+        }else{
+            Ext.MessageBox.wait(this.i18n._("Determining recommended settings..."), this.i18n._("Please wait"));
+            Ext.Ajax.request({
+                url: "/webui/download",
+                method: 'POST',
+                params: {
+                    type: "IdpsSettings",
+                    arg1: "wizard",
+                    arg2: this.gui.node.nodeId
+                },
+                scope: this,
+                success: function(response){
+                    this.gui.wizardSettings = Ext.decode( response.responseText );
+                    this.gui.wizardSettings.recommended = this.gui.wizardSettings.active_rules;
+                    Ext.MessageBox.hide();
+                    handler();
+                },
+                failure: function(response){
+                    Ext.MessageBox.hide();
+                    Ext.MessageBox.alert(
+                        this.i18n._("Setup Wizard Error"), 
+                        this.i18n._("Unable to obtain default settings.  Please run the Setup Wizard again."), 
+                        Ext.bind(function () {
+                        this.gui.wizardWindow.hide();
+                    }, this));
+                }
+            });
+        }
+    }
+});
+
+Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
+    constructor: function( config ) {
+        this.i18n = config.i18n;
+        this.node = config.node;
+        this.nodeWidget = config.nodeWidget;
+        this.gui = config.gui;
+
+        this.classtypesCheckboxGroup = {
+            xtype: 'checkboxgroup',
+            fieldLabel: this.i18n._("Classtypes"),
+            columns: 1,
+            items: [],
+//            value: this.gui.wizardSettings.active_rules.classtypes,
+            // getValue: function(){
+            //     return 'abc';
+            // }
+        };
+        this.gui.classtypesStore.each( function(record){
+            this.classtypesCheckboxGroup.items.push({
+                boxLabel: record.get( 'name' ) + ' (' + record.get( 'priority' ) + ')',
+                name: 'classtypes_selected',
+//                tooltip: record.get( 'description' ),
+                inputValue: record.get( 'name' )
+            });
+        }, this );
+
+        this.title = this.i18n._( "Classtypes" );
+        this.panel = Ext.create('Ext.form.Panel',{
+            border: false,
+            items: [{
+                xtype: 'container',
+                html: '<h2 class="wizard-title">'+this.i18n._("Classtypes")+'</h2>'
+            },{
+                xtype: 'container',
+                html: this.i18n._("Classtypes are a generalized  grouping for rules, such as attempts to gain user access."),
+                cls: 'description',
+                border: false,
+            },{
+                name: 'classtypes',
+                xtype: 'radio',
+                inputValue: 'recommended',
+                boxLabel: this.i18n._('Recommended (default)'),
+                hideLabel: true,
+                checked: true,
+                handler: Ext.bind(function(elem, checked) {
+                    this.setVisible( elem.inputValue, checked );
+                }, this)
+            },{
+                name: 'classtypes_recommended_settings',
+                xtype:'fieldset',
+                hidden:true,
+                html: "<i>" + this.i18n._("Recommended classtype Settings") + "</i>"
+            },{
+                name: 'classtypes',
+                xtype: 'radio',
+                inputValue: 'name',
+                boxLabel: this.i18n._('Custom'),
+                hideLabel: true,
+                checked: false,
+                handler: Ext.bind(function(elem, checked) {
+                    this.setVisible( elem.inputValue, checked );
+                }, this)                
+            },{
+                name: 'classtypes_name_settings',
+                xtype:'fieldset',
+                hidden:true,
+                items: [
+                    this.classtypesCheckboxGroup
+                ]
+            }]
+        });
+
+        this.setVisible('recommended', true);
+
+        this.onLoad = Ext.bind( this.setEnabled, this );
+        this.onNext = Ext.bind( this.getValues, this );
+    },
+
+    setVisible: function( id, checked ){
+        if( checked == false ){
+            return;
+        }
+        Ext.Array.each( 
+            this.panel.query(""), 
+            function( c ){ 
+                if( !c.name || c.name.indexOf('classtypes_') != 0 ){
+                    return true;
+                }
+                if( c.xtype == "fieldset"){
+                    if( c.name.indexOf( id ) != -1 ){
+                        c.setVisible(true);
+                    }else{
+                        c.setVisible(false);
+                    }
+                }
+            }
+        );
+    },
+
+    setEnabled: function( handler ){
+        if( this.gui.wizardSettings.active_rules &&
+            typeof( this.gui.wizardSettings.active_rules.classtypes ) == 'object' ){
+            for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
+                var value = this.gui.wizardSettings.active_rules.classtypes[i];
+                Ext.Array.each(
+                    this.panel.query("checkbox[name=classtypes_selected]"),
+                    function(c){
+                        if( c.inputValue == value ){
+                            c.setValue(true);
+                        }
+                    }
+                );
+            }
+
+            if( this.gui.wizardSettings.active_rules.classtypes.length == 0 ){
+                this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
+            }else{
+                this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.classtypes.join( ", "));
+            }
+        }
+        handler();
+    },
+
+    getValues: function( handler ){
+        if( this.panel.down("radio[name=classtypes]").getGroupValue() == "recommended") {
+            this.gui.wizardSettings.active_rules.classtypes = this.gui.wizardSettings.recommended.classtypes;
+        }else{
+            this.gui.wizardSettings.active_rules.classtypes = [];
+            Ext.Array.each( 
+                this.panel.query("checkbox[name=classtypes_selected][checked=true]"), 
+                function( c ){ 
+                    this.gui.wizardSettings.active_rules.classtypes.push( c.inputValue );
+                },
+                this
+            );
+        }
+        handler();
+    }
+
+});
+
+Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
+    constructor: function( config ) {
+        this.i18n = config.i18n;
+        this.node = config.node;
+        this.nodeWidget = config.nodeWidget;
+        this.gui = config.gui;
+
+        var categoriesCheckboxGroup = {
+            xtype: 'checkboxgroup',
+            fieldLabel: this.i18n._("Categories"),
+            columns: 1,
+            items: []
+        };
+        this.gui.categoriesStore.each( function(record){
+            categoriesCheckboxGroup.items.push({
+                boxLabel: record.get( 'name' ),
+//                tooltip: record.get( 'description' ),
+                name: 'categories_selected',
+                inputValue: record.get( 'name' )
+            });
+        } );
+
+        this.title = this.i18n._( "Categories" );
+        this.panel = Ext.create('Ext.form.Panel',{
+            border: false,
+            items: [{
+                xtype: 'container',
+                html: '<h2 class="wizard-title">'+this.i18n._("Categories")+'</h2>'
+            },{
+                xtype: 'container',
+                html: this.i18n._("Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."),
+                cls: 'description',
+                border: false,
+            },{
+                name: 'categories',
+                xtype: 'radio',
+                inputValue: 'recommended',
+                boxLabel: this.i18n._('Recommended (default)'),
+                hideLabel: true,
+                checked: true,
+                handler: Ext.bind(function(elem, checked) {
+                    this.setVisible( elem.inputValue, checked );
+                }, this)
+            },{
+                name: 'categories_recommended_settings',
+                xtype:'fieldset',
+                hidden:true
+            },{
+                name: 'categories',
+                xtype: 'radio',
+                inputValue: 'name',
+                boxLabel: this.i18n._('Select by name'),
+                hideLabel: true,
+                checked: false,
+                handler: Ext.bind(function(elem, checked) {
+                    this.setVisible( elem.inputValue, checked );
+                }, this)                
+            },{
+                name: 'categories_name_settings',
+                xtype:'fieldset',
+                hidden:true,
+                items: [{
+                    html: "<i>" + this.i18n._("Named Category Settings") + "</i>",
+                    cls: 'description',
+                    bodyStyle: 'padding-top:10px',
+                    border: false
+                    },
+                    categoriesCheckboxGroup
+                ]
+            }]
+        });
+
+        this.setVisible('recommended', true);
+
+        this.onLoad = Ext.bind( this.setEnabled, this );
+        this.onNext = Ext.bind( this.getValues, this );
+    },
+
+    setVisible: function( id, checked ){
+        if( checked == false ){
+            return;
+        }
+        Ext.Array.each( 
+            this.panel.query(""), 
+            function( c ){ 
+                if( !c.name || c.name.indexOf('categories_') != 0 ){
+                    return true;
+                }
+                if( c.xtype == "fieldset"){
+                    if( c.name.indexOf( id ) != -1 ){
+                        c.setVisible(true);
+                    }else{
+                        c.setVisible(false);
+                    }
+                }
+            }
+        );
+    },
+
+    setEnabled: function( handler ){
+        if( this.gui.wizardSettings.active_rules &&
+            typeof( this.gui.wizardSettings.active_rules.categories ) == 'object' ){
+            for( var i = 0; i < this.gui.wizardSettings.active_rules.categories.length; i++ ){
+                var value = this.gui.wizardSettings.active_rules.categories[i];
+                Ext.Array.each(
+                    this.panel.query("checkbox[name=categories_selected]"),
+                    function(c){
+                        if( c.inputValue == value ){
+                            c.setValue(true);
+                        }
+                    }
+                );
+            }
+
+            if( this.gui.wizardSettings.active_rules.categories.length == 0 ){
+                this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
+            }else{
+                this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.categories.join( ", "));
+            }
+        }
+        handler();
+    },
+    
+    getValues: function( handler ){
+        if( this.panel.down("radio[name=categories]").getGroupValue() == "recommended") {
+            this.gui.wizardSettings.active_rules.categories = this.gui.wizardSettings.recommended.categories;
+        }else{
+            this.gui.wizardSettings.active_rules.categories = [];
+            Ext.Array.each( 
+                this.panel.query("checkbox[name=categories_selected][checked=true]"), 
+                function( c ){ 
+                    this.gui.wizardSettings.active_rules.categories.push( c.inputValue );
+                },
+                this
+            );
+        }
+        handler();
+    }
+});
+
+
+Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
+    constructor: function( config ) {
+        this.i18n = config.i18n;
+        this.node = config.node;
+        this.nodeWidget = config.nodeWidget;
+        this.gui = config.gui;
+
+        this.title = this.i18n._( "Finish" );
+        this.panel = Ext.create('Ext.form.Panel',{
+            border: false,
+            items: [{
+                    xtype: 'container',
+                    html: '<h2 class="wizard-title">'+this.i18n._("Congratulations!")+'</h2>'
+                }, {
+                    xtype: 'container',
+                    html: this.i18n._('Intrusion Prevention is now configured and enabled.'),
+                    cls: 'description',
+                    border: false
+                }]
+        });
+
+        this.onNext = Ext.bind(this.completeWizard, this );
+    },
+
+    completeWizard: function( handler ) {
+        /*
+         * From the default list, disable rules that aren't in specified classtypes or categories.
+         */
+        var match;
+        for( var i = 0; i < this.gui.wizardSettings.rules.list.length; i++ ){
+            match = false;
+            if( ( this.gui.wizardSettings.active_rules.classtypes.indexOf(this.gui.wizardSettings.rules.list[i].classtype) != -1 ) ||
+                ( this.gui.wizardSettings.active_rules.categories.indexOf(this.gui.wizardSettings.rules.list[i].category) != -1 ) ){
+                match = true;
+            }
+            if( match == false ){
+                this.gui.wizardSettings.rules.list[i].log = false;
+                this.gui.wizardSettings.rules.list[i].block = false;
+            }
+        }
+
+        this.gui.settings.active_rules = this.gui.wizardSettings.active_rules;
+        this.gui.settings.rules = this.gui.wizardSettings.rules;
+        this.gui.settings.configured = true;
+
+        /*
+         * Reload rules editor.  
+         */
+        Ext.Function.defer(
+            function(){
+                this.gui.down("[name=Rules]").buildData();
+                this.gui.down("[name=Rules]").reload();
+            },
+            1000,
+            this
+        );
+
+        /*
+         * Save, enable, teardown wizard
+         */
+        this.gui.dirtyFlag = true;
+        this.gui.wizard = true;
+
+        this.gui.applyAction();
+
+        this.nodeWidget.setPowerOn(true);
+        this.nodeWidget.setState("attention");
+        this.gui.getRpcNode().start(Ext.bind(function(result, exception) {
+            this.gui.wizardWindow.endAction();
+            this.gui.getRpcNode().getRunState(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.nodeWidget.updateRunState(result);
+            }, this));
+        }, this));
+        this.gui.wizardWindow.hide();
+
+    }
+});
+

@@ -3,8 +3,10 @@
  */
 package com.untangle.node.idps;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +25,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -49,7 +52,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
-
 
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -160,6 +162,29 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         return settingsName;
     }
 
+    public String getWizardSettingsFileName()
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeId = this.getNodeSettings().getId().toString();
+
+        ExecManager execManager = UvmContextFactory.context().createExecManager();
+        String memorySettings = "";
+        int totalMemory = 0;
+        String result = execManager.execOutput( "/usr/bin/awk '/MemTotal:/ {print $2}' /proc/meminfo" );
+        execManager.close();
+        if ( result != null &&
+             ! "".equals(result) ) {
+            totalMemory = Integer.parseInt( result.trim() ) * 1024;
+        }
+        if( totalMemory < ( 1058111488 * 2 ) ){
+            memorySettings = "_1G";
+        }
+        // Others?  Read updates file for possible values?
+ 
+        String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
+        return settingsName;
+    }
+
     public void initializeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -226,8 +251,15 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 return;
             }
 
-            if( action.equals("load") ){
-                String settingsName = node.getSettingsFileName();
+            if( action.equals("load") ||
+                action.equals("wizard") ){
+                String settingsName;
+                if( action.equals("wizard") ){  
+                    settingsName = node.getWizardSettingsFileName();
+                }else{
+                    settingsName = node.getSettingsFileName();
+                }
+                logger.warn("settngsName=" + settingsName );
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
                     resp.setHeader("Content-Type","application/json");

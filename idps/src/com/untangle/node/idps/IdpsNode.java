@@ -12,7 +12,8 @@ public interface IdpsNode extends Node
     EventLogQuery[] getEventQueries();
 
     public String getSettingsFileName();
+    public String getWizardSettingsFileName();
+    
     public void initializeSettings();
     public void saveSettings( String tempFileName );
-
 }
