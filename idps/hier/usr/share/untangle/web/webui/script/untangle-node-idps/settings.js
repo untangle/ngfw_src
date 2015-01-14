@@ -286,7 +286,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             [ "browser-chrome", this.i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the 'browser-webkit' category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)") ],
             [ "browser-firefox", this.i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the 'Gecko' engine. (Thunderbird email client, etc)") ],
             [ "browser-ie", this.i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
-            [ "browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM’s mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
+            [ "browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
             [ "browser-other", this.i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
             [ "browser-plugins", this.i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
             [ "content-replace", this.i18n._("This category containt any rule that utilizes the 'replace' functionality inside of Snort.") ],
