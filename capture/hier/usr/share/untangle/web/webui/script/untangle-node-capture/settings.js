@@ -357,6 +357,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 editor:{
                     xtype:'textfield',
                     emptyText: this.i18n._("[enter address]"),
+                    vtype: 'ipMatcher',
                     allowBlank: false
                 }
             }, {
