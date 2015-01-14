@@ -15,5 +15,6 @@ public interface IdpsNode extends Node
     public String getWizardSettingsFileName();
     
     public void initializeSettings();
+    public void createDefaultSettings( String filename );
     public void saveSettings( String tempFileName );
 }

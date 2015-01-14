@@ -177,7 +177,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             totalMemory = Integer.parseInt( result.trim() ) * 1024;
         }
         if( totalMemory < ( 1058111488 * 2 ) ){
-            memorySettings = "_1G";
+            memorySettings = "_1GB";
         }
         // Others?  Read updates file for possible values?
  
@@ -212,6 +212,29 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             settingsManager.save( getSettingsFileName(), tempFileName, true );
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
+        }
+    }
+
+    public void createDefaultSettings( String filename )
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+
+        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
+            "/idps-generate-defaults.py" + 
+            " --templates /usr/share/untangle-snort-config/current/templates" +
+            " --rules /usr/share/untangle-snort-config/current/rules" +
+            " --defaults " + System.getProperty("uvm.lib.dir") + "/untangle-node-idps" +
+            " --filename " + filename
+        );
+        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+        try{
+            String lines[] = result.split("\\r?\\n");
+            logger.warn("idps config: ");
+            for ( String line : lines ){
+                logger.warn("idps config: " + line);
+            }
+        }catch( Exception e ){
+
         }
     }
 
@@ -259,14 +282,17 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 }else{
                     settingsName = node.getSettingsFileName();
                 }
-                logger.warn("settngsName=" + settingsName );
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
                     resp.setHeader("Content-Type","application/json");
 
                     File f = new File( settingsName );
                     if( !f.exists() ){
-                        node.initializeSettings();
+                        if( action.equals("wizard") ){  
+                            node.createDefaultSettings( settingsName );
+                        }else{
+                            node.initializeSettings();
+                        }
                     }
                     byte[] buffer = new byte[1024];
                     int read;
@@ -322,7 +348,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
                 }
                 UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
-                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untange" );
+                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
             }
         }
     }

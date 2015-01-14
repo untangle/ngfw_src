@@ -32,9 +32,10 @@ def main(argv):
     defaults_dir = ""
     templates_dir = ""
     nodeId = "0"
+    file_name = ""
 	
     try:
-		opts, args = getopt.getopt(argv, "hsret:d", ["help", "rules=", "defaults=", "templates=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsretf:d", ["help", "rules=", "defaults=", "templates=", "filename=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -50,6 +51,8 @@ def main(argv):
             rules_dir = arg
         elif opt in ( "-t", "--templates"):
             templates_dir = arg
+        elif opt in ( "-f", "--filename"):
+            file_name = arg
 
     if _debug == True:
         print "rules_dir = " + rules_dir
@@ -62,6 +65,8 @@ def main(argv):
     snort_rules.load( True )
 
     for file_name in os.listdir( templates_dir ):
+        if file_name != "" and file_name != file_name:
+            continue
         settings = untangle_node_idps.IdpsSettings( nodeId )
         settings.load( templates_dir + "/" + file_name )
         settings.initialize( snort_conf, snort_rules )
