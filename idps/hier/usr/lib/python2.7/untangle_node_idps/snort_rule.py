@@ -65,10 +65,15 @@ class SnortRule:
             msg = msg[1:-1]
         self.set_options( "msg", '"' + msg + '"' )
         
+    def get_msg( self ):
+        return self.options["msg"]
+        
     def set_sid( self, sid ):
         self.set_options( "sid", sid )
 
     def set_classtype( self, classtype ):
+        if classtype.startswith('"') and classtype.endswith('"'):
+            classtype = classtype[1:-1]
         self.set_options( "classtype", classtype )
 
     def get_enabled( self ):

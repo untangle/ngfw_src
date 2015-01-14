@@ -11,6 +11,24 @@ class IdpsSettings:
     #
     # NGFW settings management
     #
+    default_settings = {
+        "variables": {
+            "list": []
+        },
+        "rules": {
+            "list": []
+        },
+        "interfaces": {
+            "list": []
+        },
+        "active_rules": {
+            "classtypes": [],
+            "categories": []
+        },
+        "nfqueueQueueNum": 2930,
+        "configured": False
+    }
+    
     def __init__( self, nodeId, save_file_name = "" ):
         self.nodeId = nodeId
         self.file_name = "/usr/share/untangle/settings/untangle-node-idps/settings_" + self.nodeId + ".js"
@@ -21,23 +39,26 @@ class IdpsSettings:
             
         self.rules = SnortRules( nodeId )
 
-    def load( self ):
-        self.settings_file = open( self.file_name )
+    def load( self, file_name = "" ):
+        if file_name == "":
+            file_name = self.file_name
+            
+        self.settings_file = open( file_name )
         self.settings = json.load( self.settings_file )
         self.settings_file.close()
 
-        ## Convert rules to snort rules object
-        for settings_rule in self.settings["rules"]["list"]:
-#            match_rule = re.search( SnortRule.text_regex, settings_rule["text"] )
-            match_rule = re.search( SnortRule.text_regex, settings_rule["rule"] )
-            if match_rule:
-                rule = SnortRule( match_rule, settings_rule["category"] )
-                rule.set_action( settings_rule["log"], settings_rule["block"] )
-                rule.set_msg( settings_rule["msg"] )
-                rule.set_sid( settings_rule["sid"] )
-                self.rules.addRule( rule )
-            else:
-                print "error with rule:" + settings_rule["text"]
+        if hasattr( self.settings, "rules" ) == True:
+            ## Convert rules to snort rules object
+            for settings_rule in self.settings["rules"]["list"]:
+                match_rule = re.search( SnortRule.text_regex, settings_rule["rule"] )
+                if match_rule:
+                    rule = SnortRule( match_rule, settings_rule["category"] )
+                    rule.set_action( settings_rule["log"], settings_rule["block"] )
+                    rule.set_msg( settings_rule["msg"] )
+                    rule.set_sid( settings_rule["sid"] )
+                    self.rules.addRule( rule )
+                else:
+                    print "error with rule:" + settings_rule["text"]
         
     def exists( self ):
         return os.path.exists( self.file_name )
@@ -47,24 +68,13 @@ class IdpsSettings:
         # Create a new settings file based on the processed
         # rule set and default variables from snort configuration.
         #
-        
-        ## create in proper internal way...
-        self.settings = { 
-            "variables": {
-                "list": []
-            },
-            "rules": {
-                "list": []
-            },
-            "interfaces": {
-                "list": []
-            },
-            "active_rules": {
-                "classtypes": [],
-                "categories": []
-            },
-            "nfqueueQueueNum": 2930
-        }
+        if hasattr( self, 'settings') == False:
+            self.settings = IdpsSettings.default_settings
+        else:            
+            settings_keys = self.settings.keys()
+            for key in IdpsSettings.default_settings.keys():
+                if not key in settings_keys:
+                    self.settings[key] = IdpsSettings.default_settings[key]
         
         network_settings_file = open( "/usr/share/untangle/settings/untangle-vm/network.js" )
         network_settings = json.load( network_settings_file )
@@ -108,7 +118,10 @@ class IdpsSettings:
             
         self.rules = rules
         
-    def save( self ):
+    def save( self, file_name = "" ):
+        if file_name == "":
+            file_name = self.save_file_name
+            
         self.settings["rules"] = {
             "list": []
         }
@@ -128,12 +141,11 @@ class IdpsSettings:
                 "rule": rule.build()
             } );
         
-        settings_file = open( self.save_file_name, "w" )
+        settings_file = open( file_name, "w" )
         json.dump( self.settings, settings_file, False, True, True, True, None, 0 )
         settings_file.close()
 
     def get_rules( self ):
-#       return self.settings["rules"]["list"]
        return self.rules
 
     def get_variables( self ):
