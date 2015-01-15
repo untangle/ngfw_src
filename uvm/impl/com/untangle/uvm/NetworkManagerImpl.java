@@ -1898,7 +1898,7 @@ public class NetworkManagerImpl implements NetworkManager
 	    return channels;
 	}
 
-	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw wiphy" + wiphyId + " info" );
+	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
 
 	try {
             String lines[] = channelResult.split("\\n");
