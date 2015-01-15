@@ -24,6 +24,7 @@ public class IPMatcher
     private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_RANGE = "-";
     private static final String MARKER_SUBNET = "/";
+    private static final String IPADDR_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
 
     private static IPMatcher ANY_MATCHER = new IPMatcher(MARKER_ANY);
     private static IPMatcher NIL_MATCHER = new IPMatcher(MARKER_NONE);
@@ -239,6 +240,11 @@ public class IPMatcher
             }
 
             try {
+                if ( ! results[0].matches( IPADDR_REGEX ) )
+                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
+                if ( ! results[1].matches( IPADDR_REGEX ) )
+                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 1)");
+                    
                 InetAddress addrMin = InetAddress.getByName(results[0]);
                 InetAddress addrMax = InetAddress.getByName(results[1]);
 
@@ -269,6 +275,9 @@ public class IPMatcher
             }
 
             try {
+                if ( ! results[0].matches( IPADDR_REGEX ) )
+                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
+
                 InetAddress addrNetwork = InetAddress.getByName(results[0]);
                 this.subnetNetwork = addrToLong(addrNetwork);
                 
@@ -287,6 +296,8 @@ public class IPMatcher
 
                 /* If that didnt work it must be a IP */
                 if (subnetNetmask == -1) {
+                    if ( ! results[1].matches( IPADDR_REGEX ) )
+                        throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid subnet)");
                     this.subnetNetmask = addrToLong(InetAddress.getByName(results[1]));
                 }
 
@@ -306,6 +317,9 @@ public class IPMatcher
          */
         this.type = IPMatcherType.SINGLE;
         try {
+            if ( ! matcher.matches( IPADDR_REGEX ) )
+                throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid host)");
+
             this.single = InetAddress.getByName(matcher);
         } catch (java.net.UnknownHostException e) {
             logger.warn("Unknown IPMatcher single format: \"" + matcher + "\"", e);
