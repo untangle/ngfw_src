@@ -140,6 +140,7 @@ public class SessionTable
         shutdownMatches( matcher, null );
     }
 
+    @SuppressWarnings("unchecked")
     protected void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
@@ -150,49 +151,49 @@ public class SessionTable
         /**
          * Iterate through all sessions and reset matching sessions
          */
-        synchronized( this ) {
-            for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
-                Map.Entry<Vector,SessionGlobalState> e = iter.next();
-                boolean isMatch;
+        Object[] array = activeSessions.entrySet().toArray();
+        int i;
+        for ( i = 0; i < array.length ; i++ ) {
+            Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)array[i];
+            boolean isMatch;
 
-                SessionGlobalState session = e.getValue();
-                Vector vector  = e.getKey();
-                NetcapHook netcapHook = session.netcapHook();
+            SessionGlobalState session = e.getValue();
+            Vector vector  = e.getKey();
+            NetcapHook netcapHook = session.netcapHook();
 
-                /**
-                 * Only process sessions involving the specified pipespec and associated connectors
-                 */
-                if ( connector != null ) {
-                    if ( ! session.getPipelineConnectors().contains( connector ) )
-                        continue;
-                }
-                
-                com.untangle.uvm.node.SessionEvent sessionEvent = session.getSessionEvent();
-                if ( sessionEvent == null )
+            /**
+             * Only process sessions involving the specified pipespec and associated connectors
+             */
+            if ( connector != null ) {
+                if ( ! session.getPipelineConnectors().contains( connector ) )
                     continue;
+            }
                 
-                isMatch = matcher.isMatch( sessionEvent.getPolicyId(), sessionEvent.getProtocol(),
-                                           sessionEvent.getClientIntf(), sessionEvent.getServerIntf(),
-                                           sessionEvent.getCClientAddr(), sessionEvent.getSServerAddr(),
-                                           sessionEvent.getCClientPort(), sessionEvent.getSServerPort(),
-                                           session.getAttachments() );
+            com.untangle.uvm.node.SessionEvent sessionEvent = session.getSessionEvent();
+            if ( sessionEvent == null )
+                continue;
+                
+            isMatch = matcher.isMatch( sessionEvent.getPolicyId(), sessionEvent.getProtocol(),
+                                       sessionEvent.getClientIntf(), sessionEvent.getServerIntf(),
+                                       sessionEvent.getCClientAddr(), sessionEvent.getSServerAddr(),
+                                       sessionEvent.getCClientPort(), sessionEvent.getSServerPort(),
+                                       session.getAttachments() );
 
-                logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
-                              sessionEvent.getProtocolName() + "| "  +
-                              sessionEvent.getCClientAddr().getHostAddress() + ":" + 
-                              sessionEvent.getCClientPort() + " -> " +
-                              sessionEvent.getSServerAddr().getHostAddress() + ":" +
-                              sessionEvent.getSServerPort() + 
-                              " matched: " + isMatch );
-                if ( isMatch ) {
-                    logger.info( "shutdownMatches(): Shutdown  session[" + session.id() + "]: " +
-                                 sessionEvent.getProtocolName() + "| "  +
-                                 sessionEvent.getCClientAddr().getHostAddress() + ":" + 
-                                 sessionEvent.getCClientPort() + " -> " +
-                                 sessionEvent.getSServerAddr().getHostAddress() + ":" +
-                                 sessionEvent.getSServerPort());
-                    shutdownList.add(vector);
-                }
+            logger.debug( "shutdownMatches(): Tested    session[" + session.id() + "]: " +
+                          sessionEvent.getProtocolName() + "| "  +
+                          sessionEvent.getCClientAddr().getHostAddress() + ":" + 
+                          sessionEvent.getCClientPort() + " -> " +
+                          sessionEvent.getSServerAddr().getHostAddress() + ":" +
+                          sessionEvent.getSServerPort() + 
+                          " matched: " + isMatch );
+            if ( isMatch ) {
+                logger.info( "shutdownMatches(): Shutdown  session[" + session.id() + "]: " +
+                             sessionEvent.getProtocolName() + "| "  +
+                             sessionEvent.getCClientAddr().getHostAddress() + ":" + 
+                             sessionEvent.getCClientPort() + " -> " +
+                             sessionEvent.getSServerAddr().getHostAddress() + ":" +
+                             sessionEvent.getSServerPort());
+                shutdownList.add(vector);
             }
         }
 
