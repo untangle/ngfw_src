@@ -247,7 +247,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                 logger.debug("Spam found");
 
                 if (action == SpamMessageAction.PASS) {
-                    logger.debug("Although SPAM detected, pass message as-per policy");
+                    logger.debug("Although spam detected, pass message as-per policy");
                     markHeaders(msg, report);
                     postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                     node.incrementPassCount();
@@ -274,7 +274,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                         return new ScannedMessageResult(wrappedMsg);
                     }
                 } else {
-                    logger.debug("Blocking SPAM message as-per policy");
+                    logger.debug("Blocking spam message as-per policy");
                     postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                     node.incrementBlockCount();
                     return new ScannedMessageResult(BlockOrPassResult.DROP);
@@ -402,7 +402,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             logger.debug("Spam");
 
             if (action == SpamMessageAction.PASS) {
-                logger.debug("Although SPAM detected, pass message as-per policy");
+                logger.debug("Although spam detected, pass message as-per policy");
                 postSpamEvent(msgInfo, report, SpamMessageAction.PASS);
                 node.incrementPassCount();
                 return BlockOrPassResult.PASS;
@@ -425,7 +425,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                     return BlockOrPassResult.PASS;
                 }
             } else {
-                logger.debug("Blocking SPAM message as-per policy");
+                logger.debug("Blocking spam message as-per policy");
                 postSpamEvent(msgInfo, report, SpamMessageAction.DROP);
                 node.incrementBlockCount();
                 return BlockOrPassResult.DROP;
