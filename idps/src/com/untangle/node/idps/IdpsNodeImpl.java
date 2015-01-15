@@ -97,12 +97,12 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void postStop()
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
     }
 
     protected void preStart()
     {
-        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
         this.idpsEventMonitor.start();
         this.idpsEventMonitor.enable();
     }
@@ -184,7 +184,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             memorySettings = "_2GB";
         }
         // Otherwise use "defaults.js"
- 
+
         String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
         return settingsName;
     }
