@@ -53,6 +53,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
 
+    private float memoryThreshold = .25f;
+
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -169,17 +171,19 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
         ExecManager execManager = UvmContextFactory.context().createExecManager();
         String memorySettings = "";
-        int totalMemory = 0;
+        long totalMemory = 0;
         String result = execManager.execOutput( "/usr/bin/awk '/MemTotal:/ {print $2}' /proc/meminfo" );
         execManager.close();
         if ( result != null &&
              ! "".equals(result) ) {
-            totalMemory = Integer.parseInt( result.trim() ) * 1024;
+            totalMemory = Long.parseLong( result.trim() ) * 1024;
         }
-        if( totalMemory < ( 1058111488 * 2 ) ){
+        if( totalMemory <= 1073741824L + ( 1073741824L * memoryThreshold ) ){
             memorySettings = "_1GB";
+        }else if( totalMemory <= 2147483648L + ( 2147483648L * memoryThreshold ) ){
+            memorySettings = "_2GB";
         }
-        // Others?  Read updates file for possible values?
+        // Otherwise use "defaults.js"
  
         String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
         return settingsName;
