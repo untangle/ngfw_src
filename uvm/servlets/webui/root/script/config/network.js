@@ -2029,7 +2029,7 @@ Ext.define("Webui.config.network", {
                     var wirelessChannel = this.down('combo[dataIndex="wirelessChannel"]');
                     main.getNetworkManager().getWirelessChannels(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        var availableChannels=[]
+                        var availableChannels=[];
                         if(result && result.list) {
                             var allChannelsMap = this.getWirelessChannelsMap();
                             for(var j=0; j<result.list.length; j++) {
