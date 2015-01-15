@@ -47,7 +47,7 @@ class IdpsSettings:
         self.settings = json.load( self.settings_file )
         self.settings_file.close()
 
-        if hasattr( self.settings, "rules" ) == True:
+        if "rules" in self.settings.keys():
             ## Convert rules to snort rules object
             for settings_rule in self.settings["rules"]["list"]:
                 match_rule = re.search( SnortRule.text_regex, settings_rule["rule"] )

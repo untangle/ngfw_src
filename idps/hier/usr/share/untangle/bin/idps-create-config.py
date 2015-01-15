@@ -63,6 +63,7 @@ def main(argv):
     rules = settings.get_rules()
     rules.set_path( snort_conf.get_variable( "RULE_PATH" ) )
     rules.save( classtypes, categories, msgs )
+    
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
 	

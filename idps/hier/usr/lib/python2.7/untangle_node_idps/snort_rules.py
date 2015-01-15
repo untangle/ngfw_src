@@ -69,19 +69,16 @@ class SnortRules:
         if len(classtypes) == 0 or rule.options["classtype"] in classtypes:
             classtype_match = True
         else:
-            print rule.get_msg() + ", bad classtype=" + rule.options["classtype"]
             classtype_match = False
         
         if len(categories) == 0 or rule.category in categories:
             category_match = True
         else:
-            print rule.get_msg() + ", bad category"
             category_match = False
 
         if len(msgs) == 0:
             msgs_match = True
         else:
-            print rule.get_msg() + ", bad msgs"
             msgs_match = False
         
         for msg_substring in msgs:
@@ -98,10 +95,8 @@ class SnortRules:
         # ? order by category
         for rule in self.rules.values():
             if self.check_write_rule( rule, classtypes, categories, msgs ) == False:
-                print "Ignored:" + rule.get_msg()
                 continue
 
-            print "add:" + rule.get_msg() + "["+rule.build()+"]"
             if rule.category != category:
                 category = rule.category
                 rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
