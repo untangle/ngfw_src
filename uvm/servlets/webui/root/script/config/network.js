@@ -248,6 +248,53 @@ Ext.define("Webui.config.network", {
             }, this));
         }, this));
     },
+    getWirelessChannelsMap: function() {
+        if(!this.wirelessChannelsMap) {
+            this.wirelessChannelsMap = {
+                "-1": [-1, this.i18n._("Automatic 2.4 GHz")],
+                "-2": [-2, this.i18n._("Automatic 5 GHz")],
+                "1": [1, this.i18n._("1 - 2.412 GHz")],
+                "2": [2, this.i18n._("2 - 2.417 GHz")],
+                "3": [3, this.i18n._("3 - 2.422 GHz")],
+                "4": [4, this.i18n._("4 - 2.427 GHz")],
+                "5": [5, this.i18n._("5 - 2.432 GHz")],
+                "6": [6, this.i18n._("6 - 2.437 GHz")],
+                "7": [7, this.i18n._("7 - 2.442 GHz")],
+                "8": [8, this.i18n._("8 - 2.447 GHz")],
+                "9": [9, this.i18n._("9 - 2.452 GHz")],
+                "10": [10, this.i18n._("10 - 2.457 GHz")],
+                "11": this.i18n._("11 - 2.462 GHz"),
+                "12": this.i18n._("12 - 2.467 GHz"),
+                "13": this.i18n._("13 - 2.472 GHz"),
+                "14": this.i18n._("14 - 2.484 GHz"),
+                "36": this.i18n._("36 - 5.180 GHz"),
+                "40": this.i18n._("40 - 5.200 GHz"),
+                "44": this.i18n._("44 - 5.220 GHz"),
+                "48": this.i18n._("48 - 5.240 GHz"),
+                "52": this.i18n._("52 - 5.260 GHz"),
+                "56": this.i18n._("56 - 5.280 GHz"),
+                "60": this.i18n._("60 - 5.300 GHz"),
+                "64": this.i18n._("64 - 5.320 GHz"),
+                "100": this.i18n._("100 - 5.500 GHz"),
+                "104": this.i18n._("104 - 5.520 GHz"),
+                "108": this.i18n._("108 - 5.540 GHz"),
+                "112": this.i18n._("112 - 5.560 GHz"),
+                "116": this.i18n._("116 - 5.580 GHz"),
+                "120": this.i18n._("120 - 5.600 GHz"),
+                "124": this.i18n._("124 - 5.620 GHz"),
+                "128": this.i18n._("128 - 5.640 GHz"),
+                "132": this.i18n._("132 - 5.660 GHz"),
+                "136": this.i18n._("136 - 5.680 GHz"),
+                "140": this.i18n._("140 - 5.700 GHz"),
+                "149": this.i18n._("149 - 5.745 GHz"),
+                "153": this.i18n._("153 - 5.765 GHz"),
+                "157": this.i18n._("157 - 5.785 GHz"),
+                "161": this.i18n._("161 - 5.805 GHz"),
+                "165": this.i18n._("165 - 5.825 GHz")
+            };
+        }
+        return this.wirelessChannelsMap;
+    },
     // Interfaces Panel
     buildInterfaces: function() {
         var settingsCmp = this;
@@ -1243,7 +1290,12 @@ Ext.define("Webui.config.network", {
                     dataIndex: "wirelessChannel",
                     fieldLabel: this.i18n._("Channel"),
                     editable: false,
-                    store: [[-1, "Automatic 2.4 GHz"],[-2, "Automatic 5 GHz"],[1, "1"],[2, "2"],[3, "3"],[4, "4"],[5, "5"],[6, "6"],[7, "7"],[8, "8"],[9, "9"],[10, "10"],[11, "11"],[36, "36"],[40, "40"],[44, "44"],[48, "48"],[148, "149"],[153, "153"],[157, "157"],[161, "161"],[165, "165"]],
+                    valueField: "channel",
+                    displayField: "channelDescription",
+                    store: Ext.create('Ext.data.ArrayStore', {
+                        fields:[{ name: "channel" }, { name: "channelDescription" }],
+                        data: []
+                    }),
                     width: 300,
                     queryMode: 'local'
                 }]
@@ -1972,6 +2024,25 @@ Ext.define("Webui.config.network", {
                 bridgedTo.getStore().loadData( bridgedToInterfaces );
                 var vlanParent = this.down('combo[dataIndex="vlanParent"]');
                 vlanParent.getStore().loadData( vlanParentInterfaces );
+                //Populate wirelessChannel store with device supported channnels
+                if(record.get("isWirelessInterface")) {
+                    var wirelessChannel = this.down('combo[dataIndex="wirelessChannel"]');
+                    main.getNetworkManager().getWirelessChannels(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        var availableChannels=[]
+                        if(result && result.list) {
+                            var allChannelsMap = this.getWirelessChannelsMap();
+                            for(var j=0; j<result.list.length; j++) {
+                                var item=result.list[j];
+                                availableChannels.push(allChannelsMap[item]);
+                            }
+                        }
+                        wirelessChannel.getStore().loadData(availableChannels);
+                        wirelessChannel.suspendEvents();
+                        wirelessChannel.setValue(record.get("wirelessChannel"));
+                        wirelessChannel.resumeEvents();
+                    }, this.grid.settingsCmp), record.get("systemDev"));
+                }
 
                 Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
 
