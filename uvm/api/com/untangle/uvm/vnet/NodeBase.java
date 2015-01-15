@@ -532,7 +532,7 @@ public abstract class NodeBase implements Node
 
     private void init( boolean saveNewTargetState ) 
     {
-        if (NodeState.LOADED != currentState) {
+        if ( currentState != NodeState.LOADED ) {
             logger.warn("Init called in state: " + currentState);
             return;
         }
