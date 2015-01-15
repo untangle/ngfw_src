@@ -53,10 +53,6 @@ def main(argv):
         print "cannot find settings file"
         sys.exit()
     settings.load()
-    if len(classtypes) == 0:
-        classtypes = settings.get_active_rules_classtypes()
-    if len(categories) == 0:
-        categories = settings.get_active_rules_categories()
 
     snort_conf = untangle_node_idps.SnortConf( _debug=_debug )
 
