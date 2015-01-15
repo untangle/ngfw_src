@@ -19,6 +19,7 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 nodeData = None
 node = None
+nodeWeb = None
 vpnClientName = "atsclient"
 vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
