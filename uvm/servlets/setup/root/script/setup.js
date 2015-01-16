@@ -1660,7 +1660,7 @@ Ext.define("Ung.Setup", {
             url: '/auth/login?url=/webui&realm=Administrator',
             callback: Ext.bind(function( options, success, response ) {
                 if ( success ) {
-                    if(response.responseText && response.responseText.indexOf("Username and Password do not match")!=-1) {
+                    if(response.responseText && response.responseText.indexOf("loginPage")!=-1) {
                         Ext.MessageBox.alert( i18n._( "Authenticatication failed"), i18n._( "Invalid password."));
                         return;
                     }

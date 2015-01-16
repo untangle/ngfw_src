@@ -420,6 +420,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         WizardSettings wizardSettings = getWizardSettings();
         wizardSettings.setWizardComplete( true );
+        wizardSettings.setCompletedStep(null);
         setWizardSettings( wizardSettings );
     }
     
