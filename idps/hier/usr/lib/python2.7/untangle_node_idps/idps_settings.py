@@ -25,7 +25,6 @@ class IdpsSettings:
             "classtypes": [],
             "categories": []
         },
-        "nfqueueQueueNum": 2930,
         "configured": False
     }
     
@@ -126,8 +125,6 @@ class IdpsSettings:
             "list": []
         }
         for rule in self.rules.get_rules().values():
-            if rule.get_category() == "deleted":
-                continue
             msg = rule.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
@@ -159,9 +156,6 @@ class IdpsSettings:
     def get_interfaces( self ):
         return self.settings["interfaces"]["list"]
 
-    def get_nfqueue_queue_num( self ):
-        return self.settings["nfqueueQueueNum"]
-    
     def get_active_rules_categories( self ):
         return self.settings["active_rules"]["categories"]
     

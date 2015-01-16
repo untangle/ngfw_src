@@ -19,13 +19,14 @@ def main(argv):
     global _debug
     _debug = False
     settings_file = ""
-    nodeId = 0
+    nodeId = "0"
+    queueNum = "0"
     classtypes = []
     categories = []
     msgs = []
 	
     try:
-		opts, args = getopt.getopt(argv, "hsinca:d", ["help", "nodeId=", "classtypes=", "categories=", "msgs=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsincaq:d", ["help", "nodeId=", "classtypes=", "categories=", "msgs=", "queueNum=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -43,6 +44,8 @@ def main(argv):
             categories = arg.split(",")
         elif opt in ( "-m", "--msgs"):
             msgs = arg.split(",")
+        elif opt in ( "-q", "--queueNum"):
+            queueNum = arg
 
     if _debug == True:
 		print "nodeId = " + nodeId
@@ -77,7 +80,7 @@ def main(argv):
     snort_debian_conf = untangle_node_idps.SnortDebianConf( _debug=_debug )
 	
     snort_debian_conf.set_variable("HOME_NET", settings.get_variable("HOME_NET") )
-    snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=" + str(settings.get_nfqueue_queue_num()) + " -Q" )
+    snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=" + queueNum + " -Q" )
     interface_pairs = []
     interface_first = settings.get_interfaces()[0]
     snort_debian_conf.set_variable("INTERFACE", ":".join(settings.get_interfaces()) )
