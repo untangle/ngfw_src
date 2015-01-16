@@ -47,8 +47,8 @@ Ext.define('Ung.RuleEditorGrid', {
                 hideLabel: true,
                 width: 200,
                 listeners: {
-                change: {
-                    fn: me.onTextFieldChange,
+                    change: {
+                        fn: me.onTextFieldChange,
                         scope: this,
                         buffer: 100
                     }
@@ -200,6 +200,7 @@ Ext.define('Ung.RuleEditorGrid', {
         this.store.clearFilter(true);
         return this.callSuper( useId, useInternalId );
      }
+
 });
 
 Ext.define('Webui.untangle-node-idps.settings', {
@@ -472,13 +473,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         name: 'block'
                     }],
                     emptyRow: {
-                        "sid": "0",
+                        "classtype": "unknown",
+                        "category": "app-detect",
+                        "msg" : "new rule",
+                        "sid": "1999999",
                         "log": true,
                         "block": false,
-                        "category": "",
-                        "classtype": "",
-                        "name" : "",
-                        "rule": ""
+                        "rule": "alert tcp any any -> any any ( msg:\"new rule\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
                     },
                     columns: [{
                         header: this.i18n._("Sid"),
@@ -542,8 +543,31 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         xtype: 'combo',
                         queryMode: 'local',
                         valueField: 'id',
-                        displayField: 'value'
-                  },{
+                        displayField: 'value',
+                        regexMatch: /\s+classtype:([^;]+);/,
+                        validator: function( value ){
+                            if( this.store.find( "value", value ) == -1 ){
+                                return i18n._("Invalid Classtype");
+                            }
+                            return true;
+                        },
+                        listeners: {
+                            select: function( combo, records, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+
+                                var newField = " classtype:" + combo.getValue() + ";";
+                                var ruleValue = rule.getValue();
+                                if( this.regexMatch.test( ruleValue ) == true ){
+                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
+                                }else{
+                                    ruleValue += newField;
+                                }
+                                rule.setRawValue(ruleValue);
+                            }
+
+                        }
+                    },{
                         name: "Category",
                         fieldLabel: this.i18n._("Category"),
                         dataIndex: "category",
@@ -556,12 +580,35 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         displayField: 'value'
                     },{
                         xtype:'textfield',
-                        name: "Name",
+                        name: "Msg",
                         dataIndex: "msg",
                         fieldLabel: this.i18n._("Msg"),
                         emptyText: this.i18n._("[enter name]"),
                         allowBlank: false,
-                        width: 400
+                        width: 400,
+                        regexMatch: /\s+msg:"([^;]+)";/,
+                        validator: function( value ){
+                            invalidChars = new RegExp(/[";]/);
+                            if( invalidChars.test(value) ){
+                                return i18n._("Msg contains invalid characters.");
+                            }
+                            return true;
+                        },
+                        listeners: {
+                            change: function( me, newValue, oldValue, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+
+                                var newField = " msg:\"" + newValue + "\";";
+                                var ruleValue = rule.getValue();
+                                if( this.regexMatch.test( ruleValue ) == true ){
+                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
+                                }else{
+                                    ruleValue += newField;
+                                }
+                                rule.setRawValue(ruleValue);
+                            }
+                        }
                     },{
                         xtype:'textfield',
                         name: "Sid",
@@ -569,25 +616,154 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         fieldLabel: this.i18n._("Sid"),
                         emptyText: this.i18n._("[enter sid]"),
                         allowBlank: false,
-                        width: 400
-                    },{
-                        xtype:'checkbox',
-                        name: "Block",
-                        dataIndex: "block",
-                        fieldLabel: this.i18n._("Block")
+                        width: 400,
+                        regexMatch: /\s+sid:([^;]+);/,
+                        validator: function( value ){
+                            validChars = new RegExp(/[0-9]+/);
+                            if( validChars.test(value) == false ){
+                                return i18n._("Sid must be numeric");
+                            }
+                            var record = this.up("[$className=Ung.RowEditorWindow]").record;
+                            var match = false;
+                            this.up("[$className=Ung.RowEditorWindow]").grid.store.each(
+                                function( storeRecord ){
+                                    if( ( storeRecord != record ) &&
+                                        ( value == storeRecord.get("sid") ) ){
+                                        match = true;
+                                    }
+                                },
+                                this
+                            );
+                            if( match == true ){
+                                return i18n._("Sid already in use.");
+                            }
+                            return true;
+                        },
+                        listeners: {
+                            change: function( me, newValue, oldValue, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+
+                                var newField = " sid:" + newValue + ";";
+                                var ruleValue = rule.getValue();
+                                if( this.regexMatch.test( ruleValue ) == true ){
+                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
+                                }else{
+                                    ruleValue += newField;
+                                }
+                                rule.setValue(ruleValue);
+                            }
+                        }
                     },{
                         xtype:'checkbox',
                         name: "Log",
                         dataIndex: "log",
-                        fieldLabel: this.i18n._("Log")
+                        fieldLabel: this.i18n._("Log"),
+                        listeners: {
+                            change: function( me, newValue, oldValue, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                                rule.updateAction();
+                            }
+                        }
                     },{
-                        xtype:'textfield',
+                        xtype:'checkbox',
+                        name: "Block",
+                        dataIndex: "block",
+                        fieldLabel: this.i18n._("Block"),
+                        listeners: {
+                            change: function( me, newValue, oldValue, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                                rule.updateAction();
+                            }
+                        }
+                    },{
+                        xtype:'textareafield',
                         name: "Rule",
                         dataIndex: "rule",
                         fieldLabel: this.i18n._("Rule"),
                         emptyText: this.i18n._("[enter rule]"),
                         allowBlank: false,
-                        width: 1000
+                        width: 500,
+                        height: 150,
+                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)/,
+                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+                        updateAction: function(){
+                            var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
+                            var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
+                            var logValue = log.getValue();
+                            var blockValue = block.getValue();
+
+                            var newField = "alert";
+                            if( logValue == true && blockValue == true ){
+                                newField = "drop";
+                            }else if( logValue == false && blockValue == true ){
+                                newField = "sdrop";
+                            }else if( logValue == false && blockValue == false ){
+                                newField = "#" + newField;
+                            }
+                            newField = newField;
+
+                            var ruleValue = this.getValue();
+                            if( this.actionRegexMatch.test( ruleValue ) == true ){
+                                ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
+                            }else{
+                                ruleValue = ruleValue + newField;
+                            }
+                            this.setRawValue( ruleValue );
+                        },
+                        validator: function( value ){
+                            if( this.regexMatch.test(value) == false ){
+                                return i18n._("Rule formatted wrong.");
+                            }
+                            return true;
+                        },
+                        listeners: {
+                            change: function( me, newValue, oldValue, eOpts ){
+                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var value = this.getValue();
+
+                                value = value.replace( /(\r\n|\n|\r)/gm, "" );
+
+                                var updateFields = [ "Classtype", "Msg", "Sid" ]; 
+                                var match;
+                                for( var i = 0; i < updateFields.length; i++ ){
+                                    var field = this.up("[$className=Ung.RowEditorWindow]").down("[name=" + updateFields[i] + "]");
+                                    if( field.regexMatch.test( value ) ){
+                                        match = field.regexMatch.exec( value );
+                                        field.setRawValue( match[1] );
+                                        field.validate();
+                                    }
+                                }
+
+                                // Action
+                                var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
+                                var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
+
+                                var logValue = false;
+                                var blockValue = false;
+                                if( this.actionRegexMatch.test( value ) == true ){
+                                    match = this.actionRegexMatch.exec( value );
+                                    if( match[2] == "alert" ){
+                                        logValue = true;
+                                    }else if( match[2] == "drop"){
+                                        logValue = true;
+                                        blockValue = true;
+                                    }else if( match[2] == "sdrop" ){
+                                        blockValue = true;
+                                    }
+                                    if( match[1] == "#" ){
+                                        logValue = false;
+                                        blockValue = false;
+                                    }
+                                }
+                                log.setRawValue(logValue);
+                                block.setRawValue(blockValue);
+
+                                this.setRawValue( value );
+                            }
+                        }
                     }]
                 }),
                 this.gridVariables = Ext.create('Ung.EditorGrid', {
@@ -615,7 +791,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         type: 'string'
                     }],
                     columns: [{
-                        header: this.i18n._("name"),
+                        header: this.i18n._("Name"),
                         width: 170,
                         dataIndex: 'variable',
                         editor: {
@@ -625,7 +801,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
                     },{
                         id: 'definition',
-                        header: this.i18n._("pass"),
+                        header: this.i18n._("Pass"),
                         width: 300,
                         dataIndex: 'definition',
                         editor: {
