@@ -20,13 +20,13 @@ def main(argv):
     _debug = False
     settings_file = ""
     nodeId = "0"
-    queueNum = "0"
     classtypes = []
     categories = []
     msgs = []
+    iptablesScript = ""
 	
     try:
-		opts, args = getopt.getopt(argv, "hsincaq:d", ["help", "nodeId=", "classtypes=", "categories=", "msgs=", "queueNum=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsincaq:d", ["help", "nodeId=", "classtypes=", "categories=", "msgs=", "iptablesScript=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -44,8 +44,8 @@ def main(argv):
             categories = arg.split(",")
         elif opt in ( "-m", "--msgs"):
             msgs = arg.split(",")
-        elif opt in ( "-q", "--queueNum"):
-            queueNum = arg
+        elif opt in ( "-i", "--iptablesScript"):
+            iptablesScript = arg
 
     if _debug == True:
 		print "nodeId = " + nodeId
@@ -78,7 +78,16 @@ def main(argv):
     snort_conf.save()
 	
     snort_debian_conf = untangle_node_idps.SnortDebianConf( _debug=_debug )
-	
+
+    queueNum = "0"
+    ipf = open( iptablesScript )
+    for line in ipf:
+        line = line.strip()
+        s = line.split("=")
+        if s[0] == "SNORT_QUEUE_NUM":
+            queueNum = s[1] 
+    ipf.close()
+    
     snort_debian_conf.set_variable("HOME_NET", settings.get_variable("HOME_NET") )
     snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=" + queueNum + " -Q" )
     interface_pairs = []

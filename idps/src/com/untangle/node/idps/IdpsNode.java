@@ -10,7 +10,7 @@ import com.untangle.uvm.node.EventLogQuery;
 public interface IdpsNode extends Node
 {
     EventLogQuery[] getEventQueries();
-	public static final String IPTABLES_NFQUEUE_NUM = "2930";
+    public static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
 
     public String getSettingsFileName();
     public String getWizardSettingsFileName();

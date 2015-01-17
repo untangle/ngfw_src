@@ -58,8 +58,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     private float memoryThreshold = .25f;
 
-    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
-
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -102,8 +100,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void postStop()
     {
-        removeIptablesRules();
         UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
+        iptablesRules();
     }
 
     protected void preStart()
@@ -114,7 +112,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     }
 
     protected void postStart(){
-        insertIptablesRules();
+        iptablesRules();
     }
 
     protected void preStop()
@@ -165,67 +163,14 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.incrementMetric(STAT_BLOCK);
     }
 
-    private void writeIptablesFiles()
-    {
-        try {
-            logger.info( "Writing File: " + IPTABLES_SCRIPT );
-
-            FileWriter iptablesScript = new FileWriter( IPTABLES_SCRIPT, false );
-
-            iptablesScript.write("#!/bin/dash" + "\n");
-            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
-            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
-            iptablesScript.write("\n\n");
-
-            iptablesScript.write("SNORT_CHAIN=snort-scanning\n\n");
-            iptablesScript.write("NFQUEUE_QUEUE_NUM=" + IPTABLES_NFQUEUE_NUM + "\n");
-
-            iptablesScript.write("remove_chain_calls () {\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -D PREROUTING -j ${SNORT_CHAIN} -m comment --comment \"snort scanning\" >/dev/null 2>&1\n");
-            iptablesScript.write("}\n\n");
-
-            iptablesScript.write("if [ -z \"${IPTABLES}\" ] ; then\n");
-            iptablesScript.write("   IPTABLES=/sbin/iptables\n");
-            iptablesScript.write("fi\n\n");
-
-            iptablesScript.write("if [ \"$1\" = \"stop\" ] ; then\n");
-            iptablesScript.write("    remove_chain_calls\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -F ${SNORT_CHAIN}\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -X ${SNORT_CHAIN}\n");            
-            iptablesScript.write("else\n");
-
-            iptablesScript.write("    ${IPTABLES} -t mangle -N ${SNORT_CHAIN} 2>/dev/null\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -F ${SNORT_CHAIN} >/dev/null 2>&1\n");
-
-            iptablesScript.write("    ${IPTABLES} -t mangle -A ${SNORT_CHAIN} -i lo -j RETURN -m comment --comment \"Bypass loopback traffic\"\n");
-
-            iptablesScript.write("    ${IPTABLES} -t mangle -A ${SNORT_CHAIN} -o lo -j RETURN -m comment --comment \"Bypass loopback traffic\"\n");
-
-            iptablesScript.write("    ${IPTABLES} -t mangle -A ${SNORT_CHAIN} -j NFQUEUE --queue-num $NFQUEUE_QUEUE_NUM --queue-bypass -m mark ! --mark 0x1000000/0x1000000 -m connbytes --connbytes 0:1000 --connbytes-dir both --connbytes-mode bytes -m comment --comment \"queue for snort\"\n");
-
-            iptablesScript.write("    remove_chain_calls\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -A PREROUTING -j ${SNORT_CHAIN} -m comment --comment \"snort scanning\" 2>/dev/null\n");
-            iptablesScript.write("fi\n");
-
-            iptablesScript.close();
-
-            UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
-
-            return;
-
-        } catch ( java.io.IOException exc ) {
-            logger.error( "Error writing iptables script", exc );
-        }
-    }
-
     /**
-     * Inserts necessary iptables rules if snort daemon is running
+     * Insert or remove iptables rules if snort daemon is running
      */
-    private synchronized void insertIptablesRules()
+    private synchronized void iptablesRules()
     {
         File f = new File( IPTABLES_SCRIPT  );
         if( !f.exists() ){
-            writeIptablesFiles();
+            logger.warn("Cannot find init script:" + IPTABLES_SCRIPT);
         }
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT );
@@ -240,32 +185,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to manage rules");
         }
-    }
-
-    /**
-     * Removes same rules if snort daemon is not running
-     */
-    private synchronized void removeIptablesRules()
-    {
-        File f = new File( IPTABLES_SCRIPT  );
-        if( !f.exists() ){
-            writeIptablesFiles();
-        }
-
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT + " stop");
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info( IPTABLES_SCRIPT + ": ");
-            for ( String line : lines )
-                logger.info( IPTABLES_SCRIPT + ": " + line);
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to manage rules");
-        }
-
-        f.delete();
     }
 
     public String getSettingsFileName()
@@ -452,7 +371,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 String configCmd = new String(System.getProperty("uvm.bin.dir") + 
                     "/idps-create-config.py" + 
                     " --nodeId " + nodeId +
-                    " --queueNum " + IdpsNode.IPTABLES_NFQUEUE_NUM
+                    " --iptablesScript " + IdpsNode.IPTABLES_SCRIPT
                 );
                 String result = UvmContextFactory.context().execManager().execOutput(configCmd );
                 try{

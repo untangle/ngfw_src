@@ -25,7 +25,8 @@ class IdpsSettings:
             "classtypes": [],
             "categories": []
         },
-        "configured": False
+        "configured": False,
+        "max_scan_size": 1024
     }
     
     def __init__( self, nodeId, save_file_name = "" ):
