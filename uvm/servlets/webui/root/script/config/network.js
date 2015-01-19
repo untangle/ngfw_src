@@ -3177,7 +3177,7 @@ Ext.define("Webui.config.network", {
             }, {
                 xtype: 'fieldset',
                 cls: 'description',
-                html: this.i18n._("If <b>Next Hop</b> is an IP address that network will routed via the specified IP address.") + "<br/>" +
+                html: this.i18n._("If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.") + "<br/>" +
                     this.i18n._("If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.")
             }]
         });

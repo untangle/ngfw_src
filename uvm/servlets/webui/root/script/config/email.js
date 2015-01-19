@@ -245,7 +245,7 @@ Ext.define('Webui.config.email', {
                 title: this.i18n._('Outgoing Email Server'),
                 items: [{
                     xtype: 'label',
-                    html: Ext.String.format(this.i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
+                    html: Ext.String.format(this.i18n._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify a valid SMTP server that will relay mail for the {0} Server."),
                             rpc.companyName)
                 }, {
                     xtype: 'radio',
