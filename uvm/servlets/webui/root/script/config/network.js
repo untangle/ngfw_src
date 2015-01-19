@@ -1223,6 +1223,15 @@ Ext.define("Webui.config.network", {
                     }
                 }
             }, {
+                xtype: "combo",
+                allowBlank: false,
+                dataIndex: "bridgedTo",
+                fieldLabel: this.i18n._("Bridged To"),
+                store: Ung.Util.getInterfaceAddressedList(),
+                width: 300,
+                queryMode: 'local',
+                editable: false
+            }, {
                 xtype:'checkbox',
                 dataIndex: "isWan",
                 fieldLabel: this.i18n._("Is WAN Interface"),
@@ -1778,15 +1787,6 @@ Ext.define("Webui.config.network", {
                     name: "vrrpAliasesContainer",
                     items: [this.gridInterfacesVrrpAliasesEditor]
                 }]
-            }, {
-                xtype: "combo",
-                allowBlank: false,
-                dataIndex: "bridgedTo",
-                fieldLabel: this.i18n._("Bridged To"),
-                store: Ung.Util.getInterfaceAddressedList(),
-                width: 300,
-                queryMode: 'local',
-                editable: false
             }],
             syncComponents: function() {
                 var property;
