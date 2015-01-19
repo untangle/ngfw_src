@@ -9,6 +9,9 @@ OLD_STYLE=False
 if "2.6.32" in platform.platform():
     OLD_STYLE=True
 
+if "3.10" in platform.platform():
+    OLD_STYLE=True
+
 def parse_segment(segment):
     if segment == None:
         return None
