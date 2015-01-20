@@ -5,6 +5,7 @@
         "displayName" : "Intrusion Prevention (Beta)",
         "type" : "SERVICE",
         "viewPosition" : 120,
+        "invisible": true,
         "autoStart" : "false"
 }
 
