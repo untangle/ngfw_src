@@ -5,11 +5,9 @@ import string
 import traceback
 import platform
 
+nf_acct_file = open("/proc/sys/net/netfilter/nf_conntrack_acct", "r" )
 OLD_STYLE=False
-if "2.6.32" in platform.platform():
-    OLD_STYLE=True
-
-if "3.10" in platform.platform():
+if string.atoi(nf_acct_file.read()) == 1:
     OLD_STYLE=True
 
 def parse_segment(segment):
