@@ -237,8 +237,8 @@ if (parser.hostKeyFile != None):
     remote_control.hostKeyFile  = parser.hostKeyFile
 remote_control.verbosity   = parser.verbosity
 remote_control.logfile = logfile
-remote_control.interface = parser.internalIntfId;
-remote_control.interfaceExternal = parser.externalIntfId
+remote_control.interface = int(parser.internalIntfId)
+remote_control.interfaceExternal = int(parser.externalIntfId)
 remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
