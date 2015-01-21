@@ -5148,10 +5148,10 @@ Ext.define("Webui.config.network", {
                     var filename = this.generateExportFilename().replace('\'','');
                     var traceCommand = this.buildTraceCommand().replace('\'','');
                     var script = [
-                        '/usr/share/untangle/bin/ut-network-tests-packet.sh'+
-                            ' \'' + timeout + '\'' +
-                            ' \'' + filename + '\'' +
-                            ' \'' + traceCommand + '\''
+                        '/usr/share/untangle/bin/ut-network-tests-packet.py'+
+                            ' --timeout ' + timeout  +
+                            ' --filename ' + filename + 
+                            ' --arguments \'' + traceCommand + '\''
                     ];
                     return ["/bin/bash","-c", script.join("")];
                 },
