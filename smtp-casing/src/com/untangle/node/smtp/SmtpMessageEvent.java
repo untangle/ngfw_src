@@ -175,7 +175,7 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
             + "(time_stamp, session_id, client_intf, server_intf, "
             + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
             + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id, " + "username, "
-            + "msg_id, subject, server_type, " + "sender, " + "hostname " + ")" + " VALUES "
+            + "msg_id, subject, " + "sender, " + "hostname " + ")" + " VALUES "
             + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     @Override
@@ -207,7 +207,6 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
         pstmt.setString(++i, (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()));
         pstmt.setLong(++i, getMessageId());
         pstmt.setString(++i, getSubject());
-        pstmt.setString(++i, "S");
         pstmt.setString(++i, getSender());
         pstmt.setString(++i, getSessionEvent().getHostname() == null ? "" : getSessionEvent().getHostname());
 

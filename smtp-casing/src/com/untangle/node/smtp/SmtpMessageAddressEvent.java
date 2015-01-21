@@ -95,8 +95,8 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
     private static String sql = "INSERT INTO reports.mail_addrs " + "(time_stamp, "
         + "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
         + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id,  " + "username,  "
-        + "msg_id, subject, server_type,  " + "addr_pos, addr, addr_name, addr_kind,  " + "sender,  "
-        + "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+        + "msg_id, subject, " + "addr_pos, addr, addr_name, addr_kind,  " + "sender,  "
+        + "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
@@ -121,7 +121,6 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
         pstmt.setString(++i, (se.getUsername() == null ? "" : se.getUsername()));
         pstmt.setLong(++i, messageInfo.getMessageId());
         pstmt.setString(++i, messageInfo.getSubject());
-        pstmt.setString(++i, "S");
         pstmt.setInt(++i, 0);
         pstmt.setString(++i, addr);
         pstmt.setString(++i, personal);

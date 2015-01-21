@@ -23,24 +23,21 @@ class SmtpCasing(Node):
         self.__create_mail_msgs()
         self.__create_mail_addrs()
 
-        ft = FactTable('reports.mail_msg_totals', 'reports.mail_msgs',
-                       'time_stamp',
-                       [Column('hostname', 'text'), Column('username', 'text'),
-                        Column('client_intf', 'smallint'),
-                        Column('server_type', 'char(1)')],
-                       [Column('msgs', 'bigint', 'count(*)'),
-                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
+        ft = FactTable('reports.mail_msg_totals', 'reports.mail_msgs', 'time_stamp',
+                       [Column('hostname', 'text'), 
+                        Column('username', 'text'),
+                        Column('client_intf', 'smallint')],
+                       [Column('msgs', 'bigint', 'count(*)')])
         reports.engine.register_fact_table(ft)
 
-        ft = FactTable('reports.mail_addr_totals', 'reports.mail_addrs',
-                       'time_stamp',
-                       [Column('hostname', 'text'), Column('username', 'text'),
+        ft = FactTable('reports.mail_addr_totals', 'reports.mail_addrs', 'time_stamp',
+                       [Column('hostname', 'text'), 
+                        Column('username', 'text'),
                         Column('client_intf', 'smallint'),
-                        Column('server_type', 'char(1)'),
-                        Column('addr_pos', 'text'), Column('addr', 'text'),
+                        Column('addr_pos', 'text'), 
+                        Column('addr', 'text'),
                         Column('addr_kind', 'char(1)')],
-                       [Column('msgs', 'bigint', 'count(*)'),
-                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
+                       [Column('msgs', 'bigint', 'count(*)')])
         reports.engine.register_fact_table(ft)
 
     def post_facttable_setup(self, start_date, end_date):
@@ -68,13 +65,10 @@ CREATE TABLE reports.mail_addrs (
     username text,
     msg_id bigint,
     subject text,
-    server_type char(1),
     addr_pos integer,
     addr text,
     addr_name text,
     addr_kind char(1),
-    msg_bytes bigint,
-    msg_attachments integer,
     hostname text,
     event_id bigserial,
     sender text,
@@ -105,6 +99,9 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.drop_column('reports', 'mail_addrs', 's2p_bytes')
         sql_helper.drop_column('reports', 'mail_addrs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'mail_addrs', 'p2s_bytes')
+        sql_helper.drop_column('reports', 'mail_addrs', 'server_type')
+        sql_helper.drop_column('reports', 'mail_addrs', 'msg_attachments')
+        sql_helper.drop_column('reports', 'mail_addrs', 'msg_bytes')
 
         # rename old commtouch columns
         sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_score', 'spamblocker_score')
@@ -202,9 +199,6 @@ CREATE TABLE reports.mail_msgs (
     username text,
     msg_id bigint,
     subject text,
-    server_type char(1),
-    msg_bytes bigint,
-    msg_attachments integer,
     hostname text,
     event_id bigserial,
     sender text,
@@ -236,6 +230,9 @@ CREATE TABLE reports.mail_msgs (
         sql_helper.drop_column('reports', 'mail_msgs', 's2p_bytes')
         sql_helper.drop_column('reports', 'mail_msgs', 'p2c_bytes')
         sql_helper.drop_column('reports', 'mail_msgs', 'p2s_bytes')
+        sql_helper.drop_column('reports', 'mail_msgs', 'server_type')
+        sql_helper.drop_column('reports', 'mail_msgs', 'msg_attachments')
+        sql_helper.drop_column('reports', 'mail_msgs', 'msg_bytes')
 
         # rename old commtouch columns
         sql_helper.rename_column('reports', 'mail_msgs', 'commtouchas_score', 'spamblocker_score')
