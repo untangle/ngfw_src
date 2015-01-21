@@ -312,7 +312,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         var changed = (rpc.timezoneID != timezone);
         if(changed) {
             rpc.setup.setTimeZone( Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception, "Unable to save Time Zone settings")) return;
+                if(Ung.Util.handleException(exception, i18n._("Unable to save Time Zone settings"))) return;
                 rpc.timezoneID = timezone;
                 this.saveAdminPassword(handler);
             },this ), timezone );
@@ -325,7 +325,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         var password = this.panel.down('textfield[name="password"]').getValue();
         var adminEmail = this.panel.down('textfield[name="adminEmail"]').getValue();
         rpc.setup.setAdminPassword( Ext.bind(function( result, exception ) {
-            if(Ung.Util.handleException(exception, "Unable to save the admin password")) return;
+            if(Ung.Util.handleException(exception, i18n._("Unable to save the admin password"))) return;
             var afterFn= Ext.bind(function(handler) {
                 setup.saveCurrentStep(this.stepName);
                 handler();
@@ -606,7 +606,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             if ( ! this.enableAutoRefresh ) {
                 return; // if auto refresh is now disabled, just return
             }
-            if(Ung.Util.handleException(exception, "Unable to refresh the interfaces.")) return;
+            if(Ung.Util.handleException(exception, i18n._("Unable to refresh the interfaces."))) return;
             var interfaceList = [];
             var allInterfaces = result.interfaces.list;
             for(var i=0; i<allInterfaces.length; i++) {
@@ -641,7 +641,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
     refreshInterfaces: function() {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         rpc.networkManager.getNetworkSettings( Ext.bind(function( result, exception ) {
-            if(Ung.Util.handleException(exception, "Unable to refresh the interfaces.")) return;
+            if(Ung.Util.handleException(exception, i18n._("Unable to refresh the interfaces."))) return;
 
             this.networkSettings=result;
             var interfaceList = [];
@@ -1403,7 +1403,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         }, this, [handler]);
         
         var delegate = Ext.bind(function( result, exception, foo, handler ) {
-            if(Ung.Util.handleException(exception, "Unable to save Local Network Settings")) return;
+            if(Ung.Util.handleException(exception, i18n._("Unable to save Local Network Settings"))) return;
             Ext.MessageBox.hide();
             handler();
         }, this, [ afterFn ], true );
@@ -1424,6 +1424,16 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             var enableDhcpServer = this.panel.down('checkbox[name="enableDhcpServer"]').getValue();
             changed = (firstNonWan['configType'] != 'ADDRESSED' || firstNonWan['v4ConfigType'] != 'STATIC' || firstNonWan['v4StaticAddress'] != network || firstNonWan['v4StaticPrefix'] != prefix || firstNonWan['dhcpEnabled'] != enableDhcpServer);
             if(changed) {
+                var initialNetwork = firstNonWan['v4StaticAddress'];
+                if(window.location.hostname == initialNetwork && initialNetwork != network) {
+                    delegate = Ext.bind(function( result, exception) {
+                        Ext.MessageBox.wait( i18n._( "The Internal Address is changed. The changes are applied and you will be redirected to the new setup address." ), i18n._( "Please Wait" ));
+                        Ext.defer(function() {
+                            var newSetupLocation = window.location.href.replace(initialNetwork, network);
+                            window.location.href = newSetupLocation;
+                        },15000, this);
+                    }, this);
+                }
                 firstNonWan['configType'] = 'ADDRESSED';
                 firstNonWan['v4ConfigType'] = 'STATIC';
                 firstNonWan['v4StaticAddress'] = network;
@@ -1528,7 +1538,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
         if(changed) {
             Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
             var delegate = Ext.bind(function( result, exception, foo, handler ) {
-                if(Ung.Util.handleException(exception, "Unable to save Automatic Upgrade Settings")) return;
+                if(Ung.Util.handleException(exception, i18n._("Unable to save Automatic Upgrade Settings"))) return;
                 Ext.MessageBox.hide();
                 handler();
             }, this, [ afterFn ], true );
