@@ -166,8 +166,9 @@ public class IdpsSnortUnified2Parser {
     
     public long parse( File file, long startPosition, IdpsNode idpsNode ){
         fc = null;
+        RandomAccessFile f = null;
 		try {
-			RandomAccessFile f = new RandomAccessFile( file, "r");
+			f = new RandomAccessFile( file, "r");
 			fc = f.getChannel();
             if( startPosition > 0 ){
                 fc.position( startPosition );
@@ -179,6 +180,7 @@ public class IdpsSnortUnified2Parser {
 		int packet_count = 0;
         int eventCount = 0;
 
+        long pos = 1L;
 		try {
             boolean abort = false;
 			while (fc.position() != fc.size()) {
@@ -212,14 +214,22 @@ public class IdpsSnortUnified2Parser {
                 }
                 
                 if( abort == true ){
-                    return fc.size();
+                    pos = fc.size();
+                    break;
                 }
 			}
-            return fc.position();
+            pos = fc.position();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return -1;
+        if( f != null ){
+            try {
+                f.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return pos;
     }
 
 	public void parseSerialHeader() throws Exception {
