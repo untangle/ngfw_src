@@ -10,6 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -124,19 +127,19 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public <T> T save( Class<T> clz, String fileName, T value ) throws SettingsException
     {
-        return save(clz, fileName, value, true);
+        return save( clz, fileName, value, true );
     }
     
-    public <T> T save(Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException
+    public <T> T save( Class<T> clz, String fileName, T value, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        return _saveImpl(clz, fileName, value, saveVersion);
+        return _saveImpl( clz, fileName, value, saveVersion );
     }
 
-    public void save( String fileName, String inputFilename, boolean saveVersion) throws SettingsException
+    public void save( String fileName, String inputFilename, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
@@ -232,7 +235,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private <T> T _saveImpl( Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException
+    private <T> T _saveImpl( Class<T> clz, String fileName, T value, boolean saveVersion ) throws SettingsException
     {
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
@@ -326,20 +329,30 @@ public class SettingsManagerImpl implements SettingsManager
      * @param saveVersion
      *          If true, create symlink
      */
-    private void _saveCommit( String fileName, String outputFileName, boolean saveVersion){
+    private void _saveCommit( String fileName, String outputFileName, boolean saveVersion )
+    {
         File link = new File( fileName );
 
         String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
         UvmContextImpl.context().execManager().execResult(formatCmd);
                 
-        if (saveVersion){
-            /*
-             * The API for creating symbolic links is in Java 7
-             */
+        if (saveVersion) {
+
             String[] chops = outputFileName.split(File.separator);
             String filename = chops[chops.length - 1];
-            String linkCmd = "ln -sf ./"+filename + " " + link.toString();
-            UvmContextImpl.context().execManager().exec(linkCmd);
+
+            try {
+                Path target = FileSystems.getDefault().getPath( "./" + filename );
+                Path symlink = FileSystems.getDefault().getPath( link.toString() );
+                Files.deleteIfExists( symlink );
+                Files.createSymbolicLink( symlink, target );
+            } catch ( Exception e ) {
+                logger.warn( "Failed to create symbolic link.", e );
+            }
+
+            //old way
+            //String linkCmd = "ln -sf ./"+filename + " " + link.toString();
+            //UvmContextImpl.context().execManager().exec(linkCmd);
         }
         
     }
