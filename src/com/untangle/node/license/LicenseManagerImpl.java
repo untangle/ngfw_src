@@ -682,7 +682,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js", newSettings);
+            settingsManager.save( System.getProperty("uvm.conf.dir") + "/licenses/licenses.js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
