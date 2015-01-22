@@ -61,8 +61,6 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
-    private static Map<GreyListKey,Boolean> greylist = Collections.synchronizedMap(new GreyListMap<GreyListKey,Boolean>());
-    
     public SpamSmtpHandler( SpamNodeImpl node )
     {
         super();
@@ -168,11 +166,11 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             GreyListKey key = new GreyListKey( client, from, to );
             logger.debug( "greylist: check message " + key );
             
-            Boolean found = SpamSmtpHandler.greylist.get( key );
+            Boolean found = SpamNodeImpl.getGreylist().get( key );
             if ( found == null ) {
                 logger.info( "greylist: missed. adding new key: " + key );
 
-                SpamSmtpHandler.greylist.put( key, Boolean.TRUE );
+                SpamNodeImpl.getGreylist().put( key, Boolean.TRUE );
 
                 postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.GREYLIST);
                 node.incrementBlockCount();

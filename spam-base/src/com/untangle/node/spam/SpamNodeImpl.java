@@ -6,6 +6,11 @@ package com.untangle.node.spam;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collections;
+import java.io.File;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -31,10 +36,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     
     private final TarpitEventHandler tarpitHandler = new TarpitEventHandler(this);
 
-    // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
-    // server for pop/imap).
-    // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
-    // the casing doesn't have to be initialized.
     private final PipelineConnector smtpConnector;
     private final PipelineConnector tarpitConnector;
     private final PipelineConnector[] connectors;
@@ -52,6 +53,11 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private Date lastUpdate = new Date();
     private Date lastUpdateCheck = new Date();
 
+    private static final String GREYLIST_SAVE_FILENAME = System.getProperty("uvm.conf.dir") + "/greylist.js";
+    private static Map<GreyListKey,Boolean> greylist = Collections.synchronizedMap(new GreyListMap<GreyListKey,Boolean>());
+    private volatile static boolean greyListLoaded = false;
+    private volatile static long greyListLastSave = System.currentTimeMillis();
+    
     @SuppressWarnings("unchecked")
     public SpamNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
     {
@@ -79,6 +85,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         this.addMetric(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
         this.addMetric(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
 
+        // We want to make sure that spam is before virus in the pipeline (towards the client for smtp)
+        // Would want the tarpit event handler before the casing, this way if it blocks a session the casing doesn't have to be initialized.
         this.smtpConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, new SpamSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 10);
         this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
         this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
@@ -106,6 +114,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "WHERE vendor_name = '" + vendorTag + "' " +
                                                   "AND policy_id = :policyId " +
                                                   "ORDER BY time_stamp DESC");
+
+        loadGreyList();
     }
 
     public EventLogQuery[] getEventQueries()
@@ -119,13 +129,13 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     }
 
     /**
-     * Increment the counter for blocked (SMTP only).
+     * Increment the counter for blocked
      */
     public void incrementBlockCount()
     {
         this.incrementMetric(STAT_RECEIVED);
-        this.incrementMetric(STAT_DROP);
         this.incrementMetric(STAT_SPAM);
+        this.incrementMetric(STAT_DROP);
     }
 
     /**
@@ -143,8 +153,8 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     public void incrementMarkCount()
     {
         this.incrementMetric(STAT_RECEIVED);
-        this.incrementMetric(STAT_MARK);
         this.incrementMetric(STAT_SPAM);
+        this.incrementMetric(STAT_MARK);
     }
 
     /**
@@ -152,9 +162,9 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
      */
     public void incrementQuarantineCount()
     {
-        this.incrementMetric(STAT_QUARANTINE);
-        this.incrementMetric(STAT_SPAM);
         this.incrementMetric(STAT_RECEIVED);
+        this.incrementMetric(STAT_SPAM);
+        this.incrementMetric(STAT_QUARANTINE);
     }
 
     protected void initSpamDnsblList(SpamSettings tmpSpamSettings)
@@ -270,6 +280,12 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         initSpamDnsblList(spamSettings);
     }
 
+    @Override
+    protected void postStop()
+    {
+        saveGreyList();
+    }
+    
     public SpamScanner getScanner()
     {
         return scanner;
@@ -306,5 +322,74 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     public void setSignatureVersion(String newValue)
     {
         signatureVersion = newValue;
+    }
+
+    protected static Map<GreyListKey,Boolean> getGreylist()
+    {
+        return SpamNodeImpl.greylist;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadGreyList()
+    {
+        /**
+         * Need to load any saved values in the greylist
+         * Do this asynchronously because it can take a long time if the greylist is big
+         */
+        Runnable loadGreylist = new Runnable() {
+                public void run()
+                {
+                    /**
+                     * If already loaded (by another instance of this node) just return
+                     */
+                    if ( greyListLoaded )
+                        return;
+                    greyListLoaded = true;
+                    
+                    /**
+                     * If there is no save file, just return
+                     */
+                    if ( ! (new File(GREYLIST_SAVE_FILENAME)).exists() )
+                        return;
+
+                    try {
+                        logger.info("Loading greylist from file...");
+                        LinkedList<GreyListKey> savedEntries = UvmContextFactory.context().settingsManager().load( LinkedList.class, GREYLIST_SAVE_FILENAME );
+                        for ( GreyListKey key : savedEntries ) {
+                            greylist.put( key, Boolean.TRUE );
+                        }
+                        logger.info("Loading greylist from file... done (" + greylist.size() + " entries)");
+                    } catch (Exception e) {
+                        logger.warn("Exception",e);
+                    }
+                }
+            };
+        Thread t = UvmContextFactory.context().newThread( loadGreylist, "GREYLIST_LOADER" );
+        t.start();
+    }
+
+    private void saveGreyList()
+    {
+        /**
+         * If saved less than 30 seconds ago, do not save again
+         */
+        long currentTime = System.currentTimeMillis();
+        if ( currentTime - SpamNodeImpl.greyListLastSave < 30000 )
+            return;
+        SpamNodeImpl.greyListLastSave = currentTime;
+        
+        try {
+            Set<GreyListKey> keys = SpamNodeImpl.greylist.keySet();
+            logger.info("Saving greylist from file... (" + keys.size() + " entries)");
+            LinkedList<GreyListKey> list = new LinkedList<GreyListKey>();
+            for ( GreyListKey key : keys ) {
+                list.add(key);
+            }
+            UvmContextFactory.context().settingsManager().save( GREYLIST_SAVE_FILENAME, list, false, false );
+            logger.info("Saving greylist from file... done");
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+
     }
 }

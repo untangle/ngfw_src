@@ -3,16 +3,20 @@
  */
 package com.untangle.node.spam;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-public class GreyListKey
+@SuppressWarnings("serial")
+public class GreyListKey implements Serializable
 {
     public InetAddress client;
     public String envelopeFrom;
     public String envelopeTo;
 
+    public GreyListKey() {}
+    
     public GreyListKey( InetAddress client, String envelopeFrom, String envelopeTo ) 
     {
         this.client = client;
@@ -26,7 +30,16 @@ public class GreyListKey
             ( envelopeFrom == null ? 0 : envelopeFrom.hashCode() ) +
             ( envelopeTo == null ? 0 : envelopeTo.hashCode() );
     }
-        
+
+    public InetAddress getClient() { return this.client; }
+    public void setClient( InetAddress newValue ) { this.client = newValue; }
+
+    public String getEnvelopeFrom() { return this.envelopeFrom; }
+    public void setEnvelopeFrom( String newValue ) { this.envelopeFrom = newValue; }
+
+    public String getEnvelopeTo() { return this.envelopeTo; }
+    public void setEnvelopeTo( String newValue ) { this.envelopeTo = newValue; }
+    
     public boolean equals( Object o2 )
     {
         if ( ! ( o2 instanceof GreyListKey ) ) {
@@ -43,10 +56,5 @@ public class GreyListKey
             return false;
         }
         return true;
-    }
-
-    public String toString()
-    {
-        return "GreyListKey [ " + this.client.getHostAddress() + ", " + this.envelopeFrom + ", " + this.envelopeTo + " ]";
     }
 }
