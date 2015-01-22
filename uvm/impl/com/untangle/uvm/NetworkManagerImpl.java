@@ -102,7 +102,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
                     
                 if (readSettings != null)
-                    settingsManager.save( NetworkSettings.class, this.settingsFilename, readSettings );
+                    settingsManager.save( this.settingsFilename, readSettings );
                     
             } catch ( SettingsManager.SettingsException e ) {
                 logger.warn( "Failed to load settings:", e );
@@ -170,13 +170,13 @@ public class NetworkManagerImpl implements NetworkManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(NetworkSettings.class, this.settingsFilename, newSettings);
+            settingsManager.save( this.settingsFilename, newSettings );
 
             /**
              * If its the dev env also save to /etc
              */
             if ( UvmContextFactory.context().isDevel() ) {
-                settingsManager.save(NetworkSettings.class, this.settingsFilenameBackup, newSettings, false);
+                settingsManager.save( this.settingsFilenameBackup, newSettings, false );
             }
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);

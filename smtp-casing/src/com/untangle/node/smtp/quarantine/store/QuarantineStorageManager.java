@@ -75,7 +75,7 @@ public class QuarantineStorageManager
         }
         inboxIndex.getInboxMap().put(newRecord.getMailID(), newRecord);
         try {
-            settingsManager.save(InboxIndex.class, quarantineFile, inboxIndex, false);
+            settingsManager.save( quarantineFile, inboxIndex, false );
         } catch (Exception exn) {
             logger.error("Could not save quarantine record", exn);
             return false;
@@ -96,7 +96,7 @@ public class QuarantineStorageManager
         String quarantineFile = baseDir + "/" + emailAddress + ".js";
 
         try {
-            settingsManager.save(InboxIndex.class, quarantineFile, inboxIndex, false);
+            settingsManager.save( quarantineFile, inboxIndex, false );
         } catch (Exception exn) {
             logger.error("Could not save quarantine record", exn);
             return false;
@@ -132,7 +132,7 @@ public class QuarantineStorageManager
         String quarantineFile = baseDir + "/" + SUMMARY_FILE_NAME;
 
         try {
-            settingsManager.save(StoreSummary.class, quarantineFile, summary, false);
+            settingsManager.save( quarantineFile, summary, false );
         } catch (Exception exn) {
             logger.error("Could not save quarantine summary", exn);
             return false;

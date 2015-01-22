@@ -185,7 +185,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             list = new LinkedList<LocalDirectoryUser>();
 
         try {
-            settingsManager.save(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE, list);
+            settingsManager.save( LOCAL_DIRECTORY_SETTINGS_FILE, list );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;

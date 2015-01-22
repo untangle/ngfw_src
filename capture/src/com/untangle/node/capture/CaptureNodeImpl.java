@@ -310,7 +310,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             rule.setId(++idx);
 
         try {
-            settingsManager.save(CaptureSettings.class, settingsFile, argSettings);
+            settingsManager.save( settingsFile, argSettings );
         } catch (Exception e) {
             logger.warn("Error in saveNodeSettings", e);
             return;

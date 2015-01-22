@@ -454,7 +454,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         String settingsFileName = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
         try {
-            settingsManager.save( WizardSettings.class, WIZARD_SETTINGS_FILE, wizardSettings );
+            settingsManager.save( WIZARD_SETTINGS_FILE, wizardSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
         }

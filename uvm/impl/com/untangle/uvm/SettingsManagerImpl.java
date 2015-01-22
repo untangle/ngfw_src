@@ -125,18 +125,18 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T save( Class<T> clz, String fileName, T value ) throws SettingsException
+    public void save( String fileName, Object value ) throws SettingsException
     {
-        return save( clz, fileName, value, true );
+        save( fileName, value, true );
     }
     
-    public <T> T save( Class<T> clz, String fileName, T value, boolean saveVersion ) throws SettingsException
+    public void save( String fileName, Object value, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        return _saveImpl( clz, fileName, value, saveVersion );
+        _saveImpl( fileName, value, saveVersion );
     }
 
     public void save( String fileName, String inputFilename, boolean saveVersion ) throws SettingsException
@@ -145,7 +145,7 @@ public class SettingsManagerImpl implements SettingsManager
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        _saveImpl( fileName, inputFilename, saveVersion);
+        _saveImpl( fileName, inputFilename, saveVersion );
     }
 
     /**
@@ -235,7 +235,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private <T> T _saveImpl( Class<T> clz, String fileName, T value, boolean saveVersion ) throws SettingsException
+    private void _saveImpl( String fileName, Object value, boolean saveVersion ) throws SettingsException
     {
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
@@ -281,7 +281,7 @@ public class SettingsManagerImpl implements SettingsManager
                 } catch (Exception e) {
                 }
             }
-            return _loadImpl(clz, fileName);
+            return;
         }
     }
 
@@ -292,7 +292,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private void _saveImpl( String fileName, String inputFileName, boolean saveVersion) throws SettingsException
+    private void _saveImpl( String fileName, String inputFileName, boolean saveVersion ) throws SettingsException
     {
 
         String outputFileName = _getVersionedFileName( fileName, saveVersion );

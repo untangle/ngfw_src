@@ -47,7 +47,7 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save(HttpSettings.class, settingsFile, newSettings);
+            settingsManager.save( settingsFile, newSettings );
         } catch(Exception exn) {
             logger.error("setHttpSettings()",exn);
             return;

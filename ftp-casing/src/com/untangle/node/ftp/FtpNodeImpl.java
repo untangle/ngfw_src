@@ -54,7 +54,7 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
 
         try {
-            UvmContextFactory.context().settingsManager().save(FtpSettings.class, settingsFile, newSettings);
+            UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
         } catch(Exception exn) {
             logger.error("setFtpSettings()",exn);
             return;

@@ -95,7 +95,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( IpsSettings.class, settingsName, newSettings );
+            settingsManager.save( settingsName, newSettings );
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
             return;

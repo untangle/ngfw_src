@@ -98,7 +98,7 @@ public class LanguageManagerImpl implements LanguageManager
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-vm/language.js";
 
         try {
-            settingsManager.save( LanguageSettings.class, settingsName, newSettings);
+            settingsManager.save( settingsName, newSettings );
         } catch (Exception exn) {
             logger.error("Could not save language settings", exn);
             return;

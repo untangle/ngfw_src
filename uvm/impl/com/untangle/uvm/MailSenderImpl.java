@@ -166,7 +166,7 @@ public class MailSenderImpl implements MailSender
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(MailSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "mail.js", newSettings);
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "mail.js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

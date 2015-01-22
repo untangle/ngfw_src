@@ -134,7 +134,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
                 + ".js";
 
         try {
-            settingsManager.save(SmtpNodeSettings.class, settingsFile, newSettings);
+            settingsManager.save( settingsFile, newSettings );
         } catch (Exception exn) {
             logger.error("setSmtpNodeSettings()", exn);
             return;

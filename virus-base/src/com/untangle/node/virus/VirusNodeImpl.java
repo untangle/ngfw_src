@@ -520,7 +520,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
         try {
-            settingsManager.save( VirusSettings.class, settingsFileName, newSettings );
+            settingsManager.save( settingsFileName, newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

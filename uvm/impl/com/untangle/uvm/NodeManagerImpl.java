@@ -817,7 +817,7 @@ public class NodeManagerImpl implements NodeManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(NodeManagerSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes.js", newSettings);
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "nodes.js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             throw new RuntimeException(e);

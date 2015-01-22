@@ -70,7 +70,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( PhishSettings.class, settingsFile, newSettings);
+            settingsManager.save( settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("Could not save PhishNode settings", exn);
             return;

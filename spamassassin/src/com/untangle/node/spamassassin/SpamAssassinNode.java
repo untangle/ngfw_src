@@ -60,7 +60,7 @@ public class SpamAssassinNode extends SpamNodeImpl
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( SpamSettings.class, settingsFile, newSettings);
+            settingsManager.save( settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
             return;

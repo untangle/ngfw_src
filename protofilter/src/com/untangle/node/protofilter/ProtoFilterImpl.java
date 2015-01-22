@@ -84,7 +84,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID + ".js";
 
         try {
-            settingsManager.save( ProtoFilterSettings.class, settingsFile, newSettings);
+            settingsManager.save( settingsFile, newSettings );
         } catch (Exception exn) {
             logger.error("Could not save ProtoFilter settings", exn);
             return;

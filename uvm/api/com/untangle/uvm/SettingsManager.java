@@ -16,15 +16,13 @@ public interface SettingsManager
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String fileName) throws SettingsException;
+    public <T> T load( Class<T> clz, String fileName ) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
      * 
      * @param <T>
      *            Type of class to save
-     * @param clz
-     *            Type of class to save.
      * @param fileName
      *            The filename to save the class to
      * @param value
@@ -32,15 +30,13 @@ public interface SettingsManager
      * @return The object that was saved.
      * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String fileName, T value) throws SettingsException;
+    public void save( String fileName, Object value ) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
      * 
      * @param <T>
      *            Type of class to save
-     * @param clz
-     *            Type of class to save.
      * @param fileName
      *            The filename to save the class to
      * @param value
@@ -50,9 +46,9 @@ public interface SettingsManager
      * @return The object that was saved.
      * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String fileName, T value, boolean saveVersion) throws SettingsException;
+    public void save( String fileName, Object value, boolean saveVersion ) throws SettingsException;
 
-/**
+    /**
      * Move the settings file from its input location and store using a unique identifier.
      * 
      * @param fileName
