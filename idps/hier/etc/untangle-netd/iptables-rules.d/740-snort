@@ -9,11 +9,6 @@ if [ -z "${SNORT_MAX_SCAN_SIZE}" -o "${SNORT_MAX_SCAN_SIZE}" = "None" ] ; then
     SNORT_MAX_SCAN_SIZE=1024
 fi
 
-debug()
-{
-    echo "[DEBUG:`date`] $*"
-}
-
 is_queue_open()
 {
     local t_snort_pid
