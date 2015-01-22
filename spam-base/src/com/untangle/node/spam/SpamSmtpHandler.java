@@ -174,6 +174,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
                 SpamSmtpHandler.greylist.put( key, Boolean.TRUE );
 
+                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.GREYLIST);
+                node.incrementBlockCount();
                 return new ScannedMessageResult(BlockOrPassResult.TEMPORARILY_REJECT);
             }
             else {

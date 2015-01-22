@@ -1192,6 +1192,8 @@ Ung.CustomEventLog = {
             return i18n._("block message (scan failure)");
         } else if (value == 'G') { 
             return i18n._("pass message (scan failure)");
+        } else if (value == 'G') { 
+            return i18n._("block message (greylist)");
         } else {
             return i18n._("unknown action");
         }
