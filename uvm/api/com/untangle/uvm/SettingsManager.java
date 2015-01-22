@@ -49,6 +49,24 @@ public interface SettingsManager
     public void save( String fileName, Object value, boolean saveVersion ) throws SettingsException;
 
     /**
+     * Save the settings from the store using a unique identifier.
+     * 
+     * @param <T>
+     *            Type of class to save
+     * @param fileName
+     *            The filename to save the class to
+     * @param value
+     *            The value to be saved.
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @param prettyFormat
+     *            True if the file should be pretty printed with indentation and whitespace
+     * @return The object that was saved.
+     * @throws SettingsException
+     */
+    public void save( String fileName, Object value, boolean saveVersion, boolean prettyFormat ) throws SettingsException;
+    
+    /**
      * Move the settings file from its input location and store using a unique identifier.
      * 
      * @param fileName

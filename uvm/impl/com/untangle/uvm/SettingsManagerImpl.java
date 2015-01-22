@@ -136,16 +136,25 @@ public class SettingsManagerImpl implements SettingsManager
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        _saveImpl( fileName, value, saveVersion );
+        _saveImpl( fileName, value, saveVersion, true );
     }
 
+    public void save( String fileName, Object value, boolean saveVersion, boolean prettyFormat ) throws SettingsException
+    {
+        if (!_checkLegalName(fileName)) {
+            throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
+        }
+
+        _saveImpl( fileName, value, saveVersion, prettyFormat );
+    }
+    
     public void save( String fileName, String inputFilename, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        _saveImpl( fileName, inputFilename, saveVersion );
+        _saveImpl( fileName, inputFilename, saveVersion, true );
     }
 
     /**
@@ -235,7 +244,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private void _saveImpl( String fileName, Object value, boolean saveVersion ) throws SettingsException
+    private void _saveImpl( String fileName, Object value, boolean saveVersion, boolean prettyPrint ) throws SettingsException
     {
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
@@ -262,7 +271,7 @@ public class SettingsManagerImpl implements SettingsManager
                 fileWriter.close();
                 fileWriter = null;
 
-                _saveCommit( fileName, outputFileName, saveVersion );
+                _saveCommit( fileName, outputFileName, saveVersion, prettyPrint );
 
             } catch (IOException e) {
                 logger.warn("Failed to save settings: ", e);
@@ -292,7 +301,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private void _saveImpl( String fileName, String inputFileName, boolean saveVersion ) throws SettingsException
+    private void _saveImpl( String fileName, String inputFileName, boolean saveVersion, boolean prettyFormat ) throws SettingsException
     {
 
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
@@ -314,7 +323,7 @@ public class SettingsManagerImpl implements SettingsManager
             }finally{
                 IOUtil.delete( inputFile );
 
-                _saveCommit( fileName, outputFileName, saveVersion );
+                _saveCommit( fileName, outputFileName, saveVersion, prettyFormat );
             }
         }
     }
@@ -329,15 +338,16 @@ public class SettingsManagerImpl implements SettingsManager
      * @param saveVersion
      *          If true, create symlink
      */
-    private void _saveCommit( String fileName, String outputFileName, boolean saveVersion )
+    private void _saveCommit( String fileName, String outputFileName, boolean saveVersion, boolean prettyFormat )
     {
         File link = new File( fileName );
 
-        String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
-        UvmContextImpl.context().execManager().execResult(formatCmd);
-                
-        if (saveVersion) {
-
+        if ( prettyFormat ) {
+            String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
+            UvmContextImpl.context().execManager().execResult(formatCmd);
+        }
+        
+        if ( saveVersion ) {
             String[] chops = outputFileName.split(File.separator);
             String filename = chops[chops.length - 1];
 
