@@ -4,9 +4,11 @@
 
 package com.untangle.node.capture;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
-public class CaptureUserEntry
+@SuppressWarnings("serial")
+public class CaptureUserEntry implements Serializable
 {
     private InetAddress userAddress;
     private String userName;
@@ -15,6 +17,8 @@ public class CaptureUserEntry
     private long sessionActivity;
     private long sessionCounter;
 
+    public CaptureUserEntry() {}
+    
     public CaptureUserEntry(InetAddress userAddress, String userName, Boolean isAnonymous)
     {
         this.userAddress = userAddress;
@@ -24,35 +28,23 @@ public class CaptureUserEntry
         sessionActivity = sessionCreation;
     }
 
-    public InetAddress getUserAddress()
-    {
-        return (userAddress);
-    }
+    public InetAddress getUserAddress() { return userAddress; }
+    public void setUserAddress( InetAddress newValue ) { this.userAddress = newValue; }
+    
+    public String getUserName() { return userName; }
+    public void setUserName( String newValue ) { this.userName = newValue; }
 
-    public String getUserName()
-    {
-        return (userName);
-    }
+    public Boolean getAnonymous() { return isAnonymous; }
+    public void setAnonymous( Boolean newValue ) { this.isAnonymous = newValue; }
 
-    public Boolean getAnonymous()
-    {
-        return (isAnonymous);
-    }
+    public long getSessionCreation() { return sessionCreation; }
+    public void setSessionCreation( long newValue ) { this.sessionCreation = newValue; }
 
-    public long getSessionCreation()
-    {
-        return (sessionCreation);
-    }
+    public long getSessionActivity() { return sessionActivity; }
+    public void setSessionActivity( long newValue ) { this.sessionActivity = newValue; }
 
-    public long getSessionActivity()
-    {
-        return (sessionActivity);
-    }
-
-    public long getSessionCounter()
-    {
-        return (sessionCounter);
-    }
+    public long getSessionCounter() { return sessionCounter; }
+    public void setSessionCounter( long newValue ) { this.sessionCounter = newValue; }
 
     public void updateActivityTimer()
     {

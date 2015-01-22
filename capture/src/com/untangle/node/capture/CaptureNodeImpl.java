@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.io.File;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -383,6 +384,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @Override
     protected void preStart()
     {
+        // load user state from file (if exists)
+        loadUserState();
+
         // run a script to add www-data to the uvmlogin group
         UvmContextFactory.context().execManager().exec(CAPTURE_PERMISSIONS_SCRIPT);
 
@@ -409,6 +413,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // shutdown any active sessions
         killAllSessions();
 
+        // save user state to file
+        saveUserState();
+        
         // clear out the list of active users
         captureUserTable.purgeAllUsers();
     }
@@ -692,5 +699,73 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         return (null);
+    }
+
+    /**
+     * Attempt to load any relevent user state from a file if it exists
+     */
+    @SuppressWarnings("unchecked")
+    private void loadUserState()
+    {
+            try {
+                String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
+                /**
+                 * If there is no save file, just return
+                 */
+                File saveFile = new File(filename);
+                if ( ! saveFile.exists() )
+                    return;
+
+
+                logger.info("Loading user state from file... ");
+                ArrayList<CaptureUserEntry> users = UvmContextFactory.context().settingsManager().load( ArrayList.class, filename );
+
+                int usersLoaded = 0;
+                long userTimeout = getCaptureSettings().getUserTimeout();
+                long currentTime = System.currentTimeMillis();
+                
+                /**
+                 * Insert all the non-expired users into the table.
+                 * Since the untangle-vm has likely been down, don't check idle timeout
+                 */
+                for ( CaptureUserEntry user : users ) {
+                    long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
+                    if (currentTime > userTrigger)
+                        continue;
+
+                    captureUserTable.insertActiveUser( user );
+                    usersLoaded++;
+                }
+
+                /**
+                 * Delete the save file
+                 */
+                saveFile.delete();
+                
+                logger.info("Loading user state from file... (" + usersLoaded + " entries)");
+
+            } catch (Exception e) {
+                logger.warn("Exception loading user state",e);
+            }
+    }
+
+    /**
+     * This method saves the current user state in a file in conf/
+     * This is so we preserve user login state on untangle-vm or server reboots
+     */
+    private void saveUserState()
+    {
+        try {
+            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
+            ArrayList<CaptureUserEntry> users = this.captureUserTable.buildUserList();
+            if ( users.size() < 1 )
+                return;
+            
+            logger.info("Saving user state to file... (" + users.size() + " entries)");
+            UvmContextFactory.context().settingsManager().save( filename, users, false, false );
+            logger.info("Saving user state to file... done");
+        } catch (Exception e) {
+            logger.warn("Exception saving user state",e);
+        }
     }
 }

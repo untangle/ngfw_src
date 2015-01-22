@@ -45,14 +45,19 @@ public class CaptureUserTable
     public CaptureUserEntry insertActiveUser(InetAddress address, String username, Boolean anonymous)
     {
         CaptureUserEntry local = new CaptureUserEntry(address, username, anonymous);
-        userTable.put(address, local);
+        return insertActiveUser( local );
+    }
+
+    public CaptureUserEntry insertActiveUser( CaptureUserEntry local )
+    {
+        userTable.put(local.getUserAddress(), local);
 
         // For anonymous users clear the global capture username which
         // shouldn't be required but always better safe than sorry.  We
         // also set the captive portal flag to prevent the entry from being
         // timed-out while active in our table.
-        if (anonymous == true) {
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
+        if (local.getAnonymous() == true) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserAddress(), true);
             entry.setUsernameCapture(null);
             entry.setCaptivePortalAuthenticated(true);
         }
@@ -60,8 +65,8 @@ public class CaptureUserTable
         // for all other users set the global capture username and also
         // the captive portal flag so we don't get timed-out of the table
         else {
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
-            entry.setUsernameCapture(username);
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserAddress(), true);
+            entry.setUsernameCapture(local.getUserName());
             entry.setCaptivePortalAuthenticated(true);
         }
 

@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
  * <li>uvm.web.dir - servlet directories.</li>
  * <li>uvm.conf.dir - configuration files.</li>
  * <li>uvm.settings.dir - settings files</li>
- * <li>uvm.tmp.dir - temporary files.</li>
  * <li>uvm.skins.dir - skins files.</li>
  * <li>uvm.lang.dir - languages resources files.</li>
  */
