@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -25,7 +26,7 @@ import com.untangle.uvm.node.NodeMetric;
 
 public class SpamNodeImpl extends NodeBase implements SpamNode
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger( SpamNodeImpl.class );
 
     private static final String STAT_RECEIVED = "email-received";
     private static final String STAT_SPAM = "spam-detected";
@@ -54,9 +55,11 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private Date lastUpdateCheck = new Date();
 
     private static final String GREYLIST_SAVE_FILENAME = System.getProperty("uvm.conf.dir") + "/greylist.js";
+    private static final long GREYLIST_SAVE_FREQUENCY = 7*24*60*60*1000L; // weekly
     private static Map<GreyListKey,Boolean> greylist = Collections.synchronizedMap(new GreyListMap<GreyListKey,Boolean>());
     private volatile static boolean greyListLoaded = false;
     private volatile static long greyListLastSave = System.currentTimeMillis();
+    private static Pulse greyListSaverPulse = null;
     
     @SuppressWarnings("unchecked")
     public SpamNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
@@ -116,6 +119,13 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                   "ORDER BY time_stamp DESC");
 
         loadGreyList();
+
+        synchronized( this ) {
+            if ( greyListSaverPulse == null ) {
+                greyListSaverPulse = new Pulse("GreyListSaver", true, new GreyListSaver());
+                greyListSaverPulse.start( GREYLIST_SAVE_FREQUENCY );
+            }
+        }
     }
 
     public EventLogQuery[] getEventQueries()
@@ -330,7 +340,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     }
 
     @SuppressWarnings("unchecked")
-    private void loadGreyList()
+    private static void loadGreyList()
     {
         /**
          * Need to load any saved values in the greylist
@@ -368,7 +378,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         t.start();
     }
 
-    private void saveGreyList()
+    private static void saveGreyList()
     {
         /**
          * If saved less than 30 seconds ago, do not save again
@@ -380,16 +390,25 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         
         try {
             Set<GreyListKey> keys = SpamNodeImpl.greylist.keySet();
-            logger.info("Saving greylist from file... (" + keys.size() + " entries)");
+            logger.info("Saving greylist to file... (" + keys.size() + " entries)");
             LinkedList<GreyListKey> list = new LinkedList<GreyListKey>();
             for ( GreyListKey key : keys ) {
                 list.add(key);
             }
             UvmContextFactory.context().settingsManager().save( GREYLIST_SAVE_FILENAME, list, false, false );
-            logger.info("Saving greylist from file... done");
+            logger.info("Saving greylist to file... done");
         } catch (Exception e) {
             logger.warn("Exception",e);
         }
 
     }
+
+    private static class GreyListSaver implements Runnable
+    {
+        public void run()
+        {
+            SpamNodeImpl.saveGreyList();
+        }
+    }
+    
 }
