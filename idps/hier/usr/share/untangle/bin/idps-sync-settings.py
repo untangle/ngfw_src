@@ -111,10 +111,16 @@ def main(argv):
                 settings_rules[sid] = new_rule
             else:
                 settings_rules[sid] = current_rules[sid]
-                if len( active_rules_classtypes ) > 0 and ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
-                    settings_rules[sid].enabled = False
-                if len( active_rules_categories ) > 0 and ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
-                    settings_rules[sid].enabled = False
+                
+                if len( active_rules_classtypes ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
+                    classtype_enabled = True
+                else:
+                    classtype_enabled = False
+                if len( active_rules_categories ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
+                    category_enabled = True
+                else:
+                    category_enabled == False
+                settings_rules[sid].enabled = classtype_enabled and category_enabled
         settings.set_rules( settings_rules )
 
         if status_file_name != "":
