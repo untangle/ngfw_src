@@ -57,6 +57,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private EventLogQuery blockedEventQuery;
 
     private float memoryThreshold = .25f;
+    private boolean updatedSettingsFlag = false;
 
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
@@ -284,6 +285,13 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         }
     }
 
+    public void setUpdatedSettingsFlag( boolean updatedSettingsFlag ){
+        this.updatedSettingsFlag = updatedSettingsFlag;
+    }
+    public boolean getUpdatedSettingsFlag(){
+        return this.updatedSettingsFlag;
+    }
+
     private class IdpsSettingsDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
@@ -345,6 +353,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 } catch (Exception e) {
                     logger.warn("Failed to load IDPS settings",e);
                 }
+                node.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
                 String tempSettingsName = "/tmp/untangle-node-idps_settings_" + node + ".js";

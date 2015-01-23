@@ -376,32 +376,32 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 buttonAlign: 'left'
             },
             items: [{
-                title: this.i18n._('Statistics'),
-                labelWidth: 230,
-                defaults: {
-                    xtype: "textfield",
-                    disabled: true
-                },
-                items: [{
-                    fieldLabel: this.i18n._('Total Signatures Available'),
-                    name: 'Total Signatures Available',
-                    labelWidth:200,
-                    labelAlign:'left',
-//                        value: this.statistics.totalAvailable
-                }, {
-                    fieldLabel: this.i18n._('Total Signatures Logging'),
-                    name: 'Total Signatures Logging',
-                    labelWidth:200,
-                    labelAlign:'left',
-//                        value: this.statistics.totalLogging
-                }, {
-                    fieldLabel: this.i18n._('Total Signatures Blocking'),
-                    name: 'Total Signatures Blocking',
-                    labelWidth:200,
-                    labelAlign:'left',
-//                        value: this.statistics.totalBlocking
-                }]
-            }, {
+//                 title: this.i18n._('Statistics'),
+//                 labelWidth: 230,
+//                 defaults: {
+//                     xtype: "textfield",
+//                     disabled: true
+//                 },
+//                 items: [{
+//                     fieldLabel: this.i18n._('Total Signatures Available'),
+//                     name: 'Total Signatures Available',
+//                     labelWidth:200,
+//                     labelAlign:'left',
+// //                        value: this.statistics.totalAvailable
+//                 }, {
+//                     fieldLabel: this.i18n._('Total Signatures Logging'),
+//                     name: 'Total Signatures Logging',
+//                     labelWidth:200,
+//                     labelAlign:'left',
+// //                        value: this.statistics.totalLogging
+//                 }, {
+//                     fieldLabel: this.i18n._('Total Signatures Blocking'),
+//                     name: 'Total Signatures Blocking',
+//                     labelWidth:200,
+//                     labelAlign:'left',
+// //                        value: this.statistics.totalBlocking
+//                 }]
+//             }, {
                 title: this.i18n._("Setup Wizard"),
                 items: [
                     {
@@ -1079,6 +1079,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.callParent();
     },
     beforeSave: function(isApply,handler) {
+        if( this.getRpcNode().getUpdatedSettingsFlag() == true ){
+            Ext.MessageBox.alert(this.i18n._("Intrusion Prevention Warning"), this.i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
+                this.reload();
+            }, this));
+            return;
+        }
         if( this.wizard ){
             this.wizard = false;
         }else{
@@ -1090,7 +1096,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         handler.call(this, isApply);
     },
     save: function(isApply) {
-        // pop up a window        
         Ext.Ajax.request({
             url: "/webui/download",
             jsonData: this.settings,

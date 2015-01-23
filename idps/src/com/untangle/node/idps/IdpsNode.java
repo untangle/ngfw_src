@@ -18,4 +18,7 @@ public interface IdpsNode extends Node
     public void initializeSettings();
     public void createDefaultSettings( String filename );
     public void saveSettings( String tempFileName );
+
+    public void setUpdatedSettingsFlag( boolean updatedSettingsFlag);
+    public boolean getUpdatedSettingsFlag();
 }
