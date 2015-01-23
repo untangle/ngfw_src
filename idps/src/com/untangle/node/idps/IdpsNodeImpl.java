@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -30,6 +29,7 @@ import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -55,6 +55,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
+
+    private static final String GET_UPDATES_SCRIPT = "idps-get-updates.py";
 
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
@@ -114,10 +116,12 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void postStart(){
         iptablesRules();
+        addCronEntry();
     }
 
     protected void preStop()
     {
+        removeCronEntry();
         try{
             this.idpsEventMonitor.disable();
         }catch( Exception e ){
@@ -186,6 +190,34 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to manage rules");
         }
+    }
+
+    /**
+     * If cron entry does not exist, add it.
+     */
+    private void addCronEntry()
+    {
+        File fCron = new File( "/etc/cron.daily/" + GET_UPDATES_SCRIPT );
+        if( fCron.exists() ){
+            return;
+        }
+        File fBin = new File( System.getProperty("uvm.bin.dir") + "/" + GET_UPDATES_SCRIPT );
+
+        try {
+            IOUtil.copyFile( fBin, fCron );
+        } catch (IOException e) {
+            logger.warn("Unable to copy updates file to cron.daily:  ", e);
+        }
+    }
+
+    private void removeCronEntry()
+    {
+        File fCron = new File( "/etc/cron.daily/" + GET_UPDATES_SCRIPT );
+        if( fCron.exists() == false ){
+            return;
+        }
+
+        IOUtil.delete( fCron );
     }
 
     public String getSettingsFileName()

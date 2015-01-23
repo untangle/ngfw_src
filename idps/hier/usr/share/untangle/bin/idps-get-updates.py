@@ -323,7 +323,7 @@ def usage():
         
 def main(argv):
     global Debug
-    rules_template_directory = ""
+    rules_template_directory = "/usr/share/untangle-snort-config"
     url = "https://ids.untangle.com/snortrules.tar.gz"
 	
     try:
