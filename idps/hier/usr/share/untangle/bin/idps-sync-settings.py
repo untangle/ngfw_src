@@ -9,6 +9,10 @@ import sys
 import subprocess
 import re
 import json
+import time
+import uvm
+from uvm import Manager
+from uvm import Uvm
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
@@ -31,10 +35,11 @@ def main(argv):
     rules_file_name = ""
     previous_rules_file_name = ""
     settings_file_name = ""
-    nodeId = 0
+    status_file_name = ""
+    nodeId = "0"
 	
     try:
-		opts, args = getopt.getopt(argv, "hscrn:d", ["help", "settings=", "rules=", "previous_rules=", "nodeId=", "debug"] )
+		opts, args = getopt.getopt(argv, "hscrna:d", ["help", "settings=", "rules=", "previous_rules=", "nodeId=", "status=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -52,6 +57,8 @@ def main(argv):
             previous_rules_file_name = arg
         elif opt in ( "-s", "--settings"):
             settings_file_name = arg
+        elif opt in ( "-a", "--status"):
+            status_file_name = arg
 
     if _debug == True:
         print "rules_file_name = " + rules_file_name
@@ -78,7 +85,9 @@ def main(argv):
         previous_rules = previous_snort_rules.get_rules()
         current_rules = snort_rules.get_rules()
         settings_rules = settings.get_rules().get_rules()
-        print "settings rules=" + str( len( settings_rules ) )
+        
+        active_rules_classtypes = settings.get_active_rules_classtypes()
+        active_rules_categories = settings.get_active_rules_categories()
         
         for sid in previous_rules:
             if current_rules.has_key(sid) == False:
@@ -92,20 +101,35 @@ def main(argv):
 
         for sid in deleted_rule_sids:
             if settings_rules.has_key(sid):
-                print "remove sid="+sid
+                settings_rules.remove(sid)
                 
         for sid in added_rule_sids:
             if settings_rules.has_key(sid):
-                print "modify sid="+sid
+                new_rule = current_rules[sid]
+                new_rule.enabled = settings_rules[sid].enabled
+                new_rule.action = settings_rules[sid].action
+                settings_rules[sid] = new_rule
             else:
                 settings_rules[sid] = current_rules[sid]
-                
-        print "post settings rules=" + str( len( settings_rules ) )
-        # write difference to settings/updates
-        # write difference to settings/rules
-        # write difference to settings/variables
-        # save settings (move above down here)
+                if len( active_rules_classtypes ) > 0 and ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
+                    settings_rules[sid].enabled = False
+                if len( active_rules_categories ) > 0 and ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
+                    settings_rules[sid].enabled = False
+        settings.set_rules( settings_rules )
 
+        if status_file_name != "":
+            status = {
+                "rules" : {
+                    "deleted" : deleted_rule_sids,
+                    "modified" : modified_rule_sids,
+                    "added" : added_rule_sids
+                }
+            }
+
+            status_file = open( status_file_name, "w" )
+            json.dump( status, status_file, False, True, True, True, None, 0 )
+            status_file.close()
+        
     settings.save()
     sys.exit()
 

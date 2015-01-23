@@ -146,6 +146,9 @@ class IdpsSettings:
     def get_rules( self ):
        return self.rules
 
+    def set_rules( self, rules ):
+       self.rules.set_rules( rules )
+
     def get_variables( self ):
         return self.settings["variables"]["list"]
 

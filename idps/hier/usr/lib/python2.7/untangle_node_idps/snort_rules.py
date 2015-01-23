@@ -133,6 +133,9 @@ class SnortRules:
     def get_rules(self):
         return self.rules
     
+    def set_rules(self, rules):
+        self.rules = rules
+    
     def get_variables(self):
         return self.variables
 
