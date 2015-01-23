@@ -1419,21 +1419,12 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 afterFn();
             }
         } else {
+            var initialNetwork = firstNonWan['v4StaticAddress'];
             var network = this.panel.down('textfield[name="network"]').getValue();
             var prefix = this.panel.down('combo[name="prefix"]').getValue();
             var enableDhcpServer = this.panel.down('checkbox[name="enableDhcpServer"]').getValue();
             changed = (firstNonWan['configType'] != 'ADDRESSED' || firstNonWan['v4ConfigType'] != 'STATIC' || firstNonWan['v4StaticAddress'] != network || firstNonWan['v4StaticPrefix'] != prefix || firstNonWan['dhcpEnabled'] != enableDhcpServer);
             if(changed) {
-                var initialNetwork = firstNonWan['v4StaticAddress'];
-                if(window.location.hostname == initialNetwork && initialNetwork != network) {
-                    delegate = Ext.bind(function( result, exception) {
-                        Ext.MessageBox.wait( i18n._( "The Internal Address is changed. The changes are applied and you will be redirected to the new setup address." ), i18n._( "Please Wait" ));
-                        Ext.defer(function() {
-                            var newSetupLocation = window.location.href.replace(initialNetwork, network);
-                            window.location.href = newSetupLocation;
-                        },15000, this);
-                    }, this);
-                }
                 firstNonWan['configType'] = 'ADDRESSED';
                 firstNonWan['v4ConfigType'] = 'STATIC';
                 firstNonWan['v4StaticAddress'] = network;
@@ -1441,6 +1432,18 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 firstNonWan['dhcpEnabled'] = enableDhcpServer;
                 delete firstNonWan.dhcpRangeStart; // new ones will be chosen
                 delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
+                //If the internal address is changed redirect to new address 
+                if(window.location.hostname == initialNetwork && initialNetwork != network) {
+                    delegate = function() {}; // no delegate
+                    rpc.keepAlive = function() {}; // prevent keep alive
+                    var newSetupLocation = window.location.href.replace(initialNetwork, network);
+                    Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ) + "<br/>" +
+                        Ext.String.format(i18n._( "The Internal Address is changed to {0}. The changes are applied and you will be redirected to the new setup address: {0}"),network, "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/>" +
+                        i18n._( "If the new location is not loaded after 30 seconds please reinitialize your network settings and try again." ), i18n._( "Please Wait" ));
+                    Ext.defer(function() {
+                        window.location.href = newSetupLocation;
+                    },30000, this);
+                }
                 rpc.networkManager.setNetworkSettings( delegate, rpc.networkSettings );
             } else {
                 Ext.MessageBox.hide();
