@@ -319,6 +319,10 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         return this.updatedSettingsFlag;
     }
 
+    public void reloadEventMonitorMap(){
+        this.idpsEventMonitor.parser.reloadEventMap();
+    }
+
     private class IdpsSettingsDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
@@ -383,7 +387,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 node.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempSettingsName = "/tmp/untangle-node-idps_settings_" + node + ".js";
+                String tempSettingsName = "/tmp/untangle-node-idps_settings_" + nodeId + ".js";
                 try{
                     byte[] buffer = new byte[1024];
                     int read;
@@ -419,6 +423,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 }catch( Exception e ){
                     logger.warn( "Unable to generate snort configuration:", e );
                 }
+                node.reloadEventMonitorMap();
                 UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
                 UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
             }

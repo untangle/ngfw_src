@@ -79,8 +79,6 @@ class IdpsEventMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    private IdpsSnortUnified2Parser parser;
-   
     protected IdpsEventMonitor( IdpsNodeImpl node )
     {
         this.node = node;
@@ -174,7 +172,7 @@ class IdpsEventMonitor implements Runnable
         }
     }
 
-    private IdpsSnortUnified2Parser su = new IdpsSnortUnified2Parser();
+    public IdpsSnortUnified2Parser parser = new IdpsSnortUnified2Parser();
     private long currentTime = System.currentTimeMillis();    
     private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
     public void processSnortLogFiles()
@@ -191,7 +189,7 @@ class IdpsEventMonitor implements Runnable
                     ? fileLastPositions.get(f.getCanonicalFile())
                     : 0;
                 logger.debug("processSnortLogFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
-                lastPosition = su.parse( f, startPosition, node );
+                lastPosition = parser.parse( f, startPosition, node );
                     
                 fileLastPositions.put( f.getCanonicalFile(), lastPosition );
             }catch( Exception e) {

@@ -104,7 +104,11 @@ public class IdpsSnortUnified2Parser {
 		idsEvent = new IdpsSnortUnified2IdsEvent();
         idsEvent.clear();
 
-        idpsEventMap = new IdpsEventMap();
+        reloadEventMap();
+    }
+
+    public void reloadEventMap(){
+        IdpsEventMap newIdpsEventMap = new IdpsEventMap();
         File f = new File( "/etc/snort/idps.event.map.conf" );
         if (f.exists()) {
             InputStream is = null;
@@ -135,7 +139,7 @@ public class IdpsSnortUnified2Parser {
 
                 logger.warn("serializing/marshalizing");
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-              idpsEventMap = (IdpsEventMap) serializer.fromJSON(jsonString.toString());
+              newIdpsEventMap = (IdpsEventMap) serializer.fromJSON(jsonString.toString());
             } catch (IOException e) {
                 logger.warn("Unable to process event map: ",e);
           } catch (UnmarshallException e) {
@@ -154,6 +158,7 @@ public class IdpsSnortUnified2Parser {
                 }
             }
          }
+        idpsEventMap = newIdpsEventMap;
     }
     
     public long parse( File file, long startPosition, IdpsNode idpsNode ){

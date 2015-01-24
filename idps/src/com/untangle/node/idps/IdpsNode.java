@@ -21,4 +21,6 @@ public interface IdpsNode extends Node
 
     public void setUpdatedSettingsFlag( boolean updatedSettingsFlag);
     public boolean getUpdatedSettingsFlag();
+
+    public void reloadEventMonitorMap();
 }
