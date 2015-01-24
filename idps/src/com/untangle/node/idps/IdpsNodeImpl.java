@@ -65,8 +65,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     {
         super( nodeSettings, nodeProperties );
 
-        logger.warn("node name=" + nodeProperties.getName() );
-
         handler = new EventHandler(this);
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
@@ -101,6 +99,23 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
     }
 
+    protected void postInit()
+    {
+        logger.info("Post init");
+
+        readNodeSettings();
+    }
+
+    protected void preStop()
+    {
+        removeCronEntry();
+        try{
+            this.idpsEventMonitor.disable();
+        }catch( Exception e ){
+            logger.warn( "Error disabling IDPS Event Monitor", e );
+        }
+    }
+
     protected void postStop()
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
@@ -119,24 +134,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         addCronEntry();
     }
 
-    protected void preStop()
-    {
-        removeCronEntry();
-        try{
-            this.idpsEventMonitor.disable();
-        }catch( Exception e ){
-            logger.warn( "Error disabling IDPS Event Monitor", e );
-        }
-    }
-
-    protected void postInit()
-    {
-        logger.info("Post init");
-
-        readNodeSettings();
-        reconfigure();
-    }
-
     // private methods ---------------------------------------------------------
 
     private void readNodeSettings()
@@ -147,10 +144,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
         logger.info("Loading settings from " + settingsFile);
 
-    }
-
-    private void reconfigure()
-    {
     }
 
     public void incrementScanCount()
@@ -184,7 +177,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             logger.info( IPTABLES_SCRIPT + ": ");
             for ( String line : lines )
                 logger.info( IPTABLES_SCRIPT + ": " + line);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            logger.warn( "Unable to process " + IPTABLES_SCRIPT + ":", e );
+        }
 
         if ( result.getResult() != 0 ) {
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
@@ -273,7 +268,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 logger.warn("idps config: " + line);
             }
         }catch( Exception e ){
-
+            logger.warn("Unable to initialize settings: ", e );
         }
 
         try {
@@ -302,7 +297,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 logger.warn("idps config: " + line);
             }
         }catch( Exception e ){
-
+            logger.warn("Unable to generate defaults: ", e );
         }
     }
 
@@ -422,7 +417,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                         logger.warn("idps config: " + line);
                     }
                 }catch( Exception e ){
-
+                    logger.warn( "Unable to generate snort configuration:", e );
                 }
                 UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
                 UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );

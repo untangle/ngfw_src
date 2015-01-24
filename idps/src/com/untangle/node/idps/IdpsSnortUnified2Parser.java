@@ -110,15 +110,10 @@ public class IdpsSnortUnified2Parser {
             InputStream is = null;
             try {
                 is = new FileInputStream(f);
-            }
-            catch (java.io.FileNotFoundException e) {
-//                throw new SettingsException("File not found: " + f);
+            }catch (java.io.FileNotFoundException e) {
+                logger.warn("Unable to open event map:", e);
             }
 
-//            Object lock = this.getLock(f.getParentFile().getAbsolutePath());
-//            synchronized(lock) {
-//                return _loadInputStream(clz, is);
-//            }
             BufferedReader reader = null;
             try {
                 StringBuilder jsonString = new StringBuilder();
@@ -142,26 +137,23 @@ public class IdpsSnortUnified2Parser {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
               idpsEventMap = (IdpsEventMap) serializer.fromJSON(jsonString.toString());
             } catch (IOException e) {
-                logger.warn("IOException: ",e);
-//                throw new SettingsException("Unable to the settings: '" + is + "'", e);
+                logger.warn("Unable to process event map: ",e);
           } catch (UnmarshallException e) {
               logger.warn("UnmarshallException: ",e);
               for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
                   logger.warn("Exception cause: ", cause);
               }
-              logger.warn("Unable to unamarshall=" + e );
-//              throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
+              logger.warn("Unable to unamarshall event map entry:", e );
             } finally {
                 try {
                     if (reader != null) {
                         reader.close();
                     }
-                    logger.warn( idpsEventMap.getRules() );
-                    logger.warn("LENGTH OF idEventMap.rules=" + idpsEventMap.getRules().size() );
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    logger.warn( "Unable to close event map:", e );
+                }
             }
          }
-
     }
     
     public long parse( File file, long startPosition, IdpsNode idpsNode ){
@@ -174,13 +166,13 @@ public class IdpsSnortUnified2Parser {
                 fc.position( startPosition );
             }
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.warn( "Unable to open snort log for processing:", e );
 		}
         
 		int packet_count = 0;
         int eventCount = 0;
 
-        long pos = 1L;
+        long pos = -1L;
 		try {
             boolean abort = false;
 			while (fc.position() != fc.size()) {
@@ -220,13 +212,13 @@ public class IdpsSnortUnified2Parser {
 			}
             pos = fc.position();
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.warn("Unable to process snort log: ", e);
 		}
         if( f != null ){
             try {
                 f.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Unable to close snort log: ", e);
             }
         }
         return pos;
@@ -245,7 +237,7 @@ public class IdpsSnortUnified2Parser {
 				nread = fc.read( bufSerialHeader );
 			} while (nread != -1 && bufSerialHeader.hasRemaining());
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.warn( "Unable to read serial header:", e );
 		}
         
         if( nread != SERIAL_HEADER_SIZE ){
@@ -277,7 +269,7 @@ public class IdpsSnortUnified2Parser {
 				nread = fc.read( bufIdsEvent );
 			} while (nread != -1 && bufIdsEvent.hasRemaining() );
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.warn( "Unable to read event:", e );
 		}        
         
         if( nread != eventLength ){
@@ -321,12 +313,12 @@ public class IdpsSnortUnified2Parser {
 		bufIdsEvent.position(pos);
         if( ( idsEvent.getEventType() == IdpsSnortUnified2SerialHeader.TYPE_IDS_EVENT_IPV6 ) ||
             ( idsEvent.getEventType() == IdpsSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6 ) ){
-            System.out.println("parse: ipv6");
 		    bufIdsEvent.get( ipv6bytes, 0, IDS_EVENTIP6_IP_SRC_SIZE );
             InetAddress si = null;
             try{
                 si = InetAddress.getByAddress( ipv6bytes );
             }catch( Exception e) {
+                logger.warn( "Unable to process source IPv6 address:", e );
             }
 		    idsEvent.setIpSource( si );
             pos += IDS_EVENTIP6_IP_SRC_SIZE;
@@ -336,6 +328,7 @@ public class IdpsSnortUnified2Parser {
             try{
                 di = InetAddress.getByAddress( ipv6bytes );
             }catch( Exception e) {
+                logger.warn( "Unable to process destination IPv6 address:", e );
             }
 		    idsEvent.setIpDestination( di );
             pos += IDS_EVENTIP6_IP_DST_SIZE;
@@ -344,7 +337,9 @@ public class IdpsSnortUnified2Parser {
             InetAddress si = null;
             try{
                 si = InetAddress.getByAddress( ipv4bytes );
-            }catch( Exception e) {}
+            }catch( Exception e) {
+                logger.warn( "Unable to process source IPv4 address:", e );
+            }
 		    idsEvent.setIpSource( si );
             pos += IDS_EVENT_IP_SRC_SIZE;
         
@@ -352,7 +347,9 @@ public class IdpsSnortUnified2Parser {
             InetAddress di = null;
             try{
                 di = InetAddress.getByAddress( ipv4bytes );
-            }catch( Exception e) {}
+            }catch( Exception e) {
+                logger.warn( "Unable to process destination IPv4 address:", e );
+            }
 		    idsEvent.setIpDestination( di );
             pos += IDS_EVENT_IP_DST_SIZE;
         }
@@ -400,7 +397,7 @@ public class IdpsSnortUnified2Parser {
 		try {
             fc.position( fc.position() + serialHeader.getLength() );
         }catch( Exception e){
-			e.printStackTrace();
+            logger.warn("Unable to seek to new position:", e);
         }
         return;
 	}
