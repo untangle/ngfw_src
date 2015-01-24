@@ -21,6 +21,7 @@ node = None
 nodeFirewall = None
 nodeFaild = None
 nodeWeb = None
+orig_settings = None
 # special box with testshell in the sudoer group  - used to connect to as client
 syslogHostIP = "10.112.56.30"
 testEmailAddress = "qa@untangletest.com"
@@ -76,6 +77,44 @@ def createAdminUser( useremail=testEmailAddress):
             "username": username
         }
 
+def createAlertRule(description, matcherField, value, matcherField2, value2,):
+    return {
+            "alert": True,
+            "alertLimitFrequency": False,
+            "alertLimitFrequencyMinutes": 60,
+            "description": description,
+            "enabled": True,
+            "javaClass": "com.untangle.node.reporting.AlertRule",
+            "log": True,
+            "matchers": {
+                "javaClass": "java.util.LinkedList",
+                "list": [
+                    {
+                        "javaClass": "com.untangle.node.reporting.AlertRuleMatcher",
+                        "matcherType": "FIELD_CONDITION",
+                        "value": {
+                            "comparator": "=",
+                            "field": matcherField,
+                            "javaClass": "com.untangle.node.reporting.AlertRuleMatcherField",
+                            "value": value
+                        }
+                    },
+                    {
+                        "javaClass": "com.untangle.node.reporting.AlertRuleMatcher",
+                        "matcherType": "FIELD_CONDITION",
+                        "value": {
+                            "comparator": ">",
+                            "field": matcherField2,
+                            "javaClass": "com.untangle.node.reporting.AlertRuleMatcherField",
+                            "value": value2
+                        }
+                    }
+                ]
+            },
+            "ruleId": 1
+        }
+
+    
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
@@ -104,7 +143,7 @@ class ReportTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFirewall, nodeFaild, nodeWeb, syslogSettings, syslogHostResult
+        global node, nodeFirewall, nodeFaild, nodeWeb, orig_settings, syslogHostResult
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "Node %s already installed" % self.nodeName()
@@ -134,7 +173,8 @@ class ReportTests(unittest2.TestCase):
             else:
                 nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
 
-        syslogSettings = node.getSettings()
+        reportSettings = node.getSettings()
+        orig_settings = copy.deepcopy(reportSettings)
         syslogHostResult = subprocess.call(["ping","-c","1",syslogHostIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
            
     # verify client is online
@@ -147,7 +187,6 @@ class ReportTests(unittest2.TestCase):
             raise unittest2.SkipTest("Mail sink server unreachable")        
         # test if PDF is mailed out.
         settings = node.getSettings()
-        orig_settings = copy.deepcopy(settings)
         settings["attachmentSizeLimit"] = 5
         settings["reportingUsers"]["list"].append(createReportProfile())
         node.setSettings(settings)
@@ -190,7 +229,7 @@ class ReportTests(unittest2.TestCase):
                 targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host
-        newSyslogSettings = copy.deepcopy(syslogSettings)
+        newSyslogSettings = node.getSettings()
         newSyslogSettings["syslogEnabled"] = True
         newSyslogSettings["syslogEnabled"] = True
         newSyslogSettings["syslogHost"] = syslogHostIP
@@ -203,7 +242,7 @@ class ReportTests(unittest2.TestCase):
         rsyslogResult = remote_control.runCommand("sudo tail -n 10 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=syslogHostIP, stdout=True)
 
         # remove the firewall rule aet syslog back to original settings
-        node.setSettings(syslogSettings)
+        node.setSettings(orig_settings)
         rules["list"]=[];
         nodeFirewall.setRules(rules);
         
@@ -222,116 +261,29 @@ class ReportTests(unittest2.TestCase):
 
         assert(found)
 
-    def test_080_WAN_alerts(self):
-        raise unittest2.SkipTest("Review changes in test")        
+    def test_080_download_alerts(self):
+        # raise unittest2.SkipTest("Review changes in test")        
         if (syslogHostResult != 0):
             raise unittest2.SkipTest("Mail sink server unreachable")        
         settings = node.getSettings()
-        orig_settings = copy.deepcopy(settings)
-        settings["attachmentSizeLimit"] = 5
+        # set email address and alert for downloads
         settings["reportingUsers"]["list"].append(createReportProfile())
+        settings["alertRules"]["list"] = []
+        settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","*HttpResponseEvent*","contentLength","1000"))
         node.setSettings(settings)
+
         # set untangletest email to get to syslogHostIP where fake SMTP sink is running
         netsettings = uvmContext.networkManager().getNetworkSettings()
         orig_netsettings = copy.deepcopy(netsettings)
         netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
         uvmContext.networkManager().setNetworkSettings(netsettings)
+
         # set admin email to get alerts
         adminsettings = uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(createAdminUser())
         uvmContext.adminManager().setSettings(adminsettings)
-        # Remove old email and log files.
-        remote_control.runCommand("sudo rm /tmp/test_080_alerts*", host=syslogHostIP)
-        remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP)
-        remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/test_080_alerts.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
 
-        # WAN is offine test
-        wanIndex = 0
-        for interface in netsettings['interfaces']['list']:
-            if interface['isWan']:
-                wanIndex =  interface['interfaceId']
-                break
-        if wanIndex > 0:
-            name = "test ping " + str(wanIndex)
-            rule = {
-                "delayMilliseconds": 5000,
-                "description": "test 1",
-                "enabled": True,
-                "failureThreshold": 3,
-                "httpUrl": "http://1.2.3.4/",
-                "interfaceId": wanIndex,
-                "javaClass": "com.untangle.node.faild.WanTestSettings",
-                "pingHostname": "192.168.144.1",
-                "testHistorySize": 10,
-                "timeoutMilliseconds": 2000,
-                "type": "ping"
-            }
-            nodeFaildData = nodeFaild.getSettings()
-            nodeFaildData["tests"]["list"].append(rule)
-            nodeFaild.setSettings(nodeFaildData)
-            # Wait for all the WANs to be off line before checking for alert email.
-            timeout = 50000
-            wanUp = True
-            while wanUp and timeout > 0:
-                timeout -= 1
-                wanStatus = nodeFaild.getWanStatus()
-                for statusInterface in wanStatus['list']:
-                    if not statusInterface['online'] and statusInterface['interfaceId'] == wanIndex:
-                        wanUp = False
-            assert (timeout != 0)
-            # check for email file if there is no timeout
-            emailFound = False
-            if (timeout != 0):
-                timeout = 120
-                while not emailFound and timeout > 0:
-                    timeout -= 1
-                    time.sleep(1)
-                    emailfile = remote_control.runCommand("ls -l /tmp/qa@untangletest.com*",host=syslogHostIP)
-                    if (emailfile == 0):
-                        emailFound = True
-                emailContext=remote_control.runCommand("grep -i 'alert' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
-                emailContext2=remote_control.runCommand("grep -i 'WAN is offline' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
-
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
-        # reset all settings to base.
-        nodeFaildData["tests"]["list"] = []
-        nodeFaild.setSettings(nodeFaildData)
-        node.setSettings(orig_settings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        uvmContext.adminManager().setSettings(orig_adminsettings)
-        assert(emailFound)
-        assert(("Server Alert" in emailContext) and ("WAN is offline" in emailContext2))
-        flushEvents()
-        query = None;
-        for q in node.getEventQueries():
-            if q['name'] == 'All Events': query = q;
-        assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
-        assert(found)
-
-    def test_082_download_alerts(self):
-        raise unittest2.SkipTest("Review changes in test")        
-        if (syslogHostResult != 0):
-            raise unittest2.SkipTest("Mail sink server unreachable")        
-        settings = node.getSettings()
-        orig_settings = copy.deepcopy(settings)
-        settings["attachmentSizeLimit"] = 5
-        settings["reportingUsers"]["list"].append(createReportProfile())
-        node.setSettings(settings)
-        # set untangletest email to get to syslogHostIP where fake SMTP sink is running
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        orig_netsettings = copy.deepcopy(netsettings)
-        netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        # set admin email to get alerts
-        adminsettings = uvmContext.adminManager().getSettings()
-        orig_adminsettings = copy.deepcopy(adminsettings)
-        adminsettings['users']['list'].append(createAdminUser())
-        uvmContext.adminManager().setSettings(adminsettings)
         # Remove old email and log files.
         remote_control.runCommand("sudo rm /tmp/test_080_alerts*", host=syslogHostIP)
         remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP)
@@ -364,9 +316,70 @@ class ReportTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
+        assert(found)
+
+    def test_082_WAN_alerts(self):
+        # raise unittest2.SkipTest("Review changes in test")
+        # Just check the event log for the alert.
+        settings = node.getSettings()
+        # set email address and alert for downloads
+        settings["reportingUsers"]["list"].append(createReportProfile())
+        settings["alertRules"]["list"] = []
+        settings["alertRules"]["list"].append(createAlertRule("WAN is offline","class","*FailDEvent*","action","DISCONNECTED"))
+        node.setSettings(settings)
+
+        # WAN is offine test
+        wanIndex = 0
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan']:
+                wanIndex =  interface['interfaceId']
+                break
+        if wanIndex > 0:
+            name = "test ping " + str(wanIndex)
+            rule = {
+                "delayMilliseconds": 5000,
+                "description": "test 1",
+                "enabled": True,
+                "failureThreshold": 3,
+                "httpUrl": "http://1.2.3.4/",
+                "interfaceId": wanIndex,
+                "javaClass": "com.untangle.node.faild.WanTestSettings",
+                "pingHostname": "1.2.3.4",
+                "testHistorySize": 10,
+                "timeoutMilliseconds": 2000,
+                "type": "ping"
+            }
+            nodeFaildData = nodeFaild.getSettings()
+            nodeFaildData["tests"]["list"].append(rule)
+            nodeFaild.setSettings(nodeFaildData)
+            # Wait for all the WANs to be off line before checking for alert email.
+            timeout = 50000
+            wanUp = True
+            while wanUp and timeout > 0:
+                timeout -= 1
+                wanStatus = nodeFaild.getWanStatus()
+                for statusInterface in wanStatus['list']:
+                    if not statusInterface['online'] and statusInterface['interfaceId'] == wanIndex:
+                        wanUp = False
+            assert (timeout != 0)
+
+        # reset all settings to base.
+        nodeFaildData["tests"]["list"] = []
+        nodeFaild.setSettings(nodeFaildData)
+        node.setSettings(orig_settings)
+        # Check event log for admin alert for WAN down.
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)
 
     @staticmethod
@@ -375,7 +388,7 @@ class ReportTests(unittest2.TestCase):
         # no need to uninstall reports
         # if node != None:
         # uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node.setSettings(syslogSettings)
+        node.setSettings(orig_settings)
         node = None
         if nodeFirewall != None:
             uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
