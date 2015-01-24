@@ -262,7 +262,7 @@ class ReportTests(unittest2.TestCase):
         assert(found)
 
     def test_080_download_alerts(self):
-        # raise unittest2.SkipTest("Review changes in test")        
+        raise unittest2.SkipTest("Review changes in test")        
         if (syslogHostResult != 0):
             raise unittest2.SkipTest("Mail sink server unreachable")        
         settings = node.getSettings()
@@ -322,7 +322,7 @@ class ReportTests(unittest2.TestCase):
         assert(found)
 
     def test_082_WAN_alerts(self):
-        # raise unittest2.SkipTest("Review changes in test")
+        raise unittest2.SkipTest("Review changes in test")
         # Just check the event log for the alert.
         settings = node.getSettings()
         # set email address and alert for downloads
