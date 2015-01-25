@@ -26,7 +26,6 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
-testVLANIP = None
 
 def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
     return {
@@ -261,78 +260,89 @@ def appendDNSRule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
+def findUsedIP(startIP):
+    # Find an IP that is not currently used.
+    loopLimit = 20
+    testIP = ipaddr.IPAddress(startIP)
+    ipUsed = True
+    while (ipUsed and (loopLimit > 0)):
+        loopLimit -= 1
+        testIP += 1
+        testIPResult = subprocess.call(["ping","-c","1",str(testIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if testIPResult != 0:
+            ipUsed = False
+    
+    if ipUsed:
+        # no unused IP found
+        return False
+    else:
+        return str(testIP)
+    
 def appendVLAN(parentInterfaceID):
-    global testVLANIP
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # find the physicalDev of the interface passed in.
     physicalDev = None
     for interface in netsettings['interfaces']['list']:
         if interface['interfaceId'] == parentInterfaceID:
+            if interface['configType'] != "ADDRESSED":
+                # only use if interface is addressed
+                return false
             physicalDev = interface['physicalDev']
             symbolicDev = interface['symbolicDev']
             systemDev = interface['systemDev']
             break
-    # only add VLAN if ethX is found
-    if physicalDev:
-        # Check if the sample network of 1.2.3.0/24 and ethX.1 is available
-        ipFound = True
-        interfaceFound = True
-        loopLimit = 254
-        ethIndex = 0
-        testVLANIP = ipaddr.IPAddress("1.2.3.0")
-        # Verify that the VLAN interface and IP is not currently used.
-        while ((ipFound or interfaceFound) and loopLimit > 0):
-            loopLimit -= 1
-            if ipFound:
-                # Add one to the test IP range for 1.2.3.0 looking for usable IP.
-                testVLANIP += 1  
-            if interfaceFound:
-                # cycle through the possible VLAN interfaces i.e. eth0.1, eth0.2
-                ethIndex += 1
-            testEth = physicalDev + str(ethIndex)
-            ipFound = False
-            interfaceFound = False
-            # check possible VLAN interface and IP
-            for interface in netsettings['interfaces']['list']:
-                if (interface['physicalDev'] == testEth) or  (interface['symbolicDev'] == testEth) or (interface['systemDev'] == testEth):
-                    interfaceFound = True
-                if (interface['v4StaticAddress'] == str(testVLANIP)):
-                    ipFound = True
-        if (loopLimit > 0):
-            # if valid VLAN interface and IP is available, create a VLAN
-            netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,symbolicDev,systemDev,str(testVLANIP)))
-            uvmContext.networkManager().setNetworkSettings(netsettings)
+    
+    testVLANIP = findUsedIP("1.2.3.4")
+    if testVLANIP:
+        # no unused IP found
+        return False
+    
+    # Check thast VLAN ID is not used
+    loopLimit = 20
+    testVLANID = 100
+    vlanIdUsed = True
+    while (vlanIdUsed and (loopLimit > 0)):
+        testVLANID += 1
+        loopLimit -= 1
+        vlanIdUsed = False
+        testVlanIdDev = physicalDev + "." + str(testVLANID)
+        for interface in netsettings['interfaces']['list']:
+            if interface['symbolicDev'] == testVlanIdDev:
+                # found duplicate VLAN ID
+                vlanIdUsed = True
+                break
+        
+    if vlanIdUsed:
+        # no unused VLAN ID found
+        return False 
+
+    # if valid VLAN interface and IP is available, create a VLAN
+    netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,testVlanIdDev,testVlanIdDev,str(testVLANIP)))
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+    return testVLANIP
         
 def appendAliases(parentInterfaceID):
     netsettings = uvmContext.networkManager().getNetworkSettings()
-    # find ten IP addresses if interface is addresssed.
-    successfullyAdded = False
     for i in range(len(netsettings['interfaces']['list'])):
         if netsettings['interfaces']['list'][i]['interfaceId'] == parentInterfaceID:
-            # Alias are only added if the interface is addressed and has an IP address.
-            if netsettings['interfaces']['list'][i]['addressed'] and netsettings['interfaces']['list'][i]['v4StaticAddress']:
-                # verify the IPs are not used
-                unitIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
-                unitIPnodes = unitIP.split('.')
-                unitIPnodes[-1] = "0" # replace last octet with start of range 
-                unitIPBase = ".".join(unitIPnodes)
-                testAliasIP = ipaddr.IPAddress(unitIPBase)
-                aliasIPList = []
-                for j in range(254):
-                    testAliasIP +=1
-                    testIPResult = subprocess.call(["ping","-c","1",str(testAliasIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                    if (testIPResult != 0):
-                        aliasIPList.append(str(testAliasIP))
-                        if len(aliasIPList) == 10:
-                            break
-            break  # Found the interface
-    for testAliasIP in aliasIPList:
-        successfullyAdded = True
-        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(createAlias(testAliasIP,
-                                                                         netsettings['interfaces']['list'][i]['v4StaticNetmask'],
-                                                                         netsettings['interfaces']['list'][i]['v4StaticPrefix']))
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-    return aliasIPList[0]
+            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
+                testStartIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
+                ipFound = findUsedIP(testStartIP)
+                break;
+            else:
+                # only use if interface is addressed
+                return False
+    if ipFound:
+        testAliasIP = findUsedIP(ipFound)
+        if testAliasIP:
+            netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(createAlias(testAliasIP,
+                                                                             netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                             netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+            uvmContext.networkManager().setNetworkSettings(netsettings)
+        else:
+            return False
+
+    return testAliasIP
     
 def nukeFirstLevelRule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -410,23 +420,32 @@ class NetworkTests(unittest2.TestCase):
 
     def test_015_addVLANsAndAliases(self):
         raise unittest2.SkipTest("Review changes in test")        
-        # Add a test static VLAN and Aliases to check for issues saving VLANs
-        appendVLAN(remote_control.interface)
-        testVLANIPResult = subprocess.call(["ping","-c","1",str(testVLANIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        assert(testVLANIPResult == 0)
-        lastAliasIP = appendAliases(remote_control.interface)
-        if lastAliasIP:
-            result = remote_control.runCommand("ping -c 1 %s" % lastAliasIP)
+        # Add a test static VLAN
+        testVLANIP = appendVLAN(remote_control.interface)
+        if testVLANIP:
+            result = subprocess.call(["ping","-c","1",str(testVLANIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            assert(result == 0)
         else:
-            # No alias IP added so just pass
-            result = 0
-        assert (result == 0)
+            # no VLAN was created so skip test
+            unittest2.SkipTest("No VLAN or IP address available")
+            
+
         # TODO add VLAN to device behind to verify VLAN over LAN
         # sudo test -x vconfig
         # sudo vconfig add eth0 100
         # sudo ifconfig eth0.100 1.2.3.2/24
         # ping -c 1 1.2.3.2
         # sudo vconfig rem eth0.100
+
+        # Add Alias IP
+        AliasIP = appendAliases(remote_control.interface)
+        if AliasIP:
+            # print "AliasIP <%s>" % AliasIP
+            result = remote_control.runCommand("ping -c 1 %s" % AliasIP)
+            assert (result == 0)
+        else:
+            # No alias IP added so just skip
+            unittest2.SkipTest("No alias address available")
 
     # test basic port forward (tcp port 80)
     def test_020_portForward80(self):
