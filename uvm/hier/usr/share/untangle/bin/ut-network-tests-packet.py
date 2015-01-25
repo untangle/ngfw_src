@@ -164,7 +164,7 @@ def main(argv):
 
     path = "/".join( filename.split( "/" )[0:-1] )
     if os.path.isdir( path ) == False:
-        os.mkdirs( path )
+        os.makedirs( path )
 
     tcpdump_stderr_filename = filename + ".stderr"
 	
