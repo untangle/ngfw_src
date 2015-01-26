@@ -1479,27 +1479,27 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 if(window.location.hostname != "localhost") {
                     if(initialConfigType == 'BRIDGED') {
                         //If the Transparent Bridge mode was used test if the external address was used, and offer to redirect Internal address
-                        var firstWan = this.getFirstWanSettings( rpc.networkSettings );
-                        if(firstWan && firstWan.interfaceId) {
-                            var firstWanStatus;
+                        var firstWanB = this.getFirstWanSettings( rpc.networkSettings );
+                        if(firstWanB && firstWanB.interfaceId) {
+                            var firstWanStatusB;
                             try {
-                                firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId );
+                                firstWanStatusB = rpc.networkManager.getInterfaceStatus( firstWanB.interfaceId );
                             } catch (e) {
                                 Ung.Util.rpcExHandler(e);
                             }
-                            if(window.location.hostname == firstWanStatus.v4Address) {
+                            if(window.location.hostname == firstWanStatusB.v4Address) {
                                 //Use External Address instead of Internal Address
-                                var newSetupLocation = window.location.href.replace(firstWanStatus.v4Address, network);
+                                var newSetupLocationB = window.location.href.replace(firstWanStatusB.v4Address, network);
                                 delegate = function() {}; // no delegate
                                 rpc.tolerateKeepAliveExceptions = true; // prevent keep alive exceptions
                                 Ext.defer(function() {
                                     Ext.MessageBox.confirm(i18n._("Redirect to the new setup address?"),
                                         Ext.String.format(i18n._("When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"), network) +"<br/><br/>" +
-                                        Ext.String.format(i18n._("If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."), "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/><br/>" +
+                                        Ext.String.format(i18n._("If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."), "<a href='"+newSetupLocationB+"'>"+newSetupLocationB+"</a>") + "<br/><br/>" +
                                         i18n._("Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."),
                                         function(btn) {
                                             if(btn == 'yes') {
-                                                window.location.href = newSetupLocation;
+                                                window.location.href = newSetupLocationB;
                                             } else {
                                                 rpc.tolerateKeepAliveExceptions = false;
                                                 afterFn();
@@ -1510,14 +1510,14 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                         }
                     } else if(window.location.hostname == initialNetwork && initialNetwork != network) {
                         //If using internal address and it is changed in this step redirect to new internal address
-                        var newSetupLocation = window.location.href.replace(initialNetwork, network);
+                        var newSetupLocationC = window.location.href.replace(initialNetwork, network);
                         delegate = function() {}; // no delegate
                         rpc.keepAlive = function() {}; // prevent keep alive
                         Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ) + "<br/><br/>" +
                             Ext.String.format(i18n._("The Internal Address is changed to: {0}"), network) + "<br/>" +
-                            Ext.String.format(i18n._("The changes are applied and you will be redirected to the new setup address: {0}"), "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/><br/>" +
+                            Ext.String.format(i18n._("The changes are applied and you will be redirected to the new setup address: {0}"), "<a href='"+newSetupLocationC+"'>"+newSetupLocationC+"</a>") + "<br/><br/>" +
                             i18n._( "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again." ), i18n._( "Please Wait" ));
-                        Ext.defer(function() { window.location.href = newSetupLocation; }, 30000, this);
+                        Ext.defer(function() { window.location.href = newSetupLocationC; }, 30000, this);
                     }
                 }
                 rpc.networkManager.setNetworkSettings( delegate, rpc.networkSettings );
