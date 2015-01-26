@@ -57,6 +57,8 @@ public class NetworkManagerImpl implements NetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
+    private static final String[] GREEK_NAMES = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
+    
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
 
@@ -689,17 +691,21 @@ public class NetworkManagerImpl implements NetworkManager
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
                 int interfaceId = nextFreeInterfaceId( netSettings, 1 );
                 interfaceSettings.setInterfaceId( interfaceId );
-                interfaceSettings.setName( "Interface " + interfaceId );
+                try {
+                    interfaceSettings.setName("Interface " + GREEK_NAMES[interfaceId-1]);
+                } catch (Exception e) {
+                    interfaceSettings.setName("Interface " + interfaceId);
+                }
                 interfaceSettings.setPhysicalDev( deviceName );
                 interfaceSettings.setSystemDev( deviceName );
                 interfaceSettings.setSymbolicDev( deviceName );
                 interfaceSettings.setIsWan( false );
                 interfaceSettings.setConfigType( InterfaceSettings.ConfigType.DISABLED );
 
-		// Check for wireless interfaces
-		if (deviceName.startsWith("wlan")) {
-		    interfaceSettings.setIsWirelessInterface(true);
-		}
+                // Check for wireless interfaces
+                if (deviceName.startsWith("wlan")) {
+                    interfaceSettings.setIsWirelessInterface(true);
+                }
 
                 List<InterfaceSettings> currentList = netSettings.getInterfaces();
                 if (currentList == null) currentList = new LinkedList<InterfaceSettings>();
@@ -798,20 +804,20 @@ public class NetworkManagerImpl implements NetworkManager
 
             int i = 2;
             for ( devName = deviceNames.poll() ; devName != null ; devName = deviceNames.poll() ) {
-                String[] greekNames = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
                 
                 InterfaceSettings intf = new InterfaceSettings();
-                intf.setInterfaceId( i + 1 );
+                int interfaceId = i+1;
+                intf.setInterfaceId( interfaceId );
                 try {
-                    intf.setName("Interface " + greekNames[i]);
+                    intf.setName("Interface " + GREEK_NAMES[interfaceId-1]);
                 } catch (Exception e) {
-                    intf.setName("Interface " + (i + 1));
+                    intf.setName("Interface " + interfaceId);
                 }
 
-		// Check for wireless interfaces
-		if (devName.startsWith("wlan")) {
-		    intf.setIsWirelessInterface(true);
-		}
+                // Check for wireless interfaces
+                if (devName.startsWith("wlan")) {
+                    intf.setIsWirelessInterface(true);
+                }
 
                 intf.setPhysicalDev( devName);
                 intf.setSystemDev( devName );
