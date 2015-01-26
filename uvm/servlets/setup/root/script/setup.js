@@ -1371,6 +1371,17 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         }
         return null;
     },
+    getFirstWanSettings: function( networkSettings ) {
+        for ( var c = 0 ; c < networkSettings['interfaces']['list'].length ; c++ ) {
+            if (networkSettings['interfaces']['list'][c]['configType'] == "DISABLED") {
+                continue;
+            }
+            if ( networkSettings['interfaces']['list'][c]['isWan'] ) {
+                return networkSettings['interfaces']['list'][c];
+            }
+        }
+        return null;
+    },
 
     validateInternalNetwork: function() {
         var rv = true;
@@ -1413,6 +1424,38 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             changed = (firstNonWan['configType'] != 'BRIDGED');
             if(changed) {
                 firstNonWan['configType'] = 'BRIDGED';
+                //If using Internal Address and it is changed in this step redirect to new address
+                if(window.location.hostname == firstNonWan['v4StaticAddress']) {
+                    var firstWan = this.getFirstWanSettings( rpc.networkSettings );
+                    if(firstWan && firstWan.interfaceId) {
+                        var firstWanStatus;
+                        try {
+                            firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId );
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e);
+                        }
+                        if(firstWanStatus.v4Address) {
+                            //Use Internal Address instead of External Address
+                            var newSetupLocation = window.location.href.replace(firstNonWan['v4StaticAddress'], firstWanStatus.v4Address);
+                            delegate = function() {}; // no delegate
+                            rpc.keepAlive = function() {}; // prevent keep alive
+                            Ext.defer(function() {
+                                Ext.MessageBox.confirm(i18n._("Redirect to the new setup address?"),
+                                    Ext.String.format(i18n._("When switching from Router to Transparent Bridge the setup is no longer accessible using Internal Address. Instead it could be accessible using the External Address: {0}"), firstWanStatus.v4Address) +"<br/><br/>" +
+                                    Ext.String.format(i18n._("If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."), "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/><br/>" +
+                                    i18n._("Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."),
+                                    function(btn) {
+                                        if(btn == 'yes') {
+                                            window.location.href = newSetupLocation;
+                                        } else {
+                                            rpc.tolerateKeepAliveExceptions = false;
+                                            afterFn();
+                                        }
+                                }, this);
+                            }, 5000, this);
+                        }
+                    }
+                }
                 rpc.networkManager.setNetworkSettings( delegate, rpc.networkSettings );
             } else {
                 Ext.MessageBox.hide();
@@ -1420,6 +1463,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             }
         } else {
             var initialNetwork = firstNonWan['v4StaticAddress'];
+            var initialConfigType = firstNonWan['configType'];
             var network = this.panel.down('textfield[name="network"]').getValue();
             var prefix = this.panel.down('combo[name="prefix"]').getValue();
             var enableDhcpServer = this.panel.down('checkbox[name="enableDhcpServer"]').getValue();
@@ -1432,17 +1476,49 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 firstNonWan['dhcpEnabled'] = enableDhcpServer;
                 delete firstNonWan.dhcpRangeStart; // new ones will be chosen
                 delete firstNonWan.dhcpRangeEnd; // new ones will be chosen
-                //If the internal address is changed redirect to new address 
-                if(window.location.hostname == initialNetwork && initialNetwork != network) {
-                    delegate = function() {}; // no delegate
-                    rpc.keepAlive = function() {}; // prevent keep alive
-                    var newSetupLocation = window.location.href.replace(initialNetwork, network);
-                    Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ) + "<br/>" +
-                        Ext.String.format(i18n._( "The Internal Address is changed to {0}. The changes are applied and you will be redirected to the new setup address: {0}"),network, "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/>" +
-                        i18n._( "If the new location is not loaded after 30 seconds please reinitialize your network settings and try again." ), i18n._( "Please Wait" ));
-                    Ext.defer(function() {
-                        window.location.href = newSetupLocation;
-                    },30000, this);
+                if(window.location.hostname != "localhost") {
+                    if(initialConfigType == 'BRIDGED') {
+                        //If the Transparent Bridge mode was used test if the external address was used, and offer to redirect Internal address
+                        var firstWan = this.getFirstWanSettings( rpc.networkSettings );
+                        if(firstWan && firstWan.interfaceId) {
+                            var firstWanStatus;
+                            try {
+                                firstWanStatus = rpc.networkManager.getInterfaceStatus( firstWan.interfaceId );
+                            } catch (e) {
+                                Ung.Util.rpcExHandler(e);
+                            }
+                            if(window.location.hostname == firstWanStatus.v4Address) {
+                                //Use External Address instead of Internal Address
+                                var newSetupLocation = window.location.href.replace(firstWanStatus.v4Address, network);
+                                delegate = function() {}; // no delegate
+                                rpc.tolerateKeepAliveExceptions = true; // prevent keep alive exceptions
+                                Ext.defer(function() {
+                                    Ext.MessageBox.confirm(i18n._("Redirect to the new setup address?"),
+                                        Ext.String.format(i18n._("When switching to from Transparent Bridge to Router the setup might no longer accessible using External Address. Instead it could be accessible using the Internal Address: {0}"), network) +"<br/><br/>" +
+                                        Ext.String.format(i18n._("If you want to be redirected to the new setup address: {0} please reinitialize your Network Settings and press Yes."), "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/><br/>" +
+                                        i18n._("Clicking No will prevent redirection and will try to continue setup using the current address, but it might no longer be accessible."),
+                                        function(btn) {
+                                            if(btn == 'yes') {
+                                                window.location.href = newSetupLocation;
+                                            } else {
+                                                rpc.tolerateKeepAliveExceptions = false;
+                                                afterFn();
+                                            }
+                                    }, this);
+                                }, 5000, this);
+                            }
+                        }
+                    } else if(window.location.hostname == initialNetwork && initialNetwork != network) {
+                        //If using internal address and it is changed in this step redirect to new internal address
+                        var newSetupLocation = window.location.href.replace(initialNetwork, network);
+                        delegate = function() {}; // no delegate
+                        rpc.keepAlive = function() {}; // prevent keep alive
+                        Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ) + "<br/><br/>" +
+                            Ext.String.format(i18n._("The Internal Address is changed to: {0}"), network) + "<br/>" +
+                            Ext.String.format(i18n._("The changes are applied and you will be redirected to the new setup address: {0}"), "<a href='"+newSetupLocation+"'>"+newSetupLocation+"</a>") + "<br/><br/>" +
+                            i18n._( "If the new location is not loaded after 30 seconds please reinitialize your Network Settings and try again." ), i18n._( "Please Wait" ));
+                        Ext.defer(function() { window.location.href = newSetupLocation; }, 30000, this);
+                    }
                 }
                 rpc.networkManager.setNetworkSettings( delegate, rpc.networkSettings );
             } else {
@@ -1511,6 +1587,8 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
             title: i18n._( "Automatic Upgrades" ),
             panel: this.panel,
             onLoad: Ext.bind(function( complete ) {
+                complete();
+                Ext.MessageBox.wait( i18n._( "Loading Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
                 rpc.systemManager.getSettings(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.initialAutoUpgrade = result.autoUpgrade;
@@ -1519,7 +1597,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                         autoUpgradesRadio[0].setValue(false);
                         autoUpgradesRadio[1].setValue(true);
                     }
-                    complete();
+                    Ext.MessageBox.hide();
                 }, this));
             }, this),
             onNext: Ext.bind(this.saveAutoUpgrades,this )
@@ -1682,9 +1760,12 @@ Ext.define("Ung.Setup", {
                     rpc.jsonrpc.UvmContext.getSetupStartupInfo(Ext.bind(function(result, exception){
                         if(Ung.Util.handleException(exception)) return;
                         Ext.applyIf(rpc, result);
+                        rpc.tolerateKeepAliveExceptions = false;
                         rpc.keepAlive = function() {
-                            rpc.jsonrpc.UvmContext.getFullVersion(Ext.bind(function(result, exception){
-                                if(Ung.Util.handleException(exception)) return;
+                            rpc.jsonrpc.UvmContext.getFullVersion(Ext.bind(function(result, exception) {
+                                if(!rpc.tolerateKeepAliveExceptions) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                }
                                 Ext.defer(rpc.keepAlive, 300000);
                             }, this));
                         };
@@ -1706,7 +1787,6 @@ Ext.define("Ung.Setup", {
             rpc.wizardSettings.completedStep = stepName;
             rpc.jsonrpc.UvmContext.setWizardSettings(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
-                
             }, this), rpc.wizardSettings);
         }
     }
