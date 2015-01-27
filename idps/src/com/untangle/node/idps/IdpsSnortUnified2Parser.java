@@ -137,7 +137,6 @@ public class IdpsSnortUnified2Parser {
                 serializer.setFixupDuplicates(false);
                 serializer.setMarshallNullAttributes(false);
 
-                logger.warn("serializing/marshalizing");
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
               newIdpsEventMap = (IdpsEventMap) serializer.fromJSON(jsonString.toString());
             } catch (IOException e) {
