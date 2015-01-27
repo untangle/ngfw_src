@@ -13,6 +13,7 @@ class SnortConf:
     include_regex = re.compile(r'^(\#|)\s*include\s+([^\s]+)')
     include_rulepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
     output_regex = re.compile(r'^output\s+([^:]+)')
+    preprocessor_normalize_tcp_regex = re.compile(r'^(#|)preprocessor normalize_tcp: ips ecn stream')
     
     def __init__( self, _debug = False ):
         self.conf = []
@@ -35,6 +36,7 @@ class SnortConf:
         self.save_variables()
         self.save_includes()
         self.save_output()
+        self.save_set_options()
         for line in self.conf:
             conf_file.write( line + "\n" );
         conf_file.close()
@@ -113,6 +115,14 @@ class SnortConf:
         if unified_found == False:
             self.conf[last_output_position] = self.conf[last_output_position] + "\n" + "output unified2: filename snort.log,limit 128, mpls_event_types, vlan_event_types"
                 
+    def save_set_options(self):
+        last_output_position = 0
+        for i,line in enumerate( self.conf ):
+            match_output = re.search( SnortConf.preprocessor_normalize_tcp_regex, line )
+            if match_output:
+                if match_output.group(1) == "":
+                    self.conf[i] = "#" + self.conf[i]
+
     def get_variables(self):
         #
         # Pull default snort variable names, values, and descriptions.
