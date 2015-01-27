@@ -1289,7 +1289,8 @@ Ext.define("Webui.config.network", {
                     fieldLabel: this.i18n._("Password"),
                     allowBlank: false,
                     disableOnly: true,
-                    maxLength: 30,
+                    maxLength: 63,
+		    minLength: 8,
                     maskRe: /[a-zA-Z0-9\-_=]/,
                     //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/,
                     width: 350
