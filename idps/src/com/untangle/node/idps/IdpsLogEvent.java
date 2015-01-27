@@ -47,9 +47,9 @@ public class IdpsLogEvent extends LogEvent
         pstmt.setLong(++i, idpsEvent.getGeneratorId() );
         pstmt.setLong(++i, idpsEvent.getClassificationId() );
         pstmt.setObject(++i, idpsEvent.getIpSource().getHostAddress(), java.sql.Types.OTHER);
-        pstmt.setInt(++i, (int) ( idpsEvent.getSportItype() & 0xffff ) );
+        pstmt.setInt(++i, ( idpsEvent.getSportItype() & 0xffff ) );
         pstmt.setObject(++i, idpsEvent.getIpDestination().getHostAddress(), java.sql.Types.OTHER);
-        pstmt.setInt(++i, (int) ( idpsEvent.getDportIcode() & 0xffff ) );
+        pstmt.setInt(++i, ( idpsEvent.getDportIcode() & 0xffff ) );
         pstmt.setInt(++i, idpsEvent.getProtocol() );
         pstmt.setBoolean(++i, ( idpsEvent.getBlocked() == 1 ) ? true : false  );
 
