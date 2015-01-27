@@ -312,6 +312,7 @@ class Update:
                 })
                 return False
 
+            node.reloadEventMonitorMap();
             node.stop()
             node.start()
         return True
