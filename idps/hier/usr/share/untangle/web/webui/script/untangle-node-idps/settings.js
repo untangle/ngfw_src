@@ -915,7 +915,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('sig_id') < 0,
-                header: i18n._("Signature ID"),
+                header: i18n._("Sid"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'sig_id',
@@ -924,7 +924,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('gen_id') < 0,
-                header: i18n._("Generator ID"),
+                header: i18n._("Gid"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'gen_id',
@@ -933,7 +933,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('class_id') < 0,
-                header: i18n._("Class ID"),
+                header: i18n._("Cid"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'class_id',
