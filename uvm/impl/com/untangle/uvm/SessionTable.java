@@ -151,7 +151,10 @@ public class SessionTable
         /**
          * Iterate through all sessions and reset matching sessions
          */
-        Object[] array = activeSessions.entrySet().toArray();
+        Object[] array;
+	synchronized( this ) {
+	    array = activeSessions.entrySet().toArray();
+	}
         int i;
         for ( i = 0; i < array.length ; i++ ) {
             Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)array[i];
