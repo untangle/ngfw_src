@@ -1290,7 +1290,7 @@ Ext.define("Webui.config.network", {
                     allowBlank: false,
                     disableOnly: true,
                     maxLength: 63,
-		    minLength: 8,
+                    minLength: 8,
                     maskRe: /[a-zA-Z0-9\-_=]/,
                     //maskRe: /[a-zA-Z0-9~@%_=,<>\!\-\/\?\[\]\\\^\$\+\*\.\|]/,
                     width: 350
