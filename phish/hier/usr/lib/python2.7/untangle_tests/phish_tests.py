@@ -7,6 +7,7 @@ import subprocess
 import socket
 import smtplib
 import re
+import system_properties
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -22,6 +23,7 @@ node = None
 nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
+tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def sendTestmessage():
     sender = 'test@example.com'
@@ -192,6 +194,21 @@ class PhishTests(unittest2.TestCase):
                                             'phish_action', 'D')
         assert( found )
         
+    def test_050_checkTLSBypass(self):
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
+        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
+        if (externalClientResult != 0):
+            raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
+        # Get latest TLS test command file
+        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
+        assert(testCopyResult == 0)
+        tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
+        # print "TLS  : " + str(tlsSMTPResult)
+        assert(tlsSMTPResult == 0)
+
+
     @staticmethod
     def finalTearDown(self):
         global node
