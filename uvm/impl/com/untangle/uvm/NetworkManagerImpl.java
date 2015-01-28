@@ -1569,6 +1569,23 @@ public class NetworkManagerImpl implements NetworkManager
         ruleNatTMatchers.add(ruleNatTMatcher2);
         filterRuleNatT.setMatchers( ruleNatTMatchers );
 
+        FilterRule filterRuleL2tp = new FilterRule();
+        filterRuleL2tp.setReadOnly( true );
+        filterRuleL2tp.setEnabled( true );
+        filterRuleL2tp.setDescription( "Allow L2TP" );
+        filterRuleL2tp.setBlocked( false );
+        filterRuleL2tp.setReadOnly( true );
+        List<FilterRuleMatcher> ruleL2tpMatchers = new LinkedList<FilterRuleMatcher>();
+        FilterRuleMatcher ruleL2tpMatcher1 = new FilterRuleMatcher();
+        ruleL2tpMatcher1.setMatcherType(FilterRuleMatcher.MatcherType.PROTOCOL);
+        ruleL2tpMatcher1.setValue("UDP");
+        FilterRuleMatcher ruleL2tpMatcher2 = new FilterRuleMatcher();
+        ruleL2tpMatcher2.setMatcherType(FilterRuleMatcher.MatcherType.DST_PORT);
+        ruleL2tpMatcher2.setValue("1701");
+        ruleL2tpMatchers.add(ruleL2tpMatcher1);
+        ruleL2tpMatchers.add(ruleL2tpMatcher2);
+        filterRuleL2tp.setMatchers( ruleL2tpMatchers );
+
         FilterRule filterRuleOpenVpn = new FilterRule();
         filterRuleOpenVpn.setReadOnly( true );
         filterRuleOpenVpn.setEnabled( true );
@@ -1610,6 +1627,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleAhEsp );
         rules.add( filterRuleIke );
         rules.add( filterRuleNatT );
+        rules.add( filterRuleL2tp );
         rules.add( filterRuleOpenVpn );
         rules.add( filterRuleBlock );
 
