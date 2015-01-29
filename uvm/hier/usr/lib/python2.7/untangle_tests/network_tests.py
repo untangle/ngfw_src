@@ -885,6 +885,10 @@ class NetworkTests(unittest2.TestCase):
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
         v2cResult = remote_control.runCommand( commands[0] )
+        if (v2cResult == 1):
+            # there might be a delay in snmp restarting
+            time.sleep(5)
+            v2cResult = remote_control.runCommand( commands[0] )
         v3Result = remote_control.runCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
