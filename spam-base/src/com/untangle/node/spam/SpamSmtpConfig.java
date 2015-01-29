@@ -24,7 +24,7 @@ public class SpamSmtpConfig
     public static final float DEFAULT_LIMIT_LOAD = 7.0f;
     public static final int DEFAULT_LIMIT_SCANS = 15;
     public static final boolean DEFAULT_SCAN_WAN_MAIL = false;
-    public static final boolean DEFAULT_ALLOW_TLS = true;
+    public static final boolean DEFAULT_ALLOW_TLS = false;
 
     // // Help for the UI follows.
     // public static final int LOW_STRENGTH = 50;
