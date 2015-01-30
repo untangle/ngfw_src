@@ -521,7 +521,7 @@ Ung.CustomEventLog = {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('https_ruleid') < 0,
-                header: i18n._("Rule ID (Https)"),
+                header: i18n._("Rule ID (HTTPS Inspector)"),
                 width: 70,
                 sortable: true,
                 dataIndex: 'https_ruleid',
@@ -530,13 +530,13 @@ Ung.CustomEventLog = {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('https_status') < 0,
-                header: i18n._("Status (Https)"),
+                header: i18n._("Status (HTTPS Inspector)"),
                 width: 100,
                 sortable: true,
                 dataIndex: 'https_status'
             }, {
                 hidden: visibleColumnsParam.indexOf('https_detail') < 0,
-                header: i18n._("Detail (Https)"),
+                header: i18n._("Detail (HTTPS Inspector)"),
                 width: 250,
                 sortable: true,
                 dataIndex: 'https_detail'
@@ -596,7 +596,7 @@ Ung.CustomEventLog = {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('ips_blocked') < 0,
-                header: i18n._("Blocked (IPS)"),
+                header: i18n._("Blocked (Intrusion Prevention)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
                 dataIndex: 'ips_blocked',
@@ -607,13 +607,13 @@ Ung.CustomEventLog = {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('ips_ruleid') < 0,
-                header: i18n._('Rule Id (IPS)'),
+                header: i18n._('Rule Id (Intrusion Prevention)'),
                 width: 60,
                 sortable: true,
                 dataIndex: 'ips_ruleid'
             }, {
                 hidden: visibleColumnsParam.indexOf('ips_description') < 0,
-                header: i18n._('Rule Description (IPS)'),
+                header: i18n._('Rule Description (Intrusion Prevention)'),
                 width: 150,
                 sortable: true,
                 flex:1,
