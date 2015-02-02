@@ -1,8 +1,7 @@
 #!/usr/bin/python
-##
-## Get rule updates
-##
-import errno
+"""
+Get rule updates
+"""
 import getopt
 import json
 import os
@@ -22,22 +21,21 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
-Debug = False
-Chunk_size = 1024 * 1024
+import untangle_node_idps
 
-##
-## 
-##
+DEBUG = False
+CHUNK_SIZE = 1024 * 1024
+
 class Update:
-    debug = False
+    """
+    Update
+    """
+    DEBUG = False
     errors = []
-    settings_file_name_regex = re.compile(r'^settings_(\d+).js$');
+    settings_file_name_regex = re.compile(r'^settings_(\d+).js$')
 
-    ##
-    ## Initialize variables
-    ##
     def __init__( self, base_directory, url ):
-        self.debug = Debug
+        self.debug = DEBUG
         self.base_directory = base_directory
         self.working_directory = self.base_directory + "/update"
         self.rules_working_directory = self.working_directory + "/new"
@@ -45,11 +43,13 @@ class Update:
         self.rules_file_name = self.url.split( "/" )[-1].split("?")[0]
         self.url_file_name = self.working_directory + "/" + self.rules_file_name
         self.live_rules_file_name = self.base_directory + "/" + self.rules_file_name
+        self.node_ids = []
+        self.node_manager = None
 
-    ##
-    ## Setup working directory
-    ##
     def setup( self ):
+        """
+        Setup working directory
+        """
         if self.debug == True:
             print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "cleanup and create work directories" ] )
             
@@ -71,18 +71,31 @@ class Update:
                 'error': "\n".join( str(v) for v in sys.exc_info() )
             })
             return False
+
+        uvmContext = Uvm().getUvmContext( hostname="localhost", username=None, password=None, timeout=60 )
+        self.node_manager = uvmContext.nodeManager()
+
+        ##
+        ## Easier to parse the api for instances than reproducing what 
+        ## it does with object.
+        ##
+        nm = NodeManager(uvmContext)
+        for instance in nm.get_instances():
+            if instance[1] == "untangle-node-idps":
+                self.node_ids.append(instance[0])
+        
         
         return True
 
-    ##
-    ## Download
-    ##
     def download( self ):
+        """
+        Download
+        """
         if self.debug == True:
             print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] )
             
         try:
-            u = urllib2.urlopen( self.url )
+            url = urllib2.urlopen( self.url )
         except:
             self.errors.append( {
 		        'msg': "Cannot open url=" + self.url,
@@ -95,7 +108,7 @@ class Update:
         else:
             live_rules_file_size = 0
         
-        meta = u.info()
+        meta = url.info()
         headers = meta.getheaders( "Content-length" )
         if len(headers) == 0:
             self.errors.append( {
@@ -117,7 +130,7 @@ class Update:
             return False
         
         try:
-            f = open( self.url_file_name, 'wb' )
+            write_file = open( self.url_file_name, 'wb' )
         except:
             self.errors.append( {
 		        'msg': "Cannot create url_file_name=" + url_file_name,
@@ -128,7 +141,7 @@ class Update:
         url_bytes_read = 0
         while url_bytes_read < url_file_size:
             try:
-                data = u.read( Chunk_size )
+                data = url.read( CHUNK_SIZE )
             except:
                 self.errors.append( {
 		            'msg': "Cannot read content at " + str( url_bytes_read ),
@@ -139,40 +152,40 @@ class Update:
             url_bytes_read += len(data)
 
             try:
-                f.write(data)
+                write_file.write(data)
             except:
                 self.errors.append( {
 		            'msg': "Cannot write content at " + str( url_bytes_read ),
 			        'error': "\n".join( str(v) for v in sys.exc_info() )
                 })
                 return False
-        f.close()
+        write_file.close()
         return True
 
-    ##
-    ## Extract and perform any validation
-    ##
     def validate( self ):
+        """
+        Validate
+        """
         if self.debug == True:
             print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "extract rules" ] )
             
         try:
-            t = tarfile.open( self.url_file_name )
-            t.extractall( path = self.rules_working_directory )
-            t.close()
+            tar = tarfile.open( self.url_file_name )
+            tar.extractall( path = self.rules_working_directory )
+            tar.close()
         except:
             self.errors.append( {
-                'msg': "Unable to extract downloaded file=" + url_file_name + " to current directory=" + current_directory,
+                'msg': "Unable to extract downloaded file=" + self.url_file_name + " to rules working directory=" + self.rules_working_directory,
                 'error': "\n".join( str(v) for v in sys.exc_info() )
             })
             return False
         
         return True
     
-    ##
-    ## Install to live
-    ##
     def install( self ):
+        """
+        Install to live
+        """
         if self.debug == True:
             print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "move to live" ] )
             
@@ -254,34 +267,22 @@ class Update:
         
         return True
 
-    ##
-    ## Synchronize configuration
-    ##
     def synchronize( self ):
-        nodeIds = []
-        uvmContext = Uvm().getUvmContext( hostname="localhost", username=None, password=None, timeout=60 )
-        nodeManager = uvmContext.nodeManager()
-        
-        ##
-        ## Easier to parse the api for instances than reproducing what 
-        ## it does with object.
-        ##
-        node_manager = NodeManager(uvmContext)
-        for instance in node_manager.get_instances():
-            if instance[1] == "untangle-node-idps":
-                nodeIds.append(instance[0])
-        
-        for nodeId in nodeIds:
-            node = nodeManager.node(nodeId)
-            
-            temp_settings_file_name = "/tmp/" + str(nodeId) + ".js"
+        """
+        Synchronize configuration
+        """
+        for node_id in self.node_ids:
+            node = self.node_manager.node(node_id)
+
+            temp_settings_file_name = "/tmp/" + str(node_id) + ".js"
             ## Syncronize
             args = [
                 "@PREFIX@/usr/share/untangle/bin/idps-sync-settings.py",
-                "--nodeId", str(nodeId),
+                "--node_id", str(node_id),
                 "--previous_rules", "/usr/share/untangle-snort-config/previous/rules",
                 "--rules", "/usr/share/untangle-snort-config/current/rules",
-                "--settings", temp_settings_file_name
+                "--settings", temp_settings_file_name,
+                "--status", "/usr/share/untangle-snort-config/last-update.js"
             ]
             try: 
                 process = subprocess.Popen( args )
@@ -295,66 +296,65 @@ class Update:
             
             node.saveSettings( temp_settings_file_name )
             node.setUpdatedSettingsFlag( True )
-            
-            ## Reconfigure snort
-            args = [
-                "@PREFIX@/usr/share/untangle/bin/idps-create-config.py",
-                "--nodeId", str( nodeId ),
-                "--iptablesScript", "/etc/untangle-netd/iptables-rules.d/740-snort"
-            ]
-            try: 
-                process = subprocess.Popen( args )
-                process.wait()
-            except:
-                self.errors.append( {
-                    'msg': "Unable to run config creation script with arguments = " + ",".join(args),
-                    'error': "\n".join( str(v) for v in sys.exc_info() )
-                })
-                return False
-
-            node.reloadEventMonitorMap();
-            node.stop()
-            node.start()
+            node.reconfigure()
         return True
 
 def usage():
+    """
+    Usage
+    """
     print "usage"
     print "help\t\tusage"
     print "rules_template_directory\t\tSnort rule template directory"
         
 def main(argv):
-    global Debug
+    """
+    Main
+    """
+    global DEBUG
     rules_template_directory = "/usr/share/untangle-snort-config"
     url = "https://ids.untangle.com/snortrules.tar.gz"
+    update_ran_file_name = "/tmp/idps-update.ran"
 	
     try:
-		opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "debug"] )
+        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "debug"] )
     except getopt.GetoptError:
-    	usage()
-    	sys.exit(2)
+        usage()
+        sys.exit(2)
         
     for opt, arg in opts:
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
         elif opt in ( "-d", "--debug"):
-             Debug = True
+            DEBUG = True
         elif opt in ( "-r", "--rules_template_directory"):
             rules_template_directory = arg
         elif opt in ( "-r", "--url"):
             url = arg
 
-    if Debug == True:
+    if DEBUG == True:
         print "rules_template_directory = " + rules_template_directory
         print "url = " + url
 
     update = Update( rules_template_directory, url )
     if update.setup() == True and update.download() == True and update.validate() and update.install():
         update.synchronize()
-        
+
+    """
+    Always update last updated time even if nothing was downloaded 
+    (snort rules aren't updated every day)
+    Otherwise customers will call to complain.
+    """
+    if os.path.exists(update_ran_file_name):
+        os.utime(update_ran_file_name,None)
+    else:
+        th = open(update_ran_file_name, "a" )
+        th.close()
+
     if len( update.errors ):
         print update.errors
     sys.exit()
 
 if __name__ == "__main__":
-	main( sys.argv[1:] )
+    main( sys.argv[1:] )

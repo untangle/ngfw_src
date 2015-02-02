@@ -1,14 +1,10 @@
 #!/usr/bin/python
-#
-# Generate defaults for Setup Wizard
-#
-import errno
+"""
+Generate defaults for Setup Wizard
+"""
 import os
 import getopt
 import sys
-import subprocess
-import re
-import json
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
@@ -17,6 +13,9 @@ if ( "@PREFIX@" != ''):
 import untangle_node_idps
 
 def usage():
+    """
+    Show usage
+    """
     print "usage..."
     print "help\t\tusage"
     print "settings\tSettings configuration file name"
@@ -26,25 +25,28 @@ def usage():
     print "debug\t\tEnable debugging"
         
 def main(argv):
+    """
+    Main 
+    """
     global _debug
     _debug = False
     rules_dir = ""
     defaults_dir = ""
     templates_dir = ""
-    nodeId = "0"
+    node_id = "0"
     file_name = ""
 	
     try:
-		opts, args = getopt.getopt(argv, "hsretf:d", ["help", "rules=", "defaults=", "templates=", "filename=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsretf:d", ["help", "rules=", "defaults=", "templates=", "filename=", "debug"] )
     except getopt.GetoptError:
-    	usage()
-    	sys.exit(2)
+        usage()
+        sys.exit(2)
     for opt, arg in opts:
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
         elif opt in ( "-d", "--debug"):
-             _debug = True
+            _debug = True
         elif opt in ( "-e", "--defaults"):
             defaults_dir = arg
         elif opt in ( "-r", "--rules"):
@@ -61,13 +63,13 @@ def main(argv):
         print "_debug = ",  _debug
 
     snort_conf = untangle_node_idps.SnortConf()
-    snort_rules = untangle_node_idps.SnortRules( nodeId, rules_dir )
+    snort_rules = untangle_node_idps.SnortRules( node_id, rules_dir )
     snort_rules.load( True )
 
     for file_name in os.listdir( templates_dir ):
         if file_name != "" and file_name != file_name:
             continue
-        settings = untangle_node_idps.IdpsSettings( nodeId )
+        settings = untangle_node_idps.IdpsSettings( node_id )
         settings.load( templates_dir + "/" + file_name )
         settings.initialize( snort_conf, snort_rules )
         settings.save( defaults_dir + "/" + file_name )
@@ -75,4 +77,4 @@ def main(argv):
     sys.exit()
 
 if __name__ == "__main__":
-	main( sys.argv[1:] )
+    main( sys.argv[1:] )

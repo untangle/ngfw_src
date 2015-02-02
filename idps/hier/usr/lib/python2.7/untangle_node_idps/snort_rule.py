@@ -1,9 +1,12 @@
+"""
+Snort rule
+"""
 import re
 
 class SnortRule:
-    #
-    # Process rules from the snort format.
-    #
+    """
+    Process rule from the snort format.
+    """
     text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)')
 
     def __init__( self, regex_match, category ):
@@ -34,16 +37,22 @@ class SnortRule:
             key = option
             value = None
             if option.find(':') > -1:
-                key,value = option.split( ':', 1 );
+                key, value = option.split( ':', 1 )
             
             self.options[key] = value
                 
     def dump(self):
+        """
+        Print snort rule
+        """
         print "rule dump"
-        for property, value in vars(self).iteritems():
-            print property, ": ", value
+        for prop, value in vars(self).iteritems():
+            print prop, ": ", value
 
     def set_action( self, log, block  ):
+        """
+        Set rule action based on log, block
+        """
         action = "alert"
         if log == True and block == True:
             action = "drop"
@@ -54,6 +63,9 @@ class SnortRule:
         self.action = action
 
     def set_options( self, key, value ):
+        """
+        Set options on key with value
+        """
         self.options[key] = value
         options_raw_match_re = re.compile( r'\s+' + key + ":([^;]+);")
         match_rule = re.search( options_raw_match_re, self.options_raw )
@@ -61,28 +73,49 @@ class SnortRule:
             self.options_raw = options_raw_match_re.sub( " " + key + ":" + value + ";", self.options_raw )
         
     def set_msg( self, msg ):
+        """
+        Set msg
+        """
         if msg.startswith('"') and msg.endswith('"'):
             msg = msg[1:-1]
         self.set_options( "msg", '"' + msg + '"' )
         
     def get_msg( self ):
+        """
+        Get msg
+        """
         return self.options["msg"]
         
     def set_sid( self, sid ):
+        """
+        Set sid
+        """
         self.set_options( "sid", sid )
 
     def set_classtype( self, classtype ):
+        """
+        Set classtype
+        """
         if classtype.startswith('"') and classtype.endswith('"'):
             classtype = classtype[1:-1]
         self.set_options( "classtype", classtype )
 
     def get_enabled( self ):
+        """
+        Get enabled
+        """
         return self.enabled
     
     def get_category(self):
+        """
+        Get category
+        """
         return self.category
     
     def build( self ):
+        """
+        Build for snort.conf usage
+        """
         if self.enabled == True:
             enabled = ""
         else:

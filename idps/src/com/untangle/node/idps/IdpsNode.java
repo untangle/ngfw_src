@@ -3,6 +3,7 @@
  */
 package com.untangle.node.idps;
 
+import java.util.Date;
 import java.util.List;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.EventLogQuery;
@@ -10,7 +11,6 @@ import com.untangle.uvm.node.EventLogQuery;
 public interface IdpsNode extends Node
 {
     EventLogQuery[] getEventQueries();
-    public static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
 
     public String getSettingsFileName();
     public String getWizardSettingsFileName();
@@ -23,4 +23,12 @@ public interface IdpsNode extends Node
     public boolean getUpdatedSettingsFlag();
 
     public void reloadEventMonitorMap();
+
+    public void setScanCount( long value );
+    public void setDetectCount( long value);
+    public void setBlockCount( long value );
+    public void reconfigure();
+
+    public Date getLastUpdate();
+    public Date getLastUpdateCheck();
 }

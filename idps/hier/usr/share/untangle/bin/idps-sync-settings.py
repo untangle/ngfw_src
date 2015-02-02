@@ -34,23 +34,24 @@ def main(argv):
     _debug = False
     rules_file_name = ""
     previous_rules_file_name = ""
-    settings_file_name = ""
-    status_file_name = ""
-    nodeId = "0"
+    settings_file_name = None
+    status_file_name = None
+    node_id = "0"
 	
     try:
-		opts, args = getopt.getopt(argv, "hscrna:d", ["help", "settings=", "rules=", "previous_rules=", "nodeId=", "status=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsrpna:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
+
     for opt, arg in opts:
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
         elif opt in ( "-d", "--debug"):
              _debug = True
-        elif opt in ( "-n", "--nodeId"):
-            nodeId = arg
+        elif opt in ( "-n", "--node_id"):
+            node_id = arg
         elif opt in ( "-r", "--rules"):
             rules_file_name = arg
         elif opt in ( "-p", "--previous_rules"):
@@ -63,14 +64,14 @@ def main(argv):
     if _debug == True:
         print "rules_file_name = " + rules_file_name
         print "settings_file_name = " + settings_file_name
-        print "node = " + nodeId
+        print "node = " + node_id
         print "_debug = ",  _debug
 
     snort_conf = untangle_node_idps.SnortConf()
-    snort_rules = untangle_node_idps.SnortRules( nodeId, rules_file_name )
+    snort_rules = untangle_node_idps.SnortRules( node_id, rules_file_name )
     snort_rules.load( True )
 
-    settings = untangle_node_idps.IdpsSettings( nodeId, settings_file_name )
+    settings = untangle_node_idps.IdpsSettings( node_id )
     if settings.exists() == False:
         settings.initialize( snort_conf, snort_rules )
     else:
@@ -79,7 +80,7 @@ def main(argv):
         deleted_rule_sids = []
         modified_rule_sids = []
         
-        previous_snort_rules = untangle_node_idps.SnortRules( nodeId, previous_rules_file_name )
+        previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_file_name )
         previous_snort_rules.load( True )
         
         previous_rules = previous_snort_rules.get_rules()
@@ -123,20 +124,14 @@ def main(argv):
                 settings_rules[sid].enabled = classtype_enabled and category_enabled
         settings.set_rules( settings_rules )
 
-        if status_file_name != "":
-            status = {
-                "rules" : {
-                    "deleted" : deleted_rule_sids,
-                    "modified" : modified_rule_sids,
-                    "added" : added_rule_sids
-                }
-            }
-
-            status_file = open( status_file_name, "w" )
-            json.dump( status, status_file, False, True, True, True, None, 0 )
-            status_file.close()
+        settings.set_updated({
+            "rules": { 
+                "added" : added_rule_sids, 
+                "modified" : modified_rule_sids, 
+                "deleted": deleted_rule_sids
+            }})
         
-    settings.save()
+    settings.save( settings_file_name )
     sys.exit()
 
 if __name__ == "__main__":

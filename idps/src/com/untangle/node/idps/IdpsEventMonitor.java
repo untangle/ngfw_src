@@ -36,35 +36,15 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.I18nUtil;
 
+import com.untangle.node.idps.IdpsSnortStatisticsParser;
 import com.untangle.node.idps.IdpsSnortUnified2Parser;
 
 class IdpsEventMonitor implements Runnable
 {
-    /* Poll every 5 seconds */
-    private static final long   SLEEP_TIME_MSEC = 5 * 1000;
-
-    /* Log every 5 minutes */
-    private static final long   LOG_TIME_MSEC = 5 * 60 * 1000;
+    private static final long   SLEEP_TIME_MSEC = 30 * 1000;
 
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
-
-    /* Interrupt if there is no traffic for 2 seconds */
-    private static final int READ_TIMEOUT = 2000;
-
-    private static final String KILL_CMD   = "kill";
-    private static final String STATUS_CMD = "status 2";
-    private static final String KILL_UNDEF = KILL_CMD + " UNDEF";
-    private static final String END_MARKER = "end";
-
-    private static final int TYPE_INDEX    = 0;
-    private static final int NAME_INDEX    = 1;
-    private static final int ADDRESS_INDEX = 2;
-    private static final int ADDRESS_POOL_INDEX = 3;
-    private static final int RX_INDEX      = 4;
-    private static final int TX_INDEX      = 5;
-    private static final int START_INDEX   = 7;
-    private static final int TOTAL_INDEX   = 8;
 
     protected static final Logger logger = Logger.getLogger( IdpsEventMonitor.class );
 
@@ -87,8 +67,6 @@ class IdpsEventMonitor implements Runnable
     public void run()
     {
         logger.debug( "Starting" );
-
-        Date nextUpdate = new Date(( new Date()).getTime() + LOG_TIME_MSEC );
 
         if ( !isAlive ) {
             logger.error( "died before starting" );
@@ -131,7 +109,6 @@ class IdpsEventMonitor implements Runnable
         isAlive = true;
         isEnabled = false;
 
-        logger.warn( "Starting IDPS Event monitor" );
         logger.debug( "Starting IDPS Event monitor" );
 
         /* If thread is not-null, there is a running thread that thinks it is alive */
@@ -172,11 +149,15 @@ class IdpsEventMonitor implements Runnable
         }
     }
 
-    public IdpsSnortUnified2Parser parser = new IdpsSnortUnified2Parser();
+    public IdpsSnortUnified2Parser unified2Parser = new IdpsSnortUnified2Parser();
+    public IdpsSnortStatisticsParser statisticsParser = new IdpsSnortStatisticsParser();
     private long currentTime = System.currentTimeMillis();    
     private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
     public void processSnortLogFiles()
     {
+        /*
+         * Process log entries
+         */
         long lastPosition;
         long startPosition = 0;
         
@@ -189,7 +170,7 @@ class IdpsEventMonitor implements Runnable
                     ? fileLastPositions.get(f.getCanonicalFile())
                     : 0;
                 logger.debug("processSnortLogFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
-                lastPosition = parser.parse( f, startPosition, node );
+                lastPosition = unified2Parser.parse( f, startPosition, node );
                     
                 fileLastPositions.put( f.getCanonicalFile(), lastPosition );
             }catch( Exception e) {
@@ -217,6 +198,8 @@ class IdpsEventMonitor implements Runnable
                 it.remove();
             }
         }
+        
+        statisticsParser.parse( node );
 	}
     
     public File[] getFiles( final long currentTime ){

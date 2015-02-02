@@ -339,14 +339,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
             ]
         });
 
-//        console.log(this);
-//            this.statistics = this.getRpcNode().getStatistics();
+        this.lastUpdate = this.getRpcNode().getLastUpdate();
+        this.lastUpdateCheck = this.getRpcNode().getLastUpdateCheck();
+
         this.buildStatus();
         this.buildRules();
         this.buildEventLog();
-        // builds the tab panel with the tabs
         this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
-//        this.buildTabPanel([this.panelConfiguration, this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
 
 
@@ -376,32 +375,32 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 buttonAlign: 'left'
             },
             items: [{
-//                 title: this.i18n._('Statistics'),
-//                 labelWidth: 230,
-//                 defaults: {
-//                     xtype: "textfield",
-//                     disabled: true
-//                 },
-//                 items: [{
-//                     fieldLabel: this.i18n._('Total Signatures Available'),
-//                     name: 'Total Signatures Available',
-//                     labelWidth:200,
-//                     labelAlign:'left',
-// //                        value: this.statistics.totalAvailable
-//                 }, {
-//                     fieldLabel: this.i18n._('Total Signatures Logging'),
-//                     name: 'Total Signatures Logging',
-//                     labelWidth:200,
-//                     labelAlign:'left',
-// //                        value: this.statistics.totalLogging
-//                 }, {
-//                     fieldLabel: this.i18n._('Total Signatures Blocking'),
-//                     name: 'Total Signatures Blocking',
-//                     labelWidth:200,
-//                     labelAlign:'left',
-// //                        value: this.statistics.totalBlocking
-//                 }]
-//             }, {
+            //     title: this.i18n._('Statistics'),
+            //     labelWidth: 230,
+            //     defaults: {
+            //         xtype: "textfield",
+            //         disabled: true
+            //     },
+            //     items: [{
+            //         fieldLabel: this.i18n._('Total Signatures Available'),
+            //         name: 'Total Signatures Available',
+            //         labelWidth:200,
+            //         labelAlign:'left',
+            //             value: this.statistics.totalAvailable
+            //     }, {
+            //         fieldLabel: this.i18n._('Total Signatures Logging'),
+            //         name: 'Total Signatures Logging',
+            //         labelWidth:200,
+            //         labelAlign:'left',
+            //             value: this.statistics.totalLogging
+            //     }, {
+            //         fieldLabel: this.i18n._('Total Signatures Blocking'),
+            //         name: 'Total Signatures Blocking',
+            //         labelWidth:200,
+            //         labelAlign:'left',
+            //             value: this.statistics.totalBlocking
+            //     }]
+            // }, {
                 title: this.i18n._("Setup Wizard"),
                 items: [
                     {
@@ -418,6 +417,25 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 cls: 'description',
                 html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
                         rpc.companyName)
+            },{
+                // xtype: 'fieldset',
+                title: this.i18n._("Updates"),
+                cls: 'description',
+                items: [{
+                    xtype: 'displayfield',
+                    fieldLabel: this.i18n._("Last check for updates"),
+                    name: 'lastUpdateCheck',
+                    labelWidth:200,
+                    labelAlign:'left',
+                    value: ( this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("never")
+                },{
+                    xtype: 'displayfield',
+                    fieldLabel: this.i18n._("Last update"),
+                    name: 'lastUpdateCheck',
+                    labelWidth:200,
+                    labelAlign:'left',
+                    value: ( this.lastUpdate != null && this.lastUpdate.time != 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("never")
+                }]
             }]
         });
     },

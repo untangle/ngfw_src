@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
 
-
 import com.untangle.node.idps.IdpsNode;
 import com.untangle.node.idps.IdpsLogEvent;
 import com.untangle.node.idps.IdpsEventMap;

@@ -1,52 +1,61 @@
+"""
+Snort rule set management
+"""
 import os
 import re
 
 from untangle_node_idps.snort_rule import SnortRule
 
 class SnortRules:
-    #
-    # Process a set of snort rules such as downloaded rules.
-    #
+    """
+    Process a set of snort rules such as downloaded rules.
+    """
     var_regex = re.compile(r'^\$(.+)')
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
     
-    def __init__( self, nodeId = 0, path = "", file_name = "" ):
-        self.nodeId = nodeId
+    def __init__(self, node_id = 0, path = "", file_name = ""):
+        self.node_id = node_id
         self.path = path
-        self.file_name = self.path + "/";
+        self.file_name = self.path + "/"
         if file_name != "":
             self.file_name = self.file_name + file_name
         else:
-            self.file_name = self.file_name + "node_" + self.nodeId + ".rules"
+            self.file_name = self.file_name + "node_" + self.node_id + ".rules"
         
         self.rules = {}
         self.variables = []
 
-    def set_path(self, path = "", file_name = "" ):        
+    def set_path(self, path = "", file_name = ""):
+        """
+        Set path
+        """
         self.path = path
-        self.file_name = self.path + "/";
+        self.file_name = self.path + "/"
         if file_name != "":
             self.file_name = self.file_name + file_name
         else:
-            self.file_name = self.file_name + "node_" + self.nodeId + ".rules"
+            self.file_name = self.file_name + "node_" + self.node_id + ".rules"
         
-    def load(self, path = False ):
-
+    def load(self, path = False):
+        """
+        Load ruleset
+        """
         if path == True:
             for file_name in os.listdir( self.path ):
-                name, extension = os.path.splitext( file_name )
+                extension = os.path.splitext( file_name )[1]
                 if extension != ".rules":
                     continue
                 self.load_file( self.path + "/" + file_name )
         else:
             self.load_file( self.file_name )
             
-    def load_file( self, file_name ):
-        
-        # Category based on "major" file name separator. 
-        # e.g., web-cgi = web
-        path, name = os.path.split( file_name )
-        name, ext = os.path.splitext( name )
+    def load_file( self, file_name):
+        """
+        Category based on "major" file name separator. 
+        e.g., web-cgi = web
+        """
+        name = os.path.split( file_name )[1]
+        name = os.path.splitext( name )[0]
         category = name
 
         # ? Special handling for "deleted"?
@@ -61,11 +70,14 @@ class SnortRules:
             else:            
                 match_rule = re.search( SnortRule.text_regex, line )
                 if match_rule:
-                    self.addRule( SnortRule( match_rule, category ) )
+                    self.add_rule( SnortRule( match_rule, category ) )
                     rule_count = rule_count + 1
         rules_file.close()
             
-    def check_write_rule( self, rule, classtypes, categories, msgs ):
+    def check_write_rule(self, rule, classtypes, categories, msgs):
+        """
+        Determine if rule should be enabled
+        """
         if len(classtypes) == 0 or rule.options["classtype"] in classtypes:
             classtype_match = True
         else:
@@ -88,7 +100,17 @@ class SnortRules:
         
         return classtype_match and category_match and msgs_match
         
-    def save(self, classtypes = [], categories = [], msgs = [] ):
+    def save(self, classtypes = None, categories = None, msgs = None):
+        """
+        Save rule set
+        """
+        if classtypes == None:
+            classtypes = []
+        if categories == None:
+            categories = []
+        if msgs == None:
+            msgs = []
+
         temp_file_name = self.file_name + ".tmp"
         rules_file = open( temp_file_name, "w" )
         category = "undefined"
@@ -102,19 +124,19 @@ class SnortRules:
                 rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
                 
             if rule.get_enabled() == True:
-                rules_file.write( rule.build() + "\n" );
+                rules_file.write( rule.build() + "\n" )
         rules_file.close()
         
         if os.path.isfile( self.file_name ):
             os.remove( self.file_name )
         os.rename( temp_file_name, self.file_name )
 
-    def addRule( self, rule ):
-        #
-        # Add a new rule to the list and search for variables.
-        #
+    def add_rule(self, rule):
+        """
+        Add a new rule to the list and search for variables.
+        """
         self.rules[rule.options["sid"]] = rule
-        for property, value in vars(rule).iteritems():
+        for prop, value in vars(rule).iteritems():
             if isinstance( value, str ) == False:
                 continue
             match_variable = re.search( SnortRules.var_regex, value )
@@ -131,13 +153,25 @@ class SnortRules:
                     self.variables.append( match_variable.group( 1 ) )
                     
     def get_rules(self):
+        """
+        Get rules
+        """
         return self.rules
     
     def set_rules(self, rules):
+        """
+        Set rules
+        """
         self.rules = rules
     
     def get_variables(self):
+        """
+        Get variables
+        """
         return self.variables
 
-    def get_file_name( self ):
+    def get_file_name(self):
+        """
+        Get filename
+        """
         return self.file_name

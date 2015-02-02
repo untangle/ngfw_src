@@ -1,10 +1,13 @@
+"""
+Snort configuration file management
+"""
 import os
 import re
 
 class SnortConf:
-    #
-    # Snort configuration file management
-    #
+    """
+    Snort configuration file management
+    """
     file_name = "/etc/snort/snort.conf"
     
     # Regex parsing
@@ -15,7 +18,8 @@ class SnortConf:
     output_regex = re.compile(r'^output\s+([^:]+)')
     preprocessor_normalize_tcp_regex = re.compile(r'^(#|)preprocessor normalize_tcp: ips ecn stream')
     
-    def __init__( self, _debug = False ):
+    def __init__(self, _debug = False):
+        self.last_comment = ""
         self.conf = []
         self.variables = []
         self.includes = []
@@ -23,14 +27,19 @@ class SnortConf:
         self.get_variables()
         self.get_includes()
 
-    def load( self ):
+    def load(self):
+        """
+        Load snort configuration
+        """
         conf_file = open( SnortConf.file_name )
-        self.last_comment = ""
         for line in conf_file:
             self.conf.append( line.rstrip( "\n" ) )
         conf_file.close()
         
-    def save( self ):
+    def save(self):
+        """
+        Save snort configuration
+        """
         temp_file_name = SnortConf.file_name + ".tmp"
         conf_file = open( temp_file_name, "w" )
         self.save_variables()
@@ -38,14 +47,17 @@ class SnortConf:
         self.save_output()
         self.save_set_options()
         for line in self.conf:
-            conf_file.write( line + "\n" );
+            conf_file.write( line + "\n" )
         conf_file.close()
         
         if os.path.isfile( SnortConf.file_name ):
             os.remove( SnortConf.file_name )
         os.rename( temp_file_name, SnortConf.file_name )
         
-    def save_variables( self ):
+    def save_variables(self):
+        """
+        Save snort variables
+        """
         saved = {}
         
         for variable in self.variables:
@@ -53,7 +65,7 @@ class SnortConf:
 
         last_ip_or_port_var_position = 0
         
-        for i,line in enumerate( self.conf ):
+        for i, line in enumerate( self.conf ):
             match_var = re.search( SnortConf.var_regex, line )
             if match_var:
                 for variable in self.variables:
@@ -68,7 +80,10 @@ class SnortConf:
             if saved[variable["key"]] == False:
                 self.conf[last_ip_or_port_var_position] = self.conf[last_ip_or_port_var_position] + "\n" + variable["type"] + " " + variable["key"] + " " + variable["value"] 
             
-    def save_includes( self ):
+    def save_includes(self):
+        """
+        Save snort includes
+        """
         saved = {}
         last_positions = {}
         
@@ -76,7 +91,7 @@ class SnortConf:
             saved[include["file_name"]] = False
             last_positions[include["path"]] = 0
             
-        for i,line in enumerate( self.conf ):
+        for i, line in enumerate( self.conf ):
             match_var = re.search( SnortConf.include_regex, line )
             if match_var:
                 for include in self.includes:
@@ -100,9 +115,12 @@ class SnortConf:
                 self.conf[last_positions[include["path"]]] = self.conf[last_positions[include["path"]]] + "\n" + prefix + include["file_name"]
 
     def save_output(self):
+        """
+        Save snort output directives
+        """
         unified_found = False
         last_output_position = 0
-        for i,line in enumerate( self.conf ):
+        for i, line in enumerate( self.conf ):
             match_output = re.search( SnortConf.output_regex, line )
             if match_output:
                 last_output_position = i
@@ -116,22 +134,24 @@ class SnortConf:
             self.conf[last_output_position] = self.conf[last_output_position] + "\n" + "output unified2: filename snort.log,limit 128, mpls_event_types, vlan_event_types"
                 
     def save_set_options(self):
-        last_output_position = 0
-        for i,line in enumerate( self.conf ):
+        """
+        Save miscellaneous snort directives
+        """
+        for i, line in enumerate( self.conf ):
             match_output = re.search( SnortConf.preprocessor_normalize_tcp_regex, line )
             if match_output:
                 if match_output.group(1) == "":
                     self.conf[i] = "#" + self.conf[i]
 
     def get_variables(self):
-        #
-        # Pull default snort variable names, values, and descriptions.
-        # Used to build up the default settings variable list.
-        #
-        # Based on analysis of downloaded rules, they only reference variables 
-        # defined in the snort.conf template so that's why we are interested in
-        # them (and not modifying them!)
-        #
+        """
+        Pull default snort variable names, values, and descriptions.
+        Used to build up the default settings variable list.
+        
+        Based on analysis of downloaded rules, they only reference variables 
+        defined in the snort.conf template so that's why we are interested in
+        them (and not modifying them!)
+        """
         if self.variables.count(self) == 0:
             for line in self.conf:
                 match_comment = re.search( SnortConf.comment_regex, line )
@@ -142,17 +162,22 @@ class SnortConf:
                     self.set_variable( match_var.group(2), match_var.group(3), match_var.group(1), self.last_comment )
         return self.variables
 
-    def get_variable(self,key):
+    def get_variable(self, key):
+        """
+        Get variables
+        """
         if self.variables.count(self) == 0:
             self.get_variables()
         for variable in self.variables:
             if variable["key"] == key:
                 return variable["value"]
 
-    def set_variable( self, key, value, type="var", description="" ):
-        ## type "guess" logic:
-        ## look like an IP address = ipvar, else port
-        ## reference another known type, use that type
+    def set_variable(self, key, value, type="var", description=""):
+        """
+        type "guess" logic:
+        look like an IP address = ipvar, else port
+        reference another known type, use that type
+        """
         variable_modified = False
         for variable in self.variables:
             if variable["key"] == key:
@@ -167,6 +192,9 @@ class SnortConf:
             })
                         
     def get_includes(self):
+        """
+        Get include list
+        """
         if self.includes.count(self) == 0:
             for line in self.conf:
                 match_include = re.search( SnortConf.include_regex, line )
@@ -180,7 +208,10 @@ class SnortConf:
 
         return self.includes
     
-    def set_include( self, file_name, enabled = True ):
+    def set_include(self, file_name, enabled = True):
+        """
+        Set includes
+        """
         include_modified = False
         for include in self.includes:
             if include["file_name"] == file_name:

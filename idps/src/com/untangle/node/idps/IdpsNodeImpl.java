@@ -49,14 +49,15 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private static final String STAT_BLOCK = "block";
     
     private final EventHandler handler;
-    private final PipelineConnector connector;
-    private final PipelineConnector [] connectors;
+    private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IdpsEventMonitor idpsEventMonitor;    
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
 
     private static final String GET_UPDATES_SCRIPT = "idps-get-updates.py";
+    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
+    private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
 
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
@@ -71,9 +72,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("idps", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
-        this.connectors = new PipelineConnector[] { connector };
-
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
@@ -134,6 +132,55 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         addCronEntry();
     }
 
+    public void reconfigure(){
+        String nodeId = this.getNodeSettings().getId().toString();
+        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
+            "/idps-create-config.py" + 
+            " --node_id " + nodeId +
+            " --iptables_script " + IPTABLES_SCRIPT
+        );
+
+        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+        try{
+            String lines[] = result.split("\\r?\\n");
+            logger.warn("idps config: ");
+            for ( String line : lines ){
+                logger.warn("idps config: " + line);
+            }
+        }catch( Exception e ){
+            logger.warn( "Unable to generate snort configuration:", e );
+        }
+        reloadEventMonitorMap();
+        stop();
+        start();
+    }
+
+    public Date getLastUpdate()
+    {
+        try {
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " rules");
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        } 
+    }
+
+    public Date getLastUpdateCheck()
+    {
+        try {
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        } 
+    }
+
     // private methods ---------------------------------------------------------
 
     private void readNodeSettings()
@@ -146,19 +193,19 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     }
 
-    public void incrementScanCount()
+    public void setScanCount( long value )
     {
-        this.incrementMetric(STAT_SCAN);
+        this.setMetric(STAT_SCAN, value);
     }
 
-    public void incrementDetectCount()
+    public void setDetectCount( long value)
     {
-        this.incrementMetric(STAT_DETECT);
+        this.setMetric(STAT_DETECT, value);
     }
 
-    public void incrementBlockCount()
+    public void setBlockCount( long value )
     {
-        this.incrementMetric(STAT_BLOCK);
+        this.setMetric(STAT_BLOCK, value);
     }
 
     /**
@@ -256,7 +303,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-sync-settings.py" + 
-            " --nodeId " + nodeId +
+            " --node_id " + nodeId +
             " --rules /usr/share/untangle-snort-config/current/rules" +
             " --settings " + tempFileName
         );
@@ -320,7 +367,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     }
 
     public void reloadEventMonitorMap(){
-        this.idpsEventMonitor.parser.reloadEventMap();
+        this.idpsEventMonitor.unified2Parser.reloadEventMap();
     }
 
     private class IdpsSettingsDownloadHandler implements DownloadHandler
@@ -408,24 +455,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     logger.warn("Failed to save IDPS settings");
                 }
 
-                String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-                    "/idps-create-config.py" + 
-                    " --nodeId " + nodeId +
-                    " --iptablesScript " + IdpsNode.IPTABLES_SCRIPT
-                );
-                String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-                try{
-                    String lines[] = result.split("\\r?\\n");
-                    logger.warn("idps config: ");
-                    for ( String line : lines ){
-                        logger.warn("idps config: " + line);
-                    }
-                }catch( Exception e ){
-                    logger.warn( "Unable to generate snort configuration:", e );
-                }
-                node.reloadEventMonitorMap();
-                UvmContextFactory.context().daemonManager().decrementUsageCount( "snort-untangle" );
-                UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
+                node.reconfigure();
             }
         }
     }
