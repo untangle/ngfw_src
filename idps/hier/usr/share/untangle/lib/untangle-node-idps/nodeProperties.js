@@ -4,7 +4,7 @@
         "name" : "untangle-node-idps",
         "displayName" : "Intrusion Prevention (Beta)",
         "type" : "SERVICE",
-        "viewPosition" : 120,
+        "viewPosition" : 1090,
         "invisible": true,
         "autoStart" : "false"
 }
