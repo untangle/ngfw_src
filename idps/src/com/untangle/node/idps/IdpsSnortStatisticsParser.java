@@ -241,7 +241,7 @@ public class IdpsSnortStatisticsParser {
             }
             
             long blocked = actionBlacklist;
-            long logged = actionAlerts - actionBlacklist;
+            long logged = actionAlerts;
             long sessions = breakdownTotal - breakdownTcp - breakdownUdp + stream5TotalSessions;
             
             idpsNode.setScanCount( sessions );
