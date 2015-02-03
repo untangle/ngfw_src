@@ -392,6 +392,13 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     print "v1v2command = " + v1v2command
     return( v1v2command, v3command )
 
+def trySnmpCommand(command):
+    result = remote_control.runCommand( command )
+    if (result == 1):
+        # there might be a delay in snmp restarting
+        time.sleep(5)
+        result = remote_control.runCommand( command )
+    return result
 
 class NetworkTests(unittest2.TestCase):
     
@@ -848,8 +855,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -866,8 +873,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -884,12 +891,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        if (v2cResult == 1):
-            # there might be a delay in snmp restarting
-            time.sleep(5)
-            v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -906,8 +909,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -924,8 +927,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -942,8 +945,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -960,8 +963,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 1 )
         assert( v3Result == 0 )
