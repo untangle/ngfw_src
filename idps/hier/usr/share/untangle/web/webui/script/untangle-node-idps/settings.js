@@ -549,7 +549,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         sortable: true,
                         resizable: false,
                         width:55,
-                        menuDisabled: false
+                        menuDisabled: false,
+                        listeners: {
+                            checkchange: function ( column, recordIndex, checked ){
+                                if( checked == true ){
+                                    this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex).set('log', true );
+                                }
+                            }
+                        }
                     }],
                     rowEditorInputLines: [{
                         name: "Classtype",
@@ -692,6 +699,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         listeners: {
                             change: function( me, newValue, oldValue, eOpts ){
                                 var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                                var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
+                                if( log.getValue() == false ){
+                                    log.setRawValue(true);
+                                }  
                                 var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
                                 rule.updateAction();
                             }
@@ -705,8 +716,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         allowBlank: false,
                         width: 500,
                         height: 150,
-                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)/,
-                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject)/,
+                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
                         updateAction: function(){
                             var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
                             var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
@@ -1110,6 +1121,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
             this.settings.variables.list = null;
             this.settings.rules.list = this.gridRules.getPageList();
             this.settings.variables.list = this.gridVariables.getPageList();
+        }
+        for( var i = 0; i < this.settings.rules.list.length; i++ ){
+            if( this.settings.rules.list[i].block == true ){
+                this.settings.rules.list[i].log = true;
+            }
         }
         handler.call(this, isApply);
     },
