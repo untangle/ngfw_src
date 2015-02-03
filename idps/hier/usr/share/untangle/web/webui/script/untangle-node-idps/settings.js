@@ -676,7 +676,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                 }else{
                                     ruleValue += newField;
                                 }
-                                rule.setValue(ruleValue);
+                                rule.setRawValue(ruleValue);
                             }
                         }
                     },{
