@@ -79,10 +79,21 @@ public class AdminManagerImpl implements AdminManager
             logger.debug("Loading Settings...");
 
             this.settings = readSettings;
-            this.reconfigure();
+            this.applyToSystem();
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
+        /**
+         * If the settings file date is newer than the system files, re-sync them
+         */
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            File settingsFile = new File( settingsFileName );
+            File shadowFile = new File("/etc/shadow");
+            if (settingsFile.lastModified() > shadowFile.lastModified() ) {
+                applyToSystem();
+            }
+        }
+        
         logger.info("Initialized AdminManager");
     }
 
@@ -110,7 +121,7 @@ public class AdminManagerImpl implements AdminManager
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
-        this.reconfigure();
+        this.applyToSystem();
     }
 
     @Override
@@ -291,18 +302,45 @@ public class AdminManagerImpl implements AdminManager
         return null;
     }
     
-    private void reconfigure() 
+    public Integer getTimeZoneOffset()
+    {
+    	try {
+            String tzoffsetStr = UvmContextImpl.context().execManager().execOutput("date +%:z");
+        
+            if (tzoffsetStr == null) {
+                return 0;
+            } else {
+                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
+                if (tzParts.length==2) {
+                    Integer hours= Integer.valueOf(tzParts[0]);
+                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
+                    return hours >= 0 ? tzoffset : -tzoffset;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return 0;
+    }
+
+    private void applyToSystem() 
     {
         // If timezone on box is different (example: kernel upgrade), reset it:
         TimeZone currentZone = getTimeZone();
         if (!currentZone.equals(TimeZone.getDefault())) {
             try {
                 setTimeZone(currentZone);
-            } catch (Exception x) {
-                // Already logged.
+            } catch (Exception e) {
+                logger.warn( "Exception setting timezone", e );
             }
         }
 
+        setRootPasswordToAdminPassword();
+    }
+
+    private void setRootPasswordToAdminPassword()
+    {
         // Set root password to "admin" password
         for ( AdminUserSettings user : this.settings.getUsers() ) {
             if ( "admin".equals( user.getUsername() ) ) {
@@ -327,27 +365,4 @@ public class AdminManagerImpl implements AdminManager
             }
         }
     }
-
-    public Integer getTimeZoneOffset()
-    {
-    	try {
-            String tzoffsetStr = UvmContextImpl.context().execManager().execOutput("date +%:z");
-        
-            if (tzoffsetStr == null) {
-                return 0;
-            } else {
-                String[] tzParts = tzoffsetStr.replaceAll("(\\r|\\n)", "").split(":");
-                if (tzParts.length==2) {
-                    Integer hours= Integer.valueOf(tzParts[0]);
-                    Integer tzoffset = Math.abs(hours)*3600000+Integer.valueOf(tzParts[1])*60000;
-                    return hours >= 0 ? tzoffset : -tzoffset;
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to fetch version",e);
-        }
-
-        return 0;
-    }
-
 }
