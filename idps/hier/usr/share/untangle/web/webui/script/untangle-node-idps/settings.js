@@ -427,14 +427,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     labelAlign:'left',
-                    value: ( this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("never")
+                    value: ( this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("Never")
                 },{
                     xtype: 'displayfield',
                     fieldLabel: this.i18n._("Last update"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     labelAlign:'left',
-                    value: ( this.lastUpdate != null && this.lastUpdate.time != 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("never")
+                    value: ( this.lastUpdate != null && this.lastUpdate.time != 0 && this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("Never")
                 }]
             }]
         });
