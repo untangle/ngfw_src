@@ -388,7 +388,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         matchers = new LinkedList<AlertRuleMatcher>();
         matcher1 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "class", "=", "*SystemStatEvent*" ) );
         matchers.add( matcher1 );
-        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".2" ) );
+        matcher2 = new AlertRuleMatcher( AlertRuleMatcher.MatcherType.FIELD_CONDITION, new AlertRuleMatcherField( "memFreePercent", "<", ".1" ) );
         matchers.add( matcher2 );
         alertRule = new AlertRule( true, matchers, true, true, "Free Memory is low", true, 60 );
         rules.add( alertRule );
