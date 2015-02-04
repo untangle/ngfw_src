@@ -68,11 +68,16 @@ CREATE TABLE reports.idps_events (
         classtype text,
         msg text)""")
         
-        sql_helper.create_index("reports", "idps_events", "time_stamp")
-        sql_helper.create_index("reports", "idps_events", "blocked")
-        sql_helper.create_index("reports", "idps_events", "msg")
-        sql_helper.create_index("reports", "idps_events", "category")
-        sql_helper.create_index("reports", "idps_events", "classtype")
+        if not sql_helper.index_exists("reports","idps_events","time_stamp"):
+            sql_helper.create_index("reports", "idps_events", "time_stamp")
+        if not sql_helper.index_exists("reports", "idps_events", "blocked"):
+            sql_helper.create_index("reports", "idps_events", "blocked")
+        if not sql_helper.index_exists("reports", "idps_events", "msg"):
+            sql_helper.create_index("reports", "idps_events", "msg")
+        if not sql_helper.index_exists("reports", "idps_events", "category"):
+            sql_helper.create_index("reports", "idps_events", "category")
+        if not sql_helper.index_exists("reports", "idps_events", "classtype"):
+            sql_helper.create_index("reports", "idps_events", "classtype")
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
