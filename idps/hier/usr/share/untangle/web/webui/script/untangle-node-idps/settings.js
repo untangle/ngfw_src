@@ -541,7 +541,15 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         sortable: true,
                         resizable: false,
                         width:55,
-                        menuDisabled: false
+                        menuDisabled: false,
+                        listeners: {
+                            checkchange: function ( column, recordIndex, checked ){
+                                if( checked == false ){
+                                    this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex).set('block', false );
+                                }
+                                this.up("[$className=Ung.RuleEditorGrid]").updateRule(this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex), null );
+                            }
+                        }
                     },{
                         xtype:'checkcolumn',
                         header: this.i18n._("Block"),
@@ -555,6 +563,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                 if( checked == true ){
                                     this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex).set('log', true );
                                 }
+                                this.up("[$className=Ung.RuleEditorGrid]").updateRule(this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex), null );
                             }
                         }
                     }],
@@ -686,9 +695,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         fieldLabel: this.i18n._("Log"),
                         listeners: {
                             change: function( me, newValue, oldValue, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
-                                rule.updateAction();
+                                if( newValue == false ){
+                                    this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=block]").setValue(false);
+                                }
+                                this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
                             }
                         }
                     },{
@@ -698,13 +708,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         fieldLabel: this.i18n._("Block"),
                         listeners: {
                             change: function( me, newValue, oldValue, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
-                                if( log.getValue() == false ){
-                                    log.setRawValue(true);
+                                if( newValue == true ){
+                                    this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=log]").setValue(true);
                                 }  
-                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
-                                rule.updateAction();
+                                this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
                             }
                         }
                     },{
@@ -716,32 +723,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         allowBlank: false,
                         width: 500,
                         height: 150,
-                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject)/,
-                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
-                        updateAction: function(){
-                            var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
-                            var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
-                            var logValue = log.getValue();
-                            var blockValue = block.getValue();
-
-                            var newField = "alert";
-                            if( logValue == true && blockValue == true ){
-                                newField = "drop";
-                            }else if( logValue == false && blockValue == true ){
-                                newField = "sdrop";
-                            }else if( logValue == false && blockValue == false ){
-                                newField = "#" + newField;
-                            }
-                            newField = newField;
-
-                            var ruleValue = this.getValue();
-                            if( this.actionRegexMatch.test( ruleValue ) == true ){
-                                ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
-                            }else{
-                                ruleValue = ruleValue + newField;
-                            }
-                            this.setRawValue( ruleValue );
-                        },
+                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
+                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
                         validator: function( value ){
                             if( this.regexMatch.test(value) == false ){
                                 return i18n._("Rule formatted wrong.");
@@ -776,10 +759,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                     match = this.actionRegexMatch.exec( value );
                                     if( match[2] == "alert" ){
                                         logValue = true;
-                                    }else if( match[2] == "drop"){
+                                    }else if( ( match[2] == "drop" ) || ( match[2] == "sdrop" ) ){
                                         logValue = true;
-                                        blockValue = true;
-                                    }else if( match[2] == "sdrop" ){
                                         blockValue = true;
                                     }
                                     if( match[1] == "#" ){
@@ -793,7 +774,48 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                 this.setRawValue( value );
                             }
                         }
-                    }]
+                    }],
+                    actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
+                    updateRule: function( record, source ){
+                        /*
+                         * Rebuild rule according to record or form values
+                         */
+                        var logValue = false;
+                        var blockValue = false;
+                        var ruleValue = "";
+                        if( source == null ){
+                            // Pull values from record
+                            logValue = record.data.log;
+                            blockValue = record.data.block;
+                            ruleValue = record.data.rule;
+                        }else{
+                            // Pull values from form
+                            logValue = source.down("[dataIndex=log]").getValue();
+                            blockValue = source.down("[dataIndex=block]").getValue();
+                            ruleValue = source.down("[dataIndex=rule]").getValue();
+                        }
+
+                        var newField = "alert";
+                        if( logValue == true && blockValue == true ){
+                            newField = "drop";
+                        }else if( logValue == false && blockValue == true ){
+                            newField = "sdrop";
+                        }else if( logValue == false && blockValue == false ){
+                            newField = "#" + newField;
+                        }
+
+                        if( this.actionRegexMatch.test( ruleValue ) == true ){
+                            ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
+                        }else{
+                            ruleValue = ruleValue + newField;
+                        }
+
+                        if( source == null ){
+                            record.data.rule = ruleValue;
+                        }else{
+                            source.down("[dataIndex=rule]").setRawValue(ruleValue);    
+                        }
+                    }
                 }),
                 this.gridVariables = Ext.create('Ung.EditorGrid', {
                     flex: 1,
@@ -1084,7 +1106,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
             endAction: Ext.bind(function() {
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
-//                this.reload();
             }, this),
             cancelAction: Ext.bind(function() {
                 this.wizardWindow.wizard.cancelAction();
@@ -1114,6 +1135,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             }, this));
             return;
         }
+
         if( this.wizard ){
             this.wizard = false;
         }else{
