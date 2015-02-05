@@ -1,3 +1,4 @@
+Ext.Ajax.timeout = 120000;
 Ext.define('Ung.RuleEditorGrid', {
     extend: 'Ung.EditorGrid',
     requires: [
@@ -1163,13 +1164,19 @@ Ext.define('Webui.untangle-node-idps.settings', {
             },
             scope: this,
             success: function(response){
-                Ext.MessageBox.hide();
-
-                if (!isApply) {
-                    this.closeWindow();
-                    return;
+                var r = Ext.decode( response.responseText );
+                if( r.success == false ){
+                    Ext.MessageBox.hide();
+                    Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 }else{
-                    this.clearDirty();
+                    Ext.MessageBox.hide();
+
+                    if (!isApply) {
+                        this.closeWindow();
+                        return;
+                    }else{
+                        this.clearDirty();
+                    }
                 }
             },
             failure: function(response){

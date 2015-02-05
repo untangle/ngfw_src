@@ -435,6 +435,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             }else if( action.equals("save")) {
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
                 String tempSettingsName = "/tmp/untangle-node-idps_settings_" + nodeId + ".js";
+                int verifyResult = 1;
                 try{
                     byte[] buffer = new byte[1024];
                     int read;
@@ -449,13 +450,35 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     fos.flush();
                     fos.close();
 
-                    node.saveSettings( tempSettingsName );
+                    /*
+                     * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
+                     */
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempSettingsName + "> /dev/null 2>&1" );
+                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
 
                 }catch( IOException e ){
                     logger.warn("Failed to save IDPS settings");
                 }
 
-                node.reconfigure();
+                String responseText = "{success:true}";
+                if( verifyResult == 0 ){
+                    node.saveSettings( tempSettingsName );
+                    node.reconfigure();
+                }else{
+                     responseText = "{success:false}";
+                }
+
+                try{
+                    resp.setCharacterEncoding(CHARACTER_ENCODING);
+                    resp.setHeader("Content-Type","application/json");
+
+                    OutputStream out = resp.getOutputStream();
+                    out.write( responseText.getBytes(), 0, responseText.getBytes().length );
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                    logger.warn("Failed to send IDPS save response");
+                }
             }
         }
     }
