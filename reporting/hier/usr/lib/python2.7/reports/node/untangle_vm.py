@@ -139,10 +139,10 @@ CREATE TABLE reports.sessions (
         s_client_port int4,
         client_intf int2,
         server_intf int2,
-        c2p_bytes int8,
-        p2c_bytes int8,
-        s2p_bytes int8,
-        p2s_bytes int8)""")
+        c2p_bytes int8 default 0,
+        p2c_bytes int8 default 0,
+        s2p_bytes int8 default 0,
+        p2s_bytes int8 default 0)""")
 
         sql_helper.add_column('reports', 'sessions', 'shield_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'firewall_blocked', 'boolean')

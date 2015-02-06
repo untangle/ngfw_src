@@ -111,6 +111,10 @@ public class SessionStatsEvent extends LogEvent
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        // if there are no stats, don't even log an event
+        if ( c2pBytes == 0 && p2sBytes == 0 && s2pBytes == 0 && p2cBytes == 0 )
+            return null;
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
         
         int i = 0;
