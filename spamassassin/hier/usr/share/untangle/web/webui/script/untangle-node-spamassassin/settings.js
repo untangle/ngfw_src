@@ -57,7 +57,7 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
         if(smtpAction.disabled==true) {
             dropSuperSpam.disable();
             smtpStrengthValue.disable();
-        } else if(newValue == 'QUARANTINE' || newValue == 'MARK') {
+        } else if(newValue == 'QUARANTINE' || newValue == 'MARK' || newValue == 'PASS') {
             dropSuperSpam.enable();
             if(dropSuperSpam.getValue()) {
                 smtpStrengthValue.enable();
