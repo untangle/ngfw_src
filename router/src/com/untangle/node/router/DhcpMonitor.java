@@ -75,9 +75,7 @@ class DhcpMonitor implements Runnable
         while ( true ) {
             try {
                 Thread.sleep( SLEEP_TIME );
-            } catch ( InterruptedException e ) {
-                logger.info( "Interrupted: " );
-            }
+            } catch ( InterruptedException e ) {}
 
             /* Check if the node is still running */
             if ( !isAlive ) {
