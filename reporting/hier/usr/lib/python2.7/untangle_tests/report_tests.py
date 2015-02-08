@@ -192,6 +192,7 @@ class ReportTests(unittest2.TestCase):
         settings["reportingUsers"]["list"].append(createReportProfile())
         node.setSettings(settings)
         # set untangletest email to get to syslogHostIP where fake SMTP sink is running
+        # FIXME, this is broken. changing the dns does not effect the MX record at all
         netsettings = uvmContext.networkManager().getNetworkSettings()
         orig_netsettings = copy.deepcopy(netsettings)
         netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
