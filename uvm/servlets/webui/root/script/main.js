@@ -294,6 +294,10 @@ Ext.define("Ung.Main", {
         console.log("Open Url   :", url);
         window.open(url); // open a new window
     },
+    openSetupWizardScreen: function() {
+        var url = "/setup";
+        window.open(url);
+    },
     closeIframe: function() {
         if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
             this.iframeWin.closeWindow();
