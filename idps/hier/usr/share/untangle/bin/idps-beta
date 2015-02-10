@@ -8,7 +8,7 @@
 
 SOURCE_FILE_NAME=/usr/share/untangle/lib/untangle-node-idps/nodeProperties.js
 TEMP_FILE_NAME=/tmp/idps_nodeProperties.js
-FLAG_FILE_NAME=/tmp/idps_beta
+FLAG_FILE_NAME=/usr/share/untangle/conf/idps_beta_flag 
 
 function removeinvisible {
     sed '/"invisible": true,/d' $SOURCE_FILE_NAME > $TEMP_FILE_NAME
