@@ -1041,12 +1041,13 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
 
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
-        var afterFn1= Ext.bind(function(handler) {
-            setup.saveCurrentStep(this.stepName);
-            if(handler) {
+        var afterFn1 = null;
+        if(handler) {
+            afterFn1 = Ext.bind(function(handler) {
+                setup.saveCurrentStep(this.stepName);
                 handler();
-            }
-        }, this, [handler]);
+            }, this, [handler]);
+        }
         var afterFn = Ext.bind( this.execConnectivityTest, this, [afterFn1] );
 
         this.saveData( afterFn, false );
