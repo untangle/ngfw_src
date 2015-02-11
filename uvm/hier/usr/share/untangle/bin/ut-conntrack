@@ -5,11 +5,6 @@ import string
 import traceback
 import platform
 
-nf_acct_file = open("/proc/sys/net/netfilter/nf_conntrack_acct", "r" )
-OLD_STYLE=False
-if string.atoi(nf_acct_file.read()) == 1:
-    OLD_STYLE=True
-
 def parse_segment(segment):
     if segment == None:
         return None
@@ -23,69 +18,66 @@ def parse_line(line):
     try:
         line_parts = line.split()
 
-        # Protocol name.
-        # Protocol number. (6 = TCP. 17 = UDP.)
-        # Seconds until this entry expires.
-        # TCP only: TCP connection state.
-        # Source address of original
-        # Destination address of original-side packets.
-        # Source port of original-side packets.
-        # Destination port of original-side packets.
-        # [UNREPLIED], if this connection has not seen traffic in both directions. Otherwise not present.
-        # Source address of reply-side packets (packets from the side that received the connection).
-        # Destination address of reply-side packets.
-        # Source port of reply-side packets.
-        # Destination port of reply-side packets.
-        # [ASSURED], if this connection has seen traffic in both directions (for UDP) or an ACK in an ESTABLISHED connection (for TCP). Otherwise not present.
-        # Use count of this connection structure.
-
-        idx = 0
-        dict['protocol']       = string.upper(line_parts[idx]); idx=idx+1;
+        # the first field is the protocol
+        dict['protocol'] = string.upper(line_parts[0]); 
         if dict['protocol'] != "TCP" and dict['protocol'] != "UDP": return None
-        dict['protocol_id']    = int(line_parts[idx]); idx=idx+1;
-        dict['expiration_sec'] = int(line_parts[idx]); idx=idx+1;
-        # skip tcp connection state
-        if dict['protocol'] == "TCP": idx=idx+1
-        dict['orig_src']       = parse_segment(line_parts[idx]); idx=idx+1;
-        dict['orig_dst']       = parse_segment(line_parts[idx]); idx=idx+1;
-        dict['orig_src_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['orig_dst_port']  = int(parse_segment(line_parts[idx])); idx=idx+1;
+        dict['protocol_id']    = int(line_parts[1]);
 
-        # some kernels are missing the fields orig_packets, orig_bytes, reply_packets, reply_bytes
-        # if there is an exception assume they aren't there
-        dict['orig_packets'] = 0
-        dict['orig_bytes'] = 0
-        if OLD_STYLE:
-            dict['orig_packets'] = int(parse_segment(line_parts[idx])); 
-            idx=idx+1;
-            dict['orig_bytes'] = int(parse_segment(line_parts[idx])); 
-            idx=idx+1;
+        # there are multiple "src" "dst" "sport" "dport" fields, this keeps track of how many we have seen
+        src_count = 0
+        dst_count = 0
+        sport_count = 0
+        dport_count = 0
 
-        # skip UNREPLIED
-        if line_parts[idx] == "[UNREPLIED]": idx=idx+1
-        dict['reply_src']      = parse_segment(line_parts[idx]); idx=idx+1;
-        dict['reply_dst']      = parse_segment(line_parts[idx]); idx=idx+1;
-        dict['reply_src_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['reply_dst_port'] = int(parse_segment(line_parts[idx])); idx=idx+1;
+        for part in line_parts:
+            subparts = part.split("=")
+            if len(subparts) != 2:
+                continue
+            
+            varname = subparts[0]
+            value = subparts[1]
 
-        dict['reply_packets'] = 0
-        dict['reply_bytes'] = 0
-        if OLD_STYLE:
-            dict['reply_packets'] = int(parse_segment(line_parts[idx])); 
-            idx=idx+1;
-            dict['reply_bytes'] = int(parse_segment(line_parts[idx])); 
-            idx=idx+1;
+            if varname == 'protocol':
+                dict['protocol']       = string.upper(value);
 
-        # skip ASSURED
-        if line_parts[idx] == "[ASSURED]": idx=idx+1
-        dict['mark']           = int(parse_segment(line_parts[idx])); idx=idx+1;
-        dict['use_count']      = int(parse_segment(line_parts[idx])); idx=idx+1;
-        
+            if varname == 'src':
+                if src_count == 0:
+                    dict['orig_src'] = value
+                elif src_count == 1:
+                    dict['reply_src'] = value
+                src_count += 1
+
+            if varname == 'dst':
+                if dst_count == 0:
+                    dict['orig_dst'] = value
+                elif dst_count == 1:
+                    dict['reply_dst'] = value
+                dst_count += 1
+
+            if varname == 'sport':
+                if sport_count == 0:
+                    dict['orig_src_port'] = int(value)
+                elif sport_count == 1:
+                    dict['reply_src_port'] = int(value)
+                sport_count += 1
+
+            if varname == 'dport':
+                if dport_count == 0:
+                    dict['orig_dst_port'] = int(value)
+                elif dport_count == 1:
+                    dict['reply_dst_port'] = int(value)
+                dport_count += 1
+            
+            if varname == 'mark':
+                dict['mark'] = int(value);
+                
         dict['bypassed']      = ((dict['mark'] & 0x01000000) >> 24) != 0
         dict['qos_priority']  = ((dict['mark'] & 0x000F0000) >> 16)
-        
+
         return dict
     except Exception,e:
+        print "Exception parsing line:"
+        print line
         print "Exception:"
         traceback.print_exc(e)
         return None
@@ -113,14 +105,12 @@ for line in ip_conntrack_file.readlines():
     else:
         print ","
 
-    print "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
+    print "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
         dict['protocol'],
         dict['orig_src'],
         dict['orig_dst'],
         dict['orig_src_port'],
         dict['orig_dst_port'],
-        dict['orig_packets'],
-        dict['orig_bytes'],
         dict['reply_dst'],
         dict['reply_src'],
         dict['reply_dst_port'],
