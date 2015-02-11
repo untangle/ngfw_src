@@ -64,7 +64,10 @@ class IdpsSettings:
                     settings_rule["rule"] 
                     )
                 if match_rule:
-                    rule = SnortRule( match_rule, settings_rule["category"] )
+                    path = "rules"
+                    if "path" in settings_rule:
+                        path = settings_rule["path"]
+                    rule = SnortRule( match_rule, settings_rule["category"], path )
                     rule.set_action( 
                         settings_rule["log"], 
                         settings_rule["block"] 
@@ -162,7 +165,8 @@ class IdpsSettings:
                 "category": rule.category,
                 "classtype": rule.options["classtype"],
                 "msg" : msg,
-                "rule": rule.build()
+                "rule": rule.build(),
+                "path": rule.path
             } )
         
         settings_file = open( file_name, "w" )

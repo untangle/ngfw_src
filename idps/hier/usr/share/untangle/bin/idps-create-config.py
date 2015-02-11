@@ -66,8 +66,8 @@ def main(argv):
     snort_conf = untangle_node_idps.SnortConf( _debug=_debug )
 
     rules = settings.get_rules()
-    rules.set_path( snort_conf.get_variable( "RULE_PATH" ) )
-    rules.save( classtypes, categories, msgs )
+    rules.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
+    rules.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )
     
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
@@ -80,6 +80,7 @@ def main(argv):
         if match_include_rule:
             snort_conf.set_include( include["file_name"], False )
     snort_conf.set_include( "$RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
+    snort_conf.set_include( "$PREPROC_RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
 			
     snort_conf.save()
 	

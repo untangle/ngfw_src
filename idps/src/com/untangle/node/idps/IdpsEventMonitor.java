@@ -184,6 +184,7 @@ class IdpsEventMonitor implements Runnable
         while( it.hasNext() ){
             Map.Entry<?,?> pair = (Map.Entry<?,?>)it.next();
             File flpf = (File) pair.getKey();
+
             found = false;
             for( File f: files ){
                 try{
@@ -211,6 +212,9 @@ class IdpsEventMonitor implements Runnable
                 @Override
                 public boolean accept( File directory, String name )
                 {
+                    if( name.startsWith("snort.log.") == false ){
+                        return false;
+                    }
                     try{
                         File file = new File( directory.getCanonicalPath() + "/" + name );
                         return file.isFile() && ( file.lastModified() >= currentTime );
@@ -220,7 +224,6 @@ class IdpsEventMonitor implements Runnable
                 }
             } 
         );
-        // !!! check to see if files exist
         Arrays.sort( files, 
             new Comparator<File>()
             {

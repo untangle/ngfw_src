@@ -279,8 +279,8 @@ class Update:
             args = [
                 "@PREFIX@/usr/share/untangle/bin/idps-sync-settings.py",
                 "--node_id", str(node_id),
-                "--previous_rules", "/usr/share/untangle-snort-config/previous/rules",
-                "--rules", "/usr/share/untangle-snort-config/current/rules",
+                "--previous_rules", "/usr/share/untangle-snort-config/previous",
+                "--rules", "/usr/share/untangle-snort-config/current",
                 "--settings", temp_settings_file_name,
                 "--status", "/usr/share/untangle-snort-config/last-update.js"
             ]

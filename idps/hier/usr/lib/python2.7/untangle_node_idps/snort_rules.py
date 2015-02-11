@@ -12,6 +12,8 @@ class SnortRules:
     """
     var_regex = re.compile(r'^\$(.+)')
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
+
+    rule_paths = ["rules", "preproc_rules"]
     
     def __init__(self, node_id = 0, path = "", file_name = ""):
         self.node_id = node_id
@@ -25,31 +27,25 @@ class SnortRules:
         self.rules = {}
         self.variables = []
 
-    def set_path(self, path = "", file_name = ""):
-        """
-        Set path
-        """
-        self.path = path
-        self.file_name = self.path + "/"
-        if file_name != "":
-            self.file_name = self.file_name + file_name
-        else:
-            self.file_name = self.file_name + "node_" + self.node_id + ".rules"
-        
     def load(self, path = False):
         """
         Load ruleset
         """
         if path == True:
-            for file_name in os.listdir( self.path ):
-                extension = os.path.splitext( file_name )[1]
-                if extension != ".rules":
-                    continue
-                self.load_file( self.path + "/" + file_name )
+            """
+            Parse directory trees
+            """
+            for rule_path in SnortRules.rule_paths:
+                parse_path = self.path + "/" + rule_path 
+                for file_name in os.listdir( parse_path ):
+                    extension = os.path.splitext( file_name )[1]
+                    if extension != ".rules":
+                        continue
+                    self.load_file( parse_path + "/" + file_name, rule_path )
         else:
             self.load_file( self.file_name )
             
-    def load_file( self, file_name):
+    def load_file( self, file_name, rule_path = "rules"):
         """
         Category based on "major" file name separator. 
         e.g., web-cgi = web
@@ -58,8 +54,6 @@ class SnortRules:
         name = os.path.splitext( name )[0]
         category = name
 
-        # ? Special handling for "deleted"?
-        
         rule_count = 0
         rules_file = open( file_name )
         for line in rules_file:
@@ -70,7 +64,7 @@ class SnortRules:
             else:            
                 match_rule = re.search( SnortRule.text_regex, line )
                 if match_rule:
-                    self.add_rule( SnortRule( match_rule, category ) )
+                    self.add_rule(SnortRule( match_rule, category, rule_path))
                     rule_count = rule_count + 1
         rules_file.close()
             
@@ -100,7 +94,7 @@ class SnortRules:
         
         return classtype_match and category_match and msgs_match
         
-    def save(self, classtypes = None, categories = None, msgs = None):
+    def save(self, path = None, classtypes = None, categories = None, msgs = None):
         """
         Save rule set
         """
@@ -111,7 +105,13 @@ class SnortRules:
         if msgs == None:
             msgs = []
 
-        temp_file_name = self.file_name + ".tmp"
+        if os.path.isdir(path) == False:
+            os.makedirs(path)
+
+        file_name = path + "/" + "node_" + self.node_id + ".rules"
+        rule_path = os.path.split( path )[1]
+
+        temp_file_name = file_name + ".tmp"
         rules_file = open( temp_file_name, "w" )
         category = "undefined"
         # ? order by category
@@ -119,23 +119,23 @@ class SnortRules:
             if self.check_write_rule( rule, classtypes, categories, msgs ) == False:
                 continue
 
-            if rule.category != category:
-                category = rule.category
-                rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
+            if ( rule.get_enabled() == True ) and ( rule.path == rule_path ):
+                if rule.category != category:
+                    category = rule.category
+                    rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
                 
-            if rule.get_enabled() == True:
                 rules_file.write( rule.build() + "\n" )
         rules_file.close()
         
-        if os.path.isfile( self.file_name ):
-            os.remove( self.file_name )
-        os.rename( temp_file_name, self.file_name )
+        if os.path.isfile( file_name ):
+            os.remove( file_name )
+        os.rename( temp_file_name, file_name )
 
     def add_rule(self, rule):
         """
         Add a new rule to the list and search for variables.
         """
-        self.rules[rule.options["sid"]] = rule
+        self.rules[rule.options["sid"] + "_" + rule.options["gid"]] = rule
         for prop, value in vars(rule).iteritems():
             if isinstance( value, str ) == False:
                 continue

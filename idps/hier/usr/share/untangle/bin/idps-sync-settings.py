@@ -76,9 +76,9 @@ def main(argv):
         settings.initialize( snort_conf, snort_rules )
     else:
         settings.load()
-        added_rule_sids = []
-        deleted_rule_sids = []
-        modified_rule_sids = []
+        added_rule_rids = []
+        deleted_rule_rids = []
+        modified_rule_rids = []
         
         previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_file_name )
         previous_snort_rules.load( True )
@@ -90,28 +90,28 @@ def main(argv):
         active_rules_classtypes = settings.get_active_rules_classtypes()
         active_rules_categories = settings.get_active_rules_categories()
         
-        for sid in previous_rules:
-            if current_rules.has_key(sid) == False:
-                deleted_rule_sids.append( sid )
+        for rid in previous_rules:
+            if current_rules.has_key(rid) == False:
+                deleted_rule_rids.append(rid)
 
-        for sid in current_rules:
-            if previous_rules.has_key(sid) == False:
-                added_rule_sids.append( sid )
-            elif current_rules[sid].build() != previous_rules[sid].build():
-                modified_rule_sids.append( sid )
+        for rid in current_rules:
+            if previous_rules.has_key(rid) == False:
+                added_rule_rids.append(rid)
+            elif current_rules[rid].build() != previous_rules[rid].build():
+                modified_rule_rids.append(rid)
 
-        for sid in deleted_rule_sids:
-            if settings_rules.has_key(sid):
-                settings_rules.remove(sid)
+        for rid in deleted_rule_rids:
+            if settings_rules.has_key(rid):
+                settings_rules.remove(rid)
                 
-        for sid in added_rule_sids:
-            if settings_rules.has_key(sid):
-                new_rule = current_rules[sid]
-                new_rule.enabled = settings_rules[sid].enabled
-                new_rule.action = settings_rules[sid].action
-                settings_rules[sid] = new_rule
+        for rid in added_rule_rids:
+            if settings_rules.has_key(rid):
+                new_rule = current_rules[rid]
+                new_rule.enabled = settings_rules[rid].enabled
+                new_rule.action = settings_rules[rid].action
+                settings_rules[rid] = new_rule
             else:
-                settings_rules[sid] = current_rules[sid]
+                settings_rules[rid] = current_rules[rid]
                 
                 if len( active_rules_classtypes ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
                     classtype_enabled = True
@@ -126,9 +126,9 @@ def main(argv):
 
         settings.set_updated({
             "rules": { 
-                "added" : added_rule_sids, 
-                "modified" : modified_rule_sids, 
-                "deleted": deleted_rule_sids
+                "added" : added_rule_rids, 
+                "modified" : modified_rule_rids, 
+                "deleted": deleted_rule_rids
             }})
         
     settings.save( settings_file_name )

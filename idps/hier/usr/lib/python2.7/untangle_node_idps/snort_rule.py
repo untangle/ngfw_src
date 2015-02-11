@@ -7,30 +7,40 @@ class SnortRule:
     """
     Process rule from the snort format.
     """
-    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)')
+    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
 
-    def __init__( self, regex_match, category ):
+    def __init__( self, regex_match, category, path ):
         self.category = category
+        self.path = path
         self.enabled = True
         if len( regex_match.group(1) ) > 0 and regex_match.group(1)[0] == "#":
             self.enabled = False
         self.action = regex_match.group(2).lower()
-        self.protocol = regex_match.group(3).lower()
-        self.lnet = regex_match.group(4)
-        self.lport = regex_match.group(5)
-        self.dir = regex_match.group(6)
-        self.rnet = regex_match.group(7)
-        self.rport = regex_match.group(8)
+        if regex_match.group(3) != "":
+            self.protocol = regex_match.group(4).lower()
+            self.lnet = regex_match.group(5)
+            self.lport = regex_match.group(6)
+            self.dir = regex_match.group(7)
+            self.rnet = regex_match.group(8)
+            self.rport = regex_match.group(9)
+        else:
+            self.protocol = None
+            self.lnet = None
+            self.lport = None
+            self.dir = None
+            self.rnet = None
+            self.rport = None
         
-        self.options_raw = regex_match.group(9)
+        self.options_raw = regex_match.group(10)
         self.options = { 
-            "sid": -1,
+            "sid": "-1",
+            "gid": "1",
             "classtype": "uncategoried",
             "msg": ""
         }
         
         self.content_modifiers = {}
-        for option in regex_match.group(9).split(';'):
+        for option in regex_match.group(10).split(';'):
             option = option.strip()
             if option == "":
                 continue
@@ -38,9 +48,11 @@ class SnortRule:
             value = None
             if option.find(':') > -1:
                 key, value = option.split( ':', 1 )
-            
+                key = key.strip()
+                value = value.strip()
+
             self.options[key] = value
-                
+            
     def dump(self):
         """
         Print snort rule
@@ -120,4 +132,28 @@ class SnortRule:
             enabled = ""
         else:
             enabled = "#"
-        return enabled + self.action + " " + self.protocol + " " + self.lnet + " " + " " + self.lport + " " + self.dir + " " + self.rnet + " " + self.rport + " ( " + self.options_raw + " )"
+        if self.protocol != None:
+            protocol = self.protocol + " "
+        else:
+            protocol = ""
+        if self.lnet != None:
+            lnet = self.lnet + " "
+        else:
+            lnet = ""
+        if self.lport != None:
+            lport = self.lport + " "
+        else:
+            lport = ""
+        if self.dir != None:
+            dir = self.dir + " "
+        else:
+            dir = ""
+        if self.rnet != None:
+            rnet = self.rnet + " "
+        else:
+            rnet = ""
+        if self.rport != None:
+            rport = self.rport + " "
+        else:
+            rport = ""
+        return enabled + self.action + " " + protocol + lnet + lport + dir + rnet + rport + "( " + self.options_raw + " )"

@@ -39,6 +39,7 @@ class IdpsEventMap:
             self.settings["rules"]["list"].append( { 
                 "javaClass" : "com.untangle.node.idps.IdpsEventMapRule",
                 "sid": int(rule.options["sid"]),
+                "gid": int(rule.options["gid"]),
                 "category": rule.category,
                 "msg": msg,
                 "classtype": rule.options["classtype"],

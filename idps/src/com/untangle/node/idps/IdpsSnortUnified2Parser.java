@@ -387,7 +387,7 @@ public class IdpsSnortUnified2Parser {
             pos += IDS_EVENTV2_PADDING_SIZE;
         }
 
-        IdpsEventMapRule mapRule = idpsEventMap.getRuleBySignatureId( idsEvent.getSignatureId() );
+        IdpsEventMapRule mapRule = idpsEventMap.getRuleBySignatureAndGeneratorId( idsEvent.getSignatureId(), idsEvent.getGeneratorId() );
         if( mapRule != null ){
             idsEvent.setMsg( mapRule.getMsg() );
             idsEvent.setClasstype( mapRule.getClasstype() );

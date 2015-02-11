@@ -20,13 +20,24 @@ public class IdpsEventMap implements Serializable
     public List<IdpsEventMapRule> getRules() { return new LinkedList<IdpsEventMapRule>(this.rules); }
     public void setRules( List<IdpsEventMapRule> newValue ) { this.rules = new HashSet<IdpsEventMapRule>(newValue); }
 
-    public IdpsEventMapRule getRuleBySignatureId( long signatureId ){
+    public IdpsEventMapRule getRuleBySignatureAndGeneratorId( long signatureId, long generatorId ){
+        IdpsEventMapRule bestMatchRule = null;
     	for( IdpsEventMapRule rule : this.rules ){
+            if( ( rule.getSid() == signatureId ) &&
+                ( rule.getGid() == generatorId ) ){
+                /*
+                 * Explicit signature and signature match.
+                 */
+                return rule;                
+            }
     		if( rule.getSid() == signatureId ){
-    			return rule;
+                /*
+                 * Fall back to just a signature match
+                 */
+    			bestMatchRule = rule;
     		}
     	}
-    	return null;
+    	return bestMatchRule;
     }
     
 }

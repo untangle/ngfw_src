@@ -3,7 +3,7 @@
 if [ -d /usr/share/untangle-snort-config/current ] ; then
     /usr/share/untangle/bin/idps-generate-defaults.py \
         --templates /usr/share/untangle-snort-config/current/templates \
-        --rules /usr/share/untangle-snort-config/current/rules \
+        --rules /usr/share/untangle-snort-config/current \
         --defaults /usr/share/untangle/lib/untangle-node-idps
 fi
 

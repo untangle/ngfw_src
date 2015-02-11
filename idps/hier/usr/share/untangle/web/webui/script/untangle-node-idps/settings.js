@@ -1239,11 +1239,11 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
 
         this.onNext = Ext.bind( this.loadDefaultSettings, this );
         this.initialLoad = true;
-
     },
 
     loadDefaultSettings: function(handler){
-        if( this.initialLoad == true ){
+        if( this.initialLoad == true ||
+            this.gui.wizardSettings ){
             this.initialLoad = false;
             handler();
         }else{
@@ -1260,6 +1260,12 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                 success: function(response){
                     this.gui.wizardSettings = Ext.decode( response.responseText );
                     this.gui.wizardSettings.recommended = this.gui.wizardSettings.active_rules;
+                    if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
+                        this.gui.wizardSettings.active_rules.classtypes_group = "recommended";
+                    }
+                    if( !("categories_group" in this.gui.wizardSettings.active_rules ) ){
+                        this.gui.wizardSettings.active_rules.categories_group = "recommended";
+                    }
                     Ext.MessageBox.hide();
                     handler();
                 },
@@ -1320,7 +1326,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                 inputValue: 'recommended',
                 boxLabel: this.i18n._('Recommended (default)'),
                 hideLabel: true,
-                checked: true,
+                checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
                 }, this)
@@ -1332,7 +1338,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             },{
                 name: 'classtypes',
                 xtype: 'radio',
-                inputValue: 'name',
+                inputValue: 'custom',
                 boxLabel: this.i18n._('Custom'),
                 hideLabel: true,
                 checked: false,
@@ -1340,7 +1346,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                     this.setVisible( elem.inputValue, checked );
                 }, this)                
             },{
-                name: 'classtypes_name_settings',
+                name: 'classtypes_custom_settings',
                 xtype:'fieldset',
                 hidden:true,
                 items: [
@@ -1349,9 +1355,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             }]
         });
 
-        this.setVisible('recommended', true);
-
-        this.onLoad = Ext.bind( this.setEnabled, this );
+        this.onLoad = Ext.bind( this.onLoad, this );
         this.onNext = Ext.bind( this.getValues, this );
     },
 
@@ -1376,31 +1380,47 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
         );
     },
 
-    setEnabled: function( handler ){
-        if( this.gui.wizardSettings.active_rules &&
-            typeof( this.gui.wizardSettings.active_rules.classtypes ) == 'object' ){
-            for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
-                var value = this.gui.wizardSettings.active_rules.classtypes[i];
+    onLoad: function( handler ){
+        if( this.loaded != true ){
+            if( this.gui.wizardSettings.active_rules ){
+
                 Ext.Array.each(
-                    this.panel.query("checkbox[name=classtypes_selected]"),
+                    this.panel.query("radio[name=classtypes]"),
                     function(c){
-                        if( c.inputValue == value ){
+                        if( c.inputValue == this.gui.wizardSettings.active_rules.classtypes_group ){
                             c.setValue(true);
                         }
-                    }
+                    },
+                    this
                 );
-            }
 
-            if( this.gui.wizardSettings.active_rules.classtypes.length == 0 ){
-                this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
-            }else{
-                this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.classtypes.join( ", "));
+                if( typeof( this.gui.wizardSettings.active_rules.classtypes ) == 'object' ){
+                    for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
+                        var value = this.gui.wizardSettings.active_rules.classtypes[i];
+                        Ext.Array.each(
+                            this.panel.query("checkbox[name=classtypes_selected]"),
+                            function(c){
+                                if( c.inputValue == value ){
+                                c.setValue(true);
+                                }
+                            }
+                        );
+                    }
+
+                    if( this.gui.wizardSettings.active_rules.classtypes.length == 0 ){
+                        this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
+                    }else{
+                        this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.classtypes.join( ", "));
+                    }
+                }
             }
+            this.loaded = true;
         }
         handler();
     },
 
     getValues: function( handler ){
+        this.gui.wizardSettings.active_rules.classtypes_group = this.panel.down("radio[name=classtypes]").getGroupValue();
         if( this.panel.down("radio[name=classtypes]").getGroupValue() == "recommended") {
             this.gui.wizardSettings.active_rules.classtypes = this.gui.wizardSettings.recommended.classtypes;
         }else{
@@ -1457,7 +1477,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                 inputValue: 'recommended',
                 boxLabel: this.i18n._('Recommended (default)'),
                 hideLabel: true,
-                checked: true,
+                checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
                 }, this)
@@ -1468,7 +1488,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             },{
                 name: 'categories',
                 xtype: 'radio',
-                inputValue: 'name',
+                inputValue: 'custom',
                 boxLabel: this.i18n._('Select by name'),
                 hideLabel: true,
                 checked: false,
@@ -1476,7 +1496,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     this.setVisible( elem.inputValue, checked );
                 }, this)                
             },{
-                name: 'categories_name_settings',
+                name: 'categories_custom_settings',
                 xtype:'fieldset',
                 hidden:true,
                 items: [{
@@ -1490,9 +1510,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             }]
         });
 
-        this.setVisible('recommended', true);
-
-        this.onLoad = Ext.bind( this.setEnabled, this );
+        this.onLoad = Ext.bind( this.onLoad, this );
         this.onNext = Ext.bind( this.getValues, this );
     },
 
@@ -1517,31 +1535,45 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         );
     },
 
-    setEnabled: function( handler ){
-        if( this.gui.wizardSettings.active_rules &&
-            typeof( this.gui.wizardSettings.active_rules.categories ) == 'object' ){
-            for( var i = 0; i < this.gui.wizardSettings.active_rules.categories.length; i++ ){
-                var value = this.gui.wizardSettings.active_rules.categories[i];
+    onLoad: function( handler ){
+        if( this.loaded != true ){
+            if( this.gui.wizardSettings.active_rules ){
                 Ext.Array.each(
-                    this.panel.query("checkbox[name=categories_selected]"),
+                    this.panel.query("radio[name=categories]"),
                     function(c){
-                        if( c.inputValue == value ){
+                        if( c.inputValue == this.gui.wizardSettings.active_rules.categories_group ){
                             c.setValue(true);
                         }
-                    }
+                    },
+                    this
                 );
-            }
 
-            if( this.gui.wizardSettings.active_rules.categories.length == 0 ){
-                this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
-            }else{
-                this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.categories.join( ", "));
+                for( var i = 0; i < this.gui.wizardSettings.active_rules.categories.length; i++ ){
+                    var value = this.gui.wizardSettings.active_rules.categories[i];
+                    Ext.Array.each(
+                        this.panel.query("checkbox[name=categories_selected]"),
+                        function(c){
+                            if( c.inputValue == value ){
+                                c.setValue(true);
+                            }
+                        }
+                    );
+                }
+
+                if( this.gui.wizardSettings.active_rules.categories.length == 0 ){
+                    this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
+                }else{
+                    this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.categories.join( ", "));
+                }
             }
+            this.loaded = true;
         }
         handler();
     },
     
     getValues: function( handler ){
+        this.gui.wizardSettings.active_rules.categories_group = this.panel.down("radio[name=categories]").getGroupValue();
+        
         if( this.panel.down("radio[name=categories]").getGroupValue() == "recommended") {
             this.gui.wizardSettings.active_rules.categories = this.gui.wizardSettings.recommended.categories;
         }else{

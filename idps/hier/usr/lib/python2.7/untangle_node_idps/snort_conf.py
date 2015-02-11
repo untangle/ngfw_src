@@ -16,7 +16,8 @@ class SnortConf:
     include_regex = re.compile(r'^(\#|)\s*include\s+([^\s]+)')
     include_rulepath_regex = re.compile(r'\$(PREPROC_RULE_PATH|SO_RULE_PATH|RULE_PATH)')
     output_regex = re.compile(r'^output\s+([^:]+)')
-    preprocessor_normalize_tcp_regex = re.compile(r'^(#|)preprocessor normalize_tcp: ips ecn stream')
+    preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
+    preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
     
     def __init__(self, _debug = False):
         self.last_comment = ""
@@ -142,6 +143,10 @@ class SnortConf:
             if match_output:
                 if match_output.group(1) == "":
                     self.conf[i] = "#" + self.conf[i]
+
+            match_output = re.search( SnortConf.preprocessor_sfportscan_regex, line )
+            if match_output:
+                self.conf[i] = "preprocessor sfportscan: proto  { all } memcap { 10000000 } sense_level { medium }"
 
     def get_variables(self):
         """

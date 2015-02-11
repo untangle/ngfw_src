@@ -14,15 +14,17 @@ public class IdpsEventMapRule implements Serializable
 
     private Long id;
     private Long sid;
+    private Long gid;
     private String category = "";
     private String classtype = "";
     private String msg = "";
 
     public IdpsEventMapRule() {}
 
-    public IdpsEventMapRule(Long sid, String category, String classtype, String msg )
+    public IdpsEventMapRule(Long sid, Long gid, String category, String classtype, String msg )
     {
         this.sid = sid;
+        this.gid = gid;
         this.category = category;
         this.classtype = classtype;
         this.msg = msg;
@@ -33,6 +35,9 @@ public class IdpsEventMapRule implements Serializable
 
     public Long getSid() { return sid; }
     public void setSid( Long sid ) { this.sid = sid; }
+
+    public Long getGid() { return gid; }
+    public void setGid( Long gid ) { this.gid = gid; }
 
     public String getCategory() { return category; }
     public void setCategory( String category ) { this.category = category; }

@@ -304,7 +304,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-sync-settings.py" + 
             " --node_id " + nodeId +
-            " --rules /usr/share/untangle-snort-config/current/rules" +
+            " --rules /usr/share/untangle-snort-config/current" +
             " --settings " + tempFileName
         );
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -332,7 +332,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-generate-defaults.py" + 
             " --templates /usr/share/untangle-snort-config/current/templates" +
-            " --rules /usr/share/untangle-snort-config/current/rules" +
+            " --rules /usr/share/untangle-snort-config/current" +
             " --defaults " + System.getProperty("uvm.lib.dir") + "/untangle-node-idps" +
             " --filename " + filename
         );
