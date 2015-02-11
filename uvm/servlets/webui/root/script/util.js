@@ -76,7 +76,7 @@ Ung.Util = {
     },
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
-        window.location.href="/webui";
+        window.location.href="/";
     },
     showWarningMessage:function(message, details, errorHandler) {
         var wnd = Ext.create('Ext.window.Window', {

@@ -319,6 +319,11 @@ Ext.define("Webui.config.system", {
 
                                                        Ung.MetricManager.stop();
 
+                                                       var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                                           minProgressWidth: 360
+                                                       });
+                                                       resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"));
+
                                                        main.getExecManager().exec(Ext.bind(function(result, exception) {
                                                            Ext.MessageBox.hide();
                                                            var resettingWindow=Ext.create('Ext.window.MessageBox', {
