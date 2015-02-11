@@ -73,6 +73,8 @@ def parse_line(line):
                 
         dict['bypassed']      = ((dict['mark'] & 0x01000000) >> 24) != 0
         dict['qos_priority']  = ((dict['mark'] & 0x000F0000) >> 16)
+        dict['client_intf']  = ((dict['mark'] & 0x000000FF) >> 0)
+        dict['server_intf']  = ((dict['mark'] & 0x0000FF00) >> 8)
 
         return dict
     except Exception,e:
@@ -105,8 +107,10 @@ for line in ip_conntrack_file.readlines():
     else:
         print ","
 
-    print "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
+    print "{ protocol:\"%s\", clientIntf:\"%s\", serverIntf:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%s\", mark:\"0x%08x\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }" % (
         dict['protocol'],
+        dict['client_intf'],
+        dict['server_intf'],
         dict['orig_src'],
         dict['orig_dst'],
         dict['orig_src_port'],
