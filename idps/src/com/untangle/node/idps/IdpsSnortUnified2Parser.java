@@ -28,6 +28,7 @@ import com.untangle.node.idps.IdpsEventMapRule;
 public class IdpsSnortUnified2Parser {
 
     private final Logger logger = Logger.getLogger(getClass());
+    private final int MaximumProcessedRecords = 5000;
 
 	private FileChannel fc;
 	private ByteBuffer bufSerialHeader = null;
@@ -176,6 +177,7 @@ public class IdpsSnortUnified2Parser {
         int eventCount = 0;
 
         long pos = -1L;
+        int recordCount = 0;
 		try {
             boolean abort = false;
 			while (fc.position() != fc.size()) {
@@ -201,6 +203,7 @@ public class IdpsSnortUnified2Parser {
                             break;
                         }
                         idpsNode.logEvent( new IdpsLogEvent( idsEvent ) );
+                        recordCount++;
                         break;
                     case IdpsSnortUnified2SerialHeader.TYPE_PACKET:
                     case IdpsSnortUnified2SerialHeader.TYPE_EXTRA_DATA:
@@ -208,6 +211,10 @@ public class IdpsSnortUnified2Parser {
                         parseSkip();
                 }
                 
+                if( recordCount == MaximumProcessedRecords ){
+                    break;
+                }
+
                 if( abort == true ){
                     pos = fc.size();
                     break;
@@ -217,6 +224,11 @@ public class IdpsSnortUnified2Parser {
 		} catch (Exception e) {
             logger.warn("Unable to process snort log: ", e);
 		}
+
+        if( recordCount == MaximumProcessedRecords ){
+            logger.warn( "Reached maximum record/interval threshold: " + MaximumProcessedRecords );
+        }
+
         if( f != null ){
             try {
                 f.close();
