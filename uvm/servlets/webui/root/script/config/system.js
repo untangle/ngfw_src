@@ -342,7 +342,7 @@ Ext.define("Webui.config.system", {
                                                                        i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
                                                                }
                                                            });
-                                                       }, this), "/usr/share/untangle/bin/factory-defaults");
+                                                       }, this), "nohup /usr/share/untangle/bin/factory-defaults");
                                                    }
                                                }, this));
                     }, this)
