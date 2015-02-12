@@ -94,9 +94,11 @@ class VirusTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
-    # test that client can block virus http download zip
-    def test_018_httpPartialVirusBlocked(self):
-        result = remote_control.runCommand("curl -L -r '99-' http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
+    # test that client can block a partial fetch after full fetch (using cache)
+    def test_018_httpPartialVirusBlockedWithCache(self):
+        result = remote_control.runCommand("curl -L http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
+        assert (result == 0)
+        result = remote_control.runCommand("curl -L -r '5-' http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
