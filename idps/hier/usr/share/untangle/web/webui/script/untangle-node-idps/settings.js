@@ -349,7 +349,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
 
-
         if( this.settings.configured == false &&
             !this.wizardWindow ){
             var launchWizard = Ext.create( 
@@ -360,7 +359,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 this
             );
             launchWizard.delay(100);
+            this.disable();
         }
+
     },
     // Status Panel
     buildStatus: function() {
@@ -1122,6 +1123,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             layout: "fit",
             items: setupWizard,
             endAction: Ext.bind(function() {
+                this.enable();
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
             }, this),
@@ -1131,6 +1133,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
         });
 
         setupWizard.cancelAction=Ext.bind(function() {
+            this.enable();
             if(!this.wizardWindow.wizard.finished) {
                 Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
                     this.wizardWindow.endAction();
