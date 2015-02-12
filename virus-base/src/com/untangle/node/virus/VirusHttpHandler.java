@@ -7,9 +7,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -33,36 +36,54 @@ import com.untangle.uvm.vnet.NodeTCPSession;
  */
 class VirusHttpHandler extends HttpEventHandler
 {
-    // make configurable
-    private static final int TIMEOUT = 30000;
-    private static final int SIZE_LIMIT = 256000;
-    private static final int MAX_SCAN_LIMIT = 200000000;
+    /**
+     * BUFFER_TIMEOUT configures the maximum amount of time a file will be buffered to disk
+     * before it starts trickling the file to the user
+     */
+    private static final int BUFFER_TIMEOUT = 1000*4; // 4 seconds
 
+    /**
+     * BUFFER_SIZE_LIMIT configures the maximum amount of bytes a file will be buffered to disk
+     * before it starts trickling the file to the user
+     */
+    private static final int BUFFER_SIZE_LIMIT = 1024*1024*20; //20 Meg
+
+    /**
+     * MAX_SCAN_LIMIT configures the maximum size of any file to be scanned
+     * If the file is larger it is assumed to be clean
+     */
+    private static final int MAX_SCAN_LIMIT = 200*1024*1024; //200 Meg
+
+    /**
+     * CACHE_EXPIRATION_MS configures the amount of time a positive entry is stored in the cache
+     * This is so that we don't permanently block false positives in case we cache one
+     */
+    private static final long CACHE_EXPIRATION_MS = 1000*60*60; //1 hour
+    
     private final Logger logger = Logger.getLogger(getClass());
-
+    
     private final VirusNodeImpl node;
 
-    public class VirusHttpState
+    private VirusUrlCache<VirusUrlCacheKey,VirusUrlCacheEntry> urlCache = new VirusUrlCache<VirusUrlCacheKey,VirusUrlCacheEntry>();
+    
+    protected class VirusHttpState
     {
         private boolean scan = false;
         private long bufferingStart;
         private int outstanding;
         private int totalSize;
         private String extension = null;
-        private String hostname = null;
+        private String host = null;
+        private String uri = null;
         private File scanfile = null;
         private FileChannel outFile = null;
         private FileChannel inFile = null;
     }
 
-    // constructors -----------------------------------------------------------
-
-    VirusHttpHandler( VirusNodeImpl node )
+    protected VirusHttpHandler( VirusNodeImpl node )
     {
         this.node = node;
     }
-
-    // HttpEventHandler methods -----------------------------------------------
 
     @Override
     public void handleTCPNewSession( NodeTCPSession session )
@@ -83,8 +104,6 @@ class VirusHttpHandler extends HttpEventHandler
         } else {
             int i = path.lastIndexOf('.');
             state.extension = (0 <= i && path.length() - 1 > i) ? path.substring(i + 1) : null;
-
-            releaseRequest( session );
         }
         return requestLine;
     }
@@ -93,16 +112,37 @@ class VirusHttpHandler extends HttpEventHandler
     protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
-        /* save hostname */
-        if ( state.hostname == null ) {
-            state.hostname = requestHeader.getValue("host");
+        /* save host */
+        if ( state.host == null ) {
+            state.host = requestHeader.getValue("host");
         }
-        if ( state.hostname == null ) {
+        if ( state.host == null ) {
             RequestLineToken requestLine = getRequestLine( session );
             if (requestLine != null)
-                state.hostname = requestLine.getRequestUri().normalize().getHost();
+                state.host = requestLine.getRequestUri().normalize().getHost();
         }
-        
+        if ( state.uri == null ) {
+            RequestLineToken requestLine = getRequestLine( session );
+            if (requestLine != null)
+                state.uri = requestLine.getRequestUri().normalize().getPath();
+        }
+
+        if ( ! ignoredHost( state.host ) ) {
+            String virusName = lookupCache( state.host, state.uri );
+            if ( virusName != null ) {
+                VirusBlockDetails bd = new VirusBlockDetails( state.host, state.uri, null, node.getName() );
+                String nonce = node.generateNonce(bd);
+                Token[] response = node.generateResponse( nonce, session, state.uri, requestHeader );
+                blockRequest( session, response );
+
+                RequestLine requestLine = getRequestLine( session ).getRequestLine();
+                node.logEvent( new VirusHttpEvent( requestLine, false, virusName, node.getName()) );
+
+                return requestHeader;
+            }
+        }
+
+        releaseRequest( session );
         return requestHeader;
     }
 
@@ -134,8 +174,8 @@ class VirusHttpHandler extends HttpEventHandler
         if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
             state.scan = false;
-        } else if ( ignoredHost( state.hostname ) ) {
-            logger.debug("Ignoring downloads from: " + state.hostname);
+        } else if ( ignoredHost( state.host ) ) {
+            logger.debug("Ignoring downloads from: " + state.host);
             state.scan = false;
         } else if (matchesExtension( state.extension )) {
             logger.debug("matches extension");
@@ -196,8 +236,6 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
-    // private methods --------------------------------------------------------
-
     private void scanFile( NodeTCPSession session )
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
@@ -236,6 +274,8 @@ class VirusHttpHandler extends HttpEventHandler
         } else {
             node.incrementBlockCount();
 
+            addCache( state.host, state.uri, result.getVirusName() );
+            
             if ( getResponseMode( session ) == Mode.QUEUEING ) {
                 RequestLineToken rl = getResponseRequest( session );
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
@@ -256,7 +296,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
-    private boolean matchesExtension(String extension)
+    private boolean matchesExtension( String extension )
     {
         if (null == extension) { return false; }
 
@@ -364,11 +404,18 @@ class VirusHttpHandler extends HttpEventHandler
         state.totalSize += buf.remaining();
 
         if ( getResponseMode( session ) == Mode.QUEUEING ) {
-            if (TIMEOUT > (System.currentTimeMillis() - state.bufferingStart) && SIZE_LIMIT > state.totalSize) {
-                logger.debug("buffering");
+            long elaspsedTime = System.currentTimeMillis() - state.bufferingStart;
+            
+            if ( elaspsedTime < BUFFER_TIMEOUT && state.totalSize < BUFFER_SIZE_LIMIT ) {
+                if (logger.isDebugEnabled())
+                    logger.debug("continue buffering... " + elaspsedTime + "ms and " + state.totalSize + " bytes.");
                 return chunk;
-            } else {            /* switch to trickle mode */
-                logger.debug("switching to trickling");
+            } else {
+                /**
+                 * switch to trickle mode
+                 */
+                if (logger.isDebugEnabled())
+                    logger.debug("switch to trickling after " + elaspsedTime + "ms and " + state.totalSize + " bytes.");
                 try {
                     state.inFile.position(state.outstanding);
                 } catch (IOException exn) {
@@ -440,7 +487,7 @@ class VirusHttpHandler extends HttpEventHandler
             GenericRule sr = i.next();
             if (sr.getEnabled() ){
                 p = (Pattern) sr.attachment();
-                if( null == p ){
+                if( null == p ) {
                     try{
                         p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
                     }catch( Exception error ){
@@ -455,4 +502,98 @@ class VirusHttpHandler extends HttpEventHandler
         }
         return false;
     }
+
+    /**
+     * Add a cache result to the url cache
+     * Only positive results can be cached
+     */
+    private void addCache( String host, String uri, String virusName )
+    {
+        VirusUrlCacheKey key = new VirusUrlCacheKey();
+        key.host = host;
+        key.uri = uri;
+
+        VirusUrlCacheEntry entry = new VirusUrlCacheEntry();
+        entry.virusName = virusName;
+        entry.creationTimeMillis = System.currentTimeMillis();
+        
+        logger.info( "urlCache add: " + host + uri + " = " + virusName);
+        urlCache.put( key, entry );
+    }
+
+    /**
+     * Lookup a virus result from the url cache
+     * returns the virus name if its a known virus or null
+     */
+    private String lookupCache( String host, String uri )
+    {
+        VirusUrlCacheKey key = new VirusUrlCacheKey();
+        key.host = host;
+        key.uri = uri;
+
+        VirusUrlCacheEntry entry = urlCache.get( key );
+        if ( entry == null ) {
+            return null;
+        }
+        if ( entry.creationTimeMillis - System.currentTimeMillis() > CACHE_EXPIRATION_MS ) {
+            urlCache.remove( key );
+            return null;
+        }
+
+        logger.info( "urlCache hit: " + host + uri + " -> " + entry.virusName );
+        return entry.virusName;
+    }
+   
+    
+    /**
+     * Virus Url Cache stores the most recent positive URLs so we can quickly block them on subsequent attemps
+     * The key is VirusUrlCacheKey, the entries are the virus name
+     */
+    @SuppressWarnings("serial")
+    private class VirusUrlCache<K,V> extends LinkedHashMap<K,V>
+    {
+        private static final int MAX_ENTRIES = 500;
+
+        protected boolean removeEldestEntry(Map.Entry<K,V> eldest)
+        {
+            return size() > MAX_ENTRIES;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    private class VirusUrlCacheKey implements Serializable
+    {
+        protected String host;
+        protected String uri;
+
+        public boolean equals( Object o2 )
+        {
+            if ( ! ( o2 instanceof VirusUrlCacheKey ) ) {
+                return false;
+            }
+            VirusUrlCacheKey o = (VirusUrlCacheKey) o2;
+            if ( ! ( o.host == null ? this.host == null : o.host.equals(this.host) ) ) {
+                return false;
+            }
+            if ( ! ( o.uri == null ? this.uri == null : o.uri.equals(this.uri) ) ) {
+                return false;
+            }
+            return true;
+        }
+
+        public int hashCode()
+        {
+            return host.hashCode() + uri.hashCode();
+        }
+        
+    }
+
+    @SuppressWarnings("serial")
+    private class VirusUrlCacheEntry implements Serializable
+    {
+        protected String virusName;
+        protected long creationTimeMillis;
+    }
+    
 }
+

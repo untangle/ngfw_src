@@ -29,6 +29,7 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Protocol;
+import com.untangle.node.http.HeaderToken;
 
 /**
  * Virus Node.
@@ -269,6 +270,11 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         return replacementGenerator.generateResponse(nonce, session, uri, null );
     }
 
+    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken header )
+    {
+        return replacementGenerator.generateResponse( nonce, session, uri, header );
+    }
+    
     public Date getLastSignatureUpdate()
     {
         return scanner.getLastSignatureUpdate();
