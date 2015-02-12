@@ -653,18 +653,35 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         allowBlank: false,
                         width: 400,
                         regexMatch: /\s+sid:([^;]+);/,
-                        validator: function( value ){
+                        gidRegex: /\s+gid:\s*([^;]+);/,
+                        validator: function( ourValue ){
                             validChars = new RegExp(/[0-9]+/);
-                            if( validChars.test(value) == false ){
+                            if( validChars.test( ourValue ) == false ){
                                 return i18n._("Sid must be numeric");
                             }
                             var record = this.up("[$className=Ung.RowEditorWindow]").record;
+
+                            var ourRule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                            var ourGid = "1";
+                            if( this.gidRegex.test( ourRule.getValue() ) == true ){
+                                ourGid = this.gidRegex.exec( ourRule.getValue() )[1];
+                            }
+
                             var match = false;
                             this.up("[$className=Ung.RowEditorWindow]").grid.store.each(
                                 function( storeRecord ){
+                                    var ruleGid;
                                     if( ( storeRecord != record ) &&
-                                        ( value == storeRecord.get("sid") ) ){
-                                        match = true;
+                                        (  storeRecord.get("sid") == ourValue) ){
+
+                                        ruleGid = "1";
+                                        if( this.gidRegex.test( storeRecord.get("rule") ) == true ){
+                                            ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
+                                        }
+
+                                        if( ourGid == ruleGid ){
+                                            match = true;
+                                        }
                                     }
                                 },
                                 this
