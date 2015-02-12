@@ -85,8 +85,18 @@ class VirusTests(unittest2.TestCase):
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_017_httpVirusBlocked(self):
+    def test_016_httpVirusBlocked(self):
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
+        assert (result == 0)
+
+    # test that client can block virus http download zip
+    def test_017_httpVirusZipBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
+        assert (result == 0)
+
+    # test that client can block virus http download zip
+    def test_018_httpPartialVirusBlocked(self):
+        result = remote_control.runCommand("curl -L -r '99-' http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
