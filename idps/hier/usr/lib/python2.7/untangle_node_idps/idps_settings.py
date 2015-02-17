@@ -160,8 +160,8 @@ class IdpsSettings:
                 msg = msg[1:-1]
             self.settings["rules"]["list"].append( { 
                 "sid": rule.options["sid"],
-                "log": rule.enabled == True and rule.action == "alert",
-                "block" : False,
+                "log": (rule.enabled == True) and ((rule.action == "alert" or rule.action == "drop")),
+                "block" : (rule.enabled == True)  and ( rule.action == "drop" ),
                 "category": rule.category,
                 "classtype": rule.options["classtype"],
                 "msg" : msg,
@@ -175,6 +175,79 @@ class IdpsSettings:
             False, True, True, True, None, 0 
             )
         settings_file.close()
+
+    def patch( self, patch_file_name):
+        """
+        Processing settings patch from UI
+        """
+        patch_file = open( patch_file_name )
+        patch_settings = json.load( patch_file )
+        patch_file.close()
+
+        for key in patch_settings:
+            if key == "rules":
+                for id in patch_settings[key]:
+                    self.patch_rule(patch_settings[key][id])
+            elif key == "variables":
+                for id in patch_settings[key]:
+                    self.patch_variable(patch_settings[key][id])
+            elif key == "active_rules":
+                self.patch_active_rules(patch_settings[key])
+            else:
+                """
+                Otherwise, just set as-is
+                """
+                self.settings[key] = patch_settings[key] 
+
+    def patch_rule( self, rule ):
+        """
+        Rule diff to add, modify, remove
+        """
+        snort_rule = None
+        match_rule = re.search( SnortRule.text_regex, rule["recData"]["rule"] )
+        if match_rule:
+            snort_rule = SnortRule( match_rule, rule["recData"]["category"] )
+
+        if snort_rule == None:
+            ## !! error message
+            return
+
+        operation = rule["op"] 
+        if operation == "added":
+            self.rules.add_rule( snort_rule )
+        elif operation == "modified":
+            self.rules.modify_rule( snort_rule )
+        elif operation == "deleted":
+            self.rules.delete_rule( snort_rule )
+
+    def patch_variable( self, variable):
+        """
+        Variable diff to add, modify, remove
+        """
+        snort_variable = { 
+            "variable": variable["recData"]["variable"],
+            "definition": variable["recData"]["definition"],
+            "description": variable["recData"]["description"]
+        } 
+
+        ## ??? tie to rule variable management instead
+        operation = variable["op"] 
+        if operation == "added":
+            self.settings["variables"]["list"].append( snort_variable )
+        elif operation == "modified":
+            for i,v in enumerate(self.settings["variables"]["list"]):
+                if operation == "modified" and v["variable"] == variable["recData"]["originalId"]:
+                    self.settings["variables"]["list"][i] = snort_variable
+        elif operation =="deleted":
+            self.settings["variables"]["list"].remove(snort_variable)
+
+    def patch_active_rules(self, active_rules):
+        """
+        Process active rules diff.
+        """
+        snort_rules = self.get_rules()
+        snort_rules.filter(active_rules)
+        self.set_rules(snort_rules.get_rules())
 
     def get_rules( self ):
         """

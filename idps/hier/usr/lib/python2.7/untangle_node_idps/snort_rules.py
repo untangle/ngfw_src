@@ -1,6 +1,7 @@
 """
 Snort rule set management
 """
+import json
 import os
 import re
 
@@ -15,7 +16,7 @@ class SnortRules:
 
     rule_paths = ["rules", "preproc_rules"]
     
-    def __init__(self, node_id = 0, path = "", file_name = ""):
+    def __init__(self, node_id = 0, path = "", file_name = "" ):
         self.node_id = node_id
         self.path = path
         self.file_name = self.path + "/"
@@ -26,6 +27,9 @@ class SnortRules:
         
         self.rules = {}
         self.variables = []
+
+    def set_path(self, path = ""):
+        self.path = path
 
     def load(self, path = False):
         """
@@ -68,32 +72,6 @@ class SnortRules:
                     rule_count = rule_count + 1
         rules_file.close()
             
-    def check_write_rule(self, rule, classtypes, categories, msgs):
-        """
-        Determine if rule should be enabled
-        """
-        if len(classtypes) == 0 or rule.options["classtype"] in classtypes:
-            classtype_match = True
-        else:
-            classtype_match = False
-        
-        if len(categories) == 0 or rule.category in categories:
-            category_match = True
-        else:
-            category_match = False
-
-        if len(msgs) == 0:
-            msgs_match = True
-        else:
-            msgs_match = False
-        
-        for msg_substring in msgs:
-            if rule.options["msg"].lower().find( msg_substring.lower() ) != -1:
-                msgs_match = True
-                break
-        
-        return classtype_match and category_match and msgs_match
-        
     def save(self, path = None, classtypes = None, categories = None, msgs = None):
         """
         Save rule set
@@ -116,9 +94,6 @@ class SnortRules:
         category = "undefined"
         # ? order by category
         for rule in self.rules.values():
-            if self.check_write_rule( rule, classtypes, categories, msgs ) == False:
-                continue
-
             if ( rule.get_enabled() == True ) and ( rule.path == rule_path ):
                 if rule.category != category:
                     category = rule.category
@@ -152,12 +127,54 @@ class SnortRules:
                 if self.variables.count( match_variable.group( 1 ) ) == 0:
                     self.variables.append( match_variable.group( 1 ) )
                     
+    def modify_rule(self, rule):
+        self.add_rule(rule)
+
+    def delete_rule(self, rule):
+        del(self.rules[rule.options["sid"] + "_" + rule.options["gid"]])
+
+    def filter(self, filter):
+        """
+        Filter rules for enabled/disabled
+        """
+
+        """
+        Read template associated with configuration to pull latest "recommended" values
+        """
+        template_settings = None
+        filter["template"] = "defaults_1GB"
+        if filter["template"] != None:
+            template_file = open( self.path + "/templates/" + filter["template"] + ".js" )
+            template_settings = json.load( template_file )
+            template_file.close()
+
+        if ( "classtypes_group" in filter ) and ( filter["classtypes_group"] == "recommended" ):
+            classtypes_selected = template_settings["active_rules"]["classtypes"]
+        else:
+            classtypes_selected = filter["classtypes"]
+
+        if ( "categories_group" in filter ) and ( filter["categories_group"] == "recommended"):
+            categories_selected = template_settings["active_rules"]["categories"]
+        else:
+            categories_selected = filter["categories"]
+
+        if "sids" in template_settings["active_rules"]:
+            sids_selected = template_settings["active_rules"]["sids"]
+        else:
+            sids_selected = []
+ 
+        for id in self.rules:
+            rule = self.rules[id]
+            if rule.match(classtypes_selected, categories_selected, sids_selected) == False:
+                rule.set_action(False,False)
+            self.rules[id] = rule
+    
     def get_rules(self):
         """
         Get rules
         """
         return self.rules
-    
+
     def set_rules(self, rules):
         """
         Set rules

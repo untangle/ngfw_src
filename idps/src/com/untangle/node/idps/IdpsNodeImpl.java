@@ -291,7 +291,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         }
         // Otherwise use "defaults.js"
 
-        String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
+        // String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
+        String settingsName = "/usr/share/untangle-snort-config/current/templates/defaults" + memorySettings + ".js";
         return settingsName;
     }
 
@@ -398,7 +399,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             if( action.equals("load") ||
                 action.equals("wizard") ){
                 String settingsName;
-                if( action.equals("wizard") ){  
+                if( action.equals("wizard") ){
+                    // !!! Should just be template, not full config?
                     settingsName = node.getWizardSettingsFileName();
                 }else{
                     settingsName = node.getSettingsFileName();
@@ -408,12 +410,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     resp.setHeader("Content-Type","application/json");
 
                     File f = new File( settingsName );
-                    if( !f.exists() ){
-                        if( action.equals("wizard") ){  
-                            node.createDefaultSettings( settingsName );
-                        }else{
-                            node.initializeSettings();
-                        }
+                    if( !f.exists() && 
+                        action.equals("load") ){
+                        node.initializeSettings();
                     }
                     byte[] buffer = new byte[1024];
                     int read;
@@ -434,13 +433,14 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 node.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+                String tempPatchName = "/tmp/changedDataSet_untangle-node-idps_settings_" + nodeId + ".js";
                 String tempSettingsName = "/tmp/untangle-node-idps_settings_" + nodeId + ".js";
                 int verifyResult = 1;
                 try{
                     byte[] buffer = new byte[1024];
                     int read;
                     InputStream in = req.getInputStream();
-                    FileOutputStream fos = new FileOutputStream( tempSettingsName );
+                    FileOutputStream fos = new FileOutputStream( tempPatchName );
 
                     while ( ( read = in.read( buffer ) ) > 0 ) {
                         fos.write( buffer, 0, read);
@@ -453,8 +453,30 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
                      */
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempSettingsName + "> /dev/null 2>&1" );
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
                     verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
+
+                    String configCmd = new String(
+                        System.getProperty("uvm.bin.dir") + 
+                        "/idps-sync-settings.py" + 
+                        " --node_id " + nodeId +
+                        " --rules /usr/share/untangle-snort-config/current" +
+                        " --settings " + tempSettingsName + 
+                        " --patch " + tempPatchName
+                    );
+                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+                    try{
+                        String lines[] = result.split("\\r?\\n");
+                        logger.warn("idps config: ");
+                        for ( String line : lines ){
+                            logger.warn("idps config: " + line);
+                        }
+                    }catch( Exception e ){
+                        logger.warn("Unable to initialize settings: ", e );
+                    }
+
+                    File fp = new File( tempPatchName );
+                    fp.delete();
 
                 }catch( IOException e ){
                     logger.warn("Failed to save IDPS settings");
@@ -463,7 +485,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 String responseText = "{success:true}";
                 if( verifyResult == 0 ){
                     node.saveSettings( tempSettingsName );
-                    node.reconfigure();
                 }else{
                      responseText = "{success:false}";
                 }

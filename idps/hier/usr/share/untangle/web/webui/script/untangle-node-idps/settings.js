@@ -1,4 +1,4 @@
-Ext.Ajax.timeout = 120000;
+Ext.Ajax.timeout = 600000;
 Ext.define('Ung.RuleEditorGrid', {
     extend: 'Ung.EditorGrid',
     requires: [
@@ -62,7 +62,18 @@ Ext.define('Ung.RuleEditorGrid', {
             }
         ];
 
+        me.fields.push({
+            name: "originalId",
+            mapping: null
+        });
+
+        me.fields.push({
+            name: "path",
+            mapping: null
+        });
+
         me.callParent(arguments);
+
     },
 
     // afterRender override: it adds textfield and statusbar reference and start monitoring keydown events in textfield input
@@ -200,9 +211,48 @@ Ext.define('Ung.RuleEditorGrid', {
      getPageList: function(useId, useInternalId) {
         this.store.clearFilter(true);
         return this.callSuper( useId, useInternalId );
+     },
+
+     getData: function( data ){
+        this.data = this.callSuper( data );
+
+        var gidRegex = /\s+gid:\s*([^;]+);/;
+        var gid = "";
+        for( var i = 0; i < this.data.length; i++ ){
+            gid = "1";
+            if( gidRegex.test( this.data["rule"] ) == true ){
+                gid = gidRegex.exec( this.data["rule"] )[1];
+            }
+            this.data[i]["originalId"] = this.data[i]["sid"] + "_" + gid;
+            this.data[i]["path"] = this.data[i]["path"];
+        }
+        return this.data;
      }
 
 });
+
+Ext.define('Ung.VariableEditorGrid', {
+    extend: 'Ung.EditorGrid',
+    // Component initialization override: adds the top and bottom toolbars and setup headers renderer.
+    initComponent: function() {
+        me = this;
+        me.fields.push({
+            name: "originalId",
+            mapping: null
+        });
+
+        me.callParent(arguments);
+    },
+
+    getData: function( data ){
+        this.data = this.callSuper( data );
+        for( var i = 0; i < this.data.length; i++ ){
+            this.data[i]["originalId"] = this.data[i]["variable"];
+        }
+        return this.data;
+    }
+});
+
 
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
@@ -348,6 +398,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.buildEventLog();
         this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
+
+        this.forceReload = false;
 
         if( this.settings.configured == false &&
             !this.wizardWindow ){
@@ -836,7 +888,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
                     }
                 }),
-                this.gridVariables = Ext.create('Ung.EditorGrid', {
+                this.gridVariables = Ext.create('Ung.VariableEditorGrid', {
                     flex: 1,
                     name: 'Variables',
                     settingsCmp: this,
@@ -1141,6 +1193,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             } else {
                 this.wizardWindow.endAction();
             }
+            Ext.destroy(this.wizardWindow);
         }, this);
 
         this.wizardWindow.show();
@@ -1165,17 +1218,40 @@ Ext.define('Webui.untangle-node-idps.settings', {
             this.settings.rules.list = this.gridRules.getPageList();
             this.settings.variables.list = this.gridVariables.getPageList();
         }
-        for( var i = 0; i < this.settings.rules.list.length; i++ ){
-            if( this.settings.rules.list[i].block == true ){
-                this.settings.rules.list[i].log = true;
-            }
-        }
         handler.call(this, isApply);
     },
     save: function(isApply) {
+        /*
+         * Due to the number of Snort rules, it takes too long to send everything back.
+         * Instead, we send all settings except rules and variables.  Rules and variables
+         * are sent as changedData sets from their grids.
+         */
+        var changedDataSet = {};
+        var keys = Object.keys(this.settings);
+        for( var i = 0; i < keys.length; i++){
+            if( ( keys[i] == "rules" ) || 
+                ( keys[i] == "variables" ) ){
+                continue;
+            }
+            changedDataSet[keys[i]] = this.settings[keys[i]];
+        }
+
+        /*
+         * This will always set rules/variables to minimally empty "diff" 
+         * objects if nothing  has changed
+         */
+        Ext.Array.each( 
+            this.query("*[changedData]"),
+            function( c ){
+                if( c.changedData ){ 
+                    changedDataSet[c.dataProperty] = c.changedData;
+                }
+            }
+        );
+
         Ext.Ajax.request({
             url: "/webui/download",
-            jsonData: this.settings,
+            jsonData: changedDataSet,
             method: 'POST',
             params: {
                 type: "IdpsSettings",
@@ -1189,6 +1265,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     Ext.MessageBox.hide();
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 }else{
+                    this.getRpcNode().reconfigure();
                     Ext.MessageBox.hide();
 
                     if (!isApply) {
@@ -1196,6 +1273,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         return;
                     }else{
                         this.clearDirty();
+                        if( this.forceReload == true ){
+                            this.reload();
+                        }
                     }
                 }
             },
@@ -1279,7 +1359,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                 scope: this,
                 success: function(response){
                     this.gui.wizardSettings = Ext.decode( response.responseText );
-                    this.gui.wizardSettings.recommended = this.gui.wizardSettings.active_rules;
+                    this.gui.wizardRecommendedSettings = this.gui.wizardSettings.active_rules;
                     if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
                         this.gui.wizardSettings.active_rules.classtypes_group = "recommended";
                     }
@@ -1442,7 +1522,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
     getValues: function( handler ){
         this.gui.wizardSettings.active_rules.classtypes_group = this.panel.down("radio[name=classtypes]").getGroupValue();
         if( this.panel.down("radio[name=classtypes]").getGroupValue() == "recommended") {
-            this.gui.wizardSettings.active_rules.classtypes = this.gui.wizardSettings.recommended.classtypes;
+            this.gui.wizardSettings.active_rules.classtypes = this.gui.wizardRecommendedSettings.classtypes;
         }else{
             this.gui.wizardSettings.active_rules.classtypes = [];
             Ext.Array.each( 
@@ -1595,7 +1675,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         this.gui.wizardSettings.active_rules.categories_group = this.panel.down("radio[name=categories]").getGroupValue();
         
         if( this.panel.down("radio[name=categories]").getGroupValue() == "recommended") {
-            this.gui.wizardSettings.active_rules.categories = this.gui.wizardSettings.recommended.categories;
+            this.gui.wizardSettings.active_rules.categories = this.gui.wizardRecommendedSettings.categories;
         }else{
             this.gui.wizardSettings.active_rules.categories = [];
             Ext.Array.each( 
@@ -1637,36 +1717,12 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
 
     completeWizard: function( handler ) {
         /*
-         * From the default list, disable rules that aren't in specified classtypes or categories.
+         * Copy values into form settings.
          */
-        var match;
-        for( var i = 0; i < this.gui.wizardSettings.rules.list.length; i++ ){
-            match = false;
-            if( ( this.gui.wizardSettings.active_rules.classtypes.indexOf(this.gui.wizardSettings.rules.list[i].classtype) != -1 ) ||
-                ( this.gui.wizardSettings.active_rules.categories.indexOf(this.gui.wizardSettings.rules.list[i].category) != -1 ) ){
-                match = true;
-            }
-            if( match == false ){
-                this.gui.wizardSettings.rules.list[i].log = false;
-                this.gui.wizardSettings.rules.list[i].block = false;
-            }
+        var keys = Object.keys(this.gui.wizardSettings);
+        for( var i = 0; i < keys.length; i++){
+            this.gui.settings[keys[i]] = this.gui.wizardSettings[keys[i]];
         }
-
-        this.gui.settings.active_rules = this.gui.wizardSettings.active_rules;
-        this.gui.settings.rules = this.gui.wizardSettings.rules;
-        this.gui.settings.configured = true;
-
-        /*
-         * Reload rules editor.  
-         */
-        Ext.Function.defer(
-            function(){
-                this.gui.down("[name=Rules]").buildData();
-                this.gui.down("[name=Rules]").reload();
-            },
-            1000,
-            this
-        );
 
         /*
          * Save, enable, teardown wizard
@@ -1686,7 +1742,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
             }, this));
         }, this));
         this.gui.wizardWindow.hide();
-
+        this.gui.forceReload = true;
     }
 });
 

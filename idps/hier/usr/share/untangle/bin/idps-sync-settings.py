@@ -32,14 +32,15 @@ def usage():
 def main(argv):
     global _debug
     _debug = False
-    rules_file_name = ""
-    previous_rules_file_name = ""
+    rules_file_name = None
+    previous_rules_file_name = None
     settings_file_name = None
     status_file_name = None
     node_id = "0"
+    patch_file_name = None
 	
     try:
-		opts, args = getopt.getopt(argv, "hsrpna:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "debug"] )
+		opts, args = getopt.getopt(argv, "hsrpnac:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "debug"] )
     except getopt.GetoptError:
     	usage()
     	sys.exit(2)
@@ -60,6 +61,8 @@ def main(argv):
             settings_file_name = arg
         elif opt in ( "-a", "--status"):
             status_file_name = arg
+        elif opt in ( "-p", "--patch"):
+            patch_file_name = arg
 
     if _debug == True:
         print "rules_file_name = " + rules_file_name
@@ -76,61 +79,70 @@ def main(argv):
         settings.initialize( snort_conf, snort_rules )
     else:
         settings.load()
-        added_rule_rids = []
-        deleted_rule_rids = []
-        modified_rule_rids = []
-        
-        previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_file_name )
-        previous_snort_rules.load( True )
-        
-        previous_rules = previous_snort_rules.get_rules()
-        current_rules = snort_rules.get_rules()
-        settings_rules = settings.get_rules().get_rules()
-        
-        active_rules_classtypes = settings.get_active_rules_classtypes()
-        active_rules_categories = settings.get_active_rules_categories()
-        
-        for rid in previous_rules:
-            if current_rules.has_key(rid) == False:
-                deleted_rule_rids.append(rid)
 
-        for rid in current_rules:
-            if previous_rules.has_key(rid) == False:
-                added_rule_rids.append(rid)
-            elif current_rules[rid].build() != previous_rules[rid].build():
-                modified_rule_rids.append(rid)
+        if rules_file_name != None and previous_rules_file_name != None:
+            ## all of this into a method
+            added_rule_rids = []
+            deleted_rule_rids = []
+            modified_rule_rids = []
+        
+            previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_file_name )
+            previous_snort_rules.load( True )
+        
+            previous_rules = previous_snort_rules.get_rules()
+            current_rules = snort_rules.get_rules()
+            settings_rules = settings.get_rules().get_rules()
+        
+            active_rules_classtypes = settings.get_active_rules_classtypes()
+            active_rules_categories = settings.get_active_rules_categories()
+        
+            for rid in previous_rules:
+                if current_rules.has_key(rid) == False:
+                    deleted_rule_rids.append(rid)
 
-        for rid in deleted_rule_rids:
-            if settings_rules.has_key(rid):
-                settings_rules.remove(rid)
+            for rid in current_rules:
+                if previous_rules.has_key(rid) == False:
+                    added_rule_rids.append(rid)
+                elif current_rules[rid].build() != previous_rules[rid].build():
+                    modified_rule_rids.append(rid)
+
+            for rid in deleted_rule_rids:
+                if settings_rules.has_key(rid):
+                    settings_rules.remove(rid)
                 
-        for rid in added_rule_rids:
-            if settings_rules.has_key(rid):
-                new_rule = current_rules[rid]
-                new_rule.enabled = settings_rules[rid].enabled
-                new_rule.action = settings_rules[rid].action
-                settings_rules[rid] = new_rule
-            else:
-                settings_rules[rid] = current_rules[rid]
+            for rid in added_rule_rids:
+                if settings_rules.has_key(rid):
+                    new_rule = current_rules[rid]
+                    new_rule.enabled = settings_rules[rid].enabled
+                    new_rule.action = settings_rules[rid].action
+                    settings_rules[rid] = new_rule
+                else:
+                    settings_rules[rid] = current_rules[rid]
                 
-                if len( active_rules_classtypes ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
-                    classtype_enabled = True
-                else:
-                    classtype_enabled = False
-                if len( active_rules_categories ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
-                    category_enabled = True
-                else:
-                    category_enabled == False
-                settings_rules[sid].enabled = classtype_enabled and category_enabled
-        settings.set_rules( settings_rules )
+                    if len( active_rules_classtypes ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
+                        classtype_enabled = True
+                    else:
+                        classtype_enabled = False
 
-        settings.set_updated({
-            "rules": { 
-                "added" : added_rule_rids, 
-                "modified" : modified_rule_rids, 
-                "deleted": deleted_rule_rids
-            }})
-        
+                    if len( active_rules_categories ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
+                        category_enabled = True
+                    else:
+                        category_enabled == False
+
+                    settings_rules[sid].enabled = classtype_enabled and category_enabled
+            settings.set_rules( settings_rules )
+
+            settings.set_updated({
+                "rules": { 
+                    "added" : added_rule_rids, 
+                    "modified" : modified_rule_rids, 
+                    "deleted": deleted_rule_rids
+                }})
+
+    if patch_file_name != None:
+        settings.get_rules().set_path(rules_file_name)
+        settings.patch(patch_file_name)
+
     settings.save( settings_file_name )
     sys.exit()
 

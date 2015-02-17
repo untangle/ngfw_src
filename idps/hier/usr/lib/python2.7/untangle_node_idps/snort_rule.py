@@ -9,7 +9,7 @@ class SnortRule:
     """
     text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
 
-    def __init__( self, regex_match, category, path ):
+    def __init__( self, regex_match, category, path="rules" ):
         self.category = category
         self.path = path
         self.enabled = True
@@ -66,13 +66,17 @@ class SnortRule:
         Set rule action based on log, block
         """
         action = "alert"
+        enabled = True
         if log == True and block == True:
             action = "drop"
         if log == False and block == True:
             action = "sdrop"
+
         if log == False and block == False:
-            self.enabled = False
+            enabled = False 
+
         self.action = action
+        self.enabled = enabled
 
     def set_options( self, key, value ):
         """
@@ -123,6 +127,30 @@ class SnortRule:
         Get category
         """
         return self.category
+
+    def match(self,classtypes,categories,sids):
+        if len(classtypes) == 0:
+            classtype_match = True
+        elif "+" + self.options["classtype"] in classtypes or self.options["classtype"] in classtypes:
+            classtype_match = True
+        else:
+            classtype_match = False
+
+        if len(categories) == 0:
+            category_match = True
+        elif "+" + self.options["category"] in categories or self.options["category"] in categories:
+            category_match = True
+        else:
+            category_match = False
+
+        if len(sids) == 0:
+            sid_match = True
+        elif "+" + self.options["sid"] in sids or self.options["sid"] in sids:
+            sid_match = True
+        else:
+            sid_match = False
+
+        return classtype_match and category_match and sid_match
     
     def build( self ):
         """
