@@ -68,10 +68,10 @@ public class EventReaderImpl
             }
             if (startDate != null || endDate != null) {
 
-                queryStr = queryStr.toLowerCase();
-                int whereIndex   = queryStr.indexOf("where");
-                int groupByIndex = queryStr.indexOf("group by");
-                int orderByIndex = queryStr.indexOf("order by");
+                String tmpStr = queryStr.toLowerCase();
+                int whereIndex   = tmpStr.indexOf("where");
+                int groupByIndex = tmpStr.indexOf("group by");
+                int orderByIndex = tmpStr.indexOf("order by");
                 int insertIndex;
                 if ( groupByIndex > 0 )
                     insertIndex = groupByIndex; // insert the where clause before "group by"
