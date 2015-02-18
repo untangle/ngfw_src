@@ -20,7 +20,6 @@ public class VirusScannerResult implements Serializable, TemplateValues
     private static final String VIRUS_NAME_KEY = "VirusReport:VIRUS_NAME";
 
     public static final VirusScannerResult CLEAN = new VirusScannerResult(true, "");
-    public static final VirusScannerResult INFECTED = new VirusScannerResult(false, "unknown");
     public static final VirusScannerResult ERROR = new VirusScannerResult(true, "unknown"); // CLEAN
 
     private final boolean clean;
