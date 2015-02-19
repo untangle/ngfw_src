@@ -86,7 +86,7 @@ Description: OpenVPN
 
 Package: untangle-node-ips
 Architecture: all
-Depends: untangle-vm, untangle-snort-config
+Depends: untangle-vm, untangle-snort-rules
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
