@@ -2,10 +2,13 @@
 """
 Create snort configuration from settings
 """
+import json
 import os
 import getopt
 import sys
 import re
+
+from netaddr import IPNetwork
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
@@ -72,8 +75,42 @@ def main(argv):
     idps_event_map = untangle_node_idps.IdpsEventMap( rules )
     idps_event_map.save()
 	
+    # Override snort configuration variables with settings variables
     for settings_variable in settings.get_variables():
         snort_conf.set_variable( settings_variable["variable"], settings_variable["definition"] )
+
+    ## Get HOME_NET and interfaces
+    network_settings_file = open( "/usr/share/untangle/settings/untangle-vm/network.js" )
+    network_settings = json.load( network_settings_file )
+    network_settings_file.close()
+        
+    default_home_net = []
+    default_interfaces = []
+    for interface in network_settings["interfaces"]["list"]:
+        default_interfaces.append(interface["systemDev"])
+        if interface["isWan"] == False and "v4StaticAddress" in interface:
+            network = IPNetwork( interface["v4StaticAddress"] + 
+                "/" + 
+                str(interface["v4StaticPrefix"]) ).cidr
+            default_home_net.append( network )
+            for alias in interface["v4Aliases"]["list"]:
+                network = IPNetwork( alias["staticAddress"] + 
+                    "/" + 
+                    str( alias["staticPrefix"] ) ).cidr
+                default_home_net.append( network )
+
+    if len(default_home_net) > 1:
+        default_home_net = "[" + ",".join(map(str, default_home_net)) + "]"
+    else:
+        default_home_net = str(default_home_net[0])
+
+    if snort_conf.get_variable('HOME_NET') == None:
+        snort_conf.set_variable( "HOME_NET", default_home_net )
+
+    interfaces = settings.get_interfaces()
+    interfaces = None
+    if interfaces == None:
+        interfaces = default_interfaces
 
     for include in snort_conf.get_includes():
         match_include_rule = re.search( untangle_node_idps.SnortConf.include_rulepath_regex, include["file_name"] )
@@ -95,9 +132,9 @@ def main(argv):
             queue_num = setting[1] 
     ipf.close()
     
-    snort_debian_conf.set_variable("HOME_NET", settings.get_variable("HOME_NET") )
-    snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=" + queue_num + " -Q" )
-    snort_debian_conf.set_variable("INTERFACE", ":".join(settings.get_interfaces()) )
+    snort_debian_conf.set_variable("HOME_NET", snort_conf.get_variable("HOME_NET"))
+    snort_debian_conf.set_variable("OPTIONS", "--daq-dir /usr/lib/daq --daq nfq --daq-var queue=" + queue_num + " -Q")
+    snort_debian_conf.set_variable("INTERFACE", ":".join(interfaces))
     snort_debian_conf.save()
 
 if __name__ == "__main__":

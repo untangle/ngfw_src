@@ -164,6 +164,8 @@ class SnortConf:
                     self.last_comment = match_comment.group(1)
                 match_var = re.search( SnortConf.var_regex, line )
                 if match_var:
+                    if match_var.group(2) == "HOME_NET":
+                        continue
                     self.set_variable( match_var.group(2), match_var.group(3), match_var.group(1), self.last_comment )
         return self.variables
 

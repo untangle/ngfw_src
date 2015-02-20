@@ -97,42 +97,18 @@ class IdpsSettings:
                 if not key in settings_keys:
                     self.settings[key] = IdpsSettings.default_settings[key]
         
-        network_settings_file = open( 
-            "/usr/share/untangle/settings/untangle-vm/network.js" )
-        network_settings = json.load( network_settings_file )
-        network_settings_file.close()
-        
-        default_interfaces = []
-        default_home_net = []
-        for interface in network_settings["interfaces"]["list"]:
-            default_interfaces.append(interface["systemDev"])
-            if interface["isWan"] == False and "v4StaticAddress" in interface:
-                network = IPNetwork( interface["v4StaticAddress"] + 
-                    "/" + 
-                    str(interface["v4StaticPrefix"]) ).cidr
-                default_home_net.append( network )
-                for alias in interface["v4Aliases"]["list"]:
-                    network = IPNetwork( alias["staticAddress"] + 
-                        "/" + 
-                        str( alias["staticPrefix"] ) ).cidr
-                    default_home_net.append( network )
-
-        self.settings["interfaces"]["list"] = default_interfaces
-        default_home_net = set(default_home_net)
-
         ## new internal format for variables?
         for variable in rules.get_variables():
+            if variable == "HOME_NET":
+                ## Ignore HOME_NET
+                continue
+                
             definition = "default value"
             description = "default description"
         
             for default_variable in conf.get_variables():
                 if default_variable["key"] == variable:
-                    if default_variable["key"] == "HOME_NET":
-                        definition = ",".join(map(str, default_home_net))
-                        if len(default_home_net) > 1:
-                            definition = "[" + definition + "]"
-                    else:
-                        definition = default_variable["value"]
+                    definition = default_variable["value"]
                     description = default_variable["description"]
                     break
         

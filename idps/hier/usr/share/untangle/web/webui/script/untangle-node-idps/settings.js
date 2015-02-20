@@ -1168,8 +1168,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
             },
             cards: [welcomeCard, classtypesCard, categoriesCard, congratulationsCard]
         });
+        var objSize = main.viewport.getSize();
         this.wizardWindow = Ext.create('Ung.Window',{
             title: this.i18n._("Intrusion Prevention Setup Wizard"),
+            height: objSize.height,
             closeAction: "cancelAction",
             wizard: setupWizard,
             layout: "fit",
