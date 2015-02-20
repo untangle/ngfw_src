@@ -89,10 +89,7 @@ Ext.define('Ung.RuleEditorGrid', {
         var me = this;
         me.callParent(arguments);
 
-        me.searchStatusBar.setStatus({
-            text: me.store.count() + ' ' + i18n._('total rules'),
-            iconCls: 'x-status-valid'
-        });
+        me.updateRulesStatus();
 
         me.storeCategories = Ext.create('Ext.data.Store', {
             fields: ['id', 'value']
@@ -115,6 +112,25 @@ Ext.define('Ung.RuleEditorGrid', {
         );
         me.rowEditor.down('combo[name=Classtype]').bindStore(me.storeClasstypes);
         me.rowEditor.down('combo[name=Category]').bindStore(me.storeCategories);
+    },
+
+    /*
+     * Update status for rules to show total # of rules and total enabled.
+     */
+    updateRulesStatus: function(){
+        var totalEnabled = 0;
+        this.store.each(
+            function( record ){
+                if(record.get('log') == true || record.get('block') == true ) {
+                    totalEnabled++;
+                }
+            }
+        );
+        this.searchStatusBar.setStatus({
+            text:  this.store.count() + ' ' + i18n._('total rules') + ', ' + totalEnabled + ' ' +i18n._("enabled"),
+            iconCls: 'x-status-valid'
+        });
+
     },
 
     /*
@@ -184,9 +200,16 @@ Ext.define('Ung.RuleEditorGrid', {
                 return false;
             }, me );
 
-            var count = me.store.count();
+            var totalEnabled = 0;
+            me.store.each(
+                function( record ){
+                    if(record.get('log') == true || record.get('block') == true ) {
+                        totalEnabled++;
+                    }
+                }
+            );
             me.searchStatusBar.setStatus({
-                text: count ? count + ' ' + i18n._(' matche(s) found') : i18n._('No matches found') ,
+                text: me.store.count() ? me.store.count() + ' ' + i18n._(' matching rules(s) found') + ', ' + totalEnabled + ' ' + i18n._("enabled") : i18n._('No matching rules found') ,
                 iconCls: 'x-status-valid'
             });
          }else{
@@ -197,10 +220,7 @@ Ext.define('Ung.RuleEditorGrid', {
                     iconCls: 'x-status-valid'
                 });
             }else{
-                me.searchStatusBar.setStatus({
-                    text: me.store.count() + ' ' + i18n._('total rules'),
-                    iconCls: 'x-status-valid'
-                });
+                me.updateRulesStatus();
             }
          }
 
