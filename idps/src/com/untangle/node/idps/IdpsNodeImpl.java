@@ -1,6 +1,10 @@
 /**
  * $Id: IdpsNodeImpl.java 38584 2014-09-03 23:23:07Z dmorris $
  */
+
+/*
+ * The major difference between this module and others is configuration management.
+ */
 package com.untangle.node.idps;
 
 import java.io.BufferedReader;
@@ -30,14 +34,19 @@ import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.network.NetworkSettingsListener;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 
 public class IdpsNodeImpl extends NodeBase implements IdpsNode
@@ -62,11 +71,19 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
 
+    private final NetworkListener listener;
+
+    private List<IPMaskedAddress> homeNetworks = null;
+    private List<String> interfaceIds = null;
+
     public IdpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
         handler = new EventHandler(this);
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        this.listener = new NetworkListener();
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
@@ -106,6 +123,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void preStop()
     {
+        super.preStop();
+
+        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
         removeCronEntry();
         try{
             this.idpsEventMonitor.disable();
@@ -122,7 +142,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
 
     protected void preStart()
     {
+        super.preStart();
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort-untangle" );
+        UvmContextFactory.context().networkManager().registerListener( this.listener );
         this.idpsEventMonitor.start();
         this.idpsEventMonitor.enable();
     }
@@ -133,10 +155,25 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     }
 
     public void reconfigure(){
-        String nodeId = this.getNodeSettings().getId().toString();
+
+        String homeNetValue = "";
+        for( IPMaskedAddress ma : this.homeNetworks ){
+            homeNetValue += 
+                ( homeNetValue.length() > 0 ? "," : "" ) + 
+                ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
+        }
+
+        String interfacesValue = "";
+        for( String i : this.interfaceIds ){
+            interfacesValue += 
+                ( interfacesValue.length() > 0 ? "," : "" ) + i; 
+        }
+
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/idps-create-config.py" + 
-            " --node_id " + nodeId +
+            " --node_id " + this.getNodeSettings().getId().toString() +
+            " --home_net " + homeNetValue + 
+            " --interfaces " + interfacesValue + 
             " --iptables_script " + IPTABLES_SCRIPT
         );
 
@@ -186,8 +223,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private void readNodeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-idps/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-idps/settings_" + this.getNodeSettings().getId().toString() + ".js";
 
         logger.info("Loading settings from " + settingsFile);
 
@@ -265,15 +301,12 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     public String getSettingsFileName()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeId = this.getNodeSettings().getId().toString();
-        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-idps/settings_" + nodeId + ".js";
-        return settingsName;
+        return System.getProperty("uvm.settings.dir") + "/untangle-node-idps/settings_" + this.getNodeSettings().getId().toString() + ".js";
     }
 
     public String getWizardSettingsFileName()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeId = this.getNodeSettings().getId().toString();
 
         ExecManager execManager = UvmContextFactory.context().createExecManager();
         String memorySettings = "";
@@ -371,6 +404,20 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.idpsEventMonitor.unified2Parser.reloadEventMap();
     }
 
+    /*
+     * IDPS settings are very large, around 30MB.  Managing this through uvm's
+     * standard settings management causes Java garbage collection to go nuts
+     * and almost always causes uvm to reload.
+     * 
+     * Besides not wanting to re-work uvm's GC settings, the bigger issue
+     * is that uvm does not need to know anything about IDPS settings;
+     * everything is handled in backend scripts that manage and generate
+     * configuration for Snort.
+     *
+     * Therefore, the easiest way to get around the GC issue is to simply
+     * make IDPS settings use the download manager for downloads and uploads.
+     *
+     */
     private class IdpsSettingsDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
@@ -432,6 +479,15 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 }
                 node.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
+                /*
+                 * Save/uploads are a bit of a problem due to size.  For load/downloads,
+                 * the settings file is automatically compressed by Apache/Tomcat from 
+                 * around 30MB to 3MB which is hardly noticable.
+                 *
+                 * The reverse is almost never true and the client will attempt to upload 
+                 * without compression.  To get around this, we receive a JSON "patch"
+                 * which we pass to the configuration management scripts to integrate into settings.
+                 */
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
                 String tempPatchName = "/tmp/changedDataSet_untangle-node-idps_settings_" + nodeId + ".js";
                 String tempSettingsName = "/tmp/untangle-node-idps_settings_" + nodeId + ".js";
@@ -500,6 +556,104 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 } catch (Exception e) {
                     logger.warn("Failed to send IDPS save response");
                 }
+            }
+        }
+    }
+
+    /*
+     * The HOME_NET snort value is highly dependent on non-WAN interface values.
+     * If it changes, we must reconfigure snort.  However, reconfiguring snort
+     * is an expensive operation due to timeto restart snort.  To make this as painless
+     * as possible, at startup we calculate initial HOME_NET value and recalc on
+     * network changes.  Only if HOME_NET changes will a reconfigure occur.
+     */
+
+    /*
+     * Build non-WAN networks
+     */
+    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings )
+    {
+        boolean match;
+        IPMaskedAddress maskedAddress;
+        List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
+        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+            if ( interfaceSettings.getDisabled() || interfaceSettings.getIsWan() == true ){
+                continue;
+            }
+            addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
+            for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
+                /*
+                 * Don't add if already in list 
+                 */
+                match = false;
+                maskedAddress = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                for( IPMaskedAddress ma : addresses ){
+                    if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                        ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
+                        match = true;
+                    }
+                }
+                if( match == false ){
+                    addresses.add( maskedAddress );
+                }
+            }   
+        }
+        return addresses; 
+    }
+
+    /*
+     * Build active interface identifiers.
+     */
+    private List<String> calculateInterfaces( NetworkSettings networkSettings )
+    {
+        List<String> interfaces = new LinkedList<String>();
+        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+            if ( interfaceSettings.getDisabled() ){
+                continue;
+            }
+            interfaces.add( interfaceSettings.getSystemDev() );
+        }
+        return interfaces; 
+    }
+
+    /*
+     * Compare currently known non-WAN addresses to new addresses.  
+     * If they're different, trigger a reconfigure event.
+     */
+    private void networkSettingsEvent( NetworkSettings networkSettings ) throws Exception
+    {
+        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings );
+
+        boolean sameNetworks = true;
+        if( newHomeNetworks.size() != this.homeNetworks.size() ){
+            sameNetworks = false;
+        }else{
+            int minLength = Math.min( this.homeNetworks.size(), newHomeNetworks.size() );
+            for( int i = 0; i < minLength; i++ ){
+                if( ( this.homeNetworks.get(i).getMaskedAddress().getHostAddress().toString().equals(newHomeNetworks.get(i).getMaskedAddress().getHostAddress().toString()) == false ) ||
+                    ( this.homeNetworks.get(i).getPrefixLength() != newHomeNetworks.get(i).getPrefixLength() ) ){
+                    sameNetworks = false;
+                }
+            }
+        }
+        if( sameNetworks == false ){
+            this.homeNetworks = newHomeNetworks;
+            this.interfaceIds = calculateInterfaces(networkSettings);
+            this.reconfigure();
+        }
+    }
+
+    private class NetworkListener implements NetworkSettingsListener
+    {
+        public void event( NetworkSettings settings )
+        {
+            if ( logger.isDebugEnabled()){
+                logger.debug( "network settings changed:" + settings );  
+            } 
+            try {
+                networkSettingsEvent( settings );
+            } catch( Exception e ) {
+                logger.error( "Unable to reconfigure IDPS" );
             }
         }
     }

@@ -33,9 +33,11 @@ def main(argv):
     categories = []
     msgs = []
     iptables_script = ""
-	
+    default_home_net = ""
+    default_interfaces = ""
+
     try:
-        opts, args = getopt.getopt(argv, "hsincaq:d", ["help", "node_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "node_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "home_net=", "interfaces=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -55,6 +57,12 @@ def main(argv):
             msgs = arg.split(",")
         elif opt in ( "-i", "--iptables_script"):
             iptables_script = arg
+        elif opt in ( "-v", "--home_net"):
+            default_home_net = arg
+            if default_home_net.find(",") != -1:
+                default_home_net = "[" + default_home_net + "]"
+        elif opt in ( "-x", "--interfaces"):
+            default_interfaces = arg.split(",")
 
     if _debug == True:
         print "node_id = " + node_id
@@ -78,31 +86,6 @@ def main(argv):
     # Override snort configuration variables with settings variables
     for settings_variable in settings.get_variables():
         snort_conf.set_variable( settings_variable["variable"], settings_variable["definition"] )
-
-    ## Get HOME_NET and interfaces
-    network_settings_file = open( "/usr/share/untangle/settings/untangle-vm/network.js" )
-    network_settings = json.load( network_settings_file )
-    network_settings_file.close()
-        
-    default_home_net = []
-    default_interfaces = []
-    for interface in network_settings["interfaces"]["list"]:
-        default_interfaces.append(interface["systemDev"])
-        if interface["isWan"] == False and "v4StaticAddress" in interface:
-            network = IPNetwork( interface["v4StaticAddress"] + 
-                "/" + 
-                str(interface["v4StaticPrefix"]) ).cidr
-            default_home_net.append( network )
-            for alias in interface["v4Aliases"]["list"]:
-                network = IPNetwork( alias["staticAddress"] + 
-                    "/" + 
-                    str( alias["staticPrefix"] ) ).cidr
-                default_home_net.append( network )
-
-    if len(default_home_net) > 1:
-        default_home_net = "[" + ",".join(map(str, default_home_net)) + "]"
-    else:
-        default_home_net = str(default_home_net[0])
 
     if snort_conf.get_variable('HOME_NET') == None:
         snort_conf.set_variable( "HOME_NET", default_home_net )
