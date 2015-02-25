@@ -1381,12 +1381,34 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                 scope: this,
                 success: function(response){
                     this.gui.wizardSettings = Ext.decode( response.responseText );
-                    this.gui.wizardRecommendedSettings = this.gui.wizardSettings.active_rules;
-                    if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
-                        this.gui.wizardSettings.active_rules.classtypes_group = "recommended";
+
+                    /*
+                     * Preserve recommended values
+                     */
+                    var i;
+                    this.gui.wizardRecommendedSettings = { 
+                        active_rules: {} 
+                    };
+                    var keys = Object.keys(this.gui.wizardSettings["active_rules"]);
+                    for( i = 0; i < keys.length; i++){
+                        this.gui.wizardRecommendedSettings["active_rules"][keys[i]] = this.gui.wizardSettings["active_rules"][keys[i]];
                     }
-                    if( !("categories_group" in this.gui.wizardSettings.active_rules ) ){
-                        this.gui.wizardSettings.active_rules.categories_group = "recommended";
+
+                    if( this.gui.settings.configured == true ){
+                        /*
+                         * Setup wizard already configured.  Pull current settings.
+                         */
+                        keys = Object.keys(this.gui.settings["active_rules"]);
+                        for( i = 0; i < keys.length; i++){
+                            this.gui.wizardSettings["active_rules"][keys[i]] = this.gui.settings["active_rules"][keys[i]];
+                        }
+                    }else{
+                        if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
+                            this.gui.wizardSettings.active_rules.classtypes_group = "recommended";
+                        }
+                        if( !("categories_group" in this.gui.wizardSettings.active_rules ) ){
+                            this.gui.wizardSettings.active_rules.categories_group = "recommended";
+                        }
                     }
                     Ext.MessageBox.hide();
                     handler();
@@ -1529,10 +1551,10 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                         );
                     }
 
-                    if( this.gui.wizardSettings.active_rules.classtypes.length == 0 ){
+                    if( this.gui.wizardRecommendedSettings.active_rules.classtypes.length == 0 ){
                         this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
                     }else{
-                        this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.classtypes.join( ", "));
+                        this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.classtypes.join( ", "));
                     }
                 }
             }
@@ -1682,10 +1704,10 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     );
                 }
 
-                if( this.gui.wizardSettings.active_rules.categories.length == 0 ){
+                if( this.gui.wizardRecommendedSettings.active_rules.categories.length == 0 ){
                     this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
                 }else{
-                    this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardSettings.active_rules.categories.join( ", "));
+                    this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.categories.join( ", "));
                 }
             }
             this.loaded = true;
