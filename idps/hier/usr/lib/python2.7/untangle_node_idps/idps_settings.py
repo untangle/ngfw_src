@@ -169,6 +169,7 @@ class IdpsSettings:
                     self.patch_variable(patch_settings[key][id])
             elif key == "active_rules":
                 self.patch_active_rules(patch_settings[key])
+                self.settings[key] = patch_settings[key] 
             else:
                 """
                 Otherwise, just set as-is

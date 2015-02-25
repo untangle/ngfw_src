@@ -138,7 +138,7 @@ class SnortRule:
 
         if len(categories) == 0:
             category_match = True
-        elif "+" + self.options["category"] in categories or self.options["category"] in categories:
+        elif "+" + self.category in categories or self.category in categories:
             category_match = True
         else:
             category_match = False
