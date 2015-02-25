@@ -121,7 +121,7 @@ Ext.define('Ung.RuleEditorGrid', {
         var totalEnabled = 0;
         this.store.each(
             function( record ){
-                if(record.get('log') == true || record.get('block') == true ) {
+                if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
                     totalEnabled++;
                 }
             }
@@ -203,7 +203,7 @@ Ext.define('Ung.RuleEditorGrid', {
             var totalEnabled = 0;
             me.store.each(
                 function( record ){
-                    if(record.get('log') == true || record.get('block') == true ) {
+                    if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
                         totalEnabled++;
                     }
                 }
@@ -240,11 +240,11 @@ Ext.define('Ung.RuleEditorGrid', {
         var gid = "";
         for( var i = 0; i < this.data.length; i++ ){
             gid = "1";
-            if( gidRegex.test( this.data["rule"] ) == true ){
-                gid = gidRegex.exec( this.data["rule"] )[1];
+            if( gidRegex.test( this.data.rule ) === true ){
+                gid = gidRegex.exec( this.data.rule[1] );
             }
-            this.data[i]["originalId"] = this.data[i]["sid"] + "_" + gid;
-            this.data[i]["path"] = this.data[i]["path"];
+            this.data[i].originalId = this.data[i].sid + "_" + gid;
+            this.data[i].path = this.data[i].path;
         }
         return this.data;
      }
@@ -267,7 +267,7 @@ Ext.define('Ung.VariableEditorGrid', {
     getData: function( data ){
         this.data = this.callSuper( data );
         for( var i = 0; i < this.data.length; i++ ){
-            this.data[i]["originalId"] = this.data[i]["variable"];
+            this.data[i].originalId = this.data[i].variable;
         }
         return this.data;
     }
@@ -421,7 +421,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
         this.forceReload = false;
 
-        if( this.settings.configured == false &&
+        if( this.settings.configured === false &&
             !this.wizardWindow ){
             var launchWizard = Ext.create( 
                 'Ext.util.DelayedTask', 
@@ -501,14 +501,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     labelAlign:'left',
-                    value: ( this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("Never")
+                    value: ( this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("Never")
                 },{
                     xtype: 'displayfield',
                     fieldLabel: this.i18n._("Last update"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
                     labelAlign:'left',
-                    value: ( this.lastUpdate != null && this.lastUpdate.time != 0 && this.lastUpdateCheck != null && this.lastUpdateCheck.time != 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("Never")
+                    value: ( this.lastUpdate !== null && this.lastUpdate.time !== 0 && this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("Never")
                 }]
             }]
         });
@@ -618,7 +618,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         menuDisabled: false,
                         listeners: {
                             checkchange: function ( column, recordIndex, checked ){
-                                if( checked == false ){
+                                if( checked === false ){
                                     this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex).set('block', false );
                                 }
                                 this.up("[$className=Ung.RuleEditorGrid]").updateRule(this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex), null );
@@ -634,7 +634,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         menuDisabled: false,
                         listeners: {
                             checkchange: function ( column, recordIndex, checked ){
-                                if( checked == true ){
+                                if( checked === true ){
                                     this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex).set('log', true );
                                 }
                                 this.up("[$className=Ung.RuleEditorGrid]").updateRule(this.up("[$className=Ung.RuleEditorGrid]").store.getAt(recordIndex), null );
@@ -666,7 +666,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
                                 var newField = " classtype:" + combo.getValue() + ";";
                                 var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) == true ){
+                                if( this.regexMatch.test( ruleValue ) === true ){
                                     ruleValue = ruleValue.replace( this.regexMatch, newField );
                                 }else{
                                     ruleValue += newField;
@@ -709,7 +709,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
                                 var newField = " msg:\"" + newValue + "\";";
                                 var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) == true ){
+                                if( this.regexMatch.test( ruleValue ) === true ){
                                     ruleValue = ruleValue.replace( this.regexMatch, newField );
                                 }else{
                                     ruleValue += newField;
@@ -729,14 +729,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         gidRegex: /\s+gid:\s*([^;]+);/,
                         validator: function( ourValue ){
                             validChars = new RegExp(/[0-9]+/);
-                            if( validChars.test( ourValue ) == false ){
+                            if( validChars.test( ourValue ) === false ){
                                 return i18n._("Sid must be numeric");
                             }
                             var record = this.up("[$className=Ung.RowEditorWindow]").record;
 
                             var ourRule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
                             var ourGid = "1";
-                            if( this.gidRegex.test( ourRule.getValue() ) == true ){
+                            if( this.gidRegex.test( ourRule.getValue() ) === true ){
                                 ourGid = this.gidRegex.exec( ourRule.getValue() )[1];
                             }
 
@@ -748,7 +748,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                         (  storeRecord.get("sid") == ourValue) ){
 
                                         ruleGid = "1";
-                                        if( this.gidRegex.test( storeRecord.get("rule") ) == true ){
+                                        if( this.gidRegex.test( storeRecord.get("rule") ) === true ){
                                             ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
                                         }
 
@@ -759,7 +759,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                                 },
                                 this
                             );
-                            if( match == true ){
+                            if( match === true ){
                                 return i18n._("Sid already in use.");
                             }
                             return true;
@@ -771,7 +771,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
                                 var newField = " sid:" + newValue + ";";
                                 var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) == true ){
+                                if( this.regexMatch.test( ruleValue ) === true ){
                                     ruleValue = ruleValue.replace( this.regexMatch, newField );
                                 }else{
                                     ruleValue += newField;
@@ -786,7 +786,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         fieldLabel: this.i18n._("Log"),
                         listeners: {
                             change: function( me, newValue, oldValue, eOpts ){
-                                if( newValue == false ){
+                                if( newValue === false ){
                                     this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=block]").setValue(false);
                                 }
                                 this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
@@ -799,7 +799,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         fieldLabel: this.i18n._("Block"),
                         listeners: {
                             change: function( me, newValue, oldValue, eOpts ){
-                                if( newValue == true ){
+                                if( newValue === true ){
                                     this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=log]").setValue(true);
                                 }  
                                 this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
@@ -817,7 +817,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
                         regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
                         validator: function( value ){
-                            if( this.regexMatch.test(value) == false ){
+                            if( this.regexMatch.test(value) === false ){
                                 return i18n._("Rule formatted wrong.");
                             }
                             return true;
@@ -846,7 +846,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
                                 var logValue = false;
                                 var blockValue = false;
-                                if( this.actionRegexMatch.test( value ) == true ){
+                                if( this.actionRegexMatch.test( value ) === true ){
                                     match = this.actionRegexMatch.exec( value );
                                     if( match[2] == "alert" ){
                                         logValue = true;
@@ -874,7 +874,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         var logValue = false;
                         var blockValue = false;
                         var ruleValue = "";
-                        if( source == null ){
+                        if( source === null ){
                             // Pull values from record
                             logValue = record.data.log;
                             blockValue = record.data.block;
@@ -887,21 +887,21 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
 
                         var newField = "alert";
-                        if( logValue == true && blockValue == true ){
+                        if( logValue === true && blockValue === true ){
                             newField = "drop";
-                        }else if( logValue == false && blockValue == true ){
+                        }else if( logValue === false && blockValue === true ){
                             newField = "sdrop";
-                        }else if( logValue == false && blockValue == false ){
+                        }else if( logValue === false && blockValue === false ){
                             newField = "#" + newField;
                         }
 
-                        if( this.actionRegexMatch.test( ruleValue ) == true ){
+                        if( this.actionRegexMatch.test( ruleValue ) === true ){
                             ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
                         }else{
                             ruleValue = ruleValue + newField;
                         }
 
-                        if( source == null ){
+                        if( source === null ){
                             record.data.rule = ruleValue;
                         }else{
                             source.down("[dataIndex=rule]").setRawValue(ruleValue);    
@@ -1225,7 +1225,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.callParent();
     },
     beforeSave: function(isApply,handler) {
-        if( this.getRpcNode().getUpdatedSettingsFlag() == true ){
+        if( this.getRpcNode().getUpdatedSettingsFlag() === true ){
             Ext.MessageBox.alert(this.i18n._("Intrusion Prevention Warning"), this.i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
                 this.reload();
             }, this));
@@ -1252,7 +1252,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
         var keys = Object.keys(this.settings);
         for( var i = 0; i < keys.length; i++){
             if( ( keys[i] == "rules" ) || 
-                ( keys[i] == "variables" ) ){
+                ( keys[i] == "variables" ) ||
+                ( keys[i] == "active_rules" && !this.wizardSettings ) ){
                 continue;
             }
             changedDataSet[keys[i]] = this.settings[keys[i]];
@@ -1283,7 +1284,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             scope: this,
             success: function(response){
                 var r = Ext.decode( response.responseText );
-                if( r.success == false ){
+                if( r.success === false ){
                     Ext.MessageBox.hide();
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 }else{
@@ -1295,7 +1296,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         return;
                     }else{
                         this.clearDirty();
-                        if( this.forceReload == true ){
+                        if( this.forceReload === true ){
                             this.reload();
                         }
                     }
@@ -1345,7 +1346,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
             border: false
         }];
 
-        if( this.gui.getSettings().configured == true ){
+        if( this.gui.getSettings().configured === true ){
             items.push({
                 html: this.i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
                 cls: 'description warning',
@@ -1364,7 +1365,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
     },
 
     loadDefaultSettings: function(handler){
-        if( this.initialLoad == true ||
+        if( this.initialLoad === true ||
             this.gui.wizardSettings ){
             this.initialLoad = false;
             handler();
@@ -1389,18 +1390,18 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                     this.gui.wizardRecommendedSettings = { 
                         active_rules: {} 
                     };
-                    var keys = Object.keys(this.gui.wizardSettings["active_rules"]);
+                    var keys = Object.keys(this.gui.wizardSettings.active_rules);
                     for( i = 0; i < keys.length; i++){
-                        this.gui.wizardRecommendedSettings["active_rules"][keys[i]] = this.gui.wizardSettings["active_rules"][keys[i]];
+                        this.gui.wizardRecommendedSettings.active_rules[keys[i]] = this.gui.wizardSettings.active_rules[keys[i]];
                     }
 
-                    if( this.gui.settings.configured == true ){
+                    if( this.gui.settings.configured === true ){
                         /*
                          * Setup wizard already configured.  Pull current settings.
                          */
-                        keys = Object.keys(this.gui.settings["active_rules"]);
+                        keys = Object.keys(this.gui.settings.active_rules);
                         for( i = 0; i < keys.length; i++){
-                            this.gui.wizardSettings["active_rules"][keys[i]] = this.gui.settings["active_rules"][keys[i]];
+                            this.gui.wizardSettings.active_rules[keys[i]] = this.gui.settings.active_rules[keys[i]];
                         }
                     }else{
                         if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
@@ -1504,13 +1505,13 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
     },
 
     setVisible: function( id, checked ){
-        if( checked == false ){
+        if( checked === false ){
             return;
         }
         Ext.Array.each( 
             this.panel.query(""), 
             function( c ){ 
-                if( !c.name || c.name.indexOf('classtypes_') != 0 ){
+                if( !c.name || c.name.indexOf('classtypes_') !== 0 ){
                     return true;
                 }
                 if( c.xtype == "fieldset"){
@@ -1525,7 +1526,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
     },
 
     onLoad: function( handler ){
-        if( this.loaded != true ){
+        if( this.loaded !== true ){
             if( this.gui.wizardSettings.active_rules ){
 
                 Ext.Array.each(
@@ -1538,24 +1539,19 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                     this
                 );
 
-                if( typeof( this.gui.wizardSettings.active_rules.classtypes ) == 'object' ){
-                    for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
-                        var value = this.gui.wizardSettings.active_rules.classtypes[i];
-                        Ext.Array.each(
-                            this.panel.query("checkbox[name=classtypes_selected]"),
-                            function(c){
-                                if( c.inputValue == value ){
-                                c.setValue(true);
-                                }
-                            }
-                        );
+                var checkboxes = this.panel.query("checkbox[name=classtypes_selected]");
+                for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
+                    for( var j = 0; j < checkboxes.length; j++ ){
+                        if( checkboxes[j].inputValue == this.gui.wizardSettings.active_rules.classtypes[i] ){
+                            checkboxes[j].setValue(true);
+                        }
                     }
+                }
 
-                    if( this.gui.wizardRecommendedSettings.active_rules.classtypes.length == 0 ){
-                        this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
-                    }else{
-                        this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.classtypes.join( ", "));
-                    }
+                if( this.gui.wizardRecommendedSettings.active_rules.classtypes.length === 0 ){
+                    this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
+                }else{
+                    this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.classtypes.join( ", "));
                 }
             }
             this.loaded = true;
@@ -1659,13 +1655,13 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
     },
 
     setVisible: function( id, checked ){
-        if( checked == false ){
+        if( checked === false ){
             return;
         }
         Ext.Array.each( 
             this.panel.query(""), 
             function( c ){ 
-                if( !c.name || c.name.indexOf('categories_') != 0 ){
+                if( !c.name || c.name.indexOf('categories_') !== 0 ){
                     return true;
                 }
                 if( c.xtype == "fieldset"){
@@ -1680,7 +1676,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
     },
 
     onLoad: function( handler ){
-        if( this.loaded != true ){
+        if( this.loaded !== true ){
             if( this.gui.wizardSettings.active_rules ){
                 Ext.Array.each(
                     this.panel.query("radio[name=categories]"),
@@ -1692,19 +1688,17 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     this
                 );
 
+                var checkboxes = this.panel.query("checkbox[name=categories_selected]");
                 for( var i = 0; i < this.gui.wizardSettings.active_rules.categories.length; i++ ){
                     var value = this.gui.wizardSettings.active_rules.categories[i];
-                    Ext.Array.each(
-                        this.panel.query("checkbox[name=categories_selected]"),
-                        function(c){
-                            if( c.inputValue == value ){
-                                c.setValue(true);
-                            }
+                    for( var j = 0; j < checkboxes.length; j++ ){
+                        if( checkboxes[j].inputValue == this.gui.wizardSettings.active_rules.classtypes[i] ){
+                            checkboxes[j].setValue(true);
                         }
-                    );
+                    }
                 }
 
-                if( this.gui.wizardRecommendedSettings.active_rules.categories.length == 0 ){
+                if( this.gui.wizardRecommendedSettings.active_rules.categories.length === 0 ){
                     this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
                 }else{
                     this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.categories.join( ", "));
