@@ -74,6 +74,8 @@ insert_iptables_rules()
     # This is necessary in scenarios where there are multiple independent bridges with WANs in each.
     ${IPTABLES} -A OUTPUT -t mangle -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT'
 
+    # SYN/ACKs will be unmarked by default so we need to restore the connmark so that they will be routed correctly based on the mark
+    # This ensures the response goes back out the correct interface 
     ${IPTABLES} -A OUTPUT -t mangle -p tcp --tcp-flags SYN,ACK SYN,ACK -m comment --comment 'restore mark on reinject packet' -j restore-interface-marks
 
     # Redirect any re-injected packets from the TUN interface to us
