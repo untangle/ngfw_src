@@ -12,6 +12,7 @@
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <linux/if_ether.h>
+#include <net/if_arp.h>
 
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -36,6 +37,8 @@ static netcap_virtual_interface_t tun_dev =
     .fd = 0
 };
 
+unsigned char      mac_dst[ETH_ALEN] = {0xea, 0xe5, 0x5d, 0xee, 0x78, 0xc3};
+unsigned char      mac_src[ETH_ALEN] = {0x0,  0x0,  0x0,  0x0,  0x0,  0x0};
 
 /**
  * This will open a tun device and set the name to name
@@ -44,13 +47,14 @@ int netcap_virtual_interface_init( char *name )
 {
     struct ifreq ifr;
     int fd;
+    int i;
 
     int _critical_section( void ) {
       /* sets the tun device to be an IP TUN device
        * and uses fd to send an ioctl to bring the interface up by name */
         bzero( &ifr, sizeof( ifr ));
         
-        ifr.ifr_flags = IFF_TUN;
+        ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
         strncpy(ifr.ifr_name, tun_dev.name, sizeof( ifr.ifr_name ));
 
         /* create the virtual device and returns the name in &ifr */
@@ -60,6 +64,11 @@ int netcap_virtual_interface_init( char *name )
             
         /* same ioctl but on a the temporary socket "fd" */
         if ( ioctl( fd, SIOCGIFFLAGS, &ifr ) < 0 ) return perrlog( "ioctl [SIOCGIFFLAGS]" );
+
+        /*Set interface to a fixed MAC address*/
+        ifr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
+        for ( i = 0; i < ETH_ALEN; i++ ) ifr.ifr_hwaddr.sa_data[i] = mac_dst[i];
+        if ( ioctl( fd, SIOCSIFHWADDR , &ifr ) < 0 ) return perrlog( "ioctl [SIOCGIFHWADDR]" );
 
         /* bring the interface up */
         ifr.ifr_flags |= IFF_UP;
@@ -114,14 +123,22 @@ int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
     void *packet = NULL;
     int packet_len = 0;
     struct iphdr* ip_header = (struct iphdr*) pkt->data;
+    int nfmark = pkt->nfmark;
     
     int _critical_section() {
         int bytes_written = 0;
 
-        ((struct tun_pi*)packet)->flags = htons( TUN_TUN_DEV );
-        ((struct tun_pi*)packet)->proto = htons( ETH_P_IP );
-        memcpy( &(((struct tun_pi*)packet)[1]), ip_header, packet_len - sizeof( struct tun_pi ));
-        
+        memcpy( ((unsigned char *)packet), mac_dst, sizeof( mac_dst ));
+
+        /*Set nfmark to SRC MAC*/ 
+        mac_src[5] = nfmark & 0x00FF;
+ 
+        memcpy(&(((unsigned char *)packet)[ETH_ALEN]), mac_src, sizeof( mac_src)); 
+        ((unsigned char *)packet)[12] = 8;
+        ((unsigned char *)packet)[13] = 0;
+
+        memcpy( &(((unsigned char *)packet)[ETH_HLEN]), ip_header, packet_len - 14); 
+
         debug(8, "sending packet  %s -> %s to fd: %d length: %d\n",
               unet_next_inet_ntoa( ip_header->saddr), 
               unet_next_inet_ntoa(ip_header->daddr), tun_dev.fd, packet_len );
@@ -137,13 +154,13 @@ int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
 
     if ( pkt == NULL ) return errlogargs();
 
-    packet_len = pkt->data_len + sizeof( struct tun_pi );
+    packet_len = pkt->data_len + ETH_HLEN;
 
     if ( packet_len < sizeof( struct iphdr )) {
         return errlog( ERR_CRITICAL, "Invalid packet length %d", packet_len );
     }
 
-    if (( packet = malloc( packet_len + sizeof( struct tun_pi ))) == NULL ) {
+    if (( packet = malloc( packet_len + ETH_HLEN )) == NULL ) {
         return errlog( ERR_CRITICAL, "malloc\n" );
     }
 

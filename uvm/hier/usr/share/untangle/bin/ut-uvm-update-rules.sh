@@ -74,6 +74,8 @@ insert_iptables_rules()
     # This is necessary in scenarios where there are multiple independent bridges with WANs in each.
     ${IPTABLES} -A OUTPUT -t mangle -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT'
 
+    ${IPTABLES} -A OUTPUT -t mangle -p tcp --tcp-flags SYN,ACK SYN,ACK -m comment --comment 'restore mark on reinject packet' -j restore-interface-marks
+
     # Redirect any re-injected packets from the TUN interface to us
     ## Add a redirect rule for each address,
     ${IPTABLES} -t nat -N uvm-tcp-redirect >/dev/null 2>&1
