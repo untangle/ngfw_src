@@ -41,17 +41,36 @@ Ext.define('Ung.RuleEditorGrid', {
     initComponent: function() {
         var me = this;
         me.bbar = [
-            i18n._('Search'),
-            {
+            i18n._('Search'), {
                 xtype: 'textfield',
                 name: 'searchField',
                 hideLabel: true,
                 width: 200,
                 listeners: {
                     change: {
-                        fn: me.onTextFieldChange,
+                        fn: me.searchFilter,
                         scope: this,
                         buffer: 100
+                    }
+                }
+            },{
+                xtype: 'checkbox',
+                name: 'searchLog',
+                boxLabel: i18n._("Log"),
+                listeners: {
+                    change: {
+                        fn: me.searchFilter,
+                        scope: this
+                    }
+                }
+            },{
+                xtype: 'checkbox',
+                name: 'searchBlock',
+                boxLabel: i18n._("Block"),
+                listeners: {
+                    change: {
+                        fn: me.searchFilter,
+                        scope: this
                     }
                 }
             },{
@@ -127,7 +146,7 @@ Ext.define('Ung.RuleEditorGrid', {
             }
         );
         this.searchStatusBar.setStatus({
-            text:  this.store.count() + ' ' + i18n._('total rules') + ', ' + totalEnabled + ' ' +i18n._("enabled"),
+            text:  this.store.count() + ' ' + i18n._('available rules') + ', ' + totalEnabled + ' ' +i18n._("logging or blocking"),
             iconCls: 'x-status-valid'
         });
 
@@ -177,51 +196,87 @@ Ext.define('Ung.RuleEditorGrid', {
     },
 
     /**
-     * Finds all strings that matches the searched value in each grid cells.
+     * Finds all strings that matches the searched value in each grid cells as
+     * well as Log or Block action.
      * @private
      */
-    onTextFieldChange: function() {
+    searchFilter: function() {
         var me = this;
+
+        var findLog = me.down('checkbox[name=searchLog]').getValue();
+        var findBlock = me.down('checkbox[name=searchBlock]').getValue();
 
         me.store.clearFilter(false);
         me.searchValue = me.getSearchValue();
+
+        /* 
+         * It's too expensive to search with less than minimum characters.
+         */
         if( ( me.searchValue !== null ) &&
-            ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ){
+            ( me.searchTextField.getValue().length < ( me.searchMinimumCharacters + 1 ) ) ){
+            me.searchStatusBar.setStatus({
+                text: i18n._("(type more than 2 characters)"),
+                iconCls: 'x-status-valid'
+            });
+        }
+
+        if( ( ( me.searchValue !== null ) &&
+              ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ) ||
+            ( findLog === true ) ||
+            ( findBlock === true ) ){
 
             me.searchRegExp = new RegExp(me.searchValue, 'g' + 'i');
 
+            /*
+             * Build store filter based on Log, Block, and/or search field values.
+             */
             me.store.filterBy( function( record, id ) {
                 me = this;
-                for( var i = 0 ; i < me.searchFields.length; i++){
-                    if( me.searchRegExp.test( record.get( me.searchFields[i] )) ){
-                        return true;
+                var logMatch = true;
+                if( findLog === true ){
+                    logMatch = ( record.get( "log" ) === findLog );
+                }
+                var blockMatch = true;
+                if( findBlock === true ){
+                    blockMatch = ( record.get( "block" ) === findBlock );
+                }
+                var searchMatch = true;
+                if( ( ( me.searchValue !== null ) &&
+                    ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ) ){
+                    searchMatch = false;
+                    for( var i = 0 ; i < me.searchFields.length; i++){
+                        searchMatch = me.searchRegExp.test( record.get( me.searchFields[i] ) );
+                        if( searchMatch == true ){
+                            break;
+                        }
                     }
                 }
-                return false;
+                return logMatch && blockMatch && searchMatch;
             }, me );
 
-            var totalEnabled = 0;
-            me.store.each(
-                function( record ){
-                    if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
-                        totalEnabled++;
+            /*
+             * If Log/Block is checked then it's evident that the matching rules are
+             * set to either Log/Block.  But if neither are checked, we want to know
+             * how many are enabled.
+             */
+            var statusText = me.store.count() + ' ' + i18n._(' matching rules(s) found');
+            if( findLog === false && findBlock === false ){
+                var totalEnabled = 0;
+                me.store.each(
+                    function( record ){
+                        if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
+                            totalEnabled++;
+                        }
                     }
-                }
-            );
+                );
+                statusText += ', ' + totalEnabled + ' ' + i18n._("logging or blocking");
+            }
             me.searchStatusBar.setStatus({
-                text: me.store.count() ? me.store.count() + ' ' + i18n._(' matching rules(s) found') + ', ' + totalEnabled + ' ' + i18n._("enabled") : i18n._('No matching rules found') ,
+                text: me.store.count() ? statusText : i18n._('No matching rules found') ,
                 iconCls: 'x-status-valid'
             });
          }else{
-            if( ( me.searchValue !== null ) &&
-                ( me.searchTextField.getValue().length < ( me.searchMinimumCharacters + 1 ) ) ){
-                me.searchStatusBar.setStatus({
-                    text: i18n._("(type more than 2 characters)"),
-                    iconCls: 'x-status-valid'
-                });
-            }else{
-                me.updateRulesStatus();
-            }
+            me.updateRulesStatus();
          }
 
          // force textfield focus
