@@ -47,22 +47,17 @@ class WebFilterBaseNode(Node):
     def parents(self):
         return ['untangle-casing-http']
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
         ft = reports.engine.get_fact_table('reports.http_totals')
-
-        ft.measures.append(Column('%s_blocks' % self.__short_name,
-                                  'integer',
+        ft.measures.append(Column('%s_blocks' % self.__short_name, 'integer',
                                   "count(CASE WHEN %s_blocked THEN 1 ELSE null END)"
                                   % self.__short_name))
-        ft.measures.append(Column('%s_violations' % self.__short_name,
-                                  'integer',
+        ft.measures.append(Column('%s_violations' % self.__short_name, 'integer',
                                   "count(CASE WHEN %s_flagged THEN 1 ELSE null END)"
                                   % self.__short_name))
-        ft.dimensions.append(Column('%s_category' % self.__short_name,
-                                    'text'))
-        ft.dimensions.append(Column('%s_reason' % self.__short_name,
-                                    'text'))
+        ft.dimensions.append(Column('%s_category' % self.__short_name, 'text'))
+        ft.dimensions.append(Column('%s_reason' % self.__short_name, 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -125,7 +120,7 @@ class WebHighlight(Highlight):
                            " " + "%(blocks)s" + " " + _("were blocked"))
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if email:
@@ -172,7 +167,7 @@ class DailyWebUsage(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -270,7 +265,7 @@ class TotalWebUsage(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -337,7 +332,7 @@ class TopTenWebPolicyViolationsByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -400,7 +395,7 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -462,7 +457,7 @@ class TopTenWebBrowsingHostsByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -510,7 +505,7 @@ class TopTenWebBrowsingUsersByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -558,7 +553,7 @@ class TopTenWebBrowsingUsersBySize(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -606,7 +601,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -656,7 +651,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                            email=None):
         if host or user or email:
@@ -706,7 +701,7 @@ class TopTenWebBrowsingHostsBySize(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -754,7 +749,7 @@ class TopTenWebsitesByHits(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -811,7 +806,7 @@ class TopTenWebsitesBySize(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -870,7 +865,7 @@ class TopTenPolicyViolations(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -931,7 +926,7 @@ class TopTenBlockedPolicyViolations(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -1138,7 +1133,7 @@ class WebUsageByCategory(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -1198,7 +1193,7 @@ class ViolationsByCategory(Graph):
 
         self.__short_name = node_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:

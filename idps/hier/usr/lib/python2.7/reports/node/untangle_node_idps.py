@@ -43,16 +43,19 @@ class Idps(Node):
         self.__title = title
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
+        pass
+
+    def create_tables(self):
         self.__create_idps_events()
         
-    @print_timing
+    @sql_helper.print_timing
     def __create_idps_events(self):
         """
         Generate table and indices
         """
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.idps_events (
         time_stamp timestamp NOT NULL,
         sig_id int8,
@@ -66,19 +69,8 @@ CREATE TABLE reports.idps_events (
         blocked boolean,
         category text,
         classtype text,
-        msg text)""")
+        msg text)""", [], ["time_stamp"])
         
-        if not sql_helper.index_exists("reports","idps_events","time_stamp"):
-            sql_helper.create_index("reports", "idps_events", "time_stamp")
-        if not sql_helper.index_exists("reports", "idps_events", "blocked"):
-            sql_helper.create_index("reports", "idps_events", "blocked")
-        if not sql_helper.index_exists("reports", "idps_events", "msg"):
-            sql_helper.create_index("reports", "idps_events", "msg")
-        if not sql_helper.index_exists("reports", "idps_events", "category"):
-            sql_helper.create_index("reports", "idps_events", "category")
-        if not sql_helper.index_exists("reports", "idps_events", "classtype"):
-            sql_helper.create_index("reports", "idps_events", "classtype")
-
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
@@ -118,7 +110,7 @@ class IdpsHighlight(Highlight):
                 " " + "%(blocks)s" + " " + _("were blocked")
         )
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(
         self, end_date, report_days,
         host=None, user=None, email=None):
@@ -173,7 +165,7 @@ class TopTenRulesByHits(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(
         self, end_date, report_days, 
         host=None, user=None, email=None
@@ -242,7 +234,7 @@ class TopTenCategoriesByHits(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(
         self, end_date, report_days, 
         host=None, user=None, email=None 
@@ -311,7 +303,7 @@ class TopTenClasstypesByHits(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(
         self, end_date, report_days, 
         host=None, user=None, email=None 
@@ -380,7 +372,7 @@ class DailyLogUsage(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(
         self, end_date, report_days, 
         host=None, user=None, email=None 
@@ -476,7 +468,7 @@ class DailyBlockUsage(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(
         self, end_date, report_days, 
         host=None, user=None, email=None 

@@ -26,14 +26,14 @@ USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
-NETCONFIG_JSON_OBJ = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
 
 def get_wan_clause():
+    netSettingsJsonObj = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
     wans = []
-    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+    for intf in netSettingsJsonObj['interfaces']['list']:
         if intf['configType'] == 'DISABLED':
             continue
         if intf.get('isWan'):
@@ -41,16 +41,18 @@ def get_wan_clause():
     return "(" + ','.join(wans) + ")"
 
 def get_wan_names_map():
+    netSettingsJsonObj = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
     map = {}
-    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+    for intf in netSettingsJsonObj['interfaces']['list']:
         if intf.get('isWan'):
             map[int(intf['interfaceId'])] = intf['name']
 
     return map
 
 def get_wan_ip():
+    netSettingsJsonObj = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/network.js', 'r').read())
     wans = []
-    for intf in NETCONFIG_JSON_OBJ['interfaces']['list']:
+    for intf in netSettingsJsonObj['interfaces']['list']:
         if intf.get('isWan'):
             try:
                 STATUS_JSON = json.loads(open('/var/lib/untangle-netd/interface-' + str(intf.get('interfaceId')) + '-status.js').read())
@@ -79,7 +81,7 @@ class Node:
     def setup(self):
         pass
 
-    def alter_fact_tables(self):
+    def create_tables(self):
         pass
 
     def post_facttable_setup(self, start_date, end_date):
@@ -142,11 +144,11 @@ class FactTable:
         return self.__dimensions
 
     def process(self, start_date, end_date):
-        tables = sql_helper.create_fact_table(self.__ddl())
+        tables = sql_helper.create_table(self.__ddl())
 
         for c in (self.measures + self.dimensions):
             schema, tablename = self.__name.split(".")
-            sql_helper.add_column(schema, tablename, c.name, c.type)
+            sql_helper.add_column( tablename, c.name, c.type )
 
         sd = TimestampFromMx(sql_helper.get_update_info(self.__name, start_date))
 
@@ -240,14 +242,14 @@ def get_fact_table(name):
 
     return __fact_tables.get(name, None)
 
-@print_timing
+@sql_helper.print_timing
 def process_fact_tables(start_date, end_date):
     global __fact_tables
 
     for ft in __fact_tables.values():
         ft.process(start_date, end_date)
 
-@print_timing
+@sql_helper.print_timing
 def generate_reports(report_base, end_date, report_days):
     global __nodes
 
@@ -297,7 +299,7 @@ def generate_reports(report_base, end_date, report_days):
 
     return mail_reports
 
-@print_timing
+@sql_helper.print_timing
 def generate_sub_report(report_base, node_name, end_date, report_days=1,
                         host=None, user=None, email=None):
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
@@ -331,14 +333,14 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
 
     return 'DONE'
 
-@print_timing
+@sql_helper.print_timing
 def generate_plots(report_base, end_date, report_days=1):
     date_base = 'data/%d-%02d-%02d/%s' % (end_date.year, end_date.month,
                                           end_date.day,
                                           report_days_dir(report_days))
     __generate_plots(report_base, date_base)
 
-@print_timing
+@sql_helper.print_timing
 def reports_cleanup(cutoff):
     logger.info("Cleaning reports data for all dates < %s" % (cutoff,))
 
@@ -351,7 +353,7 @@ def reports_cleanup(cutoff):
             logger.warn('could not cleanup reports for: %s' % name,
                          exc_info=True)
 
-@print_timing
+@sql_helper.print_timing
 def delete_old_reports(dir, cutoff):
     logger.info("Cleaning reports files for all dates < %s" % (cutoff,))    
     for f in os.listdir(dir):
@@ -360,35 +362,45 @@ def delete_old_reports(dir, cutoff):
             if d < cutoff:
                 shutil.rmtree('%s/%s' % (dir, f));
 
-@print_timing
+@sql_helper.print_timing
 def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
-@print_timing
-def setup():
+@sql_helper.print_timing
+def create_tables():
     global __nodes
 
-    count = 0.0
-    logger.info('setup(): %s ' % __get_available_nodes())
+    logger.info('create_tables(): %s ' % __get_available_nodes())
     for name in __get_available_nodes():
         try:
-            logger.info('doing setup for: %s' % (name))
+            logger.info('create_tables() for: %s' % (name))
             node = __nodes.get(name, None)
 
             if not node:
                 logger.warn('could not get node %s' % name)
             else:
-                try:
-                    node.alter_fact_tables()
-                except Exception, e: # that table didn't exist
-                    logger.info("Could not alter fact tables for %s: %s" % (name, e.message,))
-                node.setup()
-
-            count = count+1.0 
+                node.create_tables()
         except:
             logger.warn('could not setup for: %s' % name, exc_info=True)
 
-@print_timing
+@sql_helper.print_timing
+def setup():
+    global __nodes
+
+    logger.info('setup(): %s ' % __get_available_nodes())
+    for name in __get_available_nodes():
+        try:
+            logger.info('setup() for: %s' % (name))
+            node = __nodes.get(name, None)
+
+            if not node:
+                logger.warn('could not get node %s' % name)
+            else:
+                node.setup()
+        except:
+            logger.warn('could not setup for: %s' % name, exc_info=True)
+
+@sql_helper.print_timing
 def post_facttable_setup(start_date, end_date):
     global __nodes
 
@@ -403,7 +415,7 @@ def post_facttable_setup(start_date, end_date):
         except:
             logger.warn('could not do post factable setup for: %s' % name, exc_info=True)
 
-@print_timing
+@sql_helper.print_timing
 def fix_hierarchy(output_base):
     base_dir = '%s/data' % output_base
 
@@ -548,7 +560,7 @@ def __get_emails(start_date, end_date):
     conn = sql_helper.get_connection()
 
     try:
-        if not sql_helper.table_exists('reports', 'mail_addr_totals'):
+        if not sql_helper.table_exists('mail_addr_totals'):
             return [];
         curs = conn.cursor()
         # select all distinct email addresses from that time period

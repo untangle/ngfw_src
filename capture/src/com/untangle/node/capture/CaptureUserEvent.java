@@ -57,11 +57,13 @@ public class CaptureUserEvent extends LogEvent
     public AuthenticationType getAuthenticationType() { return AuthenticationType.valueOf(this.authenticationTypeValue); }
     public void setAuthenticationType(AuthenticationType newValue) { this.authenticationTypeValue = newValue.toString(); }
 
-    private static String sql = "INSERT INTO reports.capture_user_events " + "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " + "values ( ?, ?, ?, ?, ?, ? )";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
+        String sql = "INSERT INTO reports.capture_user_events" + getPartitionTablePostfix() + " " +
+            "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " +
+            "values ( ?, ?, ?, ?, ?, ? )";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
         int i = 0;

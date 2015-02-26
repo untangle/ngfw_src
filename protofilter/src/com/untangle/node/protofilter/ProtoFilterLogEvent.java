@@ -42,15 +42,15 @@ public class ProtoFilterLogEvent extends LogEvent
         this.sessionEvent.setSessionId(sessionId);
     }
 
-    private static String sql =
-        "UPDATE reports.sessions " + 
-        "SET protofilter_protocol = ?, " + 
-        "    protofilter_blocked = ? " +
-        "WHERE session_id = ? ";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql =
+            "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "SET protofilter_protocol = ?, " + 
+            "    protofilter_blocked = ? " +
+            "WHERE session_id = ? ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

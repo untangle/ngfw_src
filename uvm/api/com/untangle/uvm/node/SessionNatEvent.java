@@ -17,7 +17,7 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class SessionNatEvent extends LogEvent
 {
-    private Long sessionId = -1L;
+    private SessionEvent sessionEvent;
 
     private Integer serverIntf;
 
@@ -26,22 +26,16 @@ public class SessionNatEvent extends LogEvent
     private Integer sClientPort;
     private Integer sServerPort;
     
-    public SessionNatEvent( Long sessionId, Integer serverIntf, InetAddress sClientAddr, Integer sClientPort, InetAddress sServerAddr, Integer sServerPort )
+    public SessionNatEvent( SessionEvent sessionEvent, Integer serverIntf, InetAddress sClientAddr, Integer sClientPort, InetAddress sServerAddr, Integer sServerPort )
     {
         super();
-        this.sessionId = sessionId;
+        this.sessionEvent = sessionEvent;
         this.serverIntf = serverIntf;
         this.sClientAddr = sClientAddr;
         this.sClientPort = sClientPort;
         this.sServerAddr = sServerAddr;
         this.sServerPort = sServerPort;
     }
-
-    /**
-     * Session id.
-     */
-    public Long getSessionId() { return sessionId; }
-    public void setSessionId( Long sessionId ) { this.sessionId = sessionId; }
 
     /**
      * Server interface index (at server).
@@ -73,17 +67,17 @@ public class SessionNatEvent extends LogEvent
     public Integer getSServerPort() { return sServerPort; }
     public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
 
-    private static String sql = "UPDATE reports.sessions " +
-        "SET server_intf = ?, " +
-        "    s_client_addr = ?, " +
-        "    s_client_port = ?, " +
-        "    s_server_addr = ?, " +
-        "    s_server_port = ? " +
-        "WHERE session_id = ? ";
-        
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "SET server_intf = ?, " +
+            "    s_client_addr = ?, " +
+            "    s_client_port = ?, " +
+            "    s_server_addr = ?, " +
+            "    s_server_port = ? " +
+            "WHERE session_id = ? ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;
@@ -92,31 +86,11 @@ public class SessionNatEvent extends LogEvent
         pstmt.setInt(++i, getSClientPort());
         pstmt.setObject(++i, getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getSServerPort());
-        pstmt.setLong(++i,getSessionId());
+        pstmt.setLong(++i, sessionEvent.getSessionId());
 
         return pstmt;
     }
     
-    public boolean equals(Object o)
-    {
-        if (o instanceof SessionNatEvent) {
-            SessionNatEvent pe = (SessionNatEvent)o;
-            return getSessionId().equals(pe.getSessionId());
-        } else {
-            return false;
-        }
-    }
-
-    public String toString()
-    {
-        String clientAddr = (getSClientAddr() != null ? getSClientAddr().getHostAddress() : "null");
-        String serverAddr = (getSServerAddr() != null ? getSServerAddr().getHostAddress() : "null");
-        String clientPort = (getSClientPort() != null ? getSClientPort().toString() : "null");
-        String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
-        
-        return "SessionNatEvent " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
-    }
-
     @Override
     public String toSummaryString()
     {
@@ -126,10 +100,5 @@ public class SessionNatEvent extends LogEvent
         String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
 
         return I18nUtil.marktr("Session NAT") + " " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
-    }
-    
-    public int hashCode()
-    {
-        return getSessionId().hashCode();
     }
 }

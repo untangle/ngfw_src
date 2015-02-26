@@ -47,7 +47,7 @@ public class VirusHttpEvent extends LogEvent
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
         String sql =
-            "UPDATE reports.http_events " +
+            "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
             getNodeName().toLowerCase() + "_clean = ?, " + 
             getNodeName().toLowerCase() + "_name = ? "  + 

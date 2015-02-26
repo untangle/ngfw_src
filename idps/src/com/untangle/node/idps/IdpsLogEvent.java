@@ -19,24 +19,20 @@ public class IdpsLogEvent extends LogEvent
 {
     private IdpsSnortUnified2IdsEvent idpsEvent;
 
-    // constructors -----------------------------------------------------------
-
     // Pass event object
     public IdpsLogEvent( IdpsSnortUnified2IdsEvent idpsEvent )
     {
         this.idpsEvent = idpsEvent;
     }
 
-    // accessors --------------------------------------------------------------
-
-    private static String sql = "INSERT INTO reports.idps_events " +
-        "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
-        " values " +
-        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "INSERT INTO reports.idps_events" + getPartitionTablePostfix() + " " +
+            "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
+            " values " +
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

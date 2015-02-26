@@ -34,9 +34,8 @@ class ServerNode(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-reporting','Server')
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
-        self.__create_server_events()
         ft = FactTable('reports.server_totals', 'reports.server_events', 'time_stamp', [], [])
         ft.measures.append(Column('mem_free', 'int8', "avg(mem_free)"))
         ft.measures.append(Column('mem_cache', 'int8', "avg(mem_cache)"))
@@ -52,9 +51,12 @@ class ServerNode(Node):
         ft.measures.append(Column('swap_free', 'int8', "avg(swap_free)"))
         reports.engine.register_fact_table(ft)
 
+    def create_tables(self):
+        self.__create_server_events()
+
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("server_events", cutoff)
-        sql_helper.drop_fact_table("server_totals", cutoff)        
+        sql_helper.clean_table("server_events", cutoff)
+        sql_helper.clean_table("server_totals", cutoff)        
 
     def get_report(self):
         sections = []
@@ -65,9 +67,9 @@ class ServerNode(Node):
         sections.append(s)
         return Report(self, sections)
 
-    @print_timing
+    @sql_helper.print_timing
     def __create_server_events(self):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.server_events (
     time_stamp  TIMESTAMP,
     mem_free 	INT8,
@@ -90,7 +92,7 @@ class MemoryUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'free-memory', _('Free Memory'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -149,7 +151,7 @@ class LoadUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'load-usage', _('Cpu Load'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -226,7 +228,7 @@ class CpuUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'cpu-usage', _('Cpu Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -284,7 +286,7 @@ class DiskUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'disk-usage', _('Disk Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -346,7 +348,7 @@ class SwapUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'swap-usage', _('Swap Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:

@@ -39,7 +39,7 @@ class Ips(Node):
         self.__title = title
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('ips_blocks', 'integer', "count(CASE WHEN NOT ips_blocked ISNULL THEN 1 ELSE null END)"))
@@ -76,7 +76,7 @@ class IpsHighlight(Highlight):
                            "%(attacks)s" + " " + _("attacks of which") +
                            " " + "%(blocks)s" + " " + _("were blocked"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if email:
@@ -122,7 +122,7 @@ class TopTenAttacksByHits(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -179,7 +179,7 @@ class DailyUsage(Graph):
 
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None

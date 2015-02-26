@@ -98,16 +98,6 @@ public class SessionStatsEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    private static String sql = "UPDATE reports.sessions " +
-        "SET " +
-        " c2p_bytes = ?, " +
-        " s2p_bytes = ?, " +
-        " p2c_bytes = ?, " + 
-        " p2s_bytes = ?, " + 
-        " end_time = ? " + 
-        " WHERE " + 
-        " session_id = ?";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
@@ -115,6 +105,16 @@ public class SessionStatsEvent extends LogEvent
         if ( c2pBytes == 0 && p2sBytes == 0 && s2pBytes == 0 && p2cBytes == 0 )
             return null;
 
+        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "SET " +
+            " c2p_bytes = ?, " +
+            " s2p_bytes = ?, " +
+            " p2c_bytes = ?, " + 
+            " p2s_bytes = ?, " + 
+            " end_time = ? " + 
+            " WHERE " + 
+            " session_id = ?";
+        
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
         
         int i = 0;

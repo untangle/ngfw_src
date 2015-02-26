@@ -237,7 +237,7 @@ public abstract class NetcapHook implements Runnable
 
             /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
             if (  tupleHashCodeOriginal != tupleHashCodeNew ) {
-                SessionNatEvent natEvent = new SessionNatEvent( sessionEvent.getSessionId(),
+                SessionNatEvent natEvent = new SessionNatEvent( sessionEvent,
                                                                 serverSide.getServerIntf(),
                                                                 serverSide.getClientAddr(),
                                                                 serverSide.getClientPort(),                                                               

@@ -137,14 +137,15 @@ public class SessionEvent extends LogEvent
         }
     }
     
-    private static String sql = "INSERT INTO reports.sessions " +
-        "(event_id, session_id, time_stamp, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
-        "values " +
-        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
+            "(event_id, session_id, time_stamp, end_time, hostname, username, policy_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf) " +
+            "values " +
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

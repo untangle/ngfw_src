@@ -64,17 +64,17 @@ public class IpsLogEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    private static String sql =
-        "UPDATE reports.sessions " + 
-        "SET " +
-        " ips_blocked = ?, " + 
-        " ips_ruleid = ?, " + 
-        " ips_description = ? " + 
-        "WHERE session_id = ? " ;
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql =
+            "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "SET " +
+            " ips_blocked = ?, " + 
+            " ips_ruleid = ?, " + 
+            " ips_description = ? " + 
+            "WHERE session_id = ? ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

@@ -53,14 +53,14 @@ public class QuotaEvent extends LogEvent implements Serializable
     public long getQuotaSize() { return quotaSize; }
     public void setQuotaSize( long quotaSize ) { this.quotaSize = quotaSize; }
     
-    private static String sql = "INSERT INTO reports.quotas " +
-        "(time_stamp, address, action, reason, size ) " + 
-        "values " +
-        "( ?, ?, ?, ?, ? )";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "INSERT INTO reports.quotas" + getPartitionTablePostfix() + " " +
+            "(time_stamp, address, action, reason, size ) " + 
+            "values " +
+            "( ?, ?, ?, ?, ? )";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

@@ -43,7 +43,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
-    private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-tables.py";
+    private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reporter.log";
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+\\%Y-\\%m-\\%d\") > /dev/null 2>&1";
@@ -75,7 +76,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         this.interestingEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                         "SELECT * FROM reports.alerts " + 
                                                         "WHERE true " +
-                                                        "ORDER BY time_stamp DESC");   
+                                                        "ORDER BY time_stamp DESC");
         
     }
 
@@ -134,7 +135,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
 
         synchronized (this) {
-            String cmd = REPORTS_SCRIPT + " -c";
+            String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
             ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
             if (result.getResult() != 0) {
                 logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
@@ -168,7 +169,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 tries++;
                 tryAgain = false;
             
-                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_SCRIPT + " -r 1 -m -d " + ts);
+                exitCode = UvmContextFactory.context().execManager().execResult(REPORTS_GENERATE_REPORTS_SCRIPT + " -r 1 -m -d " + ts);
 
                 /* exitCode == 1 means another reports process is running, just wait and try again. */
                 if (exitCode == 1)  {
@@ -612,5 +613,4 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             toCsv( resultSetReader, resp, columnListStr, name );
         }
     }
-    
 }

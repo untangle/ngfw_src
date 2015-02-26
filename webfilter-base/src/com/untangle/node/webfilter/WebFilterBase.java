@@ -267,7 +267,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken header )
     {
-        return replacementGenerator.generateResponse( nonce, session, uri,header );
+        return replacementGenerator.generateResponse( nonce, session, uri, header );
     }
 
     public abstract void initializeSettings( WebFilterSettings settings );

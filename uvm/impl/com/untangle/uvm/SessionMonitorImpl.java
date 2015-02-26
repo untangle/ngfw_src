@@ -127,8 +127,10 @@ public class SessionMonitorImpl implements SessionMonitor
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
             session.setPolicy("");             
-            session.setClientIntf(Integer.valueOf(-1));
-            session.setServerIntf(Integer.valueOf(-1));
+            if (session.getClientIntf() == null || session.getClientIntf() == 0 )
+                session.setClientIntf(Integer.valueOf(-1));
+            if (session.getServerIntf() == null || session.getServerIntf() == 0 )
+                session.setServerIntf(Integer.valueOf(-1));
             session.setPriority(session.getQosPriority()); 
 
             Tuple tuple = _makeTuple( session );

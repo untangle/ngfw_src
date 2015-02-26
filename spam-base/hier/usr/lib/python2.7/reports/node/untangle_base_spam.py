@@ -50,19 +50,18 @@ class SpamBaseNode(Node):
     def parents(self):
         return ['untangle-casing-smtp']
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
-        self.__create_spam_smtp_tarpit_events(  )
-
         column = Column('%s_spam_msgs' % self.__short_name, 'integer',
                         "count(CASE WHEN %s_is_spam THEN 1 ELSE null END)" \
                             % self.__short_name)
-
         ft = reports.engine.get_fact_table('reports.mail_msg_totals')
         ft.measures.append(column)
-
         ft = reports.engine.get_fact_table('reports.mail_addr_totals')
         ft.measures.append(column)
+
+    def create_tables(self):
+        self.__create_spam_smtp_tarpit_events(  )
 
     def get_toc_membership(self):
         return [TOP_LEVEL, EMAIL_DRILLDOWN]
@@ -98,21 +97,18 @@ class SpamBaseNode(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table('spam_smtp_tarpit_events', cutoff)
+        sql_helper.clean_table('spam_smtp_tarpit_events', cutoff)
 
-    @print_timing
+    @sql_helper.print_timing
     def __create_spam_smtp_tarpit_events(self):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.spam_smtp_tarpit_events (
     time_stamp timestamp without time zone,
     ipaddr inet,
     hostname text,
     policy_id int8,
     vendor_name varchar(255),
-    event_id bigserial)""")
-
-        sql_helper.create_index("reports","spam_smtp_tarpit_events","event_id");
-        sql_helper.create_index("reports","spam_smtp_tarpit_events","time_stamp");
+    event_id bigserial)""",["event_id"],["time_stamp"])
 
 class SpamHighlight(Highlight):
     def __init__(self, name, short_name, spam_label):
@@ -125,7 +121,7 @@ class SpamHighlight(Highlight):
                            "%(spam)s" + " " + _(spam_label.lower()) + _(" messages"))
         self.__short_name = short_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if host or user:
@@ -172,7 +168,7 @@ class TotalEmail(Graph):
         self.__spam_label = spam_label
         self.__ham_label = ham_label
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user:
@@ -236,7 +232,7 @@ class HourlySpamRate(Graph):
         self.__spam_label = spam_label
         self.__ham_label = ham_label
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user:
@@ -335,7 +331,7 @@ class DailySpamRate(Graph):
         self.__spam_label = spam_label
         self.__ham_label = ham_label
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user:
@@ -438,7 +434,7 @@ class TopSpammedUsers(Graph):
         self.__spam_label = spam_label
         self.__ham_label = ham_label
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:

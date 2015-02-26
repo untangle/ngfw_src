@@ -17,25 +17,21 @@ class FtpCasing(Node):
     def parents(self):
         return ['untangle-vm']
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
-        self.__create_ftp_events()
-
         ft = FactTable('reports.ftp_totals', 'reports.ftp_events',
                        'time_stamp',
                        [Column('hostname', 'text'),
                         Column('username', 'text')],
                        [Column('hits', 'bigint', 'count(*)')])
-
-        # remove obsolete columns
-        sql_helper.drop_column('reports', 'ftp_totals', 's2c_bytes')
-        sql_helper.drop_column('reports', 'ftp_totals', 'c2s_bytes')
-
         reports.engine.register_fact_table(ft)
 
-    @print_timing
+    def create_tables(self):
+        self.__create_ftp_events()
+
+    @sql_helper.print_timing
     def __create_ftp_events(self):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.ftp_events (
     event_id bigserial,
     time_stamp timestamp without time zone,
@@ -55,26 +51,12 @@ CREATE TABLE reports.ftp_events (
     clam_clean boolean,
     clam_name text,
     virusblocker_clean boolean,
-    virusblocker_name text)""")
-
-        # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports", "ftp_events", "request_id", unique=True):
-            sql_helper.create_index("reports", "ftp_events", "request_id", unique=True);
-
-        # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports", "ftp_events", "event_id", unique=True):
-            sql_helper.create_index("reports", "ftp_events", "event_id", unique=True);
-
-        # rename the old commtouch columns
-        sql_helper.rename_column("reports", "ftp_events", "commtouchav_clean", "virusblocker_clean");
-        sql_helper.rename_column("reports", "ftp_events", "commtouchav_name", "virusblocker_name");
-
-        sql_helper.create_index("reports", "ftp_events", "session_id");
-        sql_helper.create_index("reports", "ftp_events", "policy_id");
-        sql_helper.create_index("reports", "ftp_events", "time_stamp");
+    virusblocker_name text)""",
+                                ["request_id","event_id"],
+                                ["policy_id","session_id","time_stamp"])
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("ftp_events", cutoff)
-        sql_helper.drop_fact_table("ftp_totals", cutoff)
+        sql_helper.clean_table("ftp_events", cutoff)
+        sql_helper.clean_table("ftp_totals", cutoff)
 
 reports.engine.register_node(FtpCasing())

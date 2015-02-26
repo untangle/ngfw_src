@@ -171,13 +171,6 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
         this.tmpFile = tmpFile;
     }
     
-    private static String sql = "INSERT INTO reports.mail_msgs "
-            + "(time_stamp, session_id, client_intf, server_intf, "
-            + "c_client_addr, c_client_port, c_server_addr, c_server_port, "
-            + "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id, " + "username, "
-            + "msg_id, subject, " + "sender, " + "hostname " + ")" + " VALUES "
-            + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
@@ -187,6 +180,13 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
     @Override
     public List<java.sql.PreparedStatement> getDirectEventSqls(java.sql.Connection conn) throws Exception
     {
+        String sql = "INSERT INTO reports.mail_msgs" + getPartitionTablePostfix() + " " +
+            "(time_stamp, session_id, client_intf, server_intf, " +
+            "c_client_addr, c_client_port, c_server_addr, c_server_port, " +
+            "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id, " + "username, " +
+            "msg_id, subject, " + "sender, " + "hostname " + ")" + " VALUES " +
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
         List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 

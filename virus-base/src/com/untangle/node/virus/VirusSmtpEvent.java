@@ -65,7 +65,7 @@ public class VirusSmtpEvent extends LogEvent
         int i=0;
         java.sql.PreparedStatement pstmt;
         
-        sql = "UPDATE reports.mail_msgs " +
+        sql = "UPDATE reports.mail_msgs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
             getNodeName().toLowerCase() + "_clean = ?, " + 
             getNodeName().toLowerCase() + "_name = ? " + 
@@ -78,7 +78,7 @@ public class VirusSmtpEvent extends LogEvent
         pstmt.setLong(++i, getMessageId());
         sqlList.add(pstmt);
         
-        sql = "UPDATE reports.mail_addrs " +
+        sql = "UPDATE reports.mail_addrs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
             getNodeName().toLowerCase() + "_clean = ?, " + 
             getNodeName().toLowerCase() + "_name = ? " + 

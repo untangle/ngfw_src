@@ -15,7 +15,6 @@ Options:
   -g | --no-data-gen            skip graph data processing
   -p | --no-plot-gen            skip graph image processing
   -m | --no-mail                skip mailing
-  -c | --create-schemas         create the SQL schemas
   -a | --attach-csv             attach events as csv
   -r | --report-length          number of days to report on
   -s <cs> | --simulate=<cs>     run reports of the remote DB specified by the connection string
@@ -36,9 +35,9 @@ from reports.log import *
 logger = getLogger(__name__)
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hcgpmiaver:d:l:t:s:b:",
+     opts, args = getopt.getopt(sys.argv[1:], "hgpmiaver:d:l:t:s:b:",
                                 ['help', 'no-cleanup',
-                                 'no-data-gen', 'no-mail', 'create-schemas',
+                                 'no-data-gen', 'no-mail', 
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
                                  'date=', 'simulate=', 'behave='])
@@ -53,7 +52,6 @@ no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
 no_mail = False
-create_schemas = False
 attach_csv = False
 attachment_size_limit = None
 end_date = mx.DateTime.today()
@@ -74,8 +72,6 @@ for opt in opts:
           no_plot_gen = True
      elif k == '-m' or k == '--no-mail':
           no_mail = True
-     elif k == '-c' or k == '--create-schemas':
-          create_schemas = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-r' or k == '--report-length':
@@ -104,17 +100,13 @@ if os.path.isfile(LOCKFILE):
      pid = verifyPidFile()
      if pid:
           logger.warning("Reports are already running (pid %s)..." % pid)
-          if create_schemas:
-               logger.error("... aborting create-schemas call.")
-               sys.exit(1)
-          else:
-               slept = 0
-               while pid:
-                    if (slept % 60) == 0:
-                         logger.warning("... waiting on pid %s" % pid)
-                    time.sleep(1)
-                    pid = verifyPidFile()
-                    slept += 1
+          slept = 0
+          while pid:
+               if (slept % 60) == 0:
+                    logger.warning("... waiting on pid %s" % pid)
+               time.sleep(1)
+               pid = verifyPidFile()
+               slept += 1
      else:
           logger.info("Removing leftover pidfile (pid %s)" % pid)
           os.remove(LOCKFILE)
@@ -219,15 +211,10 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 ## main
 total_start_time = time.time()
 
-try:
-     sql_helper.create_schema(sql_helper.SCHEMA);
-except Exception:
-     pass
+os.system(PREFIX + "/usr/share/untangle/bin/reporting-generate-tables.py")
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
-if create_schemas and report_lengths == []:
-     report_lengths = [1]
 
 running = False
 for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE, stderr=PIPE).communicate()[0].split('\n'):
@@ -235,27 +222,23 @@ for instance in Popen([PREFIX + "/usr/bin/ucli", "instances"], stdout=PIPE, stde
           running = True
           break
 
-if not running and not create_schemas:
+if not running:
      # only print this if create schemas wasn't specified
      logger.error("Reports node is not installed or not running, exiting.")
      sys.exit(0)
 
-try:
-     sql_helper.create_table("reports","report_data_days","""\
+if not sql_helper.table_exists( "report_data_days" ):
+     sql_helper.create_table("""\
 CREATE TABLE reports.report_data_days (
         day_name text NOT NULL,
-        day_begin date NOT NULL)""")
-except Exception:
-     pass
+        day_begin date NOT NULL)""", create_partitions=False)
 
-try:
-     sql_helper.create_table("reports","table_updates","""\
+if not sql_helper.table_exists( "table_updates" ):
+     sql_helper.create_table("""\
 CREATE TABLE reports.table_updates (
     tablename text NOT NULL,
     last_update timestamp NOT NULL,
-    PRIMARY KEY (tablename))""")
-except Exception:
-     pass
+    PRIMARY KEY (tablename))""", create_partitions=False)
 
 node = get_node_settings('untangle-node-reporting')
 if not node:
@@ -282,46 +265,42 @@ if report_lengths != []:
      except Exception, e:
           logger.critical("Exception while setting up reports engine: %s" % (e,), exc_info=True)
           sys.exit(1)
-     if not create_schemas:
-          try:
-               reports.engine.process_fact_tables(init_date, start_time)
-               reports.engine.post_facttable_setup(init_date, start_time)
-          except Exception, e:
-               logger.critical("Exception while processing fact-tables: %s" % (e,), exc_info=True)
-               sys.exit(1)
-
-if not create_schemas:
-     mail_reports = []
-
      try:
-         for report_days in report_lengths:
-              reports.engine.export_static_data(reports_output_base, end_date, report_days)
-
-              if not no_data_gen:
-                   logger.info("Generating reports for %s days" % (report_days,))
-                   mail_reports = reports.engine.generate_reports(reports_output_base, end_date, report_days)
-
-              if not no_plot_gen:
-                   logger.info("Generating plots for %s days" % (report_days,))          
-                   reports.engine.generate_plots(reports_output_base, end_date, report_days)
-
-              if not no_mail and not simulate:
-                   logger.info("About to email report summaries for %s days" % (report_days,))          
-                   pdf_file = None
-                   try:
-                        pdf_file = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
-                   except Exception, e:
-                        logger.warn("Failed to generate PDF")
-                        traceback.print_exc(e)
-                   reports.mailer.mail_reports(end_date, report_days, pdf_file, mail_reports, attach_csv, attachment_size_limit)
-                   if pdf_file:
-                        os.remove( pdf_file )
+          reports.engine.process_fact_tables(init_date, start_time)
+          reports.engine.post_facttable_setup(init_date, start_time)
      except Exception, e:
-          logger.critical("Exception while building report: %s" % (e,), exc_info=True)
-else:
-     logger.info("Create schemas mode, not generating reports themselves")
+          logger.critical("Exception while processing fact-tables: %s" % (e,), exc_info=True)
+          sys.exit(1)
 
-if not no_cleanup and not simulate and not create_schemas:
+mail_reports = []
+
+try:
+    for report_days in report_lengths:
+         reports.engine.export_static_data(reports_output_base, end_date, report_days)
+
+         if not no_data_gen:
+              logger.info("Generating reports for %s days" % (report_days,))
+              mail_reports = reports.engine.generate_reports(reports_output_base, end_date, report_days)
+
+         if not no_plot_gen:
+              logger.info("Generating plots for %s days" % (report_days,))          
+              reports.engine.generate_plots(reports_output_base, end_date, report_days)
+
+         if not no_mail and not simulate:
+              logger.info("About to email report summaries for %s days" % (report_days,))          
+              pdf_file = None
+              try:
+                   pdf_file = reports.pdf.generate_pdf(reports_output_base, end_date, report_days, mail_reports)
+              except Exception, e:
+                   logger.warn("Failed to generate PDF")
+                   traceback.print_exc(e)
+              reports.mailer.mail_reports(end_date, report_days, pdf_file, mail_reports, attach_csv, attachment_size_limit)
+              if pdf_file:
+                   os.remove( pdf_file )
+except Exception, e:
+     logger.critical("Exception while building report: %s" % (e,), exc_info=True)
+
+if not no_cleanup and not simulate:
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(float(db_retention))
      reports.engine.reports_cleanup(reports_cutoff)     
      write_cutoff_date(DateFromMx(reports_cutoff))

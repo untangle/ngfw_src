@@ -43,14 +43,14 @@ public class AlertEvent extends LogEvent
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
     
-    private static String sql = "INSERT INTO reports.alerts " +
-        "(time_stamp, description, summary_text, json) " +
-        "values " +
-        "(?, ?, ?, ?); ";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "INSERT INTO reports.alerts" + getPartitionTablePostfix() + " " +
+            "(time_stamp, description, summary_text, json) " +
+            "values " +
+            "(?, ?, ?, ?); ";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

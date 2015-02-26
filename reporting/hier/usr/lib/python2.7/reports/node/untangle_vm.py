@@ -42,18 +42,8 @@ class UvmNode(Node):
         self.branded_name = self.__get_branded_name() or "Untangle"
         Node.__init__(self, 'untangle-vm', self.branded_name + " " + _("Server"))
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
-
-        self.__do_housekeeping()
-
-        self.__build_admin_logins_table()
-        self.__build_sessions_table()
-        self.__build_penaltybox_table()
-        self.__build_quotas_table()
-        self.__build_host_table_updates_table()
-        self.__build_alerts_events_table()
-
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
@@ -71,36 +61,33 @@ class UvmNode(Node):
 
         self.branded_name = self.__get_branded_name() or self.name
 
-    @print_timing
+    def create_tables(self):
+        self.__build_admin_logins_table()
+        self.__build_sessions_table()
+        self.__build_penaltybox_table()
+        self.__build_quotas_table()
+        self.__build_host_table_updates_table()
+        self.__build_alerts_events_table()
+
+    @sql_helper.print_timing
     def __get_branded_name(self):
         brandco = get_node_settings_item('untangle-node-branding','companyName')
         if (brandco != None):
             return brandco
         return None
 
-    @print_timing
-    def __build_admin_logins_table(self):
-        sql_helper.create_fact_table("""\
-CREATE TABLE reports.admin_logins (
-    time_stamp timestamp without time zone,
-    login text,
-    local boolean,
-    client_addr inet,
-    succeeded boolean,
-    reason char(1) )""")
-
     def post_facttable_setup(self, start_date, end_date):
         self.__make_session_counts_table(start_date, end_date)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("admin_logins", cutoff)
-        sql_helper.drop_fact_table("sessions", cutoff)
-        sql_helper.drop_fact_table("session_totals", cutoff)
-        sql_helper.drop_fact_table("session_counts", cutoff)
-        sql_helper.drop_fact_table("penaltybox", cutoff)
-        sql_helper.drop_fact_table("quotas", cutoff)
-        sql_helper.drop_fact_table("host_table_updates", cutoff)
-        sql_helper.drop_fact_table("alerts", cutoff)
+        sql_helper.clean_table("admin_logins", cutoff)
+        sql_helper.clean_table("sessions", cutoff)
+        sql_helper.clean_table("session_totals", cutoff)
+        sql_helper.clean_table("session_counts", cutoff)
+        sql_helper.clean_table("penaltybox", cutoff)
+        sql_helper.clean_table("quotas", cutoff)
+        sql_helper.clean_table("host_table_updates", cutoff)
+        sql_helper.clean_table("alerts", cutoff)
 
     def get_report(self):
         sections = []
@@ -118,9 +105,20 @@ CREATE TABLE reports.admin_logins (
 
         return Report(self, sections)
 
-    @print_timing
+    @sql_helper.print_timing
+    def __build_admin_logins_table(self):
+        sql_helper.create_table("""\
+CREATE TABLE reports.admin_logins (
+    time_stamp timestamp without time zone,
+    login text,
+    local boolean,
+    client_addr inet,
+    succeeded boolean,
+    reason char(1) )""")
+
+    @sql_helper.print_timing
     def __build_sessions_table( self ):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
         event_id bigserial,
@@ -142,55 +140,45 @@ CREATE TABLE reports.sessions (
         c2p_bytes int8 default 0,
         p2c_bytes int8 default 0,
         s2p_bytes int8 default 0,
-        p2s_bytes int8 default 0)""")
+        p2s_bytes int8 default 0,
+        shield_blocked boolean,
+        firewall_blocked boolean,
+        firewall_flagged boolean,
+        firewall_rule_index integer,
+        protofilter_protocol text,
+        protofilter_blocked boolean,
+        capture_blocked boolean,
+        capture_rule_index integer,
+        classd_application text,
+        classd_protochain text,
+        classd_blocked boolean,
+        classd_flagged boolean,
+        classd_confidence integer,
+        classd_ruleid integer,
+        classd_detail text,
+        ips_blocked boolean,
+        ips_ruleid integer,
+        ips_description text,
+        bandwidth_priority integer,
+        bandwidth_rule integer,
+        https_ruleid integer,
+        https_status text,
+        https_detail text)""", 
+                                ["session_id","event_id"],
+                                ["policy_id","time_stamp"])
 
-        sql_helper.add_column('reports', 'sessions', 'shield_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'firewall_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'firewall_flagged', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'protofilter_protocol', 'text')
-        sql_helper.add_column('reports', 'sessions', 'protofilter_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'capture_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'capture_rule_index', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'classd_application', 'text')
-        sql_helper.add_column('reports', 'sessions', 'classd_protochain', 'text')
-        sql_helper.add_column('reports', 'sessions', 'classd_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'classd_flagged', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'classd_confidence', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'classd_ruleid', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'classd_detail', 'text')
-        sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
-        sql_helper.add_column('reports', 'sessions', 'ips_ruleid', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
-        sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'https_ruleid', 'integer')
-        sql_helper.add_column('reports', 'sessions', 'https_status', 'text')
-        sql_helper.add_column('reports', 'sessions', 'https_detail', 'text')
-
-        # If session_id index does not exist, create it
-        if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
-            sql_helper.create_index("reports","sessions","session_id", unique=True);
-
-        # If event_id index does not exist, create it
-        if not sql_helper.index_exists("reports","sessions","event_id", unique=True):
-            sql_helper.create_index("reports","sessions","event_id", unique=True);
-
-        sql_helper.create_index("reports","sessions","policy_id");
-        sql_helper.create_index("reports","sessions","time_stamp");
-
-    @print_timing
+    @sql_helper.print_timing
     def __build_alerts_events_table( self ):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.alerts (
         time_stamp timestamp NOT NULL,
         description text NOT NULL,
         summary_text text NOT NULL,
         json text NOT NULL)""")
 
-    @print_timing
+    @sql_helper.print_timing
     def __make_session_counts_table(self, start_date, end_date):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.session_counts (
         time_stamp timestamp,
         username text,
@@ -199,10 +187,7 @@ CREATE TABLE reports.session_counts (
         server_intf smallint,
         num_sessions int8)""")
 
-        sql_helper.create_index("reports","session_counts","time_stamp");
-
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
-                                                        start_date))
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts', start_date))
 
         conn = sql_helper.get_connection()
         try:
@@ -228,46 +213,34 @@ GROUP BY time, username, hostname, client_intf, server_intf
             raise e
 
     def __build_penaltybox_table( self ):
-        sql_helper.create_fact_table("""
+        sql_helper.create_table("""
 CREATE TABLE reports.penaltybox (
         address inet,
         reason text,
         start_time timestamp,
         end_time timestamp,
-        time_stamp timestamp)""")
-
-        sql_helper.create_index("reports","penaltybox","time_stamp");
-        sql_helper.create_index("reports","penaltybox","start_time");
+        time_stamp timestamp)""", [], ["time_stamp","start_time"])
 
     def __build_quotas_table( self ):
-        sql_helper.create_fact_table("""
+        sql_helper.create_table("""
 CREATE TABLE reports.quotas (
         time_stamp timestamp,
+        event_id bigserial,
         address inet,
         action integer,
         size bigint,
-        reason text,
-        event_id bigserial)""")
-
-        sql_helper.create_index("reports","quotas","event_id");
-        sql_helper.create_index("reports","quotas","time_stamp");
+        reason text)""", ["event_id"], ["time_stamp"])
 
     def __build_host_table_updates_table( self ):
-        sql_helper.create_fact_table("""
+        sql_helper.create_table("""
 CREATE TABLE reports.host_table_updates (
         address inet,
         key text,
         value text,
-        time_stamp timestamp)""")
-
-        sql_helper.create_index("reports","penaltybox","time_stamp");
+        time_stamp timestamp)""",[],["time_stamp"])
 
     def teardown(self):
         pass
-
-    def __do_housekeeping(self):
-        if sql_helper.table_exists('reports', 'merged_address_map'):
-            sql_helper.run_sql("DROP TABLE reports.merged_address_map");
 
 class VmHighlight(Highlight):
     def __init__(self, name, branded_name):
@@ -291,7 +264,7 @@ class VmHighlight(Highlight):
                            _("logged") + " " + 
                            "%(alerts)s" + " " + _("alerts"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if host or user or email:
@@ -329,7 +302,7 @@ class BandwidthUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'bandwidth-usage', _('Bandwidth Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -395,7 +368,7 @@ class SessionsPerMinute(Graph):
     def __init__(self):
         Graph.__init__(self, 'sessions-per-minute', _('Sessions per Minute'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -459,7 +432,7 @@ class DestinationPorts(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-dest-ports', _('Top Destination Ports'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -517,7 +490,7 @@ class HostsByPenalty(Graph):
     def __init__(self):
         Graph.__init__(self, 'hosts-by-penalty', _('Top Penalty Box Hosts'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:

@@ -45,19 +45,17 @@ public class VirusFtpEvent extends LogEvent
     public String getUri() { return uri; }
     public void setUri(String uri) { this.uri = uri; }
     
-    private static String sql = "INSERT INTO reports.ftp_events " + "(time_stamp, "
-            + "session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, "
-            + "s_client_addr, s_server_addr, policy_id, username, "
-            + " hostname, uri, ";
-    
-    private static String sql_end = ") values "
-            + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql(java.sql.Connection conn) throws Exception
     {
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql + getNodeName().toLowerCase() + "_clean, " + 
-                getNodeName().toLowerCase() + "_name "  + sql_end);
+        String sql = "INSERT INTO reports.ftp_events" + getPartitionTablePostfix() + " " +
+            "(time_stamp, session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, " + 
+            "s_client_addr, s_server_addr, policy_id, username, " + 
+            " hostname, uri, " + 
+            getNodeName().toLowerCase() + "_clean, " + getNodeName().toLowerCase() + "_name "  +  ") values " + 
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
         int i = 0;
         pstmt.setTimestamp(++i, getTimeStamp());

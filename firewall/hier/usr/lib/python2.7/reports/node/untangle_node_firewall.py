@@ -78,7 +78,7 @@ class FirewallHighlight(Highlight):
                            _("sessions and blocked") + " " +
                            "%(blocks)s" + " " + _("according to the rules"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if email:
@@ -217,7 +217,7 @@ class TopTenFlaggingRulesByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-flagging-rules-by-hits', _('Top Firewall Flagging Rules By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -275,7 +275,7 @@ class TopTenFlaggedHostsByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-flagged-hosts-by-hits', _('Top Firewall Flagged Hosts By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -330,7 +330,7 @@ class TopTenFlaggedUsersByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-flagged-users-by-hits', _('Top Firewall Flagged Users By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -387,7 +387,7 @@ class TopTenBlockingRulesByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-blocking-rules-by-hits', _('Top Firewall Blocking Rules By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -444,7 +444,7 @@ class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -499,7 +499,7 @@ class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-firewall-blocked-users-by-hits', _('Top Firewall Blocked Users By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None

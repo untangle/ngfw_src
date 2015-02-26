@@ -46,9 +46,9 @@ from reportlab.rl_config import defaultPageSize
 
 import reports
 import uvm.i18n_helper
+import reports.sql_helper as sql_helper
 
 from reports.engine import get_node_base
-from reports.sql_helper import print_timing
 from log import *
 logger = getLogger(__name__)
 
@@ -256,7 +256,7 @@ class BodyTemplate(PageTemplate):
                                  _('Page %d') % canvas.getPageNumber())
         canvas.restoreState()
 
-@print_timing
+@sql_helper.print_timing
 def generate_pdf(report_base, end_date, report_days, mail_reports):
     file = tempfile.mktemp()
 

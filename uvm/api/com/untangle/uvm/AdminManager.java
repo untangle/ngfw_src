@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
@@ -30,6 +31,13 @@ public interface AdminManager
      */
     String getDate();
 
+    /**
+     * returns the current Calendar
+     * when the timezone is changed all calendars must be recreated.
+     * Calendars are expensive to create so this provides a global one
+     */
+    Calendar getCalendar();
+    
     String getModificationState();
 
     String getRebootCount();

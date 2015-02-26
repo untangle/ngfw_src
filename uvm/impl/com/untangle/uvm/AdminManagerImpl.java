@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -53,6 +54,8 @@ public class AdminManagerImpl implements AdminManager
 
     private AdminSettings settings;
 
+    private Calendar currentCalendar = Calendar.getInstance();
+    
     protected AdminManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -140,6 +143,7 @@ public class AdminManagerImpl implements AdminManager
         }
     }
 
+    @Override
     public void setTimeZone(TimeZone timezone)
     {
         String id = timezone.getID();
@@ -153,8 +157,16 @@ public class AdminManagerImpl implements AdminManager
             logger.info("Time zone set to : " + id);
             TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
         }
+
+        this.currentCalendar = Calendar.getInstance();
     }
 
+    @Override
+    public Calendar getCalendar()
+    {
+        return this.currentCalendar;
+    }
+    
     public String getDate()
     {
         return (new Date(System.currentTimeMillis())).toString();

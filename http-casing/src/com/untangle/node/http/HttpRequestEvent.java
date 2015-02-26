@@ -95,22 +95,21 @@ public class HttpRequestEvent extends LogEvent
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }
     
-    private static String sql =
-        "INSERT INTO reports.http_events " +
-        "(time_stamp, " +
-        "session_id, client_intf, server_intf, " +
-        "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
-        "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
-        "policy_id, username, " + 
-        "request_id, method, uri, " + 
-        "host, c2s_content_length, " + 
-        "hostname) " + 
-        "values " +
-        "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
+        String sql = "INSERT INTO reports.http_events" + getPartitionTablePostfix() + " " +
+            "(time_stamp, " +
+            "session_id, client_intf, server_intf, " +
+            "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
+            "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
+            "policy_id, username, " + 
+            "request_id, method, uri, " + 
+            "host, c2s_content_length, " + 
+            "hostname) " + 
+            "values " +
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

@@ -113,14 +113,14 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
     public long getBytesTxDelta() { return this.bytesTxDelta; }
     public void setBytesTxDelta( long newValue ) { this.bytesTxDelta = newValue; }
     
-    private static String sql = "INSERT INTO reports.openvpn_stats " +
+    @Override
+    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
+    {
+        String sql = "INSERT INTO reports.openvpn_stats" + getPartitionTablePostfix() + " " +
         "(time_stamp, start_time, end_time, rx_bytes, tx_bytes, remote_address, remote_port, pool_address, client_name) " +
         "values " +
         "( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
 
-    @Override
-    public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
-    {
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
         int i=0;

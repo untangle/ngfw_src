@@ -28,8 +28,6 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
     private Timestamp exitTime;
     private String reason;
 
-    // constructors -----------------------------------------------------------
-
     public PenaltyBoxEvent() { }
 
     public PenaltyBoxEvent(int action, InetAddress address, Date entryTime, Date exitTime, String reason)
@@ -41,8 +39,6 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
         this.exitTime = new Timestamp(exitTime.getTime());
     }
     
-    // accessors --------------------------------------------------------------
-
     public int getAction() { return action; }
     public void setAction( int action ) { this.action = action; }
 
@@ -64,7 +60,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
         switch(action) {
         case ACTION_ENTER:
             sql =
-                "INSERT INTO reports.penaltybox " +
+                "INSERT INTO reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "(start_time, end_time, address, time_stamp, reason) " +
                 "values " +
                 "( ?, ?, ?, ?, ?) ";
@@ -77,7 +73,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return pstmt;
         case ACTION_EXIT:
             sql =
-                "UPDATE reports.penaltybox " + 
+                "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " +
                 "WHERE start_time = ? ";
             pstmt = conn.prepareStatement( sql );
@@ -86,7 +82,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return pstmt;
         case ACTION_REENTER:
             sql =
-                "UPDATE reports.penaltybox " + 
+                "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " + 
                 "WHERE start_time = ? ";
             pstmt = conn.prepareStatement( sql );

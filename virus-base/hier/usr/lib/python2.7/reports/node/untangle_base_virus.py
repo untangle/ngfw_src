@@ -59,8 +59,7 @@ count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
         
         ft = reports.engine.get_fact_table('reports.ftp_totals')
 
-        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
-                                  'integer',
+        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name, 'integer',
                                   """\
 count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
 """ % (2 * (self.__vendor_name,))))
@@ -141,8 +140,8 @@ count(CASE WHEN %s_clean IS NULL OR %s_clean THEN null ELSE 1 END)
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table('virus_http_totals', cutoff)
-        sql_helper.drop_fact_table('virus_mail_totals', cutoff)        
+        sql_helper.clean_table('virus_http_totals', cutoff)
+        sql_helper.clean_table('virus_mail_totals', cutoff)        
 
 class VirusHighlight(Highlight):
     def __init__(self, name, vendor_name):
@@ -153,7 +152,7 @@ class VirusHighlight(Highlight):
                            "%(viruses)s" + " " + _("viruses"))
         self.__vendor_name = vendor_name
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if email:

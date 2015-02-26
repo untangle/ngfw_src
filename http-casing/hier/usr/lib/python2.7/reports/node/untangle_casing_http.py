@@ -17,25 +17,24 @@ class HttpCasing(Node):
     def parents(self):
         return ['untangle-vm']
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
-        self.__create_http_events()
-
         ft = FactTable('reports.http_totals', 'reports.http_events',
                        'time_stamp',
                        [Column('hostname', 'text'),
                         Column('username', 'text'),
-                        Column('host', 'text'),
-                        Column('s2c_content_type', 'text')],
+                        Column('host', 'text')],
                        [Column('hits', 'bigint', 'count(*)'),
                         Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
                         Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
-
         reports.engine.register_fact_table(ft)
 
-    @print_timing
+    def create_tables(self):
+        self.__create_http_events()
+
+    @sql_helper.print_timing
     def __create_http_events(self):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.http_events (
     event_id bigserial,
     time_stamp timestamp without time zone,
@@ -74,34 +73,29 @@ CREATE TABLE reports.http_events (
     clam_clean boolean,
     clam_name text,
     virusblocker_clean boolean,
-    virusblocker_name text)""")
-
-        # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","http_events","request_id", unique=True):
-            sql_helper.create_index("reports","http_events","request_id", unique=True);
-
-        # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","http_events","event_id", unique=True):
-            sql_helper.create_index("reports","http_events","event_id", unique=True);
-
-        # rename the old commtouch columns
-        sql_helper.rename_column("reports", "http_events", "commtouchav_clean", "virusblocker_clean");
-        sql_helper.rename_column("reports", "http_events", "commtouchav_name", "virusblocker_name");
-
-        sql_helper.create_index("reports","http_events","session_id");
-        sql_helper.create_index("reports","http_events","policy_id");
-        sql_helper.create_index("reports","http_events","time_stamp");
-
-        # web filter event log indexes
-        sql_helper.create_index("reports","http_events","sitefilter_blocked");
-        sql_helper.create_index("reports","http_events","sitefilter_flagged");
-
-        # web filter lite event log indexes
-        # sql_helper.create_index("reports","http_events","webfilter_blocked");
-        # sql_helper.create_index("reports","http_events","webfilter_flagged");
+    virusblocker_name text)""",
+                                ["event_id","request_id"],
+                                ["session_id",
+                                 "policy_id",
+                                 "time_stamp",
+                                 "webfilter_blocked",
+                                 "webfilter_flagged",
+                                 "webfilter_category",
+                                 "virusblocker_clean",
+                                 "clam_clean",
+                                 "adblocker_blocked",
+                                 "host",
+                                 "username",
+                                 "hostname",
+                                 "c_client_addr",
+                                 "client_intf",
+                                 "server_intf",
+                                 "sitefilter_blocked",
+                                 "sitefilter_flagged",
+                                 "siteblocker_category"])
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("http_events", cutoff)
-        sql_helper.drop_fact_table("http_totals", cutoff)
+        sql_helper.clean_table("http_events", cutoff)
+        sql_helper.clean_table("http_totals", cutoff)
 
 reports.engine.register_node(HttpCasing())

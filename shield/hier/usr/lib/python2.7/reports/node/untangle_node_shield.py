@@ -36,11 +36,10 @@ class Shield(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-shield','Shield')
 
-    @print_timing
+    @sql_helper.print_timing
     def setup(self):
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('shield_blocks', 'integer', "count(CASE WHEN shield_blocked THEN 1 ELSE null END)"))
-        return
 
     def get_toc_membership(self):
         return [HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -72,7 +71,7 @@ class ShieldHighlight(Highlight):
                            _("sessions and blocked") + " " +
                            "%(blocks)s" + " " + _("sessions"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if email:
@@ -201,7 +200,7 @@ class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-shield-blocked-hosts-by-hits', _('Top Shield Blocked Hosts By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:
@@ -256,7 +255,7 @@ class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-shield-blocked-users-by-hits', _('Top Shield Blocked Users By Hits'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email:

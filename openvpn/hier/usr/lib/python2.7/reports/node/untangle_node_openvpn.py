@@ -36,8 +36,6 @@ class OpenVpn(Node):
         Node.__init__(self, 'untangle-node-openvpn','OpenVPN')
 
     def setup(self):
-        self.__create_openvpn_stats( )
-
         ft = FactTable('reports.openvpn_connect_totals',
                        'reports.openvpn_stats',
                        'time_stamp',
@@ -47,6 +45,9 @@ class OpenVpn(Node):
                        [Column('rx_bytes', 'bigint', 'sum(rx_bytes)'),
                         Column('tx_bytes', 'bigint', 'sum(tx_bytes)')])
         reports.engine.register_fact_table(ft)
+
+    def create_tables(self):
+        self.__create_openvpn_stats( )
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -66,14 +67,14 @@ class OpenVpn(Node):
 
         return Report(self, sections)
 
-    @print_timing
+    @sql_helper.print_timing
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("openvpn_stats", cutoff)
-        sql_helper.drop_fact_table("openvpn_connect_totals", cutoff)
+        sql_helper.clean_table("openvpn_stats", cutoff)
+        sql_helper.clean_table("openvpn_connect_totals", cutoff)
 
-    @print_timing
+    @sql_helper.print_timing
     def __create_openvpn_stats( self ):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.openvpn_stats (
     time_stamp timestamp without time zone,
     start_time timestamp without time zone,
@@ -85,12 +86,7 @@ CREATE TABLE reports.openvpn_stats (
     remote_port integer,
     client_name text,
     event_id bigserial
-)""")
-
-        sql_helper.add_column('reports', 'openvpn_stats', 'pool_address', 'inet')
-        
-        sql_helper.create_index("reports","openvpn_stats","event_id");
-        sql_helper.create_index("reports","openvpn_stats","time_stamp");
+)""",["event_id"],["time_stamp"])
 
 class OpenvpnHighlight(Highlight):
     def __init__(self, name):
@@ -100,7 +96,7 @@ class OpenvpnHighlight(Highlight):
                            _("MB") + " " + _("of traffic and processed") +
                            " " + "%(logins)s" + " " + _("remote logins"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if host or user or email:
@@ -133,7 +129,7 @@ class BandwidthUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'bandwidth-usage', _('Bandwidth Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:
@@ -200,7 +196,7 @@ class TopUsers(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-users', _('Top Users'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if host or user or email:

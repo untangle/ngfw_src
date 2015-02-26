@@ -55,35 +55,28 @@ class Capture(Node):
         Node.__init__(self, 'untangle-node-capture','Captive Portal')
 
     def setup(self):
-        self.__make_capture_user_events_table()
-
-        ft = FactTable('reports.capture_user_totals',
-                       'reports.capture_user_events',
-                       'time_stamp', [], [])
+        ft = FactTable('reports.capture_user_totals', 'reports.capture_user_events', 'time_stamp', [], [])
         reports.engine.register_fact_table(ft)
 
-        ft.measures.append(Column('success',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'LOGIN' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('failure',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'FAILED' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('timeout',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'TIMEOUT' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('inactive',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'INACTIVE' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('user_logout',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'USER_LOGOUT' THEN 1 ELSE NULL END)"))
-        ft.measures.append(Column('admin_logout',
-                                    'integer',
-                                    "count(CASE WHEN event_info = 'ADMIN_LOGOUT' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('success', 'integer',
+                                  "count(CASE WHEN event_info = 'LOGIN' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('failure', 'integer',
+                                  "count(CASE WHEN event_info = 'FAILED' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('timeout', 'integer',
+                                  "count(CASE WHEN event_info = 'TIMEOUT' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('inactive', 'integer',
+                                  "count(CASE WHEN event_info = 'INACTIVE' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('user_logout', 'integer',
+                                  "count(CASE WHEN event_info = 'USER_LOGOUT' THEN 1 ELSE NULL END)"))
+        ft.measures.append(Column('admin_logout', 'integer',
+                                  "count(CASE WHEN event_info = 'ADMIN_LOGOUT' THEN 1 ELSE NULL END)"))
 
         ft = reports.engine.get_fact_table('reports.session_totals')
         ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN capture_blocked THEN 1 ELSE null END)"))
         ft.dimensions.append(Column('capture_rule_index', 'integer'))
+
+    def create_tables(self):
+        self.__make_capture_user_events_table()
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -107,28 +100,20 @@ class Capture(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_fact_table("capture_user_events", cutoff)
-        sql_helper.drop_fact_table("capture_user_totals", cutoff)
+        sql_helper.clean_table("capture_user_events", cutoff)
+        sql_helper.clean_table("capture_user_totals", cutoff)
 
-    @print_timing
+    @sql_helper.print_timing
     def __make_capture_user_events_table(self):
-        sql_helper.create_fact_table("""\
+        sql_helper.create_table("""\
 CREATE TABLE reports.capture_user_events (
     time_stamp timestamp without time zone,
     policy_id bigint,
+    event_id bigserial,
     login_name text,
     event_info text,
     auth_type text,
-    client_addr text,
-    event_id bigserial)""")
-
-        sql_helper.add_column('reports', 'capture_user_events', 'event_id', 'bigserial')
-
-        # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.convert_column("reports","capture_user_events","event_id","integer","bigint");
-
-        sql_helper.create_index("reports","capture_user_events","event_id");
-        sql_helper.create_index("reports","capture_user_events","time_stamp");
+    client_addr text)""",["event_id"],["time_stamp"])
 
 class CaptureHighlight(Highlight):
     def __init__(self, name):
@@ -137,7 +122,7 @@ class CaptureHighlight(Highlight):
                            _("processed") + " " + "%(logins)s" + " " +
                            _("user login events"))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_highlights(self, end_date, report_days,
                        host=None, user=None, email=None):
         if host or user or email:
@@ -169,7 +154,7 @@ class DailyUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage', _('Usage'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -317,7 +302,7 @@ class TopUsers(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-users', _('Top Captive Portal Users'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:
@@ -364,7 +349,7 @@ class TopBlockedClients(Graph):
     def __init__(self):
         Graph.__init__(self, 'top-blocked-users', _('Top Blocked Clients'))
 
-    @print_timing
+    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
         if email or host or user:

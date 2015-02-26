@@ -12,22 +12,16 @@ import com.untangle.node.http.BlockDetails;
 @SuppressWarnings("serial")
 public class VirusBlockDetails extends BlockDetails
 {
-    
     private final String reason;
     private final String vendor;
 
-    // constructor ------------------------------------------------------------
-
-    public VirusBlockDetails(String host,
-                             String uri, String reason,
-                             String vendor)
+    public VirusBlockDetails(String host, String uri, String reason, String vendor)
     {
         super(host, uri);
         this.reason = reason;
         this.vendor = vendor;
     }
 
-    // public methods ---------------------------------------------------------
     public String getReason()
     {
         return reason;
