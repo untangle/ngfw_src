@@ -696,19 +696,22 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         width: 100,
                         flex:1,
                         editor: null,
-                        menuDisabled: false
+                        menuDisabled: false,
+                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.settingsCmp.classtypesStore.findRecord( "name", value ).get("description") ) + '"';
+                            return value;
+                        }
                     },{
                         header: this.i18n._("Category"),
                         dataIndex: 'category',
                         sortable: true,
                         width: 100,
                         flex:1,
-                        editor: {
-                            xtype:'texfield',
-                            emptyText: this.i18n._("[enter category]"),
-                            allowBlank: false
-                        },
-                        menuDisabled: false
+                        menuDisabled: false,
+                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.settingsCmp.categoriesStore.findRecord( "name", value ).get("description") ) + '"';
+                            return value;
+                        }
                     },{
                         header: this.i18n._("Msg"),
                         dataIndex: 'msg',
