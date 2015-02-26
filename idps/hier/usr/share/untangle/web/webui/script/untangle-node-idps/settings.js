@@ -1495,19 +1495,30 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             fieldLabel: this.i18n._("Classtypes"),
             columns: 1,
             items: [],
-//            value: this.gui.wizardSettings.active_rules.classtypes,
-            // getValue: function(){
-            //     return 'abc';
-            // }
         };
+
         this.gui.classtypesStore.each( function(record){
             this.classtypesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ) + ' (' + record.get( 'priority' ) + ')',
                 name: 'classtypes_selected',
-//                tooltip: record.get( 'description' ),
-                inputValue: record.get( 'name' )
+                inputValue: record.get( 'name' ),
+                listeners: {
+                    render: function(){
+                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
+                        Ext.QuickTips.register({
+                            target:  id.elements[id.elements.length - 1].id, 
+                            text: record.get( 'description' ),
+                            dismissDelay: 5000
+                        });
+                    },
+                    destroy: function(){
+                        var id = Ext.get(Ext.DomQuery.select('#x-form-el-'+this.id+' div'));
+                        Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
+                    }
+                }
             });
         }, this );
+
 
         this.title = this.i18n._( "Classtypes" );
         this.panel = Ext.create('Ext.form.Panel',{
@@ -1646,12 +1657,26 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             columns: 1,
             items: []
         };
+        
         this.gui.categoriesStore.each( function(record){
             categoriesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ),
-//                tooltip: record.get( 'description' ),
                 name: 'categories_selected',
-                inputValue: record.get( 'name' )
+                inputValue: record.get( 'name' ),
+                listeners: {
+                    render: function(){
+                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
+                        Ext.QuickTips.register({
+                            target:  id.elements[id.elements.length - 1].id, 
+                            text: record.get( 'description' ),
+                            dismissDelay: 5000
+                        });
+                    },
+                    destroy: function(){
+                        var id = Ext.get(Ext.DomQuery.select('#x-form-el-'+this.id+' div'));
+                        Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
+                    }
+                }
             });
         } );
 
