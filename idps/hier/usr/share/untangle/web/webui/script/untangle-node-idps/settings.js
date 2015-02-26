@@ -104,6 +104,8 @@ Ext.define('Ung.RuleEditorGrid', {
         me.searchStatusBar = me.down('statusbar[name=searchStatusBar]');
     },
 
+    regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
+    regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
     afterDataBuild: function(handler){
         var me = this;
         me.callParent(arguments);
@@ -116,6 +118,10 @@ Ext.define('Ung.RuleEditorGrid', {
         me.storeClasstypes = Ext.create('Ext.data.Store', {
             fields: ['id', 'value']
         });
+        me.storeActiveVariables = Ext.create('Ext.data.Store', {
+            fields: ['id', 'ruleIds']
+        });
+
         me.store.each(
             function( record ){
                 var category = record.get("category");
@@ -129,8 +135,42 @@ Ext.define('Ung.RuleEditorGrid', {
             },
             this
         );
+
         me.rowEditor.down('combo[name=Classtype]').bindStore(me.storeClasstypes);
         me.rowEditor.down('combo[name=Category]').bindStore(me.storeCategories);
+    },
+
+    buildActiveVariableStore: function(){    
+        me = this;
+        me.store.each(
+            function( record ){
+                var ruleMatches, variableMatches;
+                var i, j;
+                var variableRecord;
+                var ruleId;
+                if( me.regexRule.test( record.get("rule") ) ){
+                    ruleMatches = me.regexRule.exec( record.get("rule") );
+                    for( i = 1; i < ruleMatches.length; i++ ){
+                        if( me.regexRuleVariable.test( ruleMatches[i] ) ){
+                            variableMatches = me.regexRuleVariable.exec( ruleMatches[i] );
+                            for( j = 1; j < variableMatches.length; j++ ){
+                                ruleId = me.getRuleId( record.get( "rule" ) );
+                                variableRecord = this.storeActiveVariables.findRecord("id", variableMatches[j]);
+                                if( variableRecord == null ){
+                                    this.storeActiveVariables.add( { 
+                                        id: variableMatches[j], 
+                                        ruleIds: [ruleId]
+                                    });
+                                }else{
+                                    variableRecord.set(variableRecord.get("ruleIds").push(ruleId));
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            this
+        );
     },
 
     /*
@@ -281,28 +321,42 @@ Ext.define('Ung.RuleEditorGrid', {
 
          // force textfield focus
          me.searchTextField.focus();
-     },
+    },
 
-     getPageList: function(useId, useInternalId) {
+    getPageList: function(useId, useInternalId) {
         this.store.clearFilter(true);
         return this.callSuper( useId, useInternalId );
-     },
+    },
 
-     getData: function( data ){
+    /*
+     * Create rule id (sid_gid) from raw rule
+     */
+    regexRuleSid: /\s+sid:\s*([^;]+);/,
+    regexRuleGid: /\s+gid:\s*([^;]+);/,
+    getRuleId: function( rule ){
+        var gid = "1";
+        var sid = "1";
+        if( this.regexRuleGid.test( rule ) === true ){
+            gid = this.regexRuleGid.exec( rule )[1];
+        }
+        if( this.regexRuleSid.test( rule ) === true ){
+            sid = this.regexRuleSid.exec( rule )[1];
+        }
+        return sid + "_" + gid;
+    },
+
+    /*
+     * Modify to include original rule identiifer
+     */
+    getData: function( data ){
         this.data = this.callSuper( data );
 
-        var gidRegex = /\s+gid:\s*([^;]+);/;
-        var gid = "";
         for( var i = 0; i < this.data.length; i++ ){
-            gid = "1";
-            if( gidRegex.test( this.data.rule ) === true ){
-                gid = gidRegex.exec( this.data.rule[1] );
-            }
-            this.data[i].originalId = this.data[i].sid + "_" + gid;
+            this.data[i].originalId = this.getRuleId( this.data.rule );
             this.data[i].path = this.data[i].path;
         }
         return this.data;
-     }
+    }
 
 });
 
@@ -582,7 +636,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             items: [
                 this.gridRules = Ext.create('Ung.RuleEditorGrid', {
                     name: 'Rules',
-                    flex: 1,
+                    flex: 3,
                     groupField: 'classtype',
                     sortField: 'category',
                     style: "margin-bottom:10px;",
@@ -998,7 +1052,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
                     },{
                         id: 'definition',
-                        header: this.i18n._("Pass"),
+                        header: this.i18n._("Definition"),
                         width: 300,
                         dataIndex: 'definition',
                         editor: {
@@ -1007,7 +1061,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                             allowBlank: false
                         }
                     },{
-                        header: this.i18n._("description"),
+                        header: this.i18n._("Description"),
                         width: 300,
                         dataIndex: 'description',
                         flex:1,
@@ -1043,7 +1097,38 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         emptyText: this.i18n._("[enter description]"),
                         allowBlank: false,
                         width: 400
-                    }]
+                    }],
+                    deleteHandler: function( record ){
+                        var ruleEditorGrid = this.up("[$className=Ext.panel.Panel]").down("[$className=Ung.RuleEditorGrid]");
+                        if( ruleEditorGrid.storeActiveVariables.getCount() == 0 ){
+                            Ext.MessageBox.wait(i18n._("Validating..."), i18n._("Please wait") );
+                            var buildStore = Ext.create( 
+                                'Ext.util.DelayedTask', 
+                                function(){
+                                    ruleEditorGrid.buildActiveVariableStore();
+                                    Ext.MessageBox.hide();
+                                    this.deleteCheck(record);
+                                },
+                                this
+                                );
+                            buildStore.delay(100);
+                        }else{
+                            this.deleteCheck(record);
+                        }
+                    },
+                    deleteCheck: function( record ){
+                        var activeVariableRecord = this.up("[$className=Ext.panel.Panel]").down("[$className=Ung.RuleEditorGrid]").storeActiveVariables.findRecord("id", record.get('variable'), 0, false, false, true );
+                        if( ( activeVariableRecord != null ) &&
+                            ( activeVariableRecord.get("ruleIds").length > 0 ) ){
+                            Ext.MessageBox.alert(
+                                i18n._("Cannot Delete Variable"), 
+                                i18n._("Variable is in use by one or more rules.")
+                            );
+                        }else{
+                            this.stopEditing();
+                            this.updateChangedData(record, "deleted");
+                        }
+                    }
                 })
         ]});
     },
@@ -1657,7 +1742,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             columns: 1,
             items: []
         };
-        
+
         this.gui.categoriesStore.each( function(record){
             categoriesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ),
