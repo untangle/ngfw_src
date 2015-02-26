@@ -130,7 +130,12 @@ int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
 
         memcpy( ((unsigned char *)packet), mac_dst, sizeof( mac_dst ));
 
-        /*Set nfmark to SRC MAC*/ 
+        /**
+         * There is no way with the utun API to reinject the packet with a certain nfmark 
+         * We need to set the nfmark so that the SYN/ACK can be marked appropriately so it goes back out the correct interface.
+         * So we hack it by encoding the desired src interface mark into the source MAC address of the packet
+         * In iptables we will set the nfmark and connmark based off the source MAC address
+         */
         mac_src[5] = nfmark & 0x00FF;
  
         memcpy(&(((unsigned char *)packet)[ETH_ALEN]), mac_src, sizeof( mac_src)); 
