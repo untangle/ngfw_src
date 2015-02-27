@@ -294,6 +294,12 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
+
+        /**
+         * FIXME create report entries
+         */
+        ReportEntry entry = new ReportEntry();
+        /* XXXX */
         
         /**
          * If there are still no settings, just initialize

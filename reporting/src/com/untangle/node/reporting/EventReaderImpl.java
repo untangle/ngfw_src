@@ -23,6 +23,8 @@ public class EventReaderImpl
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+    
     private ReportingNodeImpl node;
 
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
@@ -79,7 +81,6 @@ public class EventReaderImpl
                     insertIndex = orderByIndex; // insert the where clause before "order by"
                 else
                     insertIndex = queryStr.length() - 1; // insert the where clause at the end
-                DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm");
 
                 String queryPart1 = queryStr.substring(0, insertIndex);
                 String queryPart2 = queryStr.substring(insertIndex);
@@ -87,9 +88,9 @@ public class EventReaderImpl
                 if ( whereIndex < 0 )
                     queryStr += " where true ";
                 if ( endDate != null )
-                    queryStr += " and time_stamp <= '" + df.format(endDate)   + "' ";
+                    queryStr += " and time_stamp <= '" + dateFormatter.format(endDate)   + "' ";
                 if ( startDate != null )
-                    queryStr += " and time_stamp >= '" + df.format(startDate) + "' ";
+                    queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
                 queryStr += queryPart2;
             }
             if (limit > 0)

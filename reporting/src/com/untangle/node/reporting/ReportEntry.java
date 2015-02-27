@@ -3,12 +3,17 @@
  */
 package com.untangle.node.reporting;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Date;
-import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * The settings for an individual report entry (graph)
@@ -16,10 +21,20 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class ReportEntry implements Serializable, JSONString
 {
+    private static final Logger logger = Logger.getLogger(ReportEntry.class);
+    private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+
     public static enum ReportEntryType {
         TEXT, /* A text entry */
             PIE_GRAPH, /* A top X pie chart graph */
             TIME_GRAPH /* A graph with time (minutes) on the x-axis */
+            };
+
+    public static enum TimeDataInterval {
+        SECOND,
+            MINUTE,
+            HOUR,
+            DAY
             };
 
     private ReportEntryType type;
@@ -33,6 +48,9 @@ public class ReportEntry implements Serializable, JSONString
 
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
+
+    private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
+    private String[] timeDataColumns; /* The data to graph by time */
     
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
@@ -73,23 +91,105 @@ public class ReportEntry implements Serializable, JSONString
     public Boolean getOrderDesc() { return this.orderDesc; }
     public void setOrderDesc( Boolean newValue ) { this.orderDesc = newValue; }
 
+    public TimeDataInterval getTimeDataInterval() { return this.timeDataInterval; }
+    public void setTimeDataInterval( TimeDataInterval newValue ) { this.timeDataInterval = newValue; }
+
+    public String[] getTimeDataColumns() { return this.timeDataColumns; }
+    public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
+    
     public String toSql( Date startDate, Date endDate )
     {
+        if ( endDate == null )
+            endDate = new Date(); // now
+        if ( startDate == null ) {
+            logger.warn("startDate not specified, using 1 day ago");
+            startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
+        }
+
+        String dateCondition =
+            " time_stamp > '" + dateFormatter.format(startDate) + "' " + " and " +
+            " time_stamp < '" + dateFormatter.format(endDate) + "' ";
+        
         switch ( this.type ) {
 
         case PIE_GRAPH:
-            return "select " +
+
+            String pie_query = "SELECT " +
                 getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
-                " from " +
-                "reports." + getTable() +
-                " group by " + getPieGroupColumn() + 
-                ( getOrderByColumn() == null ? "" : " order by " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
+                " FROM " +
+                " reports." + getTable() +
+                " WHERE " + dateCondition + 
+                " GROUP BY " + getPieGroupColumn() + 
+                ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
+            return pie_query;
+
         case TIME_GRAPH:
-            return "FIXME";
+
+            String generate_series = " SELECT generate_series( " +
+                " date_trunc( '" + getTimeDataInterval().toString().toLowerCase() + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " '1 " + getTimeDataInterval().toString().toLowerCase() + "' ) as time_trunc ";
+            
+            String time_query = "SELECT " +
+                " date_trunc( '" + getTimeDataInterval().toString().toLowerCase() + "', time_stamp ) as time_trunc ";
+
+            for ( String s : getTimeDataColumns() )
+                time_query += ", " + s;
+
+            time_query += " FROM " +
+                " reports." + getTable() +
+                " WHERE " + dateCondition + 
+                " GROUP BY time_trunc ";
+
+            String final_query = " SELECT * FROM " +
+                " ( " + generate_series + " ) as t1 " +
+                "LEFT JOIN " +
+                " ( " + time_query + " ) as t2 " +
+                " USING (time_trunc) " +
+                " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
+            return final_query;
+            
         case TEXT:
             return "FIXME";
         }
 
         return "FIXME";
     }
+
+    static {
+        try {
+            ReportEntry entry = new ReportEntry();
+
+            entry.setCategory("Web Filter");
+            entry.setTitle("Top Web Browsing Hosts");
+            entry.setDescription("The number of web requests by each host.");
+            entry.setTable("http_events");
+            entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
+            entry.setPieSumColumn("count(*)");
+            entry.setPieGroupColumn("hostname");
+            entry.setOrderByColumn("value");
+            entry.setOrderDesc(Boolean.TRUE);
+
+            logger.warn("XXXXXXXXXXX:" + entry.toSql(null, null));
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry );
+
+            entry.setCategory("Web Filter");
+            entry.setTitle("Hourly Web Traffic");
+            entry.setDescription("The number of web requests by each host.");
+            entry.setTable("http_events");
+            entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
+            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.HOUR);
+            entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
+            //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
+            entry.setOrderDesc(Boolean.FALSE);
+        
+            logger.warn("XXXXXXXXXXX:" + entry.toSql(null, null));
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "hourlyWeb.js", entry );
+        
+        } catch (Exception e) {
+            logger.warn("Exception.",e);
+        }
+        
+    }
+    
 }
