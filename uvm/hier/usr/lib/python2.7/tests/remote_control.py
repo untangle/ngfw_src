@@ -10,7 +10,7 @@ from uvm import Uvm
 # exteral global variables
 clientIP = None
 hostUsername = "testshell"
-hostKeyFile = "/usr/lib/python2.7/untangle_tests/testShell.key"
+hostKeyFile = "@PREFIX@/usr/lib/python2.7/tests/testShell.key"
 logfile = None
 verbosity = 0
 sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"

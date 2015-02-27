@@ -7,16 +7,15 @@ import time
 import traceback
 sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
-for f in os.listdir('@PREFIX@/usr/lib/python2.7/untangle_tests'):
+for f in os.listdir('@PREFIX@/usr/lib/python2.7/tests'):
     if f.endswith('py'):
         (m, e) = os.path.splitext(f)
-        __import__('untangle_tests.%s' % m)
+        __import__('tests.%s' % m)
 
 import unittest2
 import uvm
-import untangle_tests
-from   untangle_tests import *
-
+import tests
+from   tests import *
 
 
 class ArgumentParser(object):

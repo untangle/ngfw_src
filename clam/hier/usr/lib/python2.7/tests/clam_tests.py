@@ -7,7 +7,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
-from untangle_tests.virus_tests import VirusTests
+from tests.virus_tests import VirusTests
 import test_registry
 
 #

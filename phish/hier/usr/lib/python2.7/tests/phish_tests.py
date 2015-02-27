@@ -211,7 +211,7 @@ class PhishTests(unittest2.TestCase):
         if (externalClientResult != 0):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
         # Get latest TLS test command file
-        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/untangle_tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
+        testCopyResult = subprocess.call(["scp -3 -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key testshell@" + tlsSmtpServerHost + ":/home/testshell/test-tls.py testshell@" + remote_control.clientIP + ":/home/testshell/"],shell=True,stdout=None,stderr=None)
         assert(testCopyResult == 0)
         tlsSMTPResult = remote_control.runCommand("python test-tls.py", stdout=False, nowait=False)
         # print "TLS  : " + str(tlsSMTPResult)
