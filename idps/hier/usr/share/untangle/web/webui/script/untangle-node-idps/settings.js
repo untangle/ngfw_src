@@ -90,6 +90,10 @@ Ext.define('Ung.RuleEditorGrid', {
             name: "path",
             mapping: null
         });
+        me.fields.push({
+            name: "reference",
+            mapping: null
+        });
 
         me.callParent(arguments);
 
@@ -348,6 +352,7 @@ Ext.define('Ung.RuleEditorGrid', {
     /*
      * Modify to include original rule identiifer
      */
+     regexRuleReference: /\s+reference:\s*([^;]+);/,
     getData: function( data ){
         this.data = this.callSuper( data );
 
@@ -367,6 +372,10 @@ Ext.define('Ung.VariableEditorGrid', {
         me = this;
         me.fields.push({
             name: "originalId",
+            mapping: null
+        });
+        me.fields.push({
+            name: "reference",
             mapping: null
         });
 
@@ -1600,7 +1609,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                         });
                     },
                     destroy: function(){
-                        var id = Ext.get(Ext.DomQuery.select('#x-form-el-'+this.id+' div'));
+                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
                         Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
                     }
                 }
@@ -1761,7 +1770,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                         });
                     },
                     destroy: function(){
-                        var id = Ext.get(Ext.DomQuery.select('#x-form-el-'+this.id+' div'));
+                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
                         Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
                     }
                 }
