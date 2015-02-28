@@ -288,8 +288,6 @@ def appendVLAN(parentInterfaceID):
                 # only use if interface is addressed
                 return false
             physicalDev = interface['physicalDev']
-            symbolicDev = interface['symbolicDev']
-            systemDev = interface['systemDev']
             break
     
     testVLANIP = findUsedIP("1.2.3.4")
@@ -425,30 +423,27 @@ class NetworkTests(unittest2.TestCase):
         result = remote_control.isOnline()
         assert (result == 0)
 
-    def test_015_addVLANsAndAliases(self):
+    def test_015_addVLAN(self):
         raise unittest2.SkipTest("Review changes in test")        
         # Add a test static VLAN
         testVLANIP = appendVLAN(remote_control.interface)
         if testVLANIP:
             result = subprocess.call(["ping","-c","1",str(testVLANIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             assert(result == 0)
         else:
             # no VLAN was created so skip test
             unittest2.SkipTest("No VLAN or IP address available")
-            
 
-        # TODO add VLAN to device behind to verify VLAN over LAN
-        # sudo test -x vconfig
-        # sudo vconfig add eth0 100
-        # sudo ifconfig eth0.100 1.2.3.2/24
-        # ping -c 1 1.2.3.2
-        # sudo vconfig rem eth0.100
 
+    def test_016_addAlias(self):
+        raise unittest2.SkipTest("Review changes in test")        
         # Add Alias IP
         AliasIP = appendAliases(remote_control.interface)
         if AliasIP:
             # print "AliasIP <%s>" % AliasIP
             result = remote_control.runCommand("ping -c 1 %s" % AliasIP)
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             assert (result == 0)
         else:
             # No alias IP added so just skip
