@@ -34,7 +34,10 @@ public class ReportEntry implements Serializable, JSONString
         SECOND,
             MINUTE,
             HOUR,
-            DAY
+            DAY,
+            WEEK,
+            MONTH,
+            AUTO
             };
 
     private ReportEntryType type;
@@ -124,14 +127,15 @@ public class ReportEntry implements Serializable, JSONString
             return pie_query;
 
         case TIME_GRAPH:
-
+            String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
+            
             String generate_series = " SELECT generate_series( " +
-                " date_trunc( '" + getTimeDataInterval().toString().toLowerCase() + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
+                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
                 " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
-                " '1 " + getTimeDataInterval().toString().toLowerCase() + "' ) as time_trunc ";
+                " '1 " + dataInterval + "' ) as time_trunc ";
             
             String time_query = "SELECT " +
-                " date_trunc( '" + getTimeDataInterval().toString().toLowerCase() + "', time_stamp ) as time_trunc ";
+                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
 
             for ( String s : getTimeDataColumns() )
                 time_query += ", " + s;
@@ -141,7 +145,7 @@ public class ReportEntry implements Serializable, JSONString
                 " WHERE " + dateCondition + 
                 " GROUP BY time_trunc ";
 
-            String final_query = " SELECT * FROM " +
+            String final_query = "SELECT * FROM " +
                 " ( " + generate_series + " ) as t1 " +
                 "LEFT JOIN " +
                 " ( " + time_query + " ) as t2 " +
@@ -155,11 +159,29 @@ public class ReportEntry implements Serializable, JSONString
 
         return "FIXME";
     }
+    
+    private TimeDataInterval calculateTimeDataInterval( Date startDate, Date endDate )
+    {
+        if ( this.timeDataInterval != TimeDataInterval.AUTO )
+            return this.timeDataInterval;
 
+        /* otherwise its auto, calculate a good interval based on the data */
+        long timeDiffSec = ((endDate.getTime() - startDate.getTime())/1000);
+
+        if ( timeDiffSec > ( 60 * 60 * 24 * 2 ) ) /* more than 2 days, use days */
+            return TimeDataInterval.DAY;
+        if ( timeDiffSec > ( 60 * 60 * 2 ) ) /* more than 2 hours */
+            return TimeDataInterval.HOUR;
+        else
+            return TimeDataInterval.MINUTE;
+    }
+   
     static {
         try {
             ReportEntry entry = new ReportEntry();
-
+            Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
+            Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
+            
             entry.setCategory("Web Filter");
             entry.setTitle("Top Web Browsing Hosts");
             entry.setDescription("The number of web requests by each host.");
@@ -170,21 +192,21 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderByColumn("value");
             entry.setOrderDesc(Boolean.TRUE);
 
-            logger.warn("XXXXXXXXXXX:" + entry.toSql(null, null));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry );
+            logger.warn("SQL: " + entry.toSql( oneDayAgo, null ));
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry, false );
 
             entry.setCategory("Web Filter");
             entry.setTitle("Hourly Web Traffic");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
             entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
-            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.HOUR);
+            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
             entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
             //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
             entry.setOrderDesc(Boolean.FALSE);
-        
-            logger.warn("XXXXXXXXXXX:" + entry.toSql(null, null));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "hourlyWeb.js", entry );
+
+            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null ));
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "hourlyWeb.js", entry, false );
         
         } catch (Exception e) {
             logger.warn("Exception.",e);
