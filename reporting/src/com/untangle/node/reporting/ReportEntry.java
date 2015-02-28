@@ -48,7 +48,8 @@ public class ReportEntry implements Serializable, JSONString
 
     private boolean preCompileResults = false; /* if the results should be pre-compiled each night */
     private String table; /* table to query data from */
-
+    private ReportEntryCondition[] conditions;
+    
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
 
@@ -82,6 +83,9 @@ public class ReportEntry implements Serializable, JSONString
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
 
+    public ReportEntryCondition[] getConditions() { return this.conditions; }
+    public void setConditions( ReportEntryCondition[] newValue ) { this.conditions = newValue; }
+    
     public String getPieGroupColumn() { return this.pieGroupColumn; }
     public void setPieGroupColumn( String newValue ) { this.pieGroupColumn = newValue; }
 
@@ -121,8 +125,15 @@ public class ReportEntry implements Serializable, JSONString
                 getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
                 " FROM " +
                 " reports." + getTable() +
-                " WHERE " + dateCondition + 
-                " GROUP BY " + getPieGroupColumn() + 
+                " WHERE " + dateCondition;
+
+            if ( getConditions() != null ) {
+                for ( ReportEntryCondition condition : getConditions() ) {
+                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " '" + condition.getValue() + "'";
+                }
+            }
+
+            pie_query += " GROUP BY " + getPieGroupColumn() + 
                 ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
             return pie_query;
 
@@ -142,8 +153,15 @@ public class ReportEntry implements Serializable, JSONString
 
             time_query += " FROM " +
                 " reports." + getTable() +
-                " WHERE " + dateCondition + 
-                " GROUP BY time_trunc ";
+                " WHERE " + dateCondition;
+
+            if ( getConditions() != null ) {
+                for ( ReportEntryCondition condition : getConditions() ) {
+                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " '" + condition.getValue() + "'";
+                }
+            }
+                
+            time_query += " GROUP BY time_trunc ";
 
             String final_query = "SELECT * FROM " +
                 " ( " + generate_series + " ) as t1 " +
@@ -179,8 +197,13 @@ public class ReportEntry implements Serializable, JSONString
     static {
         try {
             ReportEntry entry = new ReportEntry();
+            ReportEntryCondition condition = new ReportEntryCondition();
             Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
             Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
+
+            condition.setColumn("c_client_addr");
+            condition.setOperator("=");
+            condition.setValue("10.21.68.172");
             
             entry.setCategory("Web Filter");
             entry.setTitle("Top Web Browsing Hosts");
@@ -193,10 +216,10 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.TRUE);
 
             logger.warn("SQL: " + entry.toSql( oneDayAgo, null ));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry, false );
+            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry, false );
 
             entry.setCategory("Web Filter");
-            entry.setTitle("Hourly Web Traffic");
+            entry.setTitle("Web Usage");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
             entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
@@ -206,12 +229,25 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.FALSE);
 
             logger.warn("SQL: " + entry.toSql( oneMonthAgo, null ));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "hourlyWeb.js", entry, false );
+            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
         
+            entry.setCategory("Web Filter");
+            entry.setTitle("Web Usage of 10.21.68.172");
+            entry.setDescription("The number of web requests by each host.");
+            entry.setTable("http_events");
+            entry.setConditions(new ReportEntryCondition[] { condition });
+            entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
+            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
+            entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
+            //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
+            entry.setOrderDesc(Boolean.FALSE);
+
+            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null ));
+            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
+             
         } catch (Exception e) {
             logger.warn("Exception.",e);
         }
         
     }
-    
 }
