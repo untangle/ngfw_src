@@ -104,7 +104,7 @@ public class ReportEntry implements Serializable, JSONString
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
     
-    public String toSql( Date startDate, Date endDate )
+    public String toSql( Date startDate, Date endDate, ReportEntryCondition[] extraConditions )
     {
         if ( endDate == null )
             endDate = new Date(); // now
@@ -129,7 +129,12 @@ public class ReportEntry implements Serializable, JSONString
 
             if ( getConditions() != null ) {
                 for ( ReportEntryCondition condition : getConditions() ) {
-                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " '" + condition.getValue() + "'";
+                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
+                }
+            }
+            if ( extraConditions != null ) {
+                for ( ReportEntryCondition condition : extraConditions ) {
+                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
 
@@ -157,7 +162,12 @@ public class ReportEntry implements Serializable, JSONString
 
             if ( getConditions() != null ) {
                 for ( ReportEntryCondition condition : getConditions() ) {
-                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " '" + condition.getValue() + "'";
+                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
+                }
+            }
+            if ( extraConditions != null ) {
+                for ( ReportEntryCondition condition : extraConditions ) {
+                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
                 
@@ -203,7 +213,7 @@ public class ReportEntry implements Serializable, JSONString
 
             condition.setColumn("c_client_addr");
             condition.setOperator("=");
-            condition.setValue("10.21.68.172");
+            condition.setValue("'10.21.68.172'");
             
             entry.setCategory("Web Filter");
             entry.setTitle("Top Web Browsing Hosts");
@@ -215,7 +225,7 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderByColumn("value");
             entry.setOrderDesc(Boolean.TRUE);
 
-            logger.warn("SQL: " + entry.toSql( oneDayAgo, null ));
+            logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
             // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry, false );
 
             entry.setCategory("Web Filter");
@@ -228,7 +238,7 @@ public class ReportEntry implements Serializable, JSONString
             //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
             entry.setOrderDesc(Boolean.FALSE);
 
-            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null ));
+            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
             // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
         
             entry.setCategory("Web Filter");
@@ -242,7 +252,7 @@ public class ReportEntry implements Serializable, JSONString
             //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
             entry.setOrderDesc(Boolean.FALSE);
 
-            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null ));
+            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
             // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
              
         } catch (Exception e) {
