@@ -1047,8 +1047,48 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
         }
+
+        /**
+         * Sanity check the interface Settings
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            sanityCheckInterfaceSettings( intf );
+        }
+
     }
 
+    private void sanityCheckInterfaceSettings( InterfaceSettings intf )
+    {
+        if ( intf == null )
+            return;
+
+        /**
+         * Check DHCP range and make sure it falls within the interface's address range
+         */
+        do {
+            if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                break;
+            if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                break;
+            if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                break;
+            if ( ! intf.getDhcpEnabled() )
+                break;
+            if ( intf.getDhcpRangeStart() == null || intf.getDhcpRangeEnd() == null )
+                break;
+
+            /**
+             * build a list of all addresses for this interface
+             * check that dhcp start and end are in this range
+             */
+            IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
+            if ( ! intfma.contains( intf.getDhcpRangeStart() ) )
+                throw new RuntimeException( "Invalid DHCP Range Start: " + intf.getDhcpRangeStart().getHostAddress() );
+            if ( ! intfma.contains( intf.getDhcpRangeEnd() ) )
+                throw new RuntimeException( "Invalid DHCP Range End: " + intf.getDhcpRangeEnd().getHostAddress() );
+        } while ( false );
+    }
+    
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
         /**
