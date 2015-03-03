@@ -186,6 +186,11 @@ Ext.define("Webui.config.network", {
                     var deviceStatus = deviceStatusMap[currentRow.get("physicalDev")];
                     var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
                     if(deviceStatus) {
+                        if(!refresh) {
+                            currentRow.set({
+                                "deviceName": deviceStatus.deviceName,
+                            });
+                        }
                         currentRow.set({
                             "macAddress": deviceStatus.macAddress,
                             "duplex": deviceStatus.duplex,
