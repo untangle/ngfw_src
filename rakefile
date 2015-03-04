@@ -5,8 +5,6 @@ verbose(false) #disable printing of rake mkdir messages
 
 ## generic framework
 require "./buildtools/buildtools.rb"
-require "./buildtools/jars.rb"
-require "./buildtools/rake-util.rb"
 
 ## default tasks
 task :default => :devel
@@ -51,6 +49,7 @@ task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
 task :targets => :download do
   # Require all arch-indep sub packages; done manually because order
   # matters.
+  require "#{SRC_HOME}/uvm/package.rb"
   require "#{SRC_HOME}/reporting/package.rb"
   require "#{SRC_HOME}/ftp-casing/package.rb"
   require "#{SRC_HOME}/http-casing/package.rb"
@@ -62,26 +61,20 @@ task :targets => :download do
   require "#{SRC_HOME}/protofilter/package.rb"
   require "#{SRC_HOME}/idps/package.rb"
   require "#{SRC_HOME}/ips/package.rb"
-
   # Base Nodes
   require "#{SRC_HOME}/spam-base/package.rb"
   require "#{SRC_HOME}/virus-base/package.rb"
   require "#{SRC_HOME}/clam-base/package.rb"
   require "#{SRC_HOME}/webfilter-base/package.rb"
-
   # Spam based nodes
   require "#{SRC_HOME}/phish/package.rb"
   require "#{SRC_HOME}/spamassassin/package.rb"
-
   # Webfilter based nodes
   require "#{SRC_HOME}/webfilter/package.rb"
-
   # Ad Blocker node
   require "#{SRC_HOME}/adblocker/package.rb"
-
   # Virus based nodes
   require "#{SRC_HOME}/clam/package.rb"
-
   # New captive portal
   require "#{SRC_HOME}/capture/package.rb"
 end
