@@ -11,7 +11,6 @@
 
 # This is the debhelper compatibility version to use.
 
-PACKAGES := $(shell dh_listpackages)
 UVM_DESTDIR := $(CURDIR)/debian/untangle-vm
 
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
@@ -29,17 +28,14 @@ configure-stamp:
 build-arch: configure-stamp  build-arch-stamp
 build-arch-stamp:
 	@dh_testdir
-# XXX: only one of the 2 build- is needed
-#	rake build
-# XXX: what's that ?
 	rm -f ./debian/tmp/stamp*
-
+	rake builduvmcore
 	@touch build-arch-stamp
 
-build-indep:  configure-stamp build-indep-stamp
-build-indep-stamp:
+build-indep: configure-stamp build-indep-stamp
+build-indep-stamp: build-arch-stamp
 	@dh_testdir
-
+	rake build
 	@touch build-indep-stamp
 
 build: build-arch build-indep
@@ -51,19 +47,27 @@ distclean:
 	@dh_testdir
 	@dh_testroot
 	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-#	@rm -f ./debian/*.init
+	@rm -f ./debian/*.init
 	@dh_clean
 
-install: build
+install: install-indep install-arch
+
+install-indep: build-indep
 	@dh_testdir
 	@dh_testroot
-	@dh_installdirs -a
+	@dh_installdirs -i
 	rake install
 	rm -f debian/untangle-vm/usr/share/untangle/log
 	ln -sf /var/log/uvm debian/untangle-vm/usr/share/untangle/log
 	find debian/untangle-libuvm/usr/share/untangle -type f -print0 | xargs -0 chmod 644
 
-binary-arch: install
+install-arch: build-arch
+	@dh_testdir
+	@dh_testroot
+	@dh_installdirs -a
+	rake installuvmcore
+
+binary-common:
 	@dh_testdir
 	@dh_testroot
 #	@dh_movefiles
@@ -89,17 +93,20 @@ binary-arch: install
 #	@dh_lintian
 	@dh_installdeb
 #	@dh_perl
-	@for i in $(PACKAGES) ; do \
-	if [ -f debian/version ] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi \
+	@for i in $(shell dh_listpackages $(DH_OPTIONS)) ; do \
+	  if [ -f debian/version ] ; then \
+	    dh_gencontrol -- -v"`cat debian/version`" ; \
+	  else dh_gencontrol ; \
+	  fi ; \
 	done
-	@find debian/untangle-libuvmthirdparty -name '*.jar' | xargs chmod 644
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
-	@dh_md5sums
-	@dh_builddeb -p untangle-vm --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 
-binary-indep: install
-# nothing to do
+binary-indep: install-indep
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
-binary: binary-indep binary-arch
-.PHONY: build clean distclean binary-indep binary install configure
+binary-arch: install-arch
+	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
+
+binary: binary-arch binary-indep
+.PHONY: build clean distclean binary-arch binary-indep binary install-arch install-arch install configure
