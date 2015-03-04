@@ -214,7 +214,7 @@ public class RequestLine implements Serializable
         try {
             return new URI(uriStr);
         } catch (URISyntaxException exn) {
-            Logger.getLogger(getClass()).warn("ignoring bad uri: " + uriStr, exn);
+            Logger.getLogger(getClass()).warn( "ignoring bad uri: " + uriStr );
             try {
                 return new URI("/");
             } catch (URISyntaxException e) {
