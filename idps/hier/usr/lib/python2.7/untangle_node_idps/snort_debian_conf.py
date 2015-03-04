@@ -14,7 +14,7 @@ class SnortDebianConf:
     # Regex parsing
     var_regex = re.compile(r'^DEBIAN_SNORT_([^\=]+)="([^\"]*)"')
     
-    def __init__( self, _debug = False ):
+    def __init__(self, _debug=False):
         self._debug = _debug
         self.conf = []
         self.variables = {}
@@ -59,13 +59,13 @@ class SnortDebianConf:
             if match_var:
                 self.variables[match_var.group(1)] = match_var.group(2)
                 
-    def get_variable( self, key ):
+    def get_variable(self, key):
         """
         Get single variable
         """
         return self.variables[key]
     
-    def set_variable( self, key, value ):
+    def set_variable(self, key, value):
         """
         Set variables
         """

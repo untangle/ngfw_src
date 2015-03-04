@@ -12,12 +12,12 @@ class IdpsEventMap:
     #
     file_name = "/etc/snort/idps.event.map.conf"
     
-    def __init__( self, rules ):
+    def __init__(self, rules):
         self.settings = {}
         self.rules = rules
         self.create()
 
-    def create( self ):
+    def create(self):
         """
         Create a new settings file based on the processed
         rule set and default variables from snort configuration.
@@ -45,7 +45,7 @@ class IdpsEventMap:
                 "classtype": rule.options["classtype"],
             } )
         
-    def save( self ):
+    def save(self):
         """
         Save event map
         """
@@ -54,4 +54,3 @@ class IdpsEventMap:
             self.settings, settings_file, 
             False, True, True, True, None, 0 )
         settings_file.close()
-

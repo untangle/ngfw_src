@@ -4,7 +4,6 @@ IDPS Settings
 import json
 import os
 import re
-from netaddr import IPNetwork
 
 from untangle_node_idps.snort_rule import SnortRule
 from untangle_node_idps.snort_rules import SnortRules
@@ -14,18 +13,20 @@ class IdpsSettings:
     NGFW settings management
     """
     default_settings = {
-        "variables": {
-            "list": []
+        "profileId": "low_unknown",
+        "profileVersion": "0",
+        "activeGroups": {
+            "classtypes": "recommended",
+            "categories": "recommended"
         },
         "rules": {
             "list": []
         },
-        "interfaces": {
+        "variables": {
             "list": []
         },
-        "active_rules": {
-            "classtypes": [],
-            "categories": []
+        "interfaces": {
+            "list": []
         },
         "updated": {
             "rules": {
@@ -38,14 +39,14 @@ class IdpsSettings:
         "max_scan_size": 1024
     }
     
-    def __init__( self, node_id ):
+    def __init__(self, node_id):
         self.node_id = node_id
         self.file_name = "/usr/share/untangle/settings/untangle-node-idps/settings_" + self.node_id + ".js"
             
-        self.rules = SnortRules( node_id )
+        self.rules = SnortRules(node_id)
         self.settings = {}
 
-    def load( self, file_name = "" ):
+    def load(self, file_name=""):
         """
         Load settings
         """
@@ -67,24 +68,24 @@ class IdpsSettings:
                     path = "rules"
                     if "path" in settings_rule:
                         path = settings_rule["path"]
-                    rule = SnortRule( match_rule, settings_rule["category"], path )
+                    rule = SnortRule(match_rule, settings_rule["category"], path)
                     rule.set_action( 
                         settings_rule["log"], 
                         settings_rule["block"] 
                         )
-                    rule.set_msg( settings_rule["msg"] )
-                    rule.set_sid( settings_rule["sid"] )
-                    self.rules.add_rule( rule )
+                    rule.set_msg(settings_rule["msg"])
+                    rule.set_sid(settings_rule["sid"])
+                    self.rules.add_rule(rule)
                 else:
                     print "error with rule:" + settings_rule["text"]
         
-    def exists( self ):
+    def exists(self):
         """
         See if settings exist
         """
         return os.path.exists( self.file_name )
 
-    def initialize( self, conf, rules ):
+    def create(self):
         """
         Create a new settings file based on the processed
         rule set and default variables from snort configuration.
@@ -96,31 +97,8 @@ class IdpsSettings:
             for key in IdpsSettings.default_settings.keys():
                 if not key in settings_keys:
                     self.settings[key] = IdpsSettings.default_settings[key]
-        
-        ## new internal format for variables?
-        for variable in rules.get_variables():
-            if variable == "HOME_NET":
-                ## Ignore HOME_NET
-                continue
                 
-            definition = "default value"
-            description = "default description"
-        
-            for default_variable in conf.get_variables():
-                if default_variable["key"] == variable:
-                    definition = default_variable["value"]
-                    description = default_variable["description"]
-                    break
-        
-            self.settings["variables"]["list"].append( { 
-                "variable": variable,
-                "definition": definition,
-                "description": description
-            } )
-            
-        self.rules = rules
-        
-    def save( self, file_name = None ):
+    def save(self, file_name=None):
         """
         Save settings
         """
@@ -152,31 +130,27 @@ class IdpsSettings:
             )
         settings_file.close()
 
-    def patch( self, patch_file_name):
+    def set_patch(self, patch, defaults_profile=None):
         """
         Processing settings patch from UI
         """
-        patch_file = open( patch_file_name )
-        patch_settings = json.load( patch_file )
-        patch_file.close()
-
-        for key in patch_settings:
+        for key in patch.settings:
             if key == "rules":
-                for id in patch_settings[key]:
-                    self.patch_rule(patch_settings[key][id])
+                for rule_id in patch.settings[key]:
+                    self.set_patch_rule(patch.settings[key][rule_id])
             elif key == "variables":
-                for id in patch_settings[key]:
-                    self.patch_variable(patch_settings[key][id])
-            elif key == "active_rules":
-                self.patch_active_rules(patch_settings[key])
-                self.settings[key] = patch_settings[key] 
+                for var_id in patch.settings[key]:
+                    self.set_patch_variable(patch.settings[key][var_id])
+            elif key == "activeGroups":
+                self.set_patch_active_groups(patch.settings[key], defaults_profile)
+                self.settings[key] = patch.settings[key] 
             else:
-                """
-                Otherwise, just set as-is
-                """
-                self.settings[key] = patch_settings[key] 
+                #
+                # Otherwise, just set as-is
+                #
+                self.settings[key] = patch.settings[key] 
 
-    def patch_rule( self, rule ):
+    def set_patch_rule(self, rule):
         """
         Rule diff to add, modify, remove
         """
@@ -195,9 +169,9 @@ class IdpsSettings:
         elif operation == "modified":
             self.rules.modify_rule( snort_rule )
         elif operation == "deleted":
-            self.rules.delete_rule( snort_rule )
+            self.rules.delete_rule( snort_rule.rule_id )
 
-    def patch_variable( self, variable):
+    def set_patch_variable(self, variable):
         """
         Variable diff to add, modify, remove
         """
@@ -212,39 +186,54 @@ class IdpsSettings:
         if operation == "added":
             self.settings["variables"]["list"].append( snort_variable )
         elif operation == "modified":
-            for i,v in enumerate(self.settings["variables"]["list"]):
-                if operation == "modified" and v["variable"] == variable["recData"]["originalId"]:
-                    self.settings["variables"]["list"][i] = snort_variable
-        elif operation =="deleted":
+            for index, variable in enumerate(self.settings["variables"]["list"]):
+                if operation == "modified" and variable["variable"] == variable["recData"]["originalId"]:
+                    self.settings["variables"]["list"][index] = snort_variable
+        elif operation == "deleted":
             self.settings["variables"]["list"].remove(snort_variable)
 
-    def patch_active_rules(self, active_rules):
+    def set_patch_active_groups(self, active_groups, defaults_profile=None):
         """
         Process active rules diff.
         """
-        snort_rules = self.get_rules()
-        snort_rules.filter(active_rules)
-        self.set_rules(snort_rules.get_rules())
+        self.rules.filter_group(active_groups, defaults_profile)
 
-    def get_rules( self ):
+    def convert(self):
+        """
+        Convert to current file format
+        """
+        settings_keys = self.settings.keys()
+        for key in IdpsSettings.default_settings.keys():
+            if not key in settings_keys:
+                self.settings[key] = IdpsSettings.default_settings[key]
+        if "active_rules" in self.settings:
+            self.settings["activeGroups"]["classtypes"] = self.settings["active_rules"]["classtypes_group"]
+            self.settings["activeGroups"]["categories"] = self.settings["active_rules"]["categories_group"]
+            if "classtypes" in self.settings["active_rules"]:
+                self.settings["activeGroups"]["classtypesSelected"] = self.settings["active_rules"]["classtypes"]
+            if "categories" in self.settings["active_rules"]:
+                self.settings["activeGroups"]["categoriesSelected"] = self.settings["active_rules"]["categories"]
+            del(self.settings["active_rules"])
+
+    def get_rules(self):
         """
         Return rules
         """
         return self.rules
 
-    def set_rules( self, rules ):
+    def set_rules(self, rules):
         """
         Set rules
         """
-        self.rules.set_rules( rules )
+        self.rules.set_rules(rules)
 
-    def get_variables( self ):
+    def get_variables(self):
         """
         Get variables
         """
         return self.settings["variables"]["list"]
 
-    def get_variable( self, key ):
+    def get_variable(self, key):
         """
         Get single variable
         """
@@ -252,33 +241,32 @@ class IdpsSettings:
             if key == variable["variable"]:
                 return variable["definition"]
 
-    def get_interfaces( self ):
+    def get_interfaces(self):
         """
         Get interfaces
         """
         return self.settings["interfaces"]["list"]
 
-    def get_active_rules_categories( self ):
+    def get_activegroups_categories(self):
         """
         Get active rules categories
         """
-        return self.settings["active_rules"]["categories"]
+        return self.settings["activeGroups"]["categories"]
     
-    def get_active_rules_classtypes( self ):
+    def get_activegroups_classtypes(self):
         """
         Get active rules classtypes
         """
-        return self.settings["active_rules"]["classtypes"]
+        return self.settings["activeGroups"]["classtypes"]
 
-    def get_updated( self ):
+    def get_updated(self):
         """
         Return updated
         """
         return self.settings["updated"]
 
-    def set_updated( self, updated ):
+    def set_updated(self, updated):
         """
         Set rules
         """
         self.settings["updated"] = updated
-

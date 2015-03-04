@@ -1,7 +1,6 @@
 """
 Snort rule set management
 """
-import json
 import os
 import re
 
@@ -16,7 +15,7 @@ class SnortRules:
 
     rule_paths = ["rules", "preproc_rules"]
     
-    def __init__(self, node_id = 0, path = "", file_name = "" ):
+    def __init__(self, node_id="0", path="", file_name=""):
         self.node_id = node_id
         self.path = path
         self.file_name = self.path + "/"
@@ -28,17 +27,20 @@ class SnortRules:
         self.rules = {}
         self.variables = []
 
-    def set_path(self, path = ""):
+    def set_path(self, path=""):
+        """
+        Path for reading.
+        """
         self.path = path
 
-    def load(self, path = False):
+    def load(self, path=False):
         """
         Load ruleset
         """
         if path == True:
-            """
-            Parse directory trees
-            """
+            #
+            # Parse directory trees
+            #
             for rule_path in SnortRules.rule_paths:
                 parse_path = self.path + "/" + rule_path 
                 for file_name in os.listdir( parse_path ):
@@ -49,7 +51,7 @@ class SnortRules:
         else:
             self.load_file( self.file_name )
             
-    def load_file( self, file_name, rule_path = "rules"):
+    def load_file(self, file_name, rule_path="rules"):
         """
         Category based on "major" file name separator. 
         e.g., web-cgi = web
@@ -72,7 +74,7 @@ class SnortRules:
                     rule_count = rule_count + 1
         rules_file.close()
             
-    def save(self, path = None, classtypes = None, categories = None, msgs = None):
+    def save(self, path=None, classtypes=None, categories=None, msgs=None):
         """
         Save rule set
         """
@@ -97,7 +99,7 @@ class SnortRules:
             if ( rule.get_enabled() == True ) and ( rule.path == rule_path ):
                 if rule.category != category:
                     category = rule.category
-                    rules_file.write( "\n\n# ---- Begin " + category +" Rules Category ----#" + "\n\n")
+                    rules_file.write("\n\n# ---- Begin " + category + " Rules Category ----#" + "\n\n")
                 
                 rules_file.write( rule.build() + "\n" )
         rules_file.close()
@@ -118,6 +120,7 @@ class SnortRules:
             if match_variable:
                 if self.variables.count( match_variable.group( 1 ) ) == 0:
                     self.variables.append( match_variable.group( 1 ) )
+
         for key in rule.options.keys():
             value = rule.options[key]
             if isinstance( value, str ) == False:
@@ -128,47 +131,149 @@ class SnortRules:
                     self.variables.append( match_variable.group( 1 ) )
                     
     def modify_rule(self, rule):
+        """
+        Alias for add_rule
+        """
         self.add_rule(rule)
 
-    def delete_rule(self, rule):
-        del(self.rules[rule.options["sid"] + "_" + rule.options["gid"]])
+    def delete_rule(self, rule_id):
+        """
+        Remove rule.
+        """
+        del(self.rules[rule_id])
 
-    def filter(self, filter):
+    def filter_group(self, profile, defaults_profile=None):
         """
         Filter rules for enabled/disabled
         """
+        if profile["classtypes"] == "recommended":
+            classtypes_selected = defaults_profile["activeGroups"]["classtypesSelected"]
+        else:
+            classtypes_selected = profile["classtypesSelected"]
 
+        if profile["categories"] == "recommended":
+            categories_selected = defaults_profile["activeGroups"]["categoriesSelected"]
+        else:
+            categories_selected = profile["categoriesSelected"]
+
+        rule_ids_selected = []
+        if "rulesSelected" in defaults_profile["activeGroups"]:
+            rule_ids_selected = defaults_profile["activeGroups"]["rulesSelected"]
+        elif "rulesSelected" in profile:
+            rule_ids_selected = profile["rulesSelected"]
+
+         
+        for rid in self.rules:
+            rule = self.rules[rid]
+            if rule.match(classtypes_selected, categories_selected, rule_ids_selected) == False:
+                rule.set_action(False, False)
+            self.rules[rid] = rule
+
+    def update(self, settings, conf, current_rules=None, previous_rules=None, preserve_action=True):
         """
-        Read template associated with configuration to pull latest "recommended" values
+        Determine differences in previous and current rules.
+        If previous is not specified, then the difference will be just
+        a populated added_rule_rids list.
+
+        A happy side effect of only comparing old and new Snort rulesets
+        is that custom rules are preserved (unless their rule identifiers
+        conflict, of course).
         """
-        template_settings = None
-        filter["template"] = "defaults_1GB"
-        if filter["template"] != None:
-            template_file = open( self.path + "/templates/" + filter["template"] + ".js" )
-            template_settings = json.load( template_file )
-            template_file.close()
 
-        if ( "classtypes_group" in filter ) and ( filter["classtypes_group"] == "recommended" ):
-            classtypes_selected = template_settings["active_rules"]["classtypes"]
-        else:
-            classtypes_selected = filter["classtypes"]
+        #
+        # Rule management
+        #
+        added_rule_rids = []
+        deleted_rule_rids = []
+        modified_rule_rids = []
 
-        if ( "categories_group" in filter ) and ( filter["categories_group"] == "recommended"):
-            categories_selected = template_settings["active_rules"]["categories"]
-        else:
-            categories_selected = filter["categories"]
+        if previous_rules != None:
+            #
+            # Deleted rules: Those only in previous and not in current
+            # 
+            for rid in previous_rules.get_rules():
+                if current_rules.get_rules().has_key(rid) == False:
+                    deleted_rule_rids.append(rid)
 
-        if "sids" in template_settings["active_rules"]:
-            sids_selected = template_settings["active_rules"]["sids"]
-        else:
-            sids_selected = []
- 
-        for id in self.rules:
-            rule = self.rules[id]
-            if rule.match(classtypes_selected, categories_selected, sids_selected) == False:
-                rule.set_action(False,False)
-            self.rules[id] = rule
-    
+        for rid in current_rules.get_rules():
+            if previous_rules == None or previous_rules.get_rules().has_key(rid) == False:
+                # 
+                # New rules: Only in current
+                #
+                added_rule_rids.append(rid)
+            elif previous_rules != None and ( current_rules.get_rules()[rid].build() != previous_rules.get_rules()[rid].build() ):
+                #
+                # Modified rules: In both but different
+                # 
+                modified_rule_rids.append(rid)
+
+        #
+        # Remove deleted rules
+        # 
+        for rid in deleted_rule_rids:
+            if self.get_rules().has_key(rid):
+                self.delete_rule(rid)
+
+        #
+        # Add/modify rules
+        #
+        for rid in added_rule_rids:
+            if self.get_rules().has_key(rid):
+                #
+                # Replace modified rule
+                # 
+                new_rule = current_rules.get_rules()[rid]
+                if preserve_action == True:
+                    new_rule.enabled = self.get_rules()[rid].enabled
+                    new_rule.action = self.get_rules()[rid].action
+                self.modify_rule( new_rule )
+            else:
+                # 
+                # Add new rule
+                #
+                self.add_rule( current_rules.get_rules()[rid] )
+
+        if ( len(added_rule_rids) > 0 and len(added_rule_rids) != len(current_rules.get_rules()) ) or len(modified_rule_rids) > 0 or len(deleted_rule_rids) > 0:
+            #
+            # Only record updated rule identifiers
+            # if there was a change and that change
+            # doesn't equal the number of initial rule population.
+            #
+            settings.set_updated({
+                "rules": { 
+                    "added" : added_rule_rids, 
+                    "modified" : modified_rule_rids, 
+                    "deleted": deleted_rule_rids
+                }
+            })
+
+        # 
+        # Variable management
+        # Only interested in adding from current set.
+        # Clearly we don't want to modify values and deletion could
+        # be problematic if a custom rule is using it.
+        # 
+        for variable in current_rules.get_variables():
+            if settings.get_variable(variable) == None:
+                if variable == "HOME_NET":
+                    ## Ignore HOME_NET
+                    continue
+
+                definition = "default value"
+                description = "default description"
+        
+                for default_variable in conf.get_variables():
+                    if default_variable["key"] == variable:
+                        definition = default_variable["value"]
+                        description = default_variable["description"]
+                        break
+        
+                settings.settings["variables"]["list"].append( { 
+                    "variable": variable,
+                    "definition": definition,
+                    "description": description
+                } )
+
     def get_rules(self):
         """
         Get rules

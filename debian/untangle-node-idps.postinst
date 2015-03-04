@@ -1,12 +1,5 @@
 #! /bin/bash
 
-if [ -d /usr/share/untangle-snort-config/current ] ; then
-    /usr/share/untangle/bin/idps-generate-defaults.py \
-        --templates /usr/share/untangle-snort-config/current/templates \
-        --rules /usr/share/untangle-snort-config/current \
-        --defaults /usr/share/untangle/lib/untangle-node-idps
-fi
-
 ##
 ## Maintain visible status for node.
 ## This code can be removed after 11.x release
