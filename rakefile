@@ -4,6 +4,8 @@
 verbose(false) #disable printing of rake mkdir messages
 
 require "./buildtools/buildtools.rb"
+require "./buildtools/jars.rb"
+require "./buildtools/rake-util.rb"
 
 task :default => :devel
 task :all => :devel
@@ -30,16 +32,58 @@ task :clean => [:download_clean, :kindaclean]
 task :download do
   Kernel.system("make --no-print-directory -C downloads")
   raise unless $?.success?
+  Jars.findJars
 end
 
-task :core => :download do
-  Jars.findJars
+task :targets => :download do
+  require "#{SRC_HOME}/reporting/package.rb"
+  require "#{SRC_HOME}/ftp-casing/package.rb"
+  require "#{SRC_HOME}/http-casing/package.rb"
+  require "#{SRC_HOME}/smtp-casing/package.rb"
+  require "#{SRC_HOME}/router/package.rb"
+  require "#{SRC_HOME}/shield/package.rb"
+  require "#{SRC_HOME}/firewall/package.rb"
+  require "#{SRC_HOME}/openvpn/package.rb"
+  require "#{SRC_HOME}/protofilter/package.rb"
+  require "#{SRC_HOME}/idps/package.rb"
+  require "#{SRC_HOME}/ips/package.rb"
+
+  ## Base Nodes
+  require "#{SRC_HOME}/spam-base/package.rb"
+  require "#{SRC_HOME}/virus-base/package.rb"
+  require "#{SRC_HOME}/clam-base/package.rb"
+  require "#{SRC_HOME}/webfilter-base/package.rb"
+
+  ## Spam based nodes
+  require "#{SRC_HOME}/phish/package.rb"
+  require "#{SRC_HOME}/spamassassin/package.rb"
+
+  ## Webfilter based nodes
+  require "#{SRC_HOME}/webfilter/package.rb"
+
+  ## Ad Blocker node
+  require "#{SRC_HOME}/adblocker/package.rb"
+
+  ## Virus based nodes
+  require "#{SRC_HOME}/clam/package.rb"
+
+  ## New captive portal
+  require "#{SRC_HOME}/capture/package.rb"
+
   require "./buildtools/untangle-core.rb"
 end
 
-task :build => [:core, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
+# arch-dep
+task :core => :download do
+  ### arch-dep
+  require "./buildtools/untangle-core.rb"
+end
+task :builduvmcore => [:core, :libuvmcore_so]
+task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
 
-task :hier => [:core, BuildEnv::SRC.hierTarget]
+task :build => [:targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
+
+task :hier => [:targets, BuildEnv::SRC.hierTarget]
 
 task :i18n => BuildEnv::SRC.i18nTarget
 
