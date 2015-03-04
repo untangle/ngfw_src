@@ -1,17 +1,14 @@
 # -*-ruby-*-
 # $Id$
 
-## Require all of the sub packages.
-## Done manually because order matters.
+## Require arch-dep sub packages
 require "#{SRC_HOME}/libmvutil/package.rb"
 require "#{SRC_HOME}/libnetcap/package.rb"
 require "#{SRC_HOME}/libvector/package.rb"
 require "#{SRC_HOME}/jmvutil/package.rb"
 require "#{SRC_HOME}/jnetcap/package.rb"
 require "#{SRC_HOME}/jvector/package.rb"
-require "#{SRC_HOME}/uvm/package.rb"
-
-wlibs = []
+require "#{SRC_HOME}/uvm/package.rb" # FIXME
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 dest_libuvmcore_dir = "#{BuildEnv::SRC['untangle-libuvmcore'].distDirectory}/usr/lib/uvm"
@@ -29,19 +26,16 @@ file libuvmcore_so do
   archivesFiles = archives.map { |n| BuildEnv::SRC[n]['archive'].filename }
 
   CBuilder.new(BuildEnv::SRC, compilerEnv).makeSharedLibrary(archivesFiles, libuvmcore_so, [],
-                                                             ['netfilter_queue','netfilter_conntrack'], wlibs)
+                                                             ['netfilter_queue','netfilter_conntrack'], [])
 end
 task :libuvmcore_so => libuvmcore_so
 
 file dest_libuvmcore_so => libuvmcore_so do
   mkdir_p(dest_libuvmcore_dir)
   cp_r("#{BuildEnv::SRC.staging}/libuvmcore.so", dest_libuvmcore_dir, :verbose => true)
+  info "[copy    ] #{BuildEnv::SRC.staging}/libuvmcore.so #{dest_libuvmcore_dir}"
 end
 task :dest_uvmcore_so => dest_libuvmcore_so
-
-BuildEnv::SRC['untangle-libuvm']['impl'].register_dependency(libuvmcore_so)
-
-BuildEnv::SRC.installTarget.install_files(libuvmcore_so, dest_libuvmcore_so)
 
 # DO IT!
 #graphViz('foo.dot')

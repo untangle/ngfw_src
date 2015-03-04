@@ -3,13 +3,16 @@
 
 verbose(false) #disable printing of rake mkdir messages
 
+## generic framework
 require "./buildtools/buildtools.rb"
 require "./buildtools/jars.rb"
 require "./buildtools/rake-util.rb"
 
+## default tasks
 task :default => :devel
 task :all => :devel
 
+## clean tasks
 task :download_clean do
   Kernel.system( "make --no-print-directory -C downloads distclean" )
 end
@@ -29,13 +32,25 @@ end
 
 task :clean => [:download_clean, :kindaclean]
 
+## download task; it is needed by both arch-dep and arch-indep,
+## because Jars.findJars sets up the base classpath used everywhere
 task :download do
   Kernel.system("make --no-print-directory -C downloads")
   raise unless $?.success?
   Jars.findJars
 end
 
+## arch-dep tasks
+task :core => :download do
+  require "./buildtools/untangle-core.rb"
+end
+task :builduvmcore => [:core, :libuvmcore_so]
+task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
+
+## arch-indep tasks
 task :targets => :download do
+  # Require all arch-indep sub packages; done manually because order
+  # matters.
   require "#{SRC_HOME}/reporting/package.rb"
   require "#{SRC_HOME}/ftp-casing/package.rb"
   require "#{SRC_HOME}/http-casing/package.rb"
@@ -48,38 +63,28 @@ task :targets => :download do
   require "#{SRC_HOME}/idps/package.rb"
   require "#{SRC_HOME}/ips/package.rb"
 
-  ## Base Nodes
+  # Base Nodes
   require "#{SRC_HOME}/spam-base/package.rb"
   require "#{SRC_HOME}/virus-base/package.rb"
   require "#{SRC_HOME}/clam-base/package.rb"
   require "#{SRC_HOME}/webfilter-base/package.rb"
 
-  ## Spam based nodes
+  # Spam based nodes
   require "#{SRC_HOME}/phish/package.rb"
   require "#{SRC_HOME}/spamassassin/package.rb"
 
-  ## Webfilter based nodes
+  # Webfilter based nodes
   require "#{SRC_HOME}/webfilter/package.rb"
 
-  ## Ad Blocker node
+  # Ad Blocker node
   require "#{SRC_HOME}/adblocker/package.rb"
 
-  ## Virus based nodes
+  # Virus based nodes
   require "#{SRC_HOME}/clam/package.rb"
 
-  ## New captive portal
+  # New captive portal
   require "#{SRC_HOME}/capture/package.rb"
-
-  require "./buildtools/untangle-core.rb"
 end
-
-# arch-dep
-task :core => :download do
-  ### arch-dep
-  require "./buildtools/untangle-core.rb"
-end
-task :builduvmcore => [:core, :libuvmcore_so]
-task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
 
 task :build => [:builduvmcore, :targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
