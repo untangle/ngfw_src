@@ -81,7 +81,7 @@ end
 task :builduvmcore => [:core, :libuvmcore_so]
 task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
 
-task :build => [:targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
+task :build => [:builduvmcore, :targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
 task :hier => [:targets, BuildEnv::SRC.hierTarget]
 
