@@ -79,7 +79,7 @@ task :targets => :download do
   require "#{SRC_HOME}/capture/package.rb"
 end
 
-task :build => [:builduvmcore, :targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
+task :build => [:builduvmcore, :installuvmcore, :targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
 task :hier => [:targets, BuildEnv::SRC.hierTarget]
 

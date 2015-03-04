@@ -34,8 +34,8 @@ task :libuvmcore_so => libuvmcore_so
 # installed version of the so file
 file dest_libuvmcore_so => libuvmcore_so do
   mkdir_p(dest_libuvmcore_dir)
-  cp_r("#{BuildEnv::SRC.staging}/libuvmcore.so", dest_libuvmcore_dir)
   info "[copy    ] #{libuvmcore_so} => #{dest_libuvmcore_dir}"
+  FileUtils.cp("#{BuildEnv::SRC.staging}/libuvmcore.so", dest_libuvmcore_dir)
 end
 
 # associate a task to the installation of that so file
