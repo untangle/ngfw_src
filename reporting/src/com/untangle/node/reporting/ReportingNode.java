@@ -27,6 +27,10 @@ public interface ReportingNode extends Node, HostnameLookup
 
     Connection getDbConnection();
 
+    ArrayList<ReportEntry> getReportEntries();
+
+    void setReportEntries( ArrayList<ReportEntry> newEntries );
+
     ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
 
     // /**

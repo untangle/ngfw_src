@@ -40,6 +40,9 @@ public class ReportEntry implements Serializable, JSONString
             AUTO
             };
 
+    private boolean enabled = true; /* If the report entry is "enabled" (shown) */
+    private Boolean readOnly = null; /* If the rule is read-only (built-in) */
+
     private ReportEntryType type;
 
     private String title; /* title of the entry/graph */
@@ -65,6 +68,12 @@ public class ReportEntry implements Serializable, JSONString
         return jO.toString();
     }
 
+    public boolean getEnabled() { return enabled; }
+    public void setEnabled( boolean enabled ) { this.enabled = enabled; }
+
+    public Boolean getReadOnly() { return this.readOnly; }
+    public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
+    
     public ReportEntryType getType() { return this.type; }
     public void setType( ReportEntryType newValue ) { this.type = newValue; }
 
@@ -104,6 +113,11 @@ public class ReportEntry implements Serializable, JSONString
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
     
+    public String toSql( Date startDate, Date endDate )
+    {
+        return toSql( startDate, endDate );
+    }
+
     public String toSql( Date startDate, Date endDate, ReportEntryCondition[] extraConditions )
     {
         if ( endDate == null )
@@ -215,8 +229,11 @@ public class ReportEntry implements Serializable, JSONString
             condition.setOperator("=");
             condition.setValue("'10.21.68.172'");
             
+            entry = new ReportEntry();
+            entry.setEnabled( true );
+            entry.setReadOnly( true );
             entry.setCategory("Web Filter");
-            entry.setTitle("Top Web Browsing Hosts");
+            entry.setTitle("Top Web Browsing Hosts (by requests)");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
             entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
@@ -226,8 +243,11 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.TRUE);
 
             logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "topHost.js", entry, false );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "top-web-browsing-hosts-by-requests.js", entry, false );
 
+            entry = new ReportEntry();
+            entry.setEnabled( true );
+            entry.setReadOnly( true );
             entry.setCategory("Web Filter");
             entry.setTitle("Web Usage");
             entry.setDescription("The number of web requests by each host.");
@@ -239,10 +259,13 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.FALSE);
 
             logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "web-usage.js", entry, false );
         
+            entry = new ReportEntry();
+            entry.setEnabled( true );
+            entry.setReadOnly( false );
             entry.setCategory("Web Filter");
-            entry.setTitle("Web Usage of 10.21.68.172");
+            entry.setTitle("Web Usage [10.21.68.172]");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
             entry.setConditions(new ReportEntryCondition[] { condition });
