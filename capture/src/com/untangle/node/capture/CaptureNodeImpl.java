@@ -707,46 +707,46 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     @SuppressWarnings("unchecked")
     private void loadUserState()
     {
-            try {
-                String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
-                /**
-                 * If there is no save file, just return
-                 */
-                File saveFile = new File(filename);
-                if ( ! saveFile.exists() )
-                    return;
+        try {
+            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
+            /**
+             * If there is no save file, just return
+             */
+            File saveFile = new File(filename);
+            if ( ! saveFile.exists() )
+                return;
 
 
-                logger.info("Loading user state from file... ");
-                ArrayList<CaptureUserEntry> users = UvmContextFactory.context().settingsManager().load( ArrayList.class, filename );
+            logger.info("Loading user state from file... ");
+            ArrayList<CaptureUserEntry> users = UvmContextFactory.context().settingsManager().load( ArrayList.class, filename );
 
-                int usersLoaded = 0;
-                long userTimeout = getCaptureSettings().getUserTimeout();
-                long currentTime = System.currentTimeMillis();
+            int usersLoaded = 0;
+            long userTimeout = getCaptureSettings().getUserTimeout();
+            long currentTime = System.currentTimeMillis();
                 
-                /**
-                 * Insert all the non-expired users into the table.
-                 * Since the untangle-vm has likely been down, don't check idle timeout
-                 */
-                for ( CaptureUserEntry user : users ) {
-                    long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
-                    if (currentTime > userTrigger)
-                        continue;
+            /**
+             * Insert all the non-expired users into the table.
+             * Since the untangle-vm has likely been down, don't check idle timeout
+             */
+            for ( CaptureUserEntry user : users ) {
+                long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
+                if (currentTime > userTrigger)
+                    continue;
 
-                    captureUserTable.insertActiveUser( user );
-                    usersLoaded++;
-                }
-
-                /**
-                 * Delete the save file
-                 */
-                saveFile.delete();
-                
-                logger.info("Loading user state from file... (" + usersLoaded + " entries)");
-
-            } catch (Exception e) {
-                logger.warn("Exception loading user state",e);
+                captureUserTable.insertActiveUser( user );
+                usersLoaded++;
             }
+
+            /**
+             * Delete the save file
+             */
+            saveFile.delete();
+                
+            logger.info("Loading user state from file... (" + usersLoaded + " entries)");
+
+        } catch (Exception e) {
+            logger.warn("Exception loading user state",e);
+        }
     }
 
     /**
