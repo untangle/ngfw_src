@@ -143,7 +143,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
                     html: Ext.String.format(i18n._('To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.'), setup.stepsTitlesMap[continueStep], '<b>','</b>')
                 }]
             }, {
-            	xtype: 'container',
+                xtype: 'container',
                 margin: '40 0 0 20',
                 items: [{
                     xtype: 'radio',
@@ -195,7 +195,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         this.panel = Ext.create('Ext.form.Panel', {
             border: false,
             defaults: {
-            	margin: '20 0 0 20',
+                margin: '20 0 0 20',
             },
             items: [{
                 xtype: 'component',
@@ -373,7 +373,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                             }, this);
                             return true;
                         },
-                		scope: this
+                        scope: this
                     }
                 }
             },
@@ -457,11 +457,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                             scope: this
                         },
                         "focus": {
-                        	fn: function(obj) {
-                        		console.log("focus", obj.getValue());
-                        		
-                        	},
-                        	scope: this	
+                            fn: function(obj) {
+                                console.log("focus", obj.getValue());
+                                
+                            },
+                            scope: this    
                         }
                     }
                 }*/
@@ -1246,9 +1246,9 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 margin: '40 0 0 20',
                 layout: 'column',
                 items: [{
-                	xtype: 'container',
-                	columnWidth: 0.60,
-                	items: [{
+                    xtype: 'container',
+                    columnWidth: 0.60,
+                    items: [{
                         xtype: 'radio',
                         name: 'bridgeOrRouter',
                         inputValue: 'router',
@@ -1263,8 +1263,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                             }
                         }
                     }, {
-                    	xtype: 'component',
-                    	style: {marginLeft: '20px'},
+                        xtype: 'component',
+                        style: {marginLeft: '20px'},
                         html: i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT and DHCP.')
                     }, {
                         name: 'network',
@@ -1304,8 +1304,8 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                         boxLabel: i18n._("Enable DHCP Server (default)")
                     }]
                 }, {
-                	xtype: 'component',
-                	margin: '40 0 0 20',
+                    xtype: 'component',
+                    margin: '40 0 0 20',
                     columnWidth: 0.40,
                     html: '<img style="border: 1px #ccc solid;" src="/skins/' + rpc.skinName + '/images/admin/wizard/router.png"/>'
                 }]
@@ -1314,9 +1314,9 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 margin: '50 0 0 20',
                 layout: 'column',
                 items: [{
-                	xtype: 'container',
-                	columnWidth: 0.60,
-                	items: [{
+                    xtype: 'container',
+                    columnWidth: 0.60,
+                    items: [{
                         xtype: 'radio',
                         name: 'bridgeOrRouter',
                         inputValue: 'BRIDGED',
@@ -1586,7 +1586,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                          i18n._('This is the recommended for most sites.')
                 }]
             }, {
-            	xtype: 'container',
+                xtype: 'container',
                 margin: '30 0 0 20',
                 items: [{
                     xtype: 'radio',

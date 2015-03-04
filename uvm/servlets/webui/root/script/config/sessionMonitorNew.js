@@ -12,7 +12,7 @@ Ext.define('Webui.config.sessionMonitorNew', {
         }
         this.buildGridCurrentSessions();
         this.buildChartSessions();
-        this.buildTabPanel([this.gridCurrentSessions, this.chartSessions])
+        this.buildTabPanel([this.gridCurrentSessions, this.chartSessions]);
         //this.items = [this.gridCurrentSessions, this.chartSessions];
         this.callParent(arguments);
     },
