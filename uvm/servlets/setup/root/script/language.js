@@ -22,11 +22,10 @@ Ext.define('Ung.SetupWizard.Language', {
                 cls: 'noborder'
             },
             items: [{
-                xtype: 'container',
+                xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
             },{
-                xtype: 'fieldset',
-                border: false,
+                xtype: 'container',
                 defaults: {
                     validationEvent: 'blur',
                     msgTarget: 'side'

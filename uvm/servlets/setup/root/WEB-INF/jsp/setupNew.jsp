@@ -12,28 +12,28 @@
         @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=${buildStamp}";
     </style>
     
-    <uvm:skin src="adminNew.css?s=${buildStamp}"  name="${skinSettings.skinName}"/>
+    <uvm:skin src="adminNew.css?s=${buildStamp}" name="${skinSettings.skinName}"/>
 
     <script type="text/javascript" src="/ext5/ext-all-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext5/packages/ext-theme-gray/build/ext-theme-gray.js?s=${buildStamp}"></script>
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
-    
-    <script type="text/javascript" src="script/language.js?s=${buildStamp}"></script>
+
+    <script type="text/javascript" src="script/setupNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
-      Ung.SetupWizard.CurrentValues = {
-        languageList : ${languageList},
-        language : "${language}"
+      var setup;
+      function init() {
+          setup=new Ung.Setup({});
+          setup.init();
       };
-
-      Ext.onReady(Ung.Language.init);
+      Ext.onReady(init);
     </script>
   </head>
-
   <body class="wizard">
     <div id="container">
       <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
