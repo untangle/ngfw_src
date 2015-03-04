@@ -19,7 +19,7 @@ class SnortConf:
     preprocessor_normalize_tcp_regex = re.compile(r'^(#|).*preprocessor normalize_tcp: ips ecn stream')
     preprocessor_sfportscan_regex = re.compile(r'(#|).*preprocessor sfportscan:')
     
-    def __init__(self, _debug = False):
+    def __init__(self, _debug=False):
         self.last_comment = ""
         self.conf = []
         self.variables = []

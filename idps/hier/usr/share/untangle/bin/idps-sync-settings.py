@@ -1,7 +1,10 @@
 #!/usr/bin/python
-#
-# Synchronize downloaded snort-formatted rules into idps settings.
-#
+"""
+Synchronize settings:
+-   From an initial state with the current rules.
+-   Between previous and current rules.
+-   From UI patches.
+"""
 import errno
 import os
 import getopt
@@ -21,6 +24,9 @@ if ( "@PREFIX@" != ''):
 import untangle_node_idps
 
 def usage():
+    """
+    Show usage
+    """
     print "usage..."
     print "help\t\tusage"
     print "settings\tSettings configuration file name"
@@ -30,121 +36,118 @@ def usage():
     print "debug\t\tEnable debugging"
         
 def main(argv):
+    """
+    Main
+    """
     global _debug
     _debug = False
-    rules_file_name = None
-    previous_rules_file_name = None
+    current_rules_path = None
+    previous_rules_path = None
     settings_file_name = None
     status_file_name = None
-    node_id = "0"
+    node_id = None
     patch_file_name = None
+    defaults_file_name = None
+    settings_file_name = None
 	
     try:
-		opts, args = getopt.getopt(argv, "hsrpnac:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "defaults=", "debug"] )
     except getopt.GetoptError:
-    	usage()
-    	sys.exit(2)
+        usage()
+        sys.exit(2)
 
     for opt, arg in opts:
         if opt in ( "-h", "--help"):
             usage()
             sys.exit()
         elif opt in ( "-d", "--debug"):
-             _debug = True
+            _debug = True
         elif opt in ( "-n", "--node_id"):
             node_id = arg
         elif opt in ( "-r", "--rules"):
-            rules_file_name = arg
+            current_rules_path = arg
         elif opt in ( "-p", "--previous_rules"):
-            previous_rules_file_name = arg
+            previous_rules_path = arg
         elif opt in ( "-s", "--settings"):
             settings_file_name = arg
         elif opt in ( "-a", "--status"):
             status_file_name = arg
         elif opt in ( "-p", "--patch"):
             patch_file_name = arg
+        elif opt in ( "-e", "--defaults"):
+            defaults_file_name = arg
+
+    if node_id == None:
+        print "Missing node_id"
+        sys.exit(1)
+
+    # if current_rules_path == None:
+    #     print "Missing rules"
+    #     sys.exit(1)
+
+    # if settings_file_name == None:
+    #     ## Must never write to actual location.
+    #     print "Missing settings file name"
+    #     sys.exit(1)
 
     if _debug == True:
-        print "rules_file_name = " + rules_file_name
-        print "settings_file_name = " + settings_file_name
+        if current_rules_path != None :
+            print "current_rules_path = " + current_rules_path
+        if previous_rules_path != None:
+            print "previous_rules_path = " + previous_rules_path
+        if settings_file_name != None:
+            print "settings_file_name = " + settings_file_name
         print "node = " + node_id
         print "_debug = ",  _debug
 
+    defaults = untangle_node_idps.IdpsDefaults()
+    defaults.load(defaults_file_name)
+
+    patch = None
+    if patch_file_name != None:
+        patch = untangle_node_idps.IdpsSettingsPatch()
+        patch.load(patch_file_name)
+
     snort_conf = untangle_node_idps.SnortConf()
-    snort_rules = untangle_node_idps.SnortRules( node_id, rules_file_name )
-    snort_rules.load( True )
+
+    current_snort_rules = None
+    if current_rules_path != None:
+        current_snort_rules = untangle_node_idps.SnortRules( node_id, current_rules_path )
+        current_snort_rules.load( True )
+
+    previous_snort_rules = None
+    if previous_rules_path != None:
+        previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_path )
+        previous_snort_rules.load( True )
 
     settings = untangle_node_idps.IdpsSettings( node_id )
     if settings.exists() == False:
-        settings.initialize( snort_conf, snort_rules )
+        settings.create()
     else:
         settings.load()
+        settings.convert()
 
-        if rules_file_name != None and previous_rules_file_name != None:
-            ## all of this into a method
-            added_rule_rids = []
-            deleted_rule_rids = []
-            modified_rule_rids = []
-        
-            previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_file_name )
-            previous_snort_rules.load( True )
-        
-            previous_rules = previous_snort_rules.get_rules()
-            current_rules = snort_rules.get_rules()
-            settings_rules = settings.get_rules().get_rules()
-        
-            active_rules_classtypes = settings.get_active_rules_classtypes()
-            active_rules_categories = settings.get_active_rules_categories()
-        
-            for rid in previous_rules:
-                if current_rules.has_key(rid) == False:
-                    deleted_rule_rids.append(rid)
+    if current_snort_rules != None:
+        if patch != None and "activeGroups" in patch.settings:
+            #
+            # For group changes, disable rule state preservation
+            #
+            settings.rules.update( settings, snort_conf, current_snort_rules, previous_snort_rules, False )
+        else:
+            settings.rules.update( settings, snort_conf, current_snort_rules, previous_snort_rules )
 
-            for rid in current_rules:
-                if previous_rules.has_key(rid) == False:
-                    added_rule_rids.append(rid)
-                elif current_rules[rid].build() != previous_rules[rid].build():
-                    modified_rule_rids.append(rid)
+        profile_id = settings.settings["profileId"]
+        if patch != None and "profileId" in patch.settings:
+            profile_id = patch.settings["profileId"]
+        defaults_profile = defaults.get_profile(profile_id)
 
-            for rid in deleted_rule_rids:
-                if settings_rules.has_key(rid):
-                    settings_rules.remove(rid)
-                
-            for rid in added_rule_rids:
-                if settings_rules.has_key(rid):
-                    new_rule = current_rules[rid]
-                    new_rule.enabled = settings_rules[rid].enabled
-                    new_rule.action = settings_rules[rid].action
-                    settings_rules[rid] = new_rule
-                else:
-                    settings_rules[rid] = current_rules[rid]
-                
-                    if len( active_rules_classtypes ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_classtypes ) == False:
-                        classtype_enabled = True
-                    else:
-                        classtype_enabled = False
-
-                    if len( active_rules_categories ) == 0 or ( settings_rules[sid].options["classtype"] in active_rules_categories ) == False:
-                        category_enabled = True
-                    else:
-                        category_enabled == False
-
-                    settings_rules[sid].enabled = classtype_enabled and category_enabled
-            settings.set_rules( settings_rules )
-
-            settings.set_updated({
-                "rules": { 
-                    "added" : added_rule_rids, 
-                    "modified" : modified_rule_rids, 
-                    "deleted": deleted_rule_rids
-                }})
-
-    if patch_file_name != None:
-        settings.get_rules().set_path(rules_file_name)
-        settings.patch(patch_file_name)
+        if patch != None:
+            settings.set_patch(patch, defaults_profile)
+        else:
+            settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
 
     settings.save( settings_file_name )
     sys.exit()
 
 if __name__ == "__main__":
-	main( sys.argv[1:] )
+    main( sys.argv[1:] )

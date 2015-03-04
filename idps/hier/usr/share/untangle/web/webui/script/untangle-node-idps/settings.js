@@ -707,7 +707,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         editor: null,
                         menuDisabled: false,
                         renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.settingsCmp.classtypesStore.findRecord( "name", value ).get("description") ) + '"';
+                            var dr = this.settingsCmp.classtypesStore.findRecord( "name", value );
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
                             return value;
                         }
                     },{
@@ -718,7 +719,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         flex:1,
                         menuDisabled: false,
                         renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(this.settingsCmp.categoriesStore.findRecord( "name", value ).get("description") ) + '"';
+                            var dr = this.settingsCmp.categoriesStore.findRecord( "name", value );
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
                             return value;
                         }
                     },{
@@ -1405,7 +1407,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
         for( var i = 0; i < keys.length; i++){
             if( ( keys[i] == "rules" ) || 
                 ( keys[i] == "variables" ) ||
-                ( keys[i] == "active_rules" && !this.wizardSettings ) ){
+                ( keys[i] == "activeGroups" && !this.wizardSettings ) ){
                 continue;
             }
             changedDataSet[keys[i]] = this.settings[keys[i]];
@@ -1533,34 +1535,59 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                 },
                 scope: this,
                 success: function(response){
-                    this.gui.wizardSettings = Ext.decode( response.responseText );
+                    var wizardDefaults = Ext.decode( response.responseText );
+
+                    /*
+                     * Determine profile to use based on system stats.
+                     */
+                    var stats = rpc.metricManager.getMetricsAndStats();
+                    var profile;
+                    var match;
+                    for( var p = 0; p < wizardDefaults.profiles.length; p++ ){
+                        match = false;
+                        for( var statKey in wizardDefaults.profiles[p].systemStats ){
+                            if( statKey == "MemTotal"){
+                                var memoryTotal = stats.systemStats[statKey];
+                                match = ( memoryTotal < ( wizardDefaults.profiles[p].systemStats[statKey] + ( wizardDefaults.profiles[p].systemStats[statKey] * 0.10 ) ) );
+                            }else if( statKey == "architecture"){
+                                var architecture = stats.systemStats[statKey];
+                                if( architecture == "i386"){
+                                    architecture = "32";
+                                }else if( architecture == "amd64"){
+                                    architecture = "64";
+                                }else{
+                                    architecture = "unknown";
+                                }
+                                match = ( architecture == wizardDefaults.profiles[p].systemStats[statKey] );
+                            }else{
+                                match = ( stats.systemStats[statKey] == wizardDefaults.profiles[p].systemStats[statKey] );
+                            }
+                            if( match == false ){
+                                break;
+                            }
+                        }
+                        if( match == true ){
+                            profile = wizardDefaults.profiles[p];
+                            profile.profileVersion = wizardDefaults.version;
+                            break;
+                        }
+                    }
 
                     /*
                      * Preserve recommended values
                      */
-                    var i;
-                    this.gui.wizardRecommendedSettings = { 
-                        active_rules: {} 
-                    };
-                    var keys = Object.keys(this.gui.wizardSettings.active_rules);
-                    for( i = 0; i < keys.length; i++){
-                        this.gui.wizardRecommendedSettings.active_rules[keys[i]] = this.gui.wizardSettings.active_rules[keys[i]];
-                    }
+                    this.gui.wizardRecommendedSettings = Ext.clone(profile);
 
+                    this.gui.wizardSettings = Ext.clone(profile);
                     if( this.gui.settings.configured === true ){
                         /*
                          * Setup wizard already configured.  Pull current settings.
                          */
-                        keys = Object.keys(this.gui.settings.active_rules);
-                        for( i = 0; i < keys.length; i++){
-                            this.gui.wizardSettings.active_rules[keys[i]] = this.gui.settings.active_rules[keys[i]];
-                        }
-                    }else{
-                        if( !("classtypes_group" in this.gui.wizardSettings.active_rules ) ){
-                            this.gui.wizardSettings.active_rules.classtypes_group = "recommended";
-                        }
-                        if( !("categories_group" in this.gui.wizardSettings.active_rules ) ){
-                            this.gui.wizardSettings.active_rules.categories_group = "recommended";
+                        if( this.gui.settings.activeGroups ){
+                            keys = Object.keys(this.gui.settings.activeGroups);
+                            for( i = 0; i < keys.length; i++){
+                                this.gui.wizardSettings.activeGroups[keys[i]] = this.gui.settings.activeGroups[keys[i]];
+                            }
                         }
                     }
                     Ext.MessageBox.hide();
@@ -1690,31 +1717,48 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
 
     onLoad: function( handler ){
         if( this.loaded !== true ){
-            if( this.gui.wizardSettings.active_rules ){
+            if( this.gui.wizardSettings.activeGroups ){
 
                 Ext.Array.each(
                     this.panel.query("radio[name=classtypes]"),
                     function(c){
-                        if( c.inputValue == this.gui.wizardSettings.active_rules.classtypes_group ){
+                        if( c.inputValue == this.gui.wizardSettings.activeGroups.classtypes ){
                             c.setValue(true);
                         }
                     },
                     this
                 );
 
+                var i, value;
                 var checkboxes = this.panel.query("checkbox[name=classtypes_selected]");
-                for( var i = 0; i < this.gui.wizardSettings.active_rules.classtypes.length; i++ ){
+                for( i = 0; i < this.gui.wizardSettings.activeGroups.classtypesSelected.length; i++ ){
+                    value = this.gui.wizardSettings.activeGroups.classtypesSelected[i];
+                    if( value.indexOf("+") == 0 ){
+                        value = value.substr(1);
+                    }else if( value.indexOf("-") == 0 ){
+                        value = value.substr(1);                        
+                    }
                     for( var j = 0; j < checkboxes.length; j++ ){
-                        if( checkboxes[j].inputValue == this.gui.wizardSettings.active_rules.classtypes[i] ){
+                        if( checkboxes[j].inputValue == value ){
                             checkboxes[j].setValue(true);
                         }
                     }
                 }
 
-                if( this.gui.wizardRecommendedSettings.active_rules.classtypes.length === 0 ){
+                if( this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length === 0 ){
                     this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
                 }else{
-                    this.panel.down( "[name=classtypes_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.classtypes.join( ", "));
+                    var recommendedValues = [];
+                    for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length; i++ ){
+                        value = this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected[i];
+                        if( value.indexOf("+") == 0 ){
+                            value = value.substr(1);
+                        }else if( value.indexOf("-") == 0 ){
+                            value = value.substr(1);                        
+                        }
+                        recommendedValues.push(value);
+                    }
+                    this.panel.down( "[name=classtypes_recommended_settings]" ).update(recommendedValues.join( ", "));
                 }
             }
             this.loaded = true;
@@ -1723,15 +1767,15 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
     },
 
     getValues: function( handler ){
-        this.gui.wizardSettings.active_rules.classtypes_group = this.panel.down("radio[name=classtypes]").getGroupValue();
+        this.gui.wizardSettings.activeGroups.classtypes = this.panel.down("radio[name=classtypes]").getGroupValue();
         if( this.panel.down("radio[name=classtypes]").getGroupValue() == "recommended") {
-            this.gui.wizardSettings.active_rules.classtypes = this.gui.wizardRecommendedSettings.classtypes;
+            this.gui.wizardSettings.activeGroups.classtypesSelected = this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected;
         }else{
-            this.gui.wizardSettings.active_rules.classtypes = [];
+            this.gui.wizardSettings.activeGroups.classtypesSelected = [];
             Ext.Array.each( 
                 this.panel.query("checkbox[name=classtypes_selected][checked=true]"), 
                 function( c ){ 
-                    this.gui.wizardSettings.active_rules.classtypes.push( c.inputValue );
+                    this.gui.wizardSettings.activeGroups.classtypesSelected.push( "+" + c.inputValue );
                 },
                 this
             );
@@ -1817,7 +1861,6 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                 xtype:'fieldset',
                 hidden:true,
                 items: [{
-                    html: "<i>" + this.i18n._("Named Category Settings") + "</i>",
                     cls: 'description',
                     bodyStyle: 'padding-top:10px',
                     border: false
@@ -1854,31 +1897,47 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
 
     onLoad: function( handler ){
         if( this.loaded !== true ){
-            if( this.gui.wizardSettings.active_rules ){
+            if( this.gui.wizardSettings.activeGroups ){
                 Ext.Array.each(
                     this.panel.query("radio[name=categories]"),
                     function(c){
-                        if( c.inputValue == this.gui.wizardSettings.active_rules.categories_group ){
+                        if( c.inputValue == this.gui.wizardSettings.activeGroups.categories ){
                             c.setValue(true);
                         }
                     },
                     this
                 );
 
+                var i, value;
                 var checkboxes = this.panel.query("checkbox[name=categories_selected]");
-                for( var i = 0; i < this.gui.wizardSettings.active_rules.categories.length; i++ ){
-                    var value = this.gui.wizardSettings.active_rules.categories[i];
+                for( i = 0; i < this.gui.wizardSettings.activeGroups.categoriesSelected.length; i++ ){
+                    value = this.gui.wizardSettings.activeGroups.categoriesSelected[i];
+                    if( value.indexOf("+") == 0 ){
+                        value = value.substr(1);
+                    }else if( value.indexOf("-") == 0 ){
+                        value = value.substr(1);                        
+                    }
                     for( var j = 0; j < checkboxes.length; j++ ){
-                        if( checkboxes[j].inputValue == this.gui.wizardSettings.active_rules.classtypes[i] ){
+                        if( checkboxes[j].inputValue == value ){
                             checkboxes[j].setValue(true);
                         }
                     }
                 }
 
-                if( this.gui.wizardRecommendedSettings.active_rules.categories.length === 0 ){
+                if( this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length === 0 ){
                     this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
                 }else{
-                    this.panel.down( "[name=categories_recommended_settings]" ).update(this.gui.wizardRecommendedSettings.active_rules.categories.join( ", "));
+                    var recommendedValues = [];
+                    for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length; i++ ){
+                        value = this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected[i];
+                        if( value.indexOf("+") == 0 ){
+                            value = value.substr(1);
+                        }else if( value.indexOf("-") == 0 ){
+                            value = value.substr(1);                        
+                        }
+                        recommendedValues.push(value);
+                    }
+                    this.panel.down( "[name=categories_recommended_settings]" ).update(recommendedValues.join( ", "));
                 }
             }
             this.loaded = true;
@@ -1887,16 +1946,16 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
     },
     
     getValues: function( handler ){
-        this.gui.wizardSettings.active_rules.categories_group = this.panel.down("radio[name=categories]").getGroupValue();
+        this.gui.wizardSettings.activeGroups.categories = this.panel.down("radio[name=categories]").getGroupValue();
         
         if( this.panel.down("radio[name=categories]").getGroupValue() == "recommended") {
-            this.gui.wizardSettings.active_rules.categories = this.gui.wizardRecommendedSettings.categories;
+            this.gui.wizardSettings.activeGroups.categoriesSelected = this.gui.wizardRecommendedSettings.categoriesSelected;
         }else{
-            this.gui.wizardSettings.active_rules.categories = [];
+            this.gui.wizardSettings.activeGroups.categoriesSelected = [];
             Ext.Array.each( 
                 this.panel.query("checkbox[name=categories_selected][checked=true]"), 
                 function( c ){ 
-                    this.gui.wizardSettings.active_rules.categories.push( c.inputValue );
+                    this.gui.wizardSettings.activeGroups.categoriesSelected.push( "+" + c.inputValue );
                 },
                 this
             );
@@ -1936,8 +1995,12 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
          */
         var keys = Object.keys(this.gui.wizardSettings);
         for( var i = 0; i < keys.length; i++){
+            if( keys[i] == "systemStats" ){
+                continue;
+            }
             this.gui.settings[keys[i]] = this.gui.wizardSettings[keys[i]];
         }
+        this.gui.settings.configured = true;
 
         /*
          * Save, enable, teardown wizard

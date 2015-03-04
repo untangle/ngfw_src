@@ -144,6 +144,7 @@ public class MetricManagerImpl implements MetricManager
                 readMeminfo(m);
                 readVmstat(m);
                 readCpuinfo(m);
+                readArchinfo(m);
                 readLoadAverage(m);
                 readUptime(m);
                 getNumProcs(m);
@@ -270,6 +271,11 @@ public class MetricManagerImpl implements MetricManager
             m.put("cpuModel", cpuModel);
             m.put("cpuSpeed", cpuSpeed);
             m.put("numCpus", numCpus);
+        }
+
+        private void readArchinfo(Map<String, Object> m) throws IOException
+        {
+            m.put("architecture", System.getProperty("os.arch", "unknown"));
         }
 
         private void readUptime(Map<String, Object> m) throws IOException

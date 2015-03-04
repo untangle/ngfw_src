@@ -34,7 +34,7 @@ class Update:
     errors = []
     settings_file_name_regex = re.compile(r'^settings_(\d+).js$')
 
-    def __init__( self, base_directory, url ):
+    def __init__(self, base_directory, url):
         self.debug = DEBUG
         self.base_directory = base_directory
         self.working_directory = self.base_directory + "/update"
@@ -46,7 +46,7 @@ class Update:
         self.node_ids = []
         self.node_manager = None
 
-    def setup( self ):
+    def setup(self):
         """
         Setup working directory
         """
@@ -87,7 +87,7 @@ class Update:
         
         return True
 
-    def download( self ):
+    def download(self):
         """
         Download
         """
@@ -162,7 +162,7 @@ class Update:
         write_file.close()
         return True
 
-    def validate( self ):
+    def validate(self):
         """
         Validate
         """
@@ -182,7 +182,7 @@ class Update:
         
         return True
     
-    def install( self ):
+    def install(self):
         """
         Install to live
         """
@@ -267,7 +267,7 @@ class Update:
         
         return True
 
-    def synchronize( self ):
+    def synchronize(self):
         """
         Synchronize configuration
         """

@@ -67,6 +67,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private static final String GET_UPDATES_SCRIPT = "idps-get-updates.py";
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
+    private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
 
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
@@ -180,9 +181,10 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
         try{
             String lines[] = result.split("\\r?\\n");
-            logger.warn("idps config: ");
             for ( String line : lines ){
-                logger.warn("idps config: " + line);
+                if( line.trim().length() > 1 ){
+                    logger.warn("reconfigure: idps-create-config: " + line);
+                }
             }
         }catch( Exception e ){
             logger.warn( "Unable to generate snort configuration:", e );
@@ -304,29 +306,9 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         return System.getProperty("uvm.settings.dir") + "/untangle-node-idps/settings_" + this.getNodeSettings().getId().toString() + ".js";
     }
 
-    public String getWizardSettingsFileName()
+    public String getDefaultsSettingsFileName()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
-        ExecManager execManager = UvmContextFactory.context().createExecManager();
-        String memorySettings = "";
-        long totalMemory = 0;
-        String result = execManager.execOutput( "/usr/bin/awk '/MemTotal:/ {print $2}' /proc/meminfo" );
-        execManager.close();
-        if ( result != null &&
-             ! "".equals(result) ) {
-            totalMemory = Long.parseLong( result.trim() ) * 1024;
-        }
-        if( totalMemory <= 1073741824L + ( 1073741824L * memoryThreshold ) ){
-            memorySettings = "_1GB";
-        }else if( totalMemory <= 2147483648L + ( 2147483648L * memoryThreshold ) ){
-            memorySettings = "_2GB";
-        }
-        // Otherwise use "defaults.js"
-
-        // String settingsName = System.getProperty("uvm.lib.dir") + "/untangle-node-idps/defaults" + memorySettings + ".js";
-        String settingsName = "/usr/share/untangle-snort-config/current/templates/defaults" + memorySettings + ".js";
-        return settingsName;
+        return DEFAULTS_SETTINGS;
     }
 
     public void initializeSettings()
@@ -344,9 +326,10 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
         try{
             String lines[] = result.split("\\r?\\n");
-            logger.warn("idps config: ");
             for ( String line : lines ){
-                logger.warn("idps config: " + line);
+                if( line.trim().length() > 1 ){
+                    logger.warn("initializeSettings: idps-sync-settings: " + line);
+                }
             }
         }catch( Exception e ){
             logger.warn("Unable to initialize settings: ", e );
@@ -356,29 +339,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             settingsManager.save( getSettingsFileName(), tempFileName, true );
         } catch (Exception exn) {
             logger.error("Could not save node settings", exn);
-        }
-    }
-
-    public void createDefaultSettings( String filename )
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
-        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-            "/idps-generate-defaults.py" + 
-            " --templates /usr/share/untangle-snort-config/current/templates" +
-            " --rules /usr/share/untangle-snort-config/current" +
-            " --defaults " + System.getProperty("uvm.lib.dir") + "/untangle-node-idps" +
-            " --filename " + filename
-        );
-        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-        try{
-            String lines[] = result.split("\\r?\\n");
-            logger.warn("idps config: ");
-            for ( String line : lines ){
-                logger.warn("idps config: " + line);
-            }
-        }catch( Exception e ){
-            logger.warn("Unable to generate defaults: ", e );
         }
     }
 
@@ -447,8 +407,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                 action.equals("wizard") ){
                 String settingsName;
                 if( action.equals("wizard") ){
-                    // !!! Should just be template, not full config?
-                    settingsName = node.getWizardSettingsFileName();
+                    settingsName = node.getDefaultsSettingsFileName();
                 }else{
                     settingsName = node.getSettingsFileName();
                 }
@@ -523,9 +482,10 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     String result = UvmContextFactory.context().execManager().execOutput(configCmd );
                     try{
                         String lines[] = result.split("\\r?\\n");
-                        logger.warn("idps config: ");
                         for ( String line : lines ){
-                            logger.warn("idps config: " + line);
+                            if( line.trim().length() > 1 ){
+                                logger.warn("DownloadHandler: idps-sync-settings: " + line);
+                            }
                         }
                     }catch( Exception e ){
                         logger.warn("Unable to initialize settings: ", e );
