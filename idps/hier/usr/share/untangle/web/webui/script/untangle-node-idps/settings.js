@@ -90,9 +90,20 @@ Ext.define('Ung.RuleEditorGrid', {
             name: "path",
             mapping: null
         });
-        me.fields.push({
-            name: "reference",
-            mapping: null
+
+        this.referencesStore = Ext.create(
+            'Ext.data.ArrayStore', {
+            fields: [ 'system', 'prefix'],
+            data: [
+                [ "bugtraq", "http://www.securityfocus.com/bid/" ],
+                [ "cve","http://cve.mitre.org/cgi-bin/cvename.cgi?name=" ],
+                [ "nessus", "http://cgi.nessus.org/plugins/dump.php3?id="],
+                [ "arachnids", "http://www.whitehats.com/info/IDS"],
+                [ "mcafee", "http://vil.nai.com/vil/content/v" ],
+                [ "osvdb", "http://osvdb.org/show/osvdb/" ],
+                [ "msb", "http://technet.microsoft.com/en-us/security/bulletin/" ],
+                [ "url","http://" ]
+            ]
         });
 
         me.callParent(arguments);
@@ -106,10 +117,13 @@ Ext.define('Ung.RuleEditorGrid', {
 
         me.searchTextField = me.down('textfield[name=searchField]');
         me.searchStatusBar = me.down('statusbar[name=searchStatusBar]');
+
     },
 
     regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
     regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+    regexRuleReference: /\s+reference:\s*([^\;]+)\;/g,
+
     afterDataBuild: function(handler){
         var me = this;
         me.callParent(arguments);
@@ -352,7 +366,6 @@ Ext.define('Ung.RuleEditorGrid', {
     /*
      * Modify to include original rule identiifer
      */
-     regexRuleReference: /\s+reference:\s*([^;]+);/,
     getData: function( data ){
         this.data = this.callSuper( data );
 
@@ -374,10 +387,6 @@ Ext.define('Ung.VariableEditorGrid', {
             name: "originalId",
             mapping: null
         });
-        me.fields.push({
-            name: "reference",
-            mapping: null
-        });
 
         me.callParent(arguments);
     },
@@ -390,7 +399,6 @@ Ext.define('Ung.VariableEditorGrid', {
         return this.data;
     }
 });
-
 
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
@@ -731,6 +739,38 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         flex:3,
                         editor: null,
                         menuDisabled: false
+                    },{
+                        header: this.i18n._("Reference"),
+                        dataIndex: 'rule',
+                        sortable: true,
+                        width: 100,
+                        flex:1,
+                        menuDisabled: false,
+                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                            var matches = value.match(this.regexRuleReference);
+                            if( matches == null ){
+                                return "";
+                            }
+                            var references = [];
+                            for( var i = 0; i < matches.length; i++ ){
+                                /*
+                                 * Apparently need to rebuild regexp each time to correctly
+                                 * extract in a loop.
+                                 */
+                                var re = /\s+reference:\s*([^\;]+)\;/g;
+                                var rmatches = re.exec( matches[i] );
+
+                                var url = "";
+                                var referenceFields = rmatches[1].split(",");
+                                var drr = this.referencesStore.findRecord( "system", referenceFields[0] );
+                                if( drr != null ){
+                                    url = drr.get("prefix") + referenceFields[1];
+                                    references.push('<a href="'+ url + '" class="icon-detail-row" style="text-decoration:none !important;" target="_reference">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>');
+                                }
+
+                            }
+                            return references.join("&nbsp;");
+                        }
                     },{
                         xtype:'checkcolumn',
                         header: this.i18n._("Log"),
