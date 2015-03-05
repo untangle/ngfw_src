@@ -27,7 +27,6 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
 {
     private static final Logger logger = Logger.getLogger(HttpUnparserEventHandler.class);
 
-    private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
     private static final String STATE_KEY = "HTTP-unparser-state";
     
     private static final byte[] LAST_CHUNK = "0\r\n\r\n".getBytes();
@@ -224,11 +223,6 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
 
         queueOutput( session, statusLine.getBytes() );
-
-        if ( clientSide )
-            session.sendDataToClient( BYTE_BUFFER_PROTO );
-        else
-            session.sendDataToServer( BYTE_BUFFER_PROTO );
     }
 
     private void requestLine( NodeTCPSession session, RequestLineToken rl )
@@ -242,11 +236,6 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         queueRequest( session, rl );
 
         queueOutput( session, rl.getBytes() );
-
-        if ( clientSide )
-            session.sendDataToClient( BYTE_BUFFER_PROTO );
-        else
-            session.sendDataToServer( BYTE_BUFFER_PROTO );
     }
 
     private void header( NodeTCPSession session, HeaderToken header )
@@ -267,12 +256,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         queueOutput( session, header.getBytes() );
         if ( clientSide ) {
             dequeueOutput( session );
-        } else {
-            if ( clientSide )
-                session.sendDataToClient( BYTE_BUFFER_PROTO );
-            else
-                session.sendDataToServer( BYTE_BUFFER_PROTO );
-        }
+        } 
     }
 
     private void chunk( NodeTCPSession session, ChunkToken c )
@@ -286,10 +270,6 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         ByteBuffer cBuf = c.getBytes();
 
         if ( state.transferEncoding == CHUNKED_ENCODING && cBuf.remaining() == 0 ) {
-            if ( clientSide )
-                session.sendDataToClient( BYTE_BUFFER_PROTO );
-            else
-                session.sendDataToServer( BYTE_BUFFER_PROTO );
             return;
         }
 
@@ -339,12 +319,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         }
 
         if ( state.outputQueue.isEmpty() ) {
-            if ( buf == null ) {
-                if ( clientSide )
-                    session.sendDataToClient( BYTE_BUFFER_PROTO );
-                else
-                    session.sendDataToServer( BYTE_BUFFER_PROTO );
-            } else {
+            if ( buf != null ) {
                 if ( clientSide )
                     session.sendDataToClient( buf );
                 else
