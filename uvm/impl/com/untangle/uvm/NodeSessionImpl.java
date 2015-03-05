@@ -948,7 +948,11 @@ public abstract class NodeSessionImpl implements NodeSession
         byte local[] = new byte[data.limit()];
         data.get(local,0,data.limit());
         DataCrumb crumb = new DataCrumb(local);
-        clientIncomingSocketQueue().send_event(crumb);
+        IncomingSocketQueue isq = clientIncomingSocketQueue();
+        if ( isq != null )
+            isq.send_event(crumb);
+        else
+            logger.warn("simulateClientData() failed, null socket queue");
     }
 
     public void simulateServerData(ByteBuffer data)
@@ -956,7 +960,11 @@ public abstract class NodeSessionImpl implements NodeSession
         byte local[] = new byte[data.limit()];
         data.get(local,0,data.limit());
         DataCrumb crumb = new DataCrumb(data.array(),data.limit());
-        serverIncomingSocketQueue().send_event(crumb);
+        IncomingSocketQueue isq = serverIncomingSocketQueue();
+        if ( isq != null )
+            isq.send_event(crumb);
+        else
+            logger.warn("simulateServerData() failed, null socket queue");
     }
 
     public short getProtocol() { return protocol; }
