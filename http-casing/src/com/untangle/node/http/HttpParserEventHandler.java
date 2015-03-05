@@ -216,8 +216,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
         } catch (Throwable exn) {
             String sessionEndpoints = "[" +
                 session.getProtocol() + " : " + 
-                session.getClientAddr() + ":" + session.getClientPort() + " -> " +
-                session.getServerAddr() + ":" + session.getServerPort() + "]";
+                session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " +
+                session.getServerAddr().getHostAddress() + ":" + session.getServerPort() + "]";
 
             /**
              * Some Special handling for semi-common parse exceptions

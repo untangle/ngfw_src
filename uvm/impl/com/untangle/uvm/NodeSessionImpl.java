@@ -949,10 +949,11 @@ public abstract class NodeSessionImpl implements NodeSession
         data.get(local,0,data.limit());
         DataCrumb crumb = new DataCrumb(local);
         IncomingSocketQueue isq = clientIncomingSocketQueue();
-        if ( isq != null )
+        if ( isq != null ) {
             isq.send_event(crumb);
-        else
-            logger.warn("simulateClientData() failed, null socket queue");
+        } else {
+            logger.warn("simulateClientData() failed: null socket queue");
+        }
     }
 
     public void simulateServerData(ByteBuffer data)
@@ -961,10 +962,11 @@ public abstract class NodeSessionImpl implements NodeSession
         data.get(local,0,data.limit());
         DataCrumb crumb = new DataCrumb(data.array(),data.limit());
         IncomingSocketQueue isq = serverIncomingSocketQueue();
-        if ( isq != null )
+        if ( isq != null ) {
             isq.send_event(crumb);
-        else
-            logger.warn("simulateServerData() failed, null socket queue");
+        } else {
+            logger.warn("simulateServerData() failed: null socket queue");
+        }
     }
 
     public short getProtocol() { return protocol; }
