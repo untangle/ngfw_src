@@ -625,7 +625,7 @@ Ext.define('Ung.EditorGrid', {
         return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount);
     },
     beforeDestroy: function() {
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     // load a page
@@ -1058,7 +1058,6 @@ Ext.define('Ung.RowEditorWindow', {
             autoScroll: true,
             layout: "auto",
             defaults: {
-                selectOnFocus: true,
                 labelWidth: this.rowEditorLabelWidth
             },
             items: this.inputLines

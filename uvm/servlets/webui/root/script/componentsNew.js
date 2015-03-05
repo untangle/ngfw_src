@@ -312,7 +312,7 @@ Ext.define("Ung.AppItem", {
         this.actionEl.removeAllListeners();
         this.progressBar.reset(true);
         this.progressBar.destroy();
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     // display Buttons xor Progress barr
@@ -433,7 +433,7 @@ Ext.define("Ung.Node", {
         if(this.settingsWin && this.settingsWin.isVisible()) {
             this.settingsWin.closeWindow();
         }
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         if(this.hasPowerButton) {
             Ext.get('node-power_' + this.getId()).removeAllListeners();
         }

@@ -80,8 +80,10 @@ Ext.define("Webui.config.aboutNew", {
             type: 'GET',
             success: function(response, opts) {
                 if( response!=null && response.account) {
-                    var uidComponent = me.panelServer.down('textarea[name="UID"]');
-                    uidComponent.setValue(uidComponent.getValue() + "\n" + this.i18n._('Account') + ": " + response.account);
+                    if(me.panelServer && me.panelServer.rendered) {
+                        var uidComponent = me.panelServer.down('textarea[name="UID"]');
+                        uidComponent.setValue(uidComponent.getValue() + "\n" + this.i18n._('Account') + ": " + response.account);
+                    }
                 }
             },
             failure: function(response, opts) {

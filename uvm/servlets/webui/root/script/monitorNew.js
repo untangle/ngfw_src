@@ -268,7 +268,7 @@ Ext.define('Ung.MonitorGrid', {
         }
     },
     beforeDestroy: function() {
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     reload: function() {

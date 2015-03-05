@@ -16,7 +16,6 @@ Ext.define('Ung.MatcherEditorWindow', {
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
             defaults: {
-                selectOnFocus: true,
                 msgTarget: 'side'
             },
             items: this.inputLines

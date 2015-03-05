@@ -1291,7 +1291,6 @@ Ext.define("Webui.config.administrationNew", {
                     ],
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     value: this.getSystemSettings().snmpSettings.v3AuthenticationProtocol ? this.getSystemSettings().snmpSettings.v3AuthenticationProtocol : "sha",
                     disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
                     listeners: {
@@ -1334,7 +1333,6 @@ Ext.define("Webui.config.administrationNew", {
                     ],
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     value: this.getSystemSettings().snmpSettings.v3PrivacyProtocol ? this.getSystemSettings().snmpSettings.v3PrivacyProtocol : "des",
                     disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
                     listeners: {
@@ -1432,7 +1430,6 @@ Ext.define("Webui.config.administrationNew", {
                     forceSelection: true,
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     hideLabel: true,
                     width: 300,
                     listeners: {

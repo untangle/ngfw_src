@@ -48,7 +48,7 @@ public class SkinTag extends SimpleTagSupport
                 
         try {
             String srcName  = "/skins/" + this.name + "/css/" + this.src;
-            out.println( "\n<link type=\"text/css\" rel=\"stylesheet\" href=\"" + srcName + "\"></link>" );
+            out.println( "\n<link type=\"text/css\" rel=\"stylesheet\" href=\"" + srcName + "\" />" );
         } catch ( IOException e ) {
             throw new JspException( "Unable to load the skins.", e );
         }

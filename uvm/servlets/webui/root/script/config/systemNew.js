@@ -411,7 +411,7 @@ Ext.define("Webui.config.systemNew", {
                     waitMsg: cmp.i18n._("Inspecting File..."),
                     success: function(form, action) {
                         var cmp = Ext.getCmp(action.parentId);
-                        Ung.MessageManager.stop();
+                        Ung.MetricManager.stop();
                         Ext.MessageBox.alert(cmp.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
                     },
                     failure: function(form, action) {

@@ -62,7 +62,7 @@ Ext.define('Ung.Window', {
     },
 
     beforeDestroy: function() {
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     // on show position and size

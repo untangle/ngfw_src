@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <c:set var="isDebug" value="true"/>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>${companyName}</title>
     <style type="text/css">
         @import "/ext5/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css?s=${buildStamp}";
@@ -51,8 +50,8 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
-    <!-- 
     <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
+    <!-- 
     <script type="text/javascript" src="script/untangle-node-reporting/settingsNew.js?s=${buildStamp}"></script>
      -->
 <%--
