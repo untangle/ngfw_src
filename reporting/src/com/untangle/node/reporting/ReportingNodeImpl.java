@@ -51,10 +51,10 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
     private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
 
-    private static EventWriterImpl eventWriter = null;
-    private static EventReaderImpl eventReader = null;
-    private static ReportingManagerImpl    reportingManager = null;
-    private static ReportingManagerNewImpl reportingManagerNew = null;
+    protected static EventWriterImpl eventWriter = null;
+    protected static EventReaderImpl eventReader = null;
+    protected static ReportingManagerImpl    reportingManager = null;
+    protected static ReportingManagerNewImpl reportingManagerNew = null;
 
     private EventLogQuery interestingEventsQuery;
     

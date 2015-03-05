@@ -4,8 +4,10 @@
 package com.untangle.node.reporting;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
@@ -43,6 +45,16 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
     }
 
+    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
+    {
+        String sql = entry.toSql( startDate, endDate );
+
+        logger.info("Getting Data for : " + entry.getTitle());
+        logger.info("SQL              : " + sql);
+        
+        return ReportingNodeImpl.eventReader.getEvents( sql, limit );
+    }
+    
     @SuppressWarnings("unchecked")
     private void loadReportEntries()
     {
@@ -51,13 +63,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
 
             logger.info("Loading report entries from file... ");
-            ArrayList<ReportEntry> reportEntries = UvmContextFactory.context().settingsManager().load( ArrayList.class, settingsFileName );
+            this.reportEntries = UvmContextFactory.context().settingsManager().load( ArrayList.class, settingsFileName );
 
-            if ( reportEntries == null ) {
-                reportEntries = new ArrayList<ReportEntry>();
+            if ( this.reportEntries == null ) {
+                this.reportEntries = new ArrayList<ReportEntry>();
             }
 
-            checkForNewReportEntries( reportEntries );
+            checkForNewReportEntries( this.reportEntries );
 
         } catch (Exception e) {
             logger.warn( "Failed to load report entries", e );

@@ -44,7 +44,7 @@ public class EventReaderImpl
      * @param endDate 
      * @param startDate 
      */
-    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final int limit, Date startDate, Date endDate )
+    public ResultSetReader getEventsResultSet( final String sql, final int limit )
     {
         Connection dbConnection = null;
 
@@ -61,43 +61,7 @@ public class EventReaderImpl
         }
         
         try {
-            String queryStr = query;
-            if ( policyId == null || policyId == -1 ) {
-                queryStr = queryStr.replace("= :policyId","is not null");
-                queryStr = queryStr.replace("=:policyId","is not null");
-            } else {
-                queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
-            }
-            if (startDate != null || endDate != null) {
-
-                String tmpStr = queryStr.toLowerCase();
-                int whereIndex   = tmpStr.indexOf("where");
-                int groupByIndex = tmpStr.indexOf("group by");
-                int orderByIndex = tmpStr.indexOf("order by");
-                int insertIndex;
-                if ( groupByIndex > 0 )
-                    insertIndex = groupByIndex; // insert the where clause before "group by"
-                else if ( orderByIndex > 0 )
-                    insertIndex = orderByIndex; // insert the where clause before "order by"
-                else
-                    insertIndex = queryStr.length() - 1; // insert the where clause at the end
-
-                String queryPart1 = queryStr.substring(0, insertIndex);
-                String queryPart2 = queryStr.substring(insertIndex);
-                queryStr = queryPart1;
-                if ( whereIndex < 0 )
-                    queryStr += " where true ";
-                if ( endDate != null )
-                    queryStr += " and time_stamp <= '" + dateFormatter.format(endDate)   + "' ";
-                if ( startDate != null )
-                    queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
-                queryStr += queryPart2;
-            }
-            if (limit > 0)
-                queryStr += " LIMIT " + limit + " ";
-
-            logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
-            logger.info("getEventsResultSet( queryStr: \"" + queryStr + "\")");
+            logger.debug("getEventsResultSet( sql: " + sql + " )");
             
             Statement statement = dbConnection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD );
 
@@ -110,7 +74,7 @@ public class EventReaderImpl
                 throw new RuntimeException("Unable to create Statement");
             }
             
-            ResultSet resultSet = statement.executeQuery( queryStr );
+            ResultSet resultSet = statement.executeQuery( sql );
             return new ResultSetReader( resultSet, dbConnection );
             
         } catch ( Exception e ) {
@@ -118,11 +82,61 @@ public class EventReaderImpl
             logger.warn("Failed to query database", e );
             throw new RuntimeException( "Failed to query database.", e );
         } 
+
     }
 
-    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, Date startDate, Date endDate)
+    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final int limit, final Date startDate, final Date endDate )
+    {
+        String queryStr = query;
+        if ( policyId == null || policyId == -1 ) {
+            queryStr = queryStr.replace("= :policyId","is not null");
+            queryStr = queryStr.replace("=:policyId","is not null");
+        } else {
+            queryStr = queryStr.replace(":policyId", Long.toString( policyId ) );
+        }
+        if (startDate != null || endDate != null) {
+
+            String tmpStr = queryStr.toLowerCase();
+            int whereIndex   = tmpStr.indexOf("where");
+            int groupByIndex = tmpStr.indexOf("group by");
+            int orderByIndex = tmpStr.indexOf("order by");
+            int insertIndex;
+            if ( groupByIndex > 0 )
+                insertIndex = groupByIndex; // insert the where clause before "group by"
+            else if ( orderByIndex > 0 )
+                insertIndex = orderByIndex; // insert the where clause before "order by"
+            else
+                insertIndex = queryStr.length() - 1; // insert the where clause at the end
+
+            String queryPart1 = queryStr.substring(0, insertIndex);
+            String queryPart2 = queryStr.substring(insertIndex);
+            queryStr = queryPart1;
+            if ( whereIndex < 0 )
+                queryStr += " where true ";
+            if ( endDate != null )
+                queryStr += " and time_stamp <= '" + dateFormatter.format(endDate)   + "' ";
+            if ( startDate != null )
+                queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
+            queryStr += queryPart2;
+        }
+        if (limit > 0)
+            queryStr += " LIMIT " + limit + " ";
+
+        logger.debug("getEventsResultSet( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
+
+        return getEventsResultSet( queryStr, limit );
+    }
+
+    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, final Date startDate, final Date endDate)
     {
         ResultSetReader resultSetReader = getEventsResultSet( query, policyId, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
     }
+
+    public ArrayList<JSONObject> getEvents( final String sql, final int limit )
+    {
+        ResultSetReader resultSetReader = getEventsResultSet( sql, -1 );
+        return resultSetReader.getAllEvents();
+    }
+    
 }

@@ -4,6 +4,9 @@
 package com.untangle.node.reporting;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import org.json.JSONObject;
 
 /**
  * The API for interacting/viewing/editing reports
@@ -13,4 +16,6 @@ public interface ReportingManagerNew
     ArrayList<ReportEntry> getReportEntries();
 
     void setReportEntries( ArrayList<ReportEntry> newEntries );
+
+    ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 }

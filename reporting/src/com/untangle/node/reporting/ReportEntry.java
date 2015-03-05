@@ -115,7 +115,7 @@ public class ReportEntry implements Serializable, JSONString
     
     public String toSql( Date startDate, Date endDate )
     {
-        return toSql( startDate, endDate );
+        return toSql( startDate, endDate, null );
     }
 
     public String toSql( Date startDate, Date endDate, ReportEntryCondition[] extraConditions )
