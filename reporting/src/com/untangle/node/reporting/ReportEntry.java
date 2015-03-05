@@ -220,20 +220,37 @@ public class ReportEntry implements Serializable, JSONString
    
     static {
         try {
-            ReportEntry entry = new ReportEntry();
-            ReportEntryCondition condition = new ReportEntryCondition();
+            ReportEntry entry;
+            ReportEntryCondition condition;
             Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
             Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
-
-            condition.setColumn("c_client_addr");
-            condition.setOperator("=");
-            condition.setValue("'10.21.68.172'");
             
             entry = new ReportEntry();
             entry.setEnabled( true );
             entry.setReadOnly( true );
             entry.setCategory("Web Filter");
-            entry.setTitle("Top Web Browsing Hosts (by requests)");
+            entry.setTitle("Top Hosts (by violations)");
+            entry.setDescription("The number of web violations by each host.");
+            entry.setTable("http_events");
+            condition = new ReportEntryCondition();
+            condition.setColumn("sitefilter_flagged");
+            condition.setOperator("=");
+            condition.setValue("true");
+            entry.setConditions(new ReportEntryCondition[] { condition });
+            entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
+            entry.setPieSumColumn("count(*)");
+            entry.setPieGroupColumn("hostname");
+            entry.setOrderByColumn("value");
+            entry.setOrderDesc(Boolean.TRUE);
+
+            logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
+            UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-flagged.js", entry, false );
+
+            entry = new ReportEntry();
+            entry.setEnabled( true );
+            entry.setReadOnly( true );
+            entry.setCategory("Web Filter");
+            entry.setTitle("Top Hosts (by requests)");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
             entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
@@ -243,8 +260,8 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.TRUE);
 
             logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "top-web-browsing-hosts-by-requests.js", entry, false );
-
+            UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-request.js", entry, false );
+            
             entry = new ReportEntry();
             entry.setEnabled( true );
             entry.setReadOnly( true );
@@ -259,15 +276,19 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.FALSE);
 
             logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "web-usage.js", entry, false );
-        
+            UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage.js", entry, false );
+
             entry = new ReportEntry();
-            entry.setEnabled( true );
+            entry.setEnabled( false );
             entry.setReadOnly( false );
             entry.setCategory("Web Filter");
-            entry.setTitle("Web Usage [10.21.68.172]");
+            entry.setTitle("Web Usage [1.2.3.4]");
             entry.setDescription("The number of web requests by each host.");
             entry.setTable("http_events");
+            condition = new ReportEntryCondition();
+            condition.setColumn("c_client_addr");
+            condition.setOperator("=");
+            condition.setValue("'1.2.3.4'");
             entry.setConditions(new ReportEntryCondition[] { condition });
             entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
             entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
@@ -276,7 +297,7 @@ public class ReportEntry implements Serializable, JSONString
             entry.setOrderDesc(Boolean.FALSE);
 
             logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-            // UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.lib.dir") + "/" + "untangle-node-reporting/" + "webUsage.js", entry, false );
+            UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage-host-example.js", entry, false );
              
         } catch (Exception e) {
             logger.warn("Exception.",e);

@@ -97,6 +97,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                         reportEntries.add( newEntry );
                         added = true;
                     }
+
+                    Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
+                    logger.info("XXX DEBUG: " + newEntry.toSql(oneDayAgo, null));
                 } catch (Exception e) {
                     logger.warn( "Failed to read report entry from: " + line, e );
                 }
