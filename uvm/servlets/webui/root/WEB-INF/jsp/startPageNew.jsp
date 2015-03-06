@@ -50,7 +50,7 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
-    <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/administrationNew.js?s=${buildStamp}"></script>
     <!-- 
     <script type="text/javascript" src="script/untangle-node-reporting/settingsNew.js?s=${buildStamp}"></script>
      -->

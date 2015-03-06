@@ -1,56 +1,3 @@
-Ext.define("Webui.config.administration.SkinManager", {
-    constructor: function( config ) {
-        /* List of stores to be refreshed, dynamically generated. */
-        this.refreshList = [];
-        this.i18n = config.i18n;
-    },
-    addRefreshableStore: function( store ) {
-        this.refreshList.push( store );
-    },
-    uploadSkin: function( cmp, form ) {
-        form.submit({
-            parentId: cmp.getId(),
-            waitMsg: this.i18n._('Please wait while your skin is uploaded...'),
-            success: Ext.bind(this.uploadSkinSuccess, this ),
-            failure: Ext.bind(this.uploadSkinFailure, this )
-        });
-    },
-    uploadSkinSuccess: function( form, action ) {
-        this.storeSemaphore = this.refreshList.length;
-
-        var handler = Ext.bind(function() {
-            this.storeSemaphore--;
-            if (this.storeSemaphore == 0) {
-                Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
-                var field = form.findField( "upload_skin_textfield" );
-                if ( field != null ) field.reset();
-            }
-        }, this);
-
-        for ( var c = 0 ; c < this.storeSemaphore ; c++ ) this.refreshList[c].load({callback:handler});
-    },
-    uploadSkinFailure: function( form, action ) {
-        var cmp = Ext.getCmp(action.parentId);
-        var errorMsg = cmp.i18n._("Upload Skin Failed");
-        if (action.result && action.result.msg) {
-            switch (action.result.msg) {
-            case 'Invalid Skin':
-                errorMsg = cmp.i18n._("Invalid Skin");
-                break;
-            case 'The default skin can not be overwritten':
-                errorMsg = cmp.i18n._("The default skin can not be overwritten");
-                break;
-            case 'Error creating skin folder':
-                errorMsg = cmp.i18n._("Error creating skin folder");
-                break;
-            default:
-                errorMsg = cmp.i18n._("Upload Skin Failed");
-            }
-        }
-        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-    }
-});
-
 Ext.define("Webui.config.administrationNew", {
     extend: "Ung.ConfigWin",
     panelAdmin: null,
@@ -69,7 +16,6 @@ Ext.define("Webui.config.administrationNew", {
         }, {
             title: i18n._('Administration')
         }];
-        this.skinManager = Ext.create('Webui.config.administration.SkinManager', {'i18n': i18n});
         this.initialSkin = this.getSkinSettings().skinName;
         this.buildAdmin();
         this.buildPublicAddress();
@@ -489,34 +435,24 @@ Ext.define("Webui.config.administrationNew", {
                 defaults: { labelWidth: 150 },
                 html: '<HR>',
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client conneced to your network.")
+                    html:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client conneced to your network.")
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid starting'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid)
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid until'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires)
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Subject DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -530,10 +466,10 @@ Ext.define("Webui.config.administrationNew", {
                             this.certGeneratorPopup("ROOT", null, this.i18n._('Generate Certificate Authority'));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate.')
+                        html: this.i18n._('Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate.')
                     }]
                 },{
                     xtype: 'fieldset',
@@ -550,10 +486,10 @@ Ext.define("Webui.config.administrationNew", {
                             downloadForm.submit();
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server.')
+                        html: this.i18n._('Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server.')
                     }]
                 }]
             },{
@@ -561,52 +497,34 @@ Ext.define("Webui.config.administrationNew", {
                 defaults: { labelWidth: 150 },
                 html: '<HR>',
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.")
+                    html:  this.i18n._("The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.")
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid starting'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid)
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid until'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires)
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Issuer DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_issuerDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Subject DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Alternative Names'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_SAN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -620,19 +538,19 @@ Ext.define("Webui.config.administrationNew", {
                             this.certGeneratorPopup("SERVER", this.getHostname(true), this.i18n._('Generate Server Certificate'));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.')
+                        html: this.i18n._('Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.')
                     }]
                 }]
             },{
                 title: this.i18n._('Third Party Server Certificate'),
                 defaults: { labelWidth: 150 },
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.")
+                    html:  this.i18n._("To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.")
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -650,10 +568,10 @@ Ext.define("Webui.config.administrationNew", {
                             this.certGeneratorPopup("CSR", this.getHostname(true), this.i18n._("Create Signature Signing Request"));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to generate and download a new Certificate Signing Request (CSR) to your computer.')
+                        html: this.i18n._('Click here to generate and download a new Certificate Signing Request (CSR) to your computer.')
                     }]
                 },{
                     xtype: 'fieldset',
@@ -670,10 +588,10 @@ Ext.define("Webui.config.administrationNew", {
                         iconCls: 'action-icon',
                         handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to upload a signed server certificate that you received from the CSR you created in step one.')
+                        html: this.i18n._('Click here to upload a signed server certificate that you received from the CSR you created in step one.')
                     }]
                 }]
             }]
@@ -714,108 +632,75 @@ Ext.define("Webui.config.administrationNew", {
             width: 600,
             height: (certMode === "ROOT" ? 320 : 360),
             border: true,
-            xtype: 'form',
             modal: true,
             items: [{
                 xtype: "form",
+                layout: 'anchor',
                 border: false,
+                defaults: {
+                    anchor: '98%',
+                    margin: "10 10 10 10",
+                    labelWidth: 150,
+                    listeners: {
+                        render: helptipRenderer
+                    }
+                },
                 items: [{
                     xtype: 'combo',
                     fieldLabel: this.i18n._('Country') + " (C)",
-                    labelWidth: 150,
                     name: 'Country',
                     id: 'Country',
                     helptip: this.i18n._("Select the country in which your organization is legally registered."),
-                    margin: "10 10 10 10",
-                    size: 50,
                     allowBlank: true,
                     store: Ung.Country.getCountryStore(i18n),
                     queryMode: 'local',
-                    editable: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    editable: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('State/Province') + " (ST)",
-                    labelWidth: 150,
                     name: "State",
                     helptip: this.i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
+                    
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('City/Locality') + " (L)",
-                    labelWidth: 150,
                     name: "Locality",
                     helptip: this.i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organization') + " (O)",
-                    labelWidth: 150,
                     name: "Organization",
                     helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field."),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organizational Unit ') + " (OU)",
-                    labelWidth: 150,
                     name: "OrganizationalUnit",
                     helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field."),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: true,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: true
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Common Name') + " (CN)",
-                    labelWidth: 150,
                     name: "CommonName",
                     helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
-                    margin: "10 10 10 10",
-                    size: 200,
                     allowBlank: false,
-                    value: hostName,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    value: hostName
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Subject Alternative Names'),
-                    labelWidth: 150,
                     name: "AltNames",
                     helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
-                    margin: "10 10 10 10",
-                    size: 200,
                     allowBlank: true,
                     value: (certMode === "ROOT" ? "" : addressList),
-                    hidden: (certMode === "ROOT" ? true : false),
-                    listeners: {
-                        render: helptipRenderer
-                    }
-                },{
+                    hidden: (certMode === "ROOT" ? true : false)
+                }],
+                buttons: [{
                     xtype: "button",
                     text: this.i18n._("Generate"),
                     name: "Accept",
-                    width: 100,
-                    margin: "20 10 10 180",
+                    width: 120,
                     handler: Ext.bind(function() {
                         this.certGeneratorWorker(certMode);
                     }, this)
@@ -823,8 +708,7 @@ Ext.define("Webui.config.administrationNew", {
                     xtype: "button",
                     text: this.i18n._("Cancel"),
                     name: "Cancel",
-                    width: 100,
-                    margin: "20 10 10 10",
+                    width: 120,
                     handler: Ext.bind(function() {
                         this.certGeneratorWindow.close();
                     }, this)
@@ -972,15 +856,19 @@ Ext.define("Webui.config.administrationNew", {
                     id: "filename",
                     margin: "10 10 10 10",
                     width: 560,
-                    size: 50,
                     labelWidth: 50,
                     allowBlank: false
                 }, {
+                    xtype: "hidden",
+                    name: "type",
+                    value: "server_cert"
+                    }]
+                }],
+                buttons: [{
                     xtype: "button",
                     text: this.i18n._("Upload Certificate"),
                     name: "Upload Certificate",
                     width: 200,
-                    margin: "10 10 10 80",
                     handler: Ext.bind(function() {
                         this.handleFileUpload();
                     }, this)
@@ -988,16 +876,10 @@ Ext.define("Webui.config.administrationNew", {
                     xtype: "button",
                     text: this.i18n._("Cancel"),
                     name: "Cancel",
-                    width: 200,
-                    margin: "10 10 10 10",
+                    width: 100,
                     handler: Ext.bind(function() {
                         popup.close();
                     }, this)
-                }, {
-                    xtype: "hidden",
-                    name: "type",
-                    value: "server_cert"
-                    }]
                 }]
         });
 
@@ -1080,7 +962,7 @@ Ext.define("Webui.config.administrationNew", {
             }
             if( pwd.getValue().length < 8 ){
                 pwd.markInvalid();
-                return i18n._('Password is too short.');                    
+                return i18n._('Password is too short.');
             }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();
@@ -1161,7 +1043,6 @@ Ext.define("Webui.config.administrationNew", {
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Community'),
                     name: 'communityString',
-//                        itemCls: 'left-indent-1',
                     id: 'administration_snmp_communityString',
                     value: this.getSystemSettings().snmpSettings.communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME'): this.getSystemSettings().snmpSettings.communityString,
                     allowBlank: false,
@@ -1174,7 +1055,6 @@ Ext.define("Webui.config.administrationNew", {
                     id: 'administration_snmp_sysContact',
                     value: this.getSystemSettings().snmpSettings.sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO'): this.getSystemSettings().snmpSettings.sysContact,
                     disabled: !this.getSystemSettings().snmpSettings.enabled
-                    //vtype: 'email'
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('System Location'),
@@ -1292,14 +1172,7 @@ Ext.define("Webui.config.administrationNew", {
                     editable: false,
                     queryMode: 'local',
                     value: this.getSystemSettings().snmpSettings.v3AuthenticationProtocol ? this.getSystemSettings().snmpSettings.v3AuthenticationProtocol : "sha",
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
-                    listeners: {
-                        "select": {
-                            fn: Ext.bind(function(elem, record) {
-//                                    this.getSkinSettings().skinName = record[0].data.name;
-                            }, this)
-                        }
-                    }
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1334,14 +1207,7 @@ Ext.define("Webui.config.administrationNew", {
                     editable: false,
                     queryMode: 'local',
                     value: this.getSystemSettings().snmpSettings.v3PrivacyProtocol ? this.getSystemSettings().snmpSettings.v3PrivacyProtocol : "des",
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
-                    listeners: {
-                        "select": {
-                            fn: Ext.bind(function(elem, record) {
-//                                    this.getSkinSettings().skinName = record[0].data.name;
-                            }, this)
-                        }
-                    }
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1379,8 +1245,7 @@ Ext.define("Webui.config.administrationNew", {
     },
 
     buildSkins: function() {
-        // keep initial skin settings
-        var adminSkinsStore = Ext.create("Ext.data.Store",{
+        this.adminSkinsStore = Ext.create("Ext.data.JsonStore",{
             fields: [{
                 name: 'name'
             },{
@@ -1389,22 +1254,8 @@ Ext.define("Webui.config.administrationNew", {
                     if ( v == "Default" ) return this.i18n._("Default");
                     return v;
                 }, this)
-            }],
-            proxy: Ext.create("Ext.data.proxy.Server",{
-                doRequest: function(operation, callback, scope) {
-                    rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.processResponse(exception==null, operation, null, result, callback, scope);
-                    }, this));
-                },
-                reader: {
-                    type: 'json',
-                    root: 'list'
-                }
-            })
+            }]
         });
-
-        this.skinManager.addRefreshableStore( adminSkinsStore );
 
         this.panelSkins = Ext.create('Ext.panel.Panel',{
             name: "panelSkins",
@@ -1423,8 +1274,7 @@ Ext.define("Webui.config.administrationNew", {
                 items: [{
                     xtype: 'combo',
                     name: "skinName",
-                    id: "administration_admin_client_skin_combo",
-                    store: adminSkinsStore,
+                    store: this.adminSkinsStore,
                     displayField: 'displayName',
                     valueField: 'name',
                     forceSelection: true,
@@ -1435,7 +1285,7 @@ Ext.define("Webui.config.administrationNew", {
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(elem, record) {
-                                this.getSkinSettings().skinName = record[0].data.name;
+                                this.getSkinSettings().skinName = record.get("name");
                             }, this)
                         }
                     }
@@ -1444,15 +1294,14 @@ Ext.define("Webui.config.administrationNew", {
                 title: this.i18n._('Upload New Skin'),
                 items: {
                     xtype: 'form',
-                    id: 'upload_skin_form',
+                    name: 'uploadSkinForm',
                     url: 'upload',
                     border: false,
                     items: [{
                         xtype: 'filefield',
                         fieldLabel: this.i18n._('File'),
-                        name: 'upload_skin_textfield',
+                        name: 'uploadSkinFile',
                         width: 500,
-                        size: 50,
                         labelWidth: 50,
                         allowBlank: false
                     },{
@@ -1468,23 +1317,52 @@ Ext.define("Webui.config.administrationNew", {
                     }]
                 }
             }],
-            onUpload: function() {
-                var prova = Ext.getCmp('upload_skin_form');
-                var cmp = Ext.getCmp(this.parentId);
-                var form = prova.getForm();
-
-                cmp.skinManager.uploadSkin( cmp, form );
-            }
-        });
-        adminSkinsStore.load({
-            callback: Ext.bind(function() {
-                var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
-                if(skinCombo!=null) {
-                    skinCombo.setValue(this.getSkinSettings().skinName);
-                    skinCombo.clearDirty();
-                }
+            onUpload: Ext.bind(function() {
+                var form = this.panelSkins.down('form[name="uploadSkinForm"]');
+                form.submit({
+                    waitMsg: this.i18n._('Please wait while your skin is uploaded...'),
+                    success: Ext.bind(function( form, action ) {
+                        rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            var filefield = this.panelSkins.down('filefield[name="uploadSkinFile"]');
+                            if ( filefield) {
+                                filefield.reset();
+                            }
+                            this.adminSkinsStore.loadData(result.list);
+                            Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
+                        }, this));
+                    }, this ),
+                    failure: Ext.bind(function( form, action ) {
+                        var errorMsg = this.i18n._("Upload Skin Failed");
+                        if (action.result && action.result.msg) {
+                            switch (action.result.msg) {
+                            case 'Invalid Skin':
+                                errorMsg = this.i18n._("Invalid Skin");
+                                break;
+                            case 'The default skin can not be overwritten':
+                                errorMsg = this.i18n._("The default skin can not be overwritten");
+                                break;
+                            case 'Error creating skin folder':
+                                errorMsg = this.i18n._("Error creating skin folder");
+                                break;
+                            default:
+                                errorMsg = this.i18n._("Upload Skin Failed");
+                            }
+                        }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this )
+                });
             }, this)
         });
+        rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.adminSkinsStore.loadData(result.list);
+            var skinCombo=this.panelSkins.down('combo[name="skinName"]');
+            if(skinCombo!=null) {
+                skinCombo.setValue(this.getSkinSettings().skinName);
+                skinCombo.clearDirty();
+            };
+        }, this));
     },
 
     // validation function

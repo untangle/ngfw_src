@@ -486,16 +486,14 @@ Ext.define('Webui.config.sessionMonitorNew', {
     },
     // Current Sessions Grid
     buildGridCurrentSessions: function() {
+        var intfList = Ung.Util.getInterfaceList(false, false);
+        var interfaceMap = {};
+        for(var i=0; i<intfList.length; i++) {
+            interfaceMap[intfList[i][0]]=intfList[i][1];
+        }
         this.fieldConvertInterface = function( value, record){
-            var interfaceRecord = Ung.Util.getInterfaceStore().findRecord("key", value);
-            if ( interfaceRecord == null ) {
-                if ( ( value == null ) || ( value < 0 ) )
-                    return "";
-                else
-                    return Ext.String.format( i18n._("Interface {0}"), value );
-            } else {
-                return interfaceRecord.get("name");
-            }
+            var interfaceName=interfaceMap[value];
+            return (interfaceName == null)?( value==null || value<0 )?"":Ext.String.format( i18n._("Interface {0}"), value ):interfaceName;
         };
         this.gridCurrentSessions = Ext.create('Ung.MonitorGrid',{
             name: this.name+"Grid",

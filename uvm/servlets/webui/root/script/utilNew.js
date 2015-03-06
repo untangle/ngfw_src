@@ -436,21 +436,6 @@ Ung.Util = {
         }
         return data;
     },
-    getInterfaceStore: function(simpleMatchers) {
-        var data = [];
-        // simple Matchers excludes WAN matchers
-        if (simpleMatchers) {
-            data = this.getInterfaceList(false, true);
-        } else {
-            data = this.getInterfaceList(true, true);
-        }
-        var interfaceStore=Ext.create('Ext.data.ArrayStore', {
-            idIndex:0,
-            fields: ['key', 'name'],
-            data: data
-        });
-        return interfaceStore;
-    },
     formatTime: function(value, rec) {
         if(value==null) {
             return null;
