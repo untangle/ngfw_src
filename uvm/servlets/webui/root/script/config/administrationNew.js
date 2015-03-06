@@ -1361,7 +1361,7 @@ Ext.define("Webui.config.administrationNew", {
             if(skinCombo!=null) {
                 skinCombo.setValue(this.getSkinSettings().skinName);
                 skinCombo.clearDirty();
-            };
+            }
         }, this));
     },
 
