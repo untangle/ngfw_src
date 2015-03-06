@@ -358,10 +358,13 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         state.size = 0;
         state.outputQueue.clear();
 
-        if ( clientSide )
-            session.sendDataToClient( buf );
-        else
-            session.sendDataToServer( buf );
+        if ( buf.remaining() > 0 ) {
+            if ( clientSide )
+                session.sendDataToClient( buf );
+            else
+                session.sendDataToServer( buf );
+        }
+        
         return;
     }
 
