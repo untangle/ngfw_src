@@ -137,6 +137,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPClientObject( NodeTCPSession session, Object obj )
     {
+        if ( obj instanceof ReleaseToken ) {
+            session.sendObjectToServer( obj );
+            session.release();
+            return;
+        }
+
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
@@ -144,6 +150,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPServerObject( NodeTCPSession session, Object obj )
     {
+        if ( obj instanceof ReleaseToken ) {
+            session.sendObjectToClient( obj );
+            session.release();
+            return;
+        }
+        
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }

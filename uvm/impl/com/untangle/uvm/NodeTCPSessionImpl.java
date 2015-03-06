@@ -461,10 +461,17 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
         /**
          * if in lineMode then the app is clearly expecting data
          * this would lead to unexpected results, so just throw an exception.
+         *
+         * This is commented out because it is sometimes useful to send an object
+         * For example if the HTTP casing is in line-buffered mode, and the outer HTTPS
+         * casing sends a release token, the HTTP casing needs to be able to receive it
+         *
+         * As long as there is no data in the current buffer there is no risk of out-of-order
+         * transmissions.
          */
-        if ( lineMode ) {
-            throw new RuntimeException("Object received while in line-mode buffering state.");
-        }
+        // if ( lineMode ) {
+        //     throw new RuntimeException("Object received while in line-mode buffering state.");
+        // }
 
         /**
          * if there is data in the readbuf then the app is expecting data
