@@ -1278,13 +1278,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('source_addr') < 0,
-                header: i18n._("Client"),
+                header: i18n._("Source Address"),
                 width: Ung.Util.ipFieldWidth,
                 sortable: true,
                 dataIndex: 'source_addr'
             }, {
                 hidden: visibleColumnsParam.indexOf('source_port') < 0,
-                header: i18n._("Client port"),
+                header: i18n._("Source port"),
                 width: Ung.Util.portFieldWidth,
                 sortable: true,
                 dataIndex: 'source_port',
@@ -1293,13 +1293,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('dest_addr') < 0,
-                header: i18n._("Server"),
+                header: i18n._("Destination Address"),
                 width: Ung.Util.ipFieldWidth,
                 sortable: true,
                 dataIndex: 'dest_addr'
             }, {
                 hidden: visibleColumnsParam.indexOf('dest_port') < 0,
-                header: i18n._("Server port"),
+                header: i18n._("Destination port"),
                 width: Ung.Util.portFieldWidth,
                 sortable: true,
                 dataIndex: 'dest_port',
