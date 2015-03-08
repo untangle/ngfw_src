@@ -81,9 +81,8 @@ class Update:
         ##
         nm = NodeManager(uvmContext)
         for instance in nm.get_instances():
-            if instance[1] == "untangle-node-idps":
+            if instance[1] == "untangle-node-idps" and instance[3] == "RUNNING":
                 self.node_ids.append(instance[0])
-        
         
         return True
 
@@ -338,8 +337,9 @@ def main(argv):
         print "url = " + url
 
     update = Update( rules_template_directory, url )
-    if update.setup() == True and update.download() == True and update.validate() and update.install():
-        update.synchronize()
+    update.setup()
+    if len(update.node_ids) > 0 and update.download() == True and update.validate() and update.install():
+         update.synchronize()
 
     """
     Always update last updated time even if nothing was downloaded 
