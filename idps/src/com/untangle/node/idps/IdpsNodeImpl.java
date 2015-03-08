@@ -64,7 +64,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
 
-    private static final String GET_UPDATES_SCRIPT = "idps-get-updates";
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
     private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
@@ -127,7 +126,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         super.preStop();
 
         UvmContextFactory.context().networkManager().unregisterListener( this.listener );
-        removeCronEntry();
         try{
             this.idpsEventMonitor.disable();
         }catch( Exception e ){
@@ -153,7 +151,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     protected void postStart()
     {
         iptablesRules();
-        addCronEntry();
     }
 
     public void reconfigure()
@@ -272,34 +269,6 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to manage rules");
         }
-    }
-
-    /**
-     * If cron entry does not exist, add it.
-     */
-    private void addCronEntry()
-    {
-        File fCron = new File( "/etc/cron.daily/" + GET_UPDATES_SCRIPT );
-        if( fCron.exists() ){
-            return;
-        }
-        File fBin = new File( System.getProperty("uvm.bin.dir") + "/" + GET_UPDATES_SCRIPT );
-
-        try {
-            IOUtil.copyFile( fBin, fCron );
-        } catch (IOException e) {
-            logger.warn("Unable to copy updates file to cron.daily:  ", e);
-        }
-    }
-
-    private void removeCronEntry()
-    {
-        File fCron = new File( "/etc/cron.daily/" + GET_UPDATES_SCRIPT );
-        if( fCron.exists() == false ){
-            return;
-        }
-
-        IOUtil.delete( fCron );
     }
 
     public String getSettingsFileName()
