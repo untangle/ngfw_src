@@ -64,7 +64,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
 
-    private static final String GET_UPDATES_SCRIPT = "idps-get-updates.py";
+    private static final String GET_UPDATES_SCRIPT = "idps-get-updates";
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/idps-get-last-update-check";
     private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
@@ -150,12 +150,14 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         this.idpsEventMonitor.enable();
     }
 
-    protected void postStart(){
+    protected void postStart()
+    {
         iptablesRules();
         addCronEntry();
     }
 
-    public void reconfigure(){
+    public void reconfigure()
+    {
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
