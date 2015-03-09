@@ -401,7 +401,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 sortable: false
                 /*TODO: ext5 ,
                 tdCls: 'ua-pointer'
-               
                 editor: {
                     xtype: 'combo',
                     store: this.deviceStore,

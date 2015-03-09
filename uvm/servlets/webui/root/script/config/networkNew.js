@@ -3085,6 +3085,7 @@ Ext.define("Webui.config.networkNew", {
             height: 300,
             name: 'Static Routes',
             settingsCmp: this,
+            paginated: false,
             emptyRow: {
                 "ruleId": -1,
                 "network": "",
@@ -5478,7 +5479,7 @@ Ext.define("Webui.config.networkNew", {
                     activeTabIndex: this.tabs.items.findIndex('id', this.tabs.getActiveTab().id),
                     advancedTabIndex: this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id)
                 });
-                Webui.config.network.superclass.closeWindow.call(this);
+                Webui.config.networkNew.superclass.closeWindow.call(this);
                 main.openConfig(configNetwork);
             } else {
                 Ext.MessageBox.hide();
@@ -5487,7 +5488,7 @@ Ext.define("Webui.config.networkNew", {
         }
     },
     closeWindow: function() {
-        Webui.config.network.superclass.closeWindow.call(this);
+        this.callParent(arguments);
         if (this.needRackReload) {
             Ung.Util.goToStartPage();
         }

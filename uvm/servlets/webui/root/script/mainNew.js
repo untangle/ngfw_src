@@ -3,7 +3,6 @@ Ext.Loader.setConfig({
     enabled: true,
     disableCaching: false,
     paths: {
-        'Ext.ux': '/ext5/examples/ux',
         'Webui': 'script'
     }
 });
@@ -18,9 +17,6 @@ Ext.Loader.loadScriptFile=Ext.bind(function() {
 var rpc=null; // the main json rpc object
 var testMode = false;
 
-Ext.require([
-    'Ext.ux.data.PagingMemoryProxy'
-]);
 //resources map
 Ung.hasResource = {};
 

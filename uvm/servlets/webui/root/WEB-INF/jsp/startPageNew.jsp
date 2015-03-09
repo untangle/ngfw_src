@@ -50,10 +50,9 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
-    <script type="text/javascript" src="script/config/administrationNew.js?s=${buildStamp}"></script>
-    <!-- 
-    <script type="text/javascript" src="script/untangle-node-reporting/settingsNew.js?s=${buildStamp}"></script>
-     -->
+    <script type="text/javascript" src="script/config/networkNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-base-virus/settingsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-virusblocker/settingsNew.js?s=${buildStamp}"></script>
 <%--
 <c:if test="${param['expert']==1}">
     <script type="text/javascript">

@@ -255,9 +255,10 @@ Ext.define('Ung.EditorGrid', {
         this.store=Ext.create('Ext.data.Store',{
             data: [],
             model: this.modelName,
-            pageSize: this.paginated?this.recordsPerPage:null,
+            pageSize: this.paginated?this.recordsPerPage:0,
             proxy: {
-                type: this.paginated?'pagingmemory':'memory',
+                type: 'memory',
+                enablePaging: this.paginated,
                 reader: {
                     type: 'json'
                 }

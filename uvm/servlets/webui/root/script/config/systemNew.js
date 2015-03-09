@@ -736,7 +736,7 @@ Ext.define("Webui.config.systemNew", {
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(elem, record) {
-                                this.getLanguageSettings().language = record[0].data.code;
+                                this.getLanguageSettings().language = record.get("code");
                             }, this)
                         },
                         "afterrender": {
