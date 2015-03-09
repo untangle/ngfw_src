@@ -1323,7 +1323,12 @@ Ext.define("Ung.FaceplateMetric", {
             }]
         });
         
-        this.chart.on("click", function(e) { main.showNodeSessions( this.parentNodeId ); }, this);
+        this.chart.on("click", function(e) { 
+            /*
+             * TODO: extjs5 make the click work on extjs 5
+             */
+            main.showNodeSessions( this.parentNodeId ); 
+        }, this);
         var chartTipArr=[
             '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
         ];

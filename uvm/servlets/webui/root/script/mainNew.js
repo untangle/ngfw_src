@@ -1220,29 +1220,33 @@ Ext.define("Ung.Main", {
         }
     },
     showHosts: function() {
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        Ext.Function.defer(function() {
+        Ext.require(['Webui.config.hostMonitorNew'], function() {
             if ( main.hostMonitorWin == null) {
-                main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
+                main.hostMonitorWin=Ext.create('Webui.config.hostMonitorNew', {"name":"hostMonitor", "helpSource":"host_viewer"});
             }
             main.hostMonitorWin.show();
-            main.hostMonitorWin.gridCurrentHosts.reload();
-            Ext.MessageBox.hide();
-        }, 10, this);
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function() {
+                main.hostMonitorWin.gridCurrentHosts.reload();
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
     },
     showSessions: function() {
         main.showNodeSessions(0);
     },
     showNodeSessions: function(nodeIdArg) {
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        Ext.Function.defer(function() {
+        Ext.require(['Webui.config.sessionMonitorNew'], function() {
             if ( main.sessionMonitorWin == null) {
-                main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+                main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitorNew', {"name":"sessionMonitor", "helpSource":"session_viewer"});
             }
             main.sessionMonitorWin.show();
-            main.sessionMonitorWin.gridCurrentSessions.reload();
-            Ext.MessageBox.hide();
-        }, 10, this);
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function() {
+                main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
     },
     showPolicyManager: function() {
         if (main.policyNodeWidget) {

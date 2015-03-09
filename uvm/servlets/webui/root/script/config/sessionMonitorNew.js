@@ -32,6 +32,12 @@ Ext.define('Webui.config.sessionMonitorNew', {
             }
             var sessions = result.list;
             if(testMode) {
+                sessions = [];
+                for(var tt = 0; tt<100; tt++) {
+                    sessions = sessions.concat(Ext.decode(Ext.encode(result.list)));
+                }
+            }
+            if(false) { 
                 var testSessionsSize=5000;//400 + Math.floor((Math.random()*150));
                 for(var t=0;t<testSessionsSize;t++) {
                     var ii=t+Math.floor((Math.random()*5));
