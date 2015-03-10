@@ -17,13 +17,12 @@ Ext.define('Webui.config.localDirectoryNew', {
         this.callParent(arguments);
     },
     buildLocalDirectory: function() {
-        this.gridUsers = Ext.create('Ung.EditorGrid',{
+        this.gridUsers = Ext.create('Ung.grid.Panel',{
             name: 'Local Users',
             helpSource: 'local_directory_local_users',
             title: this.i18n._('Local Users'),
             settingsCmp: this,
             height: 500,
-            paginated: false,
             bbar: [
                     '-',
                     {
@@ -258,7 +257,7 @@ Ext.define('Webui.config.localDirectoryNew', {
     },
     validate: function() {
         //validate local directory users
-        var listUsers = this.gridUsers.getPageList();
+        var listUsers = this.gridUsers.getList();
         var mapUsers = {}, user;
         for(var i=0; i<listUsers.length;i++) {
             user = listUsers[i];
@@ -322,7 +321,7 @@ Ext.define('Webui.config.localDirectoryNew', {
     },
     save: function (isApply) {
         // Calculate passwordBase64Hash for changed passwords and remove cleartext password before saving
-        var user, listUsers = this.gridUsers.getPageList();
+        var user, listUsers = this.gridUsers.getList();
         for(var i=0; i<listUsers.length;i++) {
             user = listUsers[i];
             if(user.password == null) {

@@ -132,7 +132,7 @@ Ext.define("Webui.config.aboutNew", {
        });
     },
     buildGridLicenses: function() {
-        this.gridLicenses = Ext.create('Ung.EditorGrid',{
+        this.gridLicenses = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: "gridLicenses",
             settingsCmp: this,
@@ -140,11 +140,9 @@ Ext.define("Webui.config.aboutNew", {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
             title: this.i18n._("Licenses"),
             //TODO: qtip is not displayed, fix this
             qtip: this.i18n._("The Current list of Licenses available on this Server."),
-            paginated: false,
             bbar: new Ext.Toolbar({
                 items: [
                     '-',

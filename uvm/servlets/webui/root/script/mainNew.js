@@ -15,7 +15,7 @@ Ext.Loader.loadScriptFile=Ext.bind(function() {
 }, Ext.Loader);
 
 var rpc=null; // the main json rpc object
-var testMode = false;
+var testMode = true;
 
 //resources map
 Ung.hasResource = {};

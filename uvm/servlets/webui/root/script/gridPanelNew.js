@@ -1,18 +1,86 @@
-// Editor Grid class
-Ext.define('Ung.EditorGrid', {
-    extend:'Ext.grid.Panel',
-    statics: {
-        maxRowCount: 2147483647
+// Grid edit column
+Ext.define('Ung.grid.EditColumn', {
+    extend:'Ext.grid.column.Action',
+    menuDisabled: true,
+    resizable: false,
+    hideable: false,
+    iconCls: 'icon-edit-row',
+    hasReadOnly: false,
+    constructor: function(config) {
+        Ext.applyIf(config, {
+            header: i18n._("Edit"),
+            width: 50
+        });
+        if(config.hasReadOnly) {
+            this.getClass = this.getClassReadOnly;
+        }
+        this.callParent(arguments);
     },
+    init: function(grid) {
+        this.grid = grid;
+    },
+    handler: function(view, rowIndex, colIndex) {
+        var rec = view.getStore().getAt(rowIndex);
+        this.grid.editHandler(rec);
+    },
+    getClassReadOnly: function(value, metadata, record) {
+        if(!record.get("readOnly")) {
+            return this.iconCls;
+        } else {
+            return 'icon-detail-row';
+        }
+    }
+});
+
+// Grid edit column
+Ext.define('Ung.grid.DeleteColumn', {
+    extend:'Ext.grid.column.Action',
+    menuDisabled: true,
+    resizable: false,
+    hideable: false,
+    iconCls: 'icon-delete-row',
+    hasReadOnly: false,
+    constructor: function(config) {
+        Ext.applyIf(config, {
+            header: i18n._("Delete"),
+            width: 55
+        });
+        if(config.hasReadOnly) {
+            this.getClass = this.getClassReadOnly;
+        }
+        this.callParent(arguments);
+    },
+    init:function(grid) {
+        this.grid=grid;
+    },
+    handler: function(view, rowIndex, colIndex) {
+        var rec = view.getStore().getAt(rowIndex);
+        this.grid.deleteHandler(rec);
+    },
+    getClassReadOnly: function(value, metadata, record) {
+        if(!record.get("readOnly")) {
+            return this.iconCls;
+        } else {
+            return 'x-hide-display';
+        }
+    }
+});
+
+// Grid reorder column
+Ext.define('Ung.grid.ReorderColumn', {
+    extend:'Ext.grid.column.Template',
+    menuDisabled:true,
+    resizable: false,
+    hideable: false,
+    header: "Reorder",
+    width: 55,
+    tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
+});
+
+// Editor Grid class
+Ext.define('Ung.grid.Panel', {
+    extend:'Ext.grid.Panel',
     selType: 'rowmodel',
-    //reserveScrollbar: true,
-    // record per page
-    recordsPerPage: 25,
-    // the minimum number of records for pagination
-    minPaginateCount: 65,
-    // the total number of records
-    totalRecords: null,
-    // settings component
     settingsCmp: null,
     // the list of fields used to by the Store
     fields: null,
@@ -20,12 +88,10 @@ Ext.define('Ung.EditorGrid', {
     hasAdd: true,
     // should add add rows at top or bottom
     addAtTop: true,
-    configAdd: null,
     // has Import Export buttons
     hasImportExport: null,
     // has Edit buton on each record
     hasEdit: true,
-    configEdit: null,
     // has Delete buton on each record
     hasDelete: true,
     configDelete: null,
@@ -44,37 +110,26 @@ Ext.define('Ung.EditorGrid', {
     //size row editor to component
     rowEditorConfig: null,
     // the default sort field
-    sortField: null,
+    sortField: undefined,
     // the default sort order
-    sortOrder: null,
-    // the default group field
-    groupField: null,
+    sortOrder: undefined,
     // the columns are sortable by default, if sortable is not specified
-    columnsDefaultSortable: null,
+    columnsDefaultSortable: true,
     // is the column header dropdown disabled
     columnMenuDisabled: true,
-    // paginate the grid by default
-    paginated: true,
-    // javaClass of the record, used in save function to create correct json-rpc
-    // object
+    // javaClass of the record, used in save function to create correct json-rpc object
     recordJavaClass: null,
-    async: false,
-    // the map of changed data in the grid
-    dataLoaded: false,
-    dataInitialized: false,
     // used by rendering functions and by save
-    importSettingsWindow: null,
     enableColumnHide: false,
     enableColumnMove: false,
     dirtyFlag: false,
     addedId: 0,
     generatedId: 1,
     useServerIds: false,
-    sortingDisabled:false,
-    features: [{ftype: "grouping"}],
+    sortingDisabled: false,
     constructor: function(config) {
         var defaults = {
-            storeData: [],
+            //data: [],
             plugins: [],
             viewConfig: {
                 enableTextSelection: true,
@@ -98,9 +153,6 @@ Ext.define('Ung.EditorGrid', {
     },
     initComponent: function() {
         var grid=this;
-        if(!this.data) {
-            this.data = [];
-        }
         if(this.hasInlineEditor) {
             this.inlineEditor=Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 1
@@ -108,7 +160,6 @@ Ext.define('Ung.EditorGrid', {
             this.plugins.push(this.inlineEditor);
         }
         if (this.hasReorder) {
-            this.paginated=false;
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {
                 header: i18n._("Reorder")
             });
@@ -144,12 +195,12 @@ Ext.define('Ung.EditorGrid', {
             }
         }
         if (this.hasEdit) {
-            var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {hasReadOnly: this.hasReadOnly});
+            var editColumn = Ext.create('Ung.grid.EditColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
         }
         if (this.hasDelete) {
-            var deleteColumn = Ext.create('Ung.grid.DeleteColumn', this.configDelete || {hasReadOnly: this.hasReadOnly});
+            var deleteColumn = Ext.create('Ung.grid.DeleteColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
         }
@@ -158,40 +209,28 @@ Ext.define('Ung.EditorGrid', {
             name: 'internalId',
             mapping: null
         });
-        if(this.dataFn) {
-            if(this.dataRoot === undefined) {
-                this.dataRoot="list";
-            }
-        } else {
-            this.async=false;
-        }
-        this.totalRecords = this.data.length;
         this.modelName = 'Ung.Model'+this.getId();
         var model = Ext.define(this.modelName , {
             extend: 'Ext.data.Model',
             fields: this.fields
         });
         this.subCmps.push(model);
-        
+        var storeData = this.dataProperty? this.settingsCmp.settings[this.dataProperty].list:
+                        this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
+                        this.storeData || [];
         this.store=Ext.create('Ext.data.Store',{
-            data: [],
+            data: this.formatData(storeData),
             model: this.modelName,
-            pageSize: this.paginated?this.recordsPerPage:0,
             proxy: {
                 type: 'memory',
-                enablePaging: this.paginated,
                 reader: {
                     type: 'json'
                 }
             },
-            autoLoad: false,
             sorters: this.sortField ? {
                 property: this.sortField,
                 direction: this.sortOrder ? this.sortOrder: "ASC"
             }: undefined,
-            groupField: this.groupField,
-            remoteSort: this.paginated,
-            remoteFilter: this.paginated,
             listeners: {
                 "update": {
                     fn: Ext.bind(function(store, record, operation) {
@@ -208,16 +247,6 @@ Ext.define('Ung.EditorGrid', {
         if(!this.dockedItems)  {
             this.dockedItems = [];
         }
-        if(this.paginated) {
-            this.dockedItems.push({
-                dock: 'bottom',
-                xtype: 'pagingtoolbar',
-                store: this.getStore(),
-                displayInfo: true,
-                displayMsg: i18n._('Displaying topics {0} - {1} of {2}'),
-                emptyMsg: i18n._("No topics to display")
-            });
-        }
         if (this.tbar == null) {
             this.tbar=[];
         }
@@ -225,14 +254,14 @@ Ext.define('Ung.EditorGrid', {
             this.hasImportExport=this.hasAdd;
         }
         if (this.hasAdd) {
-            this.tbar.push(Ext.applyIf(this.configAdd || {}, {
+            this.tbar.push({
                 text: i18n._('Add'),
                 tooltip: i18n._('Add New Row'),
                 iconCls: 'icon-add-row',
                 name: 'Add',
                 parentId: this.getId(),
                 handler: Ext.bind(this.addHandler, this)
-            }));
+            });
         }
         if (this.hasImportExport) {
             this.tbar.push('->', {
@@ -305,21 +334,27 @@ Ext.define('Ung.EditorGrid', {
         this.initialLoad();
     },
     initialLoad: function() {
-        // load first page initialy
-        this.getView().setLoading(false);  //set to false to prevent showing load mask on inital load.
-        Ext.defer(function(){
-            this.buildData(Ext.bind(function() {
-                this.getStore().loadPage(1, {
-                    limit:this.isPaginated() ? this.recordsPerPage: Ung.EditorGrid.maxRowCount,
+        if(this.dataFn) {
+            this.loadingData = true;
+            this.dataFn(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.getStore().getProxy().setData(this.formatData(result.list));
+                this.getStore().load({
                     callback: function() {
-                        this.dataLoaded=true;
-                        //must call this even when setLoading was not set to true, or prevent reload error
                         this.getView().setLoading(false);
                     },
                     scope: this
                 });
+                this.loadingData = false;
             }, this));
-        },10, this);
+        } else {
+            this.getStore().load({
+                callback: function() {
+                    this.getView().setLoading(false);
+                },
+                scope: this
+            });
+        }
     },
     getTestRecord:function(index) {
         var rec= {};
@@ -333,77 +368,49 @@ Ext.define('Ung.EditorGrid', {
         }
         return rec;
     },
-    getData: function(data) {
+    formatData: function(data) {
         if(!data) {
-            if(this.dataFn) {
-                if (this.dataFnArg !== undefined && this.dataFnArg != null) {
-                    data = this.dataFn(this.dataFnArg);
-                } else {
-                    data = this.dataFn();
-                }
-                this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
-            } else if(this.dataProperty) {
-                this.data=this.settingsCmp.settings[this.dataProperty].list;
-            } else if(this.dataExpression) {
-                    this.data=eval("this.settingsCmp."+this.dataExpression);
-            }
-        } else {
-            this.data=data;
+            data=[];
         }
-
-        if(!this.data) {
-            this.data=[];
-        }
-        if(testMode && this.data.length === 0) {
+        if(testMode && data.length === 0) {
             if(this.testData) {
-                this.data.concat(this.testData);
-            } else if(this.testDataFn) {
-                this.data.concat(this.testDataFn);
-            } else if(this.data.length === 0) {
+                data = data.concat(this.testData);
+            } else if(data.length === 0) {
                 var emptyRec={};
                 var length = Math.floor((Math.random()*5));
                 for(var t=0; t<length; t++) {
-                    this.data.push(this.getTestRecord(t));
+                    data.push(this.getTestRecord(t));
                 }
             }
         }
-        for(var i=0; i<this.data.length; i++) {
-            this.data[i]["internalId"]=i+1;
+        for(var i=0; i<data.length; i++) {
+            data[i]["internalId"]=i+1;
             //prevent using ids from server
             if(!this.useServerIds) {
-                delete this.data[i]["id"];
+                delete data[i]["id"];
             }
         }
-        this.dataInitialized=true;
-        return this.data;
+        return data;
     },
     buildData: function(handler) {
-        if(this.async) {
-            if (this.dataFnArg !== undefined && this.dataFnArg != null) {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.getData(result);
-                    this.afterDataBuild(handler);
-                }, this),this.dataFnArg);
-            } else {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.getData(result);
-                    this.afterDataBuild(handler);
-                }, this));
-            }
+        if(this.dataFn) {
+            this.dataFn(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.getStore().getProxy().setData(this.formatData(result.list));
+                if(handler) {
+                    handler();
+                }
+            }, this));
         } else {
-            this.getData();
-            this.afterDataBuild(handler);
-        }
-
-    },
-    afterDataBuild: function(handler) {
-        this.getStore().getProxy().data = this.data;
-        this.setTotalRecords(this.data.length);
-        if(handler) {
-            handler();
-        }
+            var storeData = this.dataProperty? this.settingsCmp.settings[this.dataProperty].list:
+                this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
+                this.storeData || [];
+            
+            this.getStore().getProxy().setData(this.formatData(storeData));
+            if(handler) {
+                handler();
+            }
+        }  
     },
     stopEditing: function() {
         if(this.inlineEditor) {
@@ -411,7 +418,7 @@ Ext.define('Ung.EditorGrid', {
         }
     },
     addHandler: function() {
-        var record = Ext.create(this.modelName, Ext.decode(Ext.encode(this.emptyRow)));
+        var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(this.emptyRow)));
         record.set("internalId", this.genAddedId());
         this.stopEditing();
         if (this.rowEditor) {
@@ -436,7 +443,7 @@ Ext.define('Ung.EditorGrid', {
         this.updateChangedData(record, "deleted");
     },
     importHandler: function() {
-        if(this.importSettingsWindow == null) {
+        if(!this.importSettingsWindow) {
             this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{
                 grid: this
             });
@@ -447,9 +454,7 @@ Ext.define('Ung.EditorGrid', {
     },
     onImport: function (importMode, importedRows) {
         this.stopEditing();
-        this.removePagination(Ext.bind(function() {
-            Ext.Function.defer(this.onImportContinue, 1, this, [importMode, importedRows]);
-        }, this));
+        Ext.Function.defer(this.onImportContinue, 1, this, [importMode, importedRows]);
     },
     onImportContinue: function (importMode, importedRows) {
         var invalidRecords=0;
@@ -459,7 +464,7 @@ Ext.define('Ung.EditorGrid', {
         var records=[];
         for (var i = 0; i < importedRows.length; i++) {
             try {
-                var record= Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), importedRows[i]);
+                var record= Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), importedRows[i]);
                 if(importedRows[i].javaClass == this.recordJavaClass) {
                     record.set("internalId", this.genAddedId());
                     records.push(record);
@@ -505,76 +510,36 @@ Ext.define('Ung.EditorGrid', {
     },
     exportHandler: function() {
         Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
-        this.removePagination(Ext.bind(function() {
-            var gridName=(this.name!=null)?this.name:this.recordJavaClass;
-            gridName=gridName.trim().replace(/ /g,"_");
-            var exportForm = document.getElementById('exportGridSettings');
-            exportForm["gridName"].value=gridName;
-            exportForm["gridData"].value="";
-            exportForm["gridData"].value=Ext.encode(this.getPageList(true));
-            exportForm.submit();
-            Ext.MessageBox.hide();
-        }, this ));
-    },
-    removePagination: function (handler) {
-        if(this.isPaginated()) {
-            //to remove bottom pagination bar
-            this.minPaginateCount = Ung.EditorGrid.maxRowCount;
-            this.setTotalRecords(this.totalRecords);
-            //make all cahnged data apear in first page
-            for (var id in this.changedData) {
-                var cd = this.changedData[id];
-                cd.page=1;
-            }
-            //reload grid
-            this.getStore().loadPage(1, {
-                limit: Ung.EditorGrid.maxRowCount,
-                callback: handler,
-                scope: this
-            });
-        } else {
-            if(handler) {
-                handler.call(this);
-                }
-        }
+        var gridName=(this.name!=null)?this.name:this.recordJavaClass;
+        gridName=gridName.trim().replace(/ /g,"_");
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm["gridName"].value=gridName;
+        exportForm["gridData"].value="";
+        exportForm["gridData"].value=Ext.encode(this.getList(true));
+        exportForm.submit();
+        Ext.MessageBox.hide();
     },
     genAddedId: function() {
         this.addedId--;
         return this.addedId;
     },
-    // is grid paginated
-    isPaginated: function() {
-        return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount);
-    },
     beforeDestroy: function() {
         Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
-    // load a page
-    loadPage: function(page, callback, scope, arg) {
-        this.getStore().loadPage(page, {
-            limit:this.isPaginated() ? this.recordsPerPage: Ung.EditorGrid.maxRowCount,
-            callback: callback,
-            scope: scope,
-            arg: arg
-        });
-    },
     // when a page is rendered load the changedData for it
     updateFromChangedData: function(store, records) {
-        var page = store.currentPage;
         for (var id in this.changedData) {
             var cd = this.changedData[id];
-            if (page == cd.page) {
-                if ("added" == cd.op) {
-                    var record = Ext.create(Ext.ClassManager.getName(store.getProxy().getModel()), cd.recData);
-                    store.insert(0, [record]);
-                } else if ("modified" == cd.op) {
-                    var recIndex = store.findExact("internalId", parseInt(id, 10));
-                    if (recIndex >= 0) {
-                        var rec = store.getAt(recIndex);
-                        rec.data = cd.recData;
-                        rec.commit();
-                    }
+            if ("added" == cd.op) {
+                var record = Ext.create(Ext.getClassName(store.getProxy().getModel()), cd.recData);
+                store.insert(0, [record]);
+            } else if ("modified" == cd.op) {
+                var recIndex = store.findExact("internalId", parseInt(id, 10));
+                if (recIndex >= 0) {
+                    var rec = store.getAt(recIndex);
+                    rec.data = cd.recData;
+                    rec.commit();
                 }
             }
         }
@@ -590,10 +555,8 @@ Ext.define('Ung.EditorGrid', {
         this.changedData = {};
         this.dirtyFlag=false;
         this.getView().setLoading(true);
-        //never use defer here because it has unexpected behaviour!
         this.buildData(Ext.bind(function() {
-            this.getStore().loadPage(this.getStore().currentPage, {
-                limit:this.isPaginated() ? this.recordsPerPage: Ung.EditorGrid.maxRowCount,
+            this.getStore().load({
                 callback: function() {
                     this.enableSorting();
                     this.getView().setLoading(false);
@@ -604,7 +567,7 @@ Ext.define('Ung.EditorGrid', {
     },
     reload: function(options) {
         if(options && options.data) {
-            this.data = options.data;
+            this.storeData = options.data;
         }
         this.clearDirty();
     },
@@ -637,8 +600,7 @@ Ext.define('Ung.EditorGrid', {
                 record=records[i];
                 this.changedData[record.get("internalId")] = {
                     op: currentOp,
-                    recData: record.data,
-                    page: 1
+                    recData: record.data
                 };
             }
         } else if (currentOp == "deleted") {
@@ -650,8 +612,7 @@ Ext.define('Ung.EditorGrid', {
                 if (cd == null) {
                     this.changedData[id] = {
                         op: currentOp,
-                        recData: record.data,
-                        page: 1
+                        recData: record.data
                     };
                 } else {
                     if ("added" == cd.op) {
@@ -661,8 +622,7 @@ Ext.define('Ung.EditorGrid', {
                     } else {
                         this.changedData[id] = {
                             op: currentOp,
-                            recData: record.data,
-                            page: 1
+                            recData: record.data
                         };
                     }
                 }
@@ -682,8 +642,7 @@ Ext.define('Ung.EditorGrid', {
         if (cd == null) {
             this.changedData[id] = {
                 op: currentOp,
-                recData: record.data,
-                page: this.getStore().currentPage
+                recData: record.data
             };
             if ("deleted" == currentOp) {
                 index = this.getStore().indexOf(record);
@@ -698,8 +657,7 @@ Ext.define('Ung.EditorGrid', {
                 } else {
                     this.changedData[id] = {
                         op: currentOp,
-                        recData: record.data,
-                        page: this.getStore().currentPage
+                        recData: record.data
                     };
                     index = this.getStore().indexOf(record);
                     this.getView().refreshNode(index);
@@ -710,42 +668,8 @@ Ext.define('Ung.EditorGrid', {
                 } else {
                     this.changedData[id] = {
                         op: currentOp,
-                        recData: record.data,
-                        page: this.getStore().currentPage
+                        recData: record.data
                     };
-                }
-            }
-        }
-    },
-    // Set the total number of records
-    setTotalRecords: function(totalRecords) {
-        this.totalRecords = totalRecords;
-        if(this.paginated) {
-            var isPaginated=this.isPaginated();
-            this.getStore().pageSize=isPaginated?this.recordsPerPage:Ung.EditorGrid.maxRowCount;
-            if(!isPaginated) {
-                //Needs to set currentPage to 1 when not using pagination toolbar.
-                this.getStore().currentPage=1;
-            }
-            var bbar=this.getDockedItems('toolbar[dock="bottom"]')[0];
-            // Had to disable show/hide pagination feature for grids inside a window for Chrome browser because of the right scrollbar incorrect rendering issue.
-            // Fixing this is more important than hiding the unnecesary pagination toolbar
-            if(Ext.isChrome && this.up().xtype=="window") {
-                if (isPaginated) {
-                    bbar.enable();
-                } else {
-                    bbar.disable();
-                }
-            } else {
-                if (isPaginated) {
-                    bbar.show();
-                    bbar.enable();
-                } else {
-                    bbar.hide();
-                    bbar.disable();
-                }
-                if(this.rendered) {
-                    this.setSize();
                 }
             }
         }
@@ -755,85 +679,11 @@ Ext.define('Ung.EditorGrid', {
         this.rowEditor.grid=this;
         this.subCmps.push(this.rowEditor);
     },
-    findFirstChangedDataByFieldValue: function(field, value) {
-        for (var id in this.changedData) {
-            var cd = this.changedData[id];
-            if (cd.op != "deleted" && cd.recData[field] == value) {
-                return cd;
-            }
-        }
-        return null;
-    },
-
-    focusChangedDataField: function(cd, field) {
-        var recIndex = this.getStore().findExact("internalId", parseInt(cd.recData["internalId"], 10));
-        if (recIndex >= 0) {
-            this.getView().focusRow(recIndex);
-        }
-    },
-    // focus the first changed row matching a field value
-    // used by validation functions
-    focusFirstChangedDataByFieldValue: function(field, value) {
-        var cd = this.findFirstChangedDataByFieldValue(field, value);
-        if (cd != null) {
-            this.getStore().loadPage(cd.page,{
-                callback:Ext.bind(function(r, options, success) {
-                    if (success) {
-                        this.focusChangedDataField(options.arg, field);
-                    }
-                }, this),
-                scope: this,
-                arg: cd
-            });
-        }
-    },
-    getAddedDeletedModifiedLists: function() {
-        var added = [];
-        var deleted = [];
-        var modified = [];
-        for (var id in this.changedData) {
-            var cd = this.changedData[id];
-            if ("deleted" == cd.op) {
-                if (id > 0) {
-                    deleted.push(parseInt(id, 10));
-                }
-            } else {
-                if (this.recordJavaClass != null) {
-                    cd.recData["javaClass"] = this.recordJavaClass;
-                }
-                if (id < 0) {
-                    added.push(cd.recData);
-                } else {
-                    modified.push(cd.recData);
-                }
-            }
-        }
-        return [{
-            list: added,
-            "javaClass": "java.util.ArrayList"
-        }, {
-            list: deleted,
-            "javaClass": "java.util.ArrayList"
-        }, {
-            list: modified,
-            "javaClass": "java.util.ArrayList"
-        }];
-    },
-    // Get the page list
-    // for the unpaginated grids, that send all the records on save
-    //Attention this only gets the records from the current page!
-        //It can't be used for grids that may have pagination.
-    //Can be used only for grids that have explicitly set: paginated: false
-    getPageList: function(useId, useInternalId) {
+    getList: function(useId, useInternalId) {
         var list=[];
-        if(!this.dataLoaded) {
+        if(this.loadingData) {
             //This code should never be called
-            if(!this.dataInitialized) {
-                this.getData();
-            }
-            //NOT Working fine with mapping fields
-            this.getStore().loadData(this.data);
-            this.dataLoaded=true;
+            throw i18n._("Grid data loading is not yet completed.");
         }
         var records=this.getStore().getRange();
         for(var i=0; i<records.length;i++) {
@@ -863,63 +713,10 @@ Ext.define('Ung.EditorGrid', {
         }
         return list;
     },
-    // Get the entire list from all pages, and the result is returned in the callback handler function.
-    // This is why it cannot be used synchronusly. it have to be used in an async way.
-    // First it remove pagination the grid then it gets the list
-    getList: function(handler, skipRepagination) {
-        if(this.isPaginated()) {
-            var oldSettings=null;
-            if(!skipRepagination) {
-                oldSettings = {
-                    changedData: Ext.decode(Ext.encode(this.changedData)),
-                    minPaginateCount: this.minPaginateCount,
-                    page: this.getStore().currentPage
-                };
-            }
-            //to remove bottom pagination bar
-            this.minPaginateCount = Ung.EditorGrid.maxRowCount;
-            if(skipRepagination) {
-                this.setTotalRecords(this.totalRecords);
-            }
-            //make all cahnged data apear in first page
-            for (var id in this.changedData) {
-                var cd = this.changedData[id];
-                cd.page=1;
-            }
-            //reload grid
-            this.getStore().loadPage(1, {
-                limit:Ung.EditorGrid.maxRowCount,
-                callback: Ext.bind(function() {
-                    var result=this.getPageList();
-                    if(!skipRepagination) {
-                        this.changedData = oldSettings.changedData;
-                        this.minPaginateCount = oldSettings.minPaginateCount;
-                        this.getStore().loadPage(oldSettings.page, {
-                            limit:this.isPaginated() ? this.recordsPerPage: Ung.EditorGrid.maxRowCount,
-                            callback:Ext.bind(function() {
-                                handler({
-                                    javaClass: "java.util.LinkedList",
-                                    list: result
-                                });
-                            }, this),
-                            scope: this
-                        });
-                    } else {
-                        handler({
-                            javaClass: "java.util.LinkedList",
-                            list: result
-                        });
-                    }
-                }, this),
-                scope: this
-            });
-        } else {
-            var saveList = this.getPageList();
-            handler({
-                javaClass: "java.util.LinkedList",
-                list: saveList
-            });
-        }
+    //getList: function(handler, skipRepagination) //Removed
+    getPageList: function (useId, useInternalId) {
+        console.warn("Ung.grid.Panel getPageList is deprecated use getList instead")
+        return this.getList(arguments);
     },
     getDeletedList: function() {
         var list=[];
@@ -939,5 +736,332 @@ Ext.define('Ung.EditorGrid', {
             }
         }
         return list;
+    }
+});
+
+//Row editor window used by editor grid
+Ext.define('Ung.RowEditorWindow', {
+    extend:'Ung.EditWindow',
+    // the editor grid
+    grid: null,
+    // input lines for standard input lines (text, checkbox, textarea, ..)
+    inputLines: null,
+    // label width for row editor input lines
+    rowEditorLabelWidth: null,
+    // the record currently edit
+    record: null,
+    // initial record data
+    initialRecordData: null,
+    sizeToRack: false,
+    // size to grid on show
+    sizeToGrid: false,
+    //size to a given component
+    sizeToComponent: null,
+    sizeToParent: false,
+    addMode: null,
+    layout: "fit",
+    initComponent: function() {
+        if (!this.height && !this.width && !this.sizeToComponent) {
+            this.sizeToGrid = true;
+        }
+        if (this.title == null) {
+            this.title = i18n._('Edit');
+        }
+        if (this.rowEditorLabelWidth == null) {
+            this.rowEditorLabelWidth = 100;
+        }
+        this.items = Ext.create('Ext.panel.Panel',{
+            buttonAlign: 'right',
+            border: false,
+            bodyStyle: 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            layout: "auto",
+            defaults: {
+                labelWidth: this.rowEditorLabelWidth
+            },
+            items: this.inputLines
+        });
+        this.callParent(arguments);
+    },
+    show: function() {
+        Ung.UpdateWindow.superclass.show.call(this);
+        this.doSize();
+    },
+    doSize: function() {
+        if(!this.sizeToComponent) {
+            if(this.sizeToParent) {
+                this.sizeToComponent=this.grid.findParentByType("panel");
+            }
+            if(!this.sizeToComponent) {
+                this.sizeToComponent=this.grid;
+            }
+        }
+        var objPosition = this.sizeToComponent.getPosition();
+        if (this.sizeToComponent || this.height==null || this.width==null) {
+            var objSize = this.sizeToComponent.getSize();
+            this.setSize(objSize);
+            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
+                objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
+            }
+        }
+        this.setPosition(objPosition);
+    },
+    populate: function(record,addMode) {
+        this.addMode=addMode;
+        this.record = record;
+        this.initialRecordData = Ext.encode(record.data);
+        this.populateRecursive(this.items, record, 0);
+        if(Ext.isFunction(this.syncComponents)) {
+            this.syncComponents();
+        }
+        Ung.Util.clearDirty(this.items);
+    },
+    populateRecursive: function(component, record, depth) {
+        if (component == null) {
+            return;
+        }
+        if(depth>30) {
+            console.log("Ung.RowEditorWindow.populateRecursive depth>30");
+            return;
+        }
+        if (component.dataIndex != null) {
+            if( Ext.isFunction(component.reset ) ){
+                component.reset();
+            }
+            component.suspendEvents();
+            component.setValue(record.get(component.dataIndex), record);
+            component.resumeEvents();
+            if(component.dataIndex!= 'enabled' && this.grid.hasReadOnly) {
+                component.setDisabled(record.get("readOnly") === true);
+            }
+            return;
+        }
+        if (component.items) {
+            for (var i = 0; i < component.items.length; i++) {
+                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
+                this.populateRecursive( item, record, depth+1);
+            }
+        }
+    },
+    updateAction: function() {
+        if (this.validate()!==true) {
+            return false;
+        }
+        if (this.record !== null) {
+            var data = {};
+            this.updateActionRecursive(this.items, data, 0);
+            this.record.set(data);
+            if(this.addMode) {
+                if (this.grid.addAtTop) {
+                    this.grid.getStore().insert(0, [this.record]);
+                } else {
+                    this.grid.getStore().add([this.record]);
+                }
+                this.grid.updateChangedData(this.record, "added");
+            }
+        }
+        this.hide();
+        return true;
+    },
+    updateActionRecursive: function(component, data, depth) {
+        if (component == null) {
+            return;
+        }
+        if(depth>30) {
+            console.log("Ung.RowEditorWindow.updateActionRecursive depth>30");
+            return;
+        }
+        if (component.dataIndex != null) {
+            data[component.dataIndex]= component.getValue();
+            return;
+        }
+        if (component.items) {
+            for (var i = 0; i < component.items.length; i++) {
+                var item = Ext.isFunction(component.items.get)?component.items.get(i):component.items[i];
+                this.updateActionRecursive( item, data, depth+1);
+            }
+        }
+    },
+    // check if the form is valid;
+    // this is the default functionality which can be overwritten
+    validate: function() {
+        var components = this.query("component[dataIndex]");
+        return this.validateComponents(components);
+    },
+    isDirty: function() {
+        return Ung.Util.isDirty(this.items);
+    },
+    closeWindow: function() {
+        this.record.data = Ext.decode(this.initialRecordData);
+        this.hide();
+    }
+});
+
+//Import Settings window
+Ext.define('Ung.ImportSettingsWindow', {
+    extend:'Ung.UpdateWindow',
+    // the editor grid
+    grid: null,
+    height: 230,
+    width: 500,
+    sizeToRack: false,
+    // size to grid on show
+    sizeToGrid: false,
+    //importMode
+    // 'replace' = 'Replace current settings'
+    // 'prepend' = 'Prepend to current settings'
+    // 'append' = 'Append to current settings'
+    importMode: 'replace',
+    initComponent: function() {
+        if (!this.height && !this.width) {
+            this.sizeToGrid = true;
+        }
+        if (this.title == null) {
+            this.title = i18n._('Import Settings');
+        }
+        if(this.bbar == null) {
+            this.bbar  = [
+                '->',
+                {
+                    name: "Cancel",
+                    id: this.getId() + "_cancelBtn",
+                    iconCls: 'cancel-icon',
+                    text: i18n._('Cancel'),
+                    handler: Ext.bind(function() {
+                        this.cancelAction();
+                    }, this)
+                },'-',{
+                    name: "Done",
+                    id: this.getId() + "_doneBtn",
+                    iconCls: 'apply-icon',
+                    text: i18n._('Done'),
+                    handler: Ext.bind(function() {
+                        Ext.getCmp('import_settings_form'+this.getId()).getForm().submit({
+                            waitMsg: i18n._('Please wait while the settings are uploaded...'),
+                            success: Ext.bind(this.importSettingsSuccess, this ),
+                            failure: Ext.bind(this.importSettingsFailure, this )
+                        });
+                    }, this)
+                },'-'];
+        }
+        this.items = Ext.create('Ext.panel.Panel',{
+            anchor: "100% 100%",
+            buttonAlign: 'right',
+            border: false,
+            bodyStyle: 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults: {
+                selectOnFocus: true,
+                msgTarget: 'side'
+            },
+            items: [{
+                xtype: 'radio',
+                boxLabel: i18n._('Replace current settings'),
+                hideLabel: true,
+                name: 'importMode',
+                checked: (this.importMode=='replace'),
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, checked) {
+                            if(checked) {
+                                this.importMode = 'replace';
+                            }
+                        }, this)
+                    }
+                }
+            }, {
+                xtype: 'radio',
+                boxLabel: i18n._('Prepend to current settings'),
+                hideLabel: true,
+                name: 'importMode',
+                checked: (this.importMode=='prepend'),
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, checked) {
+                            if(checked) {
+                                this.importMode = 'prepend';
+                            }
+                        }, this)
+                    }
+                }
+            }, {
+                xtype: 'radio',
+                boxLabel: i18n._('Append to current settings'),
+                hideLabel: true,
+                name: 'importMode',
+                checked: (this.importMode=='append'),
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, checked) {
+                            if(checked) {
+                                this.importMode = 'append';
+                            }
+                        }, this)
+                    }
+                }
+            }, {
+                cls: 'description',
+                border: false,
+                bodyStyle: 'padding:5px 0px 5px 30px;',
+                html: "<i>" + i18n._("with settings from")+ "</i>"
+            }, {
+                xtype: 'form',
+                id: 'import_settings_form'+this.getId(),
+                url: 'gridSettings',
+                border: false,
+                items: [{
+                    xtype: 'filefield',
+                    fieldLabel: i18n._('File'),
+                    name: 'import_settings_textfield',
+                    width: 450,
+                    size: 45,
+                    labelWidth: 50,
+                    allowBlank: false
+                },{
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'import'
+                }]
+            }]
+        });
+        this.callParent(arguments);
+    },
+    show: function() {
+        Ung.UpdateWindow.superclass.show.call(this);
+        var objPosition = this.grid.getPosition();
+        if (this.sizeToGrid) {
+            var objSize = this.grid.getSize();
+            this.setSize(objSize);
+            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
+                objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
+            }
+        }
+        this.setPosition(objPosition);
+    },
+    importSettingsSuccess: function (form, action) {
+        var result = action.result;
+        Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
+        if(!result) {
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed."));
+        } else if(!result.success) {
+            Ext.MessageBox.alert(i18n._("Warning"), result.msg);
+        } else {
+            this.grid.onImport(this.importMode, result.msg);
+            this.closeWindow();
+        }
+    },
+    importSettingsFailure: function (form, action) {
+        var result = action.result;
+        if(!result) {
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed. No file chosen."));
+            } else {
+                Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
+            }
+    },
+    isDirty: function() {
+        return false;
+    },
+    closeWindow: function() {
+        this.hide();
     }
 });

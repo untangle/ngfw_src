@@ -901,10 +901,9 @@ Ext.define("Webui.config.systemNew", {
             [100, 100 + ' ' + this.i18n._("users")],
             [-1, this.i18n._("unlimited")]
         ];
-        this.gridShieldRules = Ext.create( 'Ung.EditorGrid', {
+        this.gridShieldRules = Ext.create( 'Ung.grid.Panel', {
             name: 'Shield Rules',
             settingsCmp: this,
-            paginated: false,
             hasReorder: true,
             addAtTop: false,
             emptyRow: {
@@ -1150,7 +1149,7 @@ Ext.define("Webui.config.systemNew", {
 
         // save shield settings
         if (this.isShieldLoaded()) {
-            this.getShieldSettings().rules.list = this.gridShieldRules.getPageList();
+            this.getShieldSettings().rules.list = this.gridShieldRules.getList();
             this.getShieldNode().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getShieldSettings());

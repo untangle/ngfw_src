@@ -93,9 +93,6 @@ Ext.define("Webui.config.administrationNew", {
     },
 
     buildAdmin: function() {
-        // keep initial system and address settings
-        this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings());
-
         var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
             header: this.i18n._("change password"),
             width: 130,
@@ -121,7 +118,7 @@ Ext.define("Webui.config.administrationNew", {
             confirmPwd.clearInvalid();
             return true;
         };
-        this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
+        this.gridAdminAccounts=Ext.create('Ung.grid.Panel', {
             flex: 1,
             settingsCmp: this,
             title: this.i18n._("Admin Accounts"),
@@ -137,8 +134,7 @@ Ext.define("Webui.config.administrationNew", {
                 "password": null,
                 "passwordHashBase64": null
             },
-            data: this.getAdminSettings().users.list,
-            paginated: false,
+            dataExpression: "getAdminSettings().users.list",
             // the list of fields; we need all as we get/set all records once
             fields: [{
                 name: 'username'
@@ -182,7 +178,6 @@ Ext.define("Webui.config.administrationNew", {
                 }
             }, changePasswordColumn],
             sortField: 'username',
-            columnsDefaultSortable: true,
             plugins: [changePasswordColumn],
             // the row input lines used by the row editor window
             rowEditorInputLines: [{
@@ -930,11 +925,9 @@ Ext.define("Webui.config.administrationNew", {
         return true;
     },
 
-    updateCertificateDisplay: function()
-    {
+    updateCertificateDisplay: function() {
         var certInfo = this.getCertificateInformation(true);
-        if (certInfo != null)
-        {
+        if (certInfo != null) {
             Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
             Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
             Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
@@ -1372,7 +1365,7 @@ Ext.define("Webui.config.administrationNew", {
 
     //validate Admin Accounts
     validateAdminAccounts: function() {
-        var listAdminAccounts = this.gridAdminAccounts.getPageList();
+        var listAdminAccounts = this.gridAdminAccounts.getList();
         var oneWritableAccount = false;
 
         // verify that the username is not duplicated
@@ -1538,7 +1531,7 @@ Ext.define("Webui.config.administrationNew", {
         this.saveSemaphore = 2;
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-        this.getAdminSettings().users.list=this.gridAdminAccounts.getPageList();
+        this.getAdminSettings().users.list=this.gridAdminAccounts.getList();
 
         rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
@@ -1561,8 +1554,7 @@ Ext.define("Webui.config.administrationNew", {
                     return;
                 }
                 if(isApply) {
-                    this.gridAdminAccounts.reload({data: this.getAdminSettings(true).users.list});
-                    this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
+                    this.getAdminSettings(true);
                     this.getCertificateInformation(true);
                     this.getHostname(true);
                     this.clearDirty();

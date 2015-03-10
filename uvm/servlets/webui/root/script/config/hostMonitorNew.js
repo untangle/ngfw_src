@@ -57,9 +57,6 @@ Ext.define('Webui.config.hostMonitorNew', {
             handler(result, exception);
         }, this));
     },
-    getPenaltyBoxedHosts: function() {
-        return rpc.hostTable.getPenaltyBoxedHosts();
-    },
     megaByteRenderer: function(bytes) {
         var units = ["bytes","Kbytes","Mbytes","Gbytes"];
         var units_itr = 0;
@@ -72,9 +69,6 @@ Ext.define('Webui.config.hostMonitorNew', {
         bytes = Math.round(bytes*100)/100;
 
         return "" + bytes + " " + units[units_itr];
-    },
-    getQuotaHosts: function() {
-        return rpc.hostTable.getQuotaHosts();
     },
     // Current Hosts Grid
     buildGridCurrentHosts: function(columns, groupField) {
@@ -361,7 +355,7 @@ Ext.define('Webui.config.hostMonitorNew', {
         });
     },
     buildGridPenaltyBox: function() {
-        this.gridPenaltyBox = Ext.create('Ung.EditorGrid',{
+        this.gridPenaltyBox = Ext.create('Ung.grid.Panel',{
             anchor: '100% -60',
             helpSource: 'host_viewer_penalty_box_hosts',
             name: "PenaltyBoxHosts",
@@ -370,10 +364,8 @@ Ext.define('Webui.config.hostMonitorNew', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
             title: this.i18n._("Penalty Box Hosts"),
             qtip: this.i18n._("This shows all hosts currently in the Penalty Box."),
-            paginated: false,
             bbar: Ext.create('Ext.toolbar.Toolbar',{
                 items: [
                     '-',
@@ -390,7 +382,7 @@ Ext.define('Webui.config.hostMonitorNew', {
                 ]
             }),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
-            dataFn: Ext.bind(this.getPenaltyBoxedHosts, this),
+            dataFn: Ext.bind(rpc.hostTable.getPenaltyBoxedHosts, this),
             fields: [{
                 name: "address",
                 sortType: Ung.SortTypes.asIp
@@ -448,7 +440,7 @@ Ext.define('Webui.config.hostMonitorNew', {
 
     },
     buildGridQuotaBox: function() {
-        this.gridQuotaBox = Ext.create('Ung.EditorGrid',{
+        this.gridQuotaBox = Ext.create('Ung.grid.Panel',{
             anchor: '100% -60',
             name: "CurrentQuotas",
             helpSource: 'host_viewer_current_quotas',
@@ -457,10 +449,8 @@ Ext.define('Webui.config.hostMonitorNew', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
             title: this.i18n._("Current Quotas"),
             qtip: this.i18n._("This shows all hosts currently with quotas."),
-            paginated: false,
             bbar: Ext.create('Ext.toolbar.Toolbar',{
                 items: [
                     '-',
@@ -477,7 +467,7 @@ Ext.define('Webui.config.hostMonitorNew', {
                 ]
             }),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
-            dataFn: Ext.bind(this.getQuotaHosts, this),
+            dataFn: Ext.bind(rpc.hostTable.getQuotaHosts, this),
             fields: [{
                 name: "address",
                 sortType: Ung.SortTypes.asIp
