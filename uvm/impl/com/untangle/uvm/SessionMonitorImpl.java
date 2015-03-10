@@ -189,6 +189,13 @@ public class SessionMonitorImpl implements SessionMonitor
                     i.remove();
                 }
             }
+
+            /**
+             * Ignore sessions to 192.0.2.42
+             */
+            if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
+                i.remove();
+            }
         }
 
         /**
