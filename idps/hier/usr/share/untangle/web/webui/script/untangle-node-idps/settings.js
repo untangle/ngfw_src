@@ -370,7 +370,7 @@ Ext.define('Ung.RuleEditorGrid', {
         this.data = this.callSuper( data );
 
         for( var i = 0; i < this.data.length; i++ ){
-            this.data[i].originalId = this.getRuleId( this.data.rule );
+            this.data[i].originalId = this.getRuleId( this.data[i].rule );
             this.data[i].path = this.data[i].path;
         }
         return this.data;
@@ -705,7 +705,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         sortable: true,
                         width: 70,
                         editor: null,
-                        menuDisabled: false
+                        menuDisabled: false,
+                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                            var id = record.get("originalId").split("_");
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
+                            return value;
+                        }
                     },{
                         header: this.i18n._("Classtype"),
                         dataIndex: 'classtype',

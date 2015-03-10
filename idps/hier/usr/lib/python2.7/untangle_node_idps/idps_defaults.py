@@ -27,6 +27,8 @@ class IdpsDefaults:
         """
         Return the desired profile by identifier.
         """
+        if ( "profiles" in self.settings.keys() ) == False:
+            return None
         for profile in self.settings["profiles"]:
             if profile_id == profile["profileId"]:
                 return profile
