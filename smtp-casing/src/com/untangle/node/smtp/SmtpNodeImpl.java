@@ -106,7 +106,7 @@ public class SmtpNodeImpl extends NodeBase implements SmtpNode, MailExport
         QuarantineSettings qs = new QuarantineSettings();
         qs.setDigestHourOfDay(6); // 6 am
         qs.setDigestMinuteOfDay(0); // 6 am
-        byte[] binaryKey = new byte[4];
+        byte[] binaryKey = new byte[8];
         new java.util.Random().nextBytes(binaryKey);
         qs.initBinaryKey(binaryKey);
         qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
