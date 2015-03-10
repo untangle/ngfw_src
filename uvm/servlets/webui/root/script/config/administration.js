@@ -491,7 +491,7 @@ Ext.define("Webui.config.administration", {
                 items: [{
                     xtype: 'displayfield',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client conneced to your network.")
+                    value:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Valid starting'),
