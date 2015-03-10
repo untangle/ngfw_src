@@ -651,6 +651,7 @@ Ext.define("Webui.config.networkNew", {
 
                     this.gridMapDevices = Ext.create('Ext.grid.Panel', {
                         flex: 1,
+                        width: 200,
                         store: this.mapDevicesStore,
                         loadMask: true,
                         stripeRows: true,
@@ -728,6 +729,7 @@ Ext.define("Webui.config.networkNew", {
                                 listeners: {
                                     "change": {
                                         fn: Ext.bind(function(elem, newValue, oldValue) {
+                                            //TODO: ext5 Fix swithching interfaces using Device combo box
                                             var sourceRecord = null;
                                             var targetRecord = null;
                                             this.mapDevicesStore.each( function( currentRow ) {
@@ -870,6 +872,7 @@ Ext.define("Webui.config.networkNew", {
                         }],
                         items: [{
                             xtype: 'panel',
+                            border: false,
                             layout: { type: 'vbox', align: 'stretch' },
                             items: [{
                                 xtype: 'fieldset',
@@ -5484,19 +5487,19 @@ Ext.define("Webui.config.network.NetworkTest", {
         }];
 
         this.items = [{
-            xtype: "panel",
-            layout: 'anchor',
-            bodyStyle : "padding: 10px 10px 0px 10px;",
+            xtype: 'panel',
+            layout: { type: 'vbox', align: 'stretch' },
             items : [{
-                xtype: "label",
+                xtype: "component",
+                flex: 0,
                 html: this.testDescription,
-                style: "padding-bottom: 10px;"
+                margin: '10 10 10 10',
             },{
                 name: 'testpanel',
                 xtype: "panel",
-                style: "margin: 10px 0px 0px 0px",
-                layout: "anchor",
-                anchor: "100% -60",
+                margin: '10 10 10 10',
+                flex: 1,
+                layout: "fit",
                 tbar: this.testTopToolbar.concat([this.runTest = Ext.create("Ext.button.Button",{
                     text : this.settingsCmp.i18n._("Run Test"),
                     iconCls : "icon-test-run",

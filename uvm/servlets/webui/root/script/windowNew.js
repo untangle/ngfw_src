@@ -26,9 +26,8 @@ Ext.define('Ung.Window', {
     subCmps: null,
     // size to rack right side on show
     sizeToRack: true,
-    layout: 'anchor',
+    layout: 'fit',
     defaults: {
-        anchor: '100% 100%',
         autoScroll: true
     },
     constructor: function(config) {
