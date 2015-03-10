@@ -55,6 +55,8 @@
     <script type="text/javascript" src="script/untangle-base-virus/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-virusblocker/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-clam/settingsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spamblocker/settingsNew.js?s=${buildStamp}"></script>
+    
 <%--
 <c:if test="${param['expert']==1}">
     <script type="text/javascript">
