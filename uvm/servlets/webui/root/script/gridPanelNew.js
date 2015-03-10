@@ -715,7 +715,7 @@ Ext.define('Ung.grid.Panel', {
     },
     //getList: function(handler, skipRepagination) //Removed
     getPageList: function (useId, useInternalId) {
-        console.warn("Ung.grid.Panel getPageList is deprecated use getList instead")
+        console.warn("Ung.grid.Panel getPageList is deprecated use getList instead");
         return this.getList(arguments);
     },
     getDeletedList: function() {

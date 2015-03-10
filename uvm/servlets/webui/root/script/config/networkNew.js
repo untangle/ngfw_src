@@ -3929,7 +3929,7 @@ Ext.define("Webui.config.networkNew", {
                     } catch (e) {
                         console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
                     }
-                    handler ({list: list}, exception)
+                    handler ({list: list}, exception);
                 }, this), "/usr/share/untangle-netd/bin/qos-service.py status");
             },
             initialLoad: function() {}, //Don't load automatically
@@ -3987,7 +3987,7 @@ Ext.define("Webui.config.networkNew", {
                     } catch (e) {
                         console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
                     }
-                    handler ({list: list}, exception)
+                    handler ({list: list}, exception);
                 }, this), "/usr/share/untangle-netd/bin/qos-service.py sessions");
             },
             initialLoad: function() {}, //Don't load automatically
