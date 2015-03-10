@@ -62,6 +62,7 @@ public class SessionMonitorEntry
     /**
      * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */
+    private Long creationTime = null;
     private Long sessionId = null;
     private String policy;
     private Integer clientIntf;
@@ -72,11 +73,14 @@ public class SessionMonitorEntry
 
     private Map<String,Object> attachments;
     
+    public Long getCreationTime() {return creationTime;}
+    public void setCreationTime( Long newValue ) {this.creationTime = newValue;}
+
     public Long getSessionId() {return sessionId;}
-    public void setSessionId( Long sessionId ) {this.sessionId = sessionId;}
+    public void setSessionId( Long newValue ) {this.sessionId = newValue;}
 
     public String getPolicy() {return policy;}
-    public void   setPolicy( String policy ) {this.policy = policy;}
+    public void   setPolicy( String newValue ) {this.policy = newValue;}
 
     public Integer getClientIntf() {return clientIntf;}
     public void    setClientIntf( Integer clientIntf ) {this.clientIntf = clientIntf;}

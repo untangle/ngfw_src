@@ -67,6 +67,7 @@ Ext.define('Webui.config.sessionMonitor', {
                         "preNatServerPort": t+1500,
                         "serverIntf": ii%10,
                         "clientIntf": t%9,
+                        "creationTime": 1426011960,
                         "sessionId": 88616525732127+t,
                         "javaClass": "com.untangle.uvm.SessionMonitorEntry",
                         "qosPriority": (ii%8),
@@ -134,6 +135,14 @@ Ext.define('Webui.config.sessionMonitor', {
         var priorityList=[i18n._("Very High"), i18n._("High"), i18n._("Medium"), i18n._("Low"), i18n._("Limited"), i18n._("Limited More"), i18n._("Limited Severely")];
 
         var columns= [{
+            hidden: true,
+            header: this.i18n._("Creation Time"),
+            dataIndex: "creationTime",
+            width: Ung.Util.timestampFieldWidth,
+            renderer: function(value) {
+                return i18n.timestampFormat(value);
+            }
+        }, {
             header: this.i18n._("Protocol"),
             dataIndex: "protocol",
             width: 60,
@@ -507,6 +516,9 @@ Ext.define('Webui.config.sessionMonitor', {
             appList: this.getAppList(),
             columns: this.getColumns(),
             fields: [{
+                name: "creationTime",
+                sortType: Ung.SortTypes.asTimestamp
+            },{
                 name: "id"
             },{
                 name: "protocol"

@@ -25,7 +25,8 @@ public class SessionGlobalState
 
     protected final long id;
     protected final short protocol;
-
+    protected final long creationTime;
+    
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
 
@@ -51,10 +52,10 @@ public class SessionGlobalState
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, NetcapHook netcapHook )
     {
         this.netcapHook = netcapHook;
-
         this.netcapSession = netcapSession;
 
         id = netcapSession.id();
+        creationTime = System.currentTimeMillis();
         protocol = netcapSession.getProtocol();
         user = null;
 
@@ -74,6 +75,11 @@ public class SessionGlobalState
         return protocol;
     }
 
+    public long getCreationTime()
+    {
+        return this.creationTime;
+    }
+    
     public String user() { return this.user; }
     public void setUser( String newValue ) { this.user = newValue; }
 

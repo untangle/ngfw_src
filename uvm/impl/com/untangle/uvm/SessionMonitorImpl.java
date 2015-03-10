@@ -153,6 +153,7 @@ public class SessionMonitorImpl implements SessionMonitor
                         session.setPolicy(policyId.toString()); 
 
                     session.setSessionId(netcapSession.id());
+                    session.setCreationTime(netcapSession.getCreationTime());
                     session.setBypassed(Boolean.FALSE);
                     session.setClientIntf(new Integer(clientSide.getClientIntf()));
                     session.setServerIntf(new Integer(serverSide.getServerIntf()));
