@@ -141,10 +141,11 @@ def main(argv):
             profile_id = patch.settings["profileId"]
         defaults_profile = defaults.get_profile(profile_id)
 
-        if patch != None:
-            settings.set_patch(patch, defaults_profile)
-        else:
-            settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
+        if defaults_profile != None:
+            if patch != None:
+                settings.set_patch(patch, defaults_profile)
+            else:
+                settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
 
     settings.save( settings_file_name )
     sys.exit()

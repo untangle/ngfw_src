@@ -285,7 +285,7 @@ class Update:
             ]
             try: 
                 process = subprocess.Popen( args )
-                process.wait()
+                result = process.wait()
             except:
                 self.errors.append( {
                     'msg': "Unable to run sync script with arguments = " + ",".join(args),
@@ -293,9 +293,10 @@ class Update:
                 })
                 return False
             
-            node.saveSettings( temp_settings_file_name )
-            node.setUpdatedSettingsFlag( True )
-            node.reconfigure()
+            if result == 0:
+                node.saveSettings( temp_settings_file_name )
+                node.setUpdatedSettingsFlag( True )
+                node.reconfigure()
         return True
 
 def usage():
@@ -339,7 +340,7 @@ def main(argv):
     update = Update( rules_template_directory, url )
     update.setup()
     if len(update.node_ids) > 0 and update.download() == True and update.validate() and update.install():
-         update.synchronize()
+        update.synchronize()
 
     """
     Always update last updated time even if nothing was downloaded 
