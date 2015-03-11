@@ -171,6 +171,8 @@ public class Main
     
     private void destroy()
     {
+        logger.info("UVM shutdown initiated...");
+        System.out.println("UVM shutdown initiated...");
         uvmContext.destroy();
         logger.info("UVM shutdown complete.");
         System.out.println("UVM shutdown complete.");
