@@ -20,6 +20,8 @@ Ext.define('Webui.untangle-node-firewall.settings', {
             {name:"SRC_PORT",displayName: this.i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: false},
             {name:"SRC_INTF",displayName: this.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
             {name:"PROTOCOL",displayName: this.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", this.i18n._("any")]], visible: true},
+            {name:"SRC_MAC", displayName: this.i18n._("Client MAC Address"), type: "text", visible: true },
+            {name:"DST_MAC", displayName: this.i18n._("Server MAC Address"), type: "text", visible: true },
             {name:"USERNAME",displayName: this.i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
             {name:"CLIENT_HOSTNAME",displayName: this.i18n._("Client Hostname"), type: "text", visible: true},
             {name:"SERVER_HOSTNAME",displayName: this.i18n._("Server Hostname"), type: "text", visible: false},

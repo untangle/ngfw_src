@@ -65,7 +65,8 @@ public class RuleMatcher implements JSONString, Serializable
             TIME_OF_DAY, /* "any" "10:00-11:00" */
 
             DST_LOCAL, /* none - ONLY available in iptables rules */
-            SRC_MAC, /* 00:11:22:33:44:55 - ONLY available in iptables rules */
+            SRC_MAC, /* 00:11:22:33:44:55 */
+            DST_MAC, /* 00:11:22:33:44:55 */
             
             /* application specific matchers */
             HTTP_HOST, /* "playboy.com" "any" */
@@ -310,6 +311,11 @@ public class RuleMatcher implements JSONString, Serializable
             }
             break;
             
+        case SRC_MAC:
+        case DST_MAC:
+            this.regexValue = GlobUtil.globToRegex(value.toLowerCase());
+            break;
+
         case CLIENT_HOSTNAME:
         case SERVER_HOSTNAME:
         case HTTP_HOST:
@@ -352,7 +358,6 @@ public class RuleMatcher implements JSONString, Serializable
             break;
 
         case DST_LOCAL:
-        case SRC_MAC:
             break;
             
         default:
@@ -366,7 +371,7 @@ public class RuleMatcher implements JSONString, Serializable
         Integer attachmentInt = null;
         Long    attachmentLong = null;
         HostTableEntry entry;
-        
+
         switch (this.matcherType) {
         case SRC_ADDR:
             if (this.ipMatcher == null) {
@@ -449,6 +454,24 @@ public class RuleMatcher implements JSONString, Serializable
             }
             return dayOfWeekMatcher.isMatch();
 
+        case SRC_MAC:
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getMacAddress();
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment.toLowerCase());
+
+        case DST_MAC:
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
+            if (entry == null)
+                return false;
+            attachment = entry.getMacAddress();
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment.toLowerCase());
+            
         case HTTP_URL:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
             if ( urlMatcher == null ) {
@@ -768,6 +791,24 @@ public class RuleMatcher implements JSONString, Serializable
                 return true;
             return false;
 
+        case SRC_MAC:
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getMacAddress();
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment.toLowerCase());
+
+        case DST_MAC:
+            entry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (entry == null)
+                return false;
+            attachment = entry.getMacAddress();
+            if (attachment == null)
+                return false;
+            return Pattern.matches(regexValue, attachment.toLowerCase());
+            
         case CLIENT_HOSTNAME:
             entry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (entry == null)
