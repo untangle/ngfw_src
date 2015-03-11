@@ -36,7 +36,7 @@ class HttpCasing(Node):
     def __create_http_events(self):
         sql_helper.create_table("""\
 CREATE TABLE reports.http_events (
-    event_id bigserial,
+    request_id bigint,
     time_stamp timestamp without time zone,
     session_id bigint,
     client_intf smallint,
@@ -52,7 +52,6 @@ CREATE TABLE reports.http_events (
     policy_id bigint,
     username text,
     hostname text,
-    request_id bigint,
     method character(1),
     uri text,
     host text,
@@ -74,7 +73,7 @@ CREATE TABLE reports.http_events (
     clam_name text,
     virusblocker_clean boolean,
     virusblocker_name text)""",
-                                ["event_id","request_id"],
+                                ["request_id"],
                                 ["session_id",
                                  "policy_id",
                                  "time_stamp",
@@ -93,6 +92,8 @@ CREATE TABLE reports.http_events (
                                  "sitefilter_blocked",
                                  "sitefilter_flagged",
                                  "siteblocker_category"])
+
+        sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("http_events", cutoff)
