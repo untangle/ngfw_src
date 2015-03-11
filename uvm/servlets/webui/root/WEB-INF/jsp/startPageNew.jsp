@@ -48,10 +48,12 @@
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
     <script type="text/javascript" src="script/config/networkNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-adconnector/settingsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-bandwidth/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-virusblocker/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-clam/settingsNew.js?s=${buildStamp}"></script>

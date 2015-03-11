@@ -15,6 +15,7 @@ Ext.define('Ung.Window', {
             }
         }
     },
+    width: 800,
     modal: true,
     // window title
     title: null,

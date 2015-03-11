@@ -651,7 +651,8 @@ Ext.define("Webui.config.networkNew", {
 
                     this.gridMapDevices = Ext.create('Ext.grid.Panel', {
                         flex: 1,
-                        width: 200,
+                        margin: '5 5 5 5',
+                        width: 300,
                         store: this.mapDevicesStore,
                         loadMask: true,
                         stripeRows: true,
@@ -872,7 +873,6 @@ Ext.define("Webui.config.networkNew", {
                         }],
                         items: [{
                             xtype: 'panel',
-                            border: false,
                             layout: { type: 'vbox', align: 'stretch' },
                             items: [{
                                 xtype: 'fieldset',
@@ -2274,10 +2274,9 @@ Ext.define("Webui.config.networkNew", {
                 cls: 'description',
                 title: this.i18n._('Local Services'),
                 items: [{
-                    border: false,
-                    cls: 'description',
-                    style: "padding-bottom: 10px;",
-                    html: "<br/>" + this.i18n._('The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.') + "<br/>"
+                    xtype: 'component',
+                    html: "<br/>" + this.i18n._('The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.') + "<br/>",
+                    margin: '0 0 10 0'
                 }, {
                     xtype: 'numberfield',
                     fieldLabel: this.i18n._('HTTPS port'),
@@ -2296,10 +2295,9 @@ Ext.define("Webui.config.networkNew", {
                         }
                     }
                 }, {
-                    border: false,
-                    cls: 'description',
-                    style: "padding-bottom: 10px;",
-                    html: "<br/>" + this.i18n._('The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.') + "<br/>"
+                    xtype: 'component',
+                    html: "<br/>" + this.i18n._('The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.') + "<br/>",
+                    margin: '0 0 10 0'
                 }, {
                     xtype: 'numberfield',
                     fieldLabel: this.i18n._('HTTP port'),
@@ -4236,11 +4234,10 @@ Ext.define("Webui.config.networkNew", {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
-                 border: false,
-                 cls: 'description',
+                 xtype: 'component',
                  html: "<br/><b>" + this.i18n._('Custom dnsmasq options.') + "</b><br/>" +
                      "<font color=\"red\">" + this.i18n._("Warning: Invalid syntax will halt all DHCP & DNS services.") + "</font>" + "<br/>",
-                 style: "padding-bottom: 10px;"
+                 margin: '0 0 10 0'
              }, {
                  xtype: "textarea",
                  width : 397,

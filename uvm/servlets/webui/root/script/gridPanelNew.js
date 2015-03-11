@@ -796,15 +796,10 @@ Ext.define('Ung.RowEditorWindow', {
                 this.sizeToComponent=this.grid;
             }
         }
-        var objPosition = this.sizeToComponent.getPosition();
         if (this.sizeToComponent || this.height==null || this.width==null) {
-            var objSize = this.sizeToComponent.getSize();
-            this.setSize(objSize);
-            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
-                objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
-            }
+            this.setSize(this.sizeToComponent.getSize());
         }
-        this.setPosition(objPosition);
+        this.alignTo(this.sizeToComponent);
     },
     populate: function(record,addMode) {
         this.addMode=addMode;
