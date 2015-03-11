@@ -17,7 +17,7 @@
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
     
     <script type="text/javascript" src="script/language.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
