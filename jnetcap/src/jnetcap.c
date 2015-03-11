@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <mcheck.h>
 
 #include <libnetcap.h>
@@ -419,6 +421,26 @@ JNIEXPORT jint JNICALL JF_Netcap( unregisterUDPHook )
 (JNIEnv *env, jclass _class )
 {
     return _unregister_hook( env, IPPROTO_UDP );
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Netcap
+ * Method:    arpLookup
+ * Signature: (S)S
+ */
+JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
+(JNIEnv *env, jclass _class, jstring ipAddress )
+{
+    char mac[20];
+    const char *ipAddressStr = (*env)->GetStringUTFChars(env, ipAddress, NULL);
+    
+    int ret = netcap_arp_lookup( ipAddressStr, mac, 20 );
+    if ( ret != 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_arp_lookup\n" );
+        return (*env)->NewStringUTF(env, "");
+    }
+
+    return (*env)->NewStringUTF(env, mac);
 }
 
 /*

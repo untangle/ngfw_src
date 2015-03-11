@@ -200,6 +200,11 @@ public final class Netcap
      * Clear out the TCP hook 
      */
     public static native int unregisterTCPHook();
+
+    /**
+     * Lookup MAC address for IP in ARP table
+     */
+    public static native String arpLookup( String ipAddress );
     
     /**
      * Change the debugging level. <p/>

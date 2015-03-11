@@ -19,6 +19,7 @@
 #include "netcap_server.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
+#include "netcap_arp.h"
 #include "netcap_tcp.h"
 #include "netcap_udp.h"
 #include "netcap_icmp.h"
@@ -141,6 +142,8 @@ static int _netcap_init()
         return perrlog("netcap_hooks_init");
     if (netcap_queue_init()<0) 
         return perrlog("netcap_queue_init");
+    if (netcap_arp_init()<0) 
+        return perrlog("netcap_arp_init");
     if (netcap_tcp_init()<0) 
         return perrlog("netcap_tcp_init");
     if (netcap_udp_init()<0) 

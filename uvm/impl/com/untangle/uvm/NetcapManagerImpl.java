@@ -185,6 +185,11 @@ public class NetcapManagerImpl implements NetcapManager
         return INSTANCE;
     }
 
+    public String arpLookup( String ipAddress )
+    {
+        return Netcap.arpLookup( ipAddress );
+    }
+
     /** Get the number of sessions from the SessionTable */
     public int getSessionCount()
     {

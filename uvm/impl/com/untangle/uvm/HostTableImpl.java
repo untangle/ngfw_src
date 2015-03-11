@@ -451,8 +451,13 @@ public class HostTableImpl implements HostTable
     private HostTableEntry createNewHostTableEntry( InetAddress address )
     {
         HostTableEntry entry = new HostTableEntry();
-        entry.setAddress( address );
 
+        entry.setAddress( address );
+        
+        String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
+        if ( macAddress != null && !("".equals(macAddress)) )
+            entry.setMacAddress( macAddress );
+        
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
         int currentSize = getCurrentLicensedSize();
         
