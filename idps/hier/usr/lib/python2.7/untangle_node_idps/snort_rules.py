@@ -162,7 +162,6 @@ class SnortRules:
         elif "rulesSelected" in profile:
             rule_ids_selected = profile["rulesSelected"]
 
-         
         for rid in self.rules:
             rule = self.rules[rid]
             if rule.match(classtypes_selected, categories_selected, rule_ids_selected) == False:
@@ -273,6 +272,31 @@ class SnortRules:
                     "definition": definition,
                     "description": description
                 } )
+
+    def update_categories(self, defaults, sync_enabled = False):
+        """
+        Update category for each rule
+        """
+        categories = defaults.get_categories()
+
+        #
+        # Reset all to original
+        #
+        for rule_id in self.rules.keys():
+            rule = self.get_rules()[rule_id]
+            rule.set_category(defaults.get_original_category(rule.get_category()))
+            self.modify_rule(rule)
+        #
+        # Modify to new
+        #
+        for category in categories:
+            for rule_id in category["ids"]:
+                if rule_id in self.rules.keys():
+                    rule = self.get_rules()[rule_id]
+                    rule.set_category(category["category"])
+                    if sync_enabled == True:
+                        rule.set_action(True,False)
+                    self.modify_rule(rule)
 
     def get_rules(self):
         """

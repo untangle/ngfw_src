@@ -315,9 +315,10 @@ def main(argv):
     rules_template_directory = "/usr/share/untangle-snort-config"
     url = "https://ids.untangle.com/snortrules.tar.gz"
     update_ran_file_name = "/tmp/idps-update.ran"
+    force_sync = False
 	
     try:
-        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "debug"] )
+        opts, args = getopt.getopt(argv, "hru:d", ["help", "rules_template_directory=", "url=", "force_sync", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -328,9 +329,11 @@ def main(argv):
             sys.exit()
         elif opt in ( "-d", "--debug"):
             DEBUG = True
+        elif opt in ( "-s", "--force_sync"):
+            force_sync = True
         elif opt in ( "-r", "--rules_template_directory"):
             rules_template_directory = arg
-        elif opt in ( "-r", "--url"):
+        elif opt in ( "-u", "--url"):
             url = arg
 
     if DEBUG == True:
@@ -339,8 +342,11 @@ def main(argv):
 
     update = Update( rules_template_directory, url )
     update.setup()
-    if len(update.node_ids) > 0 and update.download() == True and update.validate() and update.install():
+    if force_sync:
         update.synchronize()
+    else:
+        if len(update.node_ids) > 0 and update.download() == True and update.validate() and update.install():
+            update.synchronize()
 
     """
     Always update last updated time even if nothing was downloaded 

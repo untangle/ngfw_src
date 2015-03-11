@@ -47,11 +47,10 @@ def main(argv):
     status_file_name = None
     node_id = None
     patch_file_name = None
-    defaults_file_name = None
     settings_file_name = None
 	
     try:
-        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "defaults=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -74,8 +73,6 @@ def main(argv):
             status_file_name = arg
         elif opt in ( "-p", "--patch"):
             patch_file_name = arg
-        elif opt in ( "-e", "--defaults"):
-            defaults_file_name = arg
 
     if node_id == None:
         print "Missing node_id"
@@ -101,7 +98,7 @@ def main(argv):
         print "_debug = ",  _debug
 
     defaults = untangle_node_idps.IdpsDefaults()
-    defaults.load(defaults_file_name)
+    defaults.load()
 
     patch = None
     if patch_file_name != None:
@@ -114,11 +111,13 @@ def main(argv):
     if current_rules_path != None:
         current_snort_rules = untangle_node_idps.SnortRules( node_id, current_rules_path )
         current_snort_rules.load( True )
+        current_snort_rules.update_categories(defaults, True)
 
     previous_snort_rules = None
     if previous_rules_path != None:
         previous_snort_rules = untangle_node_idps.SnortRules( node_id, previous_rules_path )
         previous_snort_rules.load( True )
+        previous_snort_rules.update_categories(defaults, True)
 
     settings = untangle_node_idps.IdpsSettings( node_id )
     if settings.exists() == False:
@@ -128,6 +127,8 @@ def main(argv):
         settings.convert()
 
     if current_snort_rules != None:
+        settings.rules.update_categories(defaults)
+
         if patch != None and "activeGroups" in patch.settings:
             #
             # For group changes, disable rule state preservation
