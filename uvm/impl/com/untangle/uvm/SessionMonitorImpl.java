@@ -184,6 +184,7 @@ public class SessionMonitorImpl implements SessionMonitor
                 if ( !session.getBypassed() ) {
                     logger.debug("Ignoring session: " + session);
                     i.remove();
+                    continue;
                 }
             }
 
@@ -192,6 +193,7 @@ public class SessionMonitorImpl implements SessionMonitor
              */
             if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
                 i.remove();
+                continue;
             }
         }
 
