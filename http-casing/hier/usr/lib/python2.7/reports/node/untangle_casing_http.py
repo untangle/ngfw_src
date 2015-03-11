@@ -36,11 +36,11 @@ class HttpCasing(Node):
     def __create_http_events(self):
         sql_helper.create_table("""\
 CREATE TABLE reports.http_events (
-    request_id bigint,
-    time_stamp timestamp without time zone,
+    request_id bigint NOT NULL,
+    time_stamp timestamp NOT NULL,
     session_id bigint,
-    client_intf smallint,
-    server_intf smallint,
+    client_intf int2,
+    server_intf int2,
     c_client_addr inet,
     s_client_addr inet,
     c_server_addr inet,
@@ -49,7 +49,7 @@ CREATE TABLE reports.http_events (
     s_client_port integer,
     c_server_port integer,
     s_server_port integer,
-    policy_id bigint,
+    policy_id int2,
     username text,
     hostname text,
     method character(1),

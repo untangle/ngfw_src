@@ -121,12 +121,11 @@ CREATE TABLE reports.admin_logins (
         sql_helper.create_table("""\
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
-        event_id bigserial,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         hostname text,
         username text,
-        policy_id bigint,
+        policy_id int2,
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
@@ -164,8 +163,10 @@ CREATE TABLE reports.sessions (
         https_ruleid integer,
         https_status text,
         https_detail text)""", 
-                                ["session_id","event_id"],
+                                ["session_id"],
                                 ["policy_id","time_stamp"])
+
+        sql_helper.drop_column('sessions','event_id') # 11.2 - drop unused column
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):
@@ -225,11 +226,12 @@ CREATE TABLE reports.penaltybox (
         sql_helper.create_table("""
 CREATE TABLE reports.quotas (
         time_stamp timestamp,
-        event_id bigserial,
         address inet,
         action integer,
         size bigint,
-        reason text)""", ["event_id"], ["time_stamp"])
+        reason text)""", [], ["time_stamp"])
+
+        sql_helper.drop_column("quotas","event_id") #11.2 conversion
 
     def __build_host_table_updates_table( self ):
         sql_helper.create_table("""
