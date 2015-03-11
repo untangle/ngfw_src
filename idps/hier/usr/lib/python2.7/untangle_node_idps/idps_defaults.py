@@ -16,10 +16,10 @@ class IdpsDefaults:
         """
         Load settings
         """
-        if file_name == "":
+        if file_name == None:
             file_name = self.file_name
             
-        settings_file = open(self.file_name)
+        settings_file = open(file_name)
         self.settings = json.load(settings_file)
         settings_file.close()
 
@@ -32,3 +32,20 @@ class IdpsDefaults:
         for profile in self.settings["profiles"]:
             if profile_id == profile["profileId"]:
                 return profile
+
+    def get_categories(self):
+        """
+        Pull categories tree
+        """
+        if ( "categories" in self.settings.keys() ) == False:
+            return []
+        return self.settings["categories"]
+
+    def get_original_category(self, category):
+        """
+        Map category back to its original.
+        """
+        if "_" in category:
+            return category.split("_")[0]
+        else:
+            return category

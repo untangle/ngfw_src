@@ -428,7 +428,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
     gridVariables: null,
     gridEventLog: null,
     statistics: null,
-    // called when the component is rendered
     initComponent: function() {
 
         this.classtypesStore = Ext.create(
@@ -1624,6 +1623,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                     this.gui.wizardRecommendedSettings = Ext.clone(profile);
 
                     this.gui.wizardSettings = Ext.clone(profile);
+                    var i;
                     if( this.gui.settings.configured === true ){
                         /*
                          * Setup wizard already configured.  Pull current settings.
@@ -1635,6 +1635,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                             }
                         }
                     }
+
                     Ext.MessageBox.hide();
                     handler();
                 },

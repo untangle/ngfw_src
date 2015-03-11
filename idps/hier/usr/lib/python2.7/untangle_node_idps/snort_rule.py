@@ -118,6 +118,12 @@ class SnortRule:
             classtype = classtype[1:-1]
         self.set_options( "classtype", classtype )
 
+    def get_category(self):
+        return self.category
+
+    def set_category(self, category):
+        self.category = category
+
     def get_enabled(self):
         """
         Get enabled
@@ -133,30 +139,31 @@ class SnortRule:
     def match(self, classtypes, categories, rule_ids):
         """
         See if the specified filtering match this rule appropriately.
-        If an item is prefixed by a + or just named, then match.
+        If an item is prefixed by a "+" or just named, then match.
+        If an item is prefixed with a "-", then don't match.
         """
-        if len(classtypes) == 0:
+        if "+" + self.options["classtype"] in classtypes or self.options["classtype"] in classtypes:
             classtype_match = True
-        elif "+" + self.options["classtype"] in classtypes or self.options["classtype"] in classtypes:
-            classtype_match = True
+        elif "-" + self.options["classtype"] in classtypes:
+            return False
         else:
             classtype_match = False
 
-        if len(categories) == 0:
+        if "+" + self.category in categories or self.category in categories:
             category_match = True
-        elif "+" + self.category in categories or self.category in categories:
-            category_match = True
+        elif "+" + self.category in categories:
+            return False
         else:
             category_match = False
 
-        if len(rule_ids) == 0:
+        if "+" + self.rule_id in rule_ids or self.rule_id in rule_ids:
             rule_id_match = True
-        elif "+" + self.rule_id in rule_ids or self.rule_id in rule_ids:
-            rule_id_match = True
+        elif "+" + self.rule_id in rule_ids:
+            return False
         else:
             rule_id_match = False
 
-        return classtype_match and category_match and rule_id_match
+        return classtype_match or category_match or rule_id_match
     
     def build(self):
         """
