@@ -23,15 +23,13 @@ Ext.define('Ung.SetupWizard.Language', {
                 fieldLabel: i18n._('Please select your language'),
                 name: "language",
                 editable: false,
-                validationEvent: 'blur',
-                msgTarget: 'side',
-                labelWidth: 200,
-                margin: '50 0 0 0',
                 store: this.languageStore,
                 value: Ung.SetupWizard.CurrentValues.language,
+                labelWidth: 200,
                 queryMode: 'local',
                 validationEvent: 'blur',
-                msgTarget: 'side'
+                msgTarget: 'side',
+                margin: '50 0 0 0'
             }]
         });
 
