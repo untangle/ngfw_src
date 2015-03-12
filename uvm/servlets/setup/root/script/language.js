@@ -4,8 +4,6 @@ Ext.namespace('Ung.SetupWizard');
 // the main json rpc object
 var rpc = {};
 
-Ung.SetupWizard.LabelWidth = 200;
-
 Ext.define('Ung.SetupWizard.Language', {
     constructor: function( config ) {
         this.languageStore = [];
@@ -16,31 +14,22 @@ Ext.define('Ung.SetupWizard.Language', {
             this.languageStore.push([ language.code, language.name ]);
         }
 
-        this.panel = Ext.create('Ext.form.Panel', {
-            border: false,
-            defaults: {
-                cls: 'noborder'
-            },
+        this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
-            },{
-                xtype: 'container',
-                defaults: {
-                    validationEvent: 'blur',
-                    msgTarget: 'side'
-                },
-                items: [{
-                    xtype: 'combo',
-                    fieldLabel: i18n._('Please select your language'),
-                    name: "language",
-                    editable: false,
-                    labelWidth: Ung.SetupWizard.LabelWidth,
-                    store: this.languageStore,
-                    value: Ung.SetupWizard.CurrentValues.language,
-                    queryMode: 'local',
-                    cls: 'small-top-margin'
-                }]
+            }, {
+                xtype: 'combo',
+                fieldLabel: i18n._('Please select your language'),
+                name: "language",
+                editable: false,
+                validationEvent: 'blur',
+                msgTarget: 'side'
+                labelWidth: 200,
+                store: this.languageStore,
+                value: Ung.SetupWizard.CurrentValues.language,
+                queryMode: 'local',
+                cls: 'small-top-margin'
             }]
         });
 

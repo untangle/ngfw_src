@@ -155,8 +155,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
                 }, initialConfig]
             }];
         }
-        this.panel = Ext.create('Ext.form.Panel', {
-            border: false,
+        this.panel = Ext.create('Ext.container.Container', {
             items: items
         });
         this.card = {
@@ -192,8 +191,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
 Ext.define('Ung.SetupWizard.ServerSettings', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.panel = Ext.create('Ext.form.Panel', {
-            border: false,
+        this.panel = Ext.create('Ext.container.Container', {
             defaults: {
                 margin: '20 0 0 20',
             },
@@ -540,7 +538,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 this.enableAutoRefresh = false;
 
                 Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
-                this.interfaceStore.sync();
                 var interfacesMap = {};
                 this.interfaceStore.each( function( currentRow ) {
                     interfacesMap[currentRow.get( "interfaceId" )] = currentRow.get( "physicalDev" );
@@ -673,10 +670,8 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.cards = [];
 
         // DHCP Panel
-        this.cards.push( this.dhcpPanel = Ext.create('Ext.form.Panel', {
+        this.cards.push( this.dhcpPanel = Ext.create('Ext.panel.Panel', {
             saveData: Ext.bind(this.saveDHCP,this ),
-            border: false,
-            cls: 'network-card-form-margin',
             items: [{
                 xtype: 'component',
                 margin: '10 0 0 50',
@@ -721,9 +716,8 @@ Ext.define('Ung.SetupWizard.Internet', {
         }));
 
         // Static Panel
-        this.cards.push( this.staticPanel = Ext.create('Ext.form.Panel', {
+        this.cards.push( this.staticPanel = Ext.create('Ext.panel.Panel', {
             saveData: Ext.bind(this.saveStatic,this ),
-            border: false,
             cls: 'network-card-form-margin',
             items: [{
                 xtype: 'component',
@@ -796,10 +790,8 @@ Ext.define('Ung.SetupWizard.Internet', {
         }));
 
         // PPPoE Panel
-        this.cards.push( this.pppoePanel = Ext.create('Ext.form.Panel', {
+        this.cards.push( this.pppoePanel = Ext.create('Ext.container.Container', {
             saveData: Ext.bind(this.savePPPoE,this ),
-            border: false,
-            cls: 'network-card-form-margin',
             items: [{
                 xtype: 'component',
                 margin: '10 0 0 50',
@@ -865,21 +857,21 @@ Ext.define('Ung.SetupWizard.Internet', {
             }]
         }));
 
-        this.cardPanel = Ext.create('Ext.panel.Panel', {
+        this.cardPanel = Ext.create('Ext.container.Container', {
             cls: 'untangle-form-panel',
             border: false,
             layout: 'card',
             items: this.cards,
             activePanel: 0,
             defaults: {
-                border: false
+               border: false,
+               cls: 'network-card-form-margin',
             }
         });
 
         var configureText = i18n._("Configure the Internet Connection");
-        var configure = Ext.create('Ext.form.Panel', {
+        var configure = Ext.create('Ext.container.Container', {
             cls: "untangle-form-panel",
-            border: false,
             labelWidth: Ung.SetupWizard.LabelWidth,
             items: [{
                 xtype: 'component',
@@ -1226,8 +1218,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 Ext.define('Ung.SetupWizard.InternalNetwork', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.panel = Ext.create('Ext.form.Panel', {
-            border: false,
+        this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
@@ -1553,8 +1544,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 Ext.define('Ung.SetupWizard.AutoUpgrades', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.panel = Ext.create('Ext.form.Panel', {
-            border: false,
+        this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrade Settings" )+'</h2>'
@@ -1657,13 +1647,13 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
 Ext.define('Ung.SetupWizard.Complete', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        var panel = Ext.create('Ext.form.Panel', {
-            border: false,
+        var panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             }, {
                 xtype: 'component',
+                margin: '0 0 0 20',
                 html: Ext.String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to configure the applications.' ), rpc.oemName)
             }]
         });
