@@ -162,6 +162,7 @@ Ung.Util = {
         var rv = true;
         for(var i=0;i<items.length;i++){
             switch(items[i].getXType()){
+                case 'container':
                 case 'fieldset':
                     if(!Ung.Util.validateinvalidateItems(items[i].items.items, methodname)){
                         rv = false;

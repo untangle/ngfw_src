@@ -81,7 +81,7 @@ Ung.Language = {
             height: 500,
             width: 800,
             cardDefaults: {
-                cls: 'untangle-form-panel'
+                padding: 5
             },
             cards: [ language.card ],
             disableNext: false,

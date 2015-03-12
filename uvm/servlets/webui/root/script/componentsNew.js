@@ -471,7 +471,7 @@ Ext.define("Ung.Node", {
             name: "Help",
             iconCls: 'icon-help',
             minWidth: 25,
-            //text: i18n._('Help'),
+            tooltip: i18n._('Help'),
             handler: Ext.bind(function() {
                 this.onHelpAction();
             }, this)
@@ -481,8 +481,8 @@ Ext.define("Ung.Node", {
             id: 'node-buy-button_'+this.getId(),
             iconCls: 'icon-buy',
             hidden: !(this.license != null && this.license.trial), //show only if trial license
-            ctCls:'buy-button-text',
-            text: '<font color="green">' + i18n._('Buy Now') + '</font>',
+            cls:'buy-button',
+            text: i18n._('Buy Now'),
             handler: Ext.bind(this.onBuyNowAction, this)
             }];
         var templateHTML = Ung.Node.template.applyTemplate({

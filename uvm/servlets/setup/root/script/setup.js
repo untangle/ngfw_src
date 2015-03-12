@@ -335,6 +335,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         this.enableAutoRefresh = true;
         this.networkSettings = null;
         this.interfaceGrid = Ext.create('Ext.grid.Panel', {
+            flex: 1,
             store: this.interfaceStore,
             loadMask: true,
             stripeRows: true,
@@ -497,18 +498,16 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             }]
         });
 
-        var panel = Ext.create('Ext.panel.Panel', {
-            defaults: { cls: 'noborder' },
-            border: false,
-            layout: {
-                type: 'vbox',
-                align:'left'
-            },
+        var panel = Ext.create('Ext.container.Container', {
+            layout: { type: 'vbox', align: 'stretch' },
             items: [{
                 xtype: 'component',
+                flex: 0,
                 html: '<h2 class=" wizard-title">'+i18n._('Identify Network Cards')+'<h2>'
+                
             }, {
                 xtype: 'component',
+                flex: 0,
                 html: "<font color=\"red\"><b>" + i18n._( "Important:") + "</b></font>" +
                     i18n._( " This step identifies the external, internal, and other network cards. ") + "<br/><br/>" +
                     "<b>" + i18n._("Step 1: ") + "</b>" +
@@ -517,11 +516,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     "<b>" + i18n._( "Drag and drop") + "</b>" + i18n._(" the network card to map it to the desired interface.") + "<br/>" +
                     "<b>" + i18n._("Step 3: ") + "</b>" +
                     i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.") + "<br/>"
-            }, { xtype: "panel",
-                layout:'fit',
-                border: false,
-                items: this.interfaceGrid
-            }]
+            }, this.interfaceGrid]
         });
 
         this.card = {
@@ -681,7 +676,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                 border: false,
                 defaultType: 'displayfield',
                 defaults: {
-                    //readOnly: true,
                     labelWidth: Ung.SetupWizard.LabelWidth
                 },
                 items: [{
@@ -718,7 +712,6 @@ Ext.define('Ung.SetupWizard.Internet', {
         // Static Panel
         this.cards.push( this.staticPanel = Ext.create('Ext.panel.Panel', {
             saveData: Ext.bind(this.saveStatic,this ),
-            cls: 'network-card-form-margin',
             items: [{
                 xtype: 'component',
                 margin: '10 0 0 50',
@@ -857,25 +850,11 @@ Ext.define('Ung.SetupWizard.Internet', {
             }]
         }));
 
-        this.cardPanel = Ext.create('Ext.container.Container', {
-            cls: 'untangle-form-panel',
-            border: false,
-            layout: 'card',
-            items: this.cards,
-            activePanel: 0,
-            defaults: {
-               border: false,
-               cls: 'network-card-form-margin',
-            }
-        });
-
-        var configureText = i18n._("Configure the Internet Connection");
-        var configure = Ext.create('Ext.container.Container', {
-            cls: "untangle-form-panel",
+        this.panel = Ext.create('Ext.container.Container', {
             labelWidth: Ung.SetupWizard.LabelWidth,
             items: [{
                 xtype: 'component',
-                html: '<h2 class="wizard-title">'+configureText+'<h2>'
+                html: '<h2 class="wizard-title">'+i18n._("Configure the Internet Connection")+'<h2>'
             }, {
                 xtype: 'combo',
                 fieldLabel: i18n._('Configuration Type'),
@@ -891,32 +870,33 @@ Ext.define('Ung.SetupWizard.Internet', {
                 listeners: {
                     "select": {
                         fn: Ext.bind(function( combo, record ) {
-                            this.cardPanel.layout.setActiveItem( record.get("card") );
+                            this.cardPanelLayout.setActiveItem(record.get("card") );
                         }, this)
                     }
                 },
                 value: this.v4ConfigTypes[0].name
+            }, {
+                xtype: 'container',
+                name: 'cardPanel',
+                layout: 'card',
+                items: this.cards,
+                activePanel: 0,
+                defaults: {
+                   border: false,
+                   margin: '10 0 0 0'
+                }
             }]
         });
-
-        var panel = Ext.create('Ext.panel.Panel', {
-            cls: null,
-            border: false,
-            defaults: {
-                cls: null
-            },
-            items: [ configure, this.cardPanel]
-        });
-
+        
+        this.cardPanelLayout = this.panel.down('container[name="cardPanel"]').getLayout();
         this.isInitialized = false;
 
-        var cardTitle = i18n._( "Internet Connection" );
         this.card = {
-            title: cardTitle,
-            panel: panel,
+            title: i18n._( "Internet Connection" ),
+            panel: this.panel,
             onLoad: Ext.bind(function( complete ) {
                 if ( !this.isInitialized ) {
-                    this.cardPanel.layout.setActiveItem( 0 );
+                    this.cardPanelLayout.setActiveItem( 0 );
                 }
 
                 this.refreshNetworkDisplay();
@@ -927,9 +907,8 @@ Ext.define('Ung.SetupWizard.Internet', {
             onValidate: Ext.bind(this.validateInternetConnection,this)
         };
     },
-
     validateInternetConnection: function() {
-        return Ung.Util.validateItems(this.cardPanel.layout.activeItem.items.items);
+        return Ung.Util.validateItems(this.cardPanelLayout.getActiveItem().items.items);
     },
 
     clearInterfaceSettings: function( wanSettings ) {
@@ -941,11 +920,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         delete wanSettings.v4StaticDns2;
     },
 
-    saveDHCP: function( handler, hideWindow ) {
-        if ( hideWindow == null ) {
-            hideWindow = true;
-        }
-
+    saveDHCP: function( handler) {
         var wanSettings = this.getFirstWanSettings( rpc.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
@@ -954,15 +929,11 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         this.setFirstWanSettings( rpc.networkSettings, wanSettings );
 
-        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [handler], true );
         rpc.networkManager.setNetworkSettings( complete, rpc.networkSettings );
     },
 
-    saveStatic: function( handler, hideWindow ) {
-        if ( hideWindow == null ) {
-            hideWindow = true;
-        }
-
+    saveStatic: function( handler) {
         var wanSettings = this.getFirstWanSettings( rpc.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
@@ -977,15 +948,11 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         this.setFirstWanSettings( rpc.networkSettings, wanSettings );
 
-        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [handler], true );
         rpc.networkManager.setNetworkSettings( complete, rpc.networkSettings );
     },
 
-    savePPPoE: function( handler, hideWindow ) {
-        if ( hideWindow == null ) {
-            hideWindow = true;
-        }
-
+    savePPPoE: function( handler) {
         var wanSettings = this.getFirstWanSettings( rpc.networkSettings );
         this.clearInterfaceSettings( wanSettings );
 
@@ -996,17 +963,12 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         this.setFirstWanSettings( rpc.networkSettings, wanSettings );
 
-        var complete = Ext.bind(this.complete, this, [ handler, hideWindow ], true );
+        var complete = Ext.bind(this.complete, this, [handler], true );
         rpc.networkManager.setNetworkSettings( complete, rpc.networkSettings );
     },
 
-    complete: function( result, exception, foo, handler, hideWindow ) {
+    complete: function( result, exception, foo, handler) {
         if(Ung.Util.handleException(exception)) return;
-
-        if ( hideWindow || ( hideWindow == null ) ) {
-            Ext.MessageBox.hide();
-        }
-
         if (handler != null) {
             handler();
         }
@@ -1015,14 +977,13 @@ Ext.define('Ung.SetupWizard.Internet', {
     // Refresh the current network settings (lease or whatever)
     refresh: function() {
         Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please Wait"));
-
         var handler = Ext.bind(function() {
             //redresh network data
             this.refreshNetworkDisplay();
             Ext.MessageBox.hide();
         }, this);
 
-        this.saveData( handler, false );
+        this.saveData( handler);
     },
 
     testConnectivity: function( handler ) {
@@ -1047,11 +1008,11 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
         var afterFn = Ext.bind( this.execConnectivityTest, this, [afterFn1] );
 
-        this.saveData( afterFn, false );
+        this.saveData( afterFn);
     },
 
-    saveData: function( handler, hideWindow ) {
-        this.cardPanel.layout.activeItem.saveData( handler, hideWindow );
+    saveData: function( handler) {
+        this.cardPanelLayout.getActiveItem().saveData( handler);
     },
 
     completeConnectivityTest: function( result, exception, foo, handler ) {
@@ -1174,8 +1135,9 @@ Ext.define('Ung.SetupWizard.Internet', {
         var card;
         if (isConfigured) {
             for ( c = 0; c < this.v4ConfigTypes.length ; c++ ) {
-                if (this.v4ConfigTypes[c].name == firstWan.v4ConfigType)
-                    this.cardPanel.layout.setActiveItem( c );
+                if (this.v4ConfigTypes[c].name == firstWan.v4ConfigType) {
+                    this.cardPanelLayout.setActiveItem( c );
+                }
             }
             this.updateValue( this.card.panel.down('combo[name="v4ConfigType"]'), firstWan.v4ConfigType);
 
@@ -1288,7 +1250,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     xtype: 'component',
                     margin: '40 0 0 20',
                     columnWidth: 0.40,
-                    html: '<img style="border: 1px #ccc solid;" src="/skins/' + rpc.skinName + '/images/admin/wizard/router.png"/>'
+                    html: '<img class="wizard-network-img" src="/skins/' + rpc.skinName + '/images/admin/wizard/router.png"/>'
                 }]
             }, {
                 xtype: 'container',
@@ -1314,7 +1276,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     xtype: 'component',
                     margin: '0 0 0 20',
                     columnWidth: 0.40,
-                    html: '<img style="border: 1px #ccc solid;" src="/skins/' + rpc.skinName + '/images/admin/wizard/bridge.png"/>'
+                    html: '<img class="wizard-network-img" src="/skins/' + rpc.skinName + '/images/admin/wizard/bridge.png"/>'
                 }]
             }]
         });
@@ -1735,7 +1697,7 @@ Ext.define("Ung.Setup", {
             width: 800,
             cardDefaults: {
                 labelWidth: Ung.SetupWizard.LabelWidth,
-                cls: 'untangle-form-panel'
+                padding: 5
             },
             cards: cards,
             disableNext: false,
