@@ -6,20 +6,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
 
   <servlet>
-    <servlet-name>SetupNewServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.setup.servlet.SetupNewServlet</servlet-class>
-    <init-param>
-      <param-name>buildStamp</param-name>
-      <param-value>@BUILD_STAMP@</param-value>
-    </init-param>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>SetupNewServlet</servlet-name>
-    <url-pattern>/indexNew.do</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>SetupServlet</servlet-name>
     <servlet-class>com.untangle.uvm.setup.servlet.SetupServlet</servlet-class>
     <init-param>

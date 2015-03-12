@@ -26,10 +26,12 @@ Ext.define('Ung.SetupWizard.Language', {
                 validationEvent: 'blur',
                 msgTarget: 'side',
                 labelWidth: 200,
+                margin: '50 0 0 0',
                 store: this.languageStore,
                 value: Ung.SetupWizard.CurrentValues.language,
                 queryMode: 'local',
-                cls: 'small-top-margin'
+                validationEvent: 'blur',
+                msgTarget: 'side'
             }]
         });
 
