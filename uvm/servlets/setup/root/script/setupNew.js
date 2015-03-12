@@ -327,13 +327,12 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
 Ext.define('Ung.SetupWizard.Interfaces', {
     constructor: function( config ) {
         Ext.apply(this, config);
-        this.interfaceStore = Ext.create('Ext.data.ArrayStore', {
-            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" },{ name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
-            data: []
+        this.interfaceStore = Ext.create('Ext.data.JsonStore',{
+            fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" },{ name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }]
         });
-        this.deviceStore = Ext.create('Ext.data.ArrayStore', {
-            fields:[{ name: "physicalDev" }],
-            data: []
+        this.modelName = 'Ung.Model_Ung.SetupWizard.Interfaces';
+        this.deviceStore = Ext.create('Ext.data.JsonStore',{
+            fields:[{ name: "physicalDev" }]
         });
         this.enableAutoRefresh = true;
         this.networkSettings = null;
@@ -398,9 +397,8 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 tooltip: i18n._( "Click on a Device to open a combo and choose the desired Device from a list. When anoter Device is selected the 2 Devices are swithced." ),
                 tooltipType: "title",
                 dataIndex: 'deviceName',
-                sortable: false
-                /*TODO: ext5 ,
-                tdCls: 'ua-pointer'
+                sortable: false,
+                tdCls: 'ua-pointer',
                 editor: {
                     xtype: 'combo',
                     store: this.deviceStore,
@@ -454,16 +452,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                                 return true;
                             },
                             scope: this
-                        },
-                        "focus": {
-                            fn: function(obj) {
-                                console.log("focus", obj.getValue());
-                                
-                            },
-                            scope: this    
                         }
                     }
-                }*/
+                }
             },{
                 dataIndex: 'connected',
                 sortable: false,
@@ -615,7 +606,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
                 return;
             }
-            var deviceStatus=rpc.networkManager.getDeviceStatus( Ext.bind( function( result, exception ) {
+            rpc.networkManager.getDeviceStatus(Ext.bind( function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
                 if ( result == null ) return;
 
@@ -648,7 +639,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 }
             }
 
-            var deviceStatus=rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
+            rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
 
                 Ext.MessageBox.hide();
@@ -659,7 +650,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     Ext.applyIf(intf, deviceStatus);
                 }
                 this.interfaceStore.loadData( interfaceList );
-                this.deviceStore.loadData( interfaceList );
+                this.deviceStore.loadData( Ext.decode(Ext.encode(interfaceList)) );
                 if ( interfaceList.length < 2) {
                     Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
                 }

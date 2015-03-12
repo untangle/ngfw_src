@@ -640,13 +640,11 @@ Ext.define("Webui.config.networkNew", {
             onMapDevices: Ext.bind(function() {
                 Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
                 if (!this.winMapDevices) {
-                    this.mapDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                        fields:[{name: "interfaceId"}, { name: "name" }, {name: "deviceName"}, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }],
-                        data: []
+                    this.mapDevicesStore = Ext.create('Ext.data.JsonStore',{
+                        fields:[{name: "interfaceId"}, { name: "name" }, {name: "deviceName"}, { name: "physicalDev" }, { name: "systemDev" },{ name: "symbolicDev" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }]
                     });
-                    this.availableDevicesStore = Ext.create('Ext.data.ArrayStore', {
-                        fields:[{ name: "physicalDev" }],
-                        data: []
+                    this.availableDevicesStore = Ext.create('Ext.data.JsonStore',{
+                        fields:[{ name: "physicalDev" }]
                     });
 
                     this.gridMapDevices = Ext.create('Ext.grid.Panel', {
@@ -917,7 +915,7 @@ Ext.define("Webui.config.networkNew", {
                     }
                 }
                 this.mapDevicesStore.loadData( this.currentInterfaces );
-                this.availableDevicesStore.loadData( this.currentInterfaces );
+                this.availableDevicesStore.loadData( Ext.decode(Ext.encode(this.currentInterfaces)));
                 this.winMapDevices.show();
             }, this)
         });
