@@ -1210,9 +1210,9 @@ Ext.define("Ung.Main", {
         main.loadRackView();
     },
     getPolicyName: function(policyId) {
-        if (policyId == null || policyId == "")
+        if (Ext.isEmpty(policyId)){
             return i18n._( "Services" );
-
+        }
         if (rpc.policyNamesMap[policyId] !== undefined) {
             return rpc.policyNamesMap[policyId];
         } else {

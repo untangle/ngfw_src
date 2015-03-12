@@ -457,7 +457,7 @@ Ext.define("Ung.Node", {
                 el.setOpacity(1);
                 el.frame("#63BE4A", 1, { duration: 1000 });
             }});
-            }
+        }
         var nodeButtons=[{
             xtype: "button",
             name: "Show Settings",
@@ -484,7 +484,7 @@ Ext.define("Ung.Node", {
             cls:'buy-button',
             text: i18n._('Buy Now'),
             handler: Ext.bind(this.onBuyNowAction, this)
-            }];
+        }];
         var templateHTML = Ung.Node.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,

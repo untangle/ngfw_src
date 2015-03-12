@@ -133,7 +133,6 @@ Ext.define('Ung.grid.Panel', {
             plugins: [],
             viewConfig: {
                 enableTextSelection: true,
-                stripeRows: true,
                 listeners: {
                     "drop": {
                         fn: Ext.bind(function() {
@@ -218,7 +217,7 @@ Ext.define('Ung.grid.Panel', {
         var storeData = this.dataProperty? this.settingsCmp.settings[this.dataProperty].list:
                         this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
                         this.storeData || [];
-        this.store=Ext.create('Ext.data.Store',{
+        this.store = Ext.create('Ext.data.Store',{
             data: this.formatData(storeData),
             model: this.modelName,
             proxy: {

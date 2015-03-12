@@ -1,16 +1,11 @@
 Ext.define("Ung.GridEventLog", {
     extend: "Ung.GridEventLogBase",
-    // the settings component
     hasTimestampFilter: true,
     hasAutoRefresh: true,
     hasSelectors: true,
     settingsCmp: null,
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
-    // called when the component is initialized
-    constructor: function(config) {
-        this.callParent(arguments);
-    },
     initComponent: function() {
         if(this.eventQueriesFn == null && this.settingsCmp.node !== null && this.settingsCmp.node.rpcNode !== null && this.settingsCmp.node.rpcNode.getEventQueries !== null) {
             this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
@@ -45,33 +40,21 @@ Ext.define("Ung.GridEventLog", {
     },
     autoRefreshNextChunkCallback: function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
-
         var newEventEntries = result;
-
-        /**
-         * If we got results append them to the current events list
-         * And make another call for more
-         */
+        //If we got results append them to the current events list, and make another call for more
         if ( newEventEntries != null && newEventEntries.list != null && newEventEntries.list.length != 0 ) {
             this.eventEntries.push.apply( this.eventEntries, newEventEntries.list );
             this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
             return;
         }
 
-        /**
-         * If we got here, then we either reached the end of the resultSet or ran out of room
-         * Display the results
-         */
+        //If we got here, then we either reached the end of the resultSet or ran out of room. Display the results
         if (this.settingsCmp !== null) {
-            this.getStore().getProxy().data = this.eventEntries;
-            this.getStore().load({
-                params: {
-                    start: 0
-                }
-            });
+            this.getStore().getProxy().setData(this.eventEntries);
+            this.getStore().load();
         }
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
-            if(this==this.settingsCmp.tabs.getActiveTab()) {
+            if(this == this.settingsCmp.tabs.getActiveTab()) {
                 Ext.Function.defer(this.autoRefreshList, 5000, this);
             } else {
                 this.stopAutoRefresh(true);
@@ -82,7 +65,6 @@ Ext.define("Ung.GridEventLog", {
         if(Ung.Util.handleException(exception)) return;
 
         this.eventEntries = [];
-
         if( testMode ) {
             var emptyRec={};
             for(var j=0; j<30; j++) {
@@ -93,7 +75,6 @@ Ext.define("Ung.GridEventLog", {
 
         this.reader = result;
         this.reader.getNextChunk(Ext.bind(this.autoRefreshNextChunkCallback, this), 1000);
-
     },
     autoRefreshList: function() {
         this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
@@ -341,13 +322,7 @@ Ung.CustomEventLog = {
                 name: 'firewall_flagged'
             }, {
                 name: 'firewall_rule_index',
-                convert: function( v, record ){
-                    if (v <= 0) {
-                        return i18n._("none");
-                    } else {
-                        return v.toString();
-                    }
-                }
+                convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
                 name: 'ips_blocked'
             }, {
@@ -431,15 +406,15 @@ Ung.CustomEventLog = {
                         return "";
                     }
                     switch(value) {
-                      case 0: return "";
-                      case 1: return i18n._("Very High");
-                      case 2: return i18n._("High");
-                      case 3: return i18n._("Medium");
-                      case 4: return i18n._("Low");
-                      case 5: return i18n._("Limited");
-                      case 6: return i18n._("Limited More");
-                      case 7: return i18n._("Limited Severely");
-                    default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                        case 0: return "";
+                        case 1: return i18n._("Very High");
+                        case 2: return i18n._("High");
+                        case 3: return i18n._("Medium");
+                        case 4: return i18n._("Low");
+                        case 5: return i18n._("Limited");
+                        case 6: return i18n._("Limited More");
+                        case 7: return i18n._("Limited Severely");
+                        default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
                     }
                 }
             }, {
@@ -449,9 +424,7 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'bandwidth_rule',
                 renderer: function(value) {
-                    if (Ext.isEmpty(value))
-                        return i18n._("none");
-                    return value;
+                    return Ext.isEmpty(value) ? i18n._("none") : value;
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('classd_application') < 0,
@@ -547,9 +520,7 @@ Ung.CustomEventLog = {
                 sortable: true,
                 flex:1,
                 dataIndex: 'policy_id',
-                renderer: function(value) {
-                    return main.getPolicyName(value);
-                }
+                renderer: main.getPolicyName
             }, {
                 hidden: visibleColumnsParam.indexOf('firewall_blocked') < 0,
                 header: i18n._("Blocked (Firewall)"),
@@ -686,21 +657,17 @@ Ung.CustomEventLog = {
             }, {
                 name: 'webfilter_reason',
                 type: 'string',
-                convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
+                convert: Ung.CustomEventLog.httpEventConvertReason
             }, {
                 name: 'sitefilter_reason',
                 type: 'string',
-                convert: Ext.bind(function (value){return Ung.CustomEventLog.httpEventConvertReason(value);}, this)
+                convert: Ung.CustomEventLog.httpEventConvertReason
             }, {
                 name: 'adblocker_action',
                 type: 'string',
-                convert: Ext.bind(function(value) {
-                    if (value == 'B') {
-                        return i18n._("block");
-                    } else {
-                        return i18n._("pass");
-                    }
-                }, this)
+                convert: function(value) {
+                    return (value == 'B')?i18n._("block") : i18n._("pass");
+                }
             }, {
                 name: 'adblocker_cookie_ident'
             }, {
@@ -995,9 +962,7 @@ Ung.CustomEventLog = {
             }, {
                 name:  'spamassassin_action',
                 type: 'string',
-                convert: Ext.bind( function(value, rec ) {
-                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                }, this)
+                convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
                 name: 'spamassassin_score'
             }, {
@@ -1005,9 +970,7 @@ Ung.CustomEventLog = {
             }, {
                 name:  'spamblocker_action',
                 type: 'string',
-                convert: Ext.bind( function(value, rec ) {
-                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                }, this)
+                convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
                 name: 'spamblocker_score'
             }, {
@@ -1015,9 +978,7 @@ Ung.CustomEventLog = {
             }, {
                 name:  'phish_action',
                 type: 'string',
-                convert: Ext.bind( function(value, rec ) {
-                    return Ung.CustomEventLog.mailEventConvertAction(value, rec);
-                }, this)
+                convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
                 name: 'phish_score'
             }, {
@@ -1146,57 +1107,41 @@ Ung.CustomEventLog = {
         return grid;
     },
     httpEventConvertReason: function(value) {
+        if(Ext.isEmpty(value)) {
+            return null;
+        }
         switch (value) {
-          case 'D':
-            return i18n._("in Categories Block list");
-          case 'U':
-            return i18n._("in URLs Block list");
-          case 'E':
-            return i18n._("in File Extensions Block list");
-          case 'M':
-            return i18n._("in MIME Types Block list");
-          case 'H':
-            return i18n._("Hostname is an IP address");
-          case 'I':
-            return i18n._("in URLs Pass list");
-          case 'R':
-            return i18n._("in URLs Pass list (via referer)");
-          case 'C':
-            return i18n._("in Clients Pass list");
-          case 'B':
-            return i18n._("Client Bypass");
-        default:
+          case 'D': return i18n._("in Categories Block list");
+          case 'U': return i18n._("in URLs Block list");
+          case 'E': return i18n._("in File Extensions Block list");
+          case 'M': return i18n._("in MIME Types Block list");
+          case 'H': return i18n._("Hostname is an IP address");
+          case 'I': return i18n._("in URLs Pass list");
+          case 'R': return i18n._("in URLs Pass list (via referer)");
+          case 'C': return i18n._("in Clients Pass list");
+          case 'B': return i18n._("Client Bypass");
           case 'DEFAULT':
+          default:
             return i18n._("no rule applied");
         }
-        return null;
     },
-    mailEventConvertAction: function(value, rec) {
-        if (value == 'P') { 
-            return i18n._("pass message");
-        } else if (value == 'M') { 
-            return i18n._("mark message");
-        } else if (value == 'D') { 
-            return i18n._("drop message");
-        } else if (value == 'B') { 
-            return i18n._("block message");
-        } else if (value == 'Q') { 
-            return i18n._("quarantine message");
-        } else if (value == 'S') { 
-            return i18n._("pass safelist message");
-        } else if (value == 'Z') { 
-            return i18n._("pass oversize message");
-        } else if (value == 'O') { 
-            return i18n._("pass outbound message");
-        } else if (value == 'F') { 
-            return i18n._("block message (scan failure)");
-        } else if (value == 'G') { 
-            return i18n._("pass message (scan failure)");
-        } else if (value == 'G') { 
-            return i18n._("block message (greylist)");
-        } else {
-            return i18n._("unknown action");
+    mailEventConvertAction: function(value) {
+        if(Ext.isEmpty(value)) {
+            return "";
         }
-        return "";
+        switch (value) {
+            case 'P': return i18n._("pass message");
+            case 'M': return i18n._("mark message");
+            case 'D': return i18n._("drop message");
+            case 'B': return i18n._("block message");
+            case 'Q': return i18n._("quarantine message");
+            case 'S': return i18n._("pass safelist message");
+            case 'Z': return i18n._("pass oversize message");
+            case 'O': return i18n._("pass outbound message");
+            case 'F': return i18n._("block message (scan failure)");
+            case 'G': return i18n._("pass message (scan failure)");
+            case 'Y': return i18n._("block message (greylist)");
+            default: return i18n._("unknown action");
+        }
     }
 };
