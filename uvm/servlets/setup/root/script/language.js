@@ -24,7 +24,7 @@ Ext.define('Ung.SetupWizard.Language', {
                 name: "language",
                 editable: false,
                 validationEvent: 'blur',
-                msgTarget: 'side'
+                msgTarget: 'side',
                 labelWidth: 200,
                 store: this.languageStore,
                 value: Ung.SetupWizard.CurrentValues.language,
