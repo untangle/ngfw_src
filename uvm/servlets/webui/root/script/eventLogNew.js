@@ -1121,6 +1121,7 @@ Ung.CustomEventLog = {
           case 'C': return i18n._("in Clients Pass list");
           case 'B': return i18n._("Client Bypass");
           case 'DEFAULT':
+            return i18n._("no rule applied");
           default:
             return i18n._("no rule applied");
         }
