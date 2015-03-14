@@ -5,6 +5,7 @@ import pdb
 import socket
 import subprocess
 import copy
+import smtplib
 import re
 from datetime import datetime
 from jsonrpc import ServiceProxy
@@ -22,12 +23,63 @@ nodeFirewall = None
 nodeFaild = None
 nodeWeb = None
 orig_settings = None
+canRelay = False
 # special box with testshell in the sudoer group  - used to connect to as client
 syslogHostIP = "10.112.56.30"
 testEmailAddress = "qa@untangletest.com"
 
 # pdb.set_trace()
 
+def sendTestmessage(smtpServerHost):
+    sender = 'test@example.com'
+    receivers = ['qa@example.com']
+    relaySuccess = False
+    
+    message = """From: Test <test@example.com>
+    To: Test Group <qa@example.com>
+    Subject: SMTP e-mail test
+
+    This is a test e-mail message.
+    """
+    remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
+    
+    try:
+       smtpObj = smtplib.SMTP(smtpServerHost)
+       smtpObj.sendmail(sender, receivers, message)
+       print "Successfully sent email"
+       relaySuccess = True
+    except smtplib.SMTPException, e:
+       print "Error: unable to send email" + str(e)
+       relaySuccess =  False
+       
+    remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
+    return relaySuccess
+
+def createFakeEmailEnvironment(emailLogFile):
+    # set untangletest email to get to syslogHostIP where fake SMTP sink is running
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dnsmasqOptions'] = "mx-host=untangletest.com,untangletest.com,10"
+    netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
+    # Remove old email and log files.
+    remote_control.runCommand("sudo rm /tmp/" + emailLogFile, host=syslogHostIP)
+    remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP)
+    remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
+
+def findEmailContent(searchTerm1,searchTerm2):
+    ifFound = False
+    timeout = 120
+    while not ifFound and timeout > 0:
+        timeout -= 1
+        time.sleep(1)
+        emailfile = remote_control.runCommand("ls -l /tmp/qa@untangletest.com*",host=syslogHostIP)
+        if (emailfile == 0):
+            ifFound = True
+    grepContext=remote_control.runCommand("grep -i '" + searchTerm1 + "' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
+    grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
+    return(ifFound, grepContext, grepContext2)
+    
 def createFirewallSingleMatcherRule( matcherType, value, blocked=True ):
     matcherTypeStr = str(matcherType)
     valueStr = str(value)
@@ -143,7 +195,7 @@ class ReportTests(unittest2.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global node, nodeFirewall, nodeFaild, nodeWeb, orig_settings, syslogHostResult
+        global node, nodeFirewall, nodeFaild, nodeWeb, orig_settings, orig_netsettings, syslogHostResult, canRelay
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "Node %s already installed" % self.nodeName()
@@ -175,42 +227,39 @@ class ReportTests(unittest2.TestCase):
 
         reportSettings = node.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = copy.deepcopy(netsettings)
         syslogHostResult = subprocess.call(["ping","-c","1",syslogHostIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-           
+        if (syslogHostResult == 0):
+            try:
+                canRelay = sendTestmessage(syslogHostIP)
+            except Exception,e:
+                canRelay = False
+                
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
         assert (result == 0)
     
     def test_020_sendReportOut(self):
-        raise unittest2.SkipTest("Test does not pass on hosts that can not relay")        
-        if (syslogHostResult != 0):
-            raise unittest2.SkipTest("Mail sink server unreachable")        
+        raise unittest2.SkipTest("Review changes in test")        
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + syslogHostIP)
         # test if PDF is mailed out.
         settings = node.getSettings()
         settings["attachmentSizeLimit"] = 5
         settings["reportingUsers"]["list"].append(createReportProfile())
         node.setSettings(settings)
-        # set untangletest email to get to syslogHostIP where fake SMTP sink is running
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        orig_netsettings = copy.deepcopy(netsettings)
-        netsettings['dnsmasqOptions'] = "mx-host=untangletest.com,untangletest.com,10"
-        netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
-        uvmContext.networkManager().setNetworkSettings(netsettings)
         
-        # Remove old email and log files.
-        remote_control.runCommand("sudo rm /tmp/test_020_sendReportOut*", host=syslogHostIP, stdout=False, nowait=True)
-        remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP, stdout=False, nowait=True)
-        remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/test_020_sendReportOut.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
+        createFakeEmailEnvironment("test_020.log")
+
         report_date = time.strftime("%Y-%m-%d")
         # print "report_date %s" % report_date
         report_results = subprocess.call(["/usr/share/untangle/bin/reporting-generate-reports.py", "-r", "1", "-d",report_date],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # print "report_results %s" % report_results
-        time.sleep(10) # wait for email to arrive
+        emailFound, emailContext, emailContext2 = findEmailContent('Untangle PDF Summary Reports', 'Content-Disposition')
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
-        emailContext=remote_control.runCommand("grep 'Untangle PDF Summary Reports' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
-        emailContext2=remote_control.runCommand("grep 'Content-Disposition' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
         # reset all settings to base.
         node.setSettings(orig_settings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -219,7 +268,7 @@ class ReportTests(unittest2.TestCase):
         
     def test_040_remoteSyslog(self):
         if (syslogHostResult != 0):
-            raise unittest2.SkipTest("Mail sink server unreachable")        
+            raise unittest2.SkipTest("Syslog server unreachable")        
         # Install firewall rule to generate syslog events
         rules = nodeFirewall.getRules()
         rules["list"].append(createFirewallSingleMatcherRule("SRC_ADDR",remote_control.clientIP));
@@ -265,8 +314,8 @@ class ReportTests(unittest2.TestCase):
 
     def test_080_download_alerts(self):
         raise unittest2.SkipTest("Review changes in test")        
-        if (syslogHostResult != 0):
-            raise unittest2.SkipTest("Mail sink server unreachable")        
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + syslogHostIP)
         settings = node.getSettings()
         # set email address and alert for downloads
         settings["reportingUsers"]["list"].append(createReportProfile())
@@ -274,45 +323,33 @@ class ReportTests(unittest2.TestCase):
         settings["alertRules"]["list"].append(createAlertRule("Host is doing large download","class","*HttpResponseEvent*","contentLength","1000"))
         node.setSettings(settings)
 
-        # set untangletest email to get to syslogHostIP where fake SMTP sink is running
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        orig_netsettings = copy.deepcopy(netsettings)
-        netsettings['dnsSettings']['staticEntries']['list'].append(createDNSRule(syslogHostIP,"untangletest.com"))
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment("test_080.log")
+        
         # set admin email to get alerts
         adminsettings = uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(createAdminUser())
         uvmContext.adminManager().setSettings(adminsettings)
 
-        # Remove old email and log files.
-        remote_control.runCommand("sudo rm /tmp/test_080_alerts*", host=syslogHostIP)
-        remote_control.runCommand("sudo rm /tmp/qa@untangletest.com*", host=syslogHostIP)
-        remote_control.runCommand("sudo python fakemail.py --host=" + syslogHostIP +" --log=/tmp/test_080_alerts.log --port 25 --background --path=/tmp/", host=syslogHostIP, stdout=False, nowait=True)
-
         # start download
         global_functions.getDownloadSpeed()
 
-        emailFound = False
-        timeout = 120
-        while not emailFound and timeout > 0:
-            timeout -= 1
-            time.sleep(1)
-            emailfile = remote_control.runCommand("ls -l /tmp/qa@untangletest.com*",host=syslogHostIP)
-            if (emailfile == 0):
-                emailFound = True
-        emailContext=remote_control.runCommand("grep -i 'alert' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
-        emailContext2=remote_control.runCommand("grep -i 'Host is doing' /tmp/qa@untangletest.com*",host=syslogHostIP, stdout=True)
+        # look for alert email
+        emailFound, emailContext, emailContext2 = findEmailContent('alert','Host is doing')
 
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=syslogHostIP)
-        # reset all settings to base.
+        
+        # reset all settings to default.
         node.setSettings(orig_settings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         uvmContext.adminManager().setSettings(orig_adminsettings)
+
         assert(emailFound)
         assert(("Server Alert" in emailContext) and ("Host is doing large download" in emailContext2))
+
+        # check events log
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -373,7 +410,9 @@ class ReportTests(unittest2.TestCase):
         nodeFaildData["tests"]["list"] = []
         nodeFaild.setSettings(nodeFaildData)
         node.setSettings(orig_settings)
+
         # Check event log for admin alert for WAN down.
+        time.sleep(10) # seems to be a delay in the alert event.
         flushEvents()
         query = None;
         for q in node.getEventQueries():
