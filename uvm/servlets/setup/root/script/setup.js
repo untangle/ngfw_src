@@ -594,7 +594,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 if(!allInterfaces[i].isVlanInterface) {
                     //interfaceList.push(allInterfaces[i]);
                     interfaceList.push(Ext.decode(Ext.encode(allInterfaces[i])));
-                    deviceList.push({physicalDev: allInterfaces[i].physicalDev})
+                    deviceList.push({physicalDev: allInterfaces[i].physicalDev});
                 }
             }
             rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
