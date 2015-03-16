@@ -4,6 +4,10 @@ var rpc = {};
 Ext.define('Ung.setupWizard.Language', {
     constructor: function( config ) {
         Ext.applyIf(this, config);
+        var languageStore = Ext.create('Ext.data.JsonStore', {
+            fields: ['code', 'languageName'],
+            data: this.languageList.list
+        });
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
@@ -14,8 +18,8 @@ Ext.define('Ung.setupWizard.Language', {
                 name: "language",
                 editable: false,
                 valueField: 'code',
-                displayField: 'name',
-                store: this.languageList.list,
+                displayField: 'languageName',
+                store: languageStore,
                 value: this.language,
                 labelWidth: 200,
                 queryMode: 'local',
