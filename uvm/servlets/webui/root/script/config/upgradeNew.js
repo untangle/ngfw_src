@@ -94,7 +94,7 @@ Ext.define('Webui.config.upgradeNew', {
             //console.log("rpc.systemManager.downloadUpgrades", result);
             Ext.MessageBox.hide();
             if(result) {
-                main.upgrade();
+                Ung.Main.upgrade();
             } else {
                 Ext.MessageBox.alert(i18n._("Warning"), i18n._("Downloading upgrades failed."));
             }

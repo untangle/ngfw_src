@@ -789,16 +789,21 @@ Ext.define('Ung.RowEditorWindow', {
     doSize: function() {
         if(!this.sizeToComponent) {
             if(this.sizeToParent) {
-                this.sizeToComponent=this.grid.findParentByType("panel");
+                this.sizeToComponent=this.grid.up("panel");
             }
             if(!this.sizeToComponent) {
                 this.sizeToComponent=this.grid;
             }
         }
+        var objPosition = this.sizeToComponent.getPosition();
         if (this.sizeToComponent || this.height==null || this.width==null) {
-            this.setSize(this.sizeToComponent.getSize());
+            var objSize = this.sizeToComponent.getSize();
+            this.setSize(objSize);
+            if (objPosition[1] + objSize.height > Ung.Main.viewport.getSize().height) {
+                objPosition[1] = Math.max(Ung.Main.viewport.getSize().height - objSize.height, 0);
+            }
         }
-        this.alignTo(this.sizeToComponent);
+        this.setPosition(objPosition);
     },
     populate: function(record,addMode) {
         this.addMode=addMode;
@@ -1026,8 +1031,8 @@ Ext.define('Ung.ImportSettingsWindow', {
         if (this.sizeToGrid) {
             var objSize = this.grid.getSize();
             this.setSize(objSize);
-            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
-                objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
+            if (objPosition[1] + objSize.height > Ung.Main.viewport.getSize().height) {
+                objPosition[1] = Math.max(Ung.Main.viewport.getSize().height - objSize.height,0);
             }
         }
         this.setPosition(objPosition);

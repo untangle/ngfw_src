@@ -1,6 +1,7 @@
 /* $HeadURL$ */
 package com.untangle.uvm.setup.jabsorb;
 
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.transaction.TransactionRolledbackException;
@@ -81,6 +82,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         this.context.adminManager().setTimeZone( timeZone );
     }
 
+    public Map<String, String> getTranslations()
+    {
+        return this.context.languageManager().getTranslations("untangle-libuvm");
+    }
+    
     /**
      * This call returns one big JSONObject with references to all the important
      * information This is used to avoid lots of separate synchornous calls via

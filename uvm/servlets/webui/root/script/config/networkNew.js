@@ -3,7 +3,7 @@ Ext.define("Webui.config.networkNew", {
     extend: "Ung.ConfigWin",
     statics: {
         preload: function(config, handler) {
-            main.getNetworkManager().getNetworkSettings(function(result, exception) {
+            Ung.Main.getNetworkManager().getNetworkSettings(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 config.settings = result;
                 handler(config);
@@ -145,10 +145,10 @@ Ext.define("Webui.config.networkNew", {
         if(refresh) {
             Ext.MessageBox.wait(this.i18n._("Refreshing..."), i18n._("Please wait"));
         }
-        main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+        Ung.Main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
-            main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+            Ung.Main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
                 var interfaceStatusMap=Ung.Util.createRecordsMap(result.list, "interfaceId");
                 var i, intf, devSt, intfSt;
                 for(i=0 ; i<this.settings.interfaces.list.length ; i++) {
@@ -832,7 +832,7 @@ Ext.define("Webui.config.networkNew", {
                         onRefreshDeviceStatus: function() {
                             var grid = this;
                             Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing Device Status..."), i18n._("Please wait"));
-                            main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
+                            Ung.Main.getNetworkManager().getDeviceStatus(Ext.bind(function(result, exception) {
                                 if(Ung.Util.handleException(exception)) return;
                                 var deviceStatusMap=Ung.Util.createRecordsMap(( result == null ? [] : result.list ), "deviceName");
                                 grid.getStore().suspendEvents();
@@ -2025,7 +2025,7 @@ Ext.define("Webui.config.networkNew", {
                 //Populate wirelessChannel store with device supported channnels
                 if(record.get("isWirelessInterface")) {
                     var wirelessChannel = this.down('combo[dataIndex="wirelessChannel"]');
-                    main.getNetworkManager().getWirelessChannels(Ext.bind(function(result, exception) {
+                    Ung.Main.getNetworkManager().getWirelessChannels(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         var availableChannels=[];
                         if(result && result.list) {
@@ -2055,7 +2055,7 @@ Ext.define("Webui.config.networkNew", {
                 if(vrrpEnabled.getValue()) {
                     vrrp.expand();
                     if(interfaceId>=0) {
-                        main.getNetworkManager().isVrrpMaster(Ext.bind(function(result, exception) {
+                        Ung.Main.getNetworkManager().isVrrpMaster(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             if(result) {
                                 isVrrpMaster.setValue("<div class='ua-cell-enabled' style='width:16px;'></div>");
@@ -2094,10 +2094,10 @@ Ext.define("Webui.config.networkNew", {
                 var settingsCmp = this.grid.settingsCmp;
                 Ext.MessageBox.wait( settingsCmp.i18n._( "Renewing DHCP Lease..." ), settingsCmp.i18n._( "Please wait" ));
                 var inerfaceId = this.record.get("interfaceId");
-                main.getNetworkManager().renewDhcpLease(Ext.bind(function(result, exception) {
+                Ung.Main.getNetworkManager().renewDhcpLease(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     //refresh DHCP status
-                    main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
+                    Ung.Main.getNetworkManager().getInterfaceStatus(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         var interfaceStatus = result;
                         for( i=0 ; i<settingsCmp.settings.interfaces.list.length; i++) {
@@ -2455,7 +2455,7 @@ Ext.define("Webui.config.networkNew", {
                         helpSource: 'port_forward_troubleshooting_guide',
                         settingsCmp: this,
                         helpAction: function() {
-                            main.openHelp(this.helpSource);
+                            Ung.Main.openHelp(this.helpSource);
                         },
                         bbar: [{
                             iconCls: 'icon-help',
@@ -3191,7 +3191,7 @@ Ext.define("Webui.config.networkNew", {
         this.routeButton = Ext.create('Ext.button.Button',{
             text: this.i18n._(" Refresh Routes "),
             handler: function(b,e) {
-                main.getExecManager().exec(Ext.bind(function(result, exception) {
+                Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.routeArea.setValue( result.output );
                 }, this), "/usr/share/untangle/bin/ut-routedump.sh");
@@ -3425,7 +3425,7 @@ Ext.define("Webui.config.networkNew", {
                 ]
             }),
             dataFn: function(handler) {
-                main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var lines = result.split("\n");
                     var leases = [];
@@ -3920,7 +3920,7 @@ Ext.define("Webui.config.networkNew", {
             hasDelete: false,
             hasEdit: false,
             dataFn: function(handler) {
-                main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var list = [];
                     try {
@@ -3978,7 +3978,7 @@ Ext.define("Webui.config.networkNew", {
             hasDelete: false,
             hasEdit: false,
             dataFn: function(handler) {
-                main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var list = [];
                     try {
@@ -4666,7 +4666,7 @@ Ext.define("Webui.config.networkNew", {
         ];
         var command =  "/bin/bash -c " + script.join("");
         var execResultReader = null;
-        main.getExecManager().exec(Ext.bind(function(result, exception) {
+        Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             Ext.MessageBox.alert(this.i18n._("Test Connectivity Result"), result.output);
         }, this), command);
@@ -5309,7 +5309,7 @@ Ext.define("Webui.config.networkNew", {
         this.saveSemaphore = 1;
         this.needRackReload = true;
         // save language settings
-        main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
+        Ung.Main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
         }, this), this.settings);
     },
@@ -5433,14 +5433,14 @@ Ext.define("Webui.config.networkNew", {
         if (this.saveSemaphore === 0) {
             if(isApply) {
                 //On apply we have to reload all and keep selected tabs
-                var configNetwork = Ext.clone(main.configMap["network"]);
+                var configNetwork = Ext.clone(Ung.Main.configMap["network"]);
                 Ext.apply(configNetwork, {
                     needRackReload: true,
                     activeTabIndex: this.tabs.items.findIndex('id', this.tabs.getActiveTab().id),
                     advancedTabIndex: this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id)
                 });
                 Webui.config.networkNew.superclass.closeWindow.call(this);
-                main.openConfig(configNetwork);
+                Ung.Main.openConfig(configNetwork);
             } else {
                 Ext.MessageBox.hide();
                 this.closeWindow();
@@ -5520,7 +5520,7 @@ Ext.define("Webui.config.network.NetworkTest", {
         this.callParent(arguments);
     },
     helpAction: function() {
-        main.openHelp(this.helpSource);
+        Ung.Main.openHelp(this.helpSource);
     },
     getCommand: function () {
         return this.command;
@@ -5540,7 +5540,7 @@ Ext.define("Webui.config.network.NetworkTest", {
         text.push( this.output.getValue());
         text.push( "" + this.settingsCmp.i18n.timestampFormat((new Date()).getTime()) + " - " + this.settingsCmp.i18n._("Test Started")+"\n");
         this.output.setValue( text.join( "" ));
-        main.getExecManager().execEvil(Ext.bind(function(result, exception) {
+        Ung.Main.getExecManager().execEvil(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.execResultReader = result;
             this.continueNetworkUtility();

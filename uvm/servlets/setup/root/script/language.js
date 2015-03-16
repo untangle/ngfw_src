@@ -1,19 +1,9 @@
-Ext.namespace('Ung');
-Ext.namespace('Ung.SetupWizard');
-
 // the main json rpc object
 var rpc = {};
 
-Ext.define('Ung.SetupWizard.Language', {
+Ext.define('Ung.setupWizard.Language', {
     constructor: function( config ) {
-        this.languageStore = [];
-        var c = 0;
-        var languageList = Ung.SetupWizard.CurrentValues.languageList.list;
-        for ( c = 0 ; c < languageList.length ; c++ ) {
-            var language = languageList[c];
-            this.languageStore.push([ language.code, language.name ]);
-        }
-
+        Ext.applyIf(this, config);
         this.panel = Ext.create('Ext.container.Container', {
             items: [{
                 xtype: 'component',
@@ -23,8 +13,10 @@ Ext.define('Ung.SetupWizard.Language', {
                 fieldLabel: i18n._('Please select your language'),
                 name: "language",
                 editable: false,
-                store: this.languageStore,
-                value: Ung.SetupWizard.CurrentValues.language,
+                valueField: 'code',
+                displayField: 'name',
+                store: this.languageList.list,
+                value: this.language,
                 labelWidth: 200,
                 queryMode: 'local',
                 validationEvent: 'blur',
@@ -36,65 +28,50 @@ Ext.define('Ung.SetupWizard.Language', {
         this.card = {
             title: i18n._( "Language" ),
             panel: this.panel,
-
-            onValidate: Ext.bind(this.validateSettings,this)
+            onValidate: Ext.bind(function() {
+                return Ung.Util.validate(this.panel);
+            }, this),
+            onNext: Ext.bind(function( handler ) {
+                var language = this.panel.down('combo[name="language"]').getValue();
+                rpc.setup.setLanguage( Ext.bind(function( result, exception) {
+                    if(Ung.Util.handleException(exception, "Unable to save the language")) return;
+                    // Send the user to the setup wizard.
+                    window.location.href = "index.do";
+                }, this), language );
+            }, this)
         };
-    },
-
-    validateSettings: function() {
-        var rv = Ung.Util.validateItems(this.panel.items.items);
-        return rv;
-    },
-
-    saveSettings: function( handler ) {
-        var language = this.panel.down('combo[name="language"]').getValue();
-        rpc.setup.setLanguage( Ext.bind(this.complete,this, [ handler ], true ), language );
-    },
-
-    complete: function( result, exception, foo, handler ) {
-        if(Ung.Util.handleException(exception, "Unable to save the language")) return;
-        // Send the user to the setup wizard.
-        parent.location = "index.do";
-    },
-
-    enableHandler: function() {
-        this.card.onNext = Ext.bind(this.saveSettings, this );
     }
 });
 
-Ung.Language = {
-    isInitialized: false,
-    init: function() {
-        if ( this.isInitialized == true ) return;
-        this.isInitialized = true;
-
+Ext.define("Ung.Language", {
+    singleton: true,
+    init: function(config) {
+        Ext.applyIf(this, config);
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         rpc = {};
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
-
-        i18n = new Ung.I18N( { "map": {} });
-
-        var language = Ext.create('Ung.SetupWizard.Language',{});
+        rpc.setup.getTranslations(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            Ext.applyIf(rpc, result);
+            this.initComplete();
+        }, this));
+    },
+    initComplete: function() {
+        i18n = new Ung.I18N( { "map": rpc.translations });
+        var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language});
 
         Ext.get("container").setStyle("width", "800px");
         this.wizard = Ext.create('Ung.Wizard',{
             height: 500,
             width: 800,
+            showLogo: true,
             cardDefaults: {
                 padding: 5
             },
             cards: [ language.card ],
-            disableNext: false,
             renderTo: "container"
         });
-
-        Ext.QuickTips.init();
-        this.wizard.goToPage( 0 );
-
-        this.wizard.nextButton.setText( "Next &raquo;" );
-
-        // The on next handler is always called when calling goToPage,
-        // this disables it until after starting
-        language.enableHandler();
+        this.wizard.loadPage(0);
+        this.wizard.nextButton.setText( Ext.String.format(i18n._( 'Next {0}' ),'&raquo;') );
     }
-};
+});

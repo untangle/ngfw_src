@@ -46,7 +46,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                 "javaClass": "com.untangle.uvm.LocalDirectoryUser"
             },
             recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
-            dataFn: main.getLocalDirectory().getUsers,
+            dataFn: Ung.Main.getLocalDirectory().getUsers,
             fields: [{
                 name: 'username'
             }, {
@@ -331,7 +331,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                 user.password = "";
             }
         }
-        main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
+        Ung.Main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             if (!isApply) {
@@ -347,7 +347,7 @@ Ext.define('Webui.config.localDirectoryNew', {
             return;
         }
         Ext.MessageBox.wait(this.i18n._("Cleaning up expired users..."), i18n._("Please wait"));
-        main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
+        Ung.Main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             this.gridUsers.reload();

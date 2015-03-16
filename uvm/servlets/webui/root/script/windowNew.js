@@ -58,7 +58,6 @@ Ext.define('Ung.Window', {
                 elements: this.breadcrumbs
             }));
         }
-        Ext.QuickTips.init();
     },
 
     beforeDestroy: function() {
@@ -76,9 +75,9 @@ Ext.define('Ung.Window', {
         }
     },
     setSizeToRack: function () {
-        var objSize = main.viewport.getSize();
-        objSize.width = objSize.width - main.contentLeftWidth;
-        this.setPosition(main.contentLeftWidth, 0);
+        var objSize = Ung.Main.viewport.getSize();
+        objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+        this.setPosition(Ung.Main.contentLeftWidth, 0);
         this.setSize(objSize);
     },
     // to override if needed
@@ -149,11 +148,11 @@ Ext.define("Ung.SettingsWin", {
     // build Tab panel from an array of tab items
     constructor: function(config) {
         config.rpc = {};
-        var objSize = main.viewport.getSize();
+        var objSize = Ung.Main.viewport.getSize();
         Ext.applyIf(config, {
             height: objSize.height,
-            width: objSize.width - main.contentLeftWidth,
-            x: main.contentLeftWidth,
+            width: objSize.width - Ung.Main.contentLeftWidth,
+            x: Ung.Main.contentLeftWidth,
             y: 0
         });
         this.callParent(arguments);
@@ -173,8 +172,8 @@ Ext.define("Ung.SettingsWin", {
         }, this);
     },
     openTarget: function() {
-        if(main.target) {
-            var targetTokens = main.target.split(".");
+        if(Ung.Main.target) {
+            var targetTokens = Ung.Main.target.split(".");
             if(targetTokens.length >= 3 && targetTokens[2] !=null ) {
                 var tabIndex = this.tabs.items.findIndex('name', targetTokens[2]);
                 if(tabIndex != -1) {
@@ -199,7 +198,7 @@ Ext.define("Ung.SettingsWin", {
                     }
                 }
             }
-            main.target = null;
+            Ung.Main.target = null;
         }
     },
     helpAction: function() {
@@ -215,7 +214,7 @@ Ext.define("Ung.SettingsWin", {
             helpSource = this.helpSource;
         }
 
-        main.openHelp(helpSource);
+        Ung.Main.openHelp(helpSource);
     },
     closeWindow: function(handler) {
         Ext.get("racks").show();
@@ -606,7 +605,7 @@ Ext.define('Ung.EditWindow', {
     },
     // on click help
     helpAction: function() {
-        main.openHelp(this.helpSource);
+        Ung.Main.openHelp(this.helpSource);
     }
 });
 //TODO: ext5 to deprecate and remove

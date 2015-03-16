@@ -4,7 +4,7 @@
 package com.untangle.uvm.setup.jabsorb;
 
 import java.io.IOException;
-
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,13 +103,14 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     public interface SetupContext
     {
         public void setLanguage( String language );
-        
+
         public void setAdminPassword( String password, String email ) throws TransactionRolledbackException;
-        
+
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
 
         public com.untangle.uvm.WizardSettings getWizardSettings( );
 
+        public Map<String, String> getTranslations();
         /**
          * Convenience method to load in one call all the properties needed to initialize the setup wizard
          */

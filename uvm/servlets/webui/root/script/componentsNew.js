@@ -183,7 +183,7 @@ Ext.define("Ung.ConfigItem", {
         if (e!=null) {
             e.stopEvent();
         }
-        main.openConfig(this.item);
+        Ung.Main.openConfig(this.item);
     },
     setIconCls: function(iconCls) {
         this.getEl().down("div[name=iconCls]").dom.className=iconCls;
@@ -207,14 +207,14 @@ Ext.define("Ung.AppItem", {
         // update state for the app with a displayName
         updateState: function(displayName, state, options) {
             var app = Ung.AppItem.getApp(displayName);
-            main.setAppLastState(displayName, state, options, app!=null?app.download:null);
+            Ung.Main.setAppLastState(displayName, state, options, app!=null?app.download:null);
             if (app != null) {
                 app.setState(state, options);
             }
         },
         // get the app item having a item name
         getApp: function(displayName) {
-            if (main.apps !== null) {
+            if (Ung.Main.apps !== null) {
                 return Ext.getCmp("app-item_" + displayName);
             }
             return null;
@@ -276,7 +276,7 @@ Ext.define("Ung.AppItem", {
             return;
             // error
         }
-        var appsLastState=main.appsLastState[this.nodeProperties.displayName];
+        var appsLastState = Ung.Main.appsLastState[this.nodeProperties.displayName];
         if(appsLastState!=null) {
             this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
@@ -333,7 +333,7 @@ Ext.define("Ung.AppItem", {
         if(!this.progressBar.hidden) {
             return;
         }
-        main.installNode(this.nodeProperties, this, completeFn);
+        Ung.Main.installNode(this.nodeProperties, this, completeFn);
     },
     // install node / uninstall App
     installNodeFn: function(e) {
@@ -341,7 +341,7 @@ Ext.define("Ung.AppItem", {
         if(!this.progressBar.hidden) {
             return;
         }
-        main.installNode(this.nodeProperties, this);
+        Ung.Main.installNode(this.nodeProperties, this);
     }
 });
 
@@ -441,7 +441,7 @@ Ext.define("Ung.Node", {
     },
     afterRender: function() {
         this.callParent(arguments);
-        main.removeNodePreview(this.name);
+        Ung.Main.removeNodePreview(this.name);
 
         this.getEl().set({
             'viewPosition': this.viewPosition
@@ -627,7 +627,7 @@ Ext.define("Ung.Node", {
     },
     // on click help
     onHelpAction: function() {
-        main.openHelp(this.helpSource);
+        Ung.Main.openHelp(this.helpSource);
     },
     // on click settings
     onSettingsAction: function() {
@@ -635,7 +635,7 @@ Ext.define("Ung.Node", {
     },
     //on Buy Now Action
     onBuyNowAction: function() {
-        main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
+        Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
     },
     getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
@@ -764,14 +764,14 @@ Ext.define("Ung.Node", {
                         var cmp = this;
                         Ext.destroy(cmp);
                         cmp = null;
-                        for (var i = 0; i < main.nodes.length; i++) {
-                            if (nodeName == main.nodes[i].name) {
-                                main.nodes.splice(i, 1);
+                        for (var i = 0; i < Ung.Main.nodes.length; i++) {
+                            if (nodeName == Ung.Main.nodes[i].name) {
+                                Ung.Main.nodes.splice(i, 1);
                                 break;
                             }
                         }
                     }
-                    main.updateRackView();
+                    Ung.Main.updateRackView();
                 }, this), this.nodeId);
             }
         }, this));
@@ -905,7 +905,6 @@ Ung.MetricManager = {
         }
         this.cycleCompleted = false;
         rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
-
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
                 //Keep silent for maximum 5 minutes of sequential error messages
@@ -936,18 +935,17 @@ Ung.MetricManager = {
             this.cycleCompleted = true;
 
             // update system stats
-            main.systemStats.update(result.systemStats);
+            Ung.Main.systemStats.update(result.systemStats);
             // upgrade node metrics
             var i;
-            for (i = 0; i < main.nodes.length; i++) {
-                var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+            for (i = 0; i < Ung.Main.nodes.length; i++) {
+                var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
 
                 if (nodeCmp && nodeCmp.isRunning()) {
-                    nodeCmp.metrics = result.metrics[main.nodes[i].nodeId];
+                    nodeCmp.metrics = result.metrics[Ung.Main.nodes[i].nodeId];
                     nodeCmp.updateMetrics();
                 }
             }
-
         }, this));
     }
 };
@@ -960,8 +958,8 @@ Ung.CheckStoreRegistration = {
     url: null,
     start: function(now) {
         //this.url = rpc.storeUrl.replace("/open.php","") + "/gui/register/query/uid/" + rpc.jsonrpc.UvmContext.getServerUID();
-        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + main.about();
-        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + main.about();
+        //this.url= "http://staging.untangle.com/store/open.php" + "?" + "action=is_registered" + "&" + Ung.Main.about();
+        this.url = rpc.storeUrl + "?" + "action=is_registered" + "&" + Ung.Main.about();
         this.stop();
         this.intervalId = window.setInterval(Ung.CheckStoreRegistration.run, this.updateFrequency);
         this.started = true;
@@ -982,10 +980,10 @@ Ung.CheckStoreRegistration = {
                     Ung.CheckStoreRegistration.stop();
                     rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
-                        main.closeIframe();
+                        Ung.Main.closeIframe();
                         rpc.isRegistered = true;
                         Ung.CheckStoreRegistration.stop();
-                        main.showPostRegistrationPopup();
+                        Ung.Main.showPostRegistrationPopup();
                     });
                 }
             },
@@ -1009,14 +1007,14 @@ Ext.define("Ung.SystemStats", {
         this.getEl().addCls("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:70px;left:91px;" onclick="main.showSessions()">'+i18n._("Sessions")+'</div>',
-            '<div class="label" style="width:60px;left:149px;" onclick="main.showHosts()">'+i18n._("Hosts")+'</div>',
+            '<div class="label" style="width:70px;left:91px;" onclick="Ung.Main.showSessions()">'+i18n._("Sessions")+'</div>',
+            '<div class="label" style="width:60px;left:149px;" onclick="Ung.Main.showHosts()">'+i18n._("Hosts")+'</div>',
             '<div class="label" style="width:70px;left:198px;">'+i18n._("CPU Load")+'</div>',
             '<div class="label" style="width:75px;left:273px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx-value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx-value"></div></div></div>',
-            '<div class="sessions" onclick="main.showSessions()"></div>',
-            '<div class="hosts" onclick="main.showHosts()"></div>',
+            '<div class="sessions" onclick="Ung.Main.showSessions()"></div>',
+            '<div class="hosts" onclick="Ung.Main.showHosts()"></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
             '<div class="disk"><div name="disk_value"></div></div>'
@@ -1162,7 +1160,7 @@ Ext.define("Ung.SystemStats", {
         this.getEl().down("div[class=rx-value]").dom.innerHTML=rxSpeed.value+rxSpeed.unit;
         var memoryFree=Ung.Util.bytesToMBs(stats.MemFree);
         var memoryUsed=Ung.Util.bytesToMBs(stats.MemTotal-stats.MemFree);
-        main.totalMemoryMb = Ung.Util.bytesToMBs(stats.MemTotal);
+        Ung.Main.totalMemoryMb = Ung.Util.bytesToMBs(stats.MemTotal);
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
         this.getEl().down("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
         var diskPercent=Math.round((1-stats.freeDiskSpace/stats.totalDiskSpace)*20 )*5;
@@ -1327,7 +1325,7 @@ Ext.define("Ung.FaceplateMetric", {
             /*
              * TODO: extjs5 make the click work on extjs 5
              */
-            main.showNodeSessions( this.parentNodeId ); 
+            Ung.Main.showNodeSessions( this.parentNodeId ); 
         }, this);
         var chartTipArr=[
             '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
@@ -1448,8 +1446,8 @@ Ext.define("Ung.FaceplateMetric", {
                     this.setSize({width:260,height:280});
                     this.alignTo(this.metricsCmp.getEl(),"tr-br");
                     var pos=this.getPosition();
-                    var sub=pos[1]+280-main.viewport.getSize().height;
-                    if(sub>0) {
+                    var sub=pos[1] + 280 - Ung.Main.viewport.getSize().height;
+                    if(sub > 0) {
                         this.setPosition( pos[0],pos[1]-sub);
                     }
                 }

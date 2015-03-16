@@ -17,25 +17,18 @@
     
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="script/setup.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
-      var setup;
-      function init() {
-          setup=new Ung.Setup({});
-          setup.init();
-      };
-      Ext.onReady(init);
+    Ext.onReady(function(){
+        Ung.Setup.init();
+    });
     </script>
   </head>
   <body class="wizard">
-    <div id="container">
-      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
-      <div id="extra-div-1"><span></span></div>
-    </div>
+    <div id="container"></div>
   </body>
 </html>

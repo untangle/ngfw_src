@@ -23,19 +23,16 @@
     <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
 
     <script type="text/javascript">
-      Ung.SetupWizard.CurrentValues = {
-        languageList : ${languageList},
-        language : "${language}"
-      };
-
-      Ext.onReady(Ung.Language.init);
+    Ext.onReady(function(){
+        Ung.Language.init({
+            languageList : ${languageList},
+            language : "${language}"
+        });
+    });
     </script>
   </head>
 
   <body class="wizard">
-    <div id="container">
-      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
-      <div id="extra-div-1"><span></span></div>
-    </div>
+    <div id="container"></div>
   </body>
 </html>

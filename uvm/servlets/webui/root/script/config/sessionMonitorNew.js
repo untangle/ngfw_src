@@ -113,7 +113,7 @@ Ext.define('Webui.config.sessionMonitorNew', {
             var nodeProperties = allNodeProperties.map[nodeId];
             var nodeSettings = allNodeSettings.map[nodeId];
             if (nodeProperties.viewPosition != null) {
-                appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] "});
+                appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + Ung.Main.getPolicyName(nodeSettings.policyId) + "] "});
             }
         }
         return appList;
@@ -171,7 +171,7 @@ Ext.define('Webui.config.sessionMonitorNew', {
             dataIndex: "policy",
             width: 80,
             renderer: function(value) {
-                return (value == null || value == "" ? "" : main.getPolicyName(value) );
+                return (value == null || value == "" ? "" : Ung.Main.getPolicyName(value) );
             },
             filter: {
                 type: 'list',

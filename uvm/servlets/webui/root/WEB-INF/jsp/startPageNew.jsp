@@ -47,7 +47,6 @@
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
-    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
     
@@ -68,12 +67,9 @@
 --%>
 
     <script type="text/javascript">
-        var main;
-        function init() {
-            main=new Ung.Main({debugMode:${isDebug},buildStamp:'${buildStamp}'});
-            main.init();
-        }
-        Ext.onReady(init);
+    Ext.onReady(function() {
+        Ung.Main.init({debugMode:${isDebug}, buildStamp:'${buildStamp}'})
+    });
     </script>
  </head>
 <body>
@@ -99,6 +95,5 @@
 <input type="hidden" name="arg6" value=""/>
 </form>
 </div>
-<div id="extra-div-1" style="display:none;"><span></span></div>
 </body>
 </html>

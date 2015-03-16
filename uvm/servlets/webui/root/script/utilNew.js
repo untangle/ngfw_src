@@ -1,4 +1,5 @@
-Ung.Util = {
+Ext.define('Ung.Util', {
+    singleton: true,
     isDirty: function (item, depth) {
         if(depth==null) {
             depth=0;
@@ -85,10 +86,10 @@ Ung.Util = {
             closable:false,
             layout: "fit",
             setSizeToRack: function () {
-                if(main && main.viewport) {
-                    var objSize = main.viewport.getSize();
-                    objSize.width = objSize.width - main.contentLeftWidth;
-                    this.setPosition(main.contentLeftWidth, 0);
+                if(Ung.Main && Ung.Main.viewport) {
+                    var objSize = Ung.Main.viewport.getSize();
+                    objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+                    this.setPosition(Ung.Main.contentLeftWidth, 0);
                     this.setSize(objSize);
                 } else {
                     this.maximize();
@@ -256,7 +257,7 @@ Ung.Util = {
         return msg;
     },
     addBuildStampToUrl: function(url) {
-        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime(): main.buildStamp;
+        var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
         if (url.indexOf("?") >= 0) {
             return url + "&" + scriptArgs;
         } else {
@@ -264,7 +265,7 @@ Ung.Util = {
         }
     },
     getScriptSrc: function(sScriptSrc) {
-        //return main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
+        //return Ung.Main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
         return sScriptSrc ;
     },
     // Load css file Dynamically
@@ -372,7 +373,7 @@ Ung.Util = {
     },
     getInterfaceListSystemDev: function( wanMatchers, anyMatcher, systemDev ) {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -401,7 +402,7 @@ Ung.Util = {
     },
     getInterfaceAddressedList: function() {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -425,7 +426,7 @@ Ung.Util = {
     },
     getWanList: function() {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -666,7 +667,7 @@ Ung.Util = {
     usernameFieldWidth: 120,
     booleanFieldWidth: 60,
     emailFieldWidth: 150
-};
+});
 
 Ung.Util.RetryHandler = {
     /**
@@ -737,6 +738,6 @@ Ung.Util.RetryHandler = {
                 params = params.concat( input.params );
         }
 
-            fn.apply( fnScope, params );
+        fn.apply( fnScope, params );
     }
 };

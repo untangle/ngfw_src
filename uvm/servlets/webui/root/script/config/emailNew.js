@@ -90,7 +90,7 @@ Ext.define('Webui.config.emailNew', {
     getMailSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
             try {
-                this.rpc.mailSettings = main.getMailSender().getSettings();
+                this.rpc.mailSettings = Ung.Main.getMailSender().getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -133,7 +133,7 @@ Ext.define('Webui.config.emailNew', {
         return hh + ":" + mm;
     },
     sendTestMessage: function(emailAddress) {
-        var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
+        var message = Ung.Main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.testEmailResultMessage = result;
             var color = result == 'Completed' ? 'green': 'red';
@@ -409,7 +409,7 @@ Ext.define('Webui.config.emailNew', {
                                            if (this.validate()) {
                                             Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                             // save mail settings
-                                            main.getMailSender().setSettings(Ext.bind(function(result, exception) {
+                                            Ung.Main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                                                 if(Ung.Util.handleException(exception)) return;
                                                 Ext.MessageBox.hide();
                                                 Ung.Util.clearDirty(this.panelOutgoingServer);
@@ -1251,7 +1251,7 @@ Ext.define('Webui.config.emailNew', {
     save: function (isApply) {
         this.saveSemaphore = this.isMailLoaded() ? 2: 1;
         // save mail settings
-        main.getMailSender().setSettings(Ext.bind(function(result, exception) {
+        Ung.Main.getMailSender().setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
         }, this), this.getMailSettings());
 

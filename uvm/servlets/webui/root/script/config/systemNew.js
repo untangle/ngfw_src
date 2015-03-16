@@ -16,7 +16,7 @@ Ext.define("Webui.config.systemNew", {
             title: i18n._("System")
         }];
         try {
-            this.oemName=main.getOemManager().getOemName();
+            this.oemName=Ung.Main.getOemManager().getOemName();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -291,12 +291,12 @@ Ext.define("Webui.config.systemNew", {
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
-                                               Ext.bind(function(btn) {
-                                                   if (btn == "yes") {
-                                                       main.openSetupWizardScreen();
-                                                   }
-                                               }, this));
+                            Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
+                            Ext.bind(function(btn) {
+                                if (btn == "yes") {
+                                    Ung.Main.openSetupWizardScreen();
+                                }
+                            }, this));
                     }, this)
                 }]
             },{
@@ -313,38 +313,38 @@ Ext.define("Webui.config.systemNew", {
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(this.i18n._("Reset to Factory Defaults Warning"),
-                                               this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
-                                               Ext.bind(function(btn) {
-                                                   if (btn == "yes") {
-
-                                                       Ung.MetricManager.stop();
-
-                                                       var resettingWindow=Ext.create('Ext.window.MessageBox', {
-                                                           minProgressWidth: 360
-                                                       });
-                                                       resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"));
-
-                                                       main.getExecManager().exec(Ext.bind(function(result, exception) {
-                                                           Ext.MessageBox.hide();
-                                                           var resettingWindow=Ext.create('Ext.window.MessageBox', {
-                                                               minProgressWidth: 360
-                                                           });
-                                                           resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"), {
-                                                               interval: 500,
-                                                               increment: 120,
-                                                               duration: 45000,
-                                                               scope: this,
-                                                               fn: function() {
-                                                                   console.log("Reset to factory defaults. Press ok to go to the Start Page...");
-                                                                   Ext.MessageBox.hide();
-                                                                   Ext.MessageBox.alert(
-                                                                       i18n._("Factory Defaults"),
-                                                                       i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
-                                                               }
-                                                           });
-                                                       }, this), "nohup /usr/share/untangle/bin/factory-defaults");
-                                                   }
-                                               }, this));
+                           this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
+                           Ext.bind(function(btn) {
+                               if (btn == "yes") {
+    
+                                   Ung.MetricManager.stop();
+    
+                                   var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                       minProgressWidth: 360
+                                   });
+                                   resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"));
+    
+                                   Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
+                                       Ext.MessageBox.hide();
+                                       var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                           minProgressWidth: 360
+                                       });
+                                       resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"), {
+                                           interval: 500,
+                                           increment: 120,
+                                           duration: 45000,
+                                           scope: this,
+                                           fn: function() {
+                                               console.log("Reset to factory defaults. Press ok to go to the Start Page...");
+                                               Ext.MessageBox.hide();
+                                               Ext.MessageBox.alert(
+                                                   i18n._("Factory Defaults"),
+                                                   i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
+                                           }
+                                       });
+                                   }, this), "nohup /usr/share/untangle/bin/factory-defaults");
+                               }
+                           }, this));
                     }, this)
                 }]
             }]

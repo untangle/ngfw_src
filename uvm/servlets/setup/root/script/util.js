@@ -1,7 +1,6 @@
-Ext.namespace('Ung');
-
-Ung.Util = {
-    showWarningMessage:function(message, details, errorHandler) {
+Ext.define('Ung.Util', {
+    singleton: true,
+    showWarningMessage: function(message, details, errorHandler) {
         var wnd = Ext.create('Ext.window.Window', {
             title: i18n._('Warning'),
             modal: true,
@@ -158,31 +157,14 @@ Ung.Util = {
         }
         return false;
     },
-    validateinvalidateItems: function(items, methodname){
-        var rv = true;
-        for(var i=0;i<items.length;i++){
-            switch(items[i].getXType()){
-                case 'container':
-                case 'fieldset':
-                    if(!Ung.Util.validateinvalidateItems(items[i].items.items, methodname)){
-                        rv = false;
-                    }
-                break;
-                default:
-                    if(items[i].validate){
-                        if(!items[i][methodname].call(items[i])){
-                            rv = false;
-                        }
-                    }
-                break;
+   validate: function (panel) {
+        var valid = true,
+            fields = panel.query("field");
+        for(var i=0;i<fields.length;i++) {
+            if(Ext.isFunction(fields[i].validate)){
+                valid = valid && fields[i].validate();
             }
         }
-        return rv;
-    },
-    invalidateItems: function (items){
-        return Ung.Util.validateinvalidateItems(items,'clearInvalid');
-    },
-    validateItems: function (items){
-        return Ung.Util.validateinvalidateItems(items,'validate');
+        return valid;
     }
-};
+});

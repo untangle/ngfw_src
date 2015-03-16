@@ -520,7 +520,7 @@ Ung.CustomEventLog = {
                 sortable: true,
                 flex:1,
                 dataIndex: 'policy_id',
-                renderer: main.getPolicyName
+                renderer: Ung.Main.getPolicyName
             }, {
                 hidden: visibleColumnsParam.indexOf('firewall_blocked') < 0,
                 header: i18n._("Blocked (Firewall)"),

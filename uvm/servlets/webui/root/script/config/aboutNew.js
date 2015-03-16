@@ -106,7 +106,7 @@ Ext.define("Webui.config.aboutNew", {
                 name: "View License",
                 iconCls: "reboot-icon",
                 handler: function() {
-                    main.openLegal();
+                    Ung.Main.openLegal();
                 }
             }]
             
@@ -155,7 +155,7 @@ Ext.define("Webui.config.aboutNew", {
                         iconCls: 'icon-refresh',
                         handler: Ext.bind(function() {
                             //reload licenses for each node in rack
-                            main.loadLicenses();
+                            Ung.Main.loadLicenses();
                             //reload grid
                             this.gridLicenses.reload();
                         }, this)
@@ -163,7 +163,7 @@ Ext.define("Webui.config.aboutNew", {
                 ]
             }),
             recordJavaClass: "com.untangle.uvm.node.License",
-            dataFn: main.getLicenseManager().getLicenses,
+            dataFn: Ung.Main.getLicenseManager().getLicenses,
             fields: [{
                 name: "displayName"
             },{

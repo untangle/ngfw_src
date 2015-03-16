@@ -1,77 +1,49 @@
-Ext.namespace('Ung');
-Ext.namespace('Ung.SetupWizard');
-
 // the main json rpc object
 var rpc = {};
 
-if(typeof console === "undefined") {
-    //Prevent console.log triggering errors on browsers without console support
-    var console = {
-        log: function() {},
-        error: function() {},
-        debug: function() {}
-    };
-}
-
-Ext.apply(Ext.form.field.VTypes, {
-    ipAddress: function( val, field ) {
-        return val.match( this.ipAddressRegex );
-    },
-    ipAddressText: 'Please enter a valid IP Address',
-    ipAddressRegex: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
-
-    passwordConfirmCheck: function(val,field) {
-        var pass_original = Ext.getCmp(field.comparePasswordField);
-        return val == pass_original.getValue();
-    },
-    passwordConfirmCheckText: 'Passwords do not match'
-});
-Ext.define('Ung.SetupWizard', {
+Ext.define('Ung.setupWizard', {
     statics: {
-        LabelWidth: 160,
-        getV4NetmaskList: function( includeNull ) {
-            var data = [];
-            if (includeNull) data.push( [null,"\u00a0"] );
-            data.push( [32,"/32 - 255.255.255.255"] );
-            data.push( [31,"/31 - 255.255.255.254"] );
-            data.push( [30,"/30 - 255.255.255.252"] );
-            data.push( [29,"/29 - 255.255.255.248"] );
-            data.push( [28,"/28 - 255.255.255.240"] );
-            data.push( [27,"/27 - 255.255.255.224"] );
-            data.push( [26,"/26 - 255.255.255.192"] );
-            data.push( [25,"/25 - 255.255.255.128"] );
-            data.push( [24,"/24 - 255.255.255.0"] );
-            data.push( [23,"/23 - 255.255.254.0"] );
-            data.push( [22,"/22 - 255.255.252.0"] );
-            data.push( [21,"/21 - 255.255.248.0"] );
-            data.push( [20,"/20 - 255.255.240.0"] );
-            data.push( [19,"/19 - 255.255.224.0"] );
-            data.push( [18,"/18 - 255.255.192.0"] );
-            data.push( [17,"/17 - 255.255.128.0"] );
-            data.push( [16,"/16 - 255.255.0.0"] );
-            data.push( [15,"/15 - 255.254.0.0"] );
-            data.push( [14,"/14 - 255.252.0.0"] );
-            data.push( [13,"/13 - 255.248.0.0"] );
-            data.push( [12,"/12 - 255.240.0.0"] );
-            data.push( [11,"/11 - 255.224.0.0"] );
-            data.push( [10,"/10 - 255.192.0.0"] );
-            data.push( [9,"/9 - 255.128.0.0"] );
-            data.push( [8,"/8 - 255.0.0.0"] );
-            data.push( [7,"/7 - 254.0.0.0"] );
-            data.push( [6,"/6 - 252.0.0.0"] );
-            data.push( [5,"/5 - 248.0.0.0"] );
-            data.push( [4,"/4 - 240.0.0.0"] );
-            data.push( [3,"/3 - 224.0.0.0"] );
-            data.push( [2,"/2 - 192.0.0.0"] );
-            data.push( [1,"/1 - 128.0.0.0"] );
-            data.push( [0,"/0 - 0.0.0.0"] );
-            return data;
-        }
+        labelWidth: 160,
+        v4NetmaskList: [
+            [32,"/32 - 255.255.255.255"],
+            [31,"/31 - 255.255.255.254"],
+            [30,"/30 - 255.255.255.252"],
+            [29,"/29 - 255.255.255.248"],
+            [28,"/28 - 255.255.255.240"],
+            [27,"/27 - 255.255.255.224"],
+            [26,"/26 - 255.255.255.192"],
+            [25,"/25 - 255.255.255.128"],
+            [24,"/24 - 255.255.255.0"],
+            [23,"/23 - 255.255.254.0"],
+            [22,"/22 - 255.255.252.0"],
+            [21,"/21 - 255.255.248.0"],
+            [20,"/20 - 255.255.240.0"],
+            [19,"/19 - 255.255.224.0"],
+            [18,"/18 - 255.255.192.0"],
+            [17,"/17 - 255.255.128.0"],
+            [16,"/16 - 255.255.0.0"],
+            [15,"/15 - 255.254.0.0"],
+            [14,"/14 - 255.252.0.0"],
+            [13,"/13 - 255.248.0.0"],
+            [12,"/12 - 255.240.0.0"],
+            [11,"/11 - 255.224.0.0"],
+            [10,"/10 - 255.192.0.0"],
+            [9,"/9 - 255.128.0.0"],
+            [8,"/8 - 255.0.0.0"],
+            [7,"/7 - 254.0.0.0"],
+            [6,"/6 - 252.0.0.0"],
+            [5,"/5 - 248.0.0.0"],
+            [4,"/4 - 240.0.0.0"],
+            [3,"/3 - 224.0.0.0"],
+            [2,"/2 - 192.0.0.0"],
+            [1,"/1 - 128.0.0.0"],
+            [0,"/0 - 0.0.0.0"]
+        ]
     }
 });
 
 // Setup Wizard - Welcome
-Ext.define('Ung.SetupWizard.Welcome', {
+Ext.define('Ung.setupWizard.Welcome', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.showResume = false; 
@@ -120,7 +92,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 0 20',
-                    html: Ext.String.format(i18n._( 'The setup was started before and the last completed step is {0}{1}{2}.'), '<b>', setup.stepsTitlesMap[rpc.wizardSettings.completedStep], '</b>')
+                    html: Ext.String.format(i18n._( 'The setup was started before and the last completed step is {0}{1}{2}.'), '<b>', Ung.Setup.stepsTitlesMap[rpc.wizardSettings.completedStep], '</b>')
                 }, {
                     xtype: 'displayfield',
                     inputType: 'text',
@@ -140,7 +112,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
                 }, {
                     xtype: 'component',
                     margin: '10 0 0 20',
-                    html: Ext.String.format(i18n._('To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.'), setup.stepsTitlesMap[continueStep], '<b>','</b>')
+                    html: Ext.String.format(i18n._('To continue with step {1}{0}{2} fill the admin password and press the {1}Next{2}.'), Ung.Setup.stepsTitlesMap[continueStep], '<b>','</b>')
                 }]
             }, {
                 xtype: 'container',
@@ -162,33 +134,26 @@ Ext.define('Ung.SetupWizard.Welcome', {
             title: i18n._( "Welcome" ),
             panel: this.panel,
             onNext: Ext.bind(function(handler) {
-                var resumeWizard = false;
-                if(this.showResume) {
-                    resumeWizard = this.panel.down('radio[name="restartWizardRadio"]').getGroupValue() == "yes";
-                }
+                var resumeWizard = this.showResume && (this.panel.down('radio[name="restartWizardRadio"]').getGroupValue() == "yes");
                 if(resumeWizard) {
                     var password = this.panel.down('field[name="password"]').getValue();
-                    setup.authenticate(password, function() {
-                        setup.wizard.afterChangeHandler( rpc.wizardSettings.steps.indexOf(rpc.wizardSettings.completedStep) + 1, true);
+                    Ung.Setup.authenticate(password, function() {
+                        Ung.Setup.wizard.loadPage( rpc.wizardSettings.steps.indexOf(rpc.wizardSettings.completedStep) + 1);
                     });
                 } else {
                     handler();
                 }
             }, this),
             onValidate: Ext.bind(function() {
-                var rv = Ung.Util.validateItems(this.panel.items.items);
-                return rv;
+                return Ung.Util.validate(this.panel);
             },this)
             
         };
-    },
-    resumeSetup: function () {
-        
     }
 });
 
 // Setup Wizard - Step 1 (Password and Timezone)
-Ext.define('Ung.SetupWizard.ServerSettings', {
+Ext.define('Ung.setupWizard.ServerSettings', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.panel = Ext.create('Ext.container.Container', {
@@ -260,7 +225,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
                     xtype: 'combo',
                     name: 'timezone',
                     editable: false,
-                    store: Ung.SetupWizard.TimeZoneStore,
+                    store: Ung.setupWizard.TimeZoneStore,
                     width: 350,
                     hideLabel: true,
                     queryMode: 'local',
@@ -282,8 +247,7 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
             }, this ),
             onNext: Ext.bind(this.saveServerSettings, this),
             onValidate: Ext.bind(function() {
-                var rv = Ung.Util.validateItems(this.panel.items.items);
-                return rv;
+                return Ung.Util.validate(this.panel);
             }, this)
         };
     },
@@ -312,23 +276,23 @@ Ext.define('Ung.SetupWizard.ServerSettings', {
         rpc.setup.setAdminPassword( Ext.bind(function( result, exception ) {
             if(Ung.Util.handleException(exception, i18n._("Unable to save the admin password"))) return;
             var afterFn= Ext.bind(function(handler) {
-                setup.saveCurrentStep(this.stepName);
+                Ung.Setup.saveCurrentStep(this.stepName);
                 handler();
             }, this, [handler]);
-            setup.authenticate(password, afterFn);
+            Ung.Setup.authenticate(password, afterFn);
         },this ), password, adminEmail);
     },
 
 });
 
 // Setup Wizard - Step 2 (Remap Interfaces)
-Ext.define('Ung.SetupWizard.Interfaces', {
+Ext.define('Ung.setupWizard.Interfaces', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.interfaceStore = Ext.create('Ext.data.JsonStore',{
             fields:[{name: "interfaceId"}, { name: "name" }, { name: "physicalDev" },{ name: "deviceName" }, { name: "macAddress" }, { name: "connected" }, { name: "duplex" }, { name: "vendor" }, { name: "mbit" }]
         });
-        this.modelName = 'Ung.Model_Ung.SetupWizard.Interfaces';
+        this.modelName = 'Ung.Model_Ung.setupWizard.Interfaces';
         this.deviceStore = Ext.create('Ext.data.JsonStore',{
             fields:[{ name: "physicalDev" }]
         });
@@ -549,7 +513,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     }
                 }
                 var afterFn= Ext.bind(function(handler) {
-                    setup.saveCurrentStep(this.stepName);
+                    Ung.Setup.saveCurrentStep(this.stepName);
                     handler();
                 }, this, [handler]);
                 if(changed) { //save netowrk changes only if maping is changed
@@ -624,13 +588,15 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
             this.networkSettings=result;
             var interfaceList = [];
+            var deviceList = [];
             var allInterfaces = result.interfaces.list;
             for(var i=0; i<allInterfaces.length; i++) {
                 if(!allInterfaces[i].isVlanInterface) {
+                    //interfaceList.push(allInterfaces[i]);
                     interfaceList.push(Ext.decode(Ext.encode(allInterfaces[i])));
+                    deviceList.push({physicalDev: allInterfaces[i].physicalDev})
                 }
             }
-
             rpc.networkManager.getDeviceStatus(Ext.bind(function( result, exception ) {
                 if(Ung.Util.handleException(exception)) return;
 
@@ -642,7 +608,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     Ext.applyIf(intf, deviceStatus);
                 }
                 this.interfaceStore.loadData( interfaceList );
-                this.deviceStore.loadData( Ext.decode(Ext.encode(interfaceList)) );
+                this.deviceStore.loadData(deviceList);
                 if ( interfaceList.length < 2) {
                     Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
                 }
@@ -653,7 +619,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 });
 
 // Setup Wizard - Step 3 (Configure WAN)
-Ext.define('Ung.SetupWizard.Internet', {
+Ext.define('Ung.setupWizard.Internet', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.v4ConfigTypes = [
@@ -676,7 +642,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 border: false,
                 defaultType: 'displayfield',
                 defaults: {
-                    labelWidth: Ung.SetupWizard.LabelWidth
+                    labelWidth: Ung.setupWizard.labelWidth
                 },
                 items: [{
                     name: "ip",
@@ -721,7 +687,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 border: false,
                 defaultType: 'textfield',
                 defaults: {
-                    labelWidth: Ung.SetupWizard.LabelWidth,
+                    labelWidth: Ung.setupWizard.labelWidth,
                     disabled: false,
                     msgTarget: 'side',
                     validationEvent: 'blur',
@@ -737,7 +703,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     fieldLabel: i18n._( "Netmask" ),
                     width: 340,
                     xtype: 'combo',
-                    store: Ung.SetupWizard.getV4NetmaskList( false ),
+                    store: Ung.setupWizard.v4NetmaskList,
                     queryMode: 'local',
                     triggerAction: 'all',
                     value: 24,
@@ -757,7 +723,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     margin: '0 0 0 0',
                     items: [{
                         xtype: 'textfield',
-                        labelWidth: Ung.SetupWizard.LabelWidth,
+                        labelWidth: Ung.setupWizard.labelWidth,
                         disabled: false,
                         msgTarget: 'side',
                         validationEvent: 'blur',
@@ -794,7 +760,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 border: false,
                 defaultType: 'textfield',
                 defaults: {
-                    labelWidth: Ung.SetupWizard.LabelWidth
+                    labelWidth: Ung.setupWizard.labelWidth
                 },
                 items: [{
                     fieldLabel: i18n._( "Username" ),
@@ -817,7 +783,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 border: false,
                 defaultType: 'displayfield',
                 defaults: {
-                    labelWidth: Ung.SetupWizard.LabelWidth
+                    labelWidth: Ung.setupWizard.labelWidth
                 },
                 items: [{
                     fieldLabel: i18n._( "IP Address" ),
@@ -851,7 +817,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         }));
 
         this.panel = Ext.create('Ext.container.Container', {
-            labelWidth: Ung.SetupWizard.LabelWidth,
+            labelWidth: Ung.setupWizard.labelWidth,
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._("Configure the Internet Connection")+'<h2>'
@@ -865,7 +831,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     data :this.v4ConfigTypes}),
                 displayField: 'display',
                 valueField: 'name',
-                labelWidth: Ung.SetupWizard.LabelWidth,
+                labelWidth: Ung.setupWizard.labelWidth,
                 queryMode: 'local',
                 listeners: {
                     "select": {
@@ -908,7 +874,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         };
     },
     validateInternetConnection: function() {
-        return Ung.Util.validateItems(this.cardPanelLayout.getActiveItem().items.items);
+        return Ung.Util.validate(this.cardPanelLayout.getActiveItem());
     },
 
     clearInterfaceSettings: function( wanSettings ) {
@@ -1002,7 +968,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         var afterFn1 = null;
         if(handler) {
             afterFn1 = Ext.bind(function(handler) {
-                setup.saveCurrentStep(this.stepName);
+                Ung.Setup.saveCurrentStep(this.stepName);
                 handler();
             }, this, [handler]);
         }
@@ -1177,7 +1143,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 });
 
 // Setup Wizard - Step 4 (Configure Internal)
-Ext.define('Ung.SetupWizard.InternalNetwork', {
+Ext.define('Ung.setupWizard.InternalNetwork', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.panel = Ext.create('Ext.container.Container', {
@@ -1231,7 +1197,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                         labelWidth: 140,
                         fieldLabel: i18n._( "Internal Netmask" ),
                         xtype: 'combo',
-                        store: Ung.SetupWizard.getV4NetmaskList( false ),
+                        store: Ung.setupWizard.v4NetmaskList,
                         queryMode: 'local',
                         triggerAction: 'all',
                         value: 24,
@@ -1334,7 +1300,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet);
         }
-        Ung.Util.invalidateItems(ar);
+        this.panel.down('field[name="network"]').clearInvalid();
     },
 
     getFirstNonWanSettings: function( networkSettings ) {
@@ -1367,7 +1333,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
             }
         }
         if ( nic == "router" ) {
-            rv = Ung.Util.validateItems(this.panel.items.items);
+            rv = Ung.Util.validate(this.panel);
         }
         return rv;
     },
@@ -1382,7 +1348,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 
         Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please Wait" ));
         var afterFn= Ext.bind(function(handler) {
-            setup.saveCurrentStep(this.stepName);
+            Ung.Setup.saveCurrentStep(this.stepName);
             handler();
         }, this, [handler]);
         
@@ -1503,7 +1469,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
 });
 
 // Setup Wizard - Step 5 (Configure Upgrades)
-Ext.define('Ung.SetupWizard.AutoUpgrades', {
+Ext.define('Ung.setupWizard.AutoUpgrades', {
     constructor: function( config ) {
         Ext.apply(this, config);
         this.panel = Ext.create('Ext.container.Container', {
@@ -1580,7 +1546,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
             return;
         }
         var afterFn= Ext.bind(function(handler) {
-            setup.saveCurrentStep(this.stepName);
+            Ung.Setup.saveCurrentStep(this.stepName);
             handler();
         }, this, [handler]);
         
@@ -1606,7 +1572,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
 });
 
 // Setup Wizard - Step 6 (Complete)
-Ext.define('Ung.SetupWizard.Complete', {
+Ext.define('Ung.setupWizard.Complete', {
     constructor: function( config ) {
         Ext.apply(this, config);
         var panel = Ext.create('Ext.container.Container', {
@@ -1622,7 +1588,6 @@ Ext.define('Ung.SetupWizard.Complete', {
 
         this.card = {
             title: i18n._( "Finished" ),
-            cardTitle: i18n._( "Congratulations!" ),
             panel: panel,
             onNext: Ext.bind(this.openUserInterface,this )
         };
@@ -1634,11 +1599,12 @@ Ext.define('Ung.SetupWizard.Complete', {
         rpc.jsonrpc.UvmContext.wizardComplete(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
           //now open the UI
-            window.location.href="/webui/startPage.do";
+            window.location.href = "/webui/startPage.do";
         }, this));
     }
 });
 Ext.define("Ung.Setup", {
+    singleton: true,
     init: function() {
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
 
@@ -1649,15 +1615,40 @@ Ext.define("Ung.Setup", {
             Ext.applyIf(rpc, result);
             this.initComplete();
         }, this));
+        
+/*        
+        new JSONRpcClient(Ext.bind(function( result, exception ) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.setup = result.SetupContext;
+            //Initialize startup info (skinName, timezoneID, timezones, oemName, adminEmail, translations, wizardSettings)
+            rpc.setup.getSetupWizardStartupInfo(Ext.bind(function( result, exception ) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.applyIf(rpc, result);
+                this.initComplete();
+            }, this));
+        }, this), "/setup/JSON-RPC");*/
+        Ext.apply(Ext.form.field.VTypes, {
+            ipAddress: function( val, field ) {
+                return val.match( this.ipAddressRegex );
+            },
+            ipAddressText: 'Please enter a valid IP Address',
+            ipAddressRegex: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
+
+            passwordConfirmCheck: function(val,field) {
+                var pass_original = Ext.getCmp(field.comparePasswordField);
+                return val == pass_original.getValue();
+            },
+            passwordConfirmCheckText: 'Passwords do not match'
+        });
     },
     initComplete: function() {
         if(Ext.isEmpty(rpc.oemName)) {
             rpc.oemName = "Untangle";
         }
-        Ung.SetupWizard.TimeZoneStore = [];
+        Ung.setupWizard.TimeZoneStore = [];
         var timeZoneData = eval(rpc.timezones);
         for ( var i = 0; i < timeZoneData.length; i++) {
-            Ung.SetupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
+            Ung.setupWizard.TimeZoneStore.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
         i18n = new Ung.I18N( { "map": rpc.translations });
         document.title = i18n._( "Setup Wizard" );
@@ -1680,14 +1671,14 @@ Ext.define("Ung.Setup", {
 
         //--- DEBUGGING CODE (Enable wizard resuming to any step)---
         //rpc.wizardSettings.wizardComplete=false; //Force wizard completed flag to false
-        //rpc.wizardSettings.completedStep="ServerSettings"; //wizard will resume after this step
+        //rpc.wizardSettings.completedStep="AutoUpgrades"; //wizard will resume after this step
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','AutoUpgrades','Complete']; //Force different Steps for configurations
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Interfaces','Internet','InternalNetwork','AutoUpgrades','Complete']; //Force different Steps for configurations
         //------------------
         
         var cards = [];
         for ( var j = 0; j < rpc.wizardSettings.steps.length; j++ ) {
-            var className = "Ung.SetupWizard."+rpc.wizardSettings.steps[j];
+            var className = "Ung.setupWizard."+rpc.wizardSettings.steps[j];
             var clazz = Ext.create(className, {stepName: rpc.wizardSettings.steps[j]});
             cards.push( clazz.card );
         }
@@ -1695,15 +1686,15 @@ Ext.define("Ung.Setup", {
         this.wizard = Ext.create('Ung.Wizard', {
             height: 500,
             width: 800,
+            showLogo: true,
             cardDefaults: {
-                labelWidth: Ung.SetupWizard.LabelWidth,
+                labelWidth: Ung.setupWizard.labelWidth,
                 padding: 5
             },
             cards: cards,
-            disableNext: false,
             renderTo: "container"
         });
-        this.wizard.afterChangeHandler( 0, true);
+        this.wizard.loadPage(0);
     },
     authenticate: function(password, handler) {
         Ext.MessageBox.wait( i18n._( "Authenticating" ), i18n._( "Please Wait" ));
