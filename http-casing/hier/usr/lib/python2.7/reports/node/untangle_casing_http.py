@@ -91,7 +91,7 @@ CREATE TABLE reports.http_events (
                                  "server_intf",
                                  "sitefilter_blocked",
                                  "sitefilter_flagged",
-                                 "siteblocker_category"])
+                                 "sitefilter_category"])
 
         sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
 

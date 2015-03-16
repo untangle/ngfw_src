@@ -164,7 +164,21 @@ CREATE TABLE reports.sessions (
         https_status text,
         https_detail text)""", 
                                 ["session_id"],
-                                ["policy_id","time_stamp"])
+                                ["time_stamp",
+                                 "hostname",
+                                 "username",
+                                 "policy_id",
+                                 "c_client_addr",
+                                 "s_server_addr",
+                                 "client_intf",
+                                 "server_intf",
+                                 "firewall_flagged",
+                                 "firewall_blocked",
+                                 "classd_application",
+                                 "classd_protochain",
+                                 "classd_blocked",
+                                 "classd_flagged",
+                                 "bandwidth_priority"])
 
         sql_helper.drop_column('sessions','event_id') # 11.2 - drop unused column
 
