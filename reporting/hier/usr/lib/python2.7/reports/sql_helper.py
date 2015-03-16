@@ -195,7 +195,7 @@ def create_index( tablename, columnname, unique=False ):
     else:
         uniqueStr1=""
         uniqueStr2=""
-    sql = 'CREATE %sINDEX CONCURRENTLY %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, SCHEMA, tablename, columnname)
+    sql = 'CREATE %sINDEX %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, SCHEMA, tablename, columnname)
     logger.info(sql)
     run_sql(sql)
 
