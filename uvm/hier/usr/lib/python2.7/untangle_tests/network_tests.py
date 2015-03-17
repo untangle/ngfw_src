@@ -174,6 +174,62 @@ def createDNSRule( networkAddr, name):
         "name": name
          }
 
+def createVLANInterface( physicalInterface, symInterface, sysInterface, ipV4address):
+    return {
+            "addressed": True,
+            "bridged": False,
+            "configType": "ADDRESSED",
+            "dhcpEnabled": False,
+            "dhcpOptions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "disabled": False,
+            "interfaceId": 100,
+            "isVlanInterface": True,
+            "isWan": False,
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+            "name": "network_tests_010",
+            "physicalDev": physicalInterface, #"eth1",
+            "raEnabled": False,
+            "symbolicDev": symInterface, #"eth1.1",
+            "systemDev": sysInterface, #"eth1.1",
+            "v4Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v4ConfigType": "STATIC",
+            "v4NatEgressTraffic": False,
+            "v4NatIngressTraffic": False,
+            "v4PPPoEPassword": "",
+            "v4PPPoEUsePeerDns": False,
+            "v4PPPoEUsername": "",
+            "v4StaticAddress": ipV4address, #"192.168.14.1",
+            "v4StaticNetmask": "255.255.255.0",
+            "v4StaticPrefix": 24,
+            "v6Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v6ConfigType": "STATIC",
+            "vlanParent": 2,
+            "vlanTag": 1,
+            "vrrpAliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "vrrpEnabled": False
+        }
+ 
+def createAlias(ipAddress,ipNetmask,ipPrefix):
+    return {
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+            "staticAddress": ipAddress,
+            "staticNetmask": ipNetmask,
+            "staticPrefix": ipPrefix
+        }
+
+
 def getHttpHttpsPorts():
     netsettings = uvmContext.networkManager().getNetworkSettings()
     return (netsettings['httpPort'], netsettings['httpsPort'])
@@ -204,6 +260,88 @@ def appendDNSRule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
+def findUsedIP(startIP):
+    # Find an IP that is not currently used.
+    loopLimit = 20
+    testIP = ipaddr.IPAddress(startIP)
+    ipUsed = True
+    while (ipUsed and (loopLimit > 0)):
+        loopLimit -= 1
+        testIP += 1
+        testIPResult = subprocess.call(["ping","-c","1",str(testIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if testIPResult != 0:
+            ipUsed = False
+    
+    if ipUsed:
+        # no unused IP found
+        return False
+    else:
+        return str(testIP)
+    
+def appendVLAN(parentInterfaceID):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    # find the physicalDev of the interface passed in.
+    physicalDev = None
+    for interface in netsettings['interfaces']['list']:
+        if interface['interfaceId'] == parentInterfaceID:
+            if interface['configType'] != "ADDRESSED":
+                # only use if interface is addressed
+                return false
+            physicalDev = interface['physicalDev']
+            break
+    
+    testVLANIP = findUsedIP("1.2.3.4")
+    if testVLANIP:
+        # no unused IP found
+        return False
+    
+    # Check thast VLAN ID is not used
+    loopLimit = 20
+    testVLANID = 100
+    vlanIdUsed = True
+    while (vlanIdUsed and (loopLimit > 0)):
+        testVLANID += 1
+        loopLimit -= 1
+        vlanIdUsed = False
+        testVlanIdDev = physicalDev + "." + str(testVLANID)
+        for interface in netsettings['interfaces']['list']:
+            if interface['symbolicDev'] == testVlanIdDev:
+                # found duplicate VLAN ID
+                vlanIdUsed = True
+                break
+        
+    if vlanIdUsed:
+        # no unused VLAN ID found
+        return False 
+
+    # if valid VLAN interface and IP is available, create a VLAN
+    netsettings['interfaces']['list'].append(createVLANInterface(physicalDev,testVlanIdDev,testVlanIdDev,str(testVLANIP)))
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+    return testVLANIP
+        
+def appendAliases(parentInterfaceID):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    for i in range(len(netsettings['interfaces']['list'])):
+        if netsettings['interfaces']['list'][i]['interfaceId'] == parentInterfaceID:
+            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED" and netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
+                testStartIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
+                ipFound = findUsedIP(testStartIP)
+                break;
+            else:
+                # only use if interface is addressed
+                return False
+    if ipFound:
+        testAliasIP = findUsedIP(ipFound)
+        if testAliasIP:
+            netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(createAlias(testAliasIP,
+                                                                             netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                             netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+            uvmContext.networkManager().setNetworkSettings(netsettings)
+        else:
+            return False
+
+    return testAliasIP
+    
 def nukeFirstLevelRule(ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'][:] = []
@@ -252,6 +390,13 @@ def setSnmpV3Settings( settings, v3Enabled, v3Username, v3AuthenticationProtocol
     print "v1v2command = " + v1v2command
     return( v1v2command, v3command )
 
+def trySnmpCommand(command):
+    result = remote_control.runCommand( command )
+    if (result == 1):
+        # there might be a delay in snmp restarting
+        time.sleep(5)
+        result = remote_control.runCommand( command )
+    return result
 
 class NetworkTests(unittest2.TestCase):
     
@@ -275,9 +420,34 @@ class NetworkTests(unittest2.TestCase):
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
     def test_010_clientIsOnline(self):
-        # save original network settings
         result = remote_control.isOnline()
         assert (result == 0)
+
+    def test_015_addVLAN(self):
+        raise unittest2.SkipTest("Review changes in test")        
+        # Add a test static VLAN
+        testVLANIP = appendVLAN(remote_control.interface)
+        if testVLANIP:
+            result = subprocess.call(["ping","-c","1",str(testVLANIP)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            assert(result == 0)
+        else:
+            # no VLAN was created so skip test
+            unittest2.SkipTest("No VLAN or IP address available")
+
+
+    def test_016_addAlias(self):
+        raise unittest2.SkipTest("Review changes in test")        
+        # Add Alias IP
+        AliasIP = appendAliases(remote_control.interface)
+        if AliasIP:
+            # print "AliasIP <%s>" % AliasIP
+            result = remote_control.runCommand("ping -c 1 %s" % AliasIP)
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            assert (result == 0)
+        else:
+            # No alias IP added so just skip
+            unittest2.SkipTest("No alias address available")
 
     # test basic port forward (tcp port 80)
     def test_020_portForward80(self):
@@ -353,8 +523,8 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
 
         # start netcat on client
         remote_control.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
@@ -369,13 +539,12 @@ class NetworkTests(unittest2.TestCase):
     # test a port forward from outside if possible
     def test_040_portForwardUDPInbound(self):
         # We will use iperf server and iperf for this test.
-        pingable = remote_control.runCommand("ping -c1 " + global_functions.iperfServer)
-        if pingable != 0:
-            raise unittest2.SkipTest("Iperf server not reachable")
         # Also test that it can probably reach us (we're on a 10.x network)
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if (wan_IP.split(".")[0] != "10"):
-            raise unittest2.SkipTest("Not on 10.x network, skipping")
+        if not global_functions.isInOfficeNetwork(wan_IP):
+            raise unittest2.SkipTest("Not on office network, skipping")
+        if not global_functions.verifyIperf(wan_IP):
+            raise unittest2.SkipTest("Iperf server not reachable")
         nukeFirstLevelRule('portForwardRules')
         # port forward UDP 5000 to client box
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
@@ -398,17 +567,19 @@ class NetworkTests(unittest2.TestCase):
     # test a NAT rules
     def test_050_natRule(self):
         # check if more than one WAN
-        myWANs = []
+        myWANs = {}
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             # if its not a static WAN its not testable
+            detectedIPlist =[]
             if interface['isWan'] and interface['v4ConfigType'] == "STATIC" and interface['v4StaticAddress'] != None:
                 addr = interface['v4StaticAddress']
                 # Check if WAN address is recognized by test.untangle.com
                 detectedIP =  subprocess.check_output(["wget -4 -q --bind-address=" + addr + " -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py"],shell=True)
                 detectedIP = detectedIP.rstrip()  # strip return character
-                if detectedIP == addr:
-                    myWANs.append(addr)
+                if detectedIP not in detectedIPlist:
+                    detectedIPlist.append(detectedIP)
+                    myWANs[addr] = detectedIP
         if (len(myWANs) < 2):
             raise unittest2.SkipTest("Need at least two public static WANS for test_050_natRule")
         for wanIP in myWANs:
@@ -417,8 +588,8 @@ class NetworkTests(unittest2.TestCase):
             # Determine current outgoing IP
             result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             nukeFirstLevelRule('natRules')
-            # print "result " + result + " wanIP " + wanIP
-            assert (result == wanIP)
+            # print "result " + result + " wanIP " + myWANs[wanIP]
+            assert (result == myWANs[wanIP])
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
@@ -473,7 +644,11 @@ class NetworkTests(unittest2.TestCase):
         remote_control.runCommand("rm -f /tmp/network_test_070a.log")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         appendFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
-        wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+        for i in range(0, 10):
+            wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
+            if (wwwResult == 0):
+                break
+            time.sleep(1)
         testResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com")
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -536,15 +711,20 @@ class NetworkTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
+        # skip the test if interface named External is disabled since it is probably a buffalo
+        if netsettings['interfaces']['list'][remote_control.interfaceExternal]['disabled']:
+            raise unittest2.SkipTest("External is disabled")
         # Find a static interface
         i=0
+        interfaceNotFound = True
         for interface in netsettings['interfaces']['list']:
-            if interface['v4ConfigType'] == "STATIC":
+            if (interface['v4ConfigType'] == "STATIC" and not netsettings['interfaces']['list'][i]['disabled']):
+                interfaceNotFound = False
                 break
             i += 1
         # Verify interface is found
-        if (netsettings['interfaces']['list'][i]['v4ConfigType'] != "STATIC"):
-            raise unittest2.SkipTest("No static interface found")
+        if interfaceNotFound:
+            raise unittest2.SkipTest("No static enabled interface found")
         interfaceIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
         interfacePrefix = netsettings['interfaces']['list'][i]['v4StaticPrefix']
         interfaceNet = interfaceIP + "/" + str(interfacePrefix)
@@ -552,9 +732,9 @@ class NetworkTests(unittest2.TestCase):
         ipStep = 1
         loopCounter = 10
         vrrpIP = None
+        ip = ipaddr.IPAddress(interfaceIP)
         while vrrpIP == None and loopCounter:
             # get next IP and test that it is unused
-            ip = ipaddr.IPAddress(interfaceIP)
             newip = ip + ipStep
             # check to see if the IP is in network range
             if newip in ipaddr.IPv4Network(interfaceNet):
@@ -583,11 +763,17 @@ class NetworkTests(unittest2.TestCase):
         netsettings['interfaces']['list'][i]['vrrpId'] = 2
         netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        time.sleep(60)
-        # Test that the VRRP is pingable
-        pingResult = remote_control.runCommand("ping -c 1 %s" % str(vrrpIP))
-        # check if still online
-        onlineResults = remote_control.isOnline()
+        timeout = 12
+        pingResult = 1
+        onlineResults = 1
+        while timeout > 0 and (pingResult != 0 or onlineResults != 0):
+            time.sleep(10) # wait for settings to take affect
+            timeout -= 1
+            # Test that the VRRP is pingable
+            pingResult = remote_control.runCommand("ping -c 1 %s" % str(vrrpIP))
+            # check if still online
+            onlineResults = remote_control.isOnline()
+        print "Timeout: %d" % timeout
         # Return to default network state
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pingResult == 0)
@@ -670,8 +856,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -688,8 +874,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -706,8 +892,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -724,8 +910,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -742,8 +928,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -760,8 +946,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
@@ -778,8 +964,8 @@ class NetworkTests(unittest2.TestCase):
         systemSettings['snmpSettings']['port'] = 161
         commands = setSnmpV3Settings( systemSettings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
         uvmContext.systemManager().setSettings(systemSettings)
-        v2cResult = remote_control.runCommand( commands[0] )
-        v3Result = remote_control.runCommand( commands[1] )
+        v2cResult = trySnmpCommand( commands[0] )
+        v3Result = trySnmpCommand( commands[1] )
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert( v2cResult == 1 )
         assert( v3Result == 0 )
