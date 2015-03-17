@@ -763,11 +763,17 @@ class NetworkTests(unittest2.TestCase):
         netsettings['interfaces']['list'][i]['vrrpId'] = 2
         netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        time.sleep(60)
-        # Test that the VRRP is pingable
-        pingResult = remote_control.runCommand("ping -c 1 %s" % str(vrrpIP))
-        # check if still online
-        onlineResults = remote_control.isOnline()
+        timeout = 12
+        pingResult = 1
+        onlineResults = 1
+        while timeout > 0 and (pingResult != 0 or onlineResults != 0):
+            time.sleep(10) # wait for settings to take affect
+            timeout -= 1
+            # Test that the VRRP is pingable
+            pingResult = remote_control.runCommand("ping -c 1 %s" % str(vrrpIP))
+            # check if still online
+            onlineResults = remote_control.isOnline()
+        print "Timeout: %d" % timeout
         # Return to default network state
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (pingResult == 0)
