@@ -190,6 +190,7 @@ class SpamTests(unittest2.TestCase):
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("Fake SMTP client is unreachable, skipping smtp headers check")
+        nodeData['smtpConfig']['blockSuperSpam'] = False
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['addSpamHeaders'] = True
         nodeData['smtpConfig']['msgAction'] = "MARK"
