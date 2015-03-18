@@ -171,9 +171,8 @@ def get_report_lengths(date):
     return lengths
 
 def write_cutoff_date(date):
-     sql_helper.run_sql("""
-CREATE TABLE reports.reports_state (
-        last_cutoff timestamp NOT NULL)""")
+     if not sql_helper.table_exists( 'reports_state' ):
+          sql_helper.run_sql("""CREATE TABLE reports.reports_state (last_cutoff timestamp NOT NULL)""")
 
      update = False
 
