@@ -1,4 +1,4 @@
-Ext.define('Webui.config.hostMonitorNew', {
+Ext.define('Webui.config.hostMonitor', {
     extend: 'Ung.StatusWin',
     helpSource: 'host_viewer',
     sortField:'bypassed',
@@ -87,12 +87,12 @@ Ext.define('Webui.config.hostMonitorNew', {
             helpSource: 'host_viewer_current_hosts',
             settingsCmp: this,
             height: 500,
-            sortField: this.sortField,
-            sortOrder: this.sortOrder,
-            groupField: this.groupField,
             title: this.i18n._("Current Hosts"),
             tooltip: this.i18n._("This shows all current hosts."),
             dataFn: Ext.bind(this.getHosts, this),
+            sortField: this.sortField,
+            sortOrder: this.sortOrder,
+            groupField: this.groupField,
             fields: [{
                 name: "id"
             },{
@@ -375,25 +375,11 @@ Ext.define('Webui.config.hostMonitorNew', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
+            hasRefresh: true,
             title: this.i18n._("Penalty Box Hosts"),
             qtip: this.i18n._("This shows all hosts currently in the Penalty Box."),
-            bbar: Ext.create('Ext.toolbar.Toolbar',{
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.gridPenaltyBox.reload();
-                        }, this)
-                    }
-                ]
-            }),
-            recordJavaClass: "com.untangle.uvm.HostTableEntry",
             dataFn: Ext.bind(rpc.hostTable.getPenaltyBoxedHosts, this),
+            recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
                 name: "address",
                 sortType: Ung.SortTypes.asIp
@@ -460,25 +446,11 @@ Ext.define('Webui.config.hostMonitorNew', {
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
+            hasRefresh: true,
             title: this.i18n._("Current Quotas"),
             qtip: this.i18n._("This shows all hosts currently with quotas."),
-            bbar: Ext.create('Ext.toolbar.Toolbar',{
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.gridQuotaBox.reload();
-                        }, this)
-                    }
-                ]
-            }),
-            recordJavaClass: "com.untangle.uvm.HostTableEntry",
             dataFn: Ext.bind(rpc.hostTable.getQuotaHosts, this),
+            recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
                 name: "address",
                 sortType: Ung.SortTypes.asIp

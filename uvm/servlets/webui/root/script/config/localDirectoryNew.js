@@ -1,4 +1,4 @@
-Ext.define('Webui.config.localDirectoryNew', {
+Ext.define('Webui.config.localDirectory', {
     extend: 'Ung.ConfigWin',
     gridUsers: null,
     initComponent: function() {
@@ -23,18 +23,16 @@ Ext.define('Webui.config.localDirectoryNew', {
             title: this.i18n._('Local Users'),
             settingsCmp: this,
             height: 500,
-            bbar: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Cleanup expired users'),
-                        iconCls: 'icon-delete-row',
-                        handler: Ext.bind(function() {
-                            this.cleanupExpiredUsers();
-                        }, this)
-                    },
-                    '-'
-            ],
+            dataFn: Ung.Main.getLocalDirectory().getUsers,
+            bbar: ['-', {
+                xtype: 'button',
+                text: i18n._('Cleanup expired users'),
+                iconCls: 'icon-delete-row',
+                handler: Ext.bind(function() {
+                    this.cleanupExpiredUsers();
+                }, this)
+            }, '-' ],
+            recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
             emptyRow: {
                 "username": "",
                 "firstName": "",
@@ -42,11 +40,9 @@ Ext.define('Webui.config.localDirectoryNew', {
                 "email": "",
                 "password": "",
                 "passwordBase64Hash": "",
-                "expirationTime": 0,
-                "javaClass": "com.untangle.uvm.LocalDirectoryUser"
+                "expirationTime": 0
             },
-            recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
-            dataFn: Ung.Main.getLocalDirectory().getUsers,
+            sortField: 'username',
             fields: [{
                 name: 'username'
             }, {
@@ -123,8 +119,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                     }
                     return result;
                 },this)
-            },
-            {
+            }, {
                 header: this.i18n._("expiration time"),
                 width: 150,
                 dataIndex: 'expirationTime',
@@ -135,9 +130,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                         return i18n.timestampFormat(value);
                     }
                 },this)
-            }],
-            sortField: 'username',
-            columnsDefaultSortable: true
+            }]
         });
         this.gridUsers.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             inputLines: [{
@@ -150,8 +143,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                  regex: /^[\w ]+$/,
                  regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "First Name",
                  dataIndex: "firstName",
@@ -159,16 +151,14 @@ Ext.define('Webui.config.localDirectoryNew', {
                  emptyText: this.i18n._('[enter first name]'),
                  allowBlank: false,
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "Last Name",
                  dataIndex: "lastName",
                  fieldLabel: this.i18n._("Last Name"),
                  emptyText: this.i18n._('[last name]'),
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "Email Address",
                  dataIndex: "email",
@@ -176,8 +166,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                  emptyText: this.i18n._('[email address]'),
                  vtype: 'email',
                  width: 300
-             },
-             {
+             }, {
                  xtype: 'container',
                  layout: 'column',
                  margin: '0 0 5 0',
@@ -195,8 +184,7 @@ Ext.define('Webui.config.localDirectoryNew', {
                      html: this.i18n._("(leave empty to keep the current password unchanged)"),
                      cls: 'boxlabel'
                  }]
-             },
-             {
+             }, {
                  xtype:'container',
                  layout: {
                      type: 'hbox',

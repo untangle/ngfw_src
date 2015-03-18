@@ -1,5 +1,5 @@
-Ext.define("Webui.config.systemNew", {
-    extend: "Ung.ConfigWin",
+Ext.define('Webui.config.system', {
+    extend: 'Ung.ConfigWin',
     panelRegional: null,
     panelSupport: null,
     panelBackup: null,
@@ -906,16 +906,15 @@ Ext.define("Webui.config.systemNew", {
             settingsCmp: this,
             hasReorder: true,
             addAtTop: false,
+            title: this.i18n._("Shield Rules"),
+            dataExpression:'getShieldSettings().rules.list',
+            recordJavaClass: "com.untangle.node.shield.ShieldRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
                 "description": "",
-                "multiplier": -1,
-                "javaClass": "com.untangle.node.shield.ShieldRule"
+                "multiplier": -1
             },
-            title: this.i18n._("Shield Rules"),
-            recordJavaClass: "com.untangle.node.shield.ShieldRule",
-            dataExpression:'getShieldSettings().rules.list',
             fields: [{
                 name: 'ruleId'
             }, {
@@ -962,7 +961,6 @@ Ext.define("Webui.config.systemNew", {
                     return value;
                 }
             }],
-            columnsDefaultSortable: false,
             rowEditorInputLines:[{
                 xtype:'checkbox',
                 dataIndex: "enabled",

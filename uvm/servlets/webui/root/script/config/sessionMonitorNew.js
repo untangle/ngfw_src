@@ -1,4 +1,4 @@
-Ext.define('Webui.config.sessionMonitorNew', {
+Ext.define('Webui.config.sessionMonitor', {
     extend: 'Ung.StatusWin',
     helpSource: 'session_viewer',
     sortField:'bypassed',
@@ -11,9 +11,9 @@ Ext.define('Webui.config.sessionMonitorNew', {
             }];
         }
         this.buildGridCurrentSessions();
-        this.buildChartSessions();
-        this.buildTabPanel([this.gridCurrentSessions, this.chartSessions]);
-        //this.items = [this.gridCurrentSessions, this.chartSessions];
+        //this.buildChartSessions();
+        //this.buildTabPanel([this.gridCurrentSessions]);
+        this.items=[this.gridCurrentSessions];
         this.callParent(arguments);
     },
     closeWindow: function() {
@@ -124,11 +124,11 @@ Ext.define('Webui.config.sessionMonitorNew', {
             var policy = rpc.policies[i];
             policyListOptions.push([policy.policyId+"", policy.name]);
         }
-        var policyListOptionsStore = new Ext.data.ArrayStore({
+        var policyListOptionsStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'id', 'text' ],
             data: policyListOptions
         });
-        var priorityOptionsStore = new Ext.data.ArrayStore({
+        var priorityOptionsStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'id', 'text' ],
             data: [
                 [1, i18n._("Very High")],
@@ -514,14 +514,14 @@ Ext.define('Webui.config.sessionMonitorNew', {
             name: this.name+"Grid",
             settingsCmp: this,
             height: 500,
-            sortField: this.sortField,
-            sortOrder: this.sortOrder,
-            groupField: this.groupField,
             title: this.i18n._("Current Sessions"),
             tooltip: this.i18n._("This shows all current sessions."),
             dataFn: Ext.bind(this.getSessions, this),
             dataFnArg: 0,
             appList: this.getAppList(),
+            sortField: this.sortField,
+            sortOrder: this.sortOrder,
+            groupField: this.groupField,
             columns: this.getColumns(),
             fields: [{
                 name: "creationTime",

@@ -1,4 +1,4 @@
-Ext.define('Webui.untangle-base-virus.settingsNew', {
+Ext.define('Webui.untangle-base-virus.settings', {
     extend:'Ung.NodeWin',
     panelWeb:null,
     panelEmail: null,
@@ -96,14 +96,15 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
         this.gridExtensions = Ext.create('Ung.grid.Panel',{
             name: 'File Extensions',
             settingsCmp: this,
+            title: this.i18n._("File Extensions"),
+            dataProperty: "httpFileExtensions",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            title: this.i18n._("File Extensions"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "httpFileExtensions",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("File Type"),
@@ -131,7 +132,6 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
             rowEditorInputLines: [
             {
                 xtype:'textfield',
@@ -164,14 +164,15 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
         this.gridMimeTypes = Ext.create('Ung.grid.Panel', {
             name: 'MIME Types',
             settingsCmp: this,
+            title: this.i18n._("MIME Types"),
+            dataProperty: "httpMimeTypes",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            title: this.i18n._("MIME Types"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "httpMimeTypes",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("MIME Type"),
@@ -199,7 +200,6 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
                     allowBlank:false
                 }
             }],
-            sortField: 'string',
             rowEditorInputLines: [
             {
                 xtype:'textfield',
@@ -336,15 +336,16 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
         this.gridPassSites = Ext.create('Ung.grid.Panel', {
             name: 'Pass Sites',
             settingsCmp: this,
+            flex: 1,
+            title: this.i18n._("Pass Sites"),
+            dataProperty: "passSites",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            flex: 1,
-            title: this.i18n._("Pass Sites"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "passSites",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("Site"),
@@ -371,7 +372,6 @@ Ext.define('Webui.untangle-base-virus.settingsNew', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",

@@ -90,15 +90,15 @@ Ext.define('Ung.grid.Panel', {
     addAtTop: true,
     // has Import Export buttons
     hasImportExport: null,
-    // has Edit buton on each record
+    // has Edit button on each record
     hasEdit: true,
-    // has Delete buton on each record
+    // has Delete button on each record
     hasDelete: true,
-    configDelete: null,
     // the default Empty record for a new row
     hasReorder: false,
     hasInlineEditor:true,
-    configReorder: null,
+    // has Refresh button
+    hasRefresh: false,
     // the default Empty record for a new row
     emptyRow: null,
     // implements readOnly rows feaure
@@ -109,10 +109,6 @@ Ext.define('Ung.grid.Panel', {
     rowEditorLabelWidth: null,
     //size row editor to component
     rowEditorConfig: null,
-    // the default sort field
-    sortField: undefined,
-    // the default sort order
-    sortOrder: undefined,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable: true,
     // is the column header dropdown disabled
@@ -124,12 +120,10 @@ Ext.define('Ung.grid.Panel', {
     enableColumnMove: false,
     dirtyFlag: false,
     addedId: 0,
-    generatedId: 1,
     useServerIds: false,
     sortingDisabled: false,
     constructor: function(config) {
         var defaults = {
-            //data: [],
             plugins: [],
             viewConfig: {
                 enableTextSelection: true,
@@ -140,7 +134,7 @@ Ext.define('Ung.grid.Panel', {
                         }, this)
                     }
                 },
-                loadMask:{
+                loadMask: {
                     msg: i18n._("Loading...")
                 }
             },
@@ -159,7 +153,7 @@ Ext.define('Ung.grid.Panel', {
             this.plugins.push(this.inlineEditor);
         }
         if (this.hasReorder) {
-            var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {
+            var reorderColumn = Ext.create('Ung.grid.ReorderColumn', {
                 header: i18n._("Reorder")
             });
             this.columns.push(reorderColumn);
@@ -248,6 +242,22 @@ Ext.define('Ung.grid.Panel', {
         }
         if (this.tbar == null) {
             this.tbar=[];
+        }
+        
+        if(this.hasRefresh) {
+            if (this.bbar == null) {
+                this.bbar=[];
+            }
+            this.bbar.splice(0, 0, '-', {
+                xtype: 'button',
+                text: i18n._('Refresh'),
+                name: "Refresh",
+                tooltip: i18n._('Refresh'),
+                iconCls: 'icon-refresh',
+                handler: Ext.bind(function() {
+                    this.reload();
+                }, this)
+            });
         }
         if(this.hasImportExport===null) {
             this.hasImportExport=this.hasAdd;
@@ -712,11 +722,6 @@ Ext.define('Ung.grid.Panel', {
         }
         return list;
     },
-    //getList: function(handler, skipRepagination) //Removed
-    getPageList: function (useId, useInternalId) {
-        console.warn("Ung.grid.Panel getPageList is deprecated use getList instead");
-        return this.getList(arguments);
-    },
     getDeletedList: function() {
         var list=[];
         var records=this.getStore().getRange();
@@ -1013,7 +1018,6 @@ Ext.define('Ung.ImportSettingsWindow', {
                     fieldLabel: i18n._('File'),
                     name: 'import_settings_textfield',
                     width: 450,
-                    size: 45,
                     labelWidth: 50,
                     allowBlank: false
                 },{

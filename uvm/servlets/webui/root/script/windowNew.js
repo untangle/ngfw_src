@@ -210,7 +210,8 @@ Ext.define("Ung.SettingsWin", {
                 helpSource = this.tabs.getActiveTab().getHelpSource();
             }
 
-        } else {
+        }
+        if(!helpSource) {
             helpSource = this.helpSource;
         }
 

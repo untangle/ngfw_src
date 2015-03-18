@@ -1,4 +1,4 @@
-Ext.define('Webui.config.upgradeNew', {
+Ext.define('Webui.config.upgrade', {
     extend: 'Ung.ConfigWin',
     panelSettings: null,
     initComponent: function() {

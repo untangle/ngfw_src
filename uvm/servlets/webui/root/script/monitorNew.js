@@ -4,30 +4,17 @@ Ext.define('Ung.MonitorGrid', {
     selType: 'rowmodel',
     // settings component
     settingsCmp: null,
-    // the default sort field
-    //sortField: undefined,
-    // the default sort order
-    //sortOrder: undefined,
-    // the default group field
-    //groupField: undefined,
-    // the columns are sortable by default, if sortable is not specified
-    columnsDefaultSortable: true,
     //an applicaiton selector
     appList: null,
     // the total number of records
-    totalRecords: null,
     autoRefreshEnabled: false,
     stateful: true,
-    bufferedRenderer: true,
-    trailingBufferZone: 20,
-    leadingBufferZone: 50,
-    plugins: 'gridfilters',
+    plugins: ['gridfilters'],
     features: [{
         ftype: 'groupingsummary'
     }],
     constructor: function(config) {
         var defaults = {
-            data: [],
             viewConfig: {
                 enableTextSelection: true,
                 stripeRows: true,
@@ -61,7 +48,6 @@ Ext.define('Ung.MonitorGrid', {
                     type: 'json'
                 }
             },
-            autoLoad: false,
             sorters: this.sortField ? {
                 property: this.sortField,
                 direction: this.sortOrder ? this.sortOrder: "ASC"

@@ -397,7 +397,6 @@ Ext.define('Ung.GroupEditorWindow', {
     height: 450,
     width: 550,
     initComponent: function() {
-        var data = [];
         this.gridPanel = Ext.create('Ext.grid.Panel', {
             title: i18n._('Groups'),
             id: 'groupsGrid_'+this.getId(),
@@ -405,8 +404,8 @@ Ext.define('Ung.GroupEditorWindow', {
             width: 400,
             enableColumnHide: false,
             enableColumnMove: false,
-            store: new Ext.data.Store({
-                data: data,
+            store: Ext.create('Ext.data.Store', {
+                data: [],
                 sortOnLoad: true,
                 sorters: { property: 'SAMAccountName', direction : 'ASC' },
                 fields: [{

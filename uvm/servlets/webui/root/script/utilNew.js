@@ -242,20 +242,6 @@ Ext.define('Ung.Util', {
         }
         return false;
     },
-    encode: function (obj) {
-        if(obj == null || typeof(obj) != 'object') {
-            return obj;
-        }
-        var msg="";
-        var val=null;
-        for(var key in obj) {
-            val=obj[key];
-            if(val!=null) {
-                msg+=" | "+key+" - "+val;
-            }
-        }
-        return msg;
-    },
     addBuildStampToUrl: function(url) {
         var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
         if (url.indexOf("?") >= 0) {
@@ -574,26 +560,6 @@ Ext.define('Ung.Util', {
             }
         }
         return jsonList;
-    },
-    makeDataFn: function(dataProperty, dataFn, dataFnArgs) {
-        return function(forceReloadOrHandler) {
-            if (forceReloadOrHandler !== undefined || dataProperty === undefined) {
-                if(Ext.isFunction(forceReloadOrHandler)) {
-                    dataFn(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        dataProperty = result;
-                        forceReloadOrHandler.call(this);
-                    }, this, dataFnArgs, true));
-                } else {
-                    try {
-                        dataProperty = dataFn(dataFnArgs);
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-                }
-            }
-            return dataProperty;
-        };
     },
     createStoreMap : function(pairArray) {
         var map = {};

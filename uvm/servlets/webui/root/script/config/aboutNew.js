@@ -1,5 +1,5 @@
-Ext.define("Webui.config.aboutNew", {
-    extend: "Ung.StatusWin",
+Ext.define('Webui.config.about', {
+    extend: 'Ung.StatusWin',
     panelServer: null,
     panelLicenses: null,
     panelLicenseAgreement: null,
@@ -141,29 +141,25 @@ Ext.define("Webui.config.aboutNew", {
             hasEdit: false,
             hasDelete: false,
             title: this.i18n._("Licenses"),
-            //TODO: qtip is not displayed, fix this
+            //TODO ext5 - qtip is not displayed, fix this
             qtip: this.i18n._("The Current list of Licenses available on this Server."),
             bbar: new Ext.Toolbar({
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        id: "refresh_"+this.getId(),
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            //reload licenses for each node in rack
-                            Ung.Main.loadLicenses();
-                            //reload grid
-                            this.gridLicenses.reload();
-                        }, this)
-                    }
-                ]
+                items: [ '-', {
+                    xtype: 'button',
+                    text: i18n._('Refresh'),
+                    name: "Refresh",
+                    tooltip: i18n._('Refresh'),
+                    iconCls: 'icon-refresh',
+                    handler: Ext.bind(function() {
+                        //reload licenses for each node in rack
+                        Ung.Main.loadLicenses();
+                        //reload grid
+                        this.gridLicenses.reload();
+                    }, this)
+                }]
             }),
-            recordJavaClass: "com.untangle.uvm.node.License",
             dataFn: Ung.Main.getLicenseManager().getLicenses,
+            recordJavaClass: "com.untangle.uvm.node.License",
             fields: [{
                 name: "displayName"
             },{

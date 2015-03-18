@@ -222,6 +222,7 @@ Ext.define("Ung.AppItem", {
     },
     initComponent: function() {
         this.subCmps=[];
+        //TODO ext5
         //this.id = "app-item_" + this.nodeProperties.displayName;
         this.callParent(arguments);
         this.render('appsItems', this.renderPosition);
@@ -671,11 +672,6 @@ Ext.define("Ung.Node", {
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
-        this.settingsClassName = 'Webui.'+this.name+'.settingsNew';
-        if(Ext.ClassManager.isCreated(this.settingsClassName)) {
-            this.initSettings();
-            return;
-        }
         this.settingsClassName = 'Webui.'+this.name+'.settings';
         Ext.require([this.settingsClassName], function() {
             this.initSettings();
@@ -1232,7 +1228,6 @@ Ext.define("Ung.FaceplateMetric", {
     html: '<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
     parentId: null,
     parentNodeId: null,
-    data: null,
     byteCountCurrent: null,
     byteCountLast: null,
     sessionCountCurrent: null,
@@ -1538,7 +1533,7 @@ Ext.define("Ung.FaceplateMetric", {
     }
 });
 
-Ext.define("Ung.SelectDateTimeWindow", {
+Ext.define("Ung.window.SelectDateTime", {
     extend: "Ext.window.Window",
     date: null,
     buttonObj: null,

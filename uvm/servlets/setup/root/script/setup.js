@@ -1616,17 +1616,6 @@ Ext.define("Ung.Setup", {
             this.initComplete();
         }, this));
         
-/*        
-        new JSONRpcClient(Ext.bind(function( result, exception ) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.setup = result.SetupContext;
-            //Initialize startup info (skinName, timezoneID, timezones, oemName, adminEmail, translations, wizardSettings)
-            rpc.setup.getSetupWizardStartupInfo(Ext.bind(function( result, exception ) {
-                if(Ung.Util.handleException(exception)) return;
-                Ext.applyIf(rpc, result);
-                this.initComplete();
-            }, this));
-        }, this), "/setup/JSON-RPC");*/
         Ext.apply(Ext.form.field.VTypes, {
             ipAddress: function( val, field ) {
                 return val.match( this.ipAddressRegex );

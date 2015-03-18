@@ -875,47 +875,47 @@ Ext.define("Ung.Main", {
     loadConfig: function() {
         this.config =
             [{
-                "name":"network",
-                "displayName":i18n._("Network"),
-                "iconClass":"icon-config-network",
-                "helpSource":"network",
-                "className":"Webui.config.networkNew"
+                name: 'network',
+                displayName: i18n._('Network'),
+                iconClass: 'icon-config-network',
+                helpSource: 'network',
+                className: 'Webui.config.network'
             }, {
-                "name":"administration",
-                "displayName":i18n._("Administration"),
-                "iconClass":"icon-config-admin",
-                "helpSource":"administration",
-                "className":"Webui.config.administrationNew"
+                name: 'administration',
+                displayName: i18n._('Administration'),
+                iconClass: 'icon-config-admin',
+                helpSource: 'administration',
+                className: 'Webui.config.administration'
             }, {
-                "name":"email",
-                "displayName":i18n._("Email"),
-                "iconClass":"icon-config-email",
-                "helpSource":"email",
-                "className":"Webui.config.emailNew"
+                name: 'email',
+                displayName: i18n._('Email'),
+                iconClass: 'icon-config-email',
+                helpSource: 'email',
+                className: 'Webui.config.email'
             }, {
-                "name":"localDirectory",
-                "displayName":i18n._("Local Directory"),
-                "iconClass":"icon-config-directory",
-                "helpSource":"local_directory",
-                "className":"Webui.config.localDirectoryNew"
+                name: 'localDirectory',
+                displayName: i18n._('Local Directory'),
+                iconClass: 'icon-config-directory',
+                helpSource: 'local_directory',
+                className: 'Webui.config.localDirectory'
             }, {
-                "name":"upgrade",
-                "displayName":i18n._("Upgrade"),
-                "iconClass":"icon-config-upgrade",
-                "helpSource":"upgrade",
-                "className":"Webui.config.upgradeNew"
+                name: 'upgrade',
+                displayName: i18n._('Upgrade'),
+                iconClass: 'icon-config-upgrade',
+                helpSource: 'upgrade',
+                className: 'Webui.config.upgrade'
             }, {
-                "name":"system",
-                "displayName":i18n._("System"),
-                "iconClass":"icon-config-setup",
-                "helpSource":"system",
-                "className":"Webui.config.systemNew"
+                name: 'system',
+                displayName: i18n._('System'),
+                iconClass: 'icon-config-setup',
+                helpSource: 'system',
+                className: 'Webui.config.system'
             }, {
-                "name":"about",
-                "displayName":i18n._("About"),
-                "iconClass":"icon-config-support",
-                "helpSource":"system_info",
-                "className":"Webui.config.aboutNew"
+                name: 'about',
+                displayName: i18n._('About'),
+                iconClass: 'icon-config-support',
+                helpSource: 'system_info',
+                className: 'Webui.config.about'
             }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
         for(var i=0;i<this.config.length;i++) {
@@ -1196,9 +1196,9 @@ Ext.define("Ung.Main", {
         }
     },
     showHosts: function() {
-        Ext.require(['Webui.config.hostMonitorNew'], function() {
+        Ext.require(['Webui.config.hostMonitor'], function() {
             if ( Ung.Main.hostMonitorWin == null) {
-                Ung.Main.hostMonitorWin=Ext.create('Webui.config.hostMonitorNew', {"name":"hostMonitor", "helpSource":"host_viewer"});
+                Ung.Main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
             }
             Ung.Main.hostMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
@@ -1212,9 +1212,9 @@ Ext.define("Ung.Main", {
         Ung.Main.showNodeSessions(0);
     },
     showNodeSessions: function(nodeIdArg) {
-        Ext.require(['Webui.config.sessionMonitorNew'], function() {
+        Ext.require(['Webui.config.sessionMonitor'], function() {
             if ( Ung.Main.sessionMonitorWin == null) {
-                Ung.Main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitorNew', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+                Ung.Main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
             }
             Ung.Main.sessionMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
@@ -1397,5 +1397,3 @@ Ext.define("Ung.Main", {
         });
     }
 });
-
-var main = Ung.Main;

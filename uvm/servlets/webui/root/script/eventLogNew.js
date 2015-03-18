@@ -11,11 +11,11 @@ Ext.define("Ung.GridEventLog", {
             this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
         }
         if(this.hasTimestampFilter) {
-            this.startDateWindow = Ext.create('Ung.SelectDateTimeWindow', {
+            this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
                 title: i18n._('Start date and time'),
                 dateTimeEmptyText: i18n._('start date and time')
             });
-            this.endDateWindow = Ext.create('Ung.SelectDateTimeWindow', {
+            this.endDateWindow = Ext.create('Ung.window.SelectDateTime', {
                 title: i18n._('End date and time'),
                 dateTimeEmptyText: i18n._('end date and time')
             });
