@@ -1,41 +1,21 @@
-/* TODO ext5,  make standard */
-Ext.Ajax.timeout = 600000;
+/* TODO ext5,  make standard
 Ext.define('Ung.RuleEditorGrid', {
     extend: 'Ung.grid.Panel',
     requires: [
-        'Ext.toolbar.TextItem',
-        'Ext.form.field.Checkbox',
-        'Ext.form.field.Text',
-        'Ext.ux.statusbar.StatusBar'
+        //'Ext.ux.statusbar.StatusBar' //TODO: ext5
     ],
 
-    /**
-     * @private
-     * search value initialization
-     */
+     // search value initialization
     searchValue: null,
-
-    /**
-     * @private
-     * The generated regular expression used for searching.
-     */
+    // The generated regular expression used for searching.
     searchRegExp: null,
-
     defaultStatusText: i18n._('Loading...'),
-
-    /*
-     * @public
-     * store fields to search
-     */
+    // store fields to search
     searchFields:[
         'category',
         'rule'
     ],
-
-    /*
-     * @public
-     * Minimum number of characters to start search
-     */
+     // Minimum number of characters to start search
     searchMinimumCharacters: 2,
 
     // Component initialization override: adds the top and bottom toolbars and setup headers renderer.
@@ -158,7 +138,7 @@ Ext.define('Ung.RuleEditorGrid', {
         me.rowEditor.down('combo[name=Category]').bindStore(me.storeCategories);
     },
 
-    buildActiveVariableStore: function(){    
+    buildActiveVariableStore: function(){
         me = this;
         me.store.each(
             function( record ){
@@ -175,8 +155,8 @@ Ext.define('Ung.RuleEditorGrid', {
                                 ruleId = me.getRuleId( record.get( "rule" ) );
                                 variableRecord = this.storeActiveVariables.findRecord("id", variableMatches[j]);
                                 if( variableRecord == null ){
-                                    this.storeActiveVariables.add( { 
-                                        id: variableMatches[j], 
+                                    this.storeActiveVariables.add( {
+                                        id: variableMatches[j],
                                         ruleIds: [ruleId]
                                     });
                                 }else{
@@ -191,9 +171,7 @@ Ext.define('Ung.RuleEditorGrid', {
         );
     },
 
-    /*
-     * Update status for rules to show total # of rules and total enabled.
-     */
+    // Update status for rules to show total # of rules and total enabled.
     updateRulesStatus: function(){
         var totalEnabled = 0;
         this.store.each(
@@ -210,23 +188,14 @@ Ext.define('Ung.RuleEditorGrid', {
 
     },
 
-    /*
-     * @private
-     * DEL ASCII code
-    */
+    // DEL ASCII code
     searchTagsProtect: '\x0f',
 
-    /*
-     * @private 
-     * detects regexp reserved word
-     */
+    // detects regexp reserved word
     searchRegExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
-    /**
-     * In normal mode it returns the value with protected regexp characters.
-     * In regular expression mode it returns the raw value except if the regexp is invalid.
-     * @return {String} The value to process or null if the textfield value is blank or invalid.
-     * @private
-     */
+    // In normal mode it returns the value with protected regexp characters.
+    // In regular expression mode it returns the raw value except if the regexp is invalid.
+    // @return {String} The value to process or null if the textfield value is blank or invalid.
     getSearchValue: function() {
         var me = this,
             value = me.searchTextField.getValue();
@@ -253,11 +222,7 @@ Ext.define('Ung.RuleEditorGrid', {
         return resultArray.join('');
     },
 
-    /**
-     * Finds all strings that matches the searched value in each grid cells as
-     * well as Log or Block action.
-     * @private
-     */
+    // Finds all strings that matches the searched value in each grid cells as well as Log or Block action.
     searchFilter: function() {
         var me = this;
 
@@ -267,9 +232,7 @@ Ext.define('Ung.RuleEditorGrid', {
         me.store.clearFilter(false);
         me.searchValue = me.getSearchValue();
 
-        /* 
-         * It's too expensive to search with less than minimum characters.
-         */
+        // It's too expensive to search with less than minimum characters.
         if( ( me.searchValue !== null ) &&
             ( me.searchTextField.getValue().length < ( me.searchMinimumCharacters + 1 ) ) ){
             me.searchStatusBar.setStatus({
@@ -285,9 +248,7 @@ Ext.define('Ung.RuleEditorGrid', {
 
             me.searchRegExp = new RegExp(me.searchValue, 'g' + 'i');
 
-            /*
-             * Build store filter based on Log, Block, and/or search field values.
-             */
+            // Build store filter based on Log, Block, and/or search field values.
             me.store.filterBy( function( record, id ) {
                 me = this;
                 var logMatch = true;
@@ -312,11 +273,8 @@ Ext.define('Ung.RuleEditorGrid', {
                 return logMatch && blockMatch && searchMatch;
             }, me );
 
-            /*
-             * If Log/Block is checked then it's evident that the matching rules are
-             * set to either Log/Block.  But if neither are checked, we want to know
-             * how many are enabled.
-             */
+            // If Log/Block is checked then it's evident that the matching rules are
+            // set to either Log/Block.  But if neither are checked, we want to know  how many are enabled.
             var statusText = me.store.count() + ' ' + i18n._(' matching rules(s) found');
             if( findLog === false && findBlock === false ){
                 var totalEnabled = 0;
@@ -346,9 +304,7 @@ Ext.define('Ung.RuleEditorGrid', {
         return this.callSuper( useId, useInternalId );
     },
 
-    /*
-     * Create rule id (sid_gid) from raw rule
-     */
+    // Create rule id (sid_gid) from raw rule
     regexRuleSid: /\s+sid:\s*([^;]+);/,
     regexRuleGid: /\s+gid:\s*([^;]+);/,
     getRuleId: function( rule ){
@@ -363,9 +319,7 @@ Ext.define('Ung.RuleEditorGrid', {
         return sid + "_" + gid;
     },
 
-    /*
-     * Modify to include original rule identiifer
-     */
+    // Modify to include original rule identiifer
     getData: function( data ){
         this.data = this.callSuper( data );
 
@@ -375,9 +329,8 @@ Ext.define('Ung.RuleEditorGrid', {
         }
         return this.data;
     }
-
 });
-
+*/
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
     statics: {
@@ -391,6 +344,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     arg2: node.nodeId
                 },
                 scope: node,
+                timeout: 600000,
                 success: function(response){
                     this.openSettings.call(this, Ext.decode( response.responseText ) );
                 },
@@ -401,13 +355,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
         }
     },
     panelStatus: null,
-    panelRules: null,
     gridRules: null,
     gridVariables: null,
     gridEventLog: null,
     statistics: null,
     initComponent: function() {
-
         this.classtypesStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description', 'priority' ],
             data: [
@@ -516,25 +468,19 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
         this.buildStatus();
         this.buildRules();
+        this.buildVariables();
         this.buildEventLog();
-        this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
+        this.buildTabPanel([this.panelStatus, this.gridRules, this.gridVariables, this.gridEventLog]);
         this.callParent(arguments);
 
         this.forceReload = false;
 
-        if( this.settings.configured === false &&
-            !this.wizardWindow ){
-            var launchWizard = Ext.create( 
-                'Ext.util.DelayedTask', 
-                function(){
-                    this.setupWizard();
-                },
-                this
-            );
-            launchWizard.delay(100);
+        if( this.settings.configured === false && !this.wizardWindow ){
+            Ext.defer(function(){
+                this.setupWizard();
+            }, 100, this);
             this.disable();
         }
-
     },
     // Status Panel
     buildStatus: function() {
@@ -551,29 +497,22 @@ Ext.define('Webui.untangle-node-idps.settings', {
             },
             items: [{
             //     title: this.i18n._('Statistics'),
-            //     labelWidth: 230,
             //     defaults: {
-            //         xtype: "textfield",
-            //         disabled: true
+            //         xtype: "displayfield",
+            //         labelWidth:200
             //     },
             //     items: [{
             //         fieldLabel: this.i18n._('Total Signatures Available'),
             //         name: 'Total Signatures Available',
-            //         labelWidth:200,
-            //         labelAlign:'left',
-            //             value: this.statistics.totalAvailable
+            //         value: this.statistics.totalAvailable
             //     }, {
             //         fieldLabel: this.i18n._('Total Signatures Logging'),
             //         name: 'Total Signatures Logging',
-            //         labelWidth:200,
-            //         labelAlign:'left',
-            //             value: this.statistics.totalLogging
+            //         value: this.statistics.totalLogging
             //     }, {
             //         fieldLabel: this.i18n._('Total Signatures Blocking'),
             //         name: 'Total Signatures Blocking',
-            //         labelWidth:200,
-            //         labelAlign:'left',
-            //             value: this.statistics.totalBlocking
+            //         value: this.statistics.totalBlocking
             //     }]
             // }, {
                 title: this.i18n._("Setup Wizard"),
@@ -590,10 +529,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
             }, {
                 title: this.i18n._('Note'),
                 cls: 'description',
-                html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
-                        rpc.companyName)
+                html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."), rpc.companyName)
             },{
-                // xtype: 'fieldset',
                 title: this.i18n._("Updates"),
                 cls: 'description',
                 items: [{
@@ -601,14 +538,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     fieldLabel: this.i18n._("Last check for updates"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
-                    labelAlign:'left',
                     value: ( this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdateCheck) : i18n._("Never")
                 },{
                     xtype: 'displayfield',
                     fieldLabel: this.i18n._("Last update"),
                     name: 'lastUpdateCheck',
                     labelWidth:200,
-                    labelAlign:'left',
                     value: ( this.lastUpdate !== null && this.lastUpdate.time !== 0 && this.lastUpdateCheck !== null && this.lastUpdateCheck.time !== 0 ) ? i18n.timestampFormat(this.lastUpdate) : i18n._("Never")
                 }]
             }]
@@ -617,562 +552,547 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
     // Rules Panel
     buildRules: function() {
-        this.panelRules = Ext.create('Ext.panel.Panel',{
-            name: 'panelRules',
-            // helpSource: 'intrusion_dection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
-            parentId: this.getId(),
-            title: this.i18n._('Rules'),
-            border: false,
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            items: [
-                this.gridRules = Ext.create('Ung.RuleEditorGrid', {
-                    name: 'Rules',
-                    flex: 3,
-                    groupField: 'classtype',
-                    settingsCmp: this,
-                    title: this.i18n._("Rules"),
-                    dataProperty: 'rules',
-                    features: [{
-                        ftype: 'grouping',
-                        groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
-                        startCollapsed: true
-                    }],
-                    recordJavaClass: "com.untangle.node.idps.IpsRule",
-                    sortField: 'category',
-                    fields: [{
-                        name: 'sid',
-                        sortType: 'asInt'
-                    },{
-                        name: 'category'
-                    },{
-                        name: 'classtype'
-                    },{
-                        name: 'msg'
-                    },{
-                        name: 'rule'
-                    },{
-                        name: 'log'
-                    },{
-                        name: 'block'
-                    }],
-                    emptyRow: {
-                        "classtype": "unknown",
-                        "category": "app-detect",
-                        "msg" : "new rule",
-                        "sid": "1999999",
-                        "log": true,
-                        "block": false,
-                        "rule": "alert tcp any any -> any any ( msg:\"new rule\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
-                    },
-                    columns: [{
-                        header: this.i18n._("Sid"),
-                        dataIndex: 'sid',
-                        sortable: true,
-                        width: 70,
-                        editor: null,
-                        menuDisabled: false,
-                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            var id = record.get("originalId").split("_");
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
-                            return value;
-                        }
-                    },{
-                        header: this.i18n._("Classtype"),
-                        dataIndex: 'classtype',
-                        sortable: true,
-                        width: 100,
-                        flex:1,
-                        editor: null,
-                        menuDisabled: false,
-                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            var dr = this.settingsCmp.classtypesStore.findRecord( "name", value );
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
-                            return value;
-                        }
-                    },{
-                        header: this.i18n._("Category"),
-                        dataIndex: 'category',
-                        sortable: true,
-                        width: 100,
-                        flex:1,
-                        menuDisabled: false,
-                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            var dr = this.settingsCmp.categoriesStore.findRecord( "name", value );
-                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
-                            return value;
-                        }
-                    },{
-                        header: this.i18n._("Msg"),
-                        dataIndex: 'msg',
-                        sortable: true,
-                        width: 200,
-                        flex:3,
-                        editor: null,
-                        menuDisabled: false
-                    },{
-                        header: this.i18n._("Reference"),
-                        dataIndex: 'rule',
-                        sortable: true,
-                        width: 100,
-                        flex:1,
-                        menuDisabled: false,
-                        renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                            var matches = value.match(this.regexRuleReference);
-                            if( matches == null ){
-                                return "";
-                            }
-                            var references = [];
-                            for( var i = 0; i < matches.length; i++ ){
-                                /*
-                                 * Apparently need to rebuild regexp each time to correctly
-                                 * extract in a loop.
-                                 */
-                                var re = /\s+reference:\s*([^\;]+)\;/g;
-                                var rmatches = re.exec( matches[i] );
+        this.gridRules = Ext.create('Ung.grid.Panel', {
+            // helpSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            name: 'Rules',
+            groupField: 'classtype',
+            settingsCmp: this,
+            title: this.i18n._("Rules"),
+            dataProperty: 'rules',
+            formatData: function(data) {
+                return this.callSuper(data);
+            },
+            features: [{
+                ftype: 'grouping',
+                groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
+                startCollapsed: true
+            }],
+            recordJavaClass: "com.untangle.node.idps.IpsRule",
+            emptyRow: {
+                "classtype": "unknown",
+                "category": "app-detect",
+                "msg" : "new rule",
+                "sid": "1999999",
+                "log": true,
+                "block": false,
+                "rule": "alert tcp any any -> any any ( msg:\"new rule\"; classtype:unknown; sid:1999999; content:\"matchme\"; nocase;)"
+            },
+            sortField: 'category',
+            fields: [{
+                name: 'sid',
+                sortType: 'asInt'
+            },{
+                name: 'category'
+            },{
+                name: 'classtype'
+            },{
+                name: 'msg'
+            },{
+                name: 'rule'
+            },{
+                name: 'log'
+            },{
+                name: 'block'
+            }],
+            columns: [{
+                header: this.i18n._("Sid"),
+                dataIndex: 'sid',
+                sortable: true,
+                width: 70,
+                editor: null,
+                menuDisabled: false/*,
+                renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                    var id = record.get("originalId").split("_");
+                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
+                    return value;
+                }*/
+            },{
+                header: this.i18n._("Classtype"),
+                dataIndex: 'classtype',
+                sortable: true,
+                width: 100,
+                flex:1,
+                editor: null,
+                menuDisabled: false/*,
+                renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                    var dr = this.settingsCmp.classtypesStore.findRecord( "name", value );
+                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
+                    return value;
+                }*/
+            },{
+                header: this.i18n._("Category"),
+                dataIndex: 'category',
+                sortable: true,
+                width: 100,
+                flex:1,
+                menuDisabled: false/*,
+                renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                    var dr = this.settingsCmp.categoriesStore.findRecord( "name", value );
+                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
+                    return value;
+                }*/
+            },{
+                header: this.i18n._("Msg"),
+                dataIndex: 'msg',
+                sortable: true,
+                width: 200,
+                flex:3,
+                editor: null,
+                menuDisabled: false
+            },{
+                header: this.i18n._("Reference"),
+                dataIndex: 'rule',
+                sortable: true,
+                width: 100,
+                flex:1,
+                menuDisabled: false/*,
+                renderer: function( value, metaData, record, rowIdx, colIdx, store ){
+                    var matches = value.match(this.regexRuleReference);
+                    if( matches == null ){
+                        return "";
+                    }
+                    var references = [];
+                    for( var i = 0; i < matches.length; i++ ){
+                        // Apparently need to rebuild regexp each time to correctly extract in a loop.
+                        var re = /\s+reference:\s*([^\;]+)\;/g;
+                        var rmatches = re.exec( matches[i] );
 
-                                var url = "";
-                                var referenceFields = rmatches[1].split(",");
-                                var drr = this.referencesStore.findRecord( "system", referenceFields[0] );
-                                if( drr != null ){
-                                    url = drr.get("prefix") + referenceFields[1];
-                                    references.push('<a href="'+ url + '" class="icon-detail-row" style="text-decoration:none !important;" target="_reference">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>');
+                        var url = "";
+                        var referenceFields = rmatches[1].split(",");
+                        var drr = this.referencesStore.findRecord( "system", referenceFields[0] );
+                        if( drr != null ){
+                            url = drr.get("prefix") + referenceFields[1];
+                            references.push('<a href="'+ url + '" class="icon-detail-row" style="text-decoration:none !important;" target="_reference">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>');
+                        }
+
+                    }
+                    return references.join("&nbsp;");
+                }*/
+            },{
+                xtype:'checkcolumn',
+                header: this.i18n._("Log"),
+                dataIndex: 'log',
+                sortable: true,
+                resizable: false,
+                width:55,
+                menuDisabled: false,
+                listeners: {
+                    checkchange: Ext.bind(function ( column, recordIndex, checked ){
+                        var record = this.gridRules.getStore().getAt(recordIndex);
+                        if( checked === false ){
+                            record.set('block', false );
+                        }
+                        this.gridRules.updateRule(record, null );
+                    }, this)
+                }
+            },{
+                xtype:'checkcolumn',
+                header: this.i18n._("Block"),
+                dataIndex: 'block',
+                sortable: true,
+                resizable: false,
+                width:55,
+                menuDisabled: false,
+                listeners: {
+                    checkchange: Ext.bind(function ( column, recordIndex, checked ){
+                        var record = this.gridRules.getStore().getAt(recordIndex);
+                        if( checked === true ){
+                            record.set('log', true );
+                        }
+                        this.gridRules.updateRule(record, null );
+                    }, this)
+                }
+            }],
+            rowEditorInputLines: [{
+                name: "Classtype",
+                dataIndex: "classtype",
+                fieldLabel: this.i18n._("Classtype"),
+                emptyText: this.i18n._("[enter class]"),
+                allowBlank: false,
+                width: 400,
+                xtype: 'combo',
+                queryMode: 'local',
+                valueField: 'id',
+                displayField: 'value',
+                regexMatch: /\s+classtype:([^;]+);/,
+                validator: function( value ){
+                    if( this.store.find( "value", value ) == -1 ){
+                        return this.i18n._("Invalid Classtype");
+                    }
+                    return true;
+                },
+                listeners: {
+                    select: function( combo, record, eOpts ){
+                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+
+                        var newField = " classtype:" + combo.getValue() + ";";
+                        var ruleValue = rule.getValue();
+                        if( this.regexMatch.test( ruleValue ) === true ){
+                            ruleValue = ruleValue.replace( this.regexMatch, newField );
+                        }else{
+                            ruleValue += newField;
+                        }
+                        rule.setRawValue(ruleValue);
+                    }
+                }
+            },{
+                name: "Category",
+                fieldLabel: this.i18n._("Category"),
+                dataIndex: "category",
+                emptyText: this.i18n._("[enter category]"),
+                allowBlank: false,
+                width: 400,
+                xtype: 'combo',
+                queryMode: 'local',
+                valueField: 'id',
+                displayField: 'value'
+            },{
+                xtype:'textfield',
+                name: "Msg",
+                dataIndex: "msg",
+                fieldLabel: this.i18n._("Msg"),
+                emptyText: this.i18n._("[enter name]"),
+                allowBlank: false,
+                width: 400,
+                regexMatch: /\s+msg:"([^;]+)";/,
+                validator: function( value ){
+                    invalidChars = new RegExp(/[";]/);
+                    if( invalidChars.test(value) ){
+                        return i18n._("Msg contains invalid characters.");
+                    }
+                    return true;
+                },
+                listeners: {
+                    change: function( me, newValue, oldValue, eOpts ){
+                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+
+                        var newField = " msg:\"" + newValue + "\";";
+                        var ruleValue = rule.getValue();
+                        if( this.regexMatch.test( ruleValue ) === true ){
+                            ruleValue = ruleValue.replace( this.regexMatch, newField );
+                        }else{
+                            ruleValue += newField;
+                        }
+                        rule.setRawValue(ruleValue);
+                    }
+                }
+            },{
+                xtype:'textfield',
+                name: "Sid",
+                dataIndex: "sid",
+                fieldLabel: this.i18n._("Sid"),
+                emptyText: this.i18n._("[enter sid]"),
+                allowBlank: false,
+                width: 400,
+                regexMatch: /\s+sid:([^;]+);/,
+                gidRegex: /\s+gid:\s*([^;]+);/,
+                validator: function( ourValue ){
+                    validChars = new RegExp(/[0-9]+/);
+                    if( validChars.test( ourValue ) === false ){
+                        return i18n._("Sid must be numeric");
+                    }
+                    var record = this.up("[$className=Ung.RowEditorWindow]").record;
+
+                    var ourRule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                    var ourGid = "1";
+                    if( this.gidRegex.test( ourRule.getValue() ) === true ){
+                        ourGid = this.gidRegex.exec( ourRule.getValue() )[1];
+                    }
+
+                    var match = false;
+                    this.up("[$className=Ung.RowEditorWindow]").grid.store.each(
+                        function( storeRecord ){
+                            var ruleGid;
+                            if( ( storeRecord != record ) &&
+                                (  storeRecord.get("sid") == ourValue) ){
+
+                                ruleGid = "1";
+                                if( this.gidRegex.test( storeRecord.get("rule") ) === true ){
+                                    ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
                                 }
 
-                            }
-                            return references.join("&nbsp;");
-                        }
-                    },{
-                        xtype:'checkcolumn',
-                        header: this.i18n._("Log"),
-                        dataIndex: 'log',
-                        sortable: true,
-                        resizable: false,
-                        width:55,
-                        menuDisabled: false,
-                        listeners: {
-                            checkchange: function ( column, recordIndex, checked ){
-                                if( checked === false ){
-                                    this.up("grid").store.getAt(recordIndex).set('block', false );
+                                if( ourGid == ruleGid ){
+                                    match = true;
                                 }
-                                this.up("grid").updateRule(this.up("grid").store.getAt(recordIndex), null );
                             }
-                        }
-                    },{
-                        xtype:'checkcolumn',
-                        header: this.i18n._("Block"),
-                        dataIndex: 'block',
-                        sortable: true,
-                        resizable: false,
-                        width:55,
-                        menuDisabled: false,
-                        listeners: {
-                            checkchange: function ( column, recordIndex, checked ){
-                                if( checked === true ){
-                                    this.up("grid").store.getAt(recordIndex).set('log', true );
-                                }
-                                this.up("grid").updateRule(this.up("grid").store.getAt(recordIndex), null );
-                            }
-                        }
-                    }],
-                    rowEditorInputLines: [{
-                        name: "Classtype",
-                        dataIndex: "classtype",
-                        fieldLabel: this.i18n._("Classtype"),
-                        emptyText: this.i18n._("[enter class]"),
-                        allowBlank: false,
-                        width: 400,
-                        xtype: 'combo',
-                        queryMode: 'local',
-                        valueField: 'id',
-                        displayField: 'value',
-                        regexMatch: /\s+classtype:([^;]+);/,
-                        validator: function( value ){
-                            if( this.store.find( "value", value ) == -1 ){
-                                return i18n._("Invalid Classtype");
-                            }
-                            return true;
                         },
-                        listeners: {
-                            select: function( combo, records, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                        this
+                    );
+                    if( match === true ){
+                        return i18n._("Sid already in use.");
+                    }
+                    return true;
+                },
+                listeners: {
+                    change: function( me, newValue, oldValue, eOpts ){
+                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
 
-                                var newField = " classtype:" + combo.getValue() + ";";
-                                var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) === true ){
-                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
-                                }else{
-                                    ruleValue += newField;
-                                }
-                                rule.setRawValue(ruleValue);
-                            }
-
+                        var newField = " sid:" + newValue + ";";
+                        var ruleValue = rule.getValue();
+                        if( this.regexMatch.test( ruleValue ) === true ){
+                            ruleValue = ruleValue.replace( this.regexMatch, newField );
+                        }else{
+                            ruleValue += newField;
                         }
-                    },{
-                        name: "Category",
-                        fieldLabel: this.i18n._("Category"),
-                        dataIndex: "category",
-                        emptyText: this.i18n._("[enter category]"),
-                        allowBlank: false,
-                        width: 400,
-                        xtype: 'combo',
-                        queryMode: 'local',
-                        valueField: 'id',
-                        displayField: 'value'
-                    },{
-                        xtype:'textfield',
-                        name: "Msg",
-                        dataIndex: "msg",
-                        fieldLabel: this.i18n._("Msg"),
-                        emptyText: this.i18n._("[enter name]"),
-                        allowBlank: false,
-                        width: 400,
-                        regexMatch: /\s+msg:"([^;]+)";/,
-                        validator: function( value ){
-                            invalidChars = new RegExp(/[";]/);
-                            if( invalidChars.test(value) ){
-                                return i18n._("Msg contains invalid characters.");
-                            }
-                            return true;
-                        },
-                        listeners: {
-                            change: function( me, newValue, oldValue, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
-
-                                var newField = " msg:\"" + newValue + "\";";
-                                var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) === true ){
-                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
-                                }else{
-                                    ruleValue += newField;
-                                }
-                                rule.setRawValue(ruleValue);
-                            }
+                        rule.setRawValue(ruleValue);
+                    }
+                }
+            },{
+                xtype:'checkbox',
+                name: "Log",
+                dataIndex: "log",
+                fieldLabel: this.i18n._("Log"),
+                listeners: {
+                    change: function( me, newValue, oldValue, eOpts ){
+                        if( newValue === false ){
+                            this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=block]").setValue(false);
                         }
-                    },{
-                        xtype:'textfield',
-                        name: "Sid",
-                        dataIndex: "sid",
-                        fieldLabel: this.i18n._("Sid"),
-                        emptyText: this.i18n._("[enter sid]"),
-                        allowBlank: false,
-                        width: 400,
-                        regexMatch: /\s+sid:([^;]+);/,
-                        gidRegex: /\s+gid:\s*([^;]+);/,
-                        validator: function( ourValue ){
-                            validChars = new RegExp(/[0-9]+/);
-                            if( validChars.test( ourValue ) === false ){
-                                return i18n._("Sid must be numeric");
-                            }
-                            var record = this.up("[$className=Ung.RowEditorWindow]").record;
+                        this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
+                    }
+                }
+            },{
+                xtype:'checkbox',
+                name: "Block",
+                dataIndex: "block",
+                fieldLabel: this.i18n._("Block"),
+                listeners: {
+                    change: function( me, newValue, oldValue, eOpts ){
+                        if( newValue === true ){
+                            this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=log]").setValue(true);
+                        }  
+                        this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
+                    }
+                }
+            },{
+                xtype:'textareafield',
+                name: "Rule",
+                dataIndex: "rule",
+                fieldLabel: this.i18n._("Rule"),
+                emptyText: this.i18n._("[enter rule]"),
+                allowBlank: false,
+                width: 500,
+                height: 150,
+                actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
+                regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+                validator: function( value ){
+                    if( this.regexMatch.test(value) === false ){
+                        return i18n._("Rule formatted wrong.");
+                    }
+                    return true;
+                },
+                listeners: {
+                    change: function( me, newValue, oldValue, eOpts ){
+                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                        var value = this.getValue();
 
-                            var ourRule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
-                            var ourGid = "1";
-                            if( this.gidRegex.test( ourRule.getValue() ) === true ){
-                                ourGid = this.gidRegex.exec( ourRule.getValue() )[1];
-                            }
+                        value = value.replace( /(\r\n|\n|\r)/gm, "" );
 
-                            var match = false;
-                            this.up("[$className=Ung.RowEditorWindow]").grid.store.each(
-                                function( storeRecord ){
-                                    var ruleGid;
-                                    if( ( storeRecord != record ) &&
-                                        (  storeRecord.get("sid") == ourValue) ){
-
-                                        ruleGid = "1";
-                                        if( this.gidRegex.test( storeRecord.get("rule") ) === true ){
-                                            ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
-                                        }
-
-                                        if( ourGid == ruleGid ){
-                                            match = true;
-                                        }
-                                    }
-                                },
-                                this
-                            );
-                            if( match === true ){
-                                return i18n._("Sid already in use.");
-                            }
-                            return true;
-                        },
-                        listeners: {
-                            change: function( me, newValue, oldValue, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
-
-                                var newField = " sid:" + newValue + ";";
-                                var ruleValue = rule.getValue();
-                                if( this.regexMatch.test( ruleValue ) === true ){
-                                    ruleValue = ruleValue.replace( this.regexMatch, newField );
-                                }else{
-                                    ruleValue += newField;
-                                }
-                                rule.setRawValue(ruleValue);
+                        var updateFields = [ "Classtype", "Msg", "Sid" ]; 
+                        var match;
+                        for( var i = 0; i < updateFields.length; i++ ){
+                            var field = this.up("[$className=Ung.RowEditorWindow]").down("[name=" + updateFields[i] + "]");
+                            if( field.regexMatch.test( value ) ){
+                                match = field.regexMatch.exec( value );
+                                field.setRawValue( match[1] );
+                                field.validate();
                             }
                         }
-                    },{
-                        xtype:'checkbox',
-                        name: "Log",
-                        dataIndex: "log",
-                        fieldLabel: this.i18n._("Log"),
-                        listeners: {
-                            change: function( me, newValue, oldValue, eOpts ){
-                                if( newValue === false ){
-                                    this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=block]").setValue(false);
-                                }
-                                this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
-                            }
-                        }
-                    },{
-                        xtype:'checkbox',
-                        name: "Block",
-                        dataIndex: "block",
-                        fieldLabel: this.i18n._("Block"),
-                        listeners: {
-                            change: function( me, newValue, oldValue, eOpts ){
-                                if( newValue === true ){
-                                    this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=log]").setValue(true);
-                                }  
-                                this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
-                            }
-                        }
-                    },{
-                        xtype:'textareafield',
-                        name: "Rule",
-                        dataIndex: "rule",
-                        fieldLabel: this.i18n._("Rule"),
-                        emptyText: this.i18n._("[enter rule]"),
-                        allowBlank: false,
-                        width: 500,
-                        height: 150,
-                        actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
-                        regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
-                        validator: function( value ){
-                            if( this.regexMatch.test(value) === false ){
-                                return i18n._("Rule formatted wrong.");
-                            }
-                            return true;
-                        },
-                        listeners: {
-                            change: function( me, newValue, oldValue, eOpts ){
-                                var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                                var value = this.getValue();
 
-                                value = value.replace( /(\r\n|\n|\r)/gm, "" );
+                        // Action
+                        var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
+                        var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
 
-                                var updateFields = [ "Classtype", "Msg", "Sid" ]; 
-                                var match;
-                                for( var i = 0; i < updateFields.length; i++ ){
-                                    var field = this.up("[$className=Ung.RowEditorWindow]").down("[name=" + updateFields[i] + "]");
-                                    if( field.regexMatch.test( value ) ){
-                                        match = field.regexMatch.exec( value );
-                                        field.setRawValue( match[1] );
-                                        field.validate();
-                                    }
-                                }
-
-                                // Action
-                                var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
-                                var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
-
-                                var logValue = false;
-                                var blockValue = false;
-                                if( this.actionRegexMatch.test( value ) === true ){
-                                    match = this.actionRegexMatch.exec( value );
-                                    if( match[2] == "alert" ){
-                                        logValue = true;
-                                    }else if( ( match[2] == "drop" ) || ( match[2] == "sdrop" ) ){
-                                        logValue = true;
-                                        blockValue = true;
-                                    }
-                                    if( match[1] == "#" ){
-                                        logValue = false;
-                                        blockValue = false;
-                                    }
-                                }
-                                log.setRawValue(logValue);
-                                block.setRawValue(blockValue);
-
-                                this.setRawValue( value );
-                            }
-                        }
-                    }],
-                    actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
-                    updateRule: function( record, source ){
-                        /*
-                         * Rebuild rule according to record or form values
-                         */
                         var logValue = false;
                         var blockValue = false;
-                        var ruleValue = "";
-                        if( source === null ){
-                            // Pull values from record
-                            logValue = record.data.log;
-                            blockValue = record.data.block;
-                            ruleValue = record.data.rule;
-                        }else{
-                            // Pull values from form
-                            logValue = source.down("[dataIndex=log]").getValue();
-                            blockValue = source.down("[dataIndex=block]").getValue();
-                            ruleValue = source.down("[dataIndex=rule]").getValue();
+                        if( this.actionRegexMatch.test( value ) === true ){
+                            match = this.actionRegexMatch.exec( value );
+                            if( match[2] == "alert" ){
+                                logValue = true;
+                            }else if( ( match[2] == "drop" ) || ( match[2] == "sdrop" ) ){
+                                logValue = true;
+                                blockValue = true;
+                            }
+                            if( match[1] == "#" ){
+                                logValue = false;
+                                blockValue = false;
+                            }
                         }
+                        log.setRawValue(logValue);
+                        block.setRawValue(blockValue);
 
-                        var newField = "alert";
-                        if( logValue === true && blockValue === true ){
-                            newField = "drop";
-                        }else if( logValue === false && blockValue === true ){
-                            newField = "sdrop";
-                        }else if( logValue === false && blockValue === false ){
-                            newField = "#" + newField;
-                        }
-
-                        if( this.actionRegexMatch.test( ruleValue ) === true ){
-                            ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
-                        }else{
-                            ruleValue = ruleValue + newField;
-                        }
-
-                        if( source === null ){
-                            record.data.rule = ruleValue;
-                        }else{
-                            source.down("[dataIndex=rule]").setRawValue(ruleValue);    
-                        }
+                        this.setRawValue( value );
                     }
-                }),
-                this.gridVariables = Ext.create('Ung.grid.Panel', {
-                    flex: 1,
-                    title: this.i18n._("Variables"),
-                    name: 'Variables',
-                    settingsCmp: this,
-                    dataProperty: 'variables',
-                    recordJavaClass: "com.untangle.node.idps.IpsVariable",
-                    emptyRow: {
-                        "variable": "",
-                        "definition": "",
-                        "description": ""
-                    },
-                    sortField: 'variable',
-                    fields: [{
-                        name: 'id'
-                    },{
-                        name: 'variable',
-                        type: 'string'
-                    },{
-                        name: 'definition',
-                        type: 'string'
-                    },{
-                        name: 'description',
-                        type: 'string'
-                    }, {
-                        name: 'originalId',
-                        mapping: 'variable'
-                    }],
-                    columns: [{
-                        header: this.i18n._("Name"),
-                        width: 170,
-                        dataIndex: 'variable',
-                        editor: {
-                            xtype:'textfield',
-                            emptyText: this.i18n._("[enter name]"),
-                            allowBlank: false
-                        }
-                    },{
-                        id: 'definition',
-                        header: this.i18n._("Definition"),
-                        width: 300,
-                        dataIndex: 'definition',
-                        editor: {
-                            xtype:'textfield',
-                            emptyText: this.i18n._("[enter definition]"),
-                            allowBlank: false
-                        }
-                    },{
-                        header: this.i18n._("Description"),
-                        width: 300,
-                        dataIndex: 'description',
-                        flex:1,
-                        editor: {
-                            xtype:'textfield',
-                            emptyText: this.i18n._("[enter description]"),
-                            allowBlank: false
-                        }
-                    }],
-                    rowEditorInputLines: [{
-                        xtype:'textfield',
-                        name: "Name",
-                        dataIndex: "variable",
-                        fieldLabel: this.i18n._("Name"),
-                        emptyText: this.i18n._("[enter name]"),
-                        allowBlank: false,
-                        width: 300
-                    },{
-                        xtype:'textfield',
-                        name: "Pass",
-                        dataIndex: "definition",
-                        fieldLabel: this.i18n._("Pass"),
-                        emptyText: this.i18n._("[enter definition]"),
-                        allowBlank: false,
-                        width: 400
-                    },{
-                        xtype:'textfield',
-                        name: "Description",
-                        dataIndex: "description",
-                        fieldLabel: this.i18n._("Description"),
-                        emptyText: this.i18n._("[enter description]"),
-                        allowBlank: false,
-                        width: 400
-                    }],
-                    deleteHandler: function( record ){
-                        var ruleEditorGrid = this.up("panel").down("grid");
-                        if( ruleEditorGrid.storeActiveVariables.getCount() == 0 ){
-                            Ext.MessageBox.wait(i18n._("Validating..."), i18n._("Please wait") );
-                            var buildStore = Ext.create( 
-                                'Ext.util.DelayedTask', 
-                                function(){
-                                    ruleEditorGrid.buildActiveVariableStore();
-                                    Ext.MessageBox.hide();
-                                    this.deleteCheck(record);
-                                },
-                                this
-                                );
-                            buildStore.delay(100);
-                        }else{
+                }
+            }],
+            actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
+            updateRule: function( record, source ){
+                // Rebuild rule according to record or form values
+                var logValue = false;
+                var blockValue = false;
+                var ruleValue = "";
+                if( source === null ) {
+                    // Pull values from record
+                    logValue = record.get("log");
+                    blockValue = record.get("block");
+                    ruleValue = record.get("rule");
+                } else {
+                    // Pull values from form
+                    logValue = source.down("[dataIndex=log]").getValue();
+                    blockValue = source.down("[dataIndex=block]").getValue();
+                    ruleValue = source.down("[dataIndex=rule]").getValue();
+                }
+
+                var newField = "alert";
+                if( logValue === true && blockValue === true ) {
+                    newField = "drop";
+                } else if( logValue === false && blockValue === true ) {
+                    newField = "sdrop";
+                } else if( logValue === false && blockValue === false ) {
+                    newField = "#" + newField;
+                }
+
+                if( this.actionRegexMatch.test( ruleValue ) === true ) {
+                    ruleValue = ruleValue.replace( this.actionRegexMatch, newField );
+                } else {
+                    ruleValue = ruleValue + newField;
+                }
+
+                if( source === null ) {
+                    record.data.rule = ruleValue;
+                } else {
+                    source.down("[dataIndex=rule]").setRawValue(ruleValue);    
+                }
+            }
+        });
+    },
+
+    // Variables Panel
+    buildVariables: function() {
+        this.gridVariables = Ext.create('Ung.grid.Panel', {
+            //helpSource: 'intrusion_detection_prevention_variables', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist            
+            title: this.i18n._("Variables"),
+            name: 'Variables',
+            settingsCmp: this,
+            dataProperty: 'variables',
+            recordJavaClass: "com.untangle.node.idps.IpsVariable",
+            emptyRow: {
+                "variable": "",
+                "definition": "",
+                "description": ""
+            },
+            sortField: 'variable',
+            fields: [{
+                name: 'id'
+            },{
+                name: 'variable',
+                type: 'string'
+            },{
+                name: 'definition',
+                type: 'string'
+            },{
+                name: 'description',
+                type: 'string'
+            }, {
+                name: 'originalId',
+                mapping: 'variable'
+            }],
+            columns: [{
+                header: this.i18n._("Name"),
+                width: 170,
+                dataIndex: 'variable',
+                editor: {
+                    xtype:'textfield',
+                    emptyText: this.i18n._("[enter name]"),
+                    allowBlank: false
+                }
+            },{
+                id: 'definition',
+                header: this.i18n._("Definition"),
+                width: 300,
+                dataIndex: 'definition',
+                editor: {
+                    xtype:'textfield',
+                    emptyText: this.i18n._("[enter definition]"),
+                    allowBlank: false
+                }
+            },{
+                header: this.i18n._("Description"),
+                width: 300,
+                dataIndex: 'description',
+                flex:1,
+                editor: {
+                    xtype:'textfield',
+                    emptyText: this.i18n._("[enter description]"),
+                    allowBlank: false
+                }
+            }],
+            rowEditorInputLines: [{
+                xtype:'textfield',
+                name: "Name",
+                dataIndex: "variable",
+                fieldLabel: this.i18n._("Name"),
+                emptyText: this.i18n._("[enter name]"),
+                allowBlank: false,
+                width: 300
+            },{
+                xtype:'textfield',
+                name: "Pass",
+                dataIndex: "definition",
+                fieldLabel: this.i18n._("Pass"),
+                emptyText: this.i18n._("[enter definition]"),
+                allowBlank: false,
+                width: 400
+            },{
+                xtype:'textfield',
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: this.i18n._("Description"),
+                emptyText: this.i18n._("[enter description]"),
+                allowBlank: false,
+                width: 400
+            }],
+            deleteHandler: function( record ){
+                var ruleEditorGrid = this.up("panel").down("grid");
+                if( ruleEditorGrid.storeActiveVariables.getCount() == 0 ){
+                    Ext.MessageBox.wait(i18n._("Validating..."), i18n._("Please wait") );
+                    var buildStore = Ext.create('Ext.util.DelayedTask', 
+                        function(){
+                            ruleEditorGrid.buildActiveVariableStore();
+                            Ext.MessageBox.hide();
                             this.deleteCheck(record);
-                        }
-                    },
-                    deleteCheck: function( record ){
-                        var activeVariableRecord = this.up("panel").down("grid").storeActiveVariables.findRecord("id", record.get('variable'), 0, false, false, true );
-                        if( ( activeVariableRecord != null ) &&
-                            ( activeVariableRecord.get("ruleIds").length > 0 ) ){
-                            Ext.MessageBox.alert(
-                                i18n._("Cannot Delete Variable"), 
-                                i18n._("Variable is in use by one or more rules.")
-                            );
-                        }else{
-                            this.stopEditing();
-                            this.updateChangedData(record, "deleted");
-                        }
-                    }
-                })
-        ]});
+                        },
+                        this
+                        );
+                    buildStore.delay(100);
+                }else{
+                    this.deleteCheck(record);
+                }
+            },
+            deleteCheck: function( record ){
+                var activeVariableRecord = this.up("panel").down("grid").storeActiveVariables.findRecord("id", record.get('variable'), 0, false, false, true );
+                if( ( activeVariableRecord != null ) &&
+                    ( activeVariableRecord.get("ruleIds").length > 0 ) ){
+                    Ext.MessageBox.alert(
+                        i18n._("Cannot Delete Variable"), 
+                        i18n._("Variable is in use by one or more rules.")
+                    );
+                } else {
+                    this.stopEditing();
+                    this.updateChangedData(record, "deleted");
+                }
+            }
+        })
     },
     // Event Log
     buildEventLog: function() {
-        var settingsCmpParam = this;
-        var nameParam = 'EventLog';
-        var titleParam = i18n._('Event Log');
-        var helpSourceParam = 'intrusion_detection_prevention_event_log';
-        var visibleColumnsParam = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg' ];
-        var eventQueriesFnParam = this.getRpcNode().getEventQueries;
+        var visibleColumns = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg' ];
         this.gridEventLog = Ext.create('Ung.GridEventLog',{
-            name: nameParam,
-            settingsCmp: settingsCmpParam,
-            helpSource: helpSourceParam,
-            eventQueriesFn: eventQueriesFnParam,
-            title: titleParam,
+            settingsCmp: this,
+            helpSource: 'intrusion_detection_prevention_event_log',
+            eventQueriesFn: this.getRpcNode().getEventQueries,
             fields: [{
                 name: 'time_stamp',
                 sortType: Ung.SortTypes.asTimestamp
@@ -1214,7 +1134,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 type: 'string'
             }],
             columns: [{
-                hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
+                hidden: visibleColumns.indexOf('time_stamp') < 0,
                 header: i18n._("Timestamp"),
                 width: Ung.Util.timestampFieldWidth,
                 sortable: true,
@@ -1223,7 +1143,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     return i18n.timestampFormat(value);
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('sig_id') < 0,
+                hidden: visibleColumns.indexOf('sig_id') < 0,
                 header: i18n._("Sid"),
                 width: 70,
                 sortable: true,
@@ -1232,7 +1152,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('gen_id') < 0,
+                hidden: visibleColumns.indexOf('gen_id') < 0,
                 header: i18n._("Gid"),
                 width: 70,
                 sortable: true,
@@ -1241,7 +1161,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('class_id') < 0,
+                hidden: visibleColumns.indexOf('class_id') < 0,
                 header: i18n._("Cid"),
                 width: 70,
                 sortable: true,
@@ -1250,13 +1170,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('source_addr') < 0,
+                hidden: visibleColumns.indexOf('source_addr') < 0,
                 header: i18n._("Source Address"),
                 width: Ung.Util.ipFieldWidth,
                 sortable: true,
                 dataIndex: 'source_addr'
             }, {
-                hidden: visibleColumnsParam.indexOf('source_port') < 0,
+                hidden: visibleColumns.indexOf('source_port') < 0,
                 header: i18n._("Source port"),
                 width: Ung.Util.portFieldWidth,
                 sortable: true,
@@ -1265,13 +1185,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('dest_addr') < 0,
+                hidden: visibleColumns.indexOf('dest_addr') < 0,
                 header: i18n._("Destination Address"),
                 width: Ung.Util.ipFieldWidth,
                 sortable: true,
                 dataIndex: 'dest_addr'
             }, {
-                hidden: visibleColumnsParam.indexOf('dest_port') < 0,
+                hidden: visibleColumns.indexOf('dest_port') < 0,
                 header: i18n._("Destination port"),
                 width: Ung.Util.portFieldWidth,
                 sortable: true,
@@ -1280,7 +1200,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('protocol') < 0,
+                hidden: visibleColumns.indexOf('protocol') < 0,
                 header: i18n._("Protocol"),
                 width: 70,
                 sortable: true,
@@ -1289,7 +1209,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('blocked') < 0,
+                hidden: visibleColumns.indexOf('blocked') < 0,
                 header: i18n._("Blocked"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
@@ -1300,19 +1220,19 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('category') < 0,
+                hidden: visibleColumns.indexOf('category') < 0,
                 header: i18n._("Category"),
                 width: 200,
                 sortable: true,
                 dataIndex: 'category'
             }, {
-                hidden: visibleColumnsParam.indexOf('classtype') < 0,
+                hidden: visibleColumns.indexOf('classtype') < 0,
                 header: i18n._("Classtype"),
                 width: 200,
                 sortable: true,
                 dataIndex: 'classtype'
             }, {
-                hidden: visibleColumnsParam.indexOf('msg') < 0,
+                hidden: visibleColumns.indexOf('msg') < 0,
                 header: i18n._("Msg"),
                 width: 200,
                 sortable: true,
@@ -1321,10 +1241,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         });
     },
     setupWizard: function() {
-        var i;
-        if (this.wizardWindow) {
-            Ext.destroy(this.wizardWindow);
-        }
         var welcomeCard = Ext.create('Webui.untangle-node-idps.Wizard.Welcome', {
             i18n: this.i18n,
             node: this.getRpcNode(),
@@ -1353,40 +1269,36 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 labelWidth: 200,
                 cls: 'untangle-form-panel'
             },
-            cards: [welcomeCard, classtypesCard, categoriesCard, congratulationsCard]
+            cards: [welcomeCard, classtypesCard, categoriesCard, congratulationsCard],
+            cancelAction: function() {
+                this.up("window").close();
+            }
         });
-        var objSize = Ung.Main.viewport.getSize();
         this.wizardWindow = Ext.create('Ung.Window',{
             title: this.i18n._("Intrusion Prevention Setup Wizard"),
-            height: objSize.height,
-            closeAction: "cancelAction",
-            wizard: setupWizard,
-            layout: "fit",
             items: setupWizard,
-            endAction: Ext.bind(function() {
-                this.enable();
+            closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
+                this.enable();
             }, this),
-            cancelAction: Ext.bind(function() {
-                this.wizardWindow.wizard.cancelAction();
-            }, this)
+            listeners: {
+                beforeclose: Ext.bind(function() {
+                    var wizard = this.wizardWindow.down('panel[name="wizard"]');
+                    if(!wizard.finished) {
+                        wizard.finished=true;
+                        Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
+                            this.wizardWindow.close();
+                        }, this));
+                        return false;
+                    }
+                    return true;
+                }, this)
+            }
         });
 
-        setupWizard.cancelAction=Ext.bind(function() {
-            this.enable();
-            if(!this.wizardWindow.wizard.finished) {
-                Ext.MessageBox.alert(this.i18n._("Setup Wizard Warning"), this.i18n._("You have not finished configuring Intrusion Prevention. Please run the Setup Wizard again."), Ext.bind(function () {
-                    this.wizardWindow.endAction();
-                }, this));
-            } else {
-                this.wizardWindow.endAction();
-            }
-            Ext.destroy(this.wizardWindow);
-        }, this);
-
         this.wizardWindow.show();
-        setupWizard.goToPage(0);
+        setupWizard.loadPage(0);
     },
     beforeSave: function(isApply, handler) {
         if( this.getRpcNode().getUpdatedSettingsFlag() === true ){
@@ -1407,11 +1319,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
         handler.call(this, isApply);
     },
     save: function(isApply) {
-        /*
-         * Due to the number of Snort rules, it takes too long to send everything back.
-         * Instead, we send all settings except rules and variables.  Rules and variables
-         * are sent as changedData sets from their grids.
-         */
+        // Due to the number of Snort rules, it takes too long to send everything back.
+        // Instead, we send all settings except rules and variables.  Rules and variables
+        // are sent as changedData sets from their grids.
         var changedDataSet = {};
         var keys = Object.keys(this.settings);
         for( var i = 0; i < keys.length; i++){
@@ -1423,10 +1333,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             changedDataSet[keys[i]] = this.settings[keys[i]];
         }
 
-        /*
-         * This will always set rules/variables to minimally empty "diff" 
-         * objects if nothing  has changed
-         */
+        // This will always set rules/variables to minimally empty "diff"  objects if nothing  has changed
         Ext.Array.each( 
             this.query("*[changedData]"),
             function( c ){
@@ -1446,21 +1353,22 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 arg2: this.tid
             },
             scope: this,
+            timeout: 600000,
             success: function(response){
                 var r = Ext.decode( response.responseText );
-                if( r.success === false ){
+                if( r.success === false ) {
                     Ext.MessageBox.hide();
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
-                }else{
+                } else {
                     this.getRpcNode().reconfigure();
                     Ext.MessageBox.hide();
 
                     if (!isApply) {
                         this.closeWindow();
                         return;
-                    }else{
+                    } else {
                         this.clearDirty();
-                        if( this.forceReload === true ){
+                        if( this.forceReload === true ) {
                             this.reload();
                         }
                     }
@@ -1474,50 +1382,39 @@ Ext.define('Webui.untangle-node-idps.settings', {
     }
 });
 
-/* IDPS wizard configuration cards. */
+// IDPS wizard configuration cards.
 Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
     constructor: function( config ) {
-        this.i18n = config.i18n;
-        this.node = config.node;
-        this.gui = config.gui;
+        Ext.apply(this, config);
 
         var items = [{
-            xtype: 'container',
+            xtype: 'component',
             html: '<h2 class="wizard-title">'+this.i18n._("Welcome to the Intrusion Prevention Setup Wizard!")+'</h2>'
         },{
-            xtype: 'container',
-            html: 
-                this.i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
-            cls: 'description',
-            bodyStyle: 'padding-bottom:10px',
-            border: false
+            xtype: 'component',
+            html: this.i18n._("Intrusion Prevention operates using rules to identify possible threats.  An enabled ruled performs an action, either logging or blocking traffic.  Not all rules are necessary for a given network environment and enabling all of them may negatively impact your network."),
+            margin: '0 0 10 10'
         },{
-            xtype: 'container',
-            html: 
-                this.i18n._("This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."),
-            cls: 'description',
-            bodyStyle: 'padding-bottom:10px',
-            border: false
+            xtype: 'component',
+            html: this.i18n._("This wizard is designed to help you correctly configure the appropriate amount of rules for your network by selecting rule identifiers: classtypes and categories.  The more that you select, the more rules will be enabled.  Again, too many enabled rules may negatively impact your network."),
+            margin: '0 0 10 10'
         },{
-            xtype: 'container',
-            html: 
-                this.i18n._("It is highly suggested that you use Recommended values."),
-            cls: 'description',
-            bodyStyle: 'padding-bottom:10px',
-            border: false
+            xtype: 'component',
+            html: this.i18n._("It is highly suggested that you use Recommended values."),
+            margin: '0 0 10 10'
         }];
 
         if( this.gui.getSettings().configured === true ){
             items.push({
+                xtype: 'component',
                 html: this.i18n._('WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'),
-                cls: 'description warning',
-                border: false
+                cls: 'warning',
+                margin: '0 0 10 10'
             });
         }
 
         this.title = this.i18n._("Welcome");
-        this.panel = Ext.create('Ext.form.Panel',{
-            border: false,
+        this.panel = Ext.create('Ext.container.Container',{
             items: items
         });
 
@@ -1526,11 +1423,10 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
     },
 
     loadDefaultSettings: function(handler){
-        if( this.initialLoad === true ||
-            this.gui.wizardSettings ){
+        if( this.initialLoad === true || this.gui.wizardSettings ) {
             this.initialLoad = false;
             handler();
-        }else{
+        } else {
             Ext.MessageBox.wait(this.i18n._("Determining recommended settings..."), this.i18n._("Please wait"));
             Ext.Ajax.request({
                 url: "/webui/download",
@@ -1541,12 +1437,10 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                     arg2: this.gui.node.nodeId
                 },
                 scope: this,
+                timeout: 600000,
                 success: function(response){
                     var wizardDefaults = Ext.decode( response.responseText );
-
-                    /*
-                     * Determine profile to use based on system stats.
-                     */
+                    // Determine profile to use based on system stats.
                     var stats = rpc.metricManager.getMetricsAndStats();
                     var profile;
                     var match;
@@ -1580,17 +1474,13 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
                         }
                     }
 
-                    /*
-                     * Preserve recommended values
-                     */
+                    // Preserve recommended values
                     this.gui.wizardRecommendedSettings = Ext.clone(profile);
 
                     this.gui.wizardSettings = Ext.clone(profile);
                     var i;
                     if( this.gui.settings.configured === true ){
-                        /*
-                         * Setup wizard already configured.  Pull current settings.
-                         */
+                        // Setup wizard already configured.  Pull current settings.
                         if( this.gui.settings.activeGroups ){
                             keys = Object.keys(this.gui.settings.activeGroups);
                             for( i = 0; i < keys.length; i++){
@@ -1618,10 +1508,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
 
 Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
     constructor: function( config ) {
-        this.i18n = config.i18n;
-        this.node = config.node;
-        this.nodeWidget = config.nodeWidget;
-        this.gui = config.gui;
+        Ext.apply(this, config);
 
         this.classtypesCheckboxGroup = {
             xtype: 'checkboxgroup',
@@ -1654,16 +1541,14 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
 
 
         this.title = this.i18n._( "Classtypes" );
-        this.panel = Ext.create('Ext.form.Panel',{
-            border: false,
+        this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+this.i18n._("Classtypes")+'</h2>'
             },{
                 xtype: 'container',
                 html: this.i18n._("Classtypes are a generalized  grouping for rules, such as attempts to gain user access."),
-                cls: 'description',
-                border: false,
+                margin: '0 0 10 0'
             },{
                 name: 'classtypes',
                 xtype: 'radio',
@@ -1676,8 +1561,8 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                 }, this)
             },{
                 name: 'classtypes_recommended_settings',
-                xtype:'fieldset',
-                hidden:true,
+                xtype: 'fieldset',
+                hidden: true,
                 html: "<i>" + this.i18n._("Recommended classtype Settings") + "</i>"
             },{
                 name: 'classtypes',
@@ -1688,11 +1573,11 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)                
+                }, this)
             },{
                 name: 'classtypes_custom_settings',
                 xtype:'fieldset',
-                hidden:true,
+                hidden: true,
                 items: [
                     this.classtypesCheckboxGroup
                 ]
@@ -1745,7 +1630,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                     if( value.indexOf("+") == 0 ){
                         value = value.substr(1);
                     }else if( value.indexOf("-") == 0 ){
-                        value = value.substr(1);                        
+                        value = value.substr(1);
                     }
                     for( var j = 0; j < checkboxes.length; j++ ){
                         if( checkboxes[j].inputValue == value ){
@@ -1763,7 +1648,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                         if( value.indexOf("+") == 0 ){
                             value = value.substr(1);
                         }else if( value.indexOf("-") == 0 ){
-                            value = value.substr(1);                        
+                            value = value.substr(1);
                         }
                         recommendedValues.push(value);
                     }
@@ -1796,10 +1681,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
 
 Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
     constructor: function( config ) {
-        this.i18n = config.i18n;
-        this.node = config.node;
-        this.nodeWidget = config.nodeWidget;
-        this.gui = config.gui;
+        Ext.apply(this, config);
 
         var categoriesCheckboxGroup = {
             xtype: 'checkboxgroup',
@@ -1831,16 +1713,14 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         } );
 
         this.title = this.i18n._( "Categories" );
-        this.panel = Ext.create('Ext.form.Panel',{
-            border: false,
+        this.panel = Ext.create('Ext.container.Container',{
             items: [{
                 xtype: 'container',
                 html: '<h2 class="wizard-title">'+this.i18n._("Categories")+'</h2>'
             },{
                 xtype: 'container',
                 html: this.i18n._("Categories are a different rule grouping that can span multiple classtypes, such as VOIP access."),
-                cls: 'description',
-                border: false,
+                margin: '0 0 10 0'
             },{
                 name: 'categories',
                 xtype: 'radio',
@@ -1869,11 +1749,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                 name: 'categories_custom_settings',
                 xtype:'fieldset',
                 hidden:true,
-                items: [{
-                    cls: 'description',
-                    bodyStyle: 'padding-top:10px',
-                    border: false
-                    },
+                items: [
                     categoriesCheckboxGroup
                 ]
             }]
@@ -1887,16 +1763,15 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         if( checked === false ){
             return;
         }
-        Ext.Array.each( 
-            this.panel.query(""), 
-            function( c ){ 
-                if( !c.name || c.name.indexOf('categories_') !== 0 ){
+        Ext.Array.each( this.panel.query(""), 
+            function( c ) { 
+                if( !c.name || c.name.indexOf('categories_') !== 0 ) {
                     return true;
                 }
                 if( c.xtype == "fieldset"){
-                    if( c.name.indexOf( id ) != -1 ){
+                    if( c.name.indexOf( id ) != -1 ) {
                         c.setVisible(true);
-                    }else{
+                    } else {
                         c.setVisible(false);
                     }
                 }
@@ -1907,8 +1782,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
     onLoad: function( handler ){
         if( this.loaded !== true ){
             if( this.gui.wizardSettings.activeGroups ){
-                Ext.Array.each(
-                    this.panel.query("radio[name=categories]"),
+                Ext.Array.each( this.panel.query("radio[name=categories]"),
                     function(c){
                         if( c.inputValue == this.gui.wizardSettings.activeGroups.categories ){
                             c.setValue(true);
@@ -1924,7 +1798,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     if( value.indexOf("+") == 0 ){
                         value = value.substr(1);
                     }else if( value.indexOf("-") == 0 ){
-                        value = value.substr(1);                        
+                        value = value.substr(1);
                     }
                     for( var j = 0; j < checkboxes.length; j++ ){
                         if( checkboxes[j].inputValue == value ){
@@ -1933,16 +1807,16 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     }
                 }
 
-                if( this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length === 0 ){
+                if( this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length === 0 ) {
                     this.panel.down( "[name=categories_recommended_settings]" ).update( this.i18n._("None.  Categories within selected classtypes will be used.") );
-                }else{
+                } else {
                     var recommendedValues = [];
                     for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length; i++ ){
                         value = this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected[i];
                         if( value.indexOf("+") == 0 ){
                             value = value.substr(1);
                         }else if( value.indexOf("-") == 0 ){
-                            value = value.substr(1);                        
+                            value = value.substr(1);
                         }
                         recommendedValues.push(value);
                     }
@@ -1976,32 +1850,25 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
 
 Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
     constructor: function( config ) {
-        this.i18n = config.i18n;
-        this.node = config.node;
-        this.nodeWidget = config.nodeWidget;
-        this.gui = config.gui;
+        Ext.apply(this, config);
 
         this.title = this.i18n._( "Finish" );
-        this.panel = Ext.create('Ext.form.Panel',{
-            border: false,
+        this.panel = Ext.create('Ext.container.Container',{
             items: [{
-                    xtype: 'container',
-                    html: '<h2 class="wizard-title">'+this.i18n._("Congratulations!")+'</h2>'
-                }, {
-                    xtype: 'container',
-                    html: this.i18n._('Intrusion Prevention is now configured and enabled.'),
-                    cls: 'description',
-                    border: false
-                }]
+                xtype: 'container',
+                html: '<h2 class="wizard-title">'+this.i18n._("Congratulations!")+'</h2>'
+            }, {
+                xtype: 'container',
+                html: this.i18n._('Intrusion Prevention is now configured and enabled.'),
+                margin: '10 0 0 10'
+            }]
         });
 
         this.onNext = Ext.bind(this.completeWizard, this );
     },
 
     completeWizard: function( handler ) {
-        /*
-         * Copy values into form settings.
-         */
+        // Copy values into form settings.
         var keys = Object.keys(this.gui.wizardSettings);
         for( var i = 0; i < keys.length; i++){
             if( keys[i] == "systemStats" ){
@@ -2011,9 +1878,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
         }
         this.gui.settings.configured = true;
 
-        /*
-         * Save, enable, teardown wizard
-         */
+        // Save, enable, teardown wizard
         this.gui.dirtyFlag = true;
         this.gui.wizard = true;
 

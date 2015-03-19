@@ -610,9 +610,10 @@ Ext.define('Webui.config.administration', {
                     xtype: 'fieldset',
                     layout: 'column',
                     items: [{
-                        border: false,
+                        xtype: 'component',
                         width: 20,
-                        html: '<div class="step_counter">1</div>'
+                        cls: 'step_counter',
+                        html: '1'
                     },{
                         xtype: 'button',
                         margin: '0 5 0 5',
@@ -632,9 +633,10 @@ Ext.define('Webui.config.administration', {
                     xtype: 'fieldset',
                     layout: 'column',
                     items: [{
-                        border: false,
+                        xtype: 'component',
                         width: 20,
-                        html: '<div class="step_counter">2</div>'
+                        cls: 'step_counter',
+                        html: '2'
                     },{
                         xtype: 'button',
                         margin: '0 5 0 5',

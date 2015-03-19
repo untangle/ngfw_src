@@ -39,7 +39,6 @@
     <script type="text/javascript" src="script/windowNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/baseEventLogNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/eventLogNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/editorGridNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/gridPanelNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/ruleBuilderNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/matcherWindowNew.js?s=${buildStamp}"></script>
@@ -91,7 +90,7 @@
     <script type="text/javascript" src="script/untangle-node-reporting/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spamassassin/settingsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settingsNew.js?s=${buildStamp}"></script>
-<!-- <script type="text/javascript" src="script/untangle-node-idps/settingsNew.js?s=${buildStamp}"></script> -->
+ <script type="text/javascript" src="script/untangle-node-idps/settingsNew.js?s=${buildStamp}"></script>
     
 <%--
 <c:if test="${param['expert']==1}">
