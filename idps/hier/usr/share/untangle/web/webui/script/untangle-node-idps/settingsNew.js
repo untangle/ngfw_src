@@ -1084,7 +1084,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     this.updateChangedData(record, "deleted");
                 }
             }
-        })
+        });
     },
     // Event Log
     buildEventLog: function() {
