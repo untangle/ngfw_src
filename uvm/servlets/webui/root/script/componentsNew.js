@@ -711,7 +711,7 @@ Ext.define("Ung.Node", {
                 licenseMessage = i18n._("Free trial.");
             }
         } else if (!this.license.valid) {
-            licenseMessage = this.license.status
+            licenseMessage = this.license.status;
         }
         return licenseMessage;
     },
