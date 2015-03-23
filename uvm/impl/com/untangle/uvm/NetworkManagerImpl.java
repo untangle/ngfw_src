@@ -1000,9 +1000,9 @@ public class NetworkManagerImpl implements NetworkManager
              * Check other routes
              */
             for ( StaticRoute route2 : networkSettings.getStaticRoutes() ) {
-                if ( route.getNetwork() == null )
+                if ( route2.getNetwork() == null )
                     continue;
-                if ( route.getPrefix() == null )
+                if ( route2.getPrefix() == null )
                     continue;
                 if ( route.getRuleId() == route2.getRuleId() )
                     continue;
@@ -1010,7 +1010,7 @@ public class NetworkManagerImpl implements NetworkManager
                 IPMaskedAddress maskedAddr1 = new IPMaskedAddress( route.getNetwork(), route.getPrefix() );
                 IPMaskedAddress maskedAddr2 = new IPMaskedAddress( route2.getNetwork(), route2.getPrefix() );;
                 
-                if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+                if ( maskedAddr1.getMaskedAddress().equals(maskedAddr2.getMaskedAddress()) && route.getPrefix().equals(route2.getPrefix()) ) {
                     throw new RuntimeException( route.getDescription() + " & " + route2.getDescription() + " route conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
                 }
                 
@@ -1036,12 +1036,13 @@ public class NetworkManagerImpl implements NetworkManager
                 IPMaskedAddress maskedAddr2;
                 
                 maskedAddr2 = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
-                if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+                if ( maskedAddr1.getMaskedAddress().equals(maskedAddr2.getMaskedAddress()) && route.getPrefix() == maskedAddr2.getPrefixLength() ) {
                     throw new RuntimeException( route.getDescription() + " & " + intf.getName() + " route & address conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
                 }
                 for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
                     maskedAddr2 = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
-                    if ( maskedAddr1.getMaskedAddress().equals( maskedAddr2.getMaskedAddress() ) ) {
+
+                    if ( maskedAddr1.getMaskedAddress().equals(maskedAddr2.getMaskedAddress()) && route.getPrefix() == maskedAddr2.getPrefixLength() ) {
                         throw new RuntimeException( route.getDescription() + " & " + intf.getName() + " route & address conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
                     }
                 }
