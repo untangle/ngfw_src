@@ -351,11 +351,20 @@ Ext.define("Ung.NodeWin", {
         this.callParent(arguments);
     },
     removeAction: function() {
-        this.node.removeAction();
+        var message = Ext.String.format( i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
+        Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
+            if (btn == 'yes') {
+                var node = Ung.Node.getCmp(this.nodeId);
+                this.closeWindow();
+                if(node) {
+                    node.removeAction();
+                }
+            }
+        }, this));
     },
     // get rpcNode object
     getRpcNode: function() {
-        return this.node.rpcNode;
+        return this.rpcNode;
     },
     // get node settings object
     getSettings: function(handler) {

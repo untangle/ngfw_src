@@ -1,4 +1,5 @@
-/* TODO ext5,  make standard
+/* TODO ext5,  make Ung.RuleEditorGrid compatible and use it for gridRules
+
 Ext.define('Ung.RuleEditorGrid', {
     extend: 'Ung.grid.Panel',
     requires: [
@@ -1350,7 +1351,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             params: {
                 type: "IdpsSettings",
                 arg1: "save",
-                arg2: this.tid
+                arg2: this.nodeId
             },
             scope: this,
             timeout: 600000,
@@ -1521,7 +1522,9 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             this.classtypesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ) + ' (' + record.get( 'priority' ) + ')',
                 name: 'classtypes_selected',
-                inputValue: record.get( 'name' ),
+                inputValue: record.get( 'name' )
+                /* TODO: ext5
+                ,
                 listeners: {
                     render: function(){
                         var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
@@ -1535,7 +1538,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                         var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
                         Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
                     }
-                }
+                }*/
             });
         }, this );
 
@@ -1694,7 +1697,9 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             categoriesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ),
                 name: 'categories_selected',
-                inputValue: record.get( 'name' ),
+                inputValue: record.get( 'name' )
+                /*TODO ext5
+                 ,
                 listeners: {
                     render: function(){
                         var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
@@ -1708,7 +1713,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                         var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
                         Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
                     }
-                }
+                }*/
             });
         } );
 

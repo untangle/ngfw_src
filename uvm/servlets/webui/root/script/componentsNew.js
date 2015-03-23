@@ -161,22 +161,17 @@ Ext.define("Ung.ConfigItem", {
     extend: "Ext.Component",
     item: null,
     renderTo: 'configItems',
-    autoEl: 'div',
+    cls: 'app-item',
     statics: {
         template: new Ext.Template('<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>')
-    },
-    constructor: function(config) {
-        this.id = "configItem_" + config.item.name;
-        this.callParent(arguments);
     },
     afterRender: function() {
         this.callParent(arguments);
         var html = Ung.ConfigItem.template.applyTemplate({
-            'iconCls': this.item.iconClass,
-            'text': this.item.displayName
+            iconCls: this.item.iconClass,
+            text: this.item.displayName
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-        this.getEl().addCls("app-item");
         this.getEl().on("click", this.onClick, this);
     },
     onClick: function(e) {
@@ -184,165 +179,99 @@ Ext.define("Ung.ConfigItem", {
             e.stopEvent();
         }
         Ung.Main.openConfig(this.item);
-    },
-    setIconCls: function(iconCls) {
-        this.getEl().down("div[name=iconCls]").dom.className=iconCls;
     }
 });
 
 Ext.define("Ung.AppItem", {
-    extend: "Ext.container.Container",
+    extend: "Ext.Component",
     nodeProperties: null,
-    iconSrc: null,
-    iconCls: null,
-    autoEl: 'div',
-    state: null,
+    cls: 'app-item',
     // progress bar component
     progressBar: null,
-    subCmps:null,
-    download: null,
     statics: {
-        template: new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>'),
+        //Global map to keep loading flag of the apps
+        loadingFlags: {},
+        template: new Ext.Template('<div class="icon"><img src="chiclet?name={name}" style="vertical-align: middle;"/></div>', '<div class="text">{text}</div>', '<div id="action_{id}" class="action icon-arrow-install">{installText}</div>', '<div class="state-pos" id="state_{id}"></div>'),
         buttonTemplate: new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right"></td></tr></tbody></table>'),
-        // update state for the app with a displayName
-        updateState: function(displayName, state, options) {
-            var app = Ung.AppItem.getApp(displayName);
-            Ung.Main.setAppLastState(displayName, state, options, app!=null?app.download:null);
+        setLoading: function(name, loadingFlag) {
+            Ung.AppItem.loadingFlags[name] = loadingFlag;
+            var app = Ung.AppItem.getApp(name);
             if (app != null) {
-                app.setState(state, options);
+                app.syncProgress();
             }
         },
         // get the app item having a item name
-        getApp: function(displayName) {
-            if (Ung.Main.apps !== null) {
-                return Ext.getCmp("app-item_" + displayName);
-            }
-            return null;
+        getApp: function(name) {
+            return Ext.getCmp("app-item_" + name);
         }
     },
     initComponent: function() {
-        this.subCmps=[];
-        //TODO ext5
-        //this.id = "app-item_" + this.nodeProperties.displayName;
+        this.id = "app-item_" + this.nodeProperties.name;
         this.callParent(arguments);
         this.render('appsItems', this.renderPosition);
     },
     afterRender: function() {
         this.callParent(arguments);
-
-        if (this.nodeProperties.name && this.getEl()) {
-            this.getEl().set({
-                'name': this.nodeProperties.name
-            });
-        }
-        var imageHtml = null;
-        if (this.iconCls == null) {
-            if (this.iconSrc == null) {
-                this.iconSrc = 'chiclet?name=' + this.nodeProperties.name;
-            }
-            imageHtml = '<img src="' + this.iconSrc + '" style="vertical-align: middle;"/>';
-        } else {
-            imageHtml = '<div class="' + this.iconCls + '"></div>';
-        }
+        this.getEl().set({
+            'name': this.nodeProperties.name
+        });
         var html = Ung.AppItem.template.applyTemplate({
             id: this.getId(),
-            'imageHtml': imageHtml,
-            'text': this.nodeProperties.displayName
+            name: this.nodeProperties.name,
+            text: this.nodeProperties.displayName,
+            installText: i18n._("Install")
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-        this.getEl().addCls("app-item");
 
         this.progressBar = Ext.create('Ext.ProgressBar',{
             id: 'progressBar_' + this.getId(),
             renderTo: "state_" + this.getId(),
             height: 17,
             width: 140,
-            waitDefault: function(updateText) {
-                this.reset();
-                this.wait({
-                    text:  updateText,
-                    interval: 100,
-                    increment: 15
-                });
-            }
+            hidden: true
         });
 
+        this.getEl().on("click", this.installNodeFn, this);
+        this.syncProgress();
+    },
+    //Sync progress bar status
+    syncProgress: function() {
         this.actionEl = Ext.get("action_" + this.getId());
-        this.progressBar.hide();
-        if( this.nodeProperties.name != null ) { // FIXME
-            this.getEl().on("click", this.installNodeFn, this);
-            this.actionEl.insertHtml("afterBegin", i18n._("Install"));
-            this.actionEl.addCls("icon-arrow-install");
-        } else {
-            return;
-            // error
-        }
-        var appsLastState = Ung.Main.appsLastState[this.nodeProperties.displayName];
-        if(appsLastState!=null) {
-            this.download=appsLastState.download;
-            this.setState(appsLastState.state,appsLastState.options);
-        }
-    },
-    // hack because I cant figure out how to tell extjs to apply style to progress text
-    stylizeProgressText: function (str) {
-        return '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;margin:0px;">' + str + '</p>';
-    },
-    // set the state of the progress bar
-    setState: function(newState, options) {
-        var progressString = "";
-        var currentPercentComplete;
-        var progressIndex;
-        switch (newState) {
-              case null:
-              case "installed":
-            this.displayButtonsOrProgress(true);
-            this.download=null;
-            break;
-          case "loadapp":
-            this.displayButtonsOrProgress(false);
-            progressString = this.stylizeProgressText(i18n._("Loading App..."));
-            this.progressBar.waitDefault(progressString);
-            break;
-        default:
-            Ext.MessageBox.alert(i18n._("Warning"),"Unknown state: " + newState);
-        }
-        this.state = newState;
-    },
-    // before Destroy
-    beforeDestroy: function() {
-        this.actionEl.removeAllListeners();
-        this.progressBar.reset(true);
-        this.progressBar.destroy();
-        Ext.destroy(this.subCmps);
-        this.callParent(arguments);
-    },
-    // display Buttons xor Progress barr
-    displayButtonsOrProgress: function(displayButtons) {
-        this.actionEl.setVisible(displayButtons);
-        if (displayButtons) {
-            this.getEl().unmask();
-            this.progressBar.reset(true);
-        } else {
+        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
+            this.actionEl.setVisible(false);
             this.getEl().mask();
             if(!this.progressBar.isVisible()) {
                 this.progressBar.show();
             }
+            this.progressBar.reset();
+            this.progressBar.wait({
+                text: '<p style="font-size:xx-small;text-align:left;align:left;padding-left:5px;margin:0px;">' + i18n._("Loading App...") + '</p>',
+                interval: 100,
+                increment: 15
+            });
+        } else {
+            this.actionEl.setVisible(true);
+            this.getEl().unmask();
+            this.progressBar.reset(true);
         }
     },
-    // install node / uninstall App
+    // before Destroy
+    beforeDestroy: function() {
+        this.progressBar.reset(true);
+        this.progressBar.destroy();
+        this.callParent(arguments);
+    },
+    // install node
     installNode: function( completeFn ) {
-        if(!this.progressBar.hidden) {
+        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
             return;
         }
         Ung.Main.installNode(this.nodeProperties, this, completeFn);
     },
-    // install node / uninstall App
+    // click install node
     installNodeFn: function(e) {
         e.preventDefault();
-        if(!this.progressBar.hidden) {
-            return;
-        }
-        Ung.Main.installNode(this.nodeProperties, this);
+        this.installNode();
     }
 });
 
@@ -354,28 +283,6 @@ Ext.define("Ung.Node", {
         getCmp: function(nodeId) {
             return Ext.getCmp("node_" + nodeId);
         },
-        getStatusTip: function() {
-            return [
-                '<div style="text-align: left;">',
-                i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
-                '<BR>',
-                '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
-                    i18n._('indicates that the application is "on" and operating normally.'),
-                '<BR>',
-                '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
-                    i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
-                '<BR>',
-                '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
-                    i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
-                '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
-                '</div>'].join('');
-        },
-        getPowerTip: function() {
-            return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
-        },
-        getNonEditableNodeTip: function () {
-            return i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.');
-        },
         template: new Ext.Template(
             '<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
             '<div class="node-faceplate-info">{licenseMessage}</div>',
@@ -384,7 +291,6 @@ Ext.define("Ung.Node", {
             '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
             '<div class="node-buttons" id="node-buttons_{id}"></div>')
     },
-    autoEl: "div",
     cls: "node",
     // ---Node specific attributes------
     // node name
@@ -409,7 +315,7 @@ Ext.define("Ung.Node", {
     settingsClassName: null,
     // list of available metrics for this node/app
     metrics: null,
-    // which metrics are shown on the facebplate
+    // which metrics are shown on the faceplate
     activeMetrics: [0,1,2,3],
     faceplateMetrics: null,
     buttonsPanel: null,
@@ -417,7 +323,7 @@ Ext.define("Ung.Node", {
     //can the node be edited on the gui
     isNodeEditable: true,
     constructor: function(config) {
-        this.id = "node_" + config.nodeSettings.id;
+        this.id = "node_" + config.nodeId;
         config.helpSource=config.displayName.toLowerCase().replace(/ /g,"_");
         if(config.runState==null) {
             config.runState="INITIALIZED";
@@ -448,7 +354,7 @@ Ext.define("Ung.Node", {
             'viewPosition': this.viewPosition
         });
         this.getEl().set({
-            'name': this.displayName
+            'name': this.name
         });
         if(this.fadeIn) {
             var el=this.getEl();
@@ -511,23 +417,36 @@ Ext.define("Ung.Node", {
         this.subCmps.push(this.buttonsPanel);
         if(this.hasPowerButton) {
             Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
-            this.subCmps.push(new Ext.ToolTip({
-                html: Ung.Node.getStatusTip(),
+            this.subCmps.push(Ext.create('Ext.ToolTip', {
+                html: [
+                   '<div style="text-align: left;">',
+                   i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
+                   '<BR>',
+                   '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
+                       i18n._('indicates that the application is "on" and operating normally.'),
+                   '<BR>',
+                   '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
+                       i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
+                   '<BR>',
+                   '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
+                       i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
+                   '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
+                   '</div>'].join(''),
                 target: 'node-state_' + this.getId(),
                 showDelay: 20,
                 dismissDelay: 0,
                 hideDelay: 0
             }));
-            this.subCmps.push(new Ext.ToolTip({
-                html: Ung.Node.getPowerTip(),
+            this.subCmps.push(Ext.create('Ext.ToolTip', {
+                html: i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".'),
                 target: 'node-power_' + this.getId(),
                 showDelay: 20,
                 dismissDelay: 0,
                 hideDelay: 0
             }));
             if(!this.isNodeEditable) {
-                this.subCmps.push(new Ext.ToolTip({
-                    html: Ung.Node.getNonEditableNodeTip(),
+                this.subCmps.push(Ext.create('Ext.ToolTip', {
+                    html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
                     target: 'node_' + this.nodeId,
                     showDelay: 20,
                     dismissDelay: 0,
@@ -590,7 +509,7 @@ Ext.define("Ung.Node", {
             this.stop();
         }
     },
-    start: function () {
+    start: function (handler) {
         if(this.state=="attention") {
             return;
         }
@@ -605,6 +524,9 @@ Ext.define("Ung.Node", {
                 this.rpcNode.getRunState(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.updateRunState(result);
+                    if(Ext.isFunction(handler)) {
+                        handler();
+                    }
                 }, this));
             }, this));
         }, this));
@@ -638,15 +560,14 @@ Ext.define("Ung.Node", {
     onBuyNowAction: function() {
         Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
     },
-    getNode: function(handler) {
+    getRpcNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.rpcNode === undefined) {
-            try {
-                this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            handler.call(this);
+            rpc.nodeManager.node(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.rpcNode = result;
+                handler.call(this);
+            }, this), this.nodeId);
         } else {
             handler.call(this);
         }
@@ -657,10 +578,11 @@ Ext.define("Ung.Node", {
             return;
         }
         if (this.nodeProperties === undefined) {
-            this.rpcNode.getNodeProperties(Ext.Function.createSequence(Ext.bind(function(result, exception) {
+            this.rpcNode.getNodeProperties(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.nodeProperties = result;
-            }, this), handler));
+                handler.call(this);
+            }, this));
         } else {
             handler.call(this);
         }
@@ -668,7 +590,7 @@ Ext.define("Ung.Node", {
     // load Node
     loadNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        Ext.bind(this.getNode, this,[Ext.bind(this.getNode, this,[Ext.bind(this.getNodeProperties, this,[handler])])]).call(this);
+        Ext.bind(this.getRpcNode, this, [Ext.bind(this.getNodeProperties, this,[handler])]).call(this);
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -676,7 +598,6 @@ Ext.define("Ung.Node", {
         Ext.require([this.settingsClassName], function() {
             this.initSettings();
         }, this);
-
     },
     // init settings
     initSettings: function() {
@@ -703,7 +624,13 @@ Ext.define("Ung.Node", {
     openSettings: function(settings) {
         var items=null;
         if (this.settingsClassName !== null) {
-            this.settingsWin=Ext.create(this.settingsClassName, {'node':this,'tid':this.nodeId,'name':this.name, 'settings': settings});
+            this.settingsWin=Ext.create(this.settingsClassName, {
+                node: this,
+                name:this.name,
+                nodeId: this.nodeId,
+                rpcNode: this.rpcNode,
+                settings: settings
+            });
         } else {
             this.settingsWin = Ext.create('Ung.NodeWin',{
                 node: this,
@@ -727,50 +654,31 @@ Ext.define("Ung.Node", {
 
     // remove node
     removeAction: function() {
-        /* A hook for doing something in a node before attempting to remove it */
-        if ( this.preRemoveAction ) {
-            this.preRemoveAction( this, Ext.bind(this.completeRemoveAction, this ));
-            return;
-        }
-
-        this.completeRemoveAction();
-    },
-
-    completeRemoveAction: function() {
-        var message = Ext.String.format(
-            i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
-        Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
-            if (btn == 'yes') {
-                if (this.settingsWin) {
-                    this.settingsWin.closeWindow();
+        this.setState("attention");
+        this.getEl().mask();
+        this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
+        rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception, Ext.bind(function() {
+                this.getEl().unmask();
+                this.getEl().stopAnimation();
+            }, this),"alert")) return;
+            if (this) {
+                if(this.getEl()) {
+                    this.getEl().stopAnimation();
                 }
-                this.setState("attention");
-                this.getEl().mask();
-                this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
-                rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception, Ext.bind(function() {
-                        this.getEl().unmask();
-                        this.getEl().stopAnimation();
-                    }, this),"alert")) return;
-                    if (this) {
-                        if(this.getEl()) {
-                            this.getEl().stopAnimation();
-                        }
-                        var nodeName = this.name;
-                        var cmp = this;
-                        Ext.destroy(cmp);
-                        cmp = null;
-                        for (var i = 0; i < Ung.Main.nodes.length; i++) {
-                            if (nodeName == Ung.Main.nodes[i].name) {
-                                Ung.Main.nodes.splice(i, 1);
-                                break;
-                            }
-                        }
+                var nodeName = this.name;
+                var cmp = this;
+                Ext.destroy(cmp);
+                cmp = null;
+                for (var i = 0; i < Ung.Main.nodes.length; i++) {
+                    if (nodeName == Ung.Main.nodes[i].name) {
+                        Ung.Main.nodes.splice(i, 1);
+                        break;
                     }
-                    Ung.Main.updateRackView();
-                }, this), this.nodeId);
+                }
             }
-        }, this));
+            Ung.Main.updateRackView();
+        }, this), this.nodeId);
     },
     // initialize faceplate metrics
     initMetrics: function() {
@@ -802,16 +710,8 @@ Ext.define("Ung.Node", {
             } else {
                 licenseMessage = i18n._("Free trial.");
             }
-        } else { // not a trial
-            if (this.license.valid) {
-                // if its valid - say if its close to expiring otherwise say nothing
-                // if (this.license.daysRemaining < 5) {
-                //     licenseMessage = i18n._("Expires in") + Ext.String.format(" {0} ", this.license.daysRemaining) + i18n._("days");
-                // }
-            } else {
-                // if its invalid say the reason
-                licenseMessage = this.license.status;
-            }
+        } else if (!this.license.valid) {
+            licenseMessage = this.license.status
         }
         return licenseMessage;
     },
@@ -903,8 +803,7 @@ Ung.MetricManager = {
         rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 //Tolerate Error 500: Internal Server Error after an install
-                //Keep silent for maximum 5 minutes of sequential error messages
-                //because apache may reload
+                //Keep silent for maximum 5 minutes of sequential error messages because apache may reload
                 if ( exception.code == 500 || exception.code == 12031 ) {
                     if(this.firstToleratedError==null) {
                         this.firstToleratedError=(new Date()).getTime();
@@ -915,7 +814,7 @@ Ung.MetricManager = {
                         return;
                     }
                 }
-                /* After a hostname change and the certificate is regenerated. */
+                // After a hostname change and the certificate is regenerated.
                 else if ( exception.code == 12019 ) {
                     Ext.MessageBox.alert(i18n._("System Busy"), "Please refresh the page", Ext.bind(function() {
                         this.cycleCompleted = true;
@@ -932,7 +831,7 @@ Ung.MetricManager = {
 
             // update system stats
             Ung.Main.systemStats.update(result.systemStats);
-            // upgrade node metrics
+            // update node metrics
             var i;
             for (i = 0; i < Ung.Main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
@@ -1317,9 +1216,7 @@ Ext.define("Ung.FaceplateMetric", {
         });
         
         this.chart.on("click", function(e) { 
-            /*
-             * TODO: extjs5 make the click work on extjs 5
-             */
+            // TODO: extjs5 make the click work on extjs 5
             Ung.Main.showNodeSessions( this.parentNodeId ); 
         }, this);
         var chartTipArr=[
@@ -1343,7 +1240,7 @@ Ext.define("Ung.FaceplateMetric", {
         }
         var metricsLen=Math.min(activeMetrics.length,4);
         var i, nameDiv, valueDiv;
-        /* set all four to blank */
+        // set all four to blank
         for(i=0; i<4;i++) {
             nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
             valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
@@ -1352,7 +1249,7 @@ Ext.define("Ung.FaceplateMetric", {
             valueDiv.innerHTML = "&nbsp;";
             valueDiv.style.display="none";
         }
-        /* fill in name and value */
+        // fill in name and value
         for(i=0; i<metricsLen;i++) {
             var metricIndex=activeMetrics[i];
             var metric = nodeCmp.metrics.list[metricIndex];
@@ -1389,21 +1286,19 @@ Ext.define("Ung.FaceplateMetric", {
                                     elem.setValue(false);
                                     return;
                                 }
-                                var itemIndex=-1;
+                                var itemIndex = -1;
                                 for(var i=0;i<this.newActiveMetrics.length;i++) {
                                     if(this.newActiveMetrics[i]==elem.dataIndex) {
-                                        itemIndex=i;
+                                        itemIndex = i;
                                         break;
                                     }
                                 }
                                 if(checked) {
-                                    if(itemIndex==-1) {
-                                        // add element
+                                    if(itemIndex == -1) {
                                         this.newActiveMetrics.push(elem.dataIndex);
                                     }
                                 } else {
-                                    if(itemIndex!=-1) {
-                                        // remove element
+                                    if(itemIndex != -1) {
                                         this.newActiveMetrics.splice(itemIndex,1);
                                     }
                                 }
@@ -1466,7 +1361,7 @@ Ext.define("Ung.FaceplateMetric", {
         this.buildActiveMetrics();
     },
     update: function(metrics) {
-        // UPDATE COUNTS
+        // update counts
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics = nodeCmp.activeMetrics;
         var i;

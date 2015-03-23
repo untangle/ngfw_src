@@ -15,9 +15,8 @@ Ext.define("Ung.Main", {
     debugMode: false,
     buildStamp: null,
     disableThreads: false, // in development environment is useful to disable threads.
-    apps: null,
-    appsLastState: null,
-    nodePreviews: null,
+    apps: [],
+    nodePreviews: {},
     config: null,
     totalMemoryMb: 2000,
     nodes: null,
@@ -42,8 +41,6 @@ Ext.define("Ung.Main", {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
         this.target = Ung.Util.getQueryStringParam("target");
-        this.appsLastState = {};
-        this.nodePreviews = {};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         JSONRpcClient.max_req_active = 25;
 
@@ -91,13 +88,6 @@ Ext.define("Ung.Main", {
     },
     setDocumentTitle: function() {
         document.title = rpc.companyName + ((rpc.hostname!=null)?(" - " + rpc.hostname):"");
-    },
-    setAppLastState: function(displayName,state,options,download) {
-        if(state==null) {
-            Ung.Main.appsLastState[displayName]=null;
-        } else {
-            Ung.Main.appsLastState[displayName]={state:state, options:options, download:download};
-        }
     },
     startApplication: function() {
         this.initExtI18n();
@@ -152,7 +142,8 @@ Ext.define("Ung.Main", {
                         xtype: 'panel',
                         title: i18n._('Apps'),
                         id: 'leftTabApps',
-                        html:'<div id="appsItems"></div>',name:'Apps'
+                        html:'<div id="appsItems"></div>',
+                        name:'Apps'
                     },{
                         xtype: 'panel',
                         title: i18n._('Config'),
@@ -198,7 +189,7 @@ Ext.define("Ung.Main", {
         Ext.QuickTips.init();
 
         Ung.Main.systemStats = new Ung.SystemStats({});
-        this.loadConfig();
+        this.buildConfig();
         this.loadPolicies();
     },
     about: function (forceReload) {
@@ -609,35 +600,31 @@ Ext.define("Ung.Main", {
         return null;
     },
     createNode: function (nodeProperties, nodeSettings, nodeMetrics, license, runState) {
-        var node={};
-        node.nodeId=nodeSettings.id;
-        node.nodeSettings=nodeSettings;
-        node.type=nodeProperties.type;
-        node.hasPowerButton=nodeProperties.hasPowerButton;
-        node.name=nodeProperties.name;
-        node.displayName=nodeProperties.displayName;
-        node.license=license;
-        node.image='chiclet?name='+node.name;
-        node.metrics=nodeMetrics;
-        node.runState=runState;
-        node.viewPosition=nodeProperties.viewPosition;
+        var node = {
+            nodeId: nodeSettings.id,
+            nodeSettings: nodeSettings,
+            type: nodeProperties.type,
+            hasPowerButton: nodeProperties.hasPowerButton,
+            name: nodeProperties.name,
+            displayName: nodeProperties.displayName,
+            license: license,
+            image: 'chiclet?name='+nodeProperties.name,
+            metrics: nodeMetrics,
+            runState: runState,
+            viewPosition: nodeProperties.viewPosition
+        };
         return node;
     },
     buildApps: function () {
         //destroy Apps
         var i;
-        if(Ung.Main.apps!=null) {
-            for(i=0; i<Ung.Main.apps.length; i++) {
-                Ext.destroy(Ung.Main.apps[i]);
-            }
-            this.apps=null;
+        for(i=0; i<Ung.Main.apps.length; i++) {
+            Ext.destroy(Ung.Main.apps[i]);
         }
         //build Apps
         Ung.Main.apps=[];
         for(i=0;i<rpc.rackView.installable.list.length;i++) {
-            var application=rpc.rackView.installable.list[i];
-            var appCmp = Ext.create("Ung.AppItem", {nodeProperties: application});
-            Ung.Main.apps.push(appCmp);
+            Ung.Main.apps.push(Ext.create("Ung.AppItem", {nodeProperties: rpc.rackView.installable.list[i]}));
         }
     },
     buildNodes: function() {
@@ -647,14 +634,13 @@ Ext.define("Ung.Main", {
         var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
         this.destoyNodes();
         this.nodes=[];
-        var i;
-        var node;
+        var i, node;
 
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
 
-            node=this.createNode(nodeProperties,
+            node = this.createNode(nodeProperties,
                      nodeSettings,
                      rpc.rackView.nodeMetrics.map[nodeSettings.id],
                      rpc.rackView.licenseMap.map[nodeProperties.name],
@@ -837,11 +823,11 @@ Ext.define("Ung.Main", {
             return;
         }
 
-        Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
+        Ung.AppItem.setLoading(nodeProperties.name, true);
         Ung.Main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
-                Ung.AppItem.updateState( nodeProperties.displayName, null );
+                Ung.AppItem.setLoading(nodeProperties.name, false);
                 Ung.Main.removeNodePreview( nodeProperties.name );
                 Ung.Main.updateRackView();
                 Ung.Util.handleException(exception);
@@ -872,51 +858,50 @@ Ext.define("Ung.Main", {
         return this.iframeWin;
     },
     // load Config
-    loadConfig: function() {
-        this.config =
-            [{
-                name: 'network',
-                displayName: i18n._('Network'),
-                iconClass: 'icon-config-network',
-                helpSource: 'network',
-                className: 'Webui.config.network'
-            }, {
-                name: 'administration',
-                displayName: i18n._('Administration'),
-                iconClass: 'icon-config-admin',
-                helpSource: 'administration',
-                className: 'Webui.config.administration'
-            }, {
-                name: 'email',
-                displayName: i18n._('Email'),
-                iconClass: 'icon-config-email',
-                helpSource: 'email',
-                className: 'Webui.config.email'
-            }, {
-                name: 'localDirectory',
-                displayName: i18n._('Local Directory'),
-                iconClass: 'icon-config-directory',
-                helpSource: 'local_directory',
-                className: 'Webui.config.localDirectory'
-            }, {
-                name: 'upgrade',
-                displayName: i18n._('Upgrade'),
-                iconClass: 'icon-config-upgrade',
-                helpSource: 'upgrade',
-                className: 'Webui.config.upgrade'
-            }, {
-                name: 'system',
-                displayName: i18n._('System'),
-                iconClass: 'icon-config-setup',
-                helpSource: 'system',
-                className: 'Webui.config.system'
-            }, {
-                name: 'about',
-                displayName: i18n._('About'),
-                iconClass: 'icon-config-support',
-                helpSource: 'system_info',
-                className: 'Webui.config.about'
-            }];
+    buildConfig: function() {
+        this.config =[{
+            name: 'network',
+            displayName: i18n._('Network'),
+            iconClass: 'icon-config-network',
+            helpSource: 'network',
+            className: 'Webui.config.network'
+        }, {
+            name: 'administration',
+            displayName: i18n._('Administration'),
+            iconClass: 'icon-config-admin',
+            helpSource: 'administration',
+            className: 'Webui.config.administration'
+        }, {
+            name: 'email',
+            displayName: i18n._('Email'),
+            iconClass: 'icon-config-email',
+            helpSource: 'email',
+            className: 'Webui.config.email'
+        }, {
+            name: 'localDirectory',
+            displayName: i18n._('Local Directory'),
+            iconClass: 'icon-config-directory',
+            helpSource: 'local_directory',
+            className: 'Webui.config.localDirectory'
+        }, {
+            name: 'upgrade',
+            displayName: i18n._('Upgrade'),
+            iconClass: 'icon-config-upgrade',
+            helpSource: 'upgrade',
+            className: 'Webui.config.upgrade'
+        }, {
+            name: 'system',
+            displayName: i18n._('System'),
+            iconClass: 'icon-config-setup',
+            helpSource: 'system',
+            className: 'Webui.config.system'
+        }, {
+            name: 'about',
+            displayName: i18n._('About'),
+            iconClass: 'icon-config-support',
+            helpSource: 'system_info',
+            className: 'Webui.config.about'
+        }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
         for(var i=0;i<this.config.length;i++) {
             Ext.create('Ung.ConfigItem', {
@@ -1035,25 +1020,23 @@ Ext.define("Ung.Main", {
         return position;
     },
     addNode: function (node, fadeIn) {
-        var nodeWidget=new Ung.Node(node);
+        var nodeWidget = Ext.create('Ung.Node', node);
         nodeWidget.fadeIn=fadeIn;
         var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
-        var position=this.getNodePosition(place,node.viewPosition);
-        nodeWidget.render(place,position);
-        Ung.AppItem.updateState(node.displayName, null);
+        var position=this.getNodePosition(place, node.viewPosition);
+        nodeWidget.render(place, position);
+        Ung.AppItem.setLoading(node.name, false);
         if ( node.name == 'untangle-node-policy') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            try {
-                rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            Ext.getCmp('policyManagerMenuItem').enable();
-            this.policyNodeWidget = nodeWidget;
+            rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.getCmp('policyManagerMenuItem').enable();
+                this.policyNodeWidget = nodeWidget;
+            }, this),"untangle-node-policy");
         }
     },
     addNodePreview: function ( nodeProperties ) {
-        var nodeWidget=new Ung.NodePreview( nodeProperties );
+        var nodeWidget = Ext.create('Ung.NodePreview', nodeProperties );
         var place = ( nodeProperties.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
         var position = this.getNodePosition( place, nodeProperties.viewPosition );
         nodeWidget.render(place,position);
@@ -1069,11 +1052,11 @@ Ext.define("Ung.Main", {
         }
     },
     removeNode: function(index) {
-        var tid = Ung.Main.nodes[index].nodeId;
-        var nodeUI = (tid != null) ? Ext.getCmp('node_'+tid): null;
+        var nodeId = Ung.Main.nodes[index].nodeId;
+        var nodeWidget = (nodeId != null) ? Ext.getCmp('node_'+nodeId): null;
         Ung.Main.nodes.splice(index, 1);
-        if(nodeUI) {
-            Ext.destroy(nodeUI);
+        if(nodeWidget) {
+            Ext.destroy(nodeWidget);
             return true;
         }
         return false;
@@ -1327,37 +1310,38 @@ Ext.define("Ung.Main", {
                 name: 'Yes',
                 text: i18n._("Yes, install the recommended apps."),
                 handler: Ext.bind(function() {
-                    var apps = [ "Web Filter",
-                                 //"Web Filter Lite",
-                                 "Virus Blocker",
-                                 //"Virus Blocker Lite",
-                                 "Spam Blocker",
-                                 //"Spam Blocker Lite",
-                                 //"Phish Blocker",
-                                 //"Web Cache",
-                                 "Bandwidth Control",
-                                 "HTTPS Inspector",
-                                 "Application Control",
-                                 //"Application Control Lite",
-                                 "Captive Portal",
-                                 "Firewall",
-                                 //"Intrusion Prevention",
-                                 //"Ad Blocker",
-                                 "Reports",
-                                 "Policy Manager",
-                                 "Directory Connector",
-                                 "WAN Failover",
-                                 "WAN Balancer",
-                                 "IPsec VPN",
-                                 "OpenVPN",
-                                 "Configuration Backup",
-                                 "Branding Manager",
-                                 "Live Support"];
+                    var apps = [
+                        { displayName: "Web Filter", name: 'untangle-node-sitefilter'},
+                        //{ displayName: "Web Filter Lite", name: 'untangle-node-webfilter'},
+                        { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
+                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'},
+                        { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
+                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spamassassin'},
+                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish'},
+                        //{ displayName: "Web Cache", name: 'untangle-node-webcache'},
+                        { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},
+                        { displayName: "HTTPS Inspector", name: 'untangle-casing-https'},
+                        { displayName: "Application Control", name: 'untangle-node-classd'},
+                        //{ displayName: "Application Control Lite", name: 'untangle-node-protofilter'},
+                        { displayName: "Captive Portal", name: 'untangle-node-capture'},
+                        { displayName: "Firewall", name: 'untangle-node-firewall'},
+                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-ips'},
+                        //{ displayName: "Ad Blocker", name: 'untangle-node-adblocker'},
+                        { displayName: "Reports", name: 'untangle-node-reporting'},
+                        { displayName: "Policy Manager", name: 'untangle-node-policy'},
+                        { displayName: "Directory Connector", name: 'untangle-node-adconnector'},
+                        { displayName: "WAN Failover", name: 'untangle-node-faild'},
+                        { displayName: "WAN Balancer", name: 'untangle-node-splitd'},
+                        { displayName: "IPsec VPN", name: 'untangle-node-ipsec'},
+                        { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
+                        { displayName: "Configuration Backup", name: 'untangle-node-boxbackup'},
+                        { displayName: "Branding Manager", name: 'untangle-node-branding'},
+                        { displayName: "Live Support", name: 'untangle-node-support'}];
 
                     // only install this on 1gig+ machines
                     if ( Ung.Main.totalMemoryMb > 900 ) {
-                        apps.splice(2,0,"Virus Blocker Lite");
-                        apps.splice(4,0,"Phish Blocker");
+                        apps.splice(4,0,{ displayName: "Phish Blocker", name: 'untangle-node-phish'});
+                        apps.splice(2,0,{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'});
                     }
 
                     var fn = function( appsToInstall ) {
@@ -1366,7 +1350,7 @@ Ext.define("Ung.Main", {
                             Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
                             return;
                         }
-                        var name = appsToInstall[0];
+                        var name = appsToInstall[0].name;
                         appsToInstall.shift();
                         var completeFn = Ext.bind( fn, this, [appsToInstall] ); // function to install remaining apps
                         var app = Ung.AppItem.getApp(name);
