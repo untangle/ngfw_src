@@ -126,6 +126,7 @@ insert_iptables_rules()
 
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I PREROUTING 2 -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
+    ${IPTABLES} -I PREROUTING 3 -t mangle -p icmp --icmp-type 3/4 -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route ICMP Unreachable Frag needed traffic to local"
 
     # Route traffic tagged by previous rule to local
     ip rule del priority 100 >/dev/null 2>&1
