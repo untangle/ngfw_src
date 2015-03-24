@@ -51,39 +51,54 @@ def log_date( cmd ):
     for line in iter(p.stdout.readline, ''):
         log( line.strip() + " " + cmd)
     p.wait()
+    return p.returncode
 
 def cmd_to_log(cmd):
     stdin=open(os.devnull, 'rb')
     p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=stdin )
     for line in iter(p.stdout.readline, ''):
         log( line.strip() )
-    return p.wait()
+    p.wait()
+    return p.returncode
 
 def update():
     log("apt-get update %s" % UPDATE_OPTS)
-
     p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE)
     for line in iter(p.stdout.readline, ''):
         if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
             log( line.strip() )
     p.wait()
-    return 0
+    return p.returncode
+
+def check_upgrade():
+    p = subprocess.Popen(["sh","-c","apt-get -s dist-upgrade %s 2>&1" % UPGRADE_OPTS], stdout=subprocess.PIPE)
+    for line in iter(p.stdout.readline, ''):
+        if re.search('.*been kept back.*', line):
+            log( "Packages have been kept back.\n" )
+            return 1
+    p.wait()
+    return p.returncode
 
 def upgrade():
     log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
-    r = cmd_to_log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
-    return 0
+    return cmd_to_log("apt-get dist-upgrade %s" % UPGRADE_OPTS)
 
 def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
-    r = cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
-    return 0
+    return cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
 
 log_date( os.path.basename( sys.argv[0]) )
+
 log("")
 
 update()
+
 log("")
+
+r = check_upgrade();
+if r != 0:
+    log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
+    sys.exit(1)
 
 upgrade()
 log("")
