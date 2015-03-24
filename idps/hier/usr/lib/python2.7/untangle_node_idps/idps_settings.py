@@ -181,13 +181,12 @@ class IdpsSettings:
             "description": variable["recData"]["description"]
         } 
 
-        ## ??? tie to rule variable management instead
         operation = variable["op"] 
         if operation == "added":
             self.settings["variables"]["list"].append( snort_variable )
         elif operation == "modified":
-            for index, variable in enumerate(self.settings["variables"]["list"]):
-                if operation == "modified" and variable["variable"] == variable["recData"]["originalId"]:
+            for index, settings_variable in enumerate(self.settings["variables"]["list"]):
+                if operation == "modified" and settings_variable["variable"] == variable["recData"]["originalId"]:
                     self.settings["variables"]["list"][index] = snort_variable
         elif operation == "deleted":
             self.settings["variables"]["list"].remove(snort_variable)
