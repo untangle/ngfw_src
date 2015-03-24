@@ -37,7 +37,6 @@ public class IdpsSnortUnified2Parser {
     private byte[] ipv6bytes;
     
     private IdpsSnortUnified2SerialHeader serialHeader;
-    private IdpsSnortUnified2IdsEvent idsEvent;
     private IdpsEventMap idpsEventMap;
     
     /* Serial Header */
@@ -101,8 +100,6 @@ public class IdpsSnortUnified2Parser {
         
 		serialHeader = new IdpsSnortUnified2SerialHeader();
         serialHeader.clear();
-		idsEvent = new IdpsSnortUnified2IdsEvent();
-        idsEvent.clear();
 
         reloadEventMap();
     }
@@ -195,8 +192,9 @@ public class IdpsSnortUnified2Parser {
                     case IdpsSnortUnified2SerialHeader.TYPE_IDS_EVENT_IPV6:
                     case IdpsSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2:
                     case IdpsSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2_IPV6:
+                        IdpsSnortUnified2IdsEvent idsEvent = null;
 				        try{
-                            parseIdsEvent();
+                            idsEvent = parseIdsEvent();
                         }catch( Exception e ){
                             logger.debug( "parse: Unable to parse event:" + e );
                             abort = true;
@@ -268,7 +266,9 @@ public class IdpsSnortUnified2Parser {
 		serialHeader.setLength( bufSerialHeader.getInt( pos ) );
 	}
 
-	public void parseIdsEvent() throws Exception {
+	public IdpsSnortUnified2IdsEvent parseIdsEvent() throws Exception {
+        IdpsSnortUnified2IdsEvent idsEvent = new IdpsSnortUnified2IdsEvent();
+        idsEvent.clear();
 
         int eventLength = (int) serialHeader.getLength();
         
@@ -405,6 +405,8 @@ public class IdpsSnortUnified2Parser {
             idsEvent.setClasstype( mapRule.getClasstype() );
             idsEvent.setCategory( mapRule.getCategory() );
         }
+
+        return idsEvent;
 	}
 
 	public void parseSkip()
