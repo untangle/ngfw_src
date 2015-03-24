@@ -91,10 +91,7 @@ log_date( os.path.basename( sys.argv[0]) )
 
 log("")
 
-r = update()
-if r != 0:
-    log("apt-get update returned an error (%i). Abort." % r)
-    sys.exit(1)
+update()
 
 log("")
 
