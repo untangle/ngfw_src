@@ -93,10 +93,10 @@ binary-common:
 #	@dh_lintian
 	@dh_installdeb
 #	@dh_perl
-	@for i in $(shell dh_listpackages $(DH_OPTIONS)) ; do \
-	  if [ -f debian/version ] ; then \
+	@if [ -f debian/version ] ; then \
 	    dh_gencontrol -- -v"`cat debian/version`" ; \
-	  else dh_gencontrol ; \
+	  else \
+	    dh_gencontrol ; \
 	  fi ; \
 	done
 	@dh_md5sums
