@@ -37,32 +37,30 @@ Ext.define("Ung.Main", {
                 return true;
             };
         }
-        if(Ext.supports.LocalStorage) {
-            Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
-        }
-        this.target = Ung.Util.getQueryStringParam("target");
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         JSONRpcClient.max_req_active = 25;
 
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        //load all managers and startup info
-        var startupInfo;
-        try {
-            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
+        rpc.jsonrpc.UvmContext.getWebuiStartupInfo(Ext.bind(function (result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            Ext.applyIf(rpc, result);
+            rpc.nodeManager.node(Ext.bind(function (result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.policyManager = result;
+                this.startApplication();
+            }, this), "untangle-node-policy");
+        }, this));
+    },
+    startApplication: function() {
+        if(Ext.supports.LocalStorage) {
+            Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
-        Ext.applyIf(rpc, startupInfo);
-        //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
-        try {
-            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-
-        i18n=new Ung.I18N({"map":rpc.translations});
-        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset;
+        this.target = Ung.Util.getQueryStringParam("target");
+        i18n=new Ung.I18N({
+            map: rpc.translations,
+            timeoffset: (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset
+        });
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/adminNew.css");
         if (rpc.skinSettings.outOfDate) {
@@ -83,16 +81,12 @@ Ext.define("Ung.Main", {
             });
             win.show();
         }
-        this.setDocumentTitle();
-        this.startApplication();
-    },
-    setDocumentTitle: function() {
-        document.title = rpc.companyName + ((rpc.hostname!=null)?(" - " + rpc.hostname):"");
-    },
-    startApplication: function() {
-        this.initExtI18n();
-        this.initExtGlobal();
+        document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
+        if(rpc.languageSettings.language) {
+            Ung.Util.loadScript('/ext5/packages/ext-locale/build/ext-locale-' + rpc.languageSettings.language + '.js');
+        }
         this.initExtVTypes();
+        Ext.tip.QuickTipManager.init();
         Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
         var contentRightArr=[
@@ -263,28 +257,6 @@ Ext.define("Ung.Main", {
             this.iframeWin.closeWindow();
         }
         this.reloadLicenses();
-    },
-
-    initExtI18n: function() {
-        var locale = rpc.languageSettings.language;
-        if(locale) {
-          Ung.Util.loadScript('/ext4/locale/ext-lang-' + locale + '.js', Ung.Main.overrideLanguageSettings);
-        } else {
-            Ung.Main.overrideLanguageSettings();
-        }
-    },
-    overrideLanguageSettings: function () {
-        // Uncomment this to override the language timefield format for the current language
-        //TODO: consider adding support to set this in a Time Format section in Config -> Settings -> Regional Settings (would be stored in AdminManager.AdminSettings)
-        /*
-        Ext.apply(Ext.form.field.Time.prototype, {
-            format : "H:i"    //may also use: "g:i A"
-        });
-        */
-    },
-    initExtGlobal: function() {
-        // init quick tips
-        Ext.QuickTips.init();
     },
     // Add the additional 'advanced' VTypes
     initExtVTypes: function() {
