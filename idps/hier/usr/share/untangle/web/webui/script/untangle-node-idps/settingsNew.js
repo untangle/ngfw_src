@@ -1260,7 +1260,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
         var congratulationsCard = Ext.create('Webui.untangle-node-idps.Wizard.Congratulations', {
             i18n: this.i18n,
             node: this.getRpcNode(),
-            nodeWidget: this.node,
+            nodeWidget: Ung.Node.getCmp(this.nodeId),
             gui: this
         });
         var setupWizard = Ext.create('Ung.Wizard',{

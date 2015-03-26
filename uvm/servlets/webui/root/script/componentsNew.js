@@ -625,8 +625,7 @@ Ext.define("Ung.Node", {
         var items=null;
         if (this.settingsClassName !== null) {
             this.settingsWin=Ext.create(this.settingsClassName, {
-                node: this,
-                name:this.name,
+                name: this.name,
                 nodeId: this.nodeId,
                 rpcNode: this.rpcNode,
                 settings: settings

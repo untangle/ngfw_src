@@ -618,30 +618,3 @@ Ext.define('Ung.EditWindow', {
         Ung.Main.openHelp(this.helpSource);
     }
 });
-//TODO: ext5 to deprecate and remove
-// Manage list popup window
-Ext.define("Ung.ManageListWindow", {
-    extend: "Ung.UpdateWindow",
-    // the editor grid
-    grid: null,
-    layout: 'fit',
-    initComponent: function() {
-        this.items=this.grid;
-        this.callParent(arguments);
-    },
-    closeWindow: function(skipLoad) {
-        if(!skipLoad) {
-            this.grid.reload();
-        }
-        this.hide();
-    },
-    isDirty: function() {
-        return this.grid.isDirty();
-    },
-    updateAction: function() {
-        this.hide();
-    },
-    saveAction: function() {
-        this.applyAction(Ext.bind(this.hide, this));
-    }
-});

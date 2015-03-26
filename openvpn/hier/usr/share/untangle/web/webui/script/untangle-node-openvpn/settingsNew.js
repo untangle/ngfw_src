@@ -1,103 +1,3 @@
-Ext.define('Webui.untangle-node-openvpn.DownloadClient', {
-    extend: 'Ung.Window',
-    constructor: function( config ) {
-        this.title = config.i18n._('Download OpenVPN Client');
-        this.i18n = config.i18n;
-        this.node = config.node;
-        this.callParent(arguments);
-    },
-    initComponent: function() {
-        this.bbar = ['->', {
-            name: 'close',
-            iconCls: 'cancel-icon',
-            text: this.i18n._('Close'),
-            handler: Ext.bind(this.close, this )
-        }];
-        this.items = {
-            xtype: 'panel',
-            items: [{
-                xtype: 'fieldset',
-                cls: "description",
-                title: this.i18n._('Download'),
-                labelWidth: 150,
-                items: [{
-                    html: this.i18n._('These files can be used to configure your Remote Clients.'),
-                    border: false,
-                    cls: "description"
-                }, {
-                    name: 'downloadWindowsInstaller',
-                    html:  " ",
-                    border: false,
-                    height: 25,
-                    cls: "description"
-                }, {
-                    name: 'downloadGenericConfigurationFile',
-                    html: " ",
-                    border: false,
-                    height: 25,
-                    cls: "description"
-                }, {
-                    name: 'downloadUntangleConfigurationFile',
-                    html: " ",
-                    border: false,
-                    height: 25,
-                    cls: "description"
-                }]
-            }]
-        };
-        this.callParent(arguments);
-    },
-    closeWindow: function() {
-        this.hide();
-    },
-    populate: function( record ) {
-        this.record = record;
-        this.show();
-
-        if(!this.downloadWindowsInstallerEl) {
-            this.downloadWindowsInstallerEl = this.items.get(0).down('[name="downloadWindowsInstaller"]').getEl();
-        }
-        this.downloadWindowsInstallerEl.dom.innerHTML = this.i18n._('Loading...');
-        if(!this.downloadGenericConfigurationFileEl) {
-            this.downloadGenericConfigurationFileEl = this.items.get(0).down('[name="downloadGenericConfigurationFile"]').getEl();
-        }
-        this.downloadGenericConfigurationFileEl.dom.innerHTML = this.i18n._('Loading...');
-        if(!this.downloadUntangleConfigurationFileEl) {
-            this.downloadUntangleConfigurationFileEl = this.items.get(0).down('[name="downloadUntangleConfigurationFile"]').getEl();
-        }
-        this.downloadUntangleConfigurationFileEl.dom.innerHTML = this.i18n._('Loading...');
-
-        Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));
-        // populate download links
-        var loadSemaphore = 2;
-        this.node.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-
-            this.downloadWindowsInstallerEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' +
-                this.i18n._('Click here to download this client\'s Windows setup.exe file.') + '</a>';
-
-            loadSemaphore--;
-            if(loadSemaphore == 0) {
-                Ext.MessageBox.hide();
-            }
-        }, this), this.record.data.name, "exe" );
-        this.node.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-
-            this.downloadGenericConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' +
-                this.i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc). ') + '</a>';
-            this.downloadUntangleConfigurationFileEl.dom.innerHTML = '<a href="' + result + '" target="_blank">' +
-                this.i18n._('Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.') + '</a>';
-
-            loadSemaphore--;
-            if(loadSemaphore == 0) {
-                Ext.MessageBox.hide();
-            }
-
-        }, this), this.record.data.name, "zip" );
-    }
-});
-
 Ext.define('Webui.untangle-node-openvpn.settings', {
     extend:'Ung.NodeWin',
     groupsStore: null,
@@ -552,13 +452,80 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             }, this.gridRemoteServers, this.submitForm]
         });
     },
+    getDistributeWindow: function() {
+        if(!this.distributeWindow) {
+            this.distributeWindow = Ext.create('Ung.Window', {
+                title: this.i18n._('Download OpenVPN Client'),
+                settingsCmp: this,
+                i18n: this.i18n,
+                items: [{
+                    xtype: 'panel',
+                    items: [{
+                        xtype: 'fieldset',
+                        title: this.i18n._('Download'),
+                        margin: 10,
+                        defaults: {
+                            margin: 10
+                        },
+                        items: [{
+                            xtype: 'component',
+                            html: this.i18n._('These files can be used to configure your Remote Clients.'),
+                        }, {
+                            xtype: 'component',
+                            name: 'downloadWindowsInstaller',
+                            html:  " "
+                        }, {
+                            xtype: 'component',
+                            name: 'downloadGenericConfigurationFile',
+                            html: " "
+                        }, {
+                            xtype: 'component',
+                            name: 'downloadUntangleConfigurationFile',
+                            html: " "
+                        }]
+                    }]
+                }],
+                bbar: ['->', {
+                    name: 'close',
+                    iconCls: 'cancel-icon',
+                    text: this.i18n._('Close'),
+                    handler: Ext.bind(this.close, this )
+                }],
+                closeWindow: function() {
+                    this.hide();
+                },
+                populate: function( record ) {
+                    this.record = record;
+                    this.show();
+                    var windowsLink = this.down('[name="downloadWindowsInstaller"]');
+                    var genericLink = this.down('[name="downloadGenericConfigurationFile"]');
+                    var untangleLink = this.down('[name="downloadUntangleConfigurationFile"]');
+                    windowsLink.update(this.i18n._('Loading...'));
+                    genericLink.update(this.i18n._('Loading...'));
+                    untangleLink.update(this.i18n._('Loading...'));
+                    
+                    Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));
+                    // populate download links
+                    var loadSemaphore = 2;
+                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        windowsLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s Windows setup.exe file.') + '</a>');
+                        if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
+                    }, this), this.record.data.name, "exe" );
+                    
+                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        genericLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc). ') + '</a>');
+                        untangleLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.') + '</a>');
+                        if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
+                    }, this), this.record.data.name, "zip" );
+                }
+            });
+            this.subCmps.push(this.distributeWindow);
+        }
+        return this.distributeWindow;
+    },
     buildGridRemoteClients: function() {
-        this.distributeWindow = Ext.create('Webui.untangle-node-openvpn.DownloadClient', {
-            i18n: this.i18n,
-            node: this.getRpcNode()
-        });
-        this.subCmps.push(this.distributeWindow);
-        
         this.gridRemoteClients = Ext.create('Ung.grid.Panel', {
             settingsCmp: this,
             name: 'Remote Clients',
@@ -622,7 +589,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                                 disabled: !this.isNodeRunning,
                                 width: 110,
                                 handler: Ext.bind(function () {
-                                    this.distributeWindow.populate(record);
+                                    this.getDistributeWindow().populate(record);
                                 }, this)
                             });
                             this.subCmps.push(button);

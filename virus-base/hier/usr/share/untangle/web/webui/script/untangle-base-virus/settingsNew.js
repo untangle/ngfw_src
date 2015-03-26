@@ -427,15 +427,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
         this.buildExtensions();
         this.buildMimeTypes();
 
-        this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
-            activeTab: 0,
-            deferredRender: false,
-            parentId: this.getId(),
-            autoHeight: true,
-            flex: 1,
-            items: [ this.gridExtensions, this.gridMimeTypes]
-        });
-
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
             name: 'Advanced',
             parentId: this.getId(),
@@ -448,7 +439,14 @@ Ext.define('Webui.untangle-base-virus.settings', {
                 flex: 0,
                 title: this.i18n._("Advanced"),
                 html: this.i18n._("Advanced settings require careful configuration.")
-            }, this.advancedTabPanel]
+            }, {
+                xtype: 'tabpanel',
+                activeTab: 0,
+                deferredRender: false,
+                parentId: this.getId(),
+                flex: 1,
+                items: [this.gridExtensions, this.gridMimeTypes]
+            }]
         });
     },
     // Event Log
@@ -535,4 +533,4 @@ Ext.define('Webui.untangle-base-virus.settings', {
         });
     }
 });
-//# sourceURL=virus-settings.js
+//# sourceURL=base-virus-settings.js
