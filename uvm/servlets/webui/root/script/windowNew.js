@@ -284,15 +284,14 @@ Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
     node: null,
     constructor: function(config) {
-        var nodeName=config.node.name;
-        this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.policyId;
+        this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
         // initializes the node i18n instance
-        config.i18n = Ung.i18nModuleInstances[nodeName];
+        config.i18n = Ung.i18nModuleInstances[config.name];
         this.callParent(arguments);
     },
     initComponent: function() {
         if (this.helpSource == null) {
-            this.helpSource = this.node.helpSource;
+            this.helpSource = this.helpSource;
         }
         this.breadcrumbs = [{
             title: i18n._(rpc.currentPolicy.name),
@@ -300,7 +299,7 @@ Ext.define("Ung.NodeWin", {
                 this.cancelAction(); // TODO check if we need more checking
             }, this)
         }, {
-            title: this.node.displayName
+            title: this.displayName
         }];
         if(this.bbar==null) {
             this.bbar=["-",{
@@ -354,10 +353,10 @@ Ext.define("Ung.NodeWin", {
         var message = Ext.String.format( i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
-                var node = Ung.Node.getCmp(this.nodeId);
+                var nodeCmp = Ung.Node.getCmp(this.nodeId);
                 this.closeWindow();
-                if(node) {
-                    node.removeAction();
+                if(nodeCmp) {
+                    nodeCmp.removeAction();
                 }
             }
         }, this));
@@ -385,17 +384,6 @@ Ext.define("Ung.NodeWin", {
         }
         return this.settings;
     },
-    // get Validator object
-    getValidator: function() {
-        if (this.node.rpcNode.validator === undefined) {
-            try {
-                this.node.rpcNode.validator = this.getRpcNode().getValidator();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.node.rpcNode.validator;
-    },
     save: function(isApply) {
         this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
             Ext.MessageBox.hide();
@@ -416,9 +404,11 @@ Ext.define("Ung.NodeWin", {
         }, this), this.getSettings());
     },
     reload: function() {
-        var nodeWidget=this.node;
+        var nodeCmp = Ung.Node.getCmp(this.nodeId);
         this.closeWindow();
-        nodeWidget.onSettingsAction();
+        if(nodeCmp) {
+            nodeCmp.loadSettings();
+        }
     }
 });
 

@@ -759,7 +759,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                         },{
                             xtype: 'hidden',
                             name: 'appid',
-                            value: this.node.nodeId
+                            value: this.nodeId
                         },{
                             xtype: "button",
                             name: "upload",
@@ -787,7 +787,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                         },{
                             xtype: 'hidden',
                             name: 'appid',
-                            value: this.node.nodeId
+                            value: this.nodeId
                         },{
                             xtype: "button",
                             name: "remove",
@@ -815,20 +815,20 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     xtype: "button",
                     name: "viewPage",
                     text: i18n._("Preview Captive Portal Page"),
-                    handler: Ext.bind(function()
-                    {
-                        if ( this.node.state != "on" ) {
+                    handler: Ext.bind(function() {
+                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                        if ( !nodeCmp.isRunning() ) {
                             Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"),
-                                                 this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
+                                    this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
                             return;
                         }
 
                         if ( this.isDirty()) {
                             Ext.MessageBox.alert(this.i18n._("Unsaved Changes"),
-                                                 this.i18n._("You must save your settings before previewing the page." ));
+                                    this.i18n._("You must save your settings before previewing the page." ));
                             return;
                         }
-                        window.open("/capture/handler.py/index?appid=" + this.node.nodeId , "_blank");
+                        window.open("/capture/handler.py/index?appid=" + this.nodeId , "_blank");
                     }, this)
                 }]
             },{
@@ -1079,7 +1079,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
-                nodeCmp.onSettingsAction();
+                nodeCmp.loadSettings();
             }
         }
     },
@@ -1088,7 +1088,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
-                nodeCmp.onSettingsAction();
+                nodeCmp.loadSettings();
             }
         }
     }

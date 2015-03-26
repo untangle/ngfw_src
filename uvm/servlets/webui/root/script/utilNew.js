@@ -294,8 +294,8 @@ Ext.define('Ung.Util', {
                 if(Ung.Util.handleException(exception)) return;
                 var moduleMap=result.map;
                 Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                    "map": i18n.map,
-                    "moduleMap": moduleMap
+                    map: i18n.map,
+                    moduleMap: moduleMap
                 });
                 handler.call(this);
             }, this,[moduleName, handler],true), moduleName);

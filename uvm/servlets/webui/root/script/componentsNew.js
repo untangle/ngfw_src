@@ -371,7 +371,7 @@ Ext.define("Ung.Node", {
             iconCls: 'node-settings-icon',
             text: i18n._('Settings'),
             handler: Ext.bind(function() {
-                this.onSettingsAction();
+                this.loadSettings();
             }, this)
         },{
             xtype: "button",
@@ -552,10 +552,6 @@ Ext.define("Ung.Node", {
     onHelpAction: function() {
         Ung.Main.openHelp(this.helpSource);
     },
-    // on click settings
-    onSettingsAction: function() {
-        this.loadSettings();
-    },
     //on Buy Now Action
     onBuyNowAction: function() {
         Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"), Ext.String.format(i18n._("More Info - {0}"), this.displayName) );
@@ -627,6 +623,8 @@ Ext.define("Ung.Node", {
             this.settingsWin=Ext.create(this.settingsClassName, {
                 name: this.name,
                 nodeId: this.nodeId,
+                displayName: this.displayName,
+                helpSource: this.helpSource,
                 rpcNode: this.rpcNode,
                 settings: settings
             });

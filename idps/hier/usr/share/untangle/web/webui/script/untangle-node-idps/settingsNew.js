@@ -1260,7 +1260,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         var congratulationsCard = Ext.create('Webui.untangle-node-idps.Wizard.Congratulations', {
             i18n: this.i18n,
             node: this.getRpcNode(),
-            nodeWidget: Ung.Node.getCmp(this.nodeId),
             gui: this
         });
         var setupWizard = Ext.create('Ung.Wizard',{
@@ -1889,13 +1888,14 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
 
         this.gui.applyAction();
 
-        this.nodeWidget.setPowerOn(true);
-        this.nodeWidget.setState("attention");
+        var nodeCmp = Ung.Node.getCmp(this.gui.nodeId);
+        nodeCmp.setPowerOn(true);
+        nodeCmp.setState("attention");
         this.gui.getRpcNode().start(Ext.bind(function(result, exception) {
             this.gui.wizardWindow.endAction();
             this.gui.getRpcNode().getRunState(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeWidget.updateRunState(result);
+                nodeCmp.updateRunState(result);
             }, this));
         }, this));
         this.gui.wizardWindow.hide();

@@ -24,7 +24,6 @@ Ext.define("Ung.Main", {
     viewport: null,
     contentLeftWidth: null,
     iframeWin: null,
-    policyNodeWidget:null,
     initialScreenAlreadyShown: false,
 
     init: function(config) {
@@ -57,7 +56,7 @@ Ext.define("Ung.Main", {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
         this.target = Ung.Util.getQueryStringParam("target");
-        i18n=new Ung.I18N({
+        i18n = Ext.create('Ung.I18N',{
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset
         });
@@ -650,7 +649,7 @@ Ext.define("Ung.Main", {
                         if(Ung.Main.nodes[i].name == nodeName) {
                             var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
                             if (nodeCmp != null) {
-                                nodeCmp.onSettingsAction();
+                                nodeCmp.loadSettings();
                             }
                             break;
                         }
@@ -992,26 +991,25 @@ Ext.define("Ung.Main", {
         return position;
     },
     addNode: function (node, fadeIn) {
-        var nodeWidget = Ext.create('Ung.Node', node);
-        nodeWidget.fadeIn=fadeIn;
+        var nodeCmp = Ext.create('Ung.Node', node);
+        nodeCmp.fadeIn=fadeIn;
         var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
         var position=this.getNodePosition(place, node.viewPosition);
-        nodeWidget.render(place, position);
+        nodeCmp.render(place, position);
         Ung.AppItem.setLoading(node.name, false);
         if ( node.name == 'untangle-node-policy') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
+            rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 Ext.getCmp('policyManagerMenuItem').enable();
-                this.policyNodeWidget = nodeWidget;
             }, this),"untangle-node-policy");
         }
     },
     addNodePreview: function ( nodeProperties ) {
-        var nodeWidget = Ext.create('Ung.NodePreview', nodeProperties );
+        var nodeCmp = Ext.create('Ung.NodePreview', nodeProperties );
         var place = ( nodeProperties.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
         var position = this.getNodePosition( place, nodeProperties.viewPosition );
-        nodeWidget.render(place,position);
+        nodeCmp.render(place,position);
         Ung.Main.nodePreviews[ nodeProperties.name ]=true;
     },
     removeNodePreview: function(nodeName) {
@@ -1025,10 +1023,10 @@ Ext.define("Ung.Main", {
     },
     removeNode: function(index) {
         var nodeId = Ung.Main.nodes[index].nodeId;
-        var nodeWidget = (nodeId != null) ? Ext.getCmp('node_'+nodeId): null;
+        var nodeCmp = (nodeId != null) ? Ext.getCmp('node_'+nodeId): null;
         Ung.Main.nodes.splice(index, 1);
-        if(nodeWidget) {
-            Ext.destroy(nodeWidget);
+        if(nodeCmp) {
+            Ext.destroy(nodeCmp);
             return true;
         }
         return false;
@@ -1180,8 +1178,12 @@ Ext.define("Ung.Main", {
         }, this);
     },
     showPolicyManager: function() {
-        if (Ung.Main.policyNodeWidget) {
-            Ung.Main.policyNodeWidget.loadSettings();
+        var node = Ung.Main.getNode("untangle-node-policy");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                nodeCmp.loadSettings();
+            }
         }
     },
     // change current policy
