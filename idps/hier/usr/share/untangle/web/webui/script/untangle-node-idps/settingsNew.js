@@ -487,7 +487,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildStatus: function() {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
-            // helpSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            // helpXXXSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             parentId: this.getId(),
             title: this.i18n._('Status'),
             cls: 'ung-panel',
@@ -554,7 +554,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     // Rules Panel
     buildRules: function() {
         this.gridRules = Ext.create('Ung.grid.Panel', {
-            // helpSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            // helpXXXSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             name: 'Rules',
             groupField: 'classtype',
             settingsCmp: this,
@@ -973,7 +973,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     // Variables Panel
     buildVariables: function() {
         this.gridVariables = Ext.create('Ung.grid.Panel', {
-            //helpSource: 'intrusion_detection_prevention_variables', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist            
+            //helpXXXSource: 'intrusion_detection_prevention_variables', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist            
             title: this.i18n._("Variables"),
             name: 'Variables',
             settingsCmp: this,
@@ -1092,7 +1092,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
         var visibleColumns = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg' ];
         this.gridEventLog = Ext.create('Ung.GridEventLog',{
             settingsCmp: this,
-            helpSource: 'intrusion_detection_prevention_event_log',
+            // helpXXXSource: 'intrusion_detection_prevention_event_log', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             eventQueriesFn: this.getRpcNode().getEventQueries,
             fields: [{
                 name: 'time_stamp',

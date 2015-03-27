@@ -564,7 +564,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildStatus: function() {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
-            // helpSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            // helpXXXSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             parentId: this.getId(),
             title: this.i18n._('Status'),
             cls: 'ung-panel',
@@ -643,7 +643,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     buildRules: function() {
         this.panelRules = Ext.create('Ext.panel.Panel',{
             name: 'panelRules',
-            // helpSource: 'intrusion_dection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
+            // helpXXXSource: 'intrusion_dection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             parentId: this.getId(),
             title: this.i18n._('Rules'),
             border: false,

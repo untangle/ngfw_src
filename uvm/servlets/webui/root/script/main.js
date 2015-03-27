@@ -945,7 +945,7 @@ Ext.define("Ung.Main", {
                 "name":"about",
                 "displayName":i18n._("About"),
                 "iconClass":"icon-config-support",
-                "helpSource":"system_info",
+                "helpSource":"about",
                 "className":"Webui.config.about"
             }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
