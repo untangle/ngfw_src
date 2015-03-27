@@ -130,33 +130,6 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
     }
 });
 
-// Defines custom sorting (casting?) comparison functions used when sorting data.
-Ung.SortTypes = {
-    /**
-     * Timestamp sorting
-     * @param {Mixed} value The value being converted
-     * @return {Number} The comparison value
-     */
-    asTimestamp: function(value) {
-        return value.time;
-    },
-    /**
-     * Ip address sorting. may contain netmask.
-     * @param value of the ip field
-     * @return {String} The comparison value
-     */
-    asIp: function(value){
-        if(Ext.isEmpty(value)) {
-            return null;
-        }
-        var i, len, parts = (""+value).replace(/\//g,".").split('.');
-        for(i = 0, len = parts.length; i < len; i++){
-            parts[i] = Ext.String.leftPad(parts[i], 3, '0');
-        }
-        return parts.join('.');
-    }
-};
-
 Ext.define("Ung.ConfigItem", {
     extend: "Ext.Component",
     item: null,
@@ -186,8 +159,6 @@ Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
     nodeProperties: null,
     cls: 'app-item',
-    // progress bar component
-    progressBar: null,
     statics: {
         //Global map to keep loading flag of the apps
         loadingFlags: {},
@@ -223,16 +194,19 @@ Ext.define("Ung.AppItem", {
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
 
-        this.progressBar = Ext.create('Ext.ProgressBar',{
-            id: 'progressBar_' + this.getId(),
-            renderTo: "state_" + this.getId(),
-            height: 17,
-            width: 140,
-            hidden: true
-        });
-
         this.getEl().on("click", this.installNodeFn, this);
         this.syncProgress();
+    },
+    getProgressBar: function() {
+        if(!this.progressBar) {
+            this.progressBar = Ext.create('Ext.ProgressBar',{
+                renderTo: "state_" + this.getId(),
+                height: 17,
+                width: 140,
+                hidden: true
+            });
+        }
+        return this.progressBar;
     },
     //Sync progress bar status
     syncProgress: function() {
@@ -240,7 +214,7 @@ Ext.define("Ung.AppItem", {
         if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
             this.actionEl.setVisible(false);
             this.getEl().mask();
-            if(!this.progressBar.isVisible()) {
+            if(!this.getProgressBar().isVisible()) {
                 this.progressBar.show();
             }
             this.progressBar.reset();
@@ -252,13 +226,17 @@ Ext.define("Ung.AppItem", {
         } else {
             this.actionEl.setVisible(true);
             this.getEl().unmask();
-            this.progressBar.reset(true);
+            if(this.progressBar) {
+                this.progressBar.reset(true);
+            }
         }
     },
     // before Destroy
     beforeDestroy: function() {
-        this.progressBar.reset(true);
-        this.progressBar.destroy();
+        if(this.progressBar) {
+            this.progressBar.reset(true);
+            this.progressBar.destroy();
+        }
         this.callParent(arguments);
     },
     // install node
@@ -421,16 +399,13 @@ Ext.define("Ung.Node", {
                 html: [
                    '<div style="text-align: left;">',
                    i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
-                   '<BR>',
-                   '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
+                   '<br/><font color="#00FF00"><b>' + i18n._("Green") + '</b></font> ' +
                        i18n._('indicates that the application is "on" and operating normally.'),
-                   '<BR>',
-                   '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
+                   '<br/><font color="#FF0000"><b>' + i18n._("Red") + '</b></font> ' +
                        i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
-                   '<BR>',
-                   '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
-                       i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
-                   '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
+                   '<br/><font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> ' +
+                       i18n._('indicates that the application is saving or refreshing settings.'),
+                   '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
                    '</div>'].join(''),
                 target: 'node-state_' + this.getId(),
                 showDelay: 20,
@@ -729,7 +704,6 @@ Ext.define("Ung.Node", {
 
 Ext.define("Ung.NodePreview", {
     extend: "Ext.Component",
-    autoEl: 'div',
     cls: 'node',
     statics: {
         template: new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>')
@@ -888,12 +862,7 @@ Ung.CheckStoreRegistration = {
 
 Ext.define("Ung.SystemStats", {
     extend: "Ext.Component",
-    autoEl: 'div',
     renderTo: "rack-list",
-    constructor: function(config) {
-        this.id = "system_stats";
-        this.callParent(arguments);
-    },
     afterRender: function() {
         this.callParent(arguments);
         this.getEl().addCls("system-stats");
@@ -1425,103 +1394,9 @@ Ext.define("Ung.FaceplateMetric", {
     }
 });
 
-Ext.define("Ung.window.SelectDateTime", {
-    extend: "Ext.window.Window",
-    date: null,
-    buttonObj: null,
-    modal:true,
-    closeAction: 'hide',
-    initComponent: function() {
-        this.items = [{
-            xtype: 'textfield',
-            name: 'dateAndTime',
-            readOnly: true,
-            hideLabel: true,
-            width: 180,
-            emptyText: this.dateTimeEmptyText
-        }, {
-            xtype: 'datepicker',
-            name: 'date',
-            handler: function(picker, date) {
-                var timeValue = this.down("timefield[name=time]").getValue();
-                if(timeValue != null) {
-                    date.setHours(timeValue.getHours());
-                    date.setMinutes(timeValue.getMinutes());
-                }
-                this.setDate(date);
-            },
-            scope: this
-        }, {
-            xtype: 'timefield',
-            name: 'time',
-            hideLabel: true,
-            margin: '5px 0 0 0',
-            increment: 30,
-            width: 180,
-            emptyText: i18n._('Time'),
-            value: Ext.Date.parse('12:00 AM','h:i A'),
-            listeners: {
-                change: {
-                    fn: function(combo, newValue, oldValue, opts) {
-                        if(!this.buttonObj) {
-                            return;
-                        }
-                        if (combo.getValue()!=null) {
-                            if(!this.date) {
-                                var selDate=this.down("datepicker[name=date]").getValue();
-                                if(!selDate) {
-                                    selDate=new Date();
-                                    selDate.setHours(0,0,0,0);
-                                }
-                                this.date = new Date(selDate.getTime()+i18n.timeoffset);
-                            }
-                            this.date.setHours(combo.getValue().getHours());
-                            this.date.setMinutes(combo.getValue().getMinutes());
-                            this.setDate(this.date);
-                        }
-                    },
-                    scope: this
-                }
-            }
-        }];
-        this.buttons = [{
-            text: i18n._("Done"),
-            handler: function() {
-                this.hide();
-            },
-            scope: this
-        }, '->', {
-            name: 'Clear',
-            text: i18n._("Clear Value"),
-            handler: function() {
-                this.setDate(null);
-                this.hide();
-                },
-            scope: this
-        }];
-        this.callParent(arguments);
-    },
-    setDate: function(date) {
-        this.date = date;
-        var dateStr ="";
-        var buttonLabel = null;
-        if(this.date) {
-            this.date.setTime(this.date.getTime()-i18n.timeoffset);
-            dateStr = i18n.timestampFormat({time: this.date.getTime()});
-            buttonLabel = i18n.timestampFormat({time: this.date.getTime()});
-        }
-        this.down("textfield[name=dateAndTime]").setValue(dateStr);
-        if(this.buttonObj) {
-            this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
-        }
-    }
-});
-
 // Navigation Breadcrumbs
 Ext.define('Ung.Breadcrumbs', {
     extend:'Ext.Component',
-    autoEl: "div",
-    // ---Node specific attributes------
     elements: null,
     afterRender: function() {
         this.callParent(arguments);
@@ -1546,71 +1421,3 @@ Ext.define('Ung.Breadcrumbs', {
         }
     }
 });
-
-Ung.RuleValidator = {
-    isSinglePortValid: function(val) {
-        /* check for values between 0 and 65536 */
-        if ( val < 0 || val > 65536 )
-            return false;
-        /* verify its an integer (not a float) */
-        if( ! /^\d{1,5}$/.test( val ) )
-            return false;
-        return true;
-    },
-    isPortRangeValid: function(val) {
-        var portRange = val.split('-');
-        if ( portRange.length != 2 )
-            return false;
-        return this.isSinglePortValid(portRange[0]) && this.isSinglePortValid(portRange[1]);
-    },
-    isPortListValid: function(val) {
-        var portList = val.split(',');
-        var retVal = true;
-        for ( var i = 0; i < portList.length;i++) {
-            if ( portList[i].indexOf("-") != -1) {
-                retVal = retVal && this.isPortRangeValid(portList[i]);
-            } else {
-                retVal = retVal && this.isSinglePortValid(portList[i]);
-            }
-            if (!retVal) {
-                return false;
-            }
-        }
-        return true;
-    },
-    isSingleIpValid: function(val) {
-        var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipAddrMaskRe.test(val);
-    },
-    isIpRangeValid: function(val) {
-        var ipAddrRange = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipAddrRange.test(val);
-    },
-    isCIDRValid: function(val) {
-        var cidrRange = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/;
-        return cidrRange.test(val);
-    },
-    isIpNetmaskValid:function(val) {
-        var ipNetmask = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipNetmask.test(val);
-    },
-    isIpListValid: function(val) {
-        var ipList = val.split(',');
-        var retVal = true;
-        for ( var i = 0; i < ipList.length;i++) {
-            if ( ipList[i].indexOf("-") != -1) {
-                retVal = retVal && this.isIpRangeValid(ipList[i]);
-            } else {
-                if ( ipList[i].indexOf("/") != -1) {
-                    retVal = retVal && ( this.isCIDRValid(ipList[i]) || this.isIpNetmaskValid(ipList[i]));
-                    } else {
-                        retVal = retVal && this.isSingleIpValid(ipList[i]);
-                    }
-            }
-            if (!retVal) {
-                return false;
-            }
-        }
-        return true;
-    }
-};

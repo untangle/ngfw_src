@@ -258,7 +258,7 @@ Ung.CustomEventLog = {
             title: titleParam,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'bandwidth_priority'
             }, {
@@ -269,19 +269,19 @@ Ung.CustomEventLog = {
                 name: 'hostname'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'c_client_port',
                 sortType: 'asInt'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'c_server_port',
                 sortType: 'asInt'
             }, {
                 name: 's_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_port',
                 sortType: 'asInt'
@@ -618,7 +618,7 @@ Ung.CustomEventLog = {
             title: titleParam,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'webfilter_blocked',
                 type: 'boolean'
@@ -639,14 +639,14 @@ Ung.CustomEventLog = {
                 type: 'string'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'username'
             }, {
                 name: 'hostname'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_port',
                 sortType: 'asInt'
@@ -834,17 +834,17 @@ Ung.CustomEventLog = {
             title: titleParam,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'username'
             }, {
                 name: 'hostname'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_port',
                 sortType: 'asInt'
@@ -930,20 +930,20 @@ Ung.CustomEventLog = {
             title: titleParam,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'hostname'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'username'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'virusblocker_name'
             }, {

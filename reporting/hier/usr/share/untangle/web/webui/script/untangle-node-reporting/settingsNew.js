@@ -693,7 +693,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 name: 'id'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'hostname'
             }],
@@ -922,7 +922,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             // the list of fields
             fields: [{
                 name: "time_stamp",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "description"
             },{

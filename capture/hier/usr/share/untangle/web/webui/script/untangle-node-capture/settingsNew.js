@@ -93,7 +93,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
             recordJavaClass: "com.untangle.node.capture.CaptureUserEntry",
             fields: [{
                 name: "userAddress",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "userName"
             },{
@@ -317,7 +317,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 name: "log"
             },{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: "description"
             }],
@@ -937,10 +937,10 @@ Ext.define('Webui.untangle-node-capture.settings', {
             settingsCmp: this,
             fields: [{
                 name: "time_stamp",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "client_addr",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "login_name"
             },{

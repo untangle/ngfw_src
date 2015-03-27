@@ -475,15 +475,15 @@ Ext.define('Webui.untangle-base-virus.settings', {
             // the list of fields
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'username'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'uri',
                 mapping: 'uri'

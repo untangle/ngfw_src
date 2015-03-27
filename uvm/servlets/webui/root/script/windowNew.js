@@ -608,3 +608,94 @@ Ext.define('Ung.EditWindow', {
         Ung.Main.openHelp(this.helpSource);
     }
 });
+Ext.define("Ung.window.SelectDateTime", {
+    extend: "Ext.window.Window",
+    date: null,
+    buttonObj: null,
+    modal:true,
+    closeAction: 'hide',
+    initComponent: function() {
+        this.items = [{
+            xtype: 'textfield',
+            name: 'dateAndTime',
+            readOnly: true,
+            hideLabel: true,
+            width: 180,
+            emptyText: this.dateTimeEmptyText
+        }, {
+            xtype: 'datepicker',
+            name: 'date',
+            handler: function(picker, date) {
+                var timeValue = this.down("timefield[name=time]").getValue();
+                if(timeValue != null) {
+                    date.setHours(timeValue.getHours());
+                    date.setMinutes(timeValue.getMinutes());
+                }
+                this.setDate(date);
+            },
+            scope: this
+        }, {
+            xtype: 'timefield',
+            name: 'time',
+            hideLabel: true,
+            margin: '5px 0 0 0',
+            increment: 30,
+            width: 180,
+            emptyText: i18n._('Time'),
+            value: Ext.Date.parse('12:00 AM','h:i A'),
+            listeners: {
+                change: {
+                    fn: function(combo, newValue, oldValue, opts) {
+                        if(!this.buttonObj) {
+                            return;
+                        }
+                        if (combo.getValue()!=null) {
+                            if(!this.date) {
+                                var selDate=this.down("datepicker[name=date]").getValue();
+                                if(!selDate) {
+                                    selDate=new Date();
+                                    selDate.setHours(0,0,0,0);
+                                }
+                                this.date = new Date(selDate.getTime()+i18n.timeoffset);
+                            }
+                            this.date.setHours(combo.getValue().getHours());
+                            this.date.setMinutes(combo.getValue().getMinutes());
+                            this.setDate(this.date);
+                        }
+                    },
+                    scope: this
+                }
+            }
+        }];
+        this.buttons = [{
+            text: i18n._("Done"),
+            handler: function() {
+                this.hide();
+            },
+            scope: this
+        }, '->', {
+            name: 'Clear',
+            text: i18n._("Clear Value"),
+            handler: function() {
+                this.setDate(null);
+                this.hide();
+                },
+            scope: this
+        }];
+        this.callParent(arguments);
+    },
+    setDate: function(date) {
+        this.date = date;
+        var dateStr ="";
+        var buttonLabel = null;
+        if(this.date) {
+            this.date.setTime(this.date.getTime()-i18n.timeoffset);
+            dateStr = i18n.timestampFormat({time: this.date.getTime()});
+            buttonLabel = i18n.timestampFormat({time: this.date.getTime()});
+        }
+        this.down("textfield[name=dateAndTime]").setValue(dateStr);
+        if(this.buttonObj) {
+            this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
+        }
+    }
+});

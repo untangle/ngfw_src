@@ -525,7 +525,7 @@ Ext.define('Webui.config.sessionMonitor', {
             columns: this.getColumns(),
             fields: [{
                 name: "creationTime",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "id"
             },{
@@ -536,10 +536,10 @@ Ext.define('Webui.config.sessionMonitor', {
                 name: "policy"
             },{
                 name: "preNatClient",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "preNatServer",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "preNatClientPort",
                 sortType: 'asInt'
@@ -548,10 +548,10 @@ Ext.define('Webui.config.sessionMonitor', {
                 sortType: 'asInt'
             },{
                 name: "postNatClient",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "postNatServer",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "postNatClientPort",
                 sortType: 'asInt'

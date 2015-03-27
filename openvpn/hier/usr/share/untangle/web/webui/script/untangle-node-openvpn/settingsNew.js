@@ -73,15 +73,15 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             recordJavaClass: "com.untangle.node.openvpn.OpenVpnStatusEvent",
             fields: [{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: "clientName"
             }, {
                 name: "poolAddress",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: "start",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: "bytesRxTotal"
             }, {
@@ -208,18 +208,18 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             title: i18n._('Event Log'),
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'end_time',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'client_name'
             }, {
                 name: 'remote_address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'pool_address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'tx_bytes',
                 convert: function(val) {
@@ -692,7 +692,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 name: 'name'
             }, {
                 name: 'network',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }],
             columns: [{
                 xtype:'checkcolumn',

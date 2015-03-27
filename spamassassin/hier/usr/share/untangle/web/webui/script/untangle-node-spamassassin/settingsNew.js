@@ -433,7 +433,7 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             // the list of fields
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'skipped',
                 type: 'string',

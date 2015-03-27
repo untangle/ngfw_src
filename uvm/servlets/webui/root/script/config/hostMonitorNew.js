@@ -98,7 +98,7 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 name: "address",
                 type: 'string',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "macAddress",
                 type: 'string'
@@ -382,7 +382,7 @@ Ext.define('Webui.config.hostMonitor', {
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "penaltyBoxEntryTime"
             },{
@@ -453,7 +453,7 @@ Ext.define('Webui.config.hostMonitor', {
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
             fields: [{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "quotaSize"
             },{
@@ -557,16 +557,16 @@ Ext.define('Webui.config.hostMonitor', {
             title: this.i18n._("Penalty Box Event Log"),
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'start_time',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'end_time',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'reason'
             }],
@@ -608,12 +608,12 @@ Ext.define('Webui.config.hostMonitor', {
             title: this.i18n._("Quota Event Log"),
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'action'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'size'
             }, {

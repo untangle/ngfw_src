@@ -1096,7 +1096,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             eventQueriesFn: this.getRpcNode().getEventQueries,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'sig_id',
                 sortType: 'asInt'
@@ -1108,13 +1108,13 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 sortType: 'asInt'
             }, {
                 name: 'source_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'source_port',
                 sortType: 'asInt'
             }, {
                 name: 'dest_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'dest_port',
                 sortType: 'asInt'

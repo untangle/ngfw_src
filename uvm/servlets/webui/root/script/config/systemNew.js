@@ -1006,20 +1006,20 @@ Ext.define('Webui.config.system', {
             settingsCmp: this,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'username'
             }, {
                 name: 'shield_blocked'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'c_client_port',
                 sortType: 'asInt'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_port',
                 sortType: 'asInt'

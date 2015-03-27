@@ -152,7 +152,7 @@ Ext.define('Webui.config.about', {
                     iconCls: 'icon-refresh',
                     handler: Ext.bind(function() {
                         //reload licenses for each node in rack
-                        Ung.Main.loadLicenses();
+                        Ung.Main.reloadLicenses();
                         //reload grid
                         this.gridLicenses.reload();
                     }, this)
