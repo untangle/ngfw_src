@@ -579,7 +579,7 @@ class IdpsTests(unittest2.TestCase):
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("dig www.companysecret.com > /dev/null")
+        result = remote_control.runCommand("dig @4.2.2.1 www.companysecret.com > /dev/null")
 
         event = self.idps_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == False )
@@ -595,7 +595,7 @@ class IdpsTests(unittest2.TestCase):
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("dig www.companysecret.com > /dev/null")
+        result = remote_control.runCommand("dig @4.2.2.1 www.companysecret.com > /dev/null")
 
         event = self.idps_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
@@ -606,7 +606,7 @@ class IdpsTests(unittest2.TestCase):
         """
         global node
 
-        dest_ip_address = remote_control.runCommand("dig test.untangle.com | grep test.untangle.com | grep -v ^\; | cut -f5", None, True )
+        dest_ip_address = remote_control.runCommand("dig @4.2.2.1 test.untangle.com | grep test.untangle.com | grep -v ^\; | cut -f5", None, True )
         rule = self.idps_interface.create_rule(msg="ICMP Log", type="icmp", dest_ip=dest_ip_address, block=False)
 
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
@@ -623,7 +623,7 @@ class IdpsTests(unittest2.TestCase):
         """
         global node
 
-        dest_ip_address = remote_control.runCommand("dig test.untangle.com | grep test.untangle.com | grep -v ^\; | cut -f5", None, True )
+        dest_ip_address = remote_control.runCommand("dig @4.2.2.1 test.untangle.com | grep test.untangle.com | grep -v ^\; | cut -f5", None, True )
         rule = self.idps_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
 
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
