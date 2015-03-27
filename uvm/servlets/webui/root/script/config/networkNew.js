@@ -486,7 +486,7 @@ Ext.define('Webui.config.network', {
             },
             {
                 name: "v4Address", //from interfaceStatus
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: "v4Netmask" //from interfaceStatus
             }, {
@@ -2390,7 +2390,7 @@ Ext.define('Webui.config.network', {
                 name: 'enabled'
             }, {
                 name: 'newDestination',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'newPort',
                 sortType: 'asInt'
@@ -3075,7 +3075,7 @@ Ext.define('Webui.config.network', {
                 name: 'ruleId'
             }, {
                 name: 'network',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'prefix',
                 sortType: 'asInt'
@@ -3224,7 +3224,7 @@ Ext.define('Webui.config.network', {
                 name: 'name'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }],
             columns: [{
                 header: this.i18n._("Name"),
@@ -3264,7 +3264,7 @@ Ext.define('Webui.config.network', {
                 name: 'domain'
             }, {
                 name: 'localServer',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }],
             columns: [{
                 header: this.i18n._("Domain"),
@@ -3316,7 +3316,7 @@ Ext.define('Webui.config.network', {
                 name: 'macAddress'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'description'
             }],
@@ -3416,7 +3416,7 @@ Ext.define('Webui.config.network', {
                 name: "macAddress"
             },{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "hostname"
             }],
@@ -3949,10 +3949,10 @@ Ext.define('Webui.config.network', {
                 name: 'proto'
             },{
                 name: 'src',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: 'dst',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: 'src_port',
                 sortType: 'asInt'

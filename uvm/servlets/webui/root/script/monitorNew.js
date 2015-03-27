@@ -58,15 +58,14 @@ Ext.define('Ung.MonitorGrid', {
         if(this.appList!=null) {
             this.bbar.push({
                 xtype: 'tbtext',
-                id: "appSelectorBox_"+this.getId(),
+                name: 'appSelectorBox',
                 text: ''
             });
         }
         this.bbar.push({
             xtype: 'button',
-            id: "refresh_"+this.getId(),
+            name: 'refresh',
             text: i18n._('Refresh'),
-            name: "Refresh",
             tooltip: i18n._('Refresh'),
             iconCls: 'icon-refresh',
             handler: Ext.bind(function() {
@@ -74,16 +73,14 @@ Ext.define('Ung.MonitorGrid', {
             }, this)
         },{
             xtype: 'button',
-            id: "auto_refresh_"+this.getId(),
+            name: 'auto_refresh',
             text: i18n._('Auto Refresh'),
             enableToggle: true,
             pressed: false,
-            name: "Auto Refresh",
             tooltip: i18n._('Auto Refresh'),
             iconCls: 'icon-autorefresh',
             handler: Ext.bind(function() {
-                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                if(autoRefreshButton.pressed) {
+                if(this.down('button[name=auto_refresh]').pressed) {
                     this.startAutoRefresh();
                 } else {
                     this.stopAutoRefresh();
@@ -152,7 +149,7 @@ Ext.define('Ung.MonitorGrid', {
                 out.push('<option value="' + app.value + '" ' + selOpt + '>' + app.name + '</option>');
             }
             out.push('</select>');
-            Ext.getCmp('appSelectorBox_' + this.getId()).setText(out.join(""));
+            this.down('[name=appSelectorBox]').setText(out.join(""));
         }
     },
     setSelectedApp: function(dataFnArg) {
@@ -205,22 +202,18 @@ Ext.define('Ung.MonitorGrid', {
     startAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=true;
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-            autoRefreshButton.toggle(true);
+            this.down('button[name=auto_refresh]').toggle(true);
         }
-        var refreshButton=Ext.getCmp("refresh_"+this.getId());
-        refreshButton.disable();
+        this.down('button[name=refresh]').disable();
         this.autorefreshList();
 
     },
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-            autoRefreshButton.toggle(false);
+            this.down('button[name=auto_refresh]').toggle(false);
         }
-        var refreshButton=Ext.getCmp("refresh_"+this.getId());
-        refreshButton.enable();
+        this.down('button[name=refresh]').enable();
     },
     autorefreshList: function() {
         if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {

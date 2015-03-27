@@ -132,7 +132,7 @@ Ext.define("Ung.GridEventLog", {
                 out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
-            Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
+            this.down('[name=querySelector]').setText(out.join(""));
 
             displayStyle = "";
             if (this.settingsCmp.node != null &&
@@ -149,7 +149,7 @@ Ext.define("Ung.GridEventLog", {
                 out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
             }
             out.push('</select>');
-            Ext.getCmp('rackSelector_' + this.getId()).setText(out.join(""));
+            this.down('[name=rackSelector]').setText(out.join(""));
 
             out = [];
             out.push('<select name="Event Limit" id="selectLimit_' + this.getId() + '" width="100px">');
@@ -157,8 +157,7 @@ Ext.define("Ung.GridEventLog", {
             out.push('<option value="' + 10000 + '">' + '10000 ' + i18n._('Events') + '</option>');
             out.push('<option value="' + 50000 + '">' + '50000 ' + i18n._('Events') + '</option>');
             out.push('</select>');
-            Ext.getCmp('limitSelector_' + this.getId()).setText(out.join(""));
-
+            this.down('[name=limitSelector]').setText(out.join(""));
         }
     },
     // get selected query value
