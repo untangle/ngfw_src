@@ -60,6 +60,34 @@
 	background-image: linear-gradient(top, #539b38, #005900);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#539b38, endColorstr=#005900);
 }
 
+#main {
+    margin: 0 auto; 
+    width: 600px; 
+    text-align: left; 
+    background: #fff; 
+    padding: 0px; 
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;    
+}
+/* ----------- iPhone and Android width smaller screens ----------- */
+@media screen (max-device-width: 641px)
+  and (-webkit-min-device-pixel-ratio: 2){
+    #main {
+        width: 520px;
+        font-size: 250%; 
+    }
+    #doorimg {
+        display:none;
+    }
+    #styleTitle{
+        display:none;
+    }
+    #submit{
+        font-size: 150%;
+   }
+}
+
 </style>
 <script language="javascript">
     $.SecureEndpointCheck.$
@@ -68,7 +96,7 @@
 </head>
 <body style="background-color: #fff; background: #4c4c4c;" onload="FocusOnInput()">
 <br />
-<div style="margin: 0 auto; width: 600px; text-align: left; background: #fff; padding: 0px; -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px;">
+<div id="main">
 <div style="padding: 20px 60px 40px 80px;">
 <table border=0><tr>
 	<td><img src="/images/BrandingLogo.png" alt="BrandingLogo" title="BrandingLogo" /></td>
@@ -77,7 +105,7 @@
 </tr><tr>
 	<td colspan=3>&nbsp;</td>
 </tr><tr>
-	<td colspan=3><center><img src="/capture/door.jpg" alt="Captive Portal" title="Captive Portal" /></center></td>
+	<td colspan=3><center><img id="doorimg" src="/capture/door.jpg" alt="Captive Portal" title="Captive Portal" /></center></td>
 </tr></table>
 
 <table border=0>
