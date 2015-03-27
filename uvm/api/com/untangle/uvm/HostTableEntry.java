@@ -21,6 +21,7 @@ public class HostTableEntry implements Serializable, JSONString
 
     private InetAddress address;
     private String      macAddress;
+    private String      macVendor;
     private long        creationTime;
     private long        lastAccessTime;
     private long        lastSessionTime = 0; /* time of the last new session */
@@ -59,6 +60,9 @@ public class HostTableEntry implements Serializable, JSONString
 
     public String getMacAddress() { return this.macAddress; }
     public void setMacAddress( String newValue ) { this.macAddress = newValue; updateAccessTime(); }
+
+    public String getMacVendor() { return this.macVendor; }
+    public void setMacVendor( String newValue ) { this.macVendor = newValue; updateAccessTime(); }
     
     public long getCreationTime() { return this.creationTime; }
     public void setCreationTime( long newValue ) { this.creationTime = newValue; updateAccessTime(); }
