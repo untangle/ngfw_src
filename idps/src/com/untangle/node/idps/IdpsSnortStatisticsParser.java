@@ -126,6 +126,13 @@ public class IdpsSnortStatisticsParser {
 
 	public void parse( IdpsNode idpsNode ){
         String pid = null;
+
+        File f = new File( SNORT_PID );
+        if( !f.exists() ){
+            logger.warn("Snort pid not found");
+            return;
+        }
+
         try{
             pid = new String(Files.readAllBytes(Paths.get(SNORT_PID))).trim();
         }catch ( IOException e ){
