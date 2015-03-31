@@ -2,6 +2,7 @@ Ext.Loader.setConfig({
     enabled: true,
     disableCaching: false,
     paths: {
+        'Ext.ux': '/ext5/examples/ux',
         'Webui': 'script'
     }
 });

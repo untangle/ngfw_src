@@ -4,12 +4,11 @@ Ext.define('Ung.MonitorGrid', {
     selType: 'rowmodel',
     // settings component
     settingsCmp: null,
-    //an applicaiton selector
+    //an application selector
     appList: null,
     // the total number of records
     autoRefreshEnabled: false,
     stateful: true,
-    plugins: ['gridfilters'],
     features: [{
         ftype: 'groupingsummary'
     }],
@@ -22,6 +21,7 @@ Ext.define('Ung.MonitorGrid', {
                     msg: i18n._("Loading...")
                 }
             },
+            plugins: [],
             changedData: {},
             subCmps:[],
             stateId: "monitorGrid-"+config.name
@@ -114,7 +114,8 @@ Ext.define('Ung.MonitorGrid', {
             text: i18n._('Clear Filters'),
             tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
             handler: Ext.bind(function () {
-                this.filters.clearFilters();
+                this.clearFilters();
+                this.searchField.setValue("");
             }, this)
         },{
                 text: i18n._('Clear Grouping'),
@@ -130,10 +131,11 @@ Ext.define('Ung.MonitorGrid', {
                 this.reconfigure(this.getStore(), this.initialConfig.columns);
             }, this)
         });
-        /*TODO: ext5
-        this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
+        
+        this.plugins.push('gridfilters');
+        this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {});
         this.features.push(this.filterFeature);
-        */
+        
         this.callParent(arguments);
         this.searchField=this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
@@ -178,7 +180,8 @@ Ext.define('Ung.MonitorGrid', {
     reload: function(hideLoadingMask, handler) {
         var dataFnHandler = Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            this.getStore().loadRawData(result.list);
+            this.getStore().getProxy().setData(result.list);
+            this.getStore().load();
             if(!hideLoadingMask) {
                 this.getView().setLoading(false);
             }

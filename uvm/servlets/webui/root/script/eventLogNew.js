@@ -1,5 +1,6 @@
-Ext.define("Ung.GridEventLog", {
-    extend: "Ung.GridEventLogBase",
+Ext.define("Ung.grid.EventLog", {
+    alias: 'Ung.GridEventLog',
+    extend: "Ung.grid.BaseEventLog",
     hasTimestampFilter: true,
     hasAutoRefresh: true,
     hasSelectors: true,
@@ -1119,10 +1120,7 @@ Ung.CustomEventLog = {
           case 'R': return i18n._("in URLs Pass list (via referer)");
           case 'C': return i18n._("in Clients Pass list");
           case 'B': return i18n._("Client Bypass");
-          case 'DEFAULT':
-            return i18n._("no rule applied");
-          default:
-            return i18n._("no rule applied");
+          default: return i18n._("no rule applied");
         }
     },
     mailEventConvertAction: function(value) {

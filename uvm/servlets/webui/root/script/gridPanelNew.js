@@ -224,6 +224,7 @@ Ext.define('Ung.grid.Panel', {
                 property: this.sortField,
                 direction: this.sortOrder ? this.sortOrder: "ASC"
             }: undefined,
+            groupField: this.groupField,
             listeners: {
                 "update": {
                     fn: Ext.bind(function(store, record, operation) {
@@ -687,6 +688,38 @@ Ext.define('Ung.grid.Panel', {
         this.rowEditor = rowEditor;
         this.rowEditor.grid=this;
         this.subCmps.push(this.rowEditor);
+    },
+    getAddedDeletedModifiedLists: function() {
+        var added = [];
+        var deleted = [];
+        var modified = [];
+        for (var id in this.changedData) {
+            var cd = this.changedData[id];
+            if ("deleted" == cd.op) {
+                if (id > 0) {
+                    deleted.push(parseInt(id, 10));
+                }
+            } else {
+                if (this.recordJavaClass != null) {
+                    cd.recData["javaClass"] = this.recordJavaClass;
+                }
+                if (id < 0) {
+                    added.push(cd.recData);
+                } else {
+                    modified.push(cd.recData);
+                }
+            }
+        }
+        return [{
+            list: added,
+            "javaClass": "java.util.ArrayList"
+        }, {
+            list: deleted,
+            "javaClass": "java.util.ArrayList"
+        }, {
+            list: modified,
+            "javaClass": "java.util.ArrayList"
+        }];
     },
     getList: function(useId, useInternalId) {
         var list=[];

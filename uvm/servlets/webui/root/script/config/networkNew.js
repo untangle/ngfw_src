@@ -726,7 +726,6 @@ Ext.define('Webui.config.network', {
                                 listeners: {
                                     "change": {
                                         fn: Ext.bind(function(elem, newValue, oldValue) {
-                                            //TODO: ext5 Fix swithching interfaces using Device combo box
                                             var sourceRecord = null;
                                             var targetRecord = null;
                                             this.mapDevicesStore.each( function( currentRow ) {
