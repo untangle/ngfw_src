@@ -5286,7 +5286,7 @@ Ext.define('Webui.config.network', {
             }
         }
 
-        this.settings.portForwardRules = this.gridPortForwardRules.getList();
+        this.settings.portForwardRules.list = this.gridPortForwardRules.getList();
         this.settings.natRules.list = this.gridNatRules.getList();
         this.settings.bypassRules.list = this.gridBypassRules.getList();
         this.settings.staticRoutes.list = this.gridStaticRoutes.getList();

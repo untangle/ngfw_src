@@ -212,7 +212,7 @@ Ext.define('Ung.grid.Panel', {
                         this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
                         this.storeData || [];
         this.store = Ext.create('Ext.data.Store',{
-            data: this.formatData(storeData),
+            data: this.formatData(Ext.clone(storeData)),
             model: this.modelName,
             proxy: {
                 type: 'memory',
@@ -416,7 +416,7 @@ Ext.define('Ung.grid.Panel', {
                 this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
                 this.storeData || [];
             
-            this.getStore().getProxy().setData(this.formatData(storeData));
+            this.getStore().getProxy().setData(this.formatData(Ext.clone(storeData)));
             if(handler) {
                 handler();
             }
