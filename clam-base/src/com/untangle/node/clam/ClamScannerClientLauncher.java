@@ -58,7 +58,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
         clientTmp.startScan(); // start scanning
 
         // wait for result or stop scanning if too much time has passed
-        if (0 < timeout) {
+        if ( timeout > 0 ) {
             // time remains; let client continue
             clogger.debug("clamc: " + clientTmp + ", wait: " + timeout);
             clientTmp.checkProgress(timeout);

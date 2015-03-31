@@ -58,6 +58,7 @@ public class ClamClient extends VirusClient
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
             clogger.warn(dbgName + ", finish, clamc could not connect to main clamd; clamd may not be configured or clamd may be overloaded", e);
+            cContext.setResultError();
             cleanExit();
             return;
         }
@@ -172,18 +173,23 @@ public class ClamClient extends VirusClient
             bufOutputStream = null;
         } catch (ClosedByInterruptException e) {
             // not thrown
+            cContext.setResultError();
             clogger.warn(dbgName + ", clamc i/o channel interrupted:" + clamcSocket + ", " + msgcSocket, e);
         } catch (SocketException e) {
             // thrown during read block
+            cContext.setResultError();
             clogger.warn(dbgName + ", clamc socket closed/interrupted: " + clamcSocket + ", " + msgcSocket, e);
         } catch (IOException e) {
             // not thrown
+            cContext.setResultError();
             clogger.warn(dbgName + ", clamc i/o exception: " + clamcSocket + ", " + msgcSocket, e);
         } catch (InterruptedException e) {
             // not thrown
+            cContext.setResultError();
             clogger.warn(dbgName + ", clamc interrupted: " + clamcSocket + ", " + msgcSocket, e);
         } catch (Exception e) {
             // thrown during parse
+            cContext.setResultError();
             clogger.warn(dbgName + ", clamc failed", e);
         } finally {
             //clogger.debug(dbgName + ", finish");

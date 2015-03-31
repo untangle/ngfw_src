@@ -52,7 +52,7 @@ abstract public class VirusClient implements Runnable
 
                 // retry when no result yet and time remains before timeout
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                while (null == cContext.getResult() && elapsedTime < timeout) {
+                while ( cContext.getResult() == null && elapsedTime < timeout ) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
                 }
