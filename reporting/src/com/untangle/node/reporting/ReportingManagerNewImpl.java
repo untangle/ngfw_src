@@ -32,6 +32,16 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return this.reportEntries;
     }
 
+    public ArrayList<ReportEntry> getReportEntries( String category )
+    {
+        ArrayList<ReportEntry> entries = new ArrayList<ReportEntry>();
+        for ( ReportEntry entry: this.reportEntries ) {
+            if ( category == null || category.equals( entry.getCategory() ) )
+                 entries.add( entry );
+        }
+        return entries;
+    }
+    
     public void setReportEntries( ArrayList<ReportEntry> newEntries )
     {
         this.reportEntries = newEntries;
