@@ -1264,7 +1264,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             hasCancel: true,
             cardDefaults: {
                 labelWidth: 200,
-                cls: 'untangle-form-panel'
+                cls: 'ung-panel'
             },
             cards: [welcomeCard, classtypesCard, categoriesCard, congratulationsCard],
             cancelAction: function() {

@@ -1026,7 +1026,7 @@ Ext.define("Ung.SystemStats", {
         this.getEl().down("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
         this.getEl().down("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
         var diskPercent=Math.round((1-stats.freeDiskSpace/stats.totalDiskSpace)*20 )*5;
-        this.getEl().down("div[name=disk_value]").dom.className="disk"+diskPercent;
+        this.getEl().down("div[name=disk_value]").setStyle("backgroundImage", "url('/skins/"+rpc.skinSettings.skinName+"/images/admin/disk/icon_disk"+diskPercent+".png')");
         if(this.networkToolTip.rendered) {
             toolTipEl=this.networkToolTip.getEl();
             toolTipEl.down("span[name=tx_speed]").dom.innerHTML=txSpeed.value+" "+txSpeed.unit;

@@ -578,7 +578,6 @@ Ext.define('Webui.config.email', {
     },
     buildGridSafelistUserDetails: function() {
         this.gridSafelistUserDetails = Ext.create('Ung.grid.Panel',{
-            anchor: "100% 100%",
             name: 'gridSafelistUserDetails',
             selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
             hasEdit: false,
@@ -958,7 +957,6 @@ Ext.define('Webui.config.email', {
 
     buildUserQuarantinesGrid: function() {
         this.userQuarantinesDetailsGrid = Ext.create('Ung.grid.Panel', {
-            anchor: "100% 100%",
             name: 'userQuarantinesDetailsGrid',
             selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
             hasEdit: false,

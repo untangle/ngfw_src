@@ -1006,7 +1006,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 }, {
                     xtype: 'numberfield',
                     hidden: Ung.Util.hideDangerous,
-                    labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Port'),
                     name: 'Port',
@@ -1025,7 +1024,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     xtype: "combo",
                     hidden: Ung.Util.hideDangerous,
                     editable: false,
-                    labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Protocol'),
                     name: 'Protocol',
@@ -1050,7 +1048,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 }, {
                     xtype: 'textfield',
                     hidden: Ung.Util.hideDangerous,
-                    labelAlign:'left',
                     width:300,
                     fieldLabel: this.i18n._('Cipher'),
                     name: 'Cipher',
@@ -1066,7 +1063,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     }
                 }, {
                     xtype: 'textfield',
-                    labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Address Space'),
                     name: 'Address Space',

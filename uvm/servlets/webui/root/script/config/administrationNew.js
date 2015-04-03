@@ -470,12 +470,12 @@ Ext.define('Webui.config.administration', {
             helpSource: 'administration_certificates',
             // private fields
             parentId: this.getId(),
-
             title: this.i18n._('Certificates'),
-            layout: "anchor",
             cls: 'ung-panel',
             autoScroll: true,
-            defaults: { anchor: '98%', xtype: 'fieldset' },
+            defaults: {
+                xtype: 'fieldset'
+            },
             items: [{
                 title: this.i18n._('Certificate Authority'),
                 defaults: { labelWidth: 150 },

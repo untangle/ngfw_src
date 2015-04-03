@@ -367,7 +367,6 @@ Ext.define('Webui.config.hostMonitor', {
     },
     buildGridPenaltyBox: function() {
         this.gridPenaltyBox = Ext.create('Ung.grid.Panel',{
-            anchor: '100% -60',
             helpSource: 'host_viewer_penalty_box_hosts',
             name: "PenaltyBoxHosts",
             settingsCmp: this,
@@ -438,7 +437,6 @@ Ext.define('Webui.config.hostMonitor', {
     },
     buildGridQuotaBox: function() {
         this.gridQuotaBox = Ext.create('Ung.grid.Panel',{
-            anchor: '100% -60',
             name: "CurrentQuotas",
             helpSource: 'host_viewer_current_quotas',
             settingsCmp: this,

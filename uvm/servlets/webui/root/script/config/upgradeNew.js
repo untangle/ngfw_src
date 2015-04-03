@@ -134,7 +134,7 @@ Ext.define('Webui.config.upgrade', {
                     name: 'upgradeButton',
                     hidden: true,
                     text: this.i18n._("Upgrade"),
-                    iconCls: "action-icon",
+                    iconCls: "icon-upgrade",
                     handler: Ext.bind(function() {
                         this.downloadUpgrades();
                     }, this)

@@ -87,11 +87,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             title: this.i18n._('Email'),
             name: 'Email',
             helpSource: 'spam_blocker_lite_email',
-            layout: "anchor",
-            defaults: {
-                anchor: '98%',
-                autoScroll: true
-            },
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
@@ -135,7 +130,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                             editable: false,
                             store: strengthsData,
                             fieldLabel: this.i18n._('Strength'),
-                            itemCls: 'left-indent-1',
                             width: 300,
                             queryMode: 'local',
                             value: this.getStrengthSelectionValue(this.settings.smtpConfig.strength),
@@ -159,7 +153,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                             xtype: 'numberfield',
                             fieldLabel: '&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),
                             name: 'smtpStrengthValue',
-                            itemCls: 'left-indent-1',
                             value: this.settings.smtpConfig.strength / 10.0,
                             toValidate: true,
                             width: 200,
@@ -186,7 +179,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                     valueField: 'key',
                     displayField: 'name',
                     fieldLabel: this.i18n._('Action'),
-                    itemCls: 'left-indent-1',
                     width: 300,
                     queryMode: 'local',
                     value: this.settings.smtpConfig.msgAction,
@@ -212,7 +204,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                     name: 'dropSuperSpam',
                     boxLabel: this.i18n._('Drop Super Spam'),
                     hideLabel: true,
-                    itemCls: 'left-indent-4',
                     checked: this.settings.smtpConfig.blockSuperSpam,
                     listeners: {
                         "afterrender": {
@@ -238,7 +229,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                              allowDecimals: false,
                              allowBlank: false,
                              minValue: 0,
-                             itemCls: 'left-indent-4 super-spam-threshold x-item-disabled',
                              maxValue: 2147483647,
                              hideTrigger:true,
                              listeners: {

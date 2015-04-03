@@ -2122,7 +2122,6 @@ Ext.define('Webui.config.network', {
             helpSource: 'network_hostname',
             parentId: this.getId(),
             title: this.i18n._('Hostname'),
-            layout: 'anchor',
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -2253,7 +2252,6 @@ Ext.define('Webui.config.network', {
             helpSource: 'network_services',
             parentId: this.getId(),
             title: this.i18n._('Services'),
-            layout: 'anchor',
             cls: 'ung-panel',
             autoScroll: true,
             items: [{
@@ -3177,7 +3175,6 @@ Ext.define('Webui.config.network', {
             parentId: this.getId(),
             title: this.i18n._('Routes'),
             autoScroll: true,
-            layout: "anchor",
             reserveScrollbar: true,
             cls: 'ung-panel',
             items: [{
@@ -3483,7 +3480,6 @@ Ext.define('Webui.config.network', {
             helpSource: 'network_options',
             parentId: this.getId(),
             title: this.i18n._('Options'),
-            layout: 'anchor',
             cls: 'ung-panel',
             items: [{
                 xtype: "checkbox",
@@ -3984,7 +3980,6 @@ Ext.define('Webui.config.network', {
             parentId: this.getId(),
             title: this.i18n._('QoS'),
             autoScroll: true,
-            layout: 'anchor',
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
@@ -5088,9 +5083,7 @@ Ext.define('Webui.config.network', {
                             name : "advancedInput",
                             emptyText: this.testAdvancedText,
                             hideLabel : true,
-                            anchor : "100% 10%",
                             fieldCls : "ua-test-output",
-                            style : "padding: 8px",
                             value: defaultValue
                         });
                         var testpanel = this.down('panel>panel[name="testpanel"]');
@@ -5336,9 +5329,7 @@ Ext.define("Webui.config.network.NetworkTest", {
                     emptyText : this.testEmptyText,
                     hideLabel : true,
                     readOnly : true,
-                    anchor : "100% 100%",
-                    fieldCls : "ua-test-output",
-                    style : "padding: 8px"
+                    fieldCls : "ua-test-output"
                 })]
             }]
         }];
