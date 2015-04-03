@@ -354,10 +354,9 @@ Ext.define('Webui.config.administration', {
             items: {
                 xtype: 'fieldset',
                 items: [{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName),
-                    bodyStyle: 'padding-bottom:10px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName)
                 },{
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use IP address from External interface (default)'),
@@ -376,10 +375,9 @@ Ext.define('Webui.config.administration', {
                         }
                     }
                 },{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 10px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName)
                 },{
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use Hostname'),
@@ -398,16 +396,14 @@ Ext.define('Webui.config.administration', {
                         }
                     }
                 },{
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 25',
                     html: Ext.String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
-                            rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 5px 25px;',
-                    border: false
+                            rpc.companyName)
                 }, {
-                    cls: 'description',
-                    html: Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + this.getHostname(true) + '</i>' ),
-                    bodyStyle: 'padding:0px 5px 10px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + this.getHostname(true) + '</i>' )
                 }, {
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use Manually Specified Address'),
@@ -437,37 +433,32 @@ Ext.define('Webui.config.administration', {
                         }
                     }
                 },{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'),
-                            rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 5px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'), rpc.companyName)
                 },{
-                    xtype: 'panel',
-                    bodyStyle: 'padding-left:25px;',
-                    border: false,
-                    items: [{
-                        xtype: 'textfield',
-                        fieldLabel: this.i18n._('IP/Hostname'),
-                        name: 'publicUrlAddress',
-                        value: this.getSystemSettings().publicUrlAddress,
-                        allowBlank: false,
-                        width: 400,
-                        blankText: this.i18n._("You must provide a valid IP Address or hostname."),
-                        disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
-                    },{
-                        xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Port'),
-                        name: 'publicUrlPort',
-                        value: this.getSystemSettings().publicUrlPort,
-                        allowDecimals: false,
-                        minValue: 0,
-                        allowBlank: false,
-                        width: 210,
-                        blankText: this.i18n._("You must provide a valid port."),
-                        vtype: 'port',
-                        disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
-                    }]
+                    xtype: 'textfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: this.i18n._('IP/Hostname'),
+                    name: 'publicUrlAddress',
+                    value: this.getSystemSettings().publicUrlAddress,
+                    allowBlank: false,
+                    width: 400,
+                    blankText: this.i18n._("You must provide a valid IP Address or hostname."),
+                    disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
+                },{
+                    xtype: 'numberfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: this.i18n._('Port'),
+                    name: 'publicUrlPort',
+                    value: this.getSystemSettings().publicUrlPort,
+                    allowDecimals: false,
+                    minValue: 0,
+                    allowBlank: false,
+                    width: 210,
+                    blankText: this.i18n._("You must provide a valid port."),
+                    vtype: 'port',
+                    disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
                 }]
             }
         });
@@ -1206,7 +1197,6 @@ Ext.define('Webui.config.administration', {
                     }
                 },{
                     xtype: 'textfield',
-                    itemCls: 'left-indent-2',
                     fieldLabel: this.i18n._('Username'),
                     name: 'snmpv3Username',
                     id: 'administration_snmp_v3username',
@@ -1320,8 +1310,7 @@ Ext.define('Webui.config.administration', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Administration Skin'),

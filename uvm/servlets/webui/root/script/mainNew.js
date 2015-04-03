@@ -117,7 +117,6 @@ Ext.define("Ung.Main", {
                     xtype: 'container',
                     cls: "logo",
                     html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
-                    border: false,
                     height: 141,
                     flex: 0
                 }, {
@@ -125,6 +124,7 @@ Ext.define("Ung.Main", {
                     activeTab: 0,
                     deferredRender: false,
                     border: false,
+                    plain: true,
                     flex: 1,
                     bodyStyle: 'background-color: transparent;',
                     defaults: {

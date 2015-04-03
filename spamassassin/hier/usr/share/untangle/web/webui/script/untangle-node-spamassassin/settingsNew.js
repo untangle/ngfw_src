@@ -407,7 +407,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             }, {
                 xtype: 'fieldset',
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastCheck != null&& this.lastCheck.time != 0 ? i18n.timestampFormat(this.lastCheck): i18n._("never")) + '<br\>' +
                     this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +

@@ -238,8 +238,7 @@ Ext.define('Webui.config.email', {
             }, this),
 
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Outgoing Email Server'),
@@ -289,10 +288,12 @@ Ext.define('Webui.config.email', {
                     xtype: 'fieldset',
                     height: 150,
                     style: "margin-left: 50px;",
-                    items: [{
-                        xtype: 'textfield',
+                    defaults: {
                         labelWidth: 230,
                         labelAlign: 'right',
+                    },
+                    items: [{
+                        xtype: 'textfield',
                         name: 'Server Address or Hostname',
                         id: 'email_smtpHost',
                         fieldLabel: this.i18n._('Server Address or Hostname'),
@@ -325,17 +326,13 @@ Ext.define('Webui.config.email', {
                             }
 
                         },{
-                            border: false,
+                            xtype: 'component',
                             id: 'email_smtpPort_TLS_Warning',
                             hidden: (this.getMailSettings().smtpPort != 465),
-                            cls: "description",
                             html: "<b>" + "<font color=\"red\">&nbsp;" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("SMTPS (465) is deprecated and not supported. Use STARTTLS (587).") + "</b>"
                         }]
                     }, {
                         xtype: 'checkbox',
-                        labelWidth: 230,
-                        labelAlign: 'right',
-                        itemCls: 'left-indent-5',
                         name: 'Use Authentication',
                         id: 'email_smtpUseAuthentication',
                         fieldLabel: this.i18n._('Use Authentication'),
@@ -353,16 +350,12 @@ Ext.define('Webui.config.email', {
                         name: 'Login',
                         id: 'email_smtpLogin',
                         fieldLabel: this.i18n._('Login'),
-                        labelWidth: 230,
-                        labelAlign: 'right',
                         width: 375,
                         value: this.getMailSettings().authUser
                     }, {
                         xtype: 'textfield',
                         hidden: true,
                         name: 'Password',
-                        labelWidth: 230,
-                        labelAlign: 'right',
                         id: 'email_smtpPassword',
                         inputType: 'password',
                         fieldLabel: this.i18n._('Password'),
@@ -373,8 +366,8 @@ Ext.define('Webui.config.email', {
             }, {
                 title: this.i18n._('Email From Address'),
                 items: [{
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: Ext.String.format(this.i18n._("The {0} Server will send email from this address."), rpc.companyName)
                 }, {
                     xtype: 'textfield',
@@ -390,8 +383,8 @@ Ext.define('Webui.config.email', {
             }, {
                 title: this.i18n._('Email Test'),
                 items: [{
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._('The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.')
                 },{
                     xtype: 'button',
@@ -492,6 +485,7 @@ Ext.define('Webui.config.email', {
             hasDelete: false,
             settingsCmp: this,
             flex: 1,
+            margin: '5 0 0 0',
             dataFn: this.getSafelistAdminView().getUserSafelistCounts,
             /*testData: [
                 {id: 5, emailAddress: "aaa@aaa.com", count: 353},
@@ -665,10 +659,11 @@ Ext.define('Webui.config.email', {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
+                defaults: {
+                    labelWidth: 230
+                },
                 items: [{
                     xtype: 'textfield',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     name: 'Maximum Holding Time (days)',
                     fieldLabel: this.i18n._('Maximum Holding Time (days)'),
                     allowBlank: false,
@@ -688,8 +683,6 @@ Ext.define('Webui.config.email', {
                     xtype: 'checkbox',
                     name: 'Send Daily Quarantine Digest Emails',
                     id: 'quarantine_sendDailyDigest',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     fieldLabel: this.i18n._('Send Daily Quarantine Digest Emails'),
                     checked: this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
                     width: 320,
@@ -719,8 +712,6 @@ Ext.define('Webui.config.email', {
                     xtype: 'timefield',
                     name: 'Digest Sending Time',
                     id: 'quarantine_dailySendingTime',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     fieldLabel: this.i18n._('Quarantine Digest Sending Time'),
                     allowBlank: false,
                     increment: 1,
@@ -737,8 +728,7 @@ Ext.define('Webui.config.email', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
                     html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), publicUrl)
                 }]
             },

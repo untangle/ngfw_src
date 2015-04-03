@@ -808,11 +808,9 @@ Ext.define('Ung.RowEditorWindow', {
             this.rowEditorLabelWidth = 100;
         }
         this.items = Ext.create('Ext.panel.Panel',{
-            buttonAlign: 'right',
             border: false,
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
-            layout: "auto",
             defaults: {
                 labelWidth: this.rowEditorLabelWidth
             },
@@ -978,15 +976,7 @@ Ext.define('Ung.ImportSettingsWindow', {
                 },'-'];
         }
         this.items = Ext.create('Ext.panel.Panel',{
-            anchor: "100% 100%",
-            buttonAlign: 'right',
-            border: false,
             bodyStyle: 'padding:10px 10px 0px 10px;',
-            autoScroll: true,
-            defaults: {
-                selectOnFocus: true,
-                msgTarget: 'side'
-            },
             items: [{
                 xtype: 'radio',
                 boxLabel: i18n._('Replace current settings'),
@@ -1033,9 +1023,8 @@ Ext.define('Ung.ImportSettingsWindow', {
                     }
                 }
             }, {
-                cls: 'description',
-                border: false,
-                bodyStyle: 'padding:5px 0px 5px 30px;',
+                xtype: 'component',
+                margin: '5 0 5 30',
                 html: "<i>" + i18n._("with settings from")+ "</i>"
             }, {
                 xtype: 'form',
@@ -1058,8 +1047,7 @@ Ext.define('Ung.ImportSettingsWindow', {
         });
         this.callParent(arguments);
     },
-    show: function() {
-        Ung.UpdateWindow.superclass.show.call(this);
+    doSize: function() {
         var objPosition = this.grid.getPosition();
         if (this.sizeToGrid) {
             var objSize = this.grid.getSize();

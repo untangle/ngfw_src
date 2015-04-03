@@ -26,8 +26,7 @@ Ext.define('Webui.untangle-node-ips.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Statistics'),
@@ -51,7 +50,6 @@ Ext.define('Webui.untangle-node-ips.settings', {
                 }]
             }, {
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
                         rpc.companyName)
             }]

@@ -229,11 +229,11 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Manual Reboot"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Reboot the server.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Reboot"),
                     name: "Manual Reboot",
                     iconCls: "reboot-icon",
@@ -257,11 +257,11 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Manual Shutdown"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Power off the server.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Shutdown"),
                     name: "Manual Shutdown",
                     iconCls: "reboot-icon",
@@ -285,11 +285,11 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Setup Wizard"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Launch the Setup Wizard.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Setup Wizard"),
                     name: "Setup Wizard",
                     iconCls: "reboot-icon",
@@ -307,11 +307,11 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Factory Defaults"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Reset all settings to factory defaults.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Reset to Factory Defaults"),
                     name: "Factory Defaults",
                     iconCls: "reboot-icon",
@@ -375,13 +375,13 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Backup to File"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"") +
                             "<br> <br> " +
                             this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".")
                 },{
                     xtype:"button",
+                    margin: '10 0 0 0',
                     text: this.i18n._("Backup to File"),
                     name: "Backup to File",
                     handler: Ext.bind(function() {
@@ -434,11 +434,11 @@ Ext.define('Webui.config.system', {
                 title: this.i18n._("Restore from File"),
                 xtype: "fieldset",
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"")
                 }, {
                     xtype: "form",
+                    margin: '20 0 0 0',
                     id: "upload_restore_file_form",
                     url: "upload",
                     border: false,
@@ -454,14 +454,15 @@ Ext.define('Webui.config.system', {
                         editable: false
                     }, {
                         xtype: 'filefield',
+                        margin: '10 0 0 0',
                         fieldLabel: this.i18n._("File"),
                         name: "file",
                         id: "upload_restore_file_textfield",
                         width: 500,
-                        labelWidth: 50,
                         allowBlank: false
                     }, {
                         xtype: "button",
+                        margin: '10 0 0 0',
                         text: this.i18n._("Restore from File"),
                         name: "Restore from File",
                         handler: Ext.bind(function() {
@@ -480,8 +481,6 @@ Ext.define('Webui.config.system', {
         var protocolSettingsItems = [];
 
         protocolSettingsItems.push({
-            border: false,
-            cls: "description",
             html: "<b>" + "<font color=\"red\">" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("These settings should not be changed unless instructed to do so by support.") + "</b>"
         });
 
@@ -681,19 +680,16 @@ Ext.define('Webui.config.system', {
             cls: "ung-panel",
             autoScroll: true,
             defaults: {
-                xtype: "fieldset",
-                buttonAlign: "left"
+                xtype: "fieldset"
             },
             items: [{
                 title: this.i18n._("Current Time"),
-                defaults: {
-                    border: false,
-                    cls: "description"
-                },
                 items: [{
+                    xtype: 'component',
                     html: this.i18n._("Time is automatically synced via NTP")
                 }, {
-                    xtype: 'container',
+                    xtype: 'component',
+                    margin: '10 0 0 0',
                     name: 'currentTime',
                     html: ".",
                     listeners: {
@@ -793,11 +789,11 @@ Ext.define('Webui.config.system', {
                 xtype: "fieldset",
                 title: this.i18n._("Force Sync Time"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Click to force instant time synchronization.")
                 },{
                     xtype: "button",
+                    margin: '10 0 0 0',
                     text: this.i18n._("Synchronize Time"),
                     name: "Setup Wizard",
                     iconCls: "reboot-icon",
@@ -882,7 +878,7 @@ Ext.define('Webui.config.system', {
         if(this.isVisible()) {
             rpc.adminManager.getDate(Ext.bind(function(result, exception) {
                 if( exception != null ) return; // ignore exception
-                var currentTimeObj = this.panelRegional.down('container[name="currentTime"]');
+                var currentTimeObj = this.panelRegional.down('component[name="currentTime"]');
                 if (currentTimeObj) {
                     currentTimeObj.update(result);
                     if ( this.timeUpdateId != -1) {
@@ -987,9 +983,7 @@ Ext.define('Webui.config.system', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: 'combo',
                     store: multiplierData,
@@ -1080,7 +1074,6 @@ Ext.define('Webui.config.system', {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._("Shield Settings"),
                 items:[{

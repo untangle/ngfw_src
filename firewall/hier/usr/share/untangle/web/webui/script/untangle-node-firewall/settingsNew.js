@@ -47,7 +47,6 @@ Ext.define('Webui.untangle-node-firewall.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Note'),
                 flex: 0,
                 html: Ext.String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."), rpc.companyName)
@@ -137,9 +136,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     }]
                 }, {
                     xtype: 'fieldset',
-                    cls:'description',
                     title: i18n._('Perform the following action(s):'),
-                    border: false,
                     items:[{
                         xtype: "combo",
                         name: "actionType",

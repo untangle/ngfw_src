@@ -32,7 +32,7 @@ Ext.define('Webui.config.upgrade', {
             var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + ' </font></i>' :
                 '<font color="grey">' + i18n._("No upgrades available.") + ' </font>';
             var statusCmp = this.panelSettings.down('[name="statusMessage"]');
-            statusCmp.setText(statusDescription, false);
+            statusCmp.update(statusDescription);
             statusCmp.show();
             if(result) {
                 var upgradeButton = this.panelSettings.down('[name="upgradeButton"]');
@@ -118,21 +118,17 @@ Ext.define('Webui.config.upgrade', {
                 xtype: 'fieldset'
             },
             items: [{
-                xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Status'),
                 items: [{
                     xtype: 'progressbar',
                     name: 'checkUpgradesProgressbar',
                     width: 300
                 }, {
-                    xtype: 'label',
+                    xtype: 'component',
                     name: "statusMessage",
                     html: "<i>" + i18n._("Checking for upgrades...") + "</i>",
                     hidden: true,
-                    cls: 'description',
-                    margin: '0 25 0 0',
-                    border: false
+                    margin: '0 25 10 0'
                 }, {
                     xtype: "button",
                     name: 'upgradeButton',
@@ -159,8 +155,8 @@ Ext.define('Webui.config.upgrade', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                 }, {
                     xtype: 'radio',
@@ -176,12 +172,12 @@ Ext.define('Webui.config.upgrade', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
                 }]
             }, {

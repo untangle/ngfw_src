@@ -46,7 +46,6 @@ Ext.define('Webui.config.about', {
                 title: this.i18n._('About'),
                 name: 'About',
                 xtype: 'fieldset',
-                buttonAlign: 'left',
                 items: [{
                     xtype: 'textarea',
                     name: 'UID',
@@ -124,7 +123,6 @@ Ext.define('Webui.config.about', {
             layout: { type: 'vbox', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Licenses'),
                 flex: 0,
                 html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')

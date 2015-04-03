@@ -151,21 +151,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block Categories"),
-                html: this.i18n . _("Block or flag access to sites associated with the specified category."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridCategories
-            ]
+                html: this.i18n . _("Block or flag access to sites associated with the specified category.")
+            }, this.gridCategories ]
         });
         return this.blockedCategoriesPanel;
     },
@@ -259,21 +254,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Blocked Sites"),
-                html: this.i18n . _("Block or flag access to the specified site."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedSites
-            ]
+                html: this.i18n . _("Block or flag access to the specified site.")
+            }, this.gridBlockedSites ]
         });
         return this.blockedSitesPanel;
     },
@@ -382,21 +372,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block File Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified file type."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedFileTypes
-            ]
+                html: this.i18n . _("Block or flag access to files associated with the specified file type.")
+            }, this.gridBlockedFileTypes ]
         });
         return this.blockedFileTypesPanel;
     },
@@ -504,21 +489,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block MIME Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified MIME type."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedMimeTypes
-            ]
+                html: this.i18n . _("Block or flag access to files associated with the specified MIME type.")
+            }, this.gridBlockedMimeTypes ]
         });
         return this.blockedMimeTypesPanel;
     },
@@ -599,21 +579,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Allow access to the specified site regardless of matching block policies."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridAllowedSites
-            ]
+                html: this.i18n . _("Allow access to the specified site regardless of matching block policies.")
+            }, this.gridAllowedSites ]
         });
         return this.allowedSitesPanel;
     },
@@ -694,21 +669,16 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Clients"),
-                html: this.i18n . _("Allow access for client networks regardless of matching block policies."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridAllowedClients
-            ]
+                html: this.i18n . _("Allow access for client networks regardless of matching block policies.")
+            }, this.gridAllowedClients ]
         });
         return this.allowedClientsPanel;
     },
@@ -724,8 +694,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 name: "fieldset_miscellaneous",

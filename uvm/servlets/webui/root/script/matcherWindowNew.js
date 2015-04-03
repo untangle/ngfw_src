@@ -9,9 +9,6 @@ Ext.define('Ung.MatcherEditorWindow', {
             this.title = i18n._('Edit');
         }
         this.items = Ext.create('Ext.panel.Panel',{
-            anchor: "100% 100%",
-            labelWidth: 100,
-            buttonAlign: 'right',
             border: false,
             bodyStyle: 'padding:10px 10px 0px 10px;',
             autoScroll: true,
@@ -86,8 +83,8 @@ Ext.define('Ung.TimeEditorWindow', {
             title: i18n._("Start Time"),
             fieldLabel: i18n._("Start Time - End Time"),
             layout: {
-                type: 'table',
-                columns: 7
+                type: 'hbox',
+                align: 'middle'
             },
             items: [{
                 xtype: 'combo',
@@ -99,9 +96,9 @@ Ext.define('Ung.TimeEditorWindow', {
                         ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                         ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
             }, {
-                cls: 'description',
-                border: false,
-                html: "&nbsp;:&nbsp;"
+                xtype: 'component',
+                margin: '0 3 0 3',
+                html: ":"
             }, {
                 xtype: 'combo',
                 id: 'start_time_minute_'+this.getId(),
@@ -115,9 +112,9 @@ Ext.define('Ung.TimeEditorWindow', {
                         ["40","40"], ["41","41"], ["42","42"], ["43","43"], ["44","44"], ["45","45"], ["46","46"], ["47","47"], ["48","48"], ["49","49"],
                         ["50","50"], ["51","51"], ["52","52"], ["53","53"], ["54","54"], ["55","55"], ["56","56"], ["57","57"], ["58","58"], ["59","59"]]
             }, {
-                cls: 'description',
-                border: false,
-                html: "&nbsp;" + i18n._("to") + "&nbsp;"
+                xtype: 'component',
+                margin: '0 10 0 10',
+                html: i18n._("to")
             }, {
                 xtype: 'combo',
                 id: 'end_time_hour_'+this.getId(),
@@ -128,9 +125,9 @@ Ext.define('Ung.TimeEditorWindow', {
                         ["10","10"], ["11","11"], ["12","12"], ["13","13"], ["14","14"], ["15","15"], ["16","16"], ["17","17"], ["18","18"], ["19","19"],
                         ["20","20"], ["21","21"], ["22","22"], ["23","23"]]
             }, {
-                cls: 'description',
-                border: false,
-                html: "&nbsp;:&nbsp;"
+                xtype: 'component',
+                margin: '0 3 0 3',
+                html: ":"
             }, {
                 xtype: 'combo',
                 id: 'end_time_minute_'+this.getId(),
@@ -184,10 +181,10 @@ Ext.define('Ung.TimeEditorWindow', {
         var end_time_hour = Ext.getCmp('end_time_hour_'+this.getId());
         var end_time_minute = Ext.getCmp('end_time_minute_'+this.getId());
         var time_custom_value = Ext.getCmp('time_custom_value_'+this.getId());
-        start_time_hour.setValue(12);
-        start_time_minute.setValue(0);
-        end_time_hour.setValue(13);
-        end_time_minute.setValue(30);
+        start_time_hour.setValue('12');
+        start_time_minute.setValue('00');
+        end_time_hour.setValue('13');
+        end_time_minute.setValue('30');
         time_method_custom.setValue(true);
         time_custom_value.setValue(value);
 

@@ -67,7 +67,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Status'),
                 flex: 0,
                 html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
@@ -157,7 +156,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Capture Rules'),
                 flex: 0,
                 html: this.i18n._("Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.")
@@ -242,9 +240,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     }]
                 },{
                     xtype: 'fieldset',
-                    cls:'description',
                     title: this.i18n._('Perform the following action(s):'),
-                    border: false,
                     items: [{
                         xtype: "combo",
                         name: "actionType",
@@ -278,11 +274,9 @@ Ext.define('Webui.untangle-node-capture.settings', {
             parentId: this.getId(),
             title: this.i18n._("Passed Hosts"),
             layout: { type: 'vbox', align: 'stretch' },
-            border: false,
             cls: "ung-panel",
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Passed Hosts'),
                 flex: 0,
                 html: this.i18n._("The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.")
@@ -411,8 +405,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     handler: Ext.bind(this.configureLocalDirectory, this )
                 },{
                     xtype: "radio",
-                    boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),
-                                              "<i>", "</i>" ),
+                    style: {marginTop: '15px'},
+                    boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
                     disabled: !adconnectorLicense,
                     name: "authenticationType",
@@ -429,6 +423,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     handler: Ext.bind(this.configureRadius, this )
                 },{
                     xtype: "radio",
+                    style: {marginTop: '15px'},
                     boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
                     disabled: !adconnectorLicense,
@@ -747,7 +742,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     },{
                         xtype: "form",
                         bodyStyle: "padding:0px 0px 10px 25px",
-                        buttonAlign: "left",
                         pageType: "CUSTOM",
                         name: "upload_form",
                         url: "/capture/handler.py/custom_upload",
@@ -770,7 +764,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     },{
                         xtype: "form",
                         bodyPadding: "10px 0px 0px 25px",
-                        buttonAlign: "left",
                         pageType: "CUSTOM",
                         name: "remove_form",
                         url: "/capture/handler.py/custom_remove",
@@ -808,9 +801,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             }, this)
                     }
                 },{
-                    xtype: 'fieldset',
-                    cls: 'description',
-                    width: 500,
+                    xtype: 'component',
+                    margin: '10 0 10 0',
                     html: this.i18n._('NOTE: When enabled and the root certificate is not detected, a notification message and download link will appear on the captive page.')
                 },{
                     xtype: "button",
@@ -847,12 +839,11 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             this.settings.redirectUrl = newValue;
                         }, this)
                     }
+                }, {
+                    xtype: 'component',
+                    margin:'10 0 0 0',
+                    html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
-            },{
-                xtype: 'fieldset',
-                cls: 'description',
-                width: 500,
-                html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
             }]
         });
     },

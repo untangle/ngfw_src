@@ -729,7 +729,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Note'),
                 flex: 0,
                 html: this.i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
@@ -830,9 +829,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: i18n._('Perform the following action(s):'),
-                border: false,
                 items:[{
                     xtype:'checkbox',
                     labelWidth: 160,

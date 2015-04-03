@@ -26,7 +26,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             items: [{
                 xtype: 'fieldset',
                 title: this.i18n._('Status'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
             }, {
                 xtype: 'fieldset',
@@ -50,7 +49,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             }, {
                 xtype: 'fieldset',
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
             }]
         });

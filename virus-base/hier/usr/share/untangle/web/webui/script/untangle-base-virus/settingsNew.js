@@ -41,16 +41,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
     },
     // Web Panel
     buildWeb: function() {
-        this.aboutInfoField = {};
-        if (this.aboutInfo != null) {
-            this.aboutInfoField = {
-                xtype: 'fieldset',
-                title: this.i18n._('About'),
-                cls: 'description',
-                html: this.aboutInfo
-            };
-        }
-
         this.panelWeb = Ext.create('Ext.panel.Panel',{
             name: 'Web',
             //helpSource: 'virus_blocker_web',
@@ -60,15 +50,11 @@ Ext.define('Webui.untangle-base-virus.settings', {
             winExtensions: null,
             winMimeTypes: null,
             parentId: this.getId(),
-
             title: this.i18n._('Web'),
             cls: 'ung-panel',
             autoScroll: true,
-            defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
-            },
             items: [{
+                xtype: 'fieldset',
                 items: [{
                     xtype: 'checkbox',
                     boxLabel: this.i18n._('Scan HTTP'),
@@ -82,12 +68,18 @@ Ext.define('Webui.untangle-base-virus.settings', {
                             }, this)
                         }
                     }
+                }, {
+                    xtype: 'component',
+                    margin: '30 0 0 0',
+                    html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
                 }]
             }, {
-                cls: 'description',
-                html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
-            }, this.aboutInfoField],
+                xtype: 'fieldset',
+                title: this.i18n._('About'),
+                html: this.aboutInfo,
+                hidden: (this.aboutInfo==null)
+            }],
             
         });
     },
@@ -237,8 +229,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 items: [{
@@ -256,7 +247,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     }
                 }]
             }, {
-                cls: 'description',
                 html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
             }]
@@ -274,12 +264,8 @@ Ext.define('Webui.untangle-base-virus.settings', {
             parentId: this.getId(),
 
             title: this.i18n._('Email'),
-            layout: "anchor",
             defaults: {
-                anchor: '98%',
                 xtype: 'fieldset',
-                autoScroll: true,
-                buttonAlign: 'left'
             },
             cls: 'ung-panel',
             autoScroll: true,
@@ -325,7 +311,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     }]
                 }]
             }, {
-                cls: 'description',
                 html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
             }]
@@ -406,18 +391,15 @@ Ext.define('Webui.untangle-base-virus.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!"),
-                style: "margin-bottom: 10px;"
+                html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!")
             },
             this.gridPassSites
             ]
@@ -435,7 +417,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._("Advanced"),
                 html: this.i18n._("Advanced settings require careful configuration.")

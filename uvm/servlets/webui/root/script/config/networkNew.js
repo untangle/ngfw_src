@@ -245,7 +245,7 @@ Ext.define('Webui.config.network', {
                         }
                     }
                 }
-                this.panelPortForwardRules.down('label[name="portForwardWarnings"]').setText(portForwardWarningsHtml.join(""), false);
+                this.panelPortForwardRules.down('component[name="portForwardWarnings"]').update(portForwardWarningsHtml.join(""));
                 //--------
                 if(refresh) {
                     Ext.MessageBox.hide();
@@ -872,8 +872,7 @@ Ext.define('Webui.config.network', {
                             items: [{
                                 xtype: 'fieldset',
                                 flex: 0,
-                                margin: '10 0 0 0',
-                                cls: 'description',
+                                margin: '5 0 0 0',
                                 title: this.i18n._("How to map Devices with Interfaces"),
                                 html: this.i18n._("<b>Method 1:</b> <b>Drag and Drop</b> the Device to the desired Interface<br/><b>Method 2:</b> <b>Click on a Device</b> to open a combo and choose the desired Device from a list. When another Device is selected the 2 Devices are switched.")
                             }, this.gridMapDevices]
@@ -927,7 +926,6 @@ Ext.define('Webui.config.network', {
             items: [{
                 xtype: 'fieldset',
                 flex: 0,
-                cls: 'description',
                 title: this.i18n._("Interface configuration"),
                 html: this.i18n._("Use this page to configure each interface's configuration and its mapping to a physical network card.")
             }, this.gridInterfaces]
@@ -2129,7 +2127,6 @@ Ext.define('Webui.config.network', {
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Hostname'),
                 items: [{
                     xtype: 'container',
@@ -2180,7 +2177,6 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Dynamic DNS Service Configuration'),
                 items: [{
                     xtype: "checkbox",
@@ -2262,7 +2258,6 @@ Ext.define('Webui.config.network', {
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Local Services'),
                 items: [{
                     xtype: 'component',
@@ -2464,19 +2459,18 @@ Ext.define('Webui.config.network', {
                         }],
                         items: [{
                             xtype: "panel",
-                            layout: 'anchor',
                             autoScroll: true,
                             items: [{
                                 xtype: 'fieldset',
                                 layout: "vbox",
-                                cls: 'description',
-                                style: "margin-top: 10px",
+                                margin: '5 0 0 0',
                                 title: this.i18n._('Troubleshooting Port Forwards'),
                                 items: [{
                                     xtype: "label",
                                     html: this.i18n._( 'Test 1: Verify pinging the <b>new destination</b>' )
                                 },{
                                     xtype: "button",
+                                    margin: '5 0 0 0',
                                     text: this.i18n._( "Ping Test" ),
                                     handler: function () {
                                         var destination = this.portForwardTroubleshootWin.recordData.newDestination;
@@ -2484,11 +2478,12 @@ Ext.define('Webui.config.network', {
                                     },
                                     scope: this
                                 },{
-                                    xtype: "label",
-                                    style: "margin-top: 10px",
+                                    xtype: "component",
+                                    margin: '10 0 0 0',
                                     html: this.i18n._( "Test 2: Verify connecting to the new destination<br/><i>This test applies only to TCP port forwards.</i>" )
                                 },{
                                     xtype: "button",
+                                    margin: '5 0 0 0',
                                     name: "connect_test_button",
                                     text: this.i18n._( "Connect Test" ),
                                     handler: function () {
@@ -2497,17 +2492,18 @@ Ext.define('Webui.config.network', {
                                     },
                                     scope: this
                                 },{
-                                    xtype: "label",
-                                    style: "margin-top: 10px",
+                                    xtype: "component",
+                                    margin: '10 0 0 0',
                                     html: this.i18n._( "Test 3: Watch traffic using the Packet Test" )
                                 },{
                                     xtype: "button",
+                                    margin: '5 0 0 0',
                                     text: this.i18n._( "Packet Test" ),
                                     handler: this.openPacketTest,
                                     scope: this
                                 },{
-                                    xtype: "label",
-                                    style: "margin-top: 10px",
+                                    xtype: "component",
+                                    margin: '10 0 0 0',
                                     html: Ext.String.format( this.i18n._( "For more help troubleshooting port forwards view the<br/>{0}Port Forward Troubleshooting Guide{1}" ), "<a href='http://wiki.untangle.com/index.php/Port_Forward_Troubleshooting_Guide'target='_blank'>", "</a>")
                                 }]
                             }]
@@ -2549,25 +2545,23 @@ Ext.define('Webui.config.network', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Port Forward Rules'),
-                html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order."),
-                style: "margin-bottom: 10px;"
+                html: this.i18n._("Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.")
             }, this.gridPortForwardRules, {
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 2,
+                style: "margin-top: 10px;",
                 border: true,
                 collapsible: true,
                 collapsed: false,
+                autoScroll: true,
                 title: this.i18n._('The following ports are currently reserved and can not be forwarded:'),
                 items: [{
-                    xtype: 'label',
+                    xtype: 'component',
                     name: 'portForwardWarnings',
                     html: ' '
-                }],
-                autoScroll: true,
-                style: "margin-top: 10px;"
+                }]
+                
             }]
         });
         var settingsCmp = this;
@@ -2849,7 +2843,6 @@ Ext.define('Webui.config.network', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('NAT Rules'),
                 flex: 0,
                 html: this.i18n._("NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.")
@@ -2882,9 +2875,7 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: this.i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: "combo",
                     allowBlank: false,
@@ -2995,7 +2986,6 @@ Ext.define('Webui.config.network', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._('Bypass Rules'),
                 html: this.i18n._("Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.")
@@ -3028,9 +3018,7 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: this.i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: "combo",
                     name: "bypass",
@@ -3153,8 +3141,8 @@ Ext.define('Webui.config.network', {
                 editable : true,
                 allowBlank: false
             }, {
-                xtype: 'fieldset',
-                cls: 'description',
+                xtype: 'component',
+                margin: '10 0 0 20',
                 html: this.i18n._("If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.") + "<br/>" +
                     this.i18n._("If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.")
             }]
@@ -3194,12 +3182,11 @@ Ext.define('Webui.config.network', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Static Routes'),
                 html: this.i18n._("Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.")
             }, this.gridStaticRoutes, {
                 xtype: 'fieldset',
-                cls: 'description',
+                style: {marginTop: '10px'},
                 title: this.i18n._('Current Routes'),
                 html: this.i18n._("Current Routes shows the current routing system's configuration and how all traffic will be routed.")
             }, this.routeArea, this.routeButton]
@@ -3483,7 +3470,6 @@ Ext.define('Webui.config.network', {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._("Advanced"),
                 html: this.i18n._("Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.")
@@ -3688,8 +3674,8 @@ Ext.define('Webui.config.network', {
                 var u_Mbit = u/1000;
 
                 var message = Ext.String.format( this.i18n._( "Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload" ), d, d_Mbit, u, u_Mbit );
-                var bandwidthLabel = this.panelQoS.down('label[name="bandwidthLabel"]');
-                bandwidthLabel.setText(Ext.String.format(this.i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>', false);
+                var bandwidthLabel = this.panelQoS.down('component[name="bandwidthLabel"]');
+                bandwidthLabel.update(Ext.String.format(this.i18n._("{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces."),'<font color="red">','</font>')+"</br><i>"+message+'</i>');
             }, this)
         });
         this.gridQosWanBandwidth.getStore().on("update", Ext.bind(function() {
@@ -4002,7 +3988,6 @@ Ext.define('Webui.config.network', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS'),
                 items: [{
                     xtype: "checkbox",
@@ -4032,17 +4017,15 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 name: 'bandwidth_fieldset',
                 title: this.i18n._('WAN Bandwidth'),
                 items: [{
-                    xtype: 'label',
+                    xtype: 'component',
                     name: 'bandwidthLabel',
-                    html: "&nbsp;"
+                    html: ' '
                 }, this.gridQosWanBandwidth]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS Rules'),
                 items: [{
                     xtype: "combo",
@@ -4103,7 +4086,6 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS Custom Rules'),
                 items: [{
                     xtype: 'label',
@@ -4111,17 +4093,14 @@ Ext.define('Webui.config.network', {
                 }, this.gridQosRules]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS Priorities'),
                 items: [this.gridQosPriorities]
             }, {
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS Statistics'),
                 items: [this.gridQosStatistics]
             },{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('QoS Sessions'),
                 items: [this.gridQosSessions]
             }]
@@ -4150,9 +4129,7 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: this.i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: "combo",
                     allowBlank: false,
@@ -4375,9 +4352,7 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: this.i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: "combo",
                     name: "blocked",
@@ -4417,9 +4392,7 @@ Ext.define('Webui.config.network', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: this.i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: "combo",
                     name: "blocked",
@@ -4566,7 +4539,6 @@ Ext.define('Webui.config.network', {
             autoScroll: true,
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Network Tests')
             }, this.gridNetworkTests]
         });

@@ -493,8 +493,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
             //     title: this.i18n._('Statistics'),
@@ -517,23 +516,20 @@ Ext.define('Webui.untangle-node-idps.settings', {
             //     }]
             // }, {
                 title: this.i18n._("Setup Wizard"),
-                items: [
-                    {
-                        xtype: "button",
-                        name: 'setup_wizard_button',
-                        text: this.i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
-                        iconCls: "action-icon",
-                        handler: Ext.bind(function() {
-                            this.setupWizard();
-                        }, this)
-                    }]
+                items: [{
+                    xtype: "button",
+                    name: 'setup_wizard_button',
+                    text: this.i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
+                    iconCls: "action-icon",
+                    handler: Ext.bind(function() {
+                        this.setupWizard();
+                    }, this)
+                }]
             }, {
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."), rpc.companyName)
             },{
                 title: this.i18n._("Updates"),
-                cls: 'description',
                 items: [{
                     xtype: 'displayfield',
                     fieldLabel: this.i18n._("Last check for updates"),

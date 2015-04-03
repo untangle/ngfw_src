@@ -343,33 +343,6 @@ Ext.define("Ung.Node", {
                 el.frame("#63BE4A", 1, { duration: 1000 });
             }});
         }
-        var nodeButtons=[{
-            xtype: "button",
-            name: "Show Settings",
-            iconCls: 'node-settings-icon',
-            text: i18n._('Settings'),
-            handler: Ext.bind(function() {
-                this.loadSettings();
-            }, this)
-        },{
-            xtype: "button",
-            name: "Help",
-            iconCls: 'icon-help',
-            minWidth: 25,
-            tooltip: i18n._('Help'),
-            handler: Ext.bind(function() {
-                this.onHelpAction();
-            }, this)
-        },{
-            xtype: "button",
-            name: "Buy",
-            id: 'node-buy-button_'+this.getId(),
-            iconCls: 'icon-buy',
-            hidden: !(this.license != null && this.license.trial), //show only if trial license
-            cls:'buy-button',
-            text: i18n._('Buy Now'),
-            handler: Ext.bind(this.onBuyNowAction, this)
-        }];
         var templateHTML = Ung.Node.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,
@@ -380,17 +353,41 @@ Ext.define("Ung.Node", {
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
-        this.buttonsPanel=Ext.create('Ext.panel.Panel',{
+        this.buttonsPanel = Ext.create('Ext.container.Container',{
             renderTo: 'node-buttons_' + this.getId(),
-            border: false,
-            bodyStyle: 'background-color: transparent;',
             width: 290,
-            buttonAlign: "left",
-            layout: 'table',
-            layoutConfig: {
-                columns: 3
+            layout: 'hbox',
+            style: {marginTop: '5px'},
+            defaults: {
+                style: {marginLeft: '6px'},
             },
-            buttons: nodeButtons
+            items: [{
+                xtype: "button",
+                name: "Show Settings",
+                iconCls: 'node-settings-icon',
+                text: i18n._('Settings'),
+                handler: Ext.bind(function() {
+                    this.loadSettings();
+                }, this)
+            },{
+                xtype: "button",
+                name: "Help",
+                iconCls: 'icon-help',
+                minWidth: 25,
+                tooltip: i18n._('Help'),
+                handler: Ext.bind(function() {
+                    this.onHelpAction();
+                }, this)
+            },{
+                xtype: "button",
+                name: "Buy",
+                id: 'node-buy-button_'+this.getId(),
+                iconCls: 'icon-buy',
+                hidden: !(this.license != null && this.license.trial), //show only if trial license
+                cls: 'buy-button',
+                text: i18n._('Buy Now'),
+                handler: Ext.bind(this.onBuyNowAction, this)
+            }]
         });
         this.subCmps.push(this.buttonsPanel);
         if(this.hasPowerButton) {
@@ -606,10 +603,13 @@ Ext.define("Ung.Node", {
             });
         } else {
             this.settingsWin = Ext.create('Ung.NodeWin',{
-                node: this,
+                name: this.name,
+                nodeId: this.nodeId,
+                nodeProperties: this.nodeProperties,
+                displayName: this.displayName,
+                helpSource: this.helpSource,
+                rpcNode: this.rpcNode,
                 items: [{
-                    anchor: '100% 100%',
-                    cls: 'description',
                     bodyStyle: "padding: 15px 5px 5px 15px;",
                     html: Ext.String.format(i18n._("Error: There is no settings class for the node '{0}'."), this.name)
                 }]
