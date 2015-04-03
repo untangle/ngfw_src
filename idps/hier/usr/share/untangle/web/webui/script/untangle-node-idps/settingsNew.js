@@ -1,9 +1,9 @@
-/* TODO ext5,  make Ung.RuleEditorGrid compatible and use it for gridRules
+// TODO ext5,  make Ung.RuleEditorGrid compatible and use it for gridRules
 
-Ext.define('Ung.RuleEditorGrid', {
+Ext.define('Webui.untangle-node-idps.grid.Rules', {
     extend: 'Ung.grid.Panel',
     requires: [
-        //'Ext.ux.statusbar.StatusBar' //TODO: ext5
+        'Ext.ux.statusbar.StatusBar'
     ],
 
      // search value initialization
@@ -331,7 +331,7 @@ Ext.define('Ung.RuleEditorGrid', {
         return this.data;
     }
 });
-*/
+
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
     statics: {
@@ -553,6 +553,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
     // Rules Panel
     buildRules: function() {
+        //this.gridRules = Ext.create('Webui.untangle-node-idps.grid.Rules', {
         this.gridRules = Ext.create('Ung.grid.Panel', {
             // helpXXXSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             name: 'Rules',
@@ -560,15 +561,15 @@ Ext.define('Webui.untangle-node-idps.settings', {
             settingsCmp: this,
             title: this.i18n._("Rules"),
             dataProperty: 'rules',
-            formatData: function(data) {
+/*            formatData: function(data) {
                 return this.callSuper(data);
-            },
+            },*/
             features: [{
                 ftype: 'grouping',
                 groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
                 startCollapsed: true
             }],
-            recordJavaClass: "com.untangle.node.idps.IpsRule",
+            //recordJavaClass: "com.untangle.node.idps.IpsRule",
             emptyRow: {
                 "classtype": "unknown",
                 "category": "app-detect",
@@ -1090,7 +1091,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
     // Event Log
     buildEventLog: function() {
         var visibleColumns = ['time_stamp','sig_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg' ];
-        this.gridEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             // helpXXXSource: 'intrusion_detection_prevention_event_log', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
             eventQueriesFn: this.getRpcNode().getEventQueries,

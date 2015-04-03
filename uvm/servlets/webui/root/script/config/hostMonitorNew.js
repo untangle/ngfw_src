@@ -549,7 +549,7 @@ Ext.define('Webui.config.hostMonitor', {
         });
     },
     buildPenaltyBoxEventLog: function() {
-        this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridPenaltyBoxEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'PenaltyBoxEventLog',
             helpSource: 'host_viewer_penalty_box_event_log',
@@ -600,7 +600,7 @@ Ext.define('Webui.config.hostMonitor', {
         });
     },
     buildQuotaEventLog: function() {
-        this.gridQuotaEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridQuotaEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'QuotaEventLog',
             helpSource: 'host_viewer_quota_event_log',

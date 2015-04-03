@@ -3405,7 +3405,7 @@ Ext.define('Webui.config.network', {
                             clientId: lineparts[4]
                         } );
                     }
-                    handler({list: leases}) ;
+                    handler({list: leases});
                 }, this),"cat /var/lib/misc/dnsmasq.leases");
 
             },
@@ -5258,7 +5258,7 @@ Ext.define('Webui.config.network', {
                     activeTabIndex: this.tabs.items.findIndex('id', this.tabs.getActiveTab().id),
                     advancedTabIndex: this.advancedTabPanel.items.findIndex('id', this.advancedTabPanel.getActiveTab().id)
                 });
-                Webui.config.networkNew.superclass.closeWindow.call(this);
+                Webui.config.network.superclass.closeWindow.call(this);
                 Ung.Main.openConfig(configNetwork);
             } else {
                 Ext.MessageBox.hide();

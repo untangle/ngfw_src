@@ -4,10 +4,8 @@ Ext.define('Webui.untangle-node-firewall.settings', {
     gridRules: null,
     gridEventLog: null,
     initComponent: function() {
-        // builds the tabs
         this.buildRules();
         this.buildEventLog();
-        // builds the tab panel with the tabs
         this.buildTabPanel([this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
     },
@@ -89,11 +87,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     width: 50,
                     dataIndex: 'ruleId',
                     renderer: function(value) {
-                        if (value < 0) {
-                            return i18n._("new");
-                        } else {
-                            return value;
-                        }
+                        return (value < 0) ? i18n._("new") : value;
                     }
                 }, {
                     xtype:'checkcolumn',

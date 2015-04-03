@@ -509,7 +509,7 @@ Ext.define('Ung.Util', {
         for(var i=0; i<pairArray.length; i++) {
             map[pairArray[i][0]] = pairArray[i][1];
         }
-            return map;
+        return map;
     },
     createRecordsMap : function(recList, property) {
         var map = {};

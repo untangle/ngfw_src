@@ -1,5 +1,4 @@
 Ext.define("Ung.grid.EventLog", {
-    alias: 'Ung.GridEventLog',
     extend: "Ung.grid.BaseEventLog",
     hasTimestampFilter: true,
     hasAutoRefresh: true,
@@ -8,8 +7,8 @@ Ext.define("Ung.grid.EventLog", {
     // default is getEventQueries() from settingsCmp
     eventQueriesFn: null,
     initComponent: function() {
-        if(this.eventQueriesFn == null && this.settingsCmp.node !== null && this.settingsCmp.node.rpcNode !== null && this.settingsCmp.node.rpcNode.getEventQueries !== null) {
-            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
+        if(this.eventQueriesFn == null && this.settingsCmp.rpcNode !== null && this.settingsCmp.rpcNode.getEventQueries !== null) {
+            this.eventQueriesFn = this.settingsCmp.rpcNode.getEventQueries;
         }
         if(this.hasTimestampFilter) {
             this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
@@ -136,9 +135,8 @@ Ext.define("Ung.grid.EventLog", {
             this.down('[name=querySelector]').setText(out.join(""));
 
             displayStyle = "";
-            if (this.settingsCmp.node != null &&
-                this.settingsCmp.node.nodeProperties != null &&
-                this.settingsCmp.node.nodeProperties.type == "SERVICE") {
+            if (this.settingsCmp.nodeProperties != null &&
+                this.settingsCmp.nodeProperties.type == "SERVICE") {
                 displayStyle = "display:none;"; //hide rack selector for services
             }
             out = [];
@@ -250,7 +248,7 @@ Ext.define("Ung.grid.EventLog", {
 
 Ung.CustomEventLog = {
     buildSessionEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-        var grid = Ext.create('Ung.GridEventLog',{
+        var grid = Ext.create('Ung.grid.EventLog',{
             name: nameParam,
             settingsCmp: settingsCmpParam,
             helpSource: helpSourceParam,
@@ -610,7 +608,7 @@ Ung.CustomEventLog = {
         return grid;
     },
     buildHttpEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-        var grid = Ext.create('Ung.GridEventLog',{
+        var grid = Ext.create('Ung.grid.EventLog',{
             name: nameParam,
             settingsCmp: settingsCmpParam,
             helpSource: helpSourceParam,
@@ -826,7 +824,7 @@ Ung.CustomEventLog = {
         return grid;
     },
     buildHttpQueryEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-        var grid = Ext.create('Ung.GridEventLog',{
+        var grid = Ext.create('Ung.grid.EventLog',{
             name: nameParam,
             settingsCmp: settingsCmpParam,
             helpSource: helpSourceParam,
@@ -922,7 +920,7 @@ Ung.CustomEventLog = {
         return grid;
     },
     buildMailEventLog: function(settingsCmpParam, nameParam, titleParam, helpSourceParam, visibleColumnsParam, eventQueriesFnParam) {
-        var grid = Ext.create('Ung.GridEventLog',{
+        var grid = Ext.create('Ung.grid.EventLog',{
             name: nameParam,
             settingsCmp: settingsCmpParam,
             helpSource: helpSourceParam,

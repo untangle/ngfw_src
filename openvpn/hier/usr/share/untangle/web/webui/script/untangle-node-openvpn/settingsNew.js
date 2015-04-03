@@ -9,22 +9,14 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     isNodeRunning: null,
     initComponent: function(container, position) {
         // Register the VTypes, need i18n to be initialized for the text
-        if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
-            Ext.form.VTypes["openvpnClientNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
-            Ext.form.VTypes["openvpnClientName"] = function(v) {
-                return Ext.form.VTypes["openvpnClientNameVal"].test(v);
-            };
-            Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
-            Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
-        }
-        if(Ext.form.VTypes["openvpnSiteNameVal"]==null) {
-            Ext.form.VTypes["openvpnSiteNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
-            Ext.form.VTypes["openvpnSiteName"] = function(v) {
-                return Ext.form.VTypes["openvpnSiteNameVal"].test(v);
-            };
-            Ext.form.VTypes["openvpnSiteNameMask"] = /[-_.0-9A-Za-z]*/;
-            Ext.form.VTypes["openvpnSiteNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
-        }
+        Ext.applyIf(Ext.form.VTypes, {
+            openvpnNameRe: /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/,
+            openvpnName: function(v) {
+                return Ext.form.VTypes['openvpnNameRe'].test(v);
+            },
+            openvpnNameMask: /[-_.0-9A-Za-z]/i,
+            openvpnNameText: this.i18n._( "A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." )
+        });
 
         this.isNodeRunning = this.getRpcNode().getRunState() === "RUNNING";
         this.buildStatus();
@@ -124,6 +116,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
     buildServerStatusGrid: function() {
         this.gridServerStatus = Ext.create('Ung.grid.Panel', {
             flex: 1,
+            margin: '5 0 0 0',
             name: "gridServerStatus",
             settingsCmp: this,
             hasAdd: false,
@@ -190,7 +183,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Status'),
                 flex: 0,
                 html: "<i>" + statusDescription + "</i>"
@@ -200,7 +192,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
 
     // Connections Event Log
     buildConnectionEventLog: function() {
-        this.gridConnectionEventLog = Ext.create('Ung.GridEventLog', {
+        this.gridConnectionEventLog = Ext.create('Ung.grid.EventLog', {
             settingsCmp: this,
             helpSource: 'openvpn_event_log',
             eventQueriesFn: this.getRpcNode().getStatusEventsQueries,
@@ -312,6 +304,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             settingsCmp: this,
             name: 'Remote Servers',
             flex: 1,
+            margin: '0 20 0 20',
             title: this.i18n._("Remote Servers"),
             dataProperty: "remoteServers",
             recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteServer",
@@ -342,8 +335,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     xtype:'textfield',
                     emptyText: this.i18n._("[enter server name]"),
                     allowBlank: false,
-                    maskRe: /[A-Za-z0-9-]/,
-                    vtype: 'openvpnClientName'
+                    vtype: 'openvpnName'
                 }
             }],
             rowEditorInputLines: [{
@@ -352,24 +344,23 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 dataIndex: "enabled",
                 fieldLabel: this.i18n._("Enabled")
             }, {
-                    xtype: 'container',
-                    layout: 'column',
-                    margin: '0 0 5 0',
-                    items: [{
-                        xtype: "textfield",
-                        name: "Server name",
-                        dataIndex: "name",
-                        fieldLabel: this.i18n._("Server name"),
-                        emptyText: this.i18n._("[enter server name]"),
-                        allowBlank: false,
-                        maskRe: /[A-Za-z0-9-]/,
-                        vtype: 'openvpnClientName',
-                        width: 300
-                    },{
-                        xtype: 'label',
-                        html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9-]",
-                        cls: 'boxlabel'
-                    }]
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype: "textfield",
+                    name: "Server name",
+                    dataIndex: "name",
+                    fieldLabel: this.i18n._("Server name"),
+                    emptyText: this.i18n._("[enter server name]"),
+                    allowBlank: false,
+                    vtype: 'openvpnName',
+                    width: 300
+                },{
+                    xtype: 'label',
+                    html: this.i18n._("only alphanumerics allowed") + " [A-Za-z0-9-]",
+                    cls: 'boxlabel'
+                }]
             }]
         });
     },
@@ -377,54 +368,47 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
         this.buildGridServers();
 
         this.submitForm = Ext.create('Ext.form.Panel', {
-            border: false,
-            xtype: 'fieldset',
-            cls: 'description',
             flex: 0,
+            margin: '5 0 0 0',
+            border: false,
             items: [{
-                    xtype: 'container',
-                    html: "<i>" + this.i18n._("Configure a new Remote Server connection") + "</i>",
-                    cls: 'description',
-                    border: false
-                }, {
-                    xtype: 'fieldset',
-                    buttonAlign: 'left',
+                xtype: 'fieldset',
+                title: this.i18n._("Configure a new Remote Server connection"),
+                items: [{
+                    xtype: 'filefield',
+                    name: 'uploadConfigFileName',
+                    fieldLabel: this.i18n._('Configuration File'),
+                    allowBlank: false,
                     labelWidth: 150,
-                    labelAlign: 'right',
-                    items: [{
-                        xtype: 'filefield',
-                        name: 'uploadConfigFileName',
-                        fieldLabel: this.i18n._('Configuration File'),
-                        allowBlank: false,
-                        width: 300
-                    }, {
-                        xtype: 'button',
-                        id: "submitUpload",
-                        text: i18n._('Submit'),
-                        name: "Submit",
-                        handler: Ext.bind(function() {
-                            var filename = this.submitForm.down('textfield[name="uploadConfigFileName"]').getValue();
-                            if ( filename == null || filename.length == 0 ) {
-                                Ext.MessageBox.alert(this.i18n._( "Select File" ), this.i18n._( "Please choose a file to upload." ));
-                                return;
-                            }
+                    width: 400
+                }, {
+                    xtype: 'button',
+                    id: "submitUpload",
+                    text: i18n._('Submit'),
+                    name: "Submit",
+                    handler: Ext.bind(function() {
+                        var filename = this.submitForm.down('textfield[name="uploadConfigFileName"]').getValue();
+                        if ( filename == null || filename.length == 0 ) {
+                            Ext.MessageBox.alert(this.i18n._( "Select File" ), this.i18n._( "Please choose a file to upload." ));
+                            return;
+                        }
 
-                            this.submitForm.submit({
-                                url: "/openvpn/uploadConfig",
-                                success: Ext.bind(function( form, action, handler ) {
-                                    Ext.MessageBox.alert(this.i18n._( "Success" ), this.i18n._( "The configuration has been imported." ));
-                                    this.getSettings(function () {
-                                        this.gridRemoteServers.reload(this.getSettings().remoteServers);
-                                    });
-                                }, this),
-                                failure: Ext.bind(function( form, action ) {
-                                    Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( "Import failure" ) + ": " + action.result.code);
-                                }, this)
-                            });
-                        }, this)
-                    }]
+                        this.submitForm.submit({
+                            url: "/openvpn/uploadConfig",
+                            success: Ext.bind(function( form, action, handler ) {
+                                Ext.MessageBox.alert(this.i18n._( "Success" ), this.i18n._( "The configuration has been imported." ));
+                                this.getSettings(function () {
+                                    this.gridRemoteServers.reload(this.getSettings().remoteServers);
+                                });
+                            }, this),
+                            failure: Ext.bind(function( form, action ) {
+                                Ext.MessageBox.alert(this.i18n._( "Failure" ), this.i18n._( "Import failure" ) + ": " + action.result.code);
+                            }, this)
+                        });
+                    }, this)
                 }]
-            });
+            }]
+        });
 
         this.panelClient = Ext.create('Ext.panel.Panel', {
             name: 'Client',
@@ -435,19 +419,14 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._('Client'),
                 items: [{
-                    xtype: 'container',
-                    html: "<i>" + this.i18n._("These settings configure how OpenVPN will connect to remote servers as a client.") + "</i>",
-                    cls: 'description',
-                    border: false
+                    xtype: 'component',
+                    html: "<i>" + this.i18n._("These settings configure how OpenVPN will connect to remote servers as a client.") + "</i>"
                 }, {
-                    xtype: 'container',
-                    html: "<i>" + this.i18n._("Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>",
-                    cls: 'description',
-                    border: false
+                    xtype: 'component',
+                    html: "<i>" + this.i18n._("Remote Servers is a list remote OpenVPN servers that OpenVPN should connect to as a client.") + "</i>"
                 }]
             }, this.gridRemoteServers, this.submitForm]
         });
@@ -569,8 +548,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     xtype:'textfield',
                     emptyText: this.i18n._("[enter client name]"),
                     allowBlank: false,
-                    maskRe: /[A-Za-z0-9-]/,
-                    vtype: 'openvpnClientName'
+                    vtype: 'openvpnName'
                 }
             },
             this.getGroupsColumn(),
@@ -617,8 +595,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                         fieldLabel: this.i18n._("Client Name"),
                         emptyText: this.i18n._("[enter client name]"),
                         allowBlank: false,
-                        maskRe: /[A-Za-z0-9-]/,
-                        vtype: 'openvpnClientName',
+                        vtype: 'openvpnName',
                         width: 300
                     },{
                         xtype: 'label',
@@ -842,6 +819,10 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 xtype: 'fieldset',
                 id: "pushDnsSettings",
                 title: this.i18n._('Push DNS Configuration'),
+                defaults: {
+                    labelWidth: 150,
+                    width: 350
+                },
                 items: [{
                     xtype: "combo",
                     name: "Push DNS Server",
@@ -851,7 +832,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     editable: false,
                     store: [[true,i18n._('OpenVPN Server')], [false,i18n._('Custom')]],
                     queryMode: 'local',
-                    width: 300,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -882,23 +862,20 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     dataIndex: "pushDns1",
                     fieldLabel: this.i18n._("Push DNS Custom 1"),
                     allowBlank: true,
-                    vtype: 'ipAddress',
-                    width: 300
+                    vtype: 'ipAddress'
                 }, {
                     xtype: "textfield",
                     id: "pushDns2",
                     dataIndex: "pushDns2",
                     fieldLabel: this.i18n._("Push DNS Custom 2"),
                     allowBlank: true,
-                    vtype: 'ipAddress',
-                    width: 300
+                    vtype: 'ipAddress'
                 }, {
                     xtype: "textfield",
                     id: "pushDnsDomain",
                     dataIndex: "pushDnsDomain",
                     fieldLabel: this.i18n._("Push DNS Domain"),
-                    allowBlank: true,
-                    width: 300
+                    allowBlank: true
                 }]
             }]
         });
@@ -918,7 +895,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             deferredRender: false,
             parentId: this.getId(),
             flex: 1,
-            style: "margin: 0px 20px 5px 20px",
+            margin: '0 20 0 20',
             items: [ this.gridRemoteClients, this.gridGroups, this.gridExports ]
         });
 
@@ -961,24 +938,22 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Server'),
                 flex: 0,
+                defaults: {
+                    labelWidth: 160,
+                },
                 items: [{
-                    xtype: 'container',
+                    xtype: 'component',
                     html: "<i>" + this.i18n._("These settings configure how OpenVPN will be a server for remote clients.") + "</i>",
-                    cls: 'description',
-                    style: "margin-bottom:10px;",
-                    border: false
+                    margin: '0 0 5 0'
                 }, {
                     xtype: 'textfield',
-                    labelWidth: 160,
-                    labelAlign:'left',
-                    width:300,
+                    width: 300,
                     fieldLabel: this.i18n._('Site Name'),
                     name: 'Site Name',
                     value: this.getSettings().siteName,
-                    vtype: 'openvpnSiteName',
+                    vtype: 'openvpnName',
                     id: 'openvpn_options_siteName',
                     allowBlank: false,
                     blankText: this.i18n._("You must enter a site name."),
@@ -991,16 +966,13 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     }
                 }, {
                     xtype: 'displayfield',
-                    labelWidth: 160,
-                    labelAlign:'left',
-                    width:300,
+                    width: 300,
                     fieldLabel: this.i18n._('Site URL'),
                     name: 'Site URL',
                     value: publicUrl.split(":")[0]+":"+this.getSettings().port,
                     id: 'openvpn_options_siteUrl'
                 }, {
                     xtype: 'checkbox',
-                    labelWidth: 160,
                     name: "Server Enabled",
                     fieldLabel: this.i18n._("Server Enabled"),
                     checked: this.getSettings().serverEnabled,
@@ -1020,7 +992,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 }, {
                     xtype: 'checkbox',
                     hidden: Ung.Util.hideDangerous,
-                    labelWidth: 160,
                     name: 'Client To Client',
                     fieldLabel: this.i18n._('Client To Client Allowed'),
                     checked: this.getSettings().clientToClient,
@@ -1035,7 +1006,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 }, {
                     xtype: 'numberfield',
                     hidden: Ung.Util.hideDangerous,
-                    labelWidth: 160,
                     labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Port'),
@@ -1055,7 +1025,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     xtype: "combo",
                     hidden: Ung.Util.hideDangerous,
                     editable: false,
-                    labelWidth: 160,
                     labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Protocol'),
@@ -1068,20 +1037,19 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 Ext.MessageBox.confirm(this.i18n._("Warning"),
-                                                       this.i18n._("Changing the protocol will require redistributing ALL of the openvpn clients.") + "<br/><br/>" +
-                                                       this.i18n._("Do you want to continue anyway?"),
-                                                       Ext.bind(function(btn, text) {
-                                                           if (btn == 'yes') {
-                                                               this.getSettings().protocol = newValue;
-                                                           }
-                                                       }, this));
+                                    this.i18n._("Changing the protocol will require redistributing ALL of the openvpn clients.") + "<br/><br/>" +
+                                    this.i18n._("Do you want to continue anyway?"),
+                                    Ext.bind(function(btn, text) {
+                                        if (btn == 'yes') {
+                                            this.getSettings().protocol = newValue;
+                                        }
+                                    }, this));
                             }, this)
                         }
                     }
                 }, {
                     xtype: 'textfield',
                     hidden: Ung.Util.hideDangerous,
-                    labelWidth: 160,
                     labelAlign:'left',
                     width:300,
                     fieldLabel: this.i18n._('Cipher'),
@@ -1098,7 +1066,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     }
                 }, {
                     xtype: 'textfield',
-                    labelWidth: 160,
                     labelAlign:'left',
                     width: 300,
                     fieldLabel: this.i18n._('Address Space'),
@@ -1116,9 +1083,9 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     }
                 }, {
                     xtype: 'container',
-                    layout: 'column',
+                    layout: { type: 'hbox', align: 'middle'},
                     margin: '0 0 5 0',
-                    items: [, {
+                    items: [{
                         xtype: 'checkbox',
                         labelWidth: 160,
                         name: "NAT OpenVPN Traffic",

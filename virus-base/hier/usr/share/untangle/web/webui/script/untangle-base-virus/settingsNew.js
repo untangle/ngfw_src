@@ -464,7 +464,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
             this.getRpcNode().getMailEventQueries);
     },
     buildFtpEventLog: function() {
-        this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridFtpEventLog = Ext.create('Ung.grid.EventLog',{
             name: 'Ftp Event Log',
             //helpSource: 'virus_blocker_ftp_event_log',
             //helpSource: 'virus_blocker_lite_ftp_event_log',

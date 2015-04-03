@@ -31,9 +31,8 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             }, {
                 xtype: 'fieldset',
                 defaults: {
-                    xtype: "textfield",
-                    labelWidth: 200,
-                    disabled: true
+                    xtype: "displayfield",
+                    labelWidth: 200
                 },
                 items: [{
                     fieldLabel: this.i18n._('Total Signatures Available'),

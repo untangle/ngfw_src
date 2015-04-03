@@ -424,7 +424,7 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
     },
     // Dnsbl Event Log
     buildDnsblEventLog: function() {
-        this.gridDnsblEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridDnsblEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'Tarpit Event Log',
             helpSource: 'spam_blocker_lite_tarpit_event_log',

@@ -820,10 +820,6 @@ Ext.define('Ung.RowEditorWindow', {
         });
         this.callParent(arguments);
     },
-    show: function() {
-        Ung.UpdateWindow.superclass.show.call(this);
-        this.doSize();
-    },
     doSize: function() {
         if(!this.sizeToComponent) {
             if(this.sizeToParent) {

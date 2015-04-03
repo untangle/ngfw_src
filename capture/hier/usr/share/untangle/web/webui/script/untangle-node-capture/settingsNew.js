@@ -15,7 +15,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
     initComponent: function() {
         Ung.Main.getNetworkSettings(true);
 
-        // builds the tabs
         this.buildCaptiveStatus();
         this.buildCaptureRules();
         this.buildPassedHosts();
@@ -24,7 +23,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.buildUserEventLog();
         this.buildRuleEventLog();
 
-        // builds the tab panel with the tabs
         this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
                              this.panelUserAuthentication, this.gridUserEventLog, this.gridRuleEventLog ]);
         this.callParent(arguments);
@@ -295,6 +293,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
     buildGridPassedList: function( name, title, dataProperty , tooltip) {
         return Ext.create('Ung.grid.Panel', {
             flex: 1,
+            margin: (name=='gridPassedServers')?'5 0 0 0': 0,
             title: this.i18n._(title),
             name: name,
             tooltip: tooltip,
@@ -930,7 +929,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
 
     buildUserEventLog: function() {
-        this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridUserEventLog = Ext.create('Ung.grid.EventLog',{
             title: this.i18n._( "User Event Log" ),
             helpSource: "captive_portal_user_event_log",
             eventQueriesFn: this.getRpcNode().getUserEventQueries,

@@ -598,6 +598,7 @@ Ext.define("Ung.Node", {
             this.settingsWin=Ext.create(this.settingsClassName, {
                 name: this.name,
                 nodeId: this.nodeId,
+                nodeProperties: this.nodeProperties,
                 displayName: this.displayName,
                 helpSource: this.helpSource,
                 rpcNode: this.rpcNode,

@@ -1001,7 +1001,7 @@ Ext.define('Webui.config.system', {
             }]
         });
 
-        this.gridShieldEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridShieldEventLog = Ext.create('Ung.grid.EventLog',{
             eventQueriesFn: this.getShieldNode().getEventQueries,
             settingsCmp: this,
             fields: [{
