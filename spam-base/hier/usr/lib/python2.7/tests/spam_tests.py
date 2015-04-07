@@ -20,7 +20,7 @@ node = None
 nodeData = None
 canRelay = True
 smtpServerHost = 'test.untangle.com'
-fakeSmtpServerHost = '10.112.56.30'
+listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.32','16')]
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def sendTestmessage():
@@ -185,8 +185,14 @@ class SpamTests(unittest2.TestCase):
 
     def test_070_checkForSMTPHeaders(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
-            raise unittest2.SkipTest("Not on office network, skipping")
+        # find local SMTP sender
+        fakeSmtpServerHost = "";
+        for smtpServerHostIP in listFakeSmtpServerHosts:
+            interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
+            if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
+                fakeSmtpServerHost = smtpServerHostIP[0]
+        if (fakeSmtpServerHost == ""):
+            raise unittest2.SkipTest("No local SMTP server")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
             raise unittest2.SkipTest("Fake SMTP client is unreachable, skipping smtp headers check")
