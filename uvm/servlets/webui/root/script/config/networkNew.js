@@ -4800,12 +4800,12 @@ Ext.define('Webui.config.network', {
                             }
                         }
                     }), this.protocol = new Ext.form.field.ComboBox({
-                        xtype : "combo",
-                        editable : false,
-                        style : "margin-left: 10px",
-                        width : 100,
-                        value : "U",
-                        store : [['U','UDP'], ['T','TCP'], ['I','ICMP']]
+                        xtype: "combo",
+                        editable: false,
+                        style: "margin-left: 10px",
+                        width: 100,
+                        value: "U",
+                        store: [['U','UDP'], ['T','TCP'], ['I','ICMP']]
                     })];
                     Webui.config.network.NetworkTest.prototype.initComponent.apply(this, arguments);
                 },

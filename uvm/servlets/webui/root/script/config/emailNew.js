@@ -182,7 +182,6 @@ Ext.define('Webui.config.email', {
                         closeAction: 'hide',
                         plain: false,
                         items: Ext.create('Ext.panel.Panel',{
-                            header: false,
                             border: false,
                             items: [{
                                 xtype: 'fieldset',
