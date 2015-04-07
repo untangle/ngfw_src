@@ -13,6 +13,7 @@ from jsonrpc import JSONRPCException
 from uvm import Manager
 from uvm import Uvm
 import remote_control
+import ipaddr
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
