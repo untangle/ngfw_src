@@ -331,8 +331,8 @@ Ext.define("Webui.config.network", {
             menuDisabled:true,
             resizable: false,
             hideable: false,
-            header: this.i18n._("Connections"),
-            width: 80,
+            header: this.i18n._("Status"),
+            width: 50,
             init:function(grid) {
                 this.grid=grid;
             },
@@ -346,7 +346,7 @@ Ext.define("Webui.config.network", {
             },
             getClass: function(value, metadata, record) {
                 if( record.get("isWirelessInterface")) {
-                    return 'icon-delete-row';
+                    return 'icon-wireless';
                 } else {
                     return 'x-hide-display';
                 }
