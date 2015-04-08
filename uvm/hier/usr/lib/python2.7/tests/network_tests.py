@@ -286,7 +286,7 @@ def appendVLAN(parentInterfaceID):
         if interface['interfaceId'] == parentInterfaceID:
             if interface['configType'] != "ADDRESSED":
                 # only use if interface is addressed
-                return false
+                return False
             physicalDev = interface['physicalDev']
             break
     
