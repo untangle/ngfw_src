@@ -133,7 +133,8 @@ public class NetworkManagerImpl implements NetworkManager
             File interfacesFile = new File("/etc/network/interfaces");
             if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
                 logger.warn("Settings file newer than interfaces files, Syncing...");
-                this.setNetworkSettings( this.networkSettings );
+                /* Do not run sanity checks on restored settings */
+                this.setNetworkSettings( this.networkSettings, false );
             }
         }
         
@@ -153,13 +154,21 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
+        setNetworkSettings( newSettings, true );
+    }
+
+    /**
+     * Set the network settings
+     */
+    public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks )
+    {
         String downCommand, upCommand;
 
         /**
          * validate settings
-         * validate: routes can not route traffic to self
          */
-        sanityCheckNetworkSettings( newSettings );
+        if ( runSanityChecks )
+            sanityCheckNetworkSettings( newSettings );
         
         /**
          * TODO:
