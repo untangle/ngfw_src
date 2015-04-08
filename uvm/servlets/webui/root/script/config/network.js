@@ -687,9 +687,12 @@ Ext.define("Webui.config.network", {
                             } catch (e) {
                                 Ung.Util.rpcExHandler(e);
                             }
+                            
+                            var conn = [];
+
+                            if (connText === undefined) return conn;
 
                             var lines = connText.split("\n");
-                            var conn = [];
                             var macAddress = [];
                             var address = [];
                             var rxbytes = [];
