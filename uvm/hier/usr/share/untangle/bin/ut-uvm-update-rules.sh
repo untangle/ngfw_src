@@ -66,7 +66,14 @@ insert_iptables_rules()
     # Do not track output from the UVM 
     # If its UDP or ICMP its part of an existing session, and tracking it will create a new erroneous session
     # If its TCP its non-locally bound and won't go through iptables anyway
-    ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j CT --notrack -m comment --comment 'CT NOTRACK packets with bypass bit mark set'
+    KERNVER=$(uname -r | awk -F. '{ printf("%02d%02d%02d\n",$1,$2,$3); }')
+    ORIGVER=30000
+
+    if [ "$KERNVER" -ge "$ORIGVER" ]; then
+        ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j CT --notrack -m comment --comment 'CT NOTRACK packets with bypass bit mark set'
+    else
+        ${IPTABLES} -A OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set'
+    fi
 
     # The UDP packets sent from the UVM seem to have an out intf of the primary wan by default
     # Routing occurs again after OUTPUT chain but only seems to take effect if the packet has been changed
@@ -151,7 +158,14 @@ remove_iptables_rules()
     ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
     ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
 
-    ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j CT --notrack -m comment --comment 'CT NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
+    KERNVER=$(uname -r | awk -F. '{ printf("%02d%02d%02d\n",$1,$2,$3); }')
+    ORIGVER=30000
+
+    if [ "$KERNVER" -ge "$ORIGVER" ]; then
+        ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j CT --notrack -m comment --comment 'CT NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
+    else
+        ${IPTABLES} -D OUTPUT -t raw -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j NOTRACK -m comment --comment 'NOTRACK packets with bypass bit mark set' >/dev/null 2>&1
+    fi
     ${IPTABLES} -D OUTPUT -t mangle -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT' >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
     ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
