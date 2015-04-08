@@ -399,9 +399,7 @@ public class NetworkManagerImpl implements NetworkManager
              * Add static v4 addresses
              */
             for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                    continue;
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                     continue;
                 if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                     continue;
@@ -423,9 +421,7 @@ public class NetworkManagerImpl implements NetworkManager
              */
             if ( includeDynamic ) {
                 for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                    if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                        continue;
-                    if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                    if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                         continue;
                     if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
                         continue;
@@ -877,9 +873,7 @@ public class NetworkManagerImpl implements NetworkManager
          * This never makes sense if the netmasks are equal
          */
         for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
-            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                continue;
-            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+            if ( intf1.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 continue;
             if ( intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                 continue;
@@ -887,9 +881,7 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
 
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
-                if ( intf2.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                    continue;
-                if ( intf2.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                if ( intf2.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                     continue;
                 if ( intf2.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                     continue;
@@ -945,9 +937,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         List<InetAddress> addrs = new LinkedList<InetAddress>();
         for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
-            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                continue;
-            if ( intf1.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+            if ( intf1.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 continue;
             if ( intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                 continue;
@@ -1020,9 +1010,7 @@ public class NetworkManagerImpl implements NetworkManager
              * Check interface addresses and aliases
              */
             for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                    continue;
-                if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+                if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                     continue;
                 if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                     continue;
@@ -1067,9 +1055,7 @@ public class NetworkManagerImpl implements NetworkManager
          * Check DHCP range and make sure it falls within the interface's address range
          */
         do {
-            if ( intf.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                break;
-            if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED )
+            if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 break;
             if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
                 break;
