@@ -508,7 +508,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         IPMaskedAddress maskedAddress;
         List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() || interfaceSettings.getIsWan() == true ){
+            if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() || interfaceSettings.getIsWan() == true ){
                 continue;
             }
             addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
