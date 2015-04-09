@@ -1,4 +1,4 @@
-Content-type: text/html
+Content-type: text/html; charset=UTF-8
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD><TITLE>Man page of openvpn</TITLE>
@@ -282,7 +282,7 @@ failover capability.
 <DT><B>--remote-random-hostname</B>
 
 <DD>
-Add a random string (6 characters) to first DNS label of hostname to prevent
+Prepend a random string (6 bytes, 12 hex characters) to hostname to prevent
 DNS caching.  For example, &quot;foo.bar.gov&quot; would be modified to
 &quot;&lt;random-chars&gt;.foo.bar.gov&quot;.
 
@@ -648,7 +648,7 @@ Set HTTP &quot;User-Agent&quot; string to
 <B>user-agent.</B>
 
 
-<DT><B>--socks-proxy server [port]</B>
+<DT><B>--socks-proxy server [port] [authfile]</B>
 
 <DD>
 Connect to remote host through a Socks5 proxy at address
@@ -658,6 +658,10 @@ and port
 <B>port</B>
 
 (default=1080).
+<B>authfile</B>
+
+(optional) is a file containing a username and password on 2 lines, or
+&quot;stdin&quot; to prompt from console.
 
 <DT><B>--socks-proxy-retry</B>
 
@@ -970,6 +974,21 @@ also specify
 or
 <B>--dev-type tap.</B>
 
+<P>
+Under Mac OS X this option can be used to specify the default tun
+implementation. Using
+<B>--dev-node utun</B>
+
+forces usage of the native Darwin tun kernel support. Use
+<B>--dev-node utunN</B>
+
+to select a specific utun instance. To force using the tun.kext (/dev/tunX) use
+<B>--dev-node tun</B>.
+
+When not specifying a
+<B>--dev-node</B>
+
+option openvpn will first try to open utun, and fall back to tun.kext.
 <P>
 On Windows systems, select the TAP-Win32 adapter which
 is named
@@ -1736,6 +1755,7 @@ Limit bandwidth of outgoing tunnel data to
 <B>n</B>
 
 bytes per second on the TCP/UDP port.
+Note that this will only work if mode is set to p2p.
 If you want to limit the bandwidth
 in both directions, use this option on both peers.
 <P>
@@ -1954,7 +1974,7 @@ and
 in server mode configurations.
 <P>
 The server timeout is set twice the value of the second argument.
-This ensures that a timeout is dectected on client side
+This ensures that a timeout is detected on client side
 before the server side drops the connection.
 <P>
 For example,
@@ -2312,6 +2332,21 @@ reasons for having OpenVPN fail if it detects problems in a
 config file.  Having said that, there are valid reasons for wanting
 new software features to gracefully degrade when encountered by
 older software versions.
+<P>
+It is also possible to tag a single directive so as not to trigger
+a fatal error if the directive isn't recognized.  To do this,
+prepend the following before the directive:
+<B>setenv opt</B>
+
+<P>
+Versions prior to OpenVPN 2.3.3 will always ignore options set with the
+<B>setenv opt</B>
+
+directive.
+<P>
+See also
+<B>--ignore-unknown-option</B>
+
 
 <DT><B>--setenv-safe name value</B>
 
@@ -2325,6 +2360,29 @@ This directive is designed to be pushed by the server to clients,
 and the prepending of &quot;OPENVPN_&quot; to the environmental variable
 is a safety precaution to prevent a LD_PRELOAD style attack
 from a malicious or compromised server.
+
+<DT><B>--ignore-unknown-option opt1 opt2 opt3 ... optN</B>
+
+<DD>
+When one of options
+<B>opt1 ... optN</B>
+
+is encountered in the configuration file the configuration
+file parsing does not fail if this OpenVPN version does not
+support the option. Multiple
+<B>--ignore-unknown-option</B>
+
+options can be given to support a larger number of options to ignore.
+<P>
+This option should be used with caution, as there are good security
+reasons for having OpenVPN fail if it detects problems in a
+config file. Having said that, there are valid reasons for wanting
+new software features to gracefully degrade when encountered by
+older software versions.
+<P>
+<B>--ignore-unknown-option</B>
+
+is available since OpenVPN 2.3.3.
 
 <DT><B>--script-security level</B>
 
@@ -2505,6 +2563,18 @@ In many cases, the
 parameter can point to an empty directory, however
 complications can result when scripts or restarts
 are executed after the chroot operation.
+<P>
+Note: if OpenVPN is built using the PolarSSL SSL
+library,
+<B>--chroot</B>
+
+will only work if a /dev/urandom device node is available
+inside the chroot directory
+<B>dir.</B>
+
+This is due to the way PolarSSL works (it wants to open
+/dev/urandom every time randomness is needed, not just once
+at startup) and nothing OpenVPN can influence.
 
 <DT><B>--setcon context</B>
 
@@ -2789,20 +2859,24 @@ is NOT specified.
 <DT><B>--multihome</B>
 
 <DD>
-Configure a multi-homed UDP server.  This option can be used when
-OpenVPN has been configured to listen on all interfaces, and will
-attempt to bind client sessions to the interface on which packets
-are being received, so that outgoing packets will be sent out
-of the same interface.  Note that this option is only relevant for
-UDP servers and currently is only implemented on Linux.
+Configure a multi-homed UDP server.  This option needs to be used when
+a server has more than one IP address (e.g. multiple interfaces, or
+secondary IP addresses), and is not using
+<B>--local</B>
+
+to force binding to one specific address only.  This option will
+add some extra lookups to the packet path to ensure that the UDP reply
+packets are always sent from the address that the client is
+talking to. This is not supported on all platforms, and it adds more
+processing, so it's not enabled by default.
 <P>
-Note: clients connecting to a
-<B>--multihome</B>
-
-server should always use the
-<B>--nobind</B>
-
-option.
+Note: this option is only relevant for UDP servers.
+<P>
+Note 2: if you do an IPv6+IPv4 dual-stack bind on a Linux machine with
+multiple IPv4 address, connections to IPv4 addresses will not work
+right on kernels before 3.15, due to missing kernel support for the
+IPv4-mapped case (some distributions have ported this to earlier kernel
+versions, though).
 
 <DT><B>--echo [parms...]</B>
 
@@ -2952,7 +3026,7 @@ Normally, adaptive compression is enabled with
 
 <P>
 Adaptive compression tries to optimize the case where you have
-compression enabled, but you are sending predominantly uncompressible
+compression enabled, but you are sending predominantly incompressible
 (or pre-compressed) packets over the tunnel, such as an FTP or rsync transfer
 of a large, compressed file.  With adaptive compression,
 OpenVPN will periodically sample the compression process to measure its
@@ -3199,7 +3273,7 @@ on sufficiently fast hardware.  SSL/TLS authentication must
 be used in this mode.
 
 <DL COMPACT>
-<DT><B>--server network netmask</B>
+<DT><B>--server network netmask ['nopool']</B>
 
 <DD>
 A helper directive designed to simplify the configuration
@@ -3235,6 +3309,9 @@ expands as follows:
    if !nopool:
      ifconfig-pool 10.8.0.2 10.8.0.254 255.255.255.0
    push &quot;route-gateway 10.8.0.1&quot;
+   if route-gateway unset:
+     route-gateway 10.8.0.2
+
 </B></PRE>
 
 <P>
@@ -4198,7 +4275,7 @@ like this:
 <B>/C=US/L=Somewhere/CN=John Doe/emailAddress=<A HREF="mailto:john@example.com">john@example.com</A></B>
 
 <DT><DD>
-In addition the old behavivour was to remap any character other than
+In addition the old behaviour was to remap any character other than
 alphanumeric, underscore ('_'), dash ('-'), dot ('.'), and slash ('/') to
 underscore ('_').  The X.509 Subject string as returned by the
 <B>tls_id</B>
@@ -5126,6 +5203,28 @@ when you built your peer's certificate (see
 
 above).
 
+<DT><B>--tls-version-min version ['or-highest']</B>
+
+<DD>
+Enable TLS version negotiation, and set the minimum
+TLS version we will accept from the peer (default is &quot;1.0&quot;).
+Examples for version
+include &quot;1.0&quot;, &quot;1.1&quot;, or &quot;1.2&quot;.  If 'or-highest' is specified
+and version is not recognized, we will only accept the highest TLS
+version supported by the local SSL implementation.
+<P>
+If this options is not set, the code in OpenVPN 2.3.4 will default
+to using TLS 1.0 only, without any version negotiation.  This reverts
+the beaviour to what OpenVPN versions up to 2.3.2 did, as it turned
+out that TLS version negotiation can lead to handshake problems due
+to new signature algorithms in TLS 1.2.
+
+<DT><B>--tls-version-max version</B>
+
+<DD>
+Set the maximum TLS version we will use (default is the highest version
+supported).  Examples for version include &quot;1.0&quot;, &quot;1.1&quot;, or &quot;1.2&quot;.
+
 <DT><B>--pkcs12 file</B>
 
 <DD>
@@ -5208,7 +5307,7 @@ Mode is encoded as hex number, and can be a mask one of the following:
 <P>
 <B>0</B>
 
-(default) -- Try to determind automatically.
+(default) -- Try to determine automatically.
 <BR>
 
 <B>1</B>
@@ -5680,16 +5779,59 @@ certificates will use a temporary name and will be deleted when
 the tls-verify script returns.  The file name used for the certificate
 is available via the peer_cert environment variable.
 
-<DT><B>--x509-username-field fieldname</B>
+<DT><B>--x509-username-field [ext:]fieldname</B>
 
 <DD>
-Field in x509 certificate subject to be used as username (default=CN).
-<B>Fieldname</B>
+Field in the X.509 certificate subject to be used as the username (default=CN).
+Typically, this option is specified with
+<B>fieldname</B>
 
-will be uppercased before matching. When this option is used, the
-<B>--verify-x509-username</B>
+as either of the following:
+<P>
+<B>--x509-username-field</B>
 
-option will match against the chosen fieldname instead of the CN.
+emailAddress
+<BR>
+
+<B>--x509-username-field ext:</B>subjectAltName
+
+<P>
+The first example uses the value of the &quot;emailAddress&quot; attribute in the
+certificate's Subject field as the username.  The second example uses
+the
+<B>ext:</B>
+
+prefix to signify that the X.509 extension
+<B>fieldname</B>
+
+&quot;subjectAltName&quot; be searched for an rfc822Name (email) field to be used
+as the username.  In cases where there are multiple email addresses
+in
+<B>ext:fieldname</B>,
+
+the last occurrence is chosen.
+<P>
+When this option is used, the
+<B>--verify-x509-name</B>
+
+option will match against the chosen
+<B>fieldname</B>
+
+instead of the Common Name.
+<P>
+<B>Please note:</B>
+
+This option has a feature which will convert an all-lowercase
+<B>fieldname</B>
+
+to uppercase characters, e.g., ou -&gt; OU.  A mixed-case
+<B>fieldname</B>
+
+or one having the
+<B>ext:</B>
+
+prefix will be left as-is.  This automatic upcasing feature
+is deprecated and will be removed in a future release.
 
 <DT><B>--tls-remote name (DEPRECATED)</B>
 
@@ -6533,9 +6675,12 @@ option can be used BEFORE this option to produce debugging information.
 
 
 The following options exist to support IPv6 tunneling in peer-to-peer
-and client-server mode.  As of now, this is just very basic
-documentation of the IPv6-related options. More documentation can be
-found on <A HREF="http://www.greenie.net/ipv6/openvpn.html.">http://www.greenie.net/ipv6/openvpn.html.</A>
+and client-server mode.  All options are modeled after their IPv4
+counterparts, so more detailed explanations given there apply here
+as well (except for
+<B>--topology</B>
+
+, which has no effect on IPv6).
 <DL COMPACT>
 <DT><B>--ifconfig-ipv6 ipv6addr/bits ipv6remote</B>
 
@@ -6573,7 +6718,8 @@ pool starts at
 and increments by +1 for every new client (linear mode).  The
 <B>/bits</B>
 
-setting controls the size of the pool.
+setting controls the size of the pool.  Due to implementation details,
+the pool size must be between /64 and /112.
 <DT><B>--ifconfig-ipv6-push ipv6addr/bits ipv6remote</B>
 
 <DD>
@@ -7318,6 +7464,19 @@ Set prior to execution of the
 
 script.
 
+<DT><B>tls_digest_{n}</B>
+
+<DD>
+Contains the certificate SHA1 fingerprint/digest hash value,
+where
+<B>n</B>
+
+is the verification level.  Only set for TLS connections.  Set prior
+to execution of
+<B>--tls-verify</B>
+
+script.
+
 <DT><B>tls_id_{n}</B>
 
 <DD>
@@ -7342,12 +7501,20 @@ is the verification level.  Only set for TLS connections.  Set prior
 to execution of
 <B>--tls-verify</B>
 
-script. This is in the form of a hex string like &quot;37AB46E0&quot;, which is
-suitable for doing serial-based OCSP queries (with OpenSSL, you have
-to prepend &quot;0x&quot; to the string). If something goes wrong while reading
+script. This is in the form of a decimal string like &quot;933971680&quot;, which is
+suitable for doing serial-based OCSP queries (with OpenSSL, do not
+prepend &quot;0x&quot; to the string) If something goes wrong while reading
 the value from the certificate it will be an empty string, so your
 code should check that.
 See the contrib/OCSP_check/OCSP_check.sh script for an example.
+
+<DT><B>tls_serial_hex_{n}</B>
+
+<DD>
+Like
+<B>tls_serial_{n}</B>,
+
+but in hex form (e.g. &quot;12:34:56:78:9A&quot;).
 
 <DT><B>tun_mtu</B>
 
@@ -8195,6 +8362,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:45:06 GMT, August 08, 2013
+Time: 08:10:32 GMT, December 01, 2014
 </BODY>
 </HTML>
