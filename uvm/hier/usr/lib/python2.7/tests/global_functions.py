@@ -105,7 +105,7 @@ def check_events( events, num_events, *args, **kwargs):
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
-            print "failed to find event checked: %i total: %i" % (num_checked, len(events)) 
+            print "failed to find event checked: %d total: %d" % (num_checked, len(events)) 
             break
         event = events[num_checked]
         num_checked += 1
