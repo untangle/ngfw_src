@@ -96,7 +96,7 @@ def check_events( events, num_events, *args, **kwargs):
         print "No events in list"
         return False
     if kwargs.get('min_date') == None:
-        min_date = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        min_date = datetime.datetime.now()-datetime.timedelta(minutes=12)
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
