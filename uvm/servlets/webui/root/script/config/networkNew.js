@@ -340,8 +340,8 @@ Ext.define('Webui.config.network', {
                 var rec = view.getStore().getAt(rowIndex);
 
                 if( rec.get("isWirelessInterface")) {
-                    var wintf = rec.get("systemDev");
-                    this.grid.onWirelessConnections(wintf);
+                    var systemDev = rec.get("systemDev");
+                    this.grid.onWirelessConnections(systemDev);
                 }
             },
             getClass: function(value, metadata, record) {
@@ -662,100 +662,56 @@ Ext.define('Webui.config.network', {
                 },
                 scope : this
             }],
-            onWirelessConnections: Ext.bind(function(rec) {
-                Ext.MessageBox.wait(this.i18n._("Loading wireless connections..."), this.i18n._("Please wait"));
-                {
+            onWirelessConnections: Ext.bind(function(systemDev) {
+                var me = this;
+                if(!this.winWirelessConnections) {
                     this.gridWirelessLists = Ext.create( 'Ung.grid.Panel', {
                         name: 'Wireless Lists',
                         helpSource: 'network_wireless_connections',
-                        parentId: this.getId(),
                         title: this.i18n._('Wireless Connections List'),
                         settingsCmp: this,
-                        paginated: false,
                         hasAdd: false,
                         hasDelete: false,
                         hasEdit: false,
-                        hasRefresh: false,
-                        dataRoot: null,
                         dataFn: function(handler) {
-                            var tmpstr = "/sbin/iw dev "+rec+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
-                            var tmpmacAddress = [];
-                            var tmpaddress = [];
-                            var tmplines;
+                            Ext.MessageBox.wait(me.i18n._("Loading wireless connections..."), me.i18n._("Please wait"));
+                            var connectionsCommand = "/sbin/iw dev "+this.systemDev+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
+                            var addressMap = {};
 
-                            Ung.Main.getExecManager().execOutput(Ext.bind(function(leaseText, exception) {
+                            Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                                 if(Ung.Util.handleException(exception)) return;
-                                if(leaseText === undefined) return;
-            
-                                tmplines = leaseText.split("\n");
-                                var leases = [];
-                            
-                                for ( i = 0 ; i < tmplines.length ; i++ ) {
-                                    if ( tmplines[i] === null || tmplines[i] === "" ) continue;
-
-                                    var lparts = tmplines[i].split(/\s+/);
-                                    tmpmacAddress[i] = lparts[1];
-                                    tmpaddress[i] = lparts[2];
-                                }
-                            }, this),"cat /var/lib/misc/dnsmasq.leases");
-
-                            Ung.Main.getExecManager().execOutput(Ext.bind(function(connText, exception) {
-                                if(Ung.Util.handleException(exception)) return;
-                                if(connText === undefined) return;
-    
-                                var conn = [];
-                                var lines = connText.split("\n");
-                                var macAddress = [];
-                                var address = [];
-                                var rxbytes = [];
-                                var rxpackets = [];
-                                var txbytes = [];
-                                var txpackets = [];
-                                var total = lines.length/5>>0 ;
-                                var i = 0;
-    
-                                for ( i = 0 ; i < total ; i++ ) {
-                                    if ( lines[i] === null || lines[i] === "" ) continue;
-                                    var ptr=i*5;
-                
-                                    var lineparts = lines[ptr].split(" ");
-                                    macAddress[macAddress.length] = lineparts[1]; 
-                                    
-                                    lineparts = lines[ptr+1].split(" ");
-                                    rxbytes[rxbytes.length]=lineparts[3];
-    
-                                    lineparts = lines[ptr+2].split(" ");
-                                    rxpackets[rxpackets.length]=lineparts[3];
-    
-                                    lineparts = lines[ptr+3].split(" ");
-                                    txbytes[txbytes.length]=lineparts[3];
-    
-                                    lineparts = lines[ptr+4].split(" ");
-                                    txpackets[txpackets.length]=lineparts[3];
-                                }
-    
-                                for ( var j = 0 ; j < macAddress.length ; j++ ) {
-                                    for ( i = 0 ; i < tmpmacAddress.length ; i++ ) {
-                                        if (macAddress[j] ==tmpmacAddress[i]) {
-                                            address[j] = tmpaddress[i];
-                                            break;
-                                        }
+                                var lines = Ext.isEmpty(result) ? []: result.split("\n");
+                                var lparts;
+                                for ( i = 0 ; i < lines.length ; i++ ) {
+                                    if ( !Ext.isEmpty(lines[i])) {
+                                        lparts = lines[i].split(/\s+/);
+                                        addressMap[lparts[1]] = lparts[2];
                                     }
+
                                 }
-    
-                                //push to result
-                                for ( i = 0 ; i < macAddress.length ; i++ ) {
-                                    conn.push( {
-                                        macAddress: macAddress[i],
-                                        address: address[i],
-                                        rxbytes: rxbytes[i],
-                                        rxpackets: rxpackets[i],
-                                        txbytes: txbytes[i],
-                                        txpackets: txpackets[i],
-                                    } );
-                                }
-                                handler({list: conn});
-                            }, this),tmpstr);
+                                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    var lines = Ext.isEmpty(result) ? []: result.split("\n");
+                                    var total = Math.floor(lines.legth/5) ;
+                                    var ptr, macAddress, connections = [];
+
+                                    for (var i = 0 ; i < total ; i++ ) {
+                                        if ( Ext.isEmpty(lines[i])) continue;
+                                        ptr = i*5;
+                                        macAddress =lines[ptr].split(" ")[1];
+                                        connections.push( {
+                                            macAddress: macAddress,
+                                            address: addressMap[macAddress],
+                                            rxbytes: lines[ptr+1].split(" ")[3],
+                                            rxpackets: lines[ptr+2].split(" ")[3],
+                                            txbytes: lines[ptr+3].split(" ")[3],
+                                            txpackets: lines[ptr+4].split(" ")[3]
+                                        });
+                                    }
+                                    handler({list: connections});
+                                    Ext.MessageBox.hide();
+                                }, this), connectionsCommand);
+                            }, this),"cat /var/lib/misc/dnsmasq.leases");
                         }, 
                         fields: [{
                             name: "macAddress"
@@ -807,7 +763,7 @@ Ext.define('Webui.config.network', {
                         }, {
                             title: this.i18n._("Wireless Connections")
                         }],
-                        bbar: [{
+                        bbar: ["-",{
                             iconCls: 'icon-help',
                             text: this.i18n._('Help'),
                             handler: function() {
@@ -823,16 +779,13 @@ Ext.define('Webui.config.network', {
                             },
                             scope: this
                         }],
-                        items: [
-                            {
-                            xtype: 'panel',
-                            layout: { type: 'vbox', align: 'stretch' },
-                            items: [this.gridWirelessLists]
-                        }],
+                        items: [this.gridWirelessLists],
                     });
+                    this.subCmps.push(this.winWirelessConnections);
                 }
-                Ext.MessageBox.hide();
                 this.winWirelessConnections.show();
+                this.gridWirelessLists.systemDev = systemDev;
+                this.gridWirelessLists.reload();
             }, this),
             onMapDevices: Ext.bind(function() {
                 Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
@@ -1118,7 +1071,6 @@ Ext.define('Webui.config.network', {
         this.panelInterfaces = Ext.create('Ext.panel.Panel',{
             name: 'Interfaces',
             helpSource: 'network_interfaces',
-            parentId: this.getId(),
             title: this.i18n._('Interfaces'),
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             cls: 'ung-panel',
@@ -2319,7 +2271,6 @@ Ext.define('Webui.config.network', {
         this.panelHostName = Ext.create('Ext.panel.Panel',{
             name: 'Hostname',
             helpSource: 'network_hostname',
-            parentId: this.getId(),
             title: this.i18n._('Hostname'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -2449,7 +2400,6 @@ Ext.define('Webui.config.network', {
         this.panelServices = Ext.create('Ext.panel.Panel',{
             name: 'Services',
             helpSource: 'network_services',
-            parentId: this.getId(),
             title: this.i18n._('Services'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -2560,7 +2510,6 @@ Ext.define('Webui.config.network', {
                 this.tbar= [{
                     text: this.settingsCmp.i18n._('Add Simple Rule'),
                     iconCls: 'icon-add-row',
-                    parentId: this.getId(),
                     handler: this.addSimpleRuleHandler,
                     scope: this
                 }];
@@ -2736,7 +2685,6 @@ Ext.define('Webui.config.network', {
         this.panelPortForwardRules = Ext.create('Ext.panel.Panel',{
             name: 'PortForwardRules',
             helpSource: 'network_port_forward_rules',
-            parentId: this.getId(),
             title: this.i18n._('Port Forward Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -3034,7 +2982,6 @@ Ext.define('Webui.config.network', {
         this.panelNatRules = Ext.create('Ext.panel.Panel',{
             name: 'NatRules',
             helpSource: 'network_nat_rules',
-            parentId: this.getId(),
             title: this.i18n._('NAT Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -3177,7 +3124,6 @@ Ext.define('Webui.config.network', {
         this.panelBypassRules = Ext.create('Ext.panel.Panel',{
             name: 'BypassRules',
             helpSource: 'network_bypass_rules',
-            parentId: this.getId(),
             title: this.i18n._('Bypass Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -3371,7 +3317,6 @@ Ext.define('Webui.config.network', {
         this.panelRoutes = Ext.create('Ext.panel.Panel',{
             name: 'Routes',
             helpSource: 'network_routes',
-            parentId: this.getId(),
             title: this.i18n._('Routes'),
             autoScroll: true,
             reserveScrollbar: true,
@@ -3472,7 +3417,6 @@ Ext.define('Webui.config.network', {
         this.panelDnsServer = Ext.create('Ext.panel.Panel',{
             name: 'DnsServer',
             helpSource: 'network_dns_server',
-            parentId: this.getId(),
             title: this.i18n._('DNS Server'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -3565,7 +3509,6 @@ Ext.define('Webui.config.network', {
             name: "gridCurrentDhcpLeases",
             flex: 1,
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
@@ -3626,7 +3569,6 @@ Ext.define('Webui.config.network', {
         this.panelDhcpServer = Ext.create('Ext.panel.Panel',{
             name: 'DhcpServer',
             helpSource: 'network_dhcp_server',
-            parentId: this.getId(),
             title: this.i18n._('DHCP Server'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -3644,7 +3586,6 @@ Ext.define('Webui.config.network', {
         this.advancedTabPanel = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,
-            parentId: this.getId(),
             autoHeight: true,
             flex: 1,
             items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsDhcp, this.gridNetworkCards ]
@@ -3660,7 +3601,6 @@ Ext.define('Webui.config.network', {
                 }
                 return helpSource;
             }, this),
-            parentId: this.getId(),
             title: this.i18n._('Advanced'),
             cls: 'ung-panel',
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
@@ -3677,7 +3617,6 @@ Ext.define('Webui.config.network', {
         this.panelOptions = Ext.create('Ext.panel.Panel',{
             name: 'Options',
             helpSource: 'network_options',
-            parentId: this.getId(),
             title: this.i18n._('Options'),
             cls: 'ung-panel',
             items: [{
@@ -4176,7 +4115,6 @@ Ext.define('Webui.config.network', {
         this.panelQoS = Ext.create('Ext.panel.Panel',{
             name: 'QoS',
             helpSource: 'network_qos',
-            parentId: this.getId(),
             title: this.i18n._('QoS'),
             autoScroll: true,
             cls: 'ung-panel',
@@ -4342,7 +4280,6 @@ Ext.define('Webui.config.network', {
         this.panelDnsDhcp = Ext.create('Ext.panel.Panel',{
             name: 'DNS & DHCP',
             helpSource: 'network_dns_and_dhcp',
-            parentId: this.getId(),
             title: this.i18n._('DNS & DHCP'),
             autoScroll: true,
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
@@ -4513,7 +4450,6 @@ Ext.define('Webui.config.network', {
         this.panelFilter = Ext.create('Ext.panel.Panel',{
             name: 'FilterRules',
             helpSource: 'network_filter_rules',
-            parentId: this.getId(),
             title: this.i18n._('Filter Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -4618,7 +4554,6 @@ Ext.define('Webui.config.network', {
         this.gridNetworkCards = Ext.create('Ung.grid.Panel', {
             name: 'Network Cards',
             helpSource: 'network_network_cards',
-            parentId: this.getId(),
             title: this.i18n._('Network Cards'),
             settingsCmp: this,
             hasAdd: false,
@@ -4673,7 +4608,6 @@ Ext.define('Webui.config.network', {
         var settingsCmp = this;
         this.gridNetworkTests = Ext.create( 'Ung.grid.Panel', {
             name: 'Network Cards',
-            parentId: this.getId(),
             settingsCmp: this,
             header: false,
             hasAdd: false,
@@ -4727,7 +4661,6 @@ Ext.define('Webui.config.network', {
         this.panelTroubleshooting = Ext.create('Ext.panel.Panel',{
             name: 'Troubleshooting',
             helpSource: 'network_troubleshooting',
-            parentId: this.getId(),
             title: this.i18n._('Troubleshooting'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -5182,12 +5115,10 @@ Ext.define('Webui.config.network', {
                         iconCls: 'icon-export',
                         name: 'export',
                         disabled: true,
-                        parentId: this.getId(),
                         handler: this.onExport,
                         scope: this
                     });
                     toolbar.add( this.exportButton );
-
                 },
                 buildTraceCommand: function(){
                     var traceFixedOptionsTemplate = [
@@ -5204,7 +5135,7 @@ Ext.define('Webui.config.network', {
                     var traceExpression = [];
                     if( this.advancedToggleButton.pressed ){
                         traceExpression = [this.advancedInput.getValue()];
-                    }else{
+                    } else {
                         var destination = this.destination.getValue();
                         var port = this.port.getValue();
                         if( destination !== null & destination.toLowerCase() !== "any") {
