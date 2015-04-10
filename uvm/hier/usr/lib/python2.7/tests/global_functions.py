@@ -114,7 +114,7 @@ def check_events( events, num_events, *args, **kwargs):
         if event.get('time_stamp') != None:
             ts = datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000)
             if ts < min_date:
-                print "ignoring old event: %s < %i " % (ts.isoformat(),min_date)
+                print "ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat())
                 continue
 
         # check each expected value
