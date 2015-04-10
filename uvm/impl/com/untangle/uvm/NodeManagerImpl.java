@@ -235,7 +235,7 @@ public class NodeManagerImpl implements NodeManager
                  * If the node name and policies are equal, they are dupes
                  */
                 if ( nodeName1.equals(nodeName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
-                     throw new Exception("Too many instances of " + nodeName + " + in policy " + policyId + ".");
+                     throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
             }
                 
             nodeSettings = createNewNodeSettings( policyId, nodeName );
