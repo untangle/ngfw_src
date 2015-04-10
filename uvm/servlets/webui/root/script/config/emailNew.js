@@ -145,7 +145,6 @@ Ext.define('Webui.config.email', {
         this.panelOutgoingServer = Ext.create('Ext.panel.Panel', {
             name: 'Outgoing Server',
             helpSource: 'email_outgoing_server',
-            parentId: this.getId(),
             title: this.i18n._('Outgoing Server'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -496,7 +495,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.gridSafelistUser.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -568,7 +566,6 @@ Ext.define('Webui.config.email', {
         this.panelEmailSafeList = Ext.create('Ext.panel.Panel', {
             name: 'Safe List',
             helpSource: 'email_safe_list',
-            parentId: this.getId(),
             title: this.i18n._('Safe List'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -587,7 +584,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.gridSafelistUserDetails.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -649,7 +645,6 @@ Ext.define('Webui.config.email', {
         this.panelQuarantine = Ext.create('Ext.panel.Panel',{
             name: 'panelQuarantine',
             helpSource: 'email_quarantine',
-            parentId: this.getId(),
             title: this.i18n._('Quarantine'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -749,7 +744,6 @@ Ext.define('Webui.config.email', {
                     tooltip: this.i18n._('Purge Selected'),
                     iconCls: 'purge-icon',
                     name: 'Purge Selected',
-                    parentId: this.getId(),
                     handler: Ext.bind(function() {
                         var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -772,7 +766,6 @@ Ext.define('Webui.config.email', {
                     tooltip: this.i18n._('Release Selected'),
                     iconCls: 'release-icon',
                     name: 'Release Selected',
-                    parentId: this.getId(),
                     handler: Ext.bind(function() {
                         var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -986,7 +979,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -1011,7 +1003,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Release Selected'),
                 iconCls: 'release-icon',
                 name: 'Release Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {

@@ -16,7 +16,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'application_control_lite_status',
-            parentId: this.getId(),
             isDirty: function() {
                 return false;
             },

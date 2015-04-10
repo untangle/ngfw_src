@@ -311,8 +311,6 @@ Ext.define('Webui.config.administration', {
         this.panelAdmin = Ext.create('Ext.panel.Panel',{
             name: 'panelAdmin',
             helpSource: 'administration_admin',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Admin'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -346,8 +344,6 @@ Ext.define('Webui.config.administration', {
         this.panelPublicAddress = Ext.create('Ext.panel.Panel',{
             name: 'panelPublicAddress',
             helpSource: 'administration_public_address',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Public Address'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -468,8 +464,6 @@ Ext.define('Webui.config.administration', {
         this.panelCertificates = Ext.create('Ext.panel.Panel', {
             name: 'panelCertificates',
             helpSource: 'administration_certificates',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Certificates'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -1017,8 +1011,6 @@ Ext.define('Webui.config.administration', {
         this.panelSnmp = Ext.create('Ext.panel.Panel',{
             name: 'panelSnmp',
             helpSource: 'administration_snmp',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('SNMP'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -1304,8 +1296,6 @@ Ext.define('Webui.config.administration', {
         this.panelSkins = Ext.create('Ext.panel.Panel',{
             name: "panelSkins",
             helpSource: 'administration_skins',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Skins'),
             cls: 'ung-panel',
             autoScroll: true,

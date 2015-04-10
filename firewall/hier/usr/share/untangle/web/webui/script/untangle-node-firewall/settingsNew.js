@@ -41,7 +41,6 @@ Ext.define('Webui.untangle-node-firewall.settings', {
         this.panelRules = Ext.create('Ext.panel.Panel',{
             name: 'panelRules',
             helpSource: 'firewall_rules',
-            parentId: this.getId(),
             title: this.i18n._('Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',

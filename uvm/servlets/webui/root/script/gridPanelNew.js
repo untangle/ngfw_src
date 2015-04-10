@@ -269,7 +269,6 @@ Ext.define('Ung.grid.Panel', {
                 tooltip: i18n._('Add New Row'),
                 iconCls: 'icon-add-row',
                 name: 'Add',
-                parentId: this.getId(),
                 handler: Ext.bind(this.addHandler, this)
             });
         }
@@ -279,14 +278,12 @@ Ext.define('Ung.grid.Panel', {
                 tooltip: i18n._('Import From File'),
                 iconCls: 'icon-import',
                 name: 'Import',
-                parentId: this.getId(),
                 handler: Ext.bind(this.importHandler, this)
             }, {
                 text: i18n._('Export'),
                 tooltip: i18n._('Export To File'),
                 iconCls: 'icon-export',
                 name: 'export',
-                parentId: this.getId(),
                 handler: Ext.bind(this.exportHandler, this)
             },'-');
         }

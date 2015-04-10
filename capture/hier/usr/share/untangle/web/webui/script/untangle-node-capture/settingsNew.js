@@ -61,7 +61,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelCaptiveStatus = Ext.create('Ext.panel.Panel', {
             name: 'Status',
             helpSource: 'captive_portal_status',
-            parentId: this.getId(),
             title: this.i18n._('Status'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -79,7 +78,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
             flex: 1,
             name: "gridCaptiveStatus",
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
@@ -150,7 +148,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
             name: 'panelCaptureRules',
             helpSource: 'captive_portal_capture_rules',
-            parentId: this.getId(),
             title: this.i18n._('Capture Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -270,8 +267,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
             name: "panelPassedHosts",
             helpSource: "captive_portal_passed_hosts",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("Passed Hosts"),
             layout: { type: 'vbox', align: 'stretch' },
             cls: "ung-panel",
@@ -369,8 +364,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
             name: "panelUserAuthentication",
             helpSource: "captive_portal_user_authentication",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("User Authentication"),
             autoScroll: true,
             border: false,
@@ -537,8 +530,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
             name: "panelCaptivePage",
             helpSource: "captive_portal_captive_page",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("Captive Page"),
             autoScroll: true,
             border: false,
@@ -860,7 +851,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
             return;
         }
         form.submit({
-            parentID: this.panelCaptivePage.getId(),
             waitMsg: this.i18n._("Please wait while uploading your custom captive portal page..."),
             success: Ext.bind(this.uploadCustomFileSuccess, this ),
             failure: Ext.bind(this.uploadCustomFileFailure, this )
@@ -891,7 +881,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
     onRemoveCustomFile: function() {
         var form = this.panelCaptivePage.down('form[name="remove_form"]').getForm();
         form.submit({
-            parentID: this.panelCaptivePage.getId(),
             waitMsg: this.i18n._("Please wait while the previous custom file is removed..."),
             success: Ext.bind(this.removeCustomFileSuccess, this ),
             failure: Ext.bind(this.removeCustomFileFailure, this )

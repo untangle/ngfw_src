@@ -175,7 +175,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             name: 'Status',
             helpSource: 'openvpn_status',
             title: this.i18n._("Status"),
-            parentId: this.getId(),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             isDirty: function() {
@@ -412,7 +411,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
 
         this.panelClient = Ext.create('Ext.panel.Panel', {
             name: 'Client',
-            parentId: this.getId(),
             title: this.i18n._('Client'),
             helpSource: 'openvpn_client',
             layout: { type: 'vbox', align: 'stretch' },
@@ -893,7 +891,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
         this.tabPanelServer = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,
-            parentId: this.getId(),
             flex: 1,
             margin: '0 20 0 20',
             items: [ this.gridRemoteClients, this.gridGroups, this.gridExports ]
@@ -933,7 +930,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             name: 'Server',
             helpSource: 'openvpn_server',
             title: this.i18n._("Server"),
-            parentId: this.getId(),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{

@@ -162,7 +162,6 @@ Ext.define("Ung.SettingsWin", {
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,
-            parentId: this.getId(),
             items: itemsArray
         });
         this.items=this.tabs;

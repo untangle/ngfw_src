@@ -201,10 +201,8 @@ Ext.define('Webui.config.system', {
     },
     buildSupport: function() {
         this.panelSupport = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Support",
             helpSource: "system_support",
-            parentId: this.getId(),
             title: this.i18n._("Support"),
             cls: "ung-panel",
             autoScroll: true,
@@ -357,10 +355,8 @@ Ext.define('Webui.config.system', {
     },
     buildBackup: function() {
         this.panelBackup = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Backup",
             helpSource: "system_backup",
-            parentId: this.getId(),
             title: this.i18n._("Backup"),
             cls: "ung-panel",
             autoScroll: true,
@@ -394,42 +390,33 @@ Ext.define('Webui.config.system', {
     },
     buildRestore: function() {
         this.panelRestore = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Restore",
             helpSource: "system_restore",
-            parentId: this.getId(),
             title: this.i18n._("Restore"),
             cls: "ung-panel",
             autoScroll: true,
-            onRestoreFromFile: function() {
-                var prova = Ext.getCmp("upload_restore_file_form");
-                var cmp = Ext.getCmp(this.parentId);
-                var fileText = prova.items.get(1);
-                if (fileText.getValue().length === 0) {
-                    Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Please select a file to upload."));
-                    return false;
+            onRestoreFromFile: Ext.bind(function() {
+                var fileForm = this.panelRestore.down("form[name=upload_restore_file_form]");
+                var fileField = fileForm.down("filefield");
+                if (fileField.getValue().length === 0) {
+                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("Please select a file to upload."));
+                    return;
                 }
-                var form = prova.getForm();
-                form.submit({
-                    parentId: cmp.getId(),
-                    waitMsg: cmp.i18n._("Inspecting File..."),
-                    success: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
+                fileForm.getForm().submit({
+                    waitMsg: this.i18n._("Inspecting File..."),
+                    success: Ext.bind(function(form, action) {
                         Ung.MetricManager.stop();
-                        Ext.MessageBox.alert(cmp.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
-                    },
-                    failure: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
-                        var errorMsg = cmp.i18n._("The File restore procedure failed.");
+                        Ext.MessageBox.alert(this.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
+                    }, this),
+                    failure: Ext.bind(function(form, action) {
+                        var errorMsg = this.i18n._("The File restore procedure failed.");
                         if (action.result && action.result.msg) {
                             errorMsg = action.result.msg;
                         }
-
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-                    }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this)
                 });
-                return true;
-            },
+            }, this),
             items: [{
                 title: this.i18n._("Restore from File"),
                 xtype: "fieldset",
@@ -439,7 +426,7 @@ Ext.define('Webui.config.system', {
                 }, {
                     xtype: "form",
                     margin: '20 0 0 0',
-                    id: "upload_restore_file_form",
+                    name: "upload_restore_file_form",
                     url: "upload",
                     border: false,
                     items: [{
@@ -634,9 +621,6 @@ Ext.define('Webui.config.system', {
         this.panelProtocols = Ext.create('Ext.panel.Panel',{
             name: "Protocols",
             helpSource: "system_protocols",
-            // private fields
-            parentId: this.getId(),
-
             title: this.i18n._("Protocols"),
             cls: "ung-panel",
             autoScroll: true,
@@ -672,10 +656,8 @@ Ext.define('Webui.config.system', {
             timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
         this.panelRegional = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Regional",
             helpSource: "system_regional",
-            parentId: this.getId(),
             title: this.i18n._("Regional"),
             cls: "ung-panel",
             autoScroll: true,
@@ -760,7 +742,7 @@ Ext.define('Webui.config.system', {
                 title: this.i18n._("Upload New Language Pack"),
                 items: {
                     xtype: "form",
-                    id: "upload_language_form",
+                    name: "upload_language_form",
                     url: "upload",
                     border: false,
                     items: [{
@@ -820,15 +802,11 @@ Ext.define('Webui.config.system', {
                     }, this)
                 }]
             }],
-            onUpload: function() {
-                var prova = Ext.getCmp("upload_language_form");
-                var cmp = Ext.getCmp(this.parentId);
-
-                var form = prova.getForm();
-                form.submit({
-                    parentId: cmp.getId(),
-                    waitMsg: cmp.i18n._("Please wait while your language pack is uploaded..."),
-                    success: function(form, action) {
+            onUpload: Ext.bind(function() {
+                var languageForm = this.panelRegional.down("form[name=upload_language_form]");
+                languageForm.getForm().submit({
+                    waitMsg: this.i18n._("Please wait while your language pack is uploaded..."),
+                    success: Ext.bind(function(form, action) {
                         var languagesList;
                         try {
                             languagesList = rpc.languageManager.getLanguagesList();
@@ -837,40 +815,32 @@ Ext.define('Webui.config.system', {
                         }
 
                         languagesStore.loadData(languagesList.list);
-                        var cmp = Ext.getCmp(action.parentId);
                         if(action.result.success===true) {
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"));
+                            Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload language pack succeeded"));
                         } else {
                             var msg = "An error occured while uploading the language pack";
                             if(action.result.msg) {
                                 msg = action.result.msg;
                             }
-                            Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));
+                            Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._(msg));
                         }
-                    },
-                    failure: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
-                        var errorMsg = cmp.i18n._("Upload language pack failed");
+                    }, this),
+                    failure: Ext.bind(function(form, action) {
+                        var errorMsg = this.i18n._("Upload language pack failed");
                         if (action.result && action.result.msg) {
                             msg = action.result.msg;
-                            switch (true) {
-                                case (msg === "Invalid Language Pack"):
-                                    errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
-                                break;
-                                case ((/.*MO file.*/).test(msg)):
-                                    errorMsg = cmp.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
-                                break;
-                                case ((/.*bundle file.*/).test(msg)):
-                                    errorMsg = cmp.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
-                                break;
-                                default:
-                                    errorMsg = cmp.i18n._("Upload language pack failed");
+                            if(msg === "Invalid Language Pack") {
+                                errorMsg = this.i18n._("Invalid language pack; not a zip file");
+                            } else if((/.*MO file.*/).test(msg)) {
+                                errorMsg = this.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
+                            } else if((/.*bundle file.*/).test(msg)) {
+                                errorMsg = this.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
                             }
                         }
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-                    }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this)
                 });
-            }
+            }, this)
         });
     },
     timeUpdateId:-1,
@@ -1066,7 +1036,6 @@ Ext.define('Webui.config.system', {
         });
 
         this.panelShield = Ext.create('Ext.panel.Panel',{
-            parentId: this.getId(),
             name: 'Shield',
             title: this.i18n._('Shield'),
             helpSource: "system_shield",

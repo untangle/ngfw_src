@@ -21,7 +21,6 @@ Ext.define('Webui.untangle-node-ips.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'intrusion_prevention_status',
-            parentId: this.getId(),
             title: this.i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,

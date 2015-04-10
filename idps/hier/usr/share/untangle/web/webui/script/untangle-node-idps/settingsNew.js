@@ -488,7 +488,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             // helpXXXSource: 'intrusion_detection_prevention_status', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
-            parentId: this.getId(),
             title: this.i18n._('Status'),
             cls: 'ung-panel',
             autoScroll: true,

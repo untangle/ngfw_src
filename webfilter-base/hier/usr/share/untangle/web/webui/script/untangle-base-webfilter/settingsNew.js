@@ -147,7 +147,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
             helpSource: this.helpSourceName + '_block_categories',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -250,7 +249,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_block_sites',
             //helpSource: 'web_filter_lite_block_sites',
             helpSource: this.helpSourceName + '_block_sites',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -368,7 +366,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_block_filetypes',
             //helpSource: 'web_filter_lite_block_filetypes',
             helpSource: this.helpSourceName + '_block_filetypes',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -485,7 +482,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_block_mimetypes',
             //helpSource: 'web_filter_lite_block_mimetypes',
             helpSource: this.helpSourceName + '_block_mimetypes',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -573,8 +569,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_pass_sites',
             //helpSource: 'web_filter_lite_pass_sites',
             helpSource: this.helpSourceName + '_pass_sites',
-            parentId: this.getId(),
-
             title: this.i18n._('Pass Sites'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -663,8 +657,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             //helpSource: 'web_filter_pass_clients',
             //helpSource: 'web_filter_lite_pass_clients',
             helpSource: this.helpSourceName + '_pass_clients',
-            parentId: this.getId(),
-
             title: this.i18n._('Pass Clients'),
             cls: 'ung-panel',
             autoScroll: true,

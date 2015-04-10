@@ -132,7 +132,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelGeneration = Ext.create('Ext.panel.Panel',{
             name: 'Generation',
             helpSource: 'reports_generation',
-            parentId: this.getId(),
             title: this.i18n._('Generation'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -274,7 +273,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelEmail = Ext.create('Ext.panel.Panel',{
             name: 'Email',
             helpSource: 'reports_email',
-            parentId: this.getId(),
             title: this.i18n._('Email'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
@@ -467,7 +465,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelSyslog = Ext.create('Ext.panel.Panel',{
             name: 'Syslog',
             helpSource: 'reports_syslog',
-            parentId: this.getId(),
             title: this.i18n._('Syslog'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -570,7 +567,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelDatabase = Ext.create('Ext.panel.Panel',{
             name: 'Database',
             // helpSource: 'reports_database', //DISABLED
-            parentId: this.getId(),
             title: this.i18n._('Database'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -723,7 +719,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
             helpSource: 'reports_alert_rules',
-            parentId: this.getId(),
             title: this.i18n._('Alert Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',

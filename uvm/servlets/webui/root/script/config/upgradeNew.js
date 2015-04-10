@@ -107,10 +107,8 @@ Ext.define('Webui.config.upgrade', {
         upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
         upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
         this.panelSettings = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Upgrade Settings',
             helpSource: 'upgrade_upgrade_settings',
-            parentId: this.getId(),
             title: this.i18n._('Upgrade Settings'),
             cls: 'ung-panel',
             autoScroll: true,

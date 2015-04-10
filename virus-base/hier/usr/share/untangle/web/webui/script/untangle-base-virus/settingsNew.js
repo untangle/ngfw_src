@@ -46,10 +46,8 @@ Ext.define('Webui.untangle-base-virus.settings', {
             //helpSource: 'virus_blocker_web',
             //helpSource: 'virus_blocker_lite_web',
             helpSource: this.helpSourceName + '_web',
-            // private fields
             winExtensions: null,
             winMimeTypes: null,
-            parentId: this.getId(),
             title: this.i18n._('Web'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -224,7 +222,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
             //helpSource: 'virus_blocker_ftp',
             //helpSource: 'virus_blocker_lite_ftp',
             helpSource: this.helpSourceName + '_ftp',
-            parentId: this.getId(),
             title: this.i18n._('FTP'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -260,9 +257,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
             //helpSource: 'virus_blocker_email',
             //helpSource: 'virus_blocker_lite_email',
             helpSource: this.helpSourceName + '_email',
-            // private fields
-            parentId: this.getId(),
-
             title: this.i18n._('Email'),
             defaults: {
                 xtype: 'fieldset',
@@ -386,7 +380,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
             helpSource: this.helpSourceName + '_pass_sites',
             //helpSource: 'virus_blocker_pass_sites',
             //helpSource: 'virus_blocker_lite_pass_sites',
-            parentId: this.getId(),
             title: this.i18n._("Pass Sites"),
             cls: 'ung-panel',
             autoScroll: true,
@@ -411,7 +404,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
 
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
             name: 'Advanced',
-            parentId: this.getId(),
             title: this.i18n._('Advanced'),
             cls: 'ung-panel',
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
@@ -424,7 +416,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                 xtype: 'tabpanel',
                 activeTab: 0,
                 deferredRender: false,
-                parentId: this.getId(),
                 flex: 1,
                 items: [this.gridExtensions, this.gridMimeTypes]
             }]

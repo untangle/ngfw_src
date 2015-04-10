@@ -38,7 +38,6 @@ Ext.define('Webui.config.about', {
         this.panelServer = Ext.create('Ext.panel.Panel',{
             name: 'Server',
             helpSource: 'about_server',
-            parentId: this.getId(),
             title: this.i18n._('Server'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -95,7 +94,6 @@ Ext.define('Webui.config.about', {
         this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
             name: 'License Agreement',
             helpSource: 'about_license_agreement',
-            parentId: this.getId(),
             title: this.i18n._('License Agreement'),
             cls: 'ung-panel',
             bodyStyle: 'padding:5px 5px 0px; 5px;',
@@ -117,7 +115,6 @@ Ext.define('Webui.config.about', {
         this.panelLicenses = Ext.create('Ext.panel.Panel',{
             name: 'Licenses',
             helpSource: 'about_licenses',
-            parentId: this.getId(),
             title: this.i18n._('Licenses'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
@@ -134,7 +131,6 @@ Ext.define('Webui.config.about', {
             flex: 1,
             name: "gridLicenses",
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
