@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 import time
 import logging
+import platform
 
 from uvm.settings_reader import get_uvm_settings_item
 
@@ -92,6 +93,10 @@ log_date( os.path.basename( sys.argv[0]) )
 log("")
 
 update()
+
+if "2.6.32" in platform.platform():
+    log("Upgrade(s) are not allowed on the 2.6.32 kernel. Please reboot and select a newer kernel.")
+    sys.exit(1)
 
 log("")
 
