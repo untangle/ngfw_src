@@ -131,6 +131,8 @@ class PhishTests(unittest2.TestCase):
             pass
                 
         sendPhishMail("test020")
+        sendPhishMail("test021")
+        sendPhishMail("test022")
 
         flushEvents()
         query = None;
