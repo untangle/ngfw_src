@@ -21,6 +21,11 @@ public class CaptureSettings implements Serializable
         BASIC_LOGIN, BASIC_MESSAGE, CUSTOM
     };
 
+    public static enum CertificateDetection
+    {
+        DISABLE_DETECTION, CHECK_CERTIFICATE, REQUIRE_CERTIFICATE
+    };
+
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
     private List<PassedAddress> passedClients = new LinkedList<PassedAddress>();
     private List<PassedAddress> passedServers = new LinkedList<PassedAddress>();
@@ -46,7 +51,7 @@ public class CaptureSettings implements Serializable
     private boolean basicMessageAgreeBox = false;
     private String basicMessageAgreeText = "";
     private String basicMessageFooter = "";
-    private boolean checkServerCertificate = false;
+    private CertificateDetection certificateDetection = CertificateDetection.DISABLE_DETECTION;
 
     public CaptureSettings()
     {
@@ -215,10 +220,10 @@ public class CaptureSettings implements Serializable
     {
         return this.basicMessageFooter;
     }
-    
-    public boolean getCheckServerCertificate() 
+
+    public CertificateDetection getCertificateDetection()
     {
-        return this.checkServerCertificate;
+        return this.certificateDetection;
     }
 
     public void setBasicLoginPageTitle(String newValue)
@@ -280,9 +285,9 @@ public class CaptureSettings implements Serializable
     {
         this.basicMessageFooter = newValue;
     }
-    
-    public void setCheckServerCertificate(boolean newValue) 
+
+    public void setCertificateDetection(CertificateDetection newValue)
     {
-        this.checkServerCertificate = newValue;
+        this.certificateDetection = newValue;
     }
 }

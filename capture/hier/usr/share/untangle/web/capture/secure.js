@@ -1,15 +1,43 @@
+/*
+  To support the Root Certificate Detection options, we use this script which
+  attempts to get the branding logo via https from the server. If the server
+  is using a local certificate authority to support HTTPS Inspection then it
+  will only succeed if the certificate is installed and trusted on the client.
+
+  The handler.py script will replace the $.SecureEndpointCheck.$ tag with
+  an appropriate call to checkSecureEndpoint() based on the Captive Portal
+  configuration, or will simply omit the call when the feature is disabled.
+
+  When configured to CHECK, we simply display a warning and download link
+  if the certificate is not detected.  When configured for REQUIRE we
+  show a more urgent message and disable submit for the page, forcing the
+  user to install the certificate to continue.
+*/
+
 function getServer() {
     var start = document.URL.indexOf('://') + 3;
     var end = document.URL.indexOf('/', start);
     return document.URL.substring(start,end);
 }
 
-function imgLoadFailure() {
+function imgLoadFailure(isRequired) {
     var form = document.getElementsByTagName('form');
     var cont =  form[0];
-    var newParagraph = document.createElement('p');
-    var text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
-    var newLine = document.createElement('br');
+
+    var find = document.getElementsByName('submit');
+    var push = find[0];
+
+    var newParagraph = document.createElement('H4');
+
+    if (isRequired == true)
+        var text = document.createTextNode("ERROR: The server root certificate is not installed on your computer or device.  You must install the root certificate to continue.");
+    else
+        var text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
+
+    if (isRequired == true)
+        push.setAttribute('disabled', 'true');
+        push.setAttribute('hidden', 'true');
+
     newParagraph.appendChild(text);
     newParagraph.appendChild(document.createElement('br'));
     newParagraph.appendChild(document.createElement('br'));
@@ -22,9 +50,17 @@ function imgLoadFailure() {
     cont.parentElement.appendChild(newParagraph);
 }
 
-function checkSecureEndpoint() {
+function onCheckFailure() {
+    imgLoadFailure(false);
+}
+
+function onRequireFailure() {
+    imgLoadFailure(true);
+}
+
+function checkSecureEndpoint(isRequired) {
     var img = new Image();
-    img.onerror = imgLoadFailure;
-    img.onabort = imgLoadFailure;
+    img.onerror = (isRequired ? onRequireFailure : onCheckFailure);
+    img.onabort = (isRequired ? onRequireFailure : onCheckFailure);
     img.src = 'https://' + getServer() + '/images/BrandingLogo.png';
 }

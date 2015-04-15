@@ -281,11 +281,13 @@ def generate_page(req,captureSettings,args,extra=''):
     page = file.read();
     file.close()
 
-    if (not 'checkServerCertificate' in captureSettings):
-        captureSettings['checkServerCertificate'] = False
+    if (not 'certificateDetection' in captureSettings):
+        captureSettings['certificateDetection'] = 'DISABLE_DETECTION'
 
-    if captureSettings['checkServerCertificate'] == True:
-        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint();')
+    if captureSettings['certificateDetection'] == 'CHECK_CERTIFICATE':
+        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(false);')
+    elif captureSettings['certificateDetection'] == 'REQUIRE_CERTIFICATE':
+        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(true);')
     else:
         page = replace_marker(page,'$.SecureEndpointCheck.$','')
 
