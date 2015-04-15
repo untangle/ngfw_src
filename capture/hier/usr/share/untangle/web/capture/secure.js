@@ -35,8 +35,10 @@ function imgLoadFailure(isRequired) {
         var text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
 
     if (isRequired == true)
+    {
         push.setAttribute('disabled', 'true');
         push.setAttribute('hidden', 'true');
+    }
 
     newParagraph.appendChild(text);
     newParagraph.appendChild(document.createElement('br'));
