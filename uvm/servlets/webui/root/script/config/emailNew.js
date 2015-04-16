@@ -429,8 +429,7 @@ Ext.define('Webui.config.email', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // select current row
                 this.grid.getSelectionModel().select(record);
                 // show details
@@ -626,8 +625,7 @@ Ext.define('Webui.config.email', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // select current row
                 this.grid.getSelectionModel().select(record);
                 // show details

@@ -160,10 +160,9 @@ Ext.define('Webui.config.administration', {
             header: this.i18n._("change password"),
             width: 130,
             iconClass: 'icon-edit-row',
-            handler: function(view, rowIndex, colIndex) {
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // populate row editor
-                var rec = view.getStore().getAt(rowIndex);
-                this.grid.rowEditorChangePass.populate(rec);
+                this.grid.rowEditorChangePass.populate(record);
                 this.grid.rowEditorChangePass.show();
             }
         });

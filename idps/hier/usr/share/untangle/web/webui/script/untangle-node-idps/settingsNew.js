@@ -1,337 +1,4 @@
-// TODO ext5,  make Ung.RuleEditorGrid compatible and use it for gridRules
-
-Ext.define('Webui.untangle-node-idps.grid.Rules', {
-    extend: 'Ung.grid.Panel',
-    requires: [
-        'Ext.ux.statusbar.StatusBar'
-    ],
-
-     // search value initialization
-    searchValue: null,
-    // The generated regular expression used for searching.
-    searchRegExp: null,
-    defaultStatusText: i18n._('Loading...'),
-    // store fields to search
-    searchFields:[
-        'category',
-        'rule'
-    ],
-     // Minimum number of characters to start search
-    searchMinimumCharacters: 2,
-
-    // Component initialization override: adds the top and bottom toolbars and setup headers renderer.
-    initComponent: function() {
-        var me = this;
-        me.bbar = [
-            i18n._('Search'), {
-                xtype: 'textfield',
-                name: 'searchField',
-                hideLabel: true,
-                width: 200,
-                listeners: {
-                    change: {
-                        fn: me.searchFilter,
-                        scope: this,
-                        buffer: 100
-                    }
-                }
-            },{
-                xtype: 'checkbox',
-                name: 'searchLog',
-                boxLabel: i18n._("Log"),
-                listeners: {
-                    change: {
-                        fn: me.searchFilter,
-                        scope: this
-                    }
-                }
-            },{
-                xtype: 'checkbox',
-                name: 'searchBlock',
-                boxLabel: i18n._("Block"),
-                listeners: {
-                    change: {
-                        fn: me.searchFilter,
-                        scope: this
-                    }
-                }
-            },{
-                xtype: 'statusbar',
-                defaultText: me.defaultStatusText,
-                name: 'searchStatusBar',
-                border: 0
-            }
-        ];
-
-        me.fields.push({
-            name: "originalId",
-            mapping: null
-        });
-
-        me.fields.push({
-            name: "path",
-            mapping: null
-        });
-
-        this.referencesStore = Ext.create( 'Ext.data.ArrayStore', {
-            fields: [ 'system', 'prefix'],
-            data: [
-                [ "bugtraq", "http://www.securityfocus.com/bid/" ],
-                [ "cve","http://cve.mitre.org/cgi-bin/cvename.cgi?name=" ],
-                [ "nessus", "http://cgi.nessus.org/plugins/dump.php3?id="],
-                [ "arachnids", "http://www.whitehats.com/info/IDS"],
-                [ "mcafee", "http://vil.nai.com/vil/content/v" ],
-                [ "osvdb", "http://osvdb.org/show/osvdb/" ],
-                [ "msb", "http://technet.microsoft.com/en-us/security/bulletin/" ],
-                [ "url","http://" ]
-            ]
-        });
-
-        me.callParent(arguments);
-
-    },
-
-    // afterRender override: it adds textfield and statusbar reference and start monitoring keydown events in textfield input
-    afterRender: function() {
-        var me = this;
-        me.callParent(arguments);
-
-        me.searchTextField = me.down('textfield[name=searchField]');
-        me.searchStatusBar = me.down('statusbar[name=searchStatusBar]');
-
-    },
-
-    regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
-    regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
-    regexRuleReference: /\s+reference:\s*([^\;]+)\;/g,
-
-    afterDataBuild: function(handler){
-        var me = this;
-        me.callParent(arguments);
-
-        me.updateRulesStatus();
-
-        me.storeCategories = Ext.create('Ext.data.Store', {
-            fields: ['id', 'value']
-        });
-        me.storeClasstypes = Ext.create('Ext.data.Store', {
-            fields: ['id', 'value']
-        });
-        me.storeActiveVariables = Ext.create('Ext.data.Store', {
-            fields: ['id', 'ruleIds']
-        });
-
-        me.store.each(
-            function( record ){
-                var category = record.get("category");
-                if( this.storeCategories.find( 'id', category ) == -1 ){
-                    this.storeCategories.add( { id: category, value: category } );
-                }
-                var classtype = record.get("classtype");
-                if( this.storeClasstypes.find( 'id', classtype ) == -1 ){
-                    this.storeClasstypes.add( { id: classtype, value: classtype } );
-                }
-            },
-            this
-        );
-
-        me.rowEditor.down('combo[name=Classtype]').bindStore(me.storeClasstypes);
-        me.rowEditor.down('combo[name=Category]').bindStore(me.storeCategories);
-    },
-
-    buildActiveVariableStore: function(){
-        me = this;
-        me.store.each(
-            function( record ){
-                var ruleMatches, variableMatches;
-                var i, j;
-                var variableRecord;
-                var ruleId;
-                if( me.regexRule.test( record.get("rule") ) ){
-                    ruleMatches = me.regexRule.exec( record.get("rule") );
-                    for( i = 1; i < ruleMatches.length; i++ ){
-                        if( me.regexRuleVariable.test( ruleMatches[i] ) ){
-                            variableMatches = me.regexRuleVariable.exec( ruleMatches[i] );
-                            for( j = 1; j < variableMatches.length; j++ ){
-                                ruleId = me.getRuleId( record.get( "rule" ) );
-                                variableRecord = this.storeActiveVariables.findRecord("id", variableMatches[j]);
-                                if( variableRecord == null ){
-                                    this.storeActiveVariables.add( {
-                                        id: variableMatches[j],
-                                        ruleIds: [ruleId]
-                                    });
-                                }else{
-                                    variableRecord.set(variableRecord.get("ruleIds").push(ruleId));
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            this
-        );
-    },
-
-    // Update status for rules to show total # of rules and total enabled.
-    updateRulesStatus: function(){
-        var totalEnabled = 0;
-        this.store.each(
-            function( record ){
-                if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
-                    totalEnabled++;
-                }
-            }
-        );
-        this.searchStatusBar.setStatus({
-            text:  this.store.count() + ' ' + i18n._('available rules') + ', ' + totalEnabled + ' ' +i18n._("logging or blocking"),
-            iconCls: 'x-status-valid'
-        });
-
-    },
-
-    // DEL ASCII code
-    searchTagsProtect: '\x0f',
-
-    // detects regexp reserved word
-    searchRegExpProtect: /\\|\/|\+|\\|\.|\[|\]|\{|\}|\?|\$|\*|\^|\|/gm,
-    // In normal mode it returns the value with protected regexp characters.
-    // In regular expression mode it returns the raw value except if the regexp is invalid.
-    // @return {String} The value to process or null if the textfield value is blank or invalid.
-    getSearchValue: function() {
-        var me = this,
-            value = me.searchTextField.getValue();
-
-        if (value === '') {
-            return null;
-        }
-        value = value.replace(me.searchRegExpProtect, function(m) {
-            return '\\' + m;
-        });
-
-        var length = value.length,
-            resultArray = [me.searchTagsProtect + '*'],
-            i = 0,
-            c;
-
-        for(; i < length; i++) {
-            c = value.charAt(i);
-            resultArray.push(c);
-            if (c !== '\\') {
-                resultArray.push(me.searchTagsProtect + '*');
-            }
-        }
-        return resultArray.join('');
-    },
-
-    // Finds all strings that matches the searched value in each grid cells as well as Log or Block action.
-    searchFilter: function() {
-        var me = this;
-
-        var findLog = me.down('checkbox[name=searchLog]').getValue();
-        var findBlock = me.down('checkbox[name=searchBlock]').getValue();
-
-        me.store.clearFilter(false);
-        me.searchValue = me.getSearchValue();
-
-        // It's too expensive to search with less than minimum characters.
-        if( ( me.searchValue !== null ) &&
-            ( me.searchTextField.getValue().length < ( me.searchMinimumCharacters + 1 ) ) ){
-            me.searchStatusBar.setStatus({
-                text: i18n._("(type more than 2 characters)"),
-                iconCls: 'x-status-valid'
-            });
-        }
-
-        if( ( ( me.searchValue !== null ) &&
-              ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ) ||
-            ( findLog === true ) ||
-            ( findBlock === true ) ){
-
-            me.searchRegExp = new RegExp(me.searchValue, 'g' + 'i');
-
-            // Build store filter based on Log, Block, and/or search field values.
-            me.store.filterBy( function( record, id ) {
-                me = this;
-                var logMatch = true;
-                if( findLog === true ){
-                    logMatch = ( record.get( "log" ) === findLog );
-                }
-                var blockMatch = true;
-                if( findBlock === true ){
-                    blockMatch = ( record.get( "block" ) === findBlock );
-                }
-                var searchMatch = true;
-                if( ( ( me.searchValue !== null ) &&
-                    ( me.searchTextField.getValue().length > me.searchMinimumCharacters ) ) ){
-                    searchMatch = false;
-                    for( var i = 0 ; i < me.searchFields.length; i++){
-                        searchMatch = me.searchRegExp.test( record.get( me.searchFields[i] ) );
-                        if( searchMatch == true ){
-                            break;
-                        }
-                    }
-                }
-                return logMatch && blockMatch && searchMatch;
-            }, me );
-
-            // If Log/Block is checked then it's evident that the matching rules are
-            // set to either Log/Block.  But if neither are checked, we want to know  how many are enabled.
-            var statusText = me.store.count() + ' ' + i18n._(' matching rules(s) found');
-            if( findLog === false && findBlock === false ){
-                var totalEnabled = 0;
-                me.store.each(
-                    function( record ){
-                        if( ( record.get('log') === true ) || ( record.get('block') === true ) ){
-                            totalEnabled++;
-                        }
-                    }
-                );
-                statusText += ', ' + totalEnabled + ' ' + i18n._("logging or blocking");
-            }
-            me.searchStatusBar.setStatus({
-                text: me.store.count() ? statusText : i18n._('No matching rules found') ,
-                iconCls: 'x-status-valid'
-            });
-         }else{
-            me.updateRulesStatus();
-         }
-
-         // force textfield focus
-         me.searchTextField.focus();
-    },
-
-    getList: function(useId, useInternalId) {
-        this.store.clearFilter(true);
-        return this.callSuper( useId, useInternalId );
-    },
-
-    // Create rule id (sid_gid) from raw rule
-    regexRuleSid: /\s+sid:\s*([^;]+);/,
-    regexRuleGid: /\s+gid:\s*([^;]+);/,
-    getRuleId: function( rule ){
-        var gid = "1";
-        var sid = "1";
-        if( this.regexRuleGid.test( rule ) === true ){
-            gid = this.regexRuleGid.exec( rule )[1];
-        }
-        if( this.regexRuleSid.test( rule ) === true ){
-            sid = this.regexRuleSid.exec( rule )[1];
-        }
-        return sid + "_" + gid;
-    },
-
-    // Modify to include original rule identiifer
-    getData: function( data ){
-        this.data = this.callSuper( data );
-
-        for( var i = 0; i < this.data.length; i++ ){
-            this.data[i].originalId = this.getRuleId( this.data[i].rule );
-            this.data[i].path = this.data[i].path;
-        }
-        return this.data;
-    }
-});
-
+//TODO ext5: add search to rule grid
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
     statics: {
@@ -360,109 +27,198 @@ Ext.define('Webui.untangle-node-idps.settings', {
     gridVariables: null,
     gridEventLog: null,
     statistics: null,
+    
+    regexRuleSid: /\s+sid:\s*([^;]+);/,
+    regexRuleGid: /\s+gid:\s*([^;]+);/,
+    regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
+    regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+    regexRuleReference: /\s+reference:\s*([^\;]+)\;/g,
+    
+    getRuleId: function( rule ){
+        var gid = "1";
+        var sid = "1";
+        if( this.regexRuleGid.test( rule ) === true ){
+            gid = this.regexRuleGid.exec( rule )[1];
+            this.regexRuleGid.lastIndex = 0;
+        }
+        if( this.regexRuleSid.test( rule ) === true ){
+            sid = this.regexRuleSid.exec( rule )[1];
+            this.regexRuleSid.lastIndex = 0;
+        }
+        return sid + "_" + gid;
+    },
+    isVariableUsed: function(variable) {
+        if(Ext.isEmpty(variable)) {
+            return false;
+        }
+        var rule, originalId, ruleMatches, variableMatches, j, internalId, d;
+        var isUsed = false;
+        this.gridRules.getStore().each(function( record ) {
+            rule = record.get("rule");
+            ruleMatches = this.regexRule.exec( rule );
+            this.regexRule.lastIndex = 0;
+            if( ruleMatches ) {
+                originalId = record.get("originalId");
+                for( j = 1; j < ruleMatches.length; j++ ) {
+                    variableMatches = this.regexRuleVariable.exec( ruleMatches[j] );
+                    this.regexRuleVariable.lastIndex = 0;
+                    if(variable)
+                    if( variableMatches && variableMatches.shift().indexOf(variable)!= -1) {
+                        isUsed = true;
+                        return false;
+                    }
+                }
+            }
+        }, this);
+        return isUsed;
+    },
+
     initComponent: function() {
-        this.classtypesStore = Ext.create('Ext.data.ArrayStore', {
+        this.activeVariablesMap = {};
+        var categories = [], categoriesMap = {}, classtypes=[], classtypesMap = {};
+        var rules = this.getSettings().rules.list , rule, category, classtype, i;
+        for(i=0; i<rules.length; i++) {
+            rule = rules[i];
+            rule.originalId = this.getRuleId( rule.rule );
+            category = rule.category;
+            classtype = rule.classtype;
+            if(!categoriesMap[category]) {
+                categoriesMap[category] = true;
+                categories.push([category, category]);
+            }
+            if(!classtypesMap[classtype]) {
+                classtypesMap[classtype] = true;
+                classtypes.push([classtype, classtype]);
+            }
+        }
+
+        this.storeCategories = Ext.create('Ext.data.ArrayStore', {
+            fields: ['id', 'value'],
+            data: categories
+        });
+        this.storeClasstypes = Ext.create('Ext.data.ArrayStore', {
+            fields: ['id', 'value'],
+            data: classtypes
+        });
+
+        this.referencesMap = {
+            "bugtraq": "http://www.securityfocus.com/bid/",
+            "cve": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=",
+            "nessus": "http://cgi.nessus.org/plugins/dump.php3?id=",
+            "arachnids": "http://www.whitehats.com/info/IDS",
+            "mcafee": "http://vil.nai.com/vil/content/v",
+            "osvdb": "http://osvdb.org/show/osvdb/",
+            "msb": "http://technet.microsoft.com/en-us/security/bulletin/",
+            "url": "http://"
+        };
+
+        var classtypesInfoList = [
+            [ "attempted-admin", this.i18n._("Attempted Administrator Privilege Gain"), "high"],
+            [ "attempted-user", this.i18n._("Attempted User Privilege Gain"), "high" ],
+            [ "inappropriate-content", this.i18n._("Inappropriate Content was Detected"), "high" ],
+            [ "policy-violation", this.i18n._("Potential Corporate Privacy Violation"), "high" ],
+            [ "shellcode-detect", this.i18n._("Executable code was detected"), "high" ],
+            [ "successful-admin", this.i18n._("Successful Administrator Privilege Gain"), "high" ],
+            [ "successful-user", this.i18n._("Successful User Privilege Gain"), "high" ],
+            [ "trojan-activity", this.i18n._("A Network Trojan was detected"), "high" ],
+            [ "unsuccessful-user", this.i18n._("Unsuccessful User Privilege Gain"), "high" ],
+            [ "web-application-attack", this.i18n._("Web Application Attack"), "high" ],
+
+            [ "attempted-dos", this.i18n._("Attempted Denial of Service"), "medium" ],
+            [ "attempted-recon", this.i18n._("Attempted Information Leak"), "medium" ],
+            [ "bad-unknown", this.i18n._("Potentially Bad Traffic"), "medium" ],
+            [ "default-login-attempt", this.i18n._("Attempt to login by a default username and password"), "medium" ],
+            [ "denial-of-service", this.i18n._("Detection of a Denial of Service Attack"), "medium" ],
+            [ "misc-attack", this.i18n._("Misc Attack"), "medium" ],
+            [ "non-standard-protocol", this.i18n._("Detection of a non-standard protocol or event"), "medium" ],
+            [ "rpc-portmap-decode", this.i18n._("Decode of an RPC Query"), "medium" ],
+            [ "successful-dos", this.i18n._("Denial of Service"), "medium" ],
+            [ "successful-recon-largescale", this.i18n._("Large Scale Information Leak"), "medium" ],
+            [ "successful-recon-limited", this.i18n._("Information Leak"), "medium" ],
+            [ "suspicious-filename-detect", this.i18n._("A suspicious filename was detected"), "medium" ],
+            [ "suspicious-login", this.i18n._("An attempted login using a suspicious username was detected"), "medium" ],
+            [ "system-call-detect", this.i18n._("A system call was detected"), "medium" ],
+            [ "unusual-client-port-connection", this.i18n._("A client was using an unusual port"), "medium" ],
+            [ "web-application-activity", this.i18n._("Access to a potentially vulnerable web application"), "medium" ],
+
+            [ "icmp-event", this.i18n._("Generic ICMP event"), "low" ],
+            [ "misc-activity", this.i18n._("Misc activity"), "low" ],
+            [ "network-scan", this.i18n._("Detection of a Network Scan"), "low" ],
+            [ "not-suspicious", this.i18n._("Not Suspicious Traffic"), "low" ],
+            [ "protocol-command-decode", this.i18n._("Generic Protocol Command Decode"), "low" ],
+            [ "string-detect", this.i18n._("A suspicious string was detected"), "low" ],
+            [ "unknown", this.i18n._("Unknown Traffic"), "low" ],
+
+            [ "tcp-connection", this.i18n._("A TCP connection was detected"), "low" ]
+        ];
+        this.classtypesInfoStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description', 'priority' ],
-            data: [
-                [ "attempted-admin", this.i18n._("Attempted Administrator Privilege Gain"), "high"],
-                [ "attempted-user", this.i18n._("Attempted User Privilege Gain"), "high" ],
-                [ "inappropriate-content", this.i18n._("Inappropriate Content was Detected"), "high" ],
-                [ "policy-violation", this.i18n._("Potential Corporate Privacy Violation"), "high" ],
-                [ "shellcode-detect", this.i18n._("Executable code was detected"), "high" ],
-                [ "successful-admin", this.i18n._("Successful Administrator Privilege Gain"), "high" ],
-                [ "successful-user", this.i18n._("Successful User Privilege Gain"), "high" ],
-                [ "trojan-activity", this.i18n._("A Network Trojan was detected"), "high" ],
-                [ "unsuccessful-user", this.i18n._("Unsuccessful User Privilege Gain"), "high" ],
-                [ "web-application-attack", this.i18n._("Web Application Attack"), "high" ],
-
-                [ "attempted-dos", this.i18n._("Attempted Denial of Service"), "medium" ],
-                [ "attempted-recon", this.i18n._("Attempted Information Leak"), "medium" ],
-                [ "bad-unknown", this.i18n._("Potentially Bad Traffic"), "medium" ],
-                [ "default-login-attempt", this.i18n._("Attempt to login by a default username and password"), "medium" ],
-                [ "denial-of-service", this.i18n._("Detection of a Denial of Service Attack"), "medium" ],
-                [ "misc-attack", this.i18n._("Misc Attack"), "medium" ],
-                [ "non-standard-protocol", this.i18n._("Detection of a non-standard protocol or event"), "medium" ],
-                [ "rpc-portmap-decode", this.i18n._("Decode of an RPC Query"), "medium" ],
-                [ "successful-dos", this.i18n._("Denial of Service"), "medium" ],
-                [ "successful-recon-largescale", this.i18n._("Large Scale Information Leak"), "medium" ],
-                [ "successful-recon-limited", this.i18n._("Information Leak"), "medium" ],
-                [ "suspicious-filename-detect", this.i18n._("A suspicious filename was detected"), "medium" ],
-                [ "suspicious-login", this.i18n._("An attempted login using a suspicious username was detected"), "medium" ],
-                [ "system-call-detect", this.i18n._("A system call was detected"), "medium" ],
-                [ "unusual-client-port-connection", this.i18n._("A client was using an unusual port"), "medium" ],
-                [ "web-application-activity", this.i18n._("Access to a potentially vulnerable web application"), "medium" ],
-
-                [ "icmp-event", this.i18n._("Generic ICMP event"), "low" ],
-                [ "misc-activity", this.i18n._("Misc activity"), "low" ],
-                [ "network-scan", this.i18n._("Detection of a Network Scan"), "low" ],
-                [ "not-suspicious", this.i18n._("Not Suspicious Traffic"), "low" ],
-                [ "protocol-command-decode", this.i18n._("Generic Protocol Command Decode"), "low" ],
-                [ "string-detect", this.i18n._("A suspicious string was detected"), "low" ],
-                [ "unknown", this.i18n._("Unknown Traffic"), "low" ],
-
-                [ "tcp-connection", this.i18n._("A TCP connection was detected"), "low" ]
-            ]
+            data: classtypesInfoList
         });
-
-        this.categoriesStore = Ext.create('Ext.data.ArrayStore', {
+        this.classtypesInfoMap = Ung.Util.createStoreMap(classtypesInfoList);
+        
+        var categoriesInfoList = [
+            ["app-detect", this.i18n._("This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.") ],
+            ["blacklist", this.i18n._("This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.") ],
+            ["browser-chrome", this.i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the 'browser-webkit' category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)") ],
+            ["browser-firefox", this.i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the 'Gecko' engine. (Thunderbird email client, etc)") ],
+            ["browser-ie", this.i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
+            ["browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
+            ["browser-other", this.i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
+            ["browser-plugins", this.i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
+            ["content-replace", this.i18n._("This category containt any rule that utilizes the 'replace' functionality inside of Snort.") ],
+            ["deleted", this.i18n._("When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.") ],
+            ["exploit", this.i18n._("This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.") ],
+            ["exploit-kit", this.i18n._("This category contains rules that are specifically tailored to detect exploit kit activity. This does not include 'post-compromise' rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.") ],
+            ["file-executable", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.") ],
+            ["file-flash", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.") ],
+            ["file-image", this.i18n._("This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)") ],
+            ["file-identify", this.i18n._("This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.") ],
+            ["file-multimedia", this.i18n._("This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)") ],
+            ["file-office", this.i18n._("This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)") ],
+            ["file-pdf", this.i18n._("This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)") ],
+            ["file-other", this.i18n._("This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.") ],
+            ["indicator-compromise", this.i18n._("This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.") ],
+            ["indicator-obfuscation", this.i18n._("This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.") ],
+            ["indicator-shellcode", this.i18n._("This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old 'shellcode.rules'.") ],
+            ["malware-backdoor", this.i18n._("This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.") ],
+            ["malware-cnc", this.i18n._("This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from 'Master to Zombie' type stuff will also be here.") ],
+            ["malware-tools", this.i18n._("This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.") ],
+            ["malware-other", this.i18n._("This category contains rules that are malware related, but don't fit into one of the other 'malware' categories.") ],
+            ["os-linux", this.i18n._("This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.") ],
+            ["os-solaris", this.i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
+            ["os-windows", this.i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
+            ["os-other", this.i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
+            ["policy-multimedia", this.i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
+            ["policy-social", this.i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
+            ["policy-other", this.i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
+            ["policy-spam", this.i18n._("This category is for rules that may indicate the presence of spam on the network.") ],
+            ["protocol-finger", this.i18n._("This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.") ],
+            ["protocol-ftp", this.i18n._("This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.") ],
+            ["protocol-icmp", this.i18n._("This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.") ],
+            ["protocol-imap", this.i18n._("This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.") ],
+            ["protocol-pop", this.i18n._("This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.") ],
+            ["protocol-services", this.i18n._("This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.") ],
+            ["protocol-voip", this.i18n._("This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.") ],
+            ["pua-adware", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with adware or spyware.") ],
+            ["pua-p2p", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with p2p.") ],
+            ["pua-toolbars", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)") ],
+            ["pua-other", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that don't fit into one of the categories shown above.") ],
+            ["server-apache", this.i18n._("This category deals with vulnerabilities in or attacks against the Apache Web Server.") ],
+            ["server-iis", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.") ],
+            ["server-mssql", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft SQL Server.") ],
+            ["server-mysql", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's MySQL server.") ],
+            ["server-oracle", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.") ],
+            ["server-webapp", this.i18n._("This category deals with vulnerabilities in or attacks against Web based applications on servers.") ],
+            ["server-mail", this.i18n._("This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.") ],
+            ["server-other", this.i18n._("This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.") ]
+        ];
+        this.categoriesInfoStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description' ],
-            data: [
-            [ "app-detect", this.i18n._("This category contains rules that look for, and control, the traffic of certain applications that generate network activity. This category will be used to control various aspects of how an application behaves.") ],
-            [ "blacklist", this.i18n._("This category contains URI, USER-AGENT, DNS, and IP address rules that have been determined to be indicators of malicious activity. These rules are based on activity from the Talos virus sandboxes, public list of malicious URLs, and other data sources.") ],
-            [ "browser-chrome", this.i18n._("This category contains detection for vulnerabilities present in the Chrome browser. (This is separate from the 'browser-webkit' category, as Chrome has enough vulnerabilities to be broken out into it's own, and while it uses the Webkit rendering engine, there's a lot of other features to Chrome.)") ],
-            [ "browser-firefox", this.i18n._("This category contains detection for vulnerabilities present in the Firefox browser, or products that have the 'Gecko' engine. (Thunderbird email client, etc)") ],
-            [ "browser-ie", this.i18n._("This category contains detection for vulnerabilities present in the Internet Explorer browser (Trident or Tasman engines)") ],
-            [ "browser-webkit", this.i18n._("This category contains detection of vulnerabilities present in the Webkit browser engine (aside from Chrome) this includes Apple's Safari, RIM's mobile browser, Nokia, KDE, Webkit itself, and Palm.") ],
-            [ "browser-other", this.i18n._("This category contains detection for vulnerabilities in other browsers not listed above.") ],
-            [ "browser-plugins", this.i18n._("This category contains detection for vulnerabilities in browsers that deal with plugins to the browser. (Example: Active-x)") ],
-            [ "content-replace", this.i18n._("This category containt any rule that utilizes the 'replace' functionality inside of Snort.") ],
-            [ "deleted", this.i18n._("When a rule has been deprecated or replaced it is moved to this categories. Rules are never totally removed from the ruleset, they are moved here.") ],
-            [ "exploit", this.i18n._("This is an older category which will be deprecated soon. This category looks for exploits against software in a generic form.") ],
-            [ "exploit-kit", this.i18n._("This category contains rules that are specifically tailored to detect exploit kit activity. This does not include 'post-compromise' rules (as those would be in indicator-compromise). Files that are dropped as result of visiting an exploit kit would be in their respective file category.") ],
-            [ "file-executable", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through executable files, regardless of platform.") ],
-            [ "file-flash", this.i18n._("This category contains rules for vulnerabilities that are found or are delivered through flash files. Either compressed or uncompressed, regardless of delivery method platform being attacked.") ],
-            [ "file-image", this.i18n._("This category contains rules for vulnerabilities that are found inside of images files. Regardless of delivery method, software being attacked, or type of image. (Examples include: jpg, png, gif, bmp, etc)") ],
-            [ "file-identify", this.i18n._("This category is to identify files through file extension, the content in the file (file magic), or header found in the traffic. This information is usually used to then set a flowbit to be used in a different rule.") ],
-            [ "file-multimedia", this.i18n._("This category contains rules for vulnerabilities present inside of multimedia files (mp3, movies, wmv)") ],
-            [ "file-office", this.i18n._("This category contains rules for vulnerabilities present inside of files belonging to the Microsoft Office suite of software. (Excel, PowerPoint, Word, Visio, Access, Outlook, etc)") ],
-            [ "file-pdf", this.i18n._("This category contains rules for vulnerabilities found inside of PDF files. Regardless of method of creation, delivery method, or which piece of software the PDF affects (for example, both Adobe Reader and FoxIt Reader)") ],
-            [ "file-other", this.i18n._("This category contains rules for vulnerabilities present inside a file, that doesn't fit into the other categories above.") ],
-            [ "indicator-compromise", this.i18n._("This category contains rules that are clearly to be used only for the detection of a positively compromised system, false positives may occur.") ],
-            [ "indicator-obfuscation", this.i18n._("This category contains rules that are clearly used only for the detection of obfuscated content. Like encoded JavaScript rules.") ],
-            [ "indicator-shellcode", this.i18n._("This category contains rules that are simply looking for simple identification markers of shellcode in traffic. This replaces the old 'shellcode.rules'.") ],
-            [ "malware-backdoor", this.i18n._("This category contains rules for the detection of traffic destined to known listening backdoor command channels. If a piece of malicious soft are opens a port and waits for incoming commands for its control functions, this type of detection will be here. A simple example would be the detection for BackOrifice as it listens on a specific port and then executes the commands sent.") ],
-            [ "malware-cnc", this.i18n._("This category contains known malicious command and control activity for identified botnet traffic. This includes call home, downloading of dropped files, and ex-filtration of data. Actual commands issued from 'Master to Zombie' type stuff will also be here.") ],
-            [ "malware-tools", this.i18n._("This category contains rules that deal with tools that can be considered malicious in nature. For example, LOIC.") ],
-            [ "malware-other", this.i18n._("This category contains rules that are malware related, but don't fit into one of the other 'malware' categories.") ],
-            [ "os-linux", this.i18n._("This category contains rules that are looking for vulnerabilities in Linux based OSes. Not for browsers or any other software on it, but simply against the OS itself.") ],
-            [ "os-solaris", this.i18n._("This category contains rules that are looking for vulnerabilities in Solaris based OSes. Not for any browsers or any other software on top of the OS.") ],
-            [ "os-windows", this.i18n._("This category contains rules that are looking for vulnerabilities in Windows based OSes. Not for any browsers or any other software on top of the OS.") ],
-            [ "os-other", this.i18n._("This category contains rules that are looking for vulnerabilities in an OS that is not listed above.") ],
-            [ "policy-multimedia", this.i18n._("This category contains rules that detect potential violations of policy for multimedia. Examples like the detection of the use of iTunes on the network. This is not for vulnerabilities found within multimedia files, as that would be in file-multimedia.") ],
-            [ "policy-social", this.i18n._("This category contains rules for the detection potential violations of policy on corporate networks for the use of social media. (p2p, chat, etc)") ],
-            [ "policy-other", this.i18n._("This category is for rules that may violate the end-users corporate policy bud do not fall into any of the other policy categories first.") ],
-            [ "policy-spam", this.i18n._("This category is for rules that may indicate the presence of spam on the network.") ],
-            [ "protocol-finger", this.i18n._("This category is for rules that may indicate the presence of the finger protocol or vulnerabilities in the finger protocol on the network.") ],
-            [ "protocol-ftp", this.i18n._("This category is for rules that may indicate the presence of the ftp protocol or vulnerabilities in the ftp protocol on the network.") ],
-            [ "protocol-icmp", this.i18n._("This category is for rules that may indicate the presence of icmp traffic or vulnerabilities in icmp on the network.") ],
-            [ "protocol-imap", this.i18n._("This category is for rules that may indicate the presence of the imap protocol or vulnerabilities in the imap protocol on the network.") ],
-            [ "protocol-pop", this.i18n._("This category is for rules that may indicate the presence of the pop protocol or vulnerabilities in the pop protocol on the network.") ],
-            [ "protocol-services", this.i18n._("This category is for rules that may indicate the presence of the rservices protocol or vulnerabilities in the rservices protocols on the network.") ],
-            [ "protocol-voip", this.i18n._("This category is for rules that may indicate the presence of voip services or vulnerabilities in the voip protocol on the network.") ],
-            [ "pua-adware", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with adware or spyware.") ],
-            [ "pua-p2p", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with p2p.") ],
-            [ "pua-toolbars", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that deal with toolbars installed on the client system. (Google Toolbar, Yahoo Toolbar, Hotbar, etc)") ],
-            [ "pua-other", this.i18n._("This category deals with 'pua' or Potentially Unwanted Applications that don't fit into one of the categories shown above.") ],
-            [ "server-apache", this.i18n._("This category deals with vulnerabilities in or attacks against the Apache Web Server.") ],
-            [ "server-iis", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft IIS Web server.") ],
-            [ "server-mssql", this.i18n._("This category deals with vulnerabilities in or attacks against the Microsoft SQL Server.") ],
-            [ "server-mysql", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's MySQL server.") ],
-            [ "server-oracle", this.i18n._("This category deals with vulnerabilities in or attacks against Oracle's Oracle DB Server.") ],
-            [ "server-webapp", this.i18n._("This category deals with vulnerabilities in or attacks against Web based applications on servers.") ],
-            [ "server-mail", this.i18n._("This category contains rules that detect vulnerabilities in mail servers. (Exchange, Courier). These are separate from the protocol categories, as those deal with the traffic going to the mail servers itself.") ],
-            [ "server-other", this.i18n._("This category contains rules that detect vulnerabilities in or attacks against servers that are not detailed in the above list.") ]
-            ]
+            data: categoriesInfoList
         });
+        this.categoriesInfoMap = Ung.Util.createStoreMap(categoriesInfoList);
+        
 
         this.lastUpdate = this.getRpcNode().getLastUpdate();
         this.lastUpdateCheck = this.getRpcNode().getLastUpdateCheck();
@@ -474,13 +230,10 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.buildTabPanel([this.panelStatus, this.gridRules, this.gridVariables, this.gridEventLog]);
         this.callParent(arguments);
 
-        this.forceReload = false;
-
-        if( this.settings.configured === false && !this.wizardWindow ){
+        if( !this.getSettings().configured) {
             Ext.defer(function(){
                 this.setupWizard();
             }, 100, this);
-            this.disable();
         }
     },
     // Status Panel
@@ -516,6 +269,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
             // }, {
                 title: this.i18n._("Setup Wizard"),
                 items: [{
+                    xtype: 'component',
+                    html: this.i18n._(" Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention."),
+                    cls: 'warning',
+                    margin: '0 0 5 0',
+                    hidden: this.getSettings().configured
+                }, {
                     xtype: "button",
                     name: 'setup_wizard_button',
                     text: this.i18n._("Run Intrusion Detection/Prevention Setup Wizard"),
@@ -545,9 +304,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
             }]
         });
     },
-
     // Rules Panel
     buildRules: function() {
+        var me = this;
         //this.gridRules = Ext.create('Webui.untangle-node-idps.grid.Rules', {
         this.gridRules = Ext.create('Ung.grid.Panel', {
             // helpXXXSource: 'intrusion_detection_prevention_rules', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
@@ -556,15 +315,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
             settingsCmp: this,
             title: this.i18n._("Rules"),
             dataProperty: 'rules',
-/*            formatData: function(data) {
-                return this.callSuper(data);
-            },*/
+            plugins: ['gridfilters'],
             features: [{
                 ftype: 'grouping',
                 groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
                 startCollapsed: true
-            }],
-            //recordJavaClass: "com.untangle.node.idps.IpsRule",
+            }, this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {
+                searchFields: ['category', 'rule']}
+            )],
             emptyRow: {
                 "classtype": "unknown",
                 "category": "app-detect",
@@ -597,12 +355,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 sortable: true,
                 width: 70,
                 editor: null,
-                menuDisabled: false/*,
+                menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
                     var id = record.get("originalId").split("_");
                     metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( i18n._("Sid:") + id[0] + ", " + i18n._("Gid:") +id[1]) + '"';
                     return value;
-                }*/
+                }
             },{
                 header: this.i18n._("Classtype"),
                 dataIndex: 'classtype',
@@ -610,24 +368,24 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 100,
                 flex:1,
                 editor: null,
-                menuDisabled: false/*,
+                menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var dr = this.settingsCmp.classtypesStore.findRecord( "name", value );
-                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
+                    var description = me.classtypesInfoMap[value];
+                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(description!=null?description: value ) + '"';
                     return value;
-                }*/
+                }
             },{
                 header: this.i18n._("Category"),
                 dataIndex: 'category',
                 sortable: true,
                 width: 100,
                 flex:1,
-                menuDisabled: false/*,
+                menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var dr = this.settingsCmp.categoriesStore.findRecord( "name", value );
-                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(dr != null ? dr.get("description") : value ) + '"';
+                    var description = me.categoriesInfoMap[value];
+                    metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(description!=null?description: value) + '"';
                     return value;
-                }*/
+                }
             },{
                 header: this.i18n._("Msg"),
                 dataIndex: 'msg',
@@ -642,29 +400,27 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 sortable: true,
                 width: 100,
                 flex:1,
-                menuDisabled: false/*,
+                menuDisabled: false,
                 renderer: function( value, metaData, record, rowIdx, colIdx, store ){
-                    var matches = value.match(this.regexRuleReference);
+                    var matches = value.match(me.regexRuleReference);
                     if( matches == null ){
                         return "";
                     }
                     var references = [];
                     for( var i = 0; i < matches.length; i++ ){
-                        // Apparently need to rebuild regexp each time to correctly extract in a loop.
-                        var re = /\s+reference:\s*([^\;]+)\;/g;
-                        var rmatches = re.exec( matches[i] );
+                        var rmatches = me.regexRuleReference.exec( matches[i] );
+                        me.regexRuleReference.lastIndex = 0;
 
                         var url = "";
                         var referenceFields = rmatches[1].split(",");
-                        var drr = this.referencesStore.findRecord( "system", referenceFields[0] );
-                        if( drr != null ){
-                            url = drr.get("prefix") + referenceFields[1];
-                            references.push('<a href="'+ url + '" class="icon-detail-row" style="text-decoration:none !important;" target="_reference">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>');
+                        var prefix = me.referencesMap[referenceFields[0]];
+                        if( prefix != null ){
+                            url = prefix + referenceFields[1];
+                            references.push('<a href="'+ url + '" class="icon-detail-row href-icon" target="_reference"></a>');
                         }
-
                     }
-                    return references.join("&nbsp;");
-                }*/
+                    return references.join("");
+                }
             },{
                 xtype:'checkcolumn',
                 header: this.i18n._("Log"),
@@ -674,9 +430,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width:55,
                 menuDisabled: false,
                 listeners: {
-                    checkchange: Ext.bind(function ( column, recordIndex, checked ){
-                        var record = this.gridRules.getStore().getAt(recordIndex);
-                        if( checked === false ){
+                    checkchange: Ext.bind(function ( elem, rowIndex, checked ){
+                        var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                        if( !checked){
                             record.set('block', false );
                         }
                         this.gridRules.updateRule(record, null );
@@ -691,9 +447,9 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width:55,
                 menuDisabled: false,
                 listeners: {
-                    checkchange: Ext.bind(function ( column, recordIndex, checked ){
-                        var record = this.gridRules.getStore().getAt(recordIndex);
-                        if( checked === true ){
+                    checkchange: Ext.bind(function ( elem, rowIndex, checked ){
+                        var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                        if(checked) {
                             record.set('log', true );
                         }
                         this.gridRules.updateRule(record, null );
@@ -709,25 +465,25 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 400,
                 xtype: 'combo',
                 queryMode: 'local',
+                store: this.storeClasstypes,
                 valueField: 'id',
                 displayField: 'value',
                 regexMatch: /\s+classtype:([^;]+);/,
                 validator: function( value ){
                     if( this.store.find( "value", value ) == -1 ){
-                        return this.i18n._("Invalid Classtype");
+                        return me.i18n._("Invalid Classtype");
                     }
                     return true;
                 },
                 listeners: {
                     select: function( combo, record, eOpts ){
-                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                        var rule = this.up("window").down("[name=Rule]");
+                        var ruleValue = rule.getValue();
 
                         var newField = " classtype:" + combo.getValue() + ";";
-                        var ruleValue = rule.getValue();
-                        if( this.regexMatch.test( ruleValue ) === true ){
+                        if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
-                        }else{
+                        } else {
                             ruleValue += newField;
                         }
                         rule.setRawValue(ruleValue);
@@ -742,6 +498,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 400,
                 xtype: 'combo',
                 queryMode: 'local',
+                store: this.storeCategories,
                 valueField: 'id',
                 displayField: 'value'
             },{
@@ -754,22 +511,20 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 400,
                 regexMatch: /\s+msg:"([^;]+)";/,
                 validator: function( value ){
-                    invalidChars = new RegExp(/[";]/);
-                    if( invalidChars.test(value) ){
-                        return i18n._("Msg contains invalid characters.");
+                    if( /[";]/.test(value) ){
+                        return me.i18n._("Msg contains invalid characters.");
                     }
                     return true;
                 },
                 listeners: {
                     change: function( me, newValue, oldValue, eOpts ){
-                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                        var rule = this.up("window").down("[name=Rule]");
+                        var ruleValue = rule.getValue();
 
                         var newField = " msg:\"" + newValue + "\";";
-                        var ruleValue = rule.getValue();
-                        if( this.regexMatch.test( ruleValue ) === true ){
+                        if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
-                        }else{
+                        } else {
                             ruleValue += newField;
                         }
                         rule.setRawValue(ruleValue);
@@ -785,53 +540,47 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 400,
                 regexMatch: /\s+sid:([^;]+);/,
                 gidRegex: /\s+gid:\s*([^;]+);/,
-                validator: function( ourValue ){
-                    validChars = new RegExp(/[0-9]+/);
-                    if( validChars.test( ourValue ) === false ){
-                        return i18n._("Sid must be numeric");
+                validator: function( ourValue ) {
+                    var ruleEditor = this.up("window");
+                    if( ! /[0-9]+/.test( ourValue )){
+                        return me.i18n._("Sid must be numeric");
                     }
-                    var record = this.up("[$className=Ung.RowEditorWindow]").record;
-
-                    var ourRule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                    var record = ruleEditor.record;
+                    var rule = ruleEditor.down("[name=Rule]");
                     var ourGid = "1";
-                    if( this.gidRegex.test( ourRule.getValue() ) === true ){
-                        ourGid = this.gidRegex.exec( ourRule.getValue() )[1];
+                    if( this.gidRegex.test( rule.getValue() )){
+                        ourGid = this.gidRegex.exec( rule.getValue() )[1];
                     }
 
                     var match = false;
-                    this.up("[$className=Ung.RowEditorWindow]").grid.store.each(
-                        function( storeRecord ){
-                            var ruleGid;
-                            if( ( storeRecord != record ) &&
-                                (  storeRecord.get("sid") == ourValue) ){
-
-                                ruleGid = "1";
-                                if( this.gidRegex.test( storeRecord.get("rule") ) === true ){
-                                    ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
-                                }
-
-                                if( ourGid == ruleGid ){
-                                    match = true;
-                                }
+                    ruleEditor.grid.getStore().each( function( storeRecord ) {
+                        var ruleGid;
+                        if( storeRecord != record && storeRecord.get("sid") == ourValue) {
+                            ruleGid = "1";
+                            if( this.gidRegex.test( storeRecord.get("rule") ) === true ) {
+                                ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
                             }
-                        },
-                        this
-                    );
+
+                            if( ourGid == ruleGid ){
+                                match = true;
+                                return false;
+                            }
+                        }
+                    }, this);
                     if( match === true ){
-                        return i18n._("Sid already in use.");
+                        return me.i18n._("Sid already in use.");
                     }
                     return true;
                 },
                 listeners: {
-                    change: function( me, newValue, oldValue, eOpts ){
-                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
-                        var rule = this.up("[$className=Ung.RowEditorWindow]").down("[name=Rule]");
+                    change: function( me, newValue, oldValue, eOpts ) {
+                        var rule = this.up("window").down("[name=Rule]");
+                        var ruleValue = rule.getValue();
 
                         var newField = " sid:" + newValue + ";";
-                        var ruleValue = rule.getValue();
-                        if( this.regexMatch.test( ruleValue ) === true ){
+                        if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
-                        }else{
+                        } else {
                             ruleValue += newField;
                         }
                         rule.setRawValue(ruleValue);
@@ -843,11 +592,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 dataIndex: "log",
                 fieldLabel: this.i18n._("Log"),
                 listeners: {
-                    change: function( me, newValue, oldValue, eOpts ){
-                        if( newValue === false ){
-                            this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=block]").setValue(false);
+                    change: function( me, newValue, oldValue, eOpts ) {
+                        var ruleEditor = this.up("window");
+                        if( !newValue ) {
+                            ruleEditor.down("[dataIndex=block]").setValue(false);
                         }
-                        this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
+                        ruleEditor.grid.updateRule(ruleEditor.record, ruleEditor);
                     }
                 }
             },{
@@ -856,11 +606,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 dataIndex: "block",
                 fieldLabel: this.i18n._("Block"),
                 listeners: {
-                    change: function( me, newValue, oldValue, eOpts ){
+                    change: function( me, newValue, oldValue, eOpts ) {
+                        var ruleEditor = this.up("window");
                         if( newValue === true ){
-                            this.up("[$className=Ung.RowEditorWindow]").down("[dataIndex=log]").setValue(true);
+                            ruleEditor.down("[dataIndex=log]").setValue(true);
                         }  
-                        this.up("[$className=Ung.RowEditorWindow]").grid.updateRule(this.up("[$className=Ung.RowEditorWindow]").record, this.up("[$className=Ung.RowEditorWindow]") );
+                        ruleEditor.grid.updateRule(ruleEditor.record, ruleEditor);
                     }
                 }
             },{
@@ -875,14 +626,14 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
                 regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
                 validator: function( value ){
-                    if( this.regexMatch.test(value) === false ){
-                        return i18n._("Rule formatted wrong.");
+                    if( !this.regexMatch.test(value)){
+                        return me.i18n._("Rule formatted wrong.");
                     }
                     return true;
                 },
                 listeners: {
                     change: function( me, newValue, oldValue, eOpts ){
-                        var editorWindow = this.up("[$className=Ung.RowEditorWindow]");
+                        var ruleEditor = this.up("window");
                         var value = this.getValue();
 
                         value = value.replace( /(\r\n|\n|\r)/gm, "" );
@@ -890,7 +641,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         var updateFields = [ "Classtype", "Msg", "Sid" ]; 
                         var match;
                         for( var i = 0; i < updateFields.length; i++ ){
-                            var field = this.up("[$className=Ung.RowEditorWindow]").down("[name=" + updateFields[i] + "]");
+                            var field = ruleEditor.down("[name=" + updateFields[i] + "]");
                             if( field.regexMatch.test( value ) ){
                                 match = field.regexMatch.exec( value );
                                 field.setRawValue( match[1] );
@@ -899,8 +650,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         }
 
                         // Action
-                        var log = this.up("[$className=Ung.RowEditorWindow]").down("[name=Log]");
-                        var block = this.up("[$className=Ung.RowEditorWindow]").down("[name=Block]");
+                        var log = ruleEditor.down("[name=Log]");
+                        var block = ruleEditor.down("[name=Block]");
 
                         var logValue = false;
                         var blockValue = false;
@@ -968,6 +719,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
     // Variables Panel
     buildVariables: function() {
+        var me = this;
         this.gridVariables = Ext.create('Ung.grid.Panel', {
             //helpXXXSource: 'intrusion_detection_prevention_variables', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist            
             title: this.i18n._("Variables"),
@@ -999,12 +751,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
             columns: [{
                 header: this.i18n._("Name"),
                 width: 170,
-                dataIndex: 'variable',
-                editor: {
-                    xtype:'textfield',
-                    emptyText: this.i18n._("[enter name]"),
-                    allowBlank: false
-                }
+                dataIndex: 'variable'
             },{
                 id: 'definition',
                 header: this.i18n._("Definition"),
@@ -1026,14 +773,54 @@ Ext.define('Webui.untangle-node-idps.settings', {
                     allowBlank: false
                 }
             }],
-            rowEditorInputLines: [{
-                xtype:'textfield',
-                name: "Name",
-                dataIndex: "variable",
-                fieldLabel: this.i18n._("Name"),
-                emptyText: this.i18n._("[enter name]"),
-                allowBlank: false,
-                width: 300
+            deleteHandler: function( record ){
+                Ext.MessageBox.wait(me.i18n._("Validating..."), me.i18n._("Please wait") );
+                Ext.Function.defer(function() {
+                    var variable = record.get('variable');
+                    if(me.isVariableUsed(variable)) {
+                        Ext.MessageBox.alert( me.i18n._("Cannot Delete Variable"), me.i18n._("Variable is used by one or more rules.") );
+                    } else {
+                        Ext.MessageBox.hide();
+                        this.stopEditing();
+                        this.updateChangedData(record, "deleted");
+                    }
+                }, 100, this);
+            }
+        });
+        this.gridVariables.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            inputLines: [{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textfield',
+                    name: "Name",
+                    dataIndex: "variable",
+                    fieldLabel: this.i18n._("Name"),
+                    emptyText: this.i18n._("[enter name]"),
+                    allowBlank: false,
+                    width: 300,
+                    validator: function( ourValue ) {
+                        var ruleEditor = this.up("window");
+                        var match = false;
+                        ruleEditor.grid.getStore().each(function(record) {
+                            if( record != ruleEditor.record && record.get("variable") == ourValue) {
+                                match = true;
+                                return false;
+                            }
+                        }, this);
+                        if( match === true ){
+                            return me.i18n._("Variable name already in use.");
+                        }
+                        return true;
+                    }
+                }, {
+                    xtype: 'label',
+                    name: 'inUseNotice',
+                    hidden: true,
+                    html: this.i18n._("Variable is used by one or more rules."),
+                    cls: 'boxlabel'
+                }]
             },{
                 xtype:'textfield',
                 name: "Pass",
@@ -1051,37 +838,17 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 allowBlank: false,
                 width: 400
             }],
-            deleteHandler: function( record ){
-                var ruleEditorGrid = this.up("panel").down("grid");
-                if( ruleEditorGrid.storeActiveVariables.getCount() == 0 ){
-                    Ext.MessageBox.wait(i18n._("Validating..."), i18n._("Please wait") );
-                    var buildStore = Ext.create('Ext.util.DelayedTask', 
-                        function(){
-                            ruleEditorGrid.buildActiveVariableStore();
-                            Ext.MessageBox.hide();
-                            this.deleteCheck(record);
-                        },
-                        this
-                        );
-                    buildStore.delay(100);
-                }else{
-                    this.deleteCheck(record);
-                }
-            },
-            deleteCheck: function( record ){
-                var activeVariableRecord = this.up("panel").down("grid").storeActiveVariables.findRecord("id", record.get('variable'), 0, false, false, true );
-                if( ( activeVariableRecord != null ) &&
-                    ( activeVariableRecord.get("ruleIds").length > 0 ) ){
-                    Ext.MessageBox.alert(
-                        i18n._("Cannot Delete Variable"), 
-                        i18n._("Variable is in use by one or more rules.")
-                    );
-                } else {
-                    this.stopEditing();
-                    this.updateChangedData(record, "deleted");
-                }
+            populate: function(record, addMode) {
+                var inUseNotice = this.down('component[name=inUseNotice]');
+                inUseNotice.setVisible(false);
+                Ext.Function.defer(function() {
+                    var isUsed = me.isVariableUsed(record.get("variable"));
+                    this.down('textfield[dataIndex=variable]').setReadOnly(isUsed);
+                    inUseNotice.setVisible(isUsed);
+                }, 100, this);
+                Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
             }
-        });
+        }));
     },
     // Event Log
     buildEventLog: function() {
@@ -1089,7 +856,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
         this.gridEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             // helpXXXSource: 'intrusion_detection_prevention_event_log', //FIXME disabled for now so it doesnt break test - uncomment me when docs exist
-            eventQueriesFn: this.getRpcNode().getEventQueries,
             fields: [{
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -1240,22 +1006,18 @@ Ext.define('Webui.untangle-node-idps.settings', {
     setupWizard: function() {
         var welcomeCard = Ext.create('Webui.untangle-node-idps.Wizard.Welcome', {
             i18n: this.i18n,
-            node: this.getRpcNode(),
             gui: this
         });
         var classtypesCard = Ext.create('Webui.untangle-node-idps.Wizard.Classtypes', {
             i18n: this.i18n,
-            node: this.getRpcNode(),
             gui: this
         });
         var categoriesCard = Ext.create('Webui.untangle-node-idps.Wizard.Categories', {
             i18n: this.i18n,
-            node: this.getRpcNode(),
             gui: this
         });
         var congratulationsCard = Ext.create('Webui.untangle-node-idps.Wizard.Congratulations', {
             i18n: this.i18n,
-            node: this.getRpcNode(),
             gui: this
         });
         var setupWizard = Ext.create('Ung.Wizard',{
@@ -1276,7 +1038,23 @@ Ext.define('Webui.untangle-node-idps.settings', {
             closeWindow: Ext.bind(function() {
                 this.wizardWindow.hide();
                 Ext.destroy(this.wizardWindow);
-                this.enable();
+                if(this.wizardCompleted) {
+                    this.getSettings().configured = true;
+                    Ext.apply(this.settings, this.wizardSettings);
+                    this.markDirty();
+                    // Save, enable, teardown wizard
+                    this.afterSave = Ext.bind(function() {
+                        this.afterSave = null;
+                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                        if(nodeCmp) {
+                            nodeCmp.start(Ext.bind(function() {
+                                this.reload();
+                            }, this));
+                        }
+                    }, this);
+                    
+                    this.applyAction();
+                }
             }, this),
             listeners: {
                 beforeclose: Ext.bind(function() {
@@ -1297,22 +1075,21 @@ Ext.define('Webui.untangle-node-idps.settings', {
         setupWizard.loadPage(0);
     },
     beforeSave: function(isApply, handler) {
-        if( this.getRpcNode().getUpdatedSettingsFlag() === true ){
-            Ext.MessageBox.alert(this.i18n._("Intrusion Prevention Warning"), this.i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
-                this.reload();
-            }, this));
-            return;
-        }
-
-        if( this.wizard ) {
-            this.wizard = false;
-        } else {
-            this.settings.rules.list = null;
-            this.settings.variables.list = null;
-            this.settings.rules.list = this.gridRules.getList();
-            this.settings.variables.list = this.gridVariables.getList();
-        }
-        handler.call(this, isApply);
+        this.getRpcNode().getUpdatedSettingsFlag(Ext.bind(function (result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            if(result) {
+                Ext.MessageBox.alert(this.i18n._("Intrusion Prevention Warning"), this.i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
+                    this.reload();
+                }, this));
+                return;
+            }
+            if( !this.wizardCompleted ) {
+                //TODO: is this required?
+                this.settings.rules.list = this.gridRules.getList();
+                this.settings.variables.list = this.gridVariables.getList();
+            }
+            handler.call(this, isApply);
+        }, this));
     },
     save: function(isApply) {
         // Due to the number of Snort rules, it takes too long to send everything back.
@@ -1321,23 +1098,19 @@ Ext.define('Webui.untangle-node-idps.settings', {
         var changedDataSet = {};
         var keys = Object.keys(this.settings);
         for( var i = 0; i < keys.length; i++){
-            if( ( keys[i] == "rules" ) || 
-                ( keys[i] == "variables" ) ||
-                ( keys[i] == "activeGroups" && !this.wizardSettings ) ){
+            if( ( keys[i] == "rules" ) || ( keys[i] == "variables" ) ||
+                ( keys[i] == "activeGroups" && !this.wizardCompleted ) ){
                 continue;
             }
             changedDataSet[keys[i]] = this.settings[keys[i]];
         }
 
         // This will always set rules/variables to minimally empty "diff"  objects if nothing  has changed
-        Ext.Array.each( 
-            this.query("*[changedData]"),
-            function( c ){
-                if( c.changedData ){ 
-                    changedDataSet[c.dataProperty] = c.changedData;
-                }
+        Ext.Array.each( this.query("*[changedData]"), function( c ) {
+            if( c.changedData ) { 
+                changedDataSet[c.dataProperty] = c.changedData;
             }
-        );
+        });
 
         Ext.Ajax.request({
             url: "/webui/download",
@@ -1352,26 +1125,24 @@ Ext.define('Webui.untangle-node-idps.settings', {
             timeout: 600000,
             success: function(response){
                 var r = Ext.decode( response.responseText );
-                if( r.success === false ) {
-                    Ext.MessageBox.hide();
+                if( !r.success) {
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 } else {
-                    this.getRpcNode().reconfigure();
-                    Ext.MessageBox.hide();
-
-                    if (!isApply) {
-                        this.closeWindow();
-                        return;
-                    } else {
-                        this.clearDirty();
-                        if( this.forceReload === true ) {
-                            this.reload();
+                    this.getRpcNode().reconfigure(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        Ext.MessageBox.hide();
+                        if (!isApply) {
+                            this.closeWindow();
+                        } else {
+                            this.clearDirty();
+                            if(Ext.isFunction(this.afterSave)) {
+                                this.afterSave.call(this);
+                            }
                         }
-                    }
+                    }, this));
                 }
             },
             failure: function(response){
-                Ext.MessageBox.hide();
                 Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
             }
         });
@@ -1415,90 +1186,79 @@ Ext.define('Webui.untangle-node-idps.Wizard.Welcome',{
         });
 
         this.onNext = Ext.bind( this.loadDefaultSettings, this );
-        this.initialLoad = true;
     },
 
     loadDefaultSettings: function(handler){
-        if( this.initialLoad === true || this.gui.wizardSettings ) {
-            this.initialLoad = false;
-            handler();
-        } else {
-            Ext.MessageBox.wait(this.i18n._("Determining recommended settings..."), this.i18n._("Please wait"));
-            Ext.Ajax.request({
-                url: "/webui/download",
-                method: 'POST',
-                params: {
-                    type: "IdpsSettings",
-                    arg1: "wizard",
-                    arg2: this.gui.node.nodeId
-                },
-                scope: this,
-                timeout: 600000,
-                success: function(response){
-                    var wizardDefaults = Ext.decode( response.responseText );
-                    // Determine profile to use based on system stats.
-                    var stats = rpc.metricManager.getMetricsAndStats();
-                    var profile;
-                    var match;
-                    for( var p = 0; p < wizardDefaults.profiles.length; p++ ){
+        Ext.MessageBox.wait(this.i18n._("Determining recommended settings..."), this.i18n._("Please wait"));
+        Ext.Ajax.request({
+            url: "/webui/download",
+            method: 'POST',
+            params: {
+                type: "IdpsSettings",
+                arg1: "wizard",
+                arg2: this.gui.nodeId
+            },
+            scope: this,
+            timeout: 600000,
+            success: function(response){
+                var wizardDefaults = Ext.decode( response.responseText );
+                // Determine profile to use based on system stats.
+                rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var stats = result;
+                    var memoryTotal = stats.systemStats["MemTotal"];
+                    var architecture = stats.systemStats["architecture"];
+                    if( architecture == "i386"){
+                        architecture = "32";
+                    } else if( architecture == "amd64") {
+                        architecture = "64";
+                    } else {
+                        architecture = "unknown";
+                    }
+                    
+                    var profile, match, systemStats;
+                    for( var p = 0; p < wizardDefaults.profiles.length; p++ ) {
                         match = false;
-                        for( var statKey in wizardDefaults.profiles[p].systemStats ){
-                            if( statKey == "MemTotal"){
-                                var memoryTotal = stats.systemStats[statKey];
-                                match = ( memoryTotal < ( wizardDefaults.profiles[p].systemStats[statKey] + ( wizardDefaults.profiles[p].systemStats[statKey] * 0.10 ) ) );
-                            }else if( statKey == "architecture"){
-                                var architecture = stats.systemStats[statKey];
-                                if( architecture == "i386"){
-                                    architecture = "32";
-                                }else if( architecture == "amd64"){
-                                    architecture = "64";
-                                }else{
-                                    architecture = "unknown";
-                                }
-                                match = ( architecture == wizardDefaults.profiles[p].systemStats[statKey] );
-                            }else{
-                                match = ( stats.systemStats[statKey] == wizardDefaults.profiles[p].systemStats[statKey] );
+                        systemStats = wizardDefaults.profiles[p].systemStats;
+                        for( var statKey in systemStats ){
+                            if( statKey == "MemTotal") {
+                                match = Ext.isEmpty(systemStats[statKey]) || ( memoryTotal < parseFloat(systemStats[statKey] * 1.10 ) ) ;
+                            } else if( statKey == "architecture") {
+                                match = ( architecture == systemStats[statKey] );
+                            } else {
+                                match = ( stats.systemStats[statKey] == systemStats[statKey] );
                             }
-                            if( match == false ){
+                            if(!match){
                                 break;
                             }
                         }
-                        if( match == true ){
+                        if( match){
                             profile = wizardDefaults.profiles[p];
                             profile.profileVersion = wizardDefaults.version;
                             break;
                         }
                     }
-
                     // Preserve recommended values
                     this.gui.wizardRecommendedSettings = Ext.clone(profile);
-
                     this.gui.wizardSettings = Ext.clone(profile);
-                    var i;
-                    if( this.gui.settings.configured === true ){
+                    delete this.gui.wizardSettings.systemStats;
+                    if( this.gui.getSettings().configured){
                         // Setup wizard already configured.  Pull current settings.
-                        if( this.gui.settings.activeGroups ){
-                            keys = Object.keys(this.gui.settings.activeGroups);
-                            for( i = 0; i < keys.length; i++){
-                                this.gui.wizardSettings.activeGroups[keys[i]] = this.gui.settings.activeGroups[keys[i]];
-                            }
+                        if( this.gui.getSettings().activeGroups ) {
+                            Ext.apply(this.gui.wizardSettings.activeGroups, this.gui.getSettings().activeGroups);
                         }
                     }
 
                     Ext.MessageBox.hide();
                     handler();
-                },
-                failure: function(response){
-                    Ext.MessageBox.hide();
-                    Ext.MessageBox.alert(
-                        this.i18n._("Setup Wizard Error"), 
-                        this.i18n._("Unable to obtain default settings.  Please run the Setup Wizard again."), 
-                        Ext.bind(function () {
-                        this.gui.wizardWindow.hide();
-                    }, this));
-                }
-            });
-        }
+                }, this));
+            },
+            failure: function(response){
+                Ext.MessageBox.alert( this.i18n._("Setup Wizard Error"), this.i18n._("Unable to obtain default settings.  Please run the Setup Wizard again."), Ext.bind(function () {
+                    this.gui.wizardWindow.hide();
+                }, this));
+            }
+        });
     }
 });
 
@@ -1510,10 +1270,10 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             xtype: 'checkboxgroup',
             fieldLabel: this.i18n._("Classtypes"),
             columns: 1,
-            items: [],
+            items: []
         };
 
-        this.gui.classtypesStore.each( function(record){
+        this.gui.classtypesInfoStore.each( function(record){
             this.classtypesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ) + ' (' + record.get( 'priority' ) + ')',
                 name: 'classtypes_selected',
@@ -1536,7 +1296,6 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                 }*/
             });
         }, this );
-
 
         this.title = this.i18n._( "Classtypes" );
         this.panel = Ext.create('Ext.container.Container',{
@@ -1585,49 +1344,29 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
         this.onLoad = Ext.bind( this.onLoad, this );
         this.onNext = Ext.bind( this.getValues, this );
     },
-
-    setVisible: function( id, checked ){
-        if( checked === false ){
-            return;
-        }
-        Ext.Array.each( 
-            this.panel.query(""), 
-            function( c ){ 
-                if( !c.name || c.name.indexOf('classtypes_') !== 0 ){
-                    return true;
-                }
-                if( c.xtype == "fieldset"){
-                    if( c.name.indexOf( id ) != -1 ){
-                        c.setVisible(true);
-                    }else{
-                        c.setVisible(false);
-                    }
-                }
+    setVisible: function( id, checked ) {
+        if( !checked ) return;
+        Ext.Array.each( this.panel.query("fieldset"), function( c ) {
+            if( c.name && c.name.indexOf('classtypes_') == 0 ) {
+                c.setVisible( c.name.indexOf( id ) != -1 );
             }
-        );
+        });
     },
 
     onLoad: function( handler ){
-        if( this.loaded !== true ){
-            if( this.gui.wizardSettings.activeGroups ){
-
-                Ext.Array.each(
-                    this.panel.query("radio[name=classtypes]"),
-                    function(c){
-                        if( c.inputValue == this.gui.wizardSettings.activeGroups.classtypes ){
-                            c.setValue(true);
-                        }
-                    },
-                    this
-                );
+        if( !this.loaded ) {
+            if( this.gui.wizardSettings.activeGroups ) {
+                Ext.Array.each(this.panel.query("radio[name=classtypes]"), function(c) {
+                    if( c.inputValue == this.gui.wizardSettings.activeGroups.classtypes ){
+                        c.setValue(true);
+                    }
+                }, this);
 
                 var i, value;
                 var checkboxes = this.panel.query("checkbox[name=classtypes_selected]");
                 for( i = 0; i < this.gui.wizardSettings.activeGroups.classtypesSelected.length; i++ ){
                     value = this.gui.wizardSettings.activeGroups.classtypesSelected[i];
-                    if( value.indexOf("+") == 0 ){
-                        value = value.substr(1);
-                    }else if( value.indexOf("-") == 0 ){
+                    if( value.indexOf("+") == 0 || value.indexOf("-") == 0) {
                         value = value.substr(1);
                     }
                     for( var j = 0; j < checkboxes.length; j++ ){
@@ -1637,15 +1376,13 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
                     }
                 }
 
-                if( this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length === 0 ){
+                if( this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length === 0 ) {
                     this.panel.down( "[name=classtypes_recommended_settings]" ).update( this.i18n._("None.  Classtypes within selected categories will be used.") );
-                }else{
+                } else {
                     var recommendedValues = [];
                     for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected.length; i++ ){
                         value = this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected[i];
-                        if( value.indexOf("+") == 0 ){
-                            value = value.substr(1);
-                        }else if( value.indexOf("-") == 0 ){
+                        if( value.indexOf("+") == 0 || value.indexOf("-") == 0) {
                             value = value.substr(1);
                         }
                         recommendedValues.push(value);
@@ -1657,24 +1394,18 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
         }
         handler();
     },
-
     getValues: function( handler ){
         this.gui.wizardSettings.activeGroups.classtypes = this.panel.down("radio[name=classtypes]").getGroupValue();
-        if( this.panel.down("radio[name=classtypes]").getGroupValue() == "recommended") {
+        if( this.gui.wizardSettings.activeGroups.classtypes == "recommended") {
             this.gui.wizardSettings.activeGroups.classtypesSelected = this.gui.wizardRecommendedSettings.activeGroups.classtypesSelected;
-        }else{
+        } else {
             this.gui.wizardSettings.activeGroups.classtypesSelected = [];
-            Ext.Array.each( 
-                this.panel.query("checkbox[name=classtypes_selected][checked=true]"), 
-                function( c ){ 
-                    this.gui.wizardSettings.activeGroups.classtypesSelected.push( "+" + c.inputValue );
-                },
-                this
-            );
+            Ext.Array.each( this.panel.query("checkbox[name=classtypes_selected][checked=true]"), function( c ) { 
+                this.gui.wizardSettings.activeGroups.classtypesSelected.push( "+" + c.inputValue );
+            }, this);
         }
         handler();
     }
-
 });
 
 Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
@@ -1688,7 +1419,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             items: []
         };
 
-        this.gui.categoriesStore.each( function(record){
+        this.gui.categoriesInfoStore.each( function(record) {
             categoriesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ),
                 name: 'categories_selected',
@@ -1710,7 +1441,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     }
                 }*/
             });
-        } );
+        });
 
         this.title = this.i18n._( "Categories" );
         this.panel = Ext.create('Ext.container.Container',{
@@ -1744,7 +1475,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                 checked: false,
                 handler: Ext.bind(function(elem, checked) {
                     this.setVisible( elem.inputValue, checked );
-                }, this)                
+                }, this)
             },{
                 name: 'categories_custom_settings',
                 xtype:'fieldset',
@@ -1758,46 +1489,28 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         this.onLoad = Ext.bind( this.onLoad, this );
         this.onNext = Ext.bind( this.getValues, this );
     },
-
-    setVisible: function( id, checked ){
-        if( checked === false ){
-            return;
-        }
-        Ext.Array.each( this.panel.query(""), 
-            function( c ) { 
-                if( !c.name || c.name.indexOf('categories_') !== 0 ) {
-                    return true;
-                }
-                if( c.xtype == "fieldset"){
-                    if( c.name.indexOf( id ) != -1 ) {
-                        c.setVisible(true);
-                    } else {
-                        c.setVisible(false);
-                    }
-                }
+    setVisible: function( id, checked ) {
+        if( !checked ) return;
+        Ext.Array.each( this.panel.query("fieldset"), function( c ) {
+            if( c.name && c.name.indexOf('categories_') == 0 ) {
+                c.setVisible( c.name.indexOf( id ) != -1 );
             }
-        );
+        });
     },
-
-    onLoad: function( handler ){
+    onLoad: function( handler ) {
         if( this.loaded !== true ){
             if( this.gui.wizardSettings.activeGroups ){
-                Ext.Array.each( this.panel.query("radio[name=categories]"),
-                    function(c){
-                        if( c.inputValue == this.gui.wizardSettings.activeGroups.categories ){
-                            c.setValue(true);
-                        }
-                    },
-                    this
-                );
+                Ext.Array.each( this.panel.query("radio[name=categories]"), function(c){
+                    if( c.inputValue == this.gui.wizardSettings.activeGroups.categories ){
+                        c.setValue(true);
+                    }
+                }, this );
 
                 var i, value;
                 var checkboxes = this.panel.query("checkbox[name=categories_selected]");
                 for( i = 0; i < this.gui.wizardSettings.activeGroups.categoriesSelected.length; i++ ){
                     value = this.gui.wizardSettings.activeGroups.categoriesSelected[i];
-                    if( value.indexOf("+") == 0 ){
-                        value = value.substr(1);
-                    }else if( value.indexOf("-") == 0 ){
+                    if( value.indexOf("+") == 0 || value.indexOf("-") == 0) {
                         value = value.substr(1);
                     }
                     for( var j = 0; j < checkboxes.length; j++ ){
@@ -1813,9 +1526,7 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
                     var recommendedValues = [];
                     for( i = 0 ; i < this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected.length; i++ ){
                         value = this.gui.wizardRecommendedSettings.activeGroups.categoriesSelected[i];
-                        if( value.indexOf("+") == 0 ){
-                            value = value.substr(1);
-                        }else if( value.indexOf("-") == 0 ){
+                        if( value.indexOf("+") == 0 || value.indexOf("-") == 0) {
                             value = value.substr(1);
                         }
                         recommendedValues.push(value);
@@ -1827,31 +1538,24 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
         }
         handler();
     },
-    
     getValues: function( handler ){
         this.gui.wizardSettings.activeGroups.categories = this.panel.down("radio[name=categories]").getGroupValue();
         
-        if( this.panel.down("radio[name=categories]").getGroupValue() == "recommended") {
+        if( this.gui.wizardSettings.activeGroups.categories == "recommended") {
             this.gui.wizardSettings.activeGroups.categoriesSelected = this.gui.wizardRecommendedSettings.categoriesSelected;
-        }else{
+        } else {
             this.gui.wizardSettings.activeGroups.categoriesSelected = [];
-            Ext.Array.each( 
-                this.panel.query("checkbox[name=categories_selected][checked=true]"), 
-                function( c ){ 
-                    this.gui.wizardSettings.activeGroups.categoriesSelected.push( "+" + c.inputValue );
-                },
-                this
-            );
+            Ext.Array.each( this.panel.query("checkbox[name=categories_selected][checked=true]"), function( c ) { 
+                this.gui.wizardSettings.activeGroups.categoriesSelected.push( "+" + c.inputValue );
+            }, this);
         }
         handler();
     }
 });
 
-
 Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
     constructor: function( config ) {
         Ext.apply(this, config);
-
         this.title = this.i18n._( "Finish" );
         this.panel = Ext.create('Ext.container.Container',{
             items: [{
@@ -1863,38 +1567,13 @@ Ext.define('Webui.untangle-node-idps.Wizard.Congratulations',{
                 margin: '10 0 0 10'
             }]
         });
-
-        this.onNext = Ext.bind(this.completeWizard, this );
-    },
-
-    completeWizard: function( handler ) {
-        // Copy values into form settings.
-        var keys = Object.keys(this.gui.wizardSettings);
-        for( var i = 0; i < keys.length; i++){
-            if( keys[i] == "systemStats" ){
-                continue;
-            }
-            this.gui.settings[keys[i]] = this.gui.wizardSettings[keys[i]];
-        }
-        this.gui.settings.configured = true;
-
-        // Save, enable, teardown wizard
-        this.gui.dirtyFlag = true;
-        this.gui.wizard = true;
-
-        this.gui.applyAction();
-
-        var nodeCmp = Ung.Node.getCmp(this.gui.nodeId);
-        nodeCmp.setPowerOn(true);
-        nodeCmp.setState("attention");
-        this.gui.getRpcNode().start(Ext.bind(function(result, exception) {
-            this.gui.wizardWindow.endAction();
-            this.gui.getRpcNode().getRunState(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                nodeCmp.updateRunState(result);
-            }, this));
-        }, this));
-        this.gui.wizardWindow.hide();
-        this.gui.forceReload = true;
+        this.onLoad = Ext.bind(function(handler) {
+            this.gui.wizardCompleted = true;
+            handler();
+        }, this);
+        this.onNext = Ext.bind(function(handler) {
+            this.gui.wizardWindow.close();
+            handler();
+        }, this);
     }
 });

@@ -79,12 +79,12 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 listeners: {
                     "checkchange": {
                         fn: Ext.bind(function(elem, rowIndex, checked) {
-                                if (checked) {
-                                    var record = this.gridCategories.getStore().getAt(rowIndex);
-                                    record.set('flagged', true);
-                                }
-                            }, this)
-                        }
+                            if (checked) {
+                                var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                                record.set('flagged', true);
+                            }
+                        }, this)
+                    }
                 }
             }, {
                 xtype:'checkcolumn',

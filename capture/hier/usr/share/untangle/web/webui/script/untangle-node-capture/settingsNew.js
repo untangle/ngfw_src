@@ -129,17 +129,14 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 header: this.i18n._("Logout"),
                 xtype: 'actioncolumn',
                 width: 80,
-                items: [{
-                    iconCls: 'icon-delete-row',
-                    tooltip: 'Click to logout',
-                    handler: Ext.bind(function(grid,row,col) {
-                        var rec = grid.getStore().getAt(row);
-                        this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridCaptiveStatus.reload();
-                        },this), rec.data.userAddress);
-                    }, this)
-                }]
+                iconCls: 'icon-delete-row',
+                tooltip: 'Click to logout',
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.gridCaptiveStatus.reload();
+                    },this), record.get("userAddress"));
+                }, this)
             }]
         });
     },

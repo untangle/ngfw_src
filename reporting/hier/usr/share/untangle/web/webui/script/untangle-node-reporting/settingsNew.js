@@ -263,8 +263,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             width: 130,
             resizable: false,
             iconClass: 'icon-edit-row',
-            handler: function(view,rowIndex,colIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 this.grid.rowEditorChangePassword.populate(record);
                 this.grid.rowEditorChangePassword.show();
             }

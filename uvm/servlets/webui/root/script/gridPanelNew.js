@@ -19,9 +19,8 @@ Ext.define('Ung.grid.EditColumn', {
     init: function(grid) {
         this.grid = grid;
     },
-    handler: function(view, rowIndex, colIndex) {
-        var rec = view.getStore().getAt(rowIndex);
-        this.grid.editHandler(rec);
+    handler: function(view, rowIndex, colIndex, item, e, record) {
+        this.grid.editHandler(record);
     },
     getClassReadOnly: function(value, metadata, record) {
         if(!record.get("readOnly")) {
@@ -53,9 +52,8 @@ Ext.define('Ung.grid.DeleteColumn', {
     init:function(grid) {
         this.grid=grid;
     },
-    handler: function(view, rowIndex, colIndex) {
-        var rec = view.getStore().getAt(rowIndex);
-        this.grid.deleteHandler(rec);
+    handler: function(view, rowIndex, colIndex, item, e, record) {
+        this.grid.deleteHandler(record);
     },
     getClassReadOnly: function(value, metadata, record) {
         if(!record.get("readOnly")) {
@@ -178,7 +176,7 @@ Ext.define('Ung.grid.Panel', {
                     }
                     col.listeners["beforecheckchange"] = {
                         fn: function(elem, rowIndex, checked, eOpts) {
-                            var record = grid.getStore().getAt(rowIndex);
+                            var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
                             if (record.get('readOnly') == true) {
                                 return false;
                             }
@@ -724,15 +722,13 @@ Ext.define('Ung.grid.Panel', {
             //This code should never be called
             throw i18n._("Grid data loading is not yet completed.");
         }
-        var records=this.getStore().getRange();
+        var records=this.getStore().getRange(), internalId, d;
         for(var i=0; i<records.length;i++) {
-            var id = records[i].get("internalId");
-            if (id != null && id >= 0) {
-                var d = this.changedData[id];
-                if (d) {
-                    if (d.op == "deleted") {
-                        continue;
-                    }
+            internalId = records[i].get("internalId");
+            if (internalId != null && internalId >= 0) {
+                d = this.changedData[internalId];
+                if (d && d.op == "deleted") {
+                    continue;
                 }
             }
             if (this.recordJavaClass != null) {

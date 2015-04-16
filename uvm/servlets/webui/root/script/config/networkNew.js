@@ -312,10 +312,9 @@ Ext.define('Webui.config.network', {
             init:function(grid) {
                 this.grid=grid;
             },
-            handler: function(view, rowIndex, colIndex) {
-                var rec = view.getStore().getAt(rowIndex);
-                if( rec.get("isVlanInterface") || rec.get("connected")=='MISSING' ) {
-                    this.grid.deleteHandler(rec);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
+                if( record.get("isVlanInterface") || record.get("connected")=='MISSING' ) {
+                    this.grid.deleteHandler(record);
                 }
             },
             getClass: function(value, metadata, record) {
@@ -336,12 +335,9 @@ Ext.define('Webui.config.network', {
             init:function(grid) {
                 this.grid=grid;
             },
-            handler: function(view, rowIndex, colIndex) {
-                var rec = view.getStore().getAt(rowIndex);
-
-                if( rec.get("isWirelessInterface")) {
-                    var systemDev = rec.get("systemDev");
-                    this.grid.onWirelessConnections(systemDev);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
+                if( record.get("isWirelessInterface") ) {
+                    this.grid.onWirelessConnections(record.get("systemDev"));
                 }
             },
             getClass: function(value, metadata, record) {
@@ -2461,8 +2457,7 @@ Ext.define('Webui.config.network', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // select current row
                 this.grid.getSelectionModel().select(record);
                 // show details
@@ -3498,8 +3493,7 @@ Ext.define('Webui.config.network', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // add static
                 this.grid.settingsCmp.gridDhcpStaticEntries.onAddStatic(record);
             }
