@@ -327,7 +327,7 @@ Ext.define("Webui.config.network", {
             }
         });
 
-        var wirelessStatus = Ext.create('Ext.grid.column.Action', {
+        var intfStatus = Ext.create('Ext.grid.column.Action', {
             menuDisabled:true,
             resizable: false,
             hideable: false,
@@ -341,9 +341,9 @@ Ext.define("Webui.config.network", {
                 var intf = rec.get("systemDev");
 
                 if( rec.get("isWirelessInterface")) {
-                    this.grid.onWirelessConnections(intf);
+                    this.grid.onIntfStatus(intf,2);
                 } else {
-                    this.grid.onWireConnections(intf);
+                    this.grid.onIntfStatus(intf,1);
                 } 
             },
             getClass: function(value, metadata, record) {
@@ -625,8 +625,8 @@ Ext.define("Webui.config.network", {
                     // only ADDRESSED interfaces can be WANs
                     return (record.data.configType == 'ADDRESSED') ? value: ""; // if its addressed return value
                 }, this)
-            }, deleteVlanColumn, wirelessStatus],
-            plugins: [deleteVlanColumn,wirelessStatus],
+            }, deleteVlanColumn, intfStatus],
+            plugins: [deleteVlanColumn,intfStatus],
             bbar: ['-',{
                 xtype: "button",
                 name: "remap_interfaces",
@@ -667,178 +667,8 @@ Ext.define("Webui.config.network", {
                 },
                 scope : this
             }],
-            onWirelessConnections: Ext.bind(function(rec) {
-                Ext.MessageBox.wait(this.i18n._("Loading wireless connections..."), this.i18n._("Please wait"));
-                this.gridWirelessLists = Ext.create( 'Ung.EditorGrid', {
-                    name: 'Wireless Lists',
-                    helpSource: 'network_wireless_connections',
-                    parentId: this.getId(),
-                    title: this.i18n._('Wireless Entry List'),
-                    settingsCmp: this,
-                    paginated: false,
-                    hasAdd: false,
-                    hasDelete: false,
-                    hasEdit: false,
-                    dataRoot: null,
-                    dataFn: function() {
-                        var connText;
-                        var tmpstr = "/sbin/iw dev "+rec+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
-                        try {
-                            connText = main.getExecManager().execOutput(tmpstr);
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-                        
-                        var conn = [];
-
-                        if (connText === undefined) return conn;
-
-                        var lines = connText.split("\n");
-                        var macAddress = [];
-                        var address = [];
-                        var rxbytes = [];
-                        var rxpackets = [];
-                        var txbytes = [];
-                        var txpackets = [];
-                        var total = lines.length/5>>0 ;
-                        var i = 0;
-
-                        for ( i = 0 ; i < total ; i++ ) {
-                            if ( lines[i] === null || lines[i] === "" ) continue;
-                            var ptr=i*5;
-        
-                            var lineparts = lines[ptr].split(" ");
-                            macAddress[macAddress.length] = lineparts[1]; 
-                            
-                            lineparts = lines[ptr+1].split(" ");
-                            rxbytes[rxbytes.length]=lineparts[3];
-
-                            lineparts = lines[ptr+2].split(" ");
-                            rxpackets[rxpackets.length]=lineparts[3];
-
-                            lineparts = lines[ptr+3].split(" ");
-                            txbytes[txbytes.length]=lineparts[3];
-
-                            lineparts = lines[ptr+4].split(" ");
-                            txpackets[txpackets.length]=lineparts[3];
-                        }
-
-                        //Get IP address per current MAC address
-                        var leaseText;
-                        var lparts;
-                        try {
-                            leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-        
-                        lines = leaseText.split("\n");
-                        var leases = [];
-                        
-                        for ( var j = 0 ; j < macAddress.length ; j++ ) {
-                            for ( i = 0 ; i < lines.length ; i++ ) {
-                                if ( lines[i] === null || lines[i] === "" ) continue;
-
-                                lparts = lines[i].split(/\s+/);
-                                if ( macAddress[j] == lparts[1] ) {
-                                    address[j] = lparts[2];
-                                    break;
-                                }
-                             }
-                        }
-
-                        //push to result
-                        for ( i = 0 ; i < macAddress.length ; i++ ) {
-                            conn.push( {
-                                macAddress: macAddress[i],
-                                address: address[i],
-                                rxbytes: rxbytes[i],
-                                rxpackets: rxpackets[i],
-                                txbytes: txbytes[i],
-                                txpackets: txpackets[i]
-                            } );
-                        }
-
-                        return conn;
-                    },
-                    fields: [{
-                        name: "macAddress"
-                    },{
-                        name: "address",
-                        sortType: Ung.SortTypes.asIp
-                    },{
-                        name: "rxbytes"
-                    },{
-                        name: "rxpackets"
-                    },{
-                        name: "txbytes"
-                    },{
-                        name: "txpackets"
-                    }],
-                    columns: [{
-                        header: this.i18n._("MAC Address"),
-                        dataIndex:'macAddress',
-                        width: 150
-                    },{
-                        header: this.i18n._("IP Address"),
-                        dataIndex:'address',
-                        width: 200
-                    },{
-                        header: this.i18n._("Rx Bytes"),
-                        dataIndex:'rxbytes',
-                        width: 150
-                    },{
-                        header: this.i18n._("Rx Packets"),
-                        dataIndex:'rxpackets',
-                        width: 150
-                    },{
-                        header: this.i18n._("Tx Bytes"),
-                        dataIndex:'txbytes',
-                        width: 150
-                    },{
-                        header: this.i18n._("Tx Packets"),
-                        dataIndex:'txpackets',
-                        width: 150
-                    }],
-                });
-
-                this.winWirelessConnections = Ext.create('Ung.EditWindow', {
-                    breadcrumbs: [{
-                        title: this.i18n._("Interface"),
-                        action: Ext.bind(function() {
-                            this.winWirelessConnections.cancelAction();
-                        }, this)
-                    }, {
-                        title: this.i18n._("Wireless Connections")
-                    }],
-                    bbar: [{
-                        iconCls: 'icon-help',
-                        text: this.i18n._('Help'),
-                        handler: function() {
-                            this.winWirelessConnections.helpAction();
-                        },
-                        scope: this
-                    },'->',{
-                        name: "Close",
-                        iconCls: 'cancel-icon',
-                        text: this.i18n._('Cancel'),
-                        handler: function() {
-                            this.winWirelessConnections.cancelAction();
-                        },
-                        scope: this
-                    }],
-                    items: [
-                        {
-                        xtype: 'panel',
-                        layout: { type: 'vbox', align: 'stretch' },
-                        items: [this.gridWirelessLists]
-                    }],
-                });
-                Ext.MessageBox.hide();
-                this.winWirelessConnections.show();
-            }, this),
-            onWireConnections: Ext.bind(function(rec) {
-                Ext.MessageBox.wait(this.i18n._("Loading wire connections..."), this.i18n._("Please wait"));
+            onIntfStatus: Ext.bind(function(rec,intftype) {
+                Ext.MessageBox.wait(this.i18n._("Loading Interface Status..."), this.i18n._("Please wait"));
 
                 this.gridIfconfigLists = Ext.create( 'Ung.EditorGrid', {
                     name: 'Interface Status',
@@ -1020,20 +850,159 @@ Ext.define("Webui.config.network", {
                     }],
                 });
 
-                this.winWireConnections = Ext.create('Ung.EditWindow', {
+                this.gridWirelessLists = Ext.create( 'Ung.EditorGrid', {
+                    name: 'Wireless Lists',
+                    helpSource: 'network_wireless_connections',
+                    parentId: this.getId(),
+                    title: this.i18n._('Wireless Entry List'),
+                    settingsCmp: this,
+                    paginated: false,
+                    hasAdd: false,
+                    hasDelete: false,
+                    hasEdit: false,
+                    dataRoot: null,
+                    dataFn: function() {
+                        var connText;
+                        var tmpstr = "/sbin/iw dev "+rec+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
+                        try {
+                            connText = main.getExecManager().execOutput(tmpstr);
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e);
+                        }
+                        
+                        var conn = [];
+
+                        if (connText === undefined) return conn;
+
+                        var lines = connText.split("\n");
+                        var macAddress = [];
+                        var address = [];
+                        var rxbytes = [];
+                        var rxpackets = [];
+                        var txbytes = [];
+                        var txpackets = [];
+                        var total = lines.length/5>>0 ;
+                        var i = 0;
+
+                        for ( i = 0 ; i < total ; i++ ) {
+                            if ( lines[i] === null || lines[i] === "" ) continue;
+                            var ptr=i*5;
+        
+                            var lineparts = lines[ptr].split(" ");
+                            macAddress[macAddress.length] = lineparts[1]; 
+                            
+                            lineparts = lines[ptr+1].split(" ");
+                            rxbytes[rxbytes.length]=lineparts[3];
+
+                            lineparts = lines[ptr+2].split(" ");
+                            rxpackets[rxpackets.length]=lineparts[3];
+
+                            lineparts = lines[ptr+3].split(" ");
+                            txbytes[txbytes.length]=lineparts[3];
+
+                            lineparts = lines[ptr+4].split(" ");
+                            txpackets[txpackets.length]=lineparts[3];
+                        }
+
+                        //Get IP address per current MAC address
+                        var leaseText;
+                        var lparts;
+                        try {
+                            leaseText = main.getExecManager().execOutput("cat /var/lib/misc/dnsmasq.leases");
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e);
+                        }
+        
+                        lines = leaseText.split("\n");
+                        var leases = [];
+                        
+                        for ( var j = 0 ; j < macAddress.length ; j++ ) {
+                            for ( i = 0 ; i < lines.length ; i++ ) {
+                                if ( lines[i] === null || lines[i] === "" ) continue;
+
+                                lparts = lines[i].split(/\s+/);
+                                if ( macAddress[j] == lparts[1] ) {
+                                    address[j] = lparts[2];
+                                    break;
+                                }
+                             }
+                        }
+
+                        //push to result
+                        for ( i = 0 ; i < macAddress.length ; i++ ) {
+                            conn.push( {
+                                macAddress: macAddress[i],
+                                address: address[i],
+                                rxbytes: rxbytes[i],
+                                rxpackets: rxpackets[i],
+                                txbytes: txbytes[i],
+                                txpackets: txpackets[i]
+                            } );
+                        }
+
+                        return conn;
+                    },
+                    fields: [{
+                        name: "macAddress"
+                    },{
+                        name: "address",
+                        sortType: Ung.SortTypes.asIp
+                    },{
+                        name: "rxbytes"
+                    },{
+                        name: "rxpackets"
+                    },{
+                        name: "txbytes"
+                    },{
+                        name: "txpackets"
+                    }],
+                    columns: [{
+                        header: this.i18n._("MAC Address"),
+                        dataIndex:'macAddress',
+                        width: 150
+                    },{
+                        header: this.i18n._("IP Address"),
+                        dataIndex:'address',
+                        width: 200
+                    },{
+                        header: this.i18n._("Rx Bytes"),
+                        dataIndex:'rxbytes',
+                        width: 150
+                    },{
+                        header: this.i18n._("Rx Packets"),
+                        dataIndex:'rxpackets',
+                        width: 150
+                    },{
+                        header: this.i18n._("Tx Bytes"),
+                        dataIndex:'txbytes',
+                        width: 150
+                    },{
+                        header: this.i18n._("Tx Packets"),
+                        dataIndex:'txpackets',
+                        width: 150
+                    }],
+                });
+
+                if (intftype ===2)
+                    this.gridRealWirelessLists = this.gridWirelessLists;
+                else
+                    this.gridRealWirelessLists = null;
+
+
+                this.winWirelessConnections = Ext.create('Ung.EditWindow', {
                     breadcrumbs: [{
                         title: this.i18n._("Interface"),
                         action: Ext.bind(function() {
-                            this.winWireConnections.cancelAction();
+                            this.winWirelessConnections.cancelAction();
                         }, this)
                     }, {
-                        title: this.i18n._("Wire Connections")
+                        title: this.i18n._("Interface Status")
                     }],
                     bbar: [{
                         iconCls: 'icon-help',
                         text: this.i18n._('Help'),
                         handler: function() {
-                            this.winWireConnections.helpAction();
+                            this.winWirelessConnections.helpAction();
                         },
                         scope: this
                     },'->',{
@@ -1041,7 +1010,7 @@ Ext.define("Webui.config.network", {
                         iconCls: 'cancel-icon',
                         text: this.i18n._('Cancel'),
                         handler: function() {
-                            this.winWireConnections.cancelAction();
+                            this.winWirelessConnections.cancelAction();
                         },
                         scope: this
                     }],
@@ -1057,11 +1026,18 @@ Ext.define("Webui.config.network", {
                                  title: this.i18n._('    '),
                                  html: this.i18n._("    "),
                                  style: "margin-bottom: 10px;"},
-                                 this.gridArpLists]
+                                 this.gridArpLists,
+                                {
+                                 xtype: 'fieldset',
+                                 cls: 'description',
+                                 title: this.i18n._('    '),
+                                 html: this.i18n._("    "),
+                                 style: "margin-bottom: 10px;"},
+                                 this.gridRealWirelessLists]
                     }],
                 });
                 Ext.MessageBox.hide();
-                this.winWireConnections.show();
+                this.winWirelessConnections.show();
             }, this),
             onMapDevices: Ext.bind(function() {
                 Ext.MessageBox.wait(this.i18n._("Loading device mapper..."), this.i18n._("Please wait"));
