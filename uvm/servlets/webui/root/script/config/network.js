@@ -338,15 +338,19 @@ Ext.define("Webui.config.network", {
             },
             handler: function(view, rowIndex, colIndex) {
                 var rec = view.getStore().getAt(rowIndex);
-                var intf = rec.get("systemDev");
+                var intf = rec.get("symbolicDev");
+                var s_intf = rec.get("systemDev");
 
                 if( rec.get("isWirelessInterface")) {
-                    this.grid.onIntfStatus(intf,2);
+                    this.grid.onIntfStatus(intf,s_intf,2);
                 } else {
-                    this.grid.onIntfStatus(intf,1);
+                    this.grid.onIntfStatus(intf,s_intf,1);
                 } 
             },
             getClass: function(value, metadata, record) {
+                if( record.get("configType") === "DISABLED")
+                    return 'x-hide-display';
+
                 if( record.get("isWirelessInterface")) {
                     return 'icon-wireless';
                 } else {
@@ -667,7 +671,7 @@ Ext.define("Webui.config.network", {
                 },
                 scope : this
             }],
-            onIntfStatus: Ext.bind(function(rec,intftype) {
+            onIntfStatus: Ext.bind(function(rec,s_rec,intftype) {
                 Ext.MessageBox.wait(this.i18n._("Loading Interface Status..."), this.i18n._("Please wait"));
 
                 this.gridIfconfigLists = Ext.create( 'Ung.EditorGrid', {
@@ -683,7 +687,7 @@ Ext.define("Webui.config.network", {
                     dataRoot: null,
                     dataFn: function() {
                         var connText;
-                        var tmpstr = "ifconfig "+rec+" | grep 'HWaddr\\|inet\\|RX\\|TX' |tr '\\n' ' ' | tr -s ' ' ";
+                        var tmpstr = "ifconfig "+rec+" | grep 'HWaddr\\|packets' |tr '\\n' ' ' | tr -s ' ' ";
                         try {
                             connText = main.getExecManager().execOutput(tmpstr);
                         } catch (e) {
@@ -695,18 +699,37 @@ Ext.define("Webui.config.network", {
                         if (connText === undefined) return conn;
 
                         var lineparts = connText.split(" ");
-                        var addr = lineparts[6].split(":");
-                        var mask = lineparts[8].split(":");
-                        var rxpkts = lineparts[10].split(":");
-                        var rxerr = lineparts[11].split(":");
-                        var rxdrop = lineparts[12].split(":");
-                        var txpkts = lineparts[16].split(":");
-                        var txerr = lineparts[17].split(":");
-                        var txdrop = lineparts[18].split(":");
+                        var inf = lineparts[0];
+                        var macAddr = lineparts[4];
+                        var rxpkts = lineparts[6].split(":");
+                        var rxerr = lineparts[7].split(":");
+                        var rxdrop = lineparts[8].split(":");
+                        var txpkts = lineparts[12].split(":");
+                        var txerr = lineparts[13].split(":");
+                        var txdrop = lineparts[14].split(":");
                             
+                        var tmps = "ifconfig "+rec+" | grep 'inet addr' | tr -s ' ' | cut -c 7- ";
+                        var connT;
+                        try {
+                            connT = main.getExecManager().execOutput(tmps);
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e);
+                        }
+
+                        var addr;
+                        var mask;
+                        if (connT === undefined) {
+                            addr = ["  ", "  "];
+                            mask = ["  ", "  "];
+                        } else {
+                            var linep = connT.split(" ");
+                            addr = linep[0].split(":");
+                            mask = linep[2].split(":");
+                        }
+
                         conn.push( {
-                                intf: lineparts[0],
-                                macAddress: lineparts[4],
+                                intf: inf,
+                                macAddress: macAddr,
                                 address: addr[1],
                                 mask: mask[1],
                                 rx_pkts: rxpkts[1],
@@ -863,7 +886,7 @@ Ext.define("Webui.config.network", {
                     dataRoot: null,
                     dataFn: function() {
                         var connText;
-                        var tmpstr = "/sbin/iw dev "+rec+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
+                        var tmpstr = "/sbin/iw dev "+s_rec+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
                         try {
                             connText = main.getExecManager().execOutput(tmpstr);
                         } catch (e) {
