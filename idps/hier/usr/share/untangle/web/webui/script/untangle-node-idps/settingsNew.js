@@ -1,4 +1,3 @@
-//TODO ext5: add search to rule grid
 Ext.define('Webui.untangle-node-idps.settings', {
     extend:'Ung.NodeWin',
     statics: {
@@ -37,11 +36,11 @@ Ext.define('Webui.untangle-node-idps.settings', {
     getRuleId: function( rule ){
         var gid = "1";
         var sid = "1";
-        if( this.regexRuleGid.test( rule ) === true ){
+        if( this.regexRuleGid.test( rule ) ){
             gid = this.regexRuleGid.exec( rule )[1];
             this.regexRuleGid.lastIndex = 0;
         }
-        if( this.regexRuleSid.test( rule ) === true ){
+        if( this.regexRuleSid.test( rule ) ){
             sid = this.regexRuleSid.exec( rule )[1];
             this.regexRuleSid.lastIndex = 0;
         }
@@ -74,7 +73,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
     },
 
     initComponent: function() {
-        this.activeVariablesMap = {};
         var categories = [], categoriesMap = {}, classtypes=[], classtypesMap = {};
         var rules = this.getSettings().rules.list , rule, category, classtype, i;
         for(i=0; i<rules.length; i++) {
@@ -320,9 +318,108 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 ftype: 'grouping',
                 groupHeaderTpl: '{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? "s" : ""]})',
                 startCollapsed: true
-            }, this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {
-                searchFields: ['category', 'rule']}
-            )],
+            }],
+            updateRulesStatus: function(){
+                var hasLogOrBlockFilter = this.findLog.getValue() || this.findBlock.getValue();
+                var hasFilter = hasLogOrBlockFilter || (this.searchField.getValue().length>=2);
+                var statusText = "", logOrBlockText = "", totalEnabled = 0;
+                if(!hasLogOrBlockFilter) {
+                    this.store.each(function( record ){
+                        if( ( record.get('log')) || ( record.get('block')) ) {
+                            totalEnabled++;
+                        }
+                    });
+                    logOrBlockText = Ext.String.format(me.i18n._("{0} logging or blocking"), totalEnabled);
+                }
+                if(hasFilter) {
+                    statusText = Ext.String.format(me.i18n._('{0} matching rules(s) found'), this.getStore().count());
+                    if(!hasLogOrBlockFilter) {
+                        statusText += ', ' + logOrBlockText;
+                    }
+                } else {
+                    statusText = Ext.String.format(me.i18n._("{0} available rules"), this.getStore().getCount()) + ', ' + logOrBlockText;
+                }
+                this.searchStatusBar.update(statusText);
+            },
+            initComponent: function() {
+                this.logFilter = Ext.create('Ext.util.Filter', {
+                    id: 'logFilter',
+                    property: 'log',
+                    value: true
+                });
+                this.blockFilter = Ext.create('Ext.util.Filter', {
+                    id: 'blockFilter',
+                    property: 'block',
+                    value: true
+                });
+                this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {
+                    searchFields: ['category', 'rule']
+                });
+                this.features.push(this.filterFeature);
+                
+                this.bbar = [me.i18n._('Search'), {
+                    xtype: 'textfield',
+                    name: 'searchField',
+                    margin: '0 10 0 0',
+                    width: 200,
+                    listeners: {
+                        change: {
+                            fn: function(elem, newValue, oldValue, eOpts) {
+                                var searchValue = (newValue.length < 2)?"":newValue;
+                                this.filterFeature.updateGlobalFilter(searchValue, false);
+                            },
+                            scope: this,
+                            buffer: 800
+                        }
+                    }
+                },{
+                    xtype: 'checkbox',
+                    name: 'searchLog',
+                    boxLabel: me.i18n._("Log"),
+                    margin: '0 10 0 0',
+                    listeners: {
+                        change: {
+                            fn: function(elem, newValue, oldValue, eOpts) {
+                                if (newValue) {
+                                    this.getStore().addFilter(this.logFilter);
+                                } else {
+                                    this.getStore().removeFilter(this.logFilter);
+                                }
+                            },
+                            scope: this
+                        }
+                    }
+                }, {
+                    xtype: 'checkbox',
+                    name: 'searchBlock',
+                    boxLabel: me.i18n._("Block"),
+                    margin: '0 10 0 0',
+                    listeners: {
+                        change: {
+                            fn: function(elem, newValue, oldValue, eOpts) {
+                                if (newValue) {
+                                    this.getStore().addFilter(this.blockFilter);
+                                } else {
+                                    this.getStore().removeFilter(this.blockFilter);
+                                }
+                            },
+                            scope: this
+                        }
+                    }
+                },{
+                    xtype: 'tbtext',
+                    name: 'searchStatusBar',
+                    html: me.i18n._('Loading...')
+                }];
+                Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
+                this.searchField = this.down('textfield[name=searchField]');
+                this.findLog = this.down('checkbox[name=searchLog]');
+                this.findBlock = this.down('checkbox[name=searchBlock]');
+                this.searchStatusBar = this.down('tbtext[name=searchStatusBar]');
+                this.getStore().getFilters().on('endupdate', Ext.bind(function(eOpts) {
+                    this.updateRulesStatus();
+                }, this));
+            },
             emptyRow: {
                 "classtype": "unknown",
                 "category": "app-detect",
@@ -484,7 +581,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
                         } else {
-                            ruleValue += newField;
+                            var idx = ruleValue.lastIndexOf(")");
+                            if(idx != -1) {
+                                ruleValue = ruleValue.slice(0, idx-1) + newField +ruleValue.slice(idx-1);
+                            } else {
+                                ruleValue += " ("+newValue+" )";
+                            }
                         }
                         rule.setRawValue(ruleValue);
                     }
@@ -525,40 +627,48 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
                         } else {
-                            ruleValue += newField;
+                            var idx = ruleValue.indexOf("(");
+                            if(idx != -1) {
+                                ruleValue = ruleValue.slice(0, idx+1) + newField +ruleValue.slice(idx+1);
+                            } else {
+                                ruleValue += " ("+newValue+" )";
+                            }
                         }
                         rule.setRawValue(ruleValue);
                     }
                 }
             },{
-                xtype:'textfield',
+                xtype:'numberfield',
                 name: "Sid",
                 dataIndex: "sid",
                 fieldLabel: this.i18n._("Sid"),
                 emptyText: this.i18n._("[enter sid]"),
                 allowBlank: false,
                 width: 400,
+                hideTrigger: true,
                 regexMatch: /\s+sid:([^;]+);/,
                 gidRegex: /\s+gid:\s*([^;]+);/,
                 validator: function( ourValue ) {
                     var ruleEditor = this.up("window");
-                    if( ! /[0-9]+/.test( ourValue )){
+                    if( ! /^[0-9]+$/.test( ourValue )){
                         return me.i18n._("Sid must be numeric");
                     }
                     var record = ruleEditor.record;
                     var rule = ruleEditor.down("[name=Rule]");
-                    var ourGid = "1";
+                    var ourGid = "1", ruleGid, ruleValue;
                     if( this.gidRegex.test( rule.getValue() )){
                         ourGid = this.gidRegex.exec( rule.getValue() )[1];
+                        this.gidRegex.lastIndex = 0;
                     }
 
                     var match = false;
                     ruleEditor.grid.getStore().each( function( storeRecord ) {
-                        var ruleGid;
                         if( storeRecord != record && storeRecord.get("sid") == ourValue) {
                             ruleGid = "1";
-                            if( this.gidRegex.test( storeRecord.get("rule") ) === true ) {
-                                ruleGid = this.gidRegex.exec( storeRecord.get("rule") );
+                            ruleValue = storeRecord.get("rule");
+                            if( this.gidRegex.test( ruleValue ) ) {
+                                ruleGid = this.gidRegex.exec( ruleValue )[1];
+                                this.gidRegex.lastIndex = 0;
                             }
 
                             if( ourGid == ruleGid ){
@@ -581,7 +691,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                         if( this.regexMatch.test( ruleValue )) {
                             ruleValue = ruleValue.replace( this.regexMatch, newField );
                         } else {
-                            ruleValue += newField;
+                            var idx = ruleValue.lastIndexOf(")");
+                            if(idx != -1) {
+                                ruleValue = ruleValue.slice(0, idx-1) + newField +ruleValue.slice(idx-1);
+                            } else {
+                                ruleValue += " ("+newValue+" )";
+                            }
                         }
                         rule.setRawValue(ruleValue);
                     }
@@ -624,7 +739,7 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 500,
                 height: 150,
                 actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
-                regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+                regexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)(\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+))?\s+\((.+)\)$/,
                 validator: function( value ){
                     if( !this.regexMatch.test(value)){
                         return me.i18n._("Rule formatted wrong.");
@@ -1083,11 +1198,6 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 }, this));
                 return;
             }
-            if( !this.wizardCompleted ) {
-                //TODO: is this required?
-                this.settings.rules.list = this.gridRules.getList();
-                this.settings.variables.list = this.gridVariables.getList();
-            }
             handler.call(this, isApply);
         }, this));
     },
@@ -1106,11 +1216,8 @@ Ext.define('Webui.untangle-node-idps.settings', {
         }
 
         // This will always set rules/variables to minimally empty "diff"  objects if nothing  has changed
-        Ext.Array.each( this.query("*[changedData]"), function( c ) {
-            if( c.changedData ) { 
-                changedDataSet[c.dataProperty] = c.changedData;
-            }
-        });
+        changedDataSet.rules = this.gridRules.changedData;
+        changedDataSet.variables = this.gridVariables.changedData;
 
         Ext.Ajax.request({
             url: "/webui/download",
@@ -1277,23 +1384,19 @@ Ext.define('Webui.untangle-node-idps.Wizard.Classtypes',{
             this.classtypesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ) + ' (' + record.get( 'priority' ) + ')',
                 name: 'classtypes_selected',
-                inputValue: record.get( 'name' )
-                /* TODO: ext5
-                ,
+                inputValue: record.get( 'name' ),
                 listeners: {
-                    render: function(){
-                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
+                    render: function(c){
                         Ext.QuickTips.register({
-                            target:  id.elements[id.elements.length - 1].id, 
+                            target:  c.boxLabelEl,
                             text: record.get( 'description' ),
                             dismissDelay: 5000
                         });
                     },
-                    destroy: function(){
-                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
-                        Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
+                    destroy: function(c){
+                        Ext.QuickTips.unregister(c.boxLabelEl);
                     }
-                }*/
+                }
             });
         }, this );
 
@@ -1423,23 +1526,19 @@ Ext.define('Webui.untangle-node-idps.Wizard.Categories',{
             categoriesCheckboxGroup.items.push({
                 boxLabel: record.get( 'name' ),
                 name: 'categories_selected',
-                inputValue: record.get( 'name' )
-                /*TODO ext5
-                 ,
+                inputValue: record.get( 'name' ),
                 listeners: {
-                    render: function(){
-                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
+                    render: function(c){
                         Ext.QuickTips.register({
-                            target:  id.elements[id.elements.length - 1].id, 
+                            target:  c.boxLabelEl, 
                             text: record.get( 'description' ),
                             dismissDelay: 5000
                         });
                     },
-                    destroy: function(){
-                        var id = Ext.get(Ext.DomQuery.select( 'td#' + this.id + '-bodyEl.x-form-item-body.x-form-cb-wrap' ));
-                        Ext.QuickTips.unregister(id.elements[id.elements.length-1].id);
+                    destroy: function(c){
+                        Ext.QuickTips.unregister(c.boxLabelEl);
                     }
-                }*/
+                }
             });
         });
 
