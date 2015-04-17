@@ -533,6 +533,44 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             this.settings.concurrentLoginsEnabled = checked;
                         }, this)
                     }
+                },{
+                    xtype: "checkbox",
+                    boxLabel: this.i18n._("Allow Cookie-based authentication"),
+                    tooltip: this.i18n._("This will allow authenicated clients to continue to access even after session idle and timeout values."),
+                    hideLabel: true,
+                    checked: this.settings.sessionCookiesEnabled,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.settings.sessionCookiesEnabled = checked;
+                        }, this)
+                    }
+                },{
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: "numberfield",
+                        allowBlank: false,
+                        name: "sessionCookiesTimeout",
+                        maxValue: 525600,
+                        minValue: 5,
+                        hideTrigger:true,
+                        fieldLabel: this.i18n._( "Cookie Timeout (minutes)" ),
+                        labelWidth: 150,
+                        width: 250,
+                        invalidText: this.i18n._( "The Cookie Timeout must be more than 5 minutes and less than 525600 minutes." ),
+                        value: this.settings.sessionCookiesTimeout / 60,
+                        listeners: {
+                            "change": Ext.bind(function( elem, newValue ) {
+                                this.settings.sessionCookiesTimeout = newValue * 60;
+                            }, this)
+                        }
+                    },{
+                        xtype: 'label',
+                        name: "sessionCookiesTimeoutLabel",
+                        html: this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
+                        cls: 'boxlabel'
+                    }]
                 }]
             }]
         });

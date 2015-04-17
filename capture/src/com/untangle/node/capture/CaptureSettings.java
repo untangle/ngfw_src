@@ -34,6 +34,8 @@ public class CaptureSettings implements Serializable
     private int idleTimeout = 0;
     private int userTimeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
+    private boolean sessionCookiesEnabled = false;
+    private int sessionCookiesTimeout = 3600 * 24;
     private PageType pageType = PageType.BASIC_MESSAGE;
     private String customFileName = "";
     private String redirectUrl = "";
@@ -52,6 +54,9 @@ public class CaptureSettings implements Serializable
     private String basicMessageAgreeText = "";
     private String basicMessageFooter = "";
     private CertificateDetection certificateDetection = CertificateDetection.DISABLE_DETECTION;
+
+    private String secretKey;
+    private byte[] binaryKey;
 
     public CaptureSettings()
     {
@@ -129,6 +134,26 @@ public class CaptureSettings implements Serializable
     public void setConcurrentLoginsEnabled(boolean newValue)
     {
         this.areConcurrentLoginsEnabled = newValue;
+    }
+
+    public boolean getSessionCookiesEnabled()
+    {
+        return this.sessionCookiesEnabled;
+    }
+
+    public void setSessionCookiesEnabled(boolean newValue)
+    {
+        this.sessionCookiesEnabled = newValue;
+    }
+
+    public int getSessionCookiesTimeout()
+    {
+        return this.sessionCookiesTimeout;
+    }
+
+    public void setSessionCookiesTimeout(int newValue)
+    {
+        this.sessionCookiesTimeout = newValue;
     }
 
     public PageType getPageType()
@@ -289,5 +314,33 @@ public class CaptureSettings implements Serializable
     public void setCertificateDetection(CertificateDetection newValue)
     {
         this.certificateDetection = newValue;
+    }
+
+    public String getSecretKey()
+    {
+        return (secretKey);
+    }
+
+    public void setSecretKey(String key)
+    {
+        secretKey = key;
+    }
+
+    public void initBinaryKey(byte[] key)
+    {
+        // first we save the argumented key in our binary version
+        binaryKey = key;
+
+        // now we generate the string version from the binary version
+        StringBuilder local = new StringBuilder();
+
+        for (int x = 0; x < key.length; x++) {
+            char lo_nib = (char) ((key[x] & 0x0F) + 'A');
+            char hi_nib = (char) (((key[x] >> 4) & 0x0F) + 'A');
+            local.append(lo_nib);
+            local.append(hi_nib);
+        }
+
+        setSecretKey(local.toString());
     }
 }

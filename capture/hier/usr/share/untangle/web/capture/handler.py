@@ -4,16 +4,63 @@ from uvm.settings_reader import get_node_settings
 from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from mod_python import util
+from mod_python import Cookie
 from uvm import Uvm
 import zipfile
 import urllib
 import pprint
 import imp
 import sys
+import time
 import os
 import uvm.i18n_helper
 
 _ = uvm.i18n_helper.get_translation('untangle-node-capture').lgettext
+
+## PythonOption ApplicationPath /
+#mod_python.session.application_path /
+
+PSOCookieSession_Path = "/"
+
+class HandlerCookie:
+    cookie_key = "__ngfwcp"
+    def __init__(self,req,appid=None):
+        self.req = req
+        if appid == None:
+            args = split_args(self.req.args);
+            appid = args['APPID']
+        self.captureSettings = load_capture_settings(self.req,appid)
+        self.cookie = Cookie.get_cookies(self.req, Cookie.MarshalCookie, secret=str(self.captureSettings["secretKey"]))
+
+    def is_valid(self):
+        if self.get_field("username") != None:
+            return True
+
+        return False
+
+    def get_field(self,key):
+        value = self.cookie.get(self.cookie_key, None)
+        if value:
+            if ((type(value) is Cookie.MarshalCookie) and 
+                key in value.value ):
+                return value.value[key]
+        return None
+
+    def set(self,username):
+        value = {
+            "username": username
+        }
+        cookie = Cookie.MarshalCookie(self.cookie_key, value, secret=str(self.captureSettings["secretKey"]))
+        cookie.path = "/"
+        cookie.expires = time.time() + self.captureSettings["sessionCookiesTimeout"]
+        Cookie.add_cookie(self.req, cookie)
+
+    def expire(self):
+        value = {}
+        cookie = Cookie.MarshalCookie(self.cookie_key, value, secret=str(self.captureSettings["secretKey"]))
+        cookie.path = "/"
+        cookie.expires = 0
+        Cookie.add_cookie(self.req, cookie)
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called when a client is redirected
@@ -31,7 +78,38 @@ def index(req):
     if (not 'URI' in args):     args['URI'] = "Empty"
 
     # load the configuration data
-    captureSettings = load_capture_settings(req,args['APPID'])
+    appid = args['APPID']
+    captureSettings = load_capture_settings(req,appid)
+    captureNode = load_rpc_manager(appid)
+
+    if captureSettings["sessionCookiesEnabled"] == True:       
+        # Process cookie if exists.
+        address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+        cookie = HandlerCookie(req)
+
+        if captureNode.isUserInCookieTable(address,cookie.get_field("username")):
+            # User was found in expired cookie table.
+            captureNode.removeUserFromCookieTable(address)
+            cookie.expire()
+        elif ((cookie != None) and
+            (cookie.is_valid() == True) and 
+            (captureNode.userActivate(address,cookie.get_field("username"),"agree") == 0)):
+            # Cookie checks out.  Active them, let them through.
+            if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
+                target = str(captureSettings['redirectUrl'])
+            else:
+                host = args['HOST']
+                uri = args['URI']
+                nonce = args['NONCE']
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + uri)
+                else:
+                    target = str("http://" + host + uri)
+            util.redirect(req, target)
+            return
 
     # if not using a custom capture page we generate and return a standard page
     if (captureSettings['pageType'] != 'CUSTOM'):
@@ -68,7 +146,6 @@ def index(req):
 # that store the details of the page originally requested.
 
 def authpost(req,username,password,method,nonce,appid,host,uri):
-
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
@@ -84,6 +161,10 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
+        if captureSettings["sessionCookiesEnabled"] == True:
+            # Hand the user a cookie
+            cookie = HandlerCookie(req,appid)
+            cookie.set(username)
         if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
             target = str(captureSettings['redirectUrl'])
         else:

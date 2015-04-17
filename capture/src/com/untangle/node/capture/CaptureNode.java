@@ -34,6 +34,8 @@ public interface CaptureNode extends Node
 
     int userAuthenticate(InetAddress address, String username, String password);
 
+    int userActivate(InetAddress address, String username, String agree);
+
     int userActivate(InetAddress address, String agree);
 
     int userAdminLogout(InetAddress address);
@@ -49,4 +51,9 @@ public interface CaptureNode extends Node
     CaptureRule checkCaptureRules(IPNewSessionRequest sessreq);
 
     CaptureRule checkCaptureRules(NodeTCPSession session);
+
+    boolean isUserInCookieTable(InetAddress address, String username);
+
+    void removeUserFromCookieTable(InetAddress address);
+
 }

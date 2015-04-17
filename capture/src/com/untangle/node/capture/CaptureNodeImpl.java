@@ -72,6 +72,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
 
     protected CaptureUserTable captureUserTable = new CaptureUserTable();
+    protected CaptureUserCookieTable captureUserCookieTable = new CaptureUserCookieTable();
     private CaptureSettings captureSettings;
     private CaptureTimer captureTimer;
     private Timer timer;
@@ -280,11 +281,20 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         localSettings.setCaptureRules(ruleList);
 
+        initializeCookieKey(localSettings);
+
         // save the settings to disk
         saveNodeSettings(localSettings);
 
         // apply the new settings to the node
         applyNodeSettings(localSettings);
+    }
+
+    private void initializeCookieKey(CaptureSettings settings)
+    {
+        byte[] binaryKey = new byte[8];
+        new java.util.Random().nextBytes(binaryKey);
+        settings.initBinaryKey(binaryKey);
     }
 
     private CaptureSettings loadNodeSettings()
@@ -418,6 +428,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         
         // clear out the list of active users
         captureUserTable.purgeAllUsers();
+        captureUserCookieTable.purgeAllUsers();
     }
 
     @Override
@@ -436,10 +447,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             // creating, writing, and applying a new settings object
             initializeSettings();
         }
-
         else {
             // we got something back from the load so pass it
             // to the common apply function
+            if( readSettings.getSecretKey() == null ){
+                initializeCookieKey(readSettings);
+                saveNodeSettings(readSettings);
+            }
             applyNodeSettings(readSettings);
         }
     }
@@ -563,23 +577,34 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return (0);
     }
 
-    public int userActivate(InetAddress address, String agree)
+    public int userActivate(InetAddress address, String username, String agree)
     {
         if (agree.equals("agree") == false) {
-            CaptureUserEvent event = new CaptureUserEvent(policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
+            CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
             logEvent(event);
             incrementBlinger(BlingerType.AUTHFAIL, 1);
             logger.info("Activate failure " + address);
             return (1);
         }
 
-        captureUserTable.insertActiveUser(address, "Anonymous", true);
+        captureUserTable.insertActiveUser(address, username, true);
 
-        CaptureUserEvent event = new CaptureUserEvent(policyId, address, "Anonymous", captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN);
+        CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN);
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Activate success " + address);
+
+        if( captureSettings.getSessionCookiesEnabled() ){
+            captureUserCookieTable.removeActiveUser(address);
+        }
+
         return (0);
+    }
+
+
+    public int userActivate(InetAddress address, String agree)
+    {
+        return userActivate(address, "Anonymous", agree );
     }
 
     public int userLogin(InetAddress address, String username)
@@ -622,6 +647,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         CaptureUserEvent event = new CaptureUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
         logEvent(event);
         logger.info("Logout success: " + address);
+
+        if( captureSettings.getSessionCookiesEnabled() ){
+            captureUserCookieTable.insertInactiveUser(user);
+        }
 
         return (0);
     }
@@ -685,6 +714,14 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         }
 
         return (null);
+    }
+
+    public boolean isUserInCookieTable(InetAddress address, String username){
+        return captureUserCookieTable.searchByAddressUsername(address,username) != null;
+    }
+
+    public void removeUserFromCookieTable(InetAddress address){
+        captureUserCookieTable.removeActiveUser(address);
     }
 
     public CaptureRule checkCaptureRules(NodeTCPSession session)

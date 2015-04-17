@@ -4,6 +4,7 @@ from uvm.settings_reader import get_node_settings
 from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from uvm import Uvm
+from mod_python import Cookie
 import pprint
 import uvm.i18n_helper
 
@@ -33,8 +34,17 @@ def index(req):
     exitCount = 0
 
     # call the logout function for each node instance
+    cookie_key = "__ngfwcp"
     for node in captureList:
         exitResult = node.userLogout(address)
+        cookies = Cookie.get_cookie(req, cookie_key)
+        if cookies != None:
+            value = {}
+            cookie = Cookie.MarshalCookie(cookie_key, value, secret=str(captureSettings["secretKey"]))
+            cookie.path = "/"
+            cookie.expires = 0
+            Cookie.add_cookie(req, cookie)
+
         if (exitResult == 0):
             exitCount = exitCount + 1
 
