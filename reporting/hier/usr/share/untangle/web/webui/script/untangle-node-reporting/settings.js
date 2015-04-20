@@ -20,13 +20,11 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildAlertEventLog();
 
         // only show DB settings if set to something other than localhost
-        if (this.getSettings().dbHost != "localhost") {
+        if (this.getSettings().dbHost != "localhost" || true) {
             this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog, this.panelDatabase]);
         } else {
             this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog ]);
         }
-        this.tabs.setActiveTab(this.panelStatus);
-        this.clearDirty();
         this.callParent(arguments);
     },
     getAlertRuleMatchers: function () {
@@ -85,10 +83,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 xtype: 'fieldset',
                 items: [{
                     xtype: 'panel',
-                    html: this.i18n._('Reports are automatically generated each night.') + "<br/>",
-                    cls: 'description',
+                    html: this.i18n._('Reports are automatically generated each night.'),
                     buttonAlign: 'center',
-                    margin: '0 0 10 0',
                     border: false,
                     buttons: [{
                         xtype: 'button',
@@ -102,9 +98,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     }]
                 }, {
                     xtype: 'panel',
+                    margin: '20 0 0 0',
                     html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
                         "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Real-time report generation may cause network slowness."),
-                    cls: 'description',
                     buttonAlign: 'center',
                     border: false,
                     buttons: [{
@@ -134,23 +130,19 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         generationTime.setMinutes(this.getSettings().generationMinute);
 
         this.panelGeneration = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Generation',
             helpSource: 'reports_generation',
-            parentId: this.getId(),
             title: this.i18n._('Generation'),
-            layout: "anchor",
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                anchor: "98%",
                 xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._("Daily Reports"),
                 items: [{
-                    border: false,
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._('Daily Reports covers the previous day. Daily reports will be generated on the selected days.')
                 },  {
                     xtype: 'udayfield',
@@ -168,8 +160,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             },{
                 title: this.i18n._("Weekly Reports"),
                 items: [{
-                    border: false,
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._('Weekly Reports covers the previous week. Weekly reports will be generated on the selected days.')
                 },  {
                     xtype: 'udayfield',
@@ -187,8 +179,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             },{
                 title: this.i18n._("Monthly Reports"),
                 items: [{
-                    border: false,
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._('Monthly Reports are generated on the 1st and cover the previous month.')
                 },  {
                     xtype: 'checkbox',
@@ -208,15 +200,11 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 title: this.i18n._("Generation Time"),
                 labelWidth: 150,
                 items: [{
-                    border: false,
-                    cls: 'description',
-                    html: this.i18n._("Scheduled time to generate the reports.")
-                }, {
                     xtype: 'timefield',
-                    fieldLabel: this.i18n._('Generation Time'),
+                    fieldLabel: this.i18n._("Scheduled time to generate the reports"),
+                    labelWidth: 260,
+                    width: 360,
                     name: 'Generation Time',
-                    width: 90,
-                    hideLabel: true,
                     value: generationTime,
                     toValidate: true,
                     listeners: {
@@ -234,12 +222,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 title: this.i18n._("Data Retention"),
                 labelWidth: 150,
                 items: [{
-                    border: false,
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._("Keep event data for this number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
                 },{
-                    border: false,
-                    cls: "description",
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: Ext.String.format("{0}" + this.i18n._("Warning") + ":{1} " +  this.i18n._("Depending on the server and network, increasing this value may cause performance issues."),"<font color=\"red\">","</font>")
                 },{
                     xtype: 'numberfield',
@@ -249,7 +237,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     value: this.getSettings().dbRetention,
                     toValidate: true,
                     labelWidth: 150,
-                    labelAlign: 'right',
                     width: 200,
                     allowDecimals: false,
                     minValue: 1,
@@ -276,49 +263,40 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             width: 130,
             resizable: false,
             iconClass: 'icon-edit-row',
-            handler: function(view,rowIndex,colIndex)
-            {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 this.grid.rowEditorChangePassword.populate(record);
                 this.grid.rowEditorChangePassword.show();
             }
         });
 
         this.panelEmail = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Email',
             helpSource: 'reports_email',
-            parentId: this.getId(),
             title: this.i18n._('Email'),
-            layout: "anchor",
             cls: 'ung-panel',
-            autoScroll: true,
+            layout: { type: 'vbox', align: 'stretch' },
             defaults: {
-                anchor: "98%",
                 xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Email'),
-                height: 350,
-                items: [ this.gridReportingUsers = Ext.create('Ung.EditorGrid',{
-                    width: 710,
-                    name: 'ReportingUsers',
+                flex: 1,
+                layout: 'fit',
+                items: [ this.gridReportingUsers = Ext.create('Ung.grid.Panel',{
                     title: this.i18n._("Reporting Users"),
                     hasEdit: false,
                     settingsCmp: this,
-                    paginated: false,
-                    height: 300,
+                    plugins:[changePasswordColumn],
+                    dataProperty: 'reportingUsers',
+                    recordJavaClass: "com.untangle.node.reporting.ReportingUser",
                     emptyRow: {
-                        javaClass: "com.untangle.node.reporting.ReportingUser",
                         emailAddress: "",
                         emailSummaries: true,
                         onlineAccess: false,
                         password: null,
                         passwordHashBase64: null
                     },
-                    dataProperty: 'reportingUsers',
-                    recordJavaClass: "com.untangle.node.reporting.ReportingUser",
-                    plugins:[changePasswordColumn],
+                    sortField: "emailAddress",
                     fields: [{
                         name: "emailAddress"
                     },{
@@ -330,8 +308,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     },{
                         name: "passwordHashBase64"
                     }],
-                    sortField: "emailAddress",
-                    columnsDefaultSortable: true,
                     columns: [{
                         header: this.i18n._("Email Address (username)"),
                         dataIndex: "emailAddress",
@@ -411,6 +387,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 })]
             },{
                 title: this.i18n._("Email Attachment Settings"),
+                flex: 0,
                 items: [{
                     xtype: 'checkbox',
                     boxLabel: this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
@@ -451,6 +428,11 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         /* Create the row editor for updating the password */
         this.gridReportingUsers.rowEditorChangePassword = Ext.create('Ung.RowEditorWindow',{
             grid: this.gridReportingUsers,
+            //TODO extjs5 fix positioninig
+            width: 300,
+            height: 150,
+            draggable: true,
+            resizable: true,
             ownerCt: this,
             inputLines: [{
                 xtype:'textfield',
@@ -480,25 +462,21 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     // syslog panel
     buildSyslog: function() {
         this.panelSyslog = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Syslog',
             helpSource: 'reports_syslog',
-            parentId: this.getId(),
             title: this.i18n._('Syslog'),
-            layout: "anchor",
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                anchor: "98%",
                 xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Syslog'),
                 height: 350,
                 items: [{
-                    html: this.i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.') + "<br/>",
-                    cls: 'description',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: this.i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
                 }, {
                     xtype: 'radio',
                     boxLabel: Ext.String.format(this.i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
@@ -536,13 +514,13 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         }
                     }
                 }, {
-                    border: false,
+                    xtype: 'container',
+                    margin: '0 0 0 40',
                     items: [{
                         xtype: 'textfield',
                         fieldLabel: this.i18n._('Host'),
                         name: 'syslogHost',
                         width: 300,
-                        itemCls: 'left-indent-1',
                         value: this.getSettings().syslogHost,
                         toValidate: true,
                         allowBlank: false,
@@ -560,7 +538,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                         fieldLabel: this.i18n._('Port'),
                         name: 'syslogPort',
                         width: 200,
-                        itemCls: 'left-indent-1',
                         value: this.getSettings().syslogPort,
                         toValidate: true,
                         allowDecimals: false,
@@ -572,7 +549,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     },{
                         xtype: 'combo',
                         name: 'syslogProtocol',
-                        itemCls: 'left-indent-1',
                         editable: false,
                         fieldLabel: this.i18n._('Protocol'),
                         queryMode: 'local',
@@ -588,16 +564,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     // database panel
     buildDatabase: function() {
         this.panelDatabase = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Database',
             // helpSource: 'reports_database', //DISABLED
-            parentId: this.getId(),
             title: this.i18n._('Database'),
-            layout: "anchor",
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                anchor: "98%",
                 xtype: 'fieldset'
             },
             items: [{
@@ -608,7 +580,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     fieldLabel: this.i18n._('Host'),
                     name: 'databaseHost',
                     width: 300,
-                    itemCls: 'left-indent-1',
                     value: this.getSettings().dbHost,
                     allowBlank: false,
                     blankText: this.i18n._("A \"Host\" must be specified."),
@@ -622,7 +593,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     fieldLabel: this.i18n._('Port'),
                     name: 'databasePort',
                     width: 200,
-                    itemCls: 'left-indent-1',
                     value: this.getSettings().dbPort,
                     allowDecimals: false,
                     minValue: 0,
@@ -639,7 +609,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     fieldLabel: this.i18n._('User'),
                     name: 'databaseUser',
                     width: 300,
-                    itemCls: 'left-indent-1',
                     value: this.getSettings().dbUser,
                     allowBlank: false,
                     blankText: this.i18n._("A \"User\" must be specified."),
@@ -653,7 +622,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     fieldLabel: this.i18n._('Password'),
                     name: 'databasePassword',
                     width: 300,
-                    itemCls: 'left-indent-1',
                     value: this.getSettings().dbPassword,
                     allowBlank: false,
                     blankText: this.i18n._("A \"Password\" must be specified."),
@@ -667,7 +635,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     fieldLabel: this.i18n._('Name'),
                     name: 'databaseName',
                     width: 300,
-                    itemCls: 'left-indent-1',
                     value: this.getSettings().dbName,
                     allowBlank: false,
                     blankText: this.i18n._("A \"Name\" must be specified."),
@@ -682,29 +649,25 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     },
     // Hostname Map grid
     buildHostnameMap: function() {
-        this.gridHostnameMap = Ext.create('Ung.EditorGrid',{
+        this.gridHostnameMap = Ext.create('Ung.grid.Panel',{
             settingsCmp: this,
             name: 'Name Map',
             helpSource: 'reports_name_map',
             title: this.i18n._("Name Map"),
-            paginated: false,
+            dataProperty: 'hostnameMap',
+            recordJavaClass: "com.untangle.node.reporting.ReportingHostnameMapEntry",
             emptyRow: {
-                javaClass: "com.untangle.node.reporting.ReportingUser",
                 "address": "1.2.3.4",
                 "hostname": ""
             },
-            dataProperty: 'hostnameMap',
-            recordJavaClass: "com.untangle.node.reporting.ReportingHostnameMapEntry",
-            // the list of fields
             fields: [{
                 name: 'id'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'hostname'
             }],
-            // the list of columns for the column model
             columns: [{
                 header: this.i18n._("IP Address"),
                 width: 200,
@@ -728,8 +691,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     allowBlank: false
                 }
             }],
-            columnsDefaultSortable: true,
-            // the row input lines used by the row editor window
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Subnet",
@@ -757,23 +718,23 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
             helpSource: 'reports_alert_rules',
-            parentId: this.getId(),
             title: this.i18n._('Alert Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Note'),
                 flex: 0,
                 html: this.i18n._(" <b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
-            },  this.gridAlertRules= Ext.create('Ung.EditorGrid',{
+            },  this.gridAlertRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Alert Rules',
                 settingsCmp: this,
-                paginated: false,
                 hasReorder: true,
                 addAtTop: false,
+                title: this.i18n._("Alert Rules"),
+                dataProperty:'alertRules',
+                recordJavaClass: "com.untangle.node.reporting.AlertRule",
                 emptyRow: {
                     "ruleId": null,
                     "enabled": true,
@@ -781,13 +742,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     "alert": false,
                     "alertLimitFrequency": false,
                     "alertLimitFrequencyMinutes": 0,
-                    "description": "",
-                    "javaClass": "com.untangle.node.reporting.AlertRule"
+                    "description": ""
                 },
-                title: this.i18n._("Alert Rules"),
-                recordJavaClass: "com.untangle.node.reporting.AlertRule",
-                columnsDefaultSortable: false,
-                dataProperty:'alertRules',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -867,9 +823,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: i18n._('Perform the following action(s):'),
-                border: false,
                 items:[{
                     xtype:'checkbox',
                     labelWidth: 160,
@@ -926,7 +880,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     },
     // Event Log
     buildAlertEventLog: function() {
-        this.gridAlertEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridAlertEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: "event-log",
             helpSource: "reports_alert_event_log",
@@ -935,7 +889,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             // the list of fields
             fields: [{
                 name: "time_stamp",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "description"
             },{
@@ -972,9 +926,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         });
     },
     beforeSave: function(isApply,handler) {
-        this.getSettings().reportingUsers.list = this.gridReportingUsers.getPageList();
-        this.getSettings().hostnameMap.list = this.gridHostnameMap.getPageList();
-        this.getSettings().alertRules.list = this.gridAlertRules.getPageList();
+        this.getSettings().reportingUsers.list = this.gridReportingUsers.getList();
+        this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
+        this.getSettings().alertRules.list = this.gridAlertRules.getList();
 
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
         this.getSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();

@@ -13,9 +13,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
     gridUserEventLog: null,
     gridRuleEventLog: null,
     initComponent: function() {
-        main.getNetworkSettings(true);
+        Ung.Main.getNetworkSettings(true);
 
-        // builds the tabs
         this.buildCaptiveStatus();
         this.buildCaptureRules();
         this.buildPassedHosts();
@@ -24,7 +23,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.buildUserEventLog();
         this.buildRuleEventLog();
 
-        // builds the tab panel with the tabs
         this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptureRules, this.panelPassedHosts, this.panelCaptivePage,
                              this.panelUserAuthentication, this.gridUserEventLog, this.gridRuleEventLog ]);
         this.callParent(arguments);
@@ -63,13 +61,11 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelCaptiveStatus = Ext.create('Ext.panel.Panel', {
             name: 'Status',
             helpSource: 'captive_portal_status',
-            parentId: this.getId(),
             title: this.i18n._('Status'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Status'),
                 flex: 0,
                 html: this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.')
@@ -78,39 +74,21 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
 
     buildGridCaptiveStatus: function() {
-        this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
+        this.gridCaptiveStatus = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: "gridCaptiveStatus",
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
+            hasRefresh: true,
             title: this.i18n._("Active Sessions"),
             qtip: this.i18n._("The Active Sessions list shows authenticated users."),
-            paginated: false,
-            bbar: Ext.create('Ext.toolbar.Toolbar', {
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        id: "refresh_"+this.getId(),
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.gridCaptiveStatus.reload();
-                        }, this)
-                    }
-                ]
-            }),
-            recordJavaClass: "com.untangle.node.capture.CaptureUserEntry",
             dataFn: this.getRpcNode().getActiveUsers,
+            recordJavaClass: "com.untangle.node.capture.CaptureUserEntry",
             fields: [{
                 name: "userAddress",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "userName"
             },{
@@ -151,17 +129,14 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 header: this.i18n._("Logout"),
                 xtype: 'actioncolumn',
                 width: 80,
-                items: [{
-                    iconCls: 'icon-delete-row',
-                    tooltip: 'Click to logout',
-                    handler: Ext.bind(function(grid,row,col) {
-                        var rec = grid.getStore().getAt(row);
-                        this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridCaptiveStatus.reload();
-                        },this), rec.data.userAddress);
-                    }, this)
-                }]
+                iconCls: 'icon-delete-row',
+                tooltip: 'Click to logout',
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.gridCaptiveStatus.reload();
+                    },this), record.get("userAddress"));
+                }, this)
             }]
         });
     },
@@ -170,33 +145,29 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelCaptureRules = Ext.create('Ext.panel.Panel',{
             name: 'panelCaptureRules',
             helpSource: 'captive_portal_capture_rules',
-            parentId: this.getId(),
             title: this.i18n._('Capture Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Capture Rules'),
                 flex: 0,
                 html: this.i18n._("Network access is controlled based on the set of rules defined below. To learn more click on the <b>Help</b> button below.")
-            },  this.gridCaptureRules= Ext.create('Ung.EditorGrid',{
+            },  this.gridCaptureRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Rules',
                 settingsCmp: this,
-                paginated: false,
                 hasReorder: true,
                 addAtTop: false,
+                title: this.i18n._("Rules"),
+                dataProperty:'captureRules',
+                recordJavaClass: "com.untangle.node.capture.CaptureRule",
                 emptyRow: {
                     "ruleId": 0,
                     "enabled": true,
                     "capture": false,
-                    "description": "",
-                    "javaClass": "com.untangle.node.capture.CaptureRule"
+                    "description": ""
                 },
-                title: this.i18n._("Rules"),
-                recordJavaClass: "com.untangle.node.capture.CaptureRule",
-                dataProperty:'captureRules',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -239,7 +210,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     resizable: false,
                     width:55
                 }],
-                columnsDefaultSortable: false,
                 rowEditorInputLines: [{
                     xtype:'checkbox',
                     name: "Enable Rule",
@@ -264,9 +234,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     }]
                 },{
                     xtype: 'fieldset',
-                    cls:'description',
                     title: this.i18n._('Perform the following action(s):'),
-                    border: false,
                     items: [{
                         xtype: "combo",
                         name: "actionType",
@@ -296,15 +264,11 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
             name: "panelPassedHosts",
             helpSource: "captive_portal_passed_hosts",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("Passed Hosts"),
             layout: { type: 'vbox', align: 'stretch' },
-            border: false,
             cls: "ung-panel",
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Passed Hosts'),
                 flex: 0,
                 html: this.i18n._("The pass lists provide a quick alternative way to allow access from specific clients, or to specific servers.")
@@ -313,23 +277,23 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
 
     buildGridPassedList: function( name, title, dataProperty , tooltip) {
-        return Ext.create('Ung.EditorGrid', {
+        return Ext.create('Ung.grid.Panel', {
+            flex: 1,
+            margin: (name=='gridPassedServers')?'5 0 0 0': 0,
+            title: this.i18n._(title),
             name: name,
             tooltip: tooltip,
             settingsCmp: this,
             hasEdit: false,
-            flex: 1,
+            columnsDefaultSortable: false,
+            dataProperty: dataProperty,
+            recordJavaClass: "com.untangle.node.capture.PassedAddress",
             emptyRow: {
                 "live": true,
                 "log": false,
                 "address": "0.0.0.0",
-                "description": "",
-                "javaClass": "com.untangle.node.capture.PassedAddress"
+                "description": ""
             },
-            title: this.i18n._(title),
-            recordJavaClass: "com.untangle.node.capture.PassedAddress",
-            paginated: false,
-            dataProperty: dataProperty,
             fields: [{
                 name: "id"
             },{
@@ -338,7 +302,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 name: "log"
             },{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: "description"
             }],
@@ -373,33 +337,30 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     xtype:'textfield',
                     emptyText: this.i18n._("[no description]")
                 }
-            }],
-            columnsDefaultSortable: false
+            }]
         });
     },
 
     buildUserAuthentication: function() {
-        var onUpdateAuthenticationType = Ext.bind(function( elem, checked ) {
+        var onUpdateRadioButton = Ext.bind(function( elem, checked ) {
             if ( checked ) {
                 this.settings.authenticationType = elem.inputValue;
             }
         }, this);
 
-        var onRenderAuthenticationType = Ext.bind(function( elem ) {
+        var onRenderRadioButton = Ext.bind(function( elem ) {
             elem.setValue(this.settings.authenticationType);
             elem.clearDirty();
         }, this);
         var adconnectorLicense;
         try {
-            adconnectorLicense = main.getLicenseManager().getLicense("untangle-node-adconnector");
+            adconnectorLicense = Ung.Main.getLicenseManager().getLicense("untangle-node-adconnector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
         this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
             name: "panelUserAuthentication",
             helpSource: "captive_portal_user_authentication",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("User Authentication"),
             autoScroll: true,
             border: false,
@@ -414,8 +375,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "NONE",
                     listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
+                        "change": onUpdateRadioButton,
+                        "afterrender": onRenderRadioButton
                     }
                 },{
                     xtype: "radio",
@@ -424,8 +385,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "LOCAL_DIRECTORY",
                     listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
+                        "change": onUpdateRadioButton,
+                        "afterrender": onRenderRadioButton
                     }
                 },{
                     xtype: "button",
@@ -434,15 +395,15 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     handler: Ext.bind(this.configureLocalDirectory, this )
                 },{
                     xtype: "radio",
-                    boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),
-                                              "<i>", "</i>" ),
+                    style: {marginTop: '15px'},
+                    boxLabel: Ext.String.format( this.i18n._("RADIUS {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
                     disabled: !adconnectorLicense,
                     name: "authenticationType",
                     inputValue: "RADIUS",
                     listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
+                        "change": onUpdateRadioButton,
+                        "afterrender": onRenderRadioButton
                     }
                 },{
                     xtype: "button",
@@ -452,14 +413,15 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     handler: Ext.bind(this.configureRadius, this )
                 },{
                     xtype: "radio",
+                    style: {marginTop: '15px'},
                     boxLabel: Ext.String.format( this.i18n._("Active Directory {0}(requires Directory Connector) {1}"),"<i>", "</i>" ),
                     hideLabel: true,
                     disabled: !adconnectorLicense,
                     name: "authenticationType",
                     inputValue: "ACTIVE_DIRECTORY",
                     listeners: {
-                        "change": onUpdateAuthenticationType,
-                        "afterrender": onRenderAuthenticationType
+                        "change": onUpdateRadioButton,
+                        "afterrender": onRenderRadioButton
                     }
                 },{
                     xtype: "button",
@@ -586,35 +548,23 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     component.setVisible( currentValue == item );
                 }
             }, this));
-
-            Ext.each( this.panelCaptivePage.query('[optionType=CERT_DETECTION]'), Ext.bind(function( component ) {
-                if ( currentValue == "CUSTOM" ) {
-                    component.setVisible( false );
-                } else {
-                    component.setVisible( true );
-                }
-            }, this));
         }
     },
     buildCaptivePage: function() {
-        var onUpdatePageType = Ext.bind(function( elem, checked ) {
+        var onUpdateRadioButton = Ext.bind(function( elem, checked ) {
             if ( checked ) {
                 this.settings.pageType = elem.inputValue;
                 this.captivePageHideComponents( elem.inputValue );
             }
         }, this);
 
-        var onUpdateCertificateDetection = Ext.bind(function( elem, checked ) {
-            if ( checked ) {
-                this.settings.certificateDetection = elem.inputValue;
-            }
+        var onRenderRadioButton = Ext.bind(function( elem ) {
+            this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
         }, this);
 
         this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
             name: "panelCaptivePage",
             helpSource: "captive_portal_captive_page",
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._("Captive Page"),
             autoScroll: true,
             border: false,
@@ -623,7 +573,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 "afterrender": Ext.bind(function () {
                     this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
                     this.captivePageHideComponents(this.settings.pageType );
-                    this.panelCaptivePage.down('radio[name="certificateDetection"]').setValue(this.settings.certificateDetection);
                     Ung.Util.clearDirty(this.panelCaptivePage);
                 }, this)
             },
@@ -637,7 +586,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "BASIC_MESSAGE",
                     listeners: {
-                        "change": onUpdatePageType
+                        "change": onUpdateRadioButton
                     }
                 },{
                     xtype: "radio",
@@ -646,7 +595,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "BASIC_LOGIN",
                     listeners: {
-                        "change": onUpdatePageType
+                        "change": onUpdateRadioButton
                     }
                 },{
                     xtype: "radio",
@@ -655,7 +604,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "CUSTOM",
                     listeners: {
-                        "change": onUpdatePageType
+                        "change": onUpdateRadioButton
                     }
                 },{
                     xtype: "fieldset",
@@ -819,7 +768,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     },{
                         xtype: "form",
                         bodyStyle: "padding:0px 0px 10px 25px",
-                        buttonAlign: "left",
                         pageType: "CUSTOM",
                         name: "upload_form",
                         url: "/capture/handler.py/custom_upload",
@@ -828,12 +776,11 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             xtype: 'fileuploadfield',
                             name: "upload_file",
                             allowBlank:false,
-                            width: 500,
-                            size: 50
+                            width: 500
                         },{
                             xtype: 'hidden',
                             name: 'appid',
-                            value: this.node.nodeId
+                            value: this.nodeId
                         },{
                             xtype: "button",
                             name: "upload",
@@ -843,7 +790,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     },{
                         xtype: "form",
                         bodyPadding: "10px 0px 0px 25px",
-                        buttonAlign: "left",
                         pageType: "CUSTOM",
                         name: "remove_form",
                         url: "/capture/handler.py/custom_remove",
@@ -853,17 +799,15 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             forId: "custom_file",
                             text: "Active Custom File"
                         },{
-
                             xtype: 'textfield',
                             readOnly: true,
                             name: "custom_file",
                             value: this.settings.customFilename,
-                            width: 500,
-                            size: 50
+                            width: 500
                         },{
                             xtype: 'hidden',
                             name: 'appid',
-                            value: this.node.nodeId
+                            value: this.nodeId
                         },{
                             xtype: "button",
                             name: "remove",
@@ -872,58 +816,38 @@ Ext.define('Webui.untangle-node-capture.settings', {
                         }]
                     }]
                 },{
-                    xtype: "fieldset",
-                    title: this.i18n._( "HTTPS/SSL Root Certificate Detection" ),
-                    optionType: "CERT_DETECTION",
-                    items: [{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Disable certificate detection."),
-                        hideLabel: true,
-                        name: "certificateDetection",
-                        inputValue: "DISABLE_DETECTION",
-                        checked: this.settings.checkServerCertificate,
-                        listeners: {
-                            "change": onUpdateCertificateDetection
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Check certificate. Show warning when not detected."),
-                        hideLabel: true,
-                        checked: this.settings.checkServerCertificate,
-                        name: "certificateDetection",
-                        inputValue: "CHECK_CERTIFICATE",
-                        listeners: {
-                            "change": onUpdateCertificateDetection
-                        }
-                    },{
-                        xtype: "radio",
-                        boxLabel: this.i18n._("Require certificate. Prohibit login when not detected."),
-                        hideLabel: true,
-                        name: "certificateDetection",
-                        inputValue: "REQUIRE_CERTIFICATE",
-                        checked: this.settings.checkServerCertificate,
-                        listeners: {
-                            "change": onUpdateCertificateDetection
-                        }
-                    }]
+                    xtype: "checkbox",
+                    margin: '10 0 0 0',
+                    boxLabel: this.i18n._("Enable test to verify that the server root certificate is installed on the client device."),
+                    hideLabel: true,
+                    checked: this.settings.checkServerCertificate,
+                    listeners: {
+                            "change": Ext.bind(function(elem, checked) {
+                                this.settings.checkServerCertificate = checked;
+                            }, this)
+                    }
+                },{
+                    xtype: 'component',
+                    margin: '10 0 10 0',
+                    html: this.i18n._('NOTE: When enabled and the root certificate is not detected, a notification message and download link will appear on the captive page.')
                 },{
                     xtype: "button",
                     name: "viewPage",
                     text: i18n._("Preview Captive Portal Page"),
-                    handler: Ext.bind(function()
-                    {
-                        if ( this.node.state != "on" ) {
+                    handler: Ext.bind(function() {
+                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                        if ( !nodeCmp.isRunning() ) {
                             Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"),
-                                                 this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
+                                    this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
                             return;
                         }
 
                         if ( this.isDirty()) {
                             Ext.MessageBox.alert(this.i18n._("Unsaved Changes"),
-                                                 this.i18n._("You must save your settings before previewing the page." ));
+                                    this.i18n._("You must save your settings before previewing the page." ));
                             return;
                         }
-                        window.open("/capture/handler.py/index?appid=" + this.node.nodeId , "_blank");
+                        window.open("/capture/handler.py/index?appid=" + this.nodeId , "_blank");
                     }, this)
                 }]
             },{
@@ -941,12 +865,11 @@ Ext.define('Webui.untangle-node-capture.settings', {
                             this.settings.redirectUrl = newValue;
                         }, this)
                     }
+                }, {
+                    xtype: 'component',
+                    margin:'10 0 0 0',
+                    html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
                 }]
-            },{
-                xtype: 'fieldset',
-                cls: 'description',
-                width: 500,
-                html: this.i18n._('NOTE: The Redirect URL field allows you to specify a page to display immediately after user authentication.  If you leave this field blank, users will instead be forwarded to their original destination.')
             }]
         });
     },
@@ -963,7 +886,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
             return;
         }
         form.submit({
-            parentID: this.panelCaptivePage.getId(),
             waitMsg: this.i18n._("Please wait while uploading your custom captive portal page..."),
             success: Ext.bind(this.uploadCustomFileSuccess, this ),
             failure: Ext.bind(this.uploadCustomFileFailure, this )
@@ -994,7 +916,6 @@ Ext.define('Webui.untangle-node-capture.settings', {
     onRemoveCustomFile: function() {
         var form = this.panelCaptivePage.down('form[name="remove_form"]').getForm();
         form.submit({
-            parentID: this.panelCaptivePage.getId(),
             waitMsg: this.i18n._("Please wait while the previous custom file is removed..."),
             success: Ext.bind(this.removeCustomFileSuccess, this ),
             failure: Ext.bind(this.removeCustomFileFailure, this )
@@ -1023,17 +944,17 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
 
     buildUserEventLog: function() {
-        this.gridUserEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridUserEventLog = Ext.create('Ung.grid.EventLog',{
             title: this.i18n._( "User Event Log" ),
             helpSource: "captive_portal_user_event_log",
             eventQueriesFn: this.getRpcNode().getUserEventQueries,
             settingsCmp: this,
             fields: [{
                 name: "time_stamp",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "client_addr",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "login_name"
             },{
@@ -1113,13 +1034,13 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
     beforeSave: function(isApply, handler) {
         if ( this.gridCaptureRules.isDirty() ) {
-            this.settings.captureRules.list = this.gridCaptureRules.getPageList();
+            this.settings.captureRules.list = this.gridCaptureRules.getList();
         }
         if ( this.gridPassedClients.isDirty() ) {
-            this.settings.passedClients.list = this.gridPassedClients.getPageList();
+            this.settings.passedClients.list = this.gridPassedClients.getList();
         }
         if ( this.gridPassedServers.isDirty() ) {
-            this.settings.passedServers.list = this.gridPassedServers.getPageList();
+            this.settings.passedServers.list = this.gridPassedServers.getList();
         }
         handler.call(this, isApply);
     },
@@ -1166,24 +1087,24 @@ Ext.define('Webui.untangle-node-capture.settings', {
         return true;
     },
     configureLocalDirectory: function() {
-        main.openConfig(main.configMap["localDirectory"]);
+        Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
     },
     // There is no way to select the radius tab because we don't get a callback once the settings are loaded.
     configureRadius: function() {
-        var node = main.getNode("untangle-node-adconnector");
+        var node = Ung.Main.getNode("untangle-node-adconnector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
-                nodeCmp.onSettingsAction();
+                nodeCmp.loadSettings();
             }
         }
     },
     configureActiveDirectory: function() {
-        var node = main.getNode("untangle-node-adconnector");
+        var node = Ung.Main.getNode("untangle-node-adconnector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
-                nodeCmp.onSettingsAction();
+                nodeCmp.loadSettings();
             }
         }
     }

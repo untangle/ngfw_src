@@ -3,6 +3,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
     panelWeb:null,
     panelEmail: null,
     panelFtp: null,
+    panelAdvanced: null,
     gridWebEventLog: null,
     gridMailEventLog: null,
     gridFtpEventLog: null,
@@ -14,6 +15,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
         this.buildEmail();
         this.buildFtp();
         this.buildPassSites();
+        this.buildAdvanced();
         this.buildWebEventLog();
         this.buildMailEventLog();
         this.buildFtpEventLog();
@@ -24,58 +26,33 @@ Ext.define('Webui.untangle-base-virus.settings', {
             this.panelEmail,
             this.panelFtp,
             this.panelPassSites,
+            this.panelAdvanced,
             this.gridWebEventLog,
             this.gridMailEventLog,
             this.gridFtpEventLog
         ]);
         this.callParent(arguments);
     },
-    save: function( isApply ){
-        var settingsCmp = this;
-        for( var i = 0; i < this.tabs.items.items.length; i++ ){
-            var panel = this.tabs.items.items[i];
-            for( var j = 0; j < panel.items.items.length; j++ ){
-                var cmp = panel.items.items[j];
-                if( cmp.getList ){
-                    cmp.getList( function( saveList ){
-                        settingsCmp.settings[cmp.dataProperty] = saveList;
-                    }, true);
-                }
-            }
-        }
-        this.callParent( arguments );
+    beforeSave: function(isApply, handler) {
+        this.settings.passSites.list=this.gridPassSites.getList();
+        this.settings.httpFileExtensions.list=this.gridExtensions.getList();
+        this.settings.httpMimeTypes.list=this.gridMimeTypes.getList();
+        handler.call(this, isApply);
     },
     // Web Panel
     buildWeb: function() {
-        this.aboutInfoField = {};
-        if (this.aboutInfo != null) {
-            this.aboutInfoField = {
-                xtype: 'fieldset',
-                title: this.i18n._('About'),
-                cls: 'description',
-                html: this.aboutInfo
-            };
-        }
-
         this.panelWeb = Ext.create('Ext.panel.Panel',{
             name: 'Web',
             //helpSource: 'virus_blocker_web',
             //helpSource: 'virus_blocker_lite_web',
             helpSource: this.helpSourceName + '_web',
-            // private fields
             winExtensions: null,
             winMimeTypes: null,
-            winPassSites: null,
-            parentId: this.getId(),
-
             title: this.i18n._('Web'),
             cls: 'ung-panel',
             autoScroll: true,
-            defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
-            },
             items: [{
+                xtype: 'fieldset',
                 items: [{
                     xtype: 'checkbox',
                     boxLabel: this.i18n._('Scan HTTP'),
@@ -89,216 +66,35 @@ Ext.define('Webui.untangle-base-virus.settings', {
                             }, this)
                         }
                     }
+                }, {
+                    xtype: 'component',
+                    margin: '30 0 0 0',
+                    html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
+                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
                 }]
             }, {
-                title: this.i18n._('Advanced Settings'),
-                collapsible: true,
-                collapsed: true,
-                labelWidth: 370,
-                items: [{
-                    xtype:'fieldset',
-                    items:    {
-                        xtype: 'button',
-                        name: 'File Extensions',
-                        text: this.i18n._('Edit File Extensions'),
-                        handler: Ext.bind(function() {
-                            this.panelWeb.onManageExtensions();
-                        }, this)
-                    }
-                },{
-                    xtype:'fieldset',
-                    items: {
-                        xtype: 'button',
-                        name: 'MIME Types',
-                        text: this.i18n._('Edit MIME Types'),
-                        handler: Ext.bind(function() {
-                            this.panelWeb.onManageMimeTypes();
-                        }, this)
-                    }
-                }]
-            }, {
-                cls: 'description',
-                html: this.i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
-            }, this.aboutInfoField],
-
-            onManageExtensions: function() {
-                if (!this.winExtensions) {
-                    var settingsCmp = Ext.getCmp(this.parentId);
-                    settingsCmp.buildExtensions();
-                    this.winExtensions = Ext.create('Ung.ManageListWindow', {
-                        breadcrumbs: [{
-                            title: i18n._(rpc.currentPolicy.name),
-                            action: Ext.bind(function() {
-                                Ung.Window.cancelAction(
-                                   this.gridExtensions.isDirty() || this.isDirty(),
-                                   Ext.bind(function() {
-                                        this.panelWeb.winExtensions.closeWindow();
-                                        this.closeWindow();
-                                   }, this)
-                                );
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.node.displayName,
-                            action: Ext.bind(function() {
-                                this.panelWeb.winExtensions.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("Web"),
-                            action: Ext.bind(function() {
-                                this.panelWeb.winExtensions.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("File Extensions")
-                        }],
-                        grid: settingsCmp.gridExtensions,
-                        applyAction: function(callback) {
-                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                            settingsCmp.gridExtensions.getList(Ext.bind(function(saveList) {
-                                this.getRpcNode().setHttpFileExtensions(Ext.bind(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.settings.httpFileExtensions = result.httpFileExtensions;
-                                        this.gridExtensions.clearDirty();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }, this));
-                                }, this), saveList);
-                            },settingsCmp));
-                        }
-                    });
-                }
-                this.winExtensions.show();
-            },
-            onManageMimeTypes: function() {
-                if (!this.winMimeTypes) {
-                    var settingsCmp = Ext.getCmp(this.parentId);
-                    settingsCmp.buildMimeTypes();
-                    this.winMimeTypes = Ext.create('Ung.ManageListWindow',{
-                        breadcrumbs: [{
-                            title: i18n._(rpc.currentPolicy.name),
-                            action: Ext.bind(function() {
-                                Ung.Window.cancelAction(
-                                   this.gridMimeTypes.isDirty() || this.isDirty(),
-                                   Ext.bind(function() {
-                                        this.panelWeb.winMimeTypes.closeWindow();
-                                        this.closeWindow();
-                                   }, this)
-                                );
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.node.displayName,
-                            action: Ext.bind(function() {
-                                this.panelWeb.winMimeTypes.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("Web"),
-                            action: Ext.bind(function() {
-                                this.panelWeb.winMimeTypes.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("MIME Types")
-                        }],
-                        grid: settingsCmp.gridMimeTypes,
-                        applyAction: function(callback) {
-                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                            settingsCmp.gridMimeTypes.getList(Ext.bind(function(saveList) {
-                                this.getRpcNode().setHttpMimeTypes(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.settings.httpMimeTypes = result.httpMimeTypes;
-                                        this.gridMimeTypes.clearDirty();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }, this));
-                                }, this), saveList);
-                            },settingsCmp));
-                        }
-                    });
-                }
-                this.winMimeTypes.show();
-            },
-            onManagePassSites: function() {
-                if (!this.winPassSites) {
-                    var settingsCmp = Ext.getCmp(this.parentId);
-                    settingsCmp.buildPassSites();
-                    this.winPassSites = Ext.create('Ung.ManageListWindow',{
-                        breadcrumbs: [{
-                            title: i18n._(rpc.currentPolicy.name),
-                            action: Ext.bind(function() {
-                                Ung.Window.cancelAction(
-                                   this.gridPassSites.isDirty() || this.isDirty(),
-                                   Ext.bind(function() {
-                                        this.panelWeb.winPassSites.closeWindow();
-                                        this.closeWindow();
-                                   }, this)
-                                );
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.node.displayName,
-                            action: Ext.bind(function() {
-                                this.panelWeb.winPassSites.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("Web"),
-                            action: Ext.bind(function() {
-                                this.panelWeb.winPassSites.cancelAction();
-                            },settingsCmp)
-                        }, {
-                            title: settingsCmp.i18n._("Pass Sites")
-                        }],
-                        grid: settingsCmp.gridPassSites,
-                        applyAction: function(callback) {
-                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                            settingsCmp.gridPassSites.getList(Ext.bind(function(saveList) {
-                                this.getRpcNode().setPassSites(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
-                                        if(Ung.Util.handleException(exception)) return;
-                                        this.settings.passSites = result.passSites;
-                                        this.gridPassSites.clearDirty();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }, this));
-                                }, this), saveList);
-                            },settingsCmp));
-                        }
-                    });
-                }
-                this.winPassSites.show();
-            },
-            beforeDestroy: function() {
-                Ext.destroy(
-                    this.winExtensions,
-                    this.winMimeTypes,
-                    this.winPassSites
-                );
-                Ext.Panel.prototype.beforeDestroy.call(this);
-            }
+                xtype: 'fieldset',
+                title: this.i18n._('About'),
+                html: this.aboutInfo,
+                hidden: (this.aboutInfo==null)
+            }],
+            
         });
     },
     // File Types
     buildExtensions: function() {
-        this.gridExtensions = Ext.create('Ung.EditorGrid',{
+        this.gridExtensions = Ext.create('Ung.grid.Panel',{
             name: 'File Extensions',
             settingsCmp: this,
+            title: this.i18n._("File Extensions"),
+            dataProperty: "httpFileExtensions",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            title: this.i18n._("File Extensions"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "httpFileExtensions",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("File Type"),
@@ -326,8 +122,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [
             {
                 xtype:'textfield',
@@ -357,17 +151,18 @@ Ext.define('Webui.untangle-base-virus.settings', {
     },
     // MIME Types
     buildMimeTypes: function() {
-        this.gridMimeTypes = Ext.create('Ung.EditorGrid', {
+        this.gridMimeTypes = Ext.create('Ung.grid.Panel', {
             name: 'MIME Types',
             settingsCmp: this,
+            title: this.i18n._("MIME Types"),
+            dataProperty: "httpMimeTypes",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            title: this.i18n._("MIME Types"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "httpMimeTypes",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("MIME Type"),
@@ -395,8 +190,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     allowBlank:false
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [
             {
                 xtype:'textfield',
@@ -429,13 +222,11 @@ Ext.define('Webui.untangle-base-virus.settings', {
             //helpSource: 'virus_blocker_ftp',
             //helpSource: 'virus_blocker_lite_ftp',
             helpSource: this.helpSourceName + '_ftp',
-            parentId: this.getId(),
             title: this.i18n._('FTP'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 items: [{
@@ -453,7 +244,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     }
                 }]
             }, {
-                cls: 'description',
                 html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
             }]
@@ -467,16 +257,9 @@ Ext.define('Webui.untangle-base-virus.settings', {
             //helpSource: 'virus_blocker_email',
             //helpSource: 'virus_blocker_lite_email',
             helpSource: this.helpSourceName + '_email',
-            // private fields
-            parentId: this.getId(),
-
             title: this.i18n._('Email'),
-            layout: "anchor",
             defaults: {
-                anchor: '98%',
                 xtype: 'fieldset',
-                autoScroll: true,
-                buttonAlign: 'left'
             },
             cls: 'ung-panel',
             autoScroll: true,
@@ -522,7 +305,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     }]
                 }]
             }, {
-                cls: 'description',
                 html: this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): this.i18n._("Unknown"))
             }]
@@ -530,18 +312,19 @@ Ext.define('Webui.untangle-base-virus.settings', {
     },
     // Pass Sites
     buildPassSites: function() {
-        this.gridPassSites = Ext.create('Ung.EditorGrid', {
+        this.gridPassSites = Ext.create('Ung.grid.Panel', {
             name: 'Pass Sites',
             settingsCmp: this,
+            flex: 1,
+            title: this.i18n._("Pass Sites"),
+            dataProperty: "passSites",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            flex: 1,
-            title: this.i18n._("Pass Sites"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            dataProperty: "passSites",
+            sortField: 'string',
             fields: Ung.Util.getGenericRuleFields(this),
             columns: [{
                 header: this.i18n._("Site"),
@@ -568,8 +351,6 @@ Ext.define('Webui.untangle-base-virus.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
@@ -599,26 +380,45 @@ Ext.define('Webui.untangle-base-virus.settings', {
             helpSource: this.helpSourceName + '_pass_sites',
             //helpSource: 'virus_blocker_pass_sites',
             //helpSource: 'virus_blocker_lite_pass_sites',
-            parentId: this.getId(),
             title: this.i18n._("Pass Sites"),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!"),
-                style: "margin-bottom: 10px;"
+                html: this.i18n . _("Do not scan traffic to the specified sites.  Use caution!")
             },
-                this.gridPassSites
+            this.gridPassSites
             ]
+        });
+    },
+    buildAdvanced: function() {
+        this.buildExtensions();
+        this.buildMimeTypes();
+
+        this.panelAdvanced = Ext.create('Ext.panel.Panel',{
+            name: 'Advanced',
+            title: this.i18n._('Advanced'),
+            cls: 'ung-panel',
+            layout: { type: 'vbox', pack: 'start', align: 'stretch' },
+            items: [{
+                xtype: 'fieldset',
+                flex: 0,
+                title: this.i18n._("Advanced"),
+                html: this.i18n._("Advanced settings require careful configuration.")
+            }, {
+                xtype: 'tabpanel',
+                activeTab: 0,
+                deferredRender: false,
+                flex: 1,
+                items: [this.gridExtensions, this.gridMimeTypes]
+            }]
         });
     },
     // Event Log
@@ -636,7 +436,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
             this.getRpcNode().getMailEventQueries);
     },
     buildFtpEventLog: function() {
-        this.gridFtpEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridFtpEventLog = Ext.create('Ung.grid.EventLog',{
             name: 'Ftp Event Log',
             //helpSource: 'virus_blocker_ftp_event_log',
             //helpSource: 'virus_blocker_lite_ftp_event_log',
@@ -647,15 +447,15 @@ Ext.define('Webui.untangle-base-virus.settings', {
             // the list of fields
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'username'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'uri',
                 mapping: 'uri'
@@ -705,4 +505,4 @@ Ext.define('Webui.untangle-base-virus.settings', {
         });
     }
 });
-//# sourceURL=virus-settings.js
+//# sourceURL=base-virus-settings.js

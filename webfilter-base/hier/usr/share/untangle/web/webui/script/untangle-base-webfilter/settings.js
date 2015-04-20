@@ -16,20 +16,14 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         ]);
         this.callParent(arguments);
     },
-    save: function( isApply ){
-        var settingsCmp = this;
-        for( var i = 0; i < this.tabs.items.items.length; i++ ){
-            var panel = this.tabs.items.items[i];
-            for( var j = 0; j < panel.items.items.length; j++ ){
-                var cmp = panel.items.items[j];
-                if( cmp.getList ){
-                    cmp.getList( function( saveList ){
-                        settingsCmp.settings[cmp.dataProperty] = saveList;
-                    }, true);
-                }
-            }
-        }
-        this.callParent( arguments );
+    beforeSave: function(isApply, handler) {
+        this.settings.categories.list=this.gridCategories.getList();
+        this.settings.blockedUrls.list=this.gridBlockedSites.getList();
+        this.settings.blockedExtensions.list=this.gridBlockedFileTypes.getList();
+        this.settings.blockedMimeTypes.list=this.gridBlockedMimeTypes.getList();
+        this.settings.passedUrls.list=this.gridAllowedSites.getList();
+        this.settings.passedClients.list=this.gridAllowedClients.getList();
+        handler.call(this, isApply);
     },
     buildUrlValidator: function(){
         this.urlValidator = Ext.bind(function(fieldValue) {
@@ -60,7 +54,8 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
 
     // Block Lists Panel
     buildPanelBlockedCategories: function() {
-        this.gridCategories = Ext.create('Ung.EditorGrid',{
+        this.gridCategories = Ext.create('Ung.grid.Panel',{
+            flex: 1,
             name: 'Categories',
             title: this.i18n._("Categories"),
             sizetoParent: true,
@@ -69,14 +64,13 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             hasDelete: false,
             dataProperty: "categories",
             recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'name',
             fields: this.genericRuleFields,
-            paginated: false,
-            flex: 1,
             columns: [{
                 header: this.i18n._("Category"),
                 width: 200,
                 dataIndex: 'name'
-            },{
+            }, {
                 xtype:'checkcolumn',
                 width:55,
                 header: this.i18n._("Block"),
@@ -85,21 +79,21 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 listeners: {
                     "checkchange": {
                         fn: Ext.bind(function(elem, rowIndex, checked) {
-                                if (checked) {
-                                    var record = this.gridCategories.getStore().getAt(rowIndex);
-                                    record.set('flagged', true);
-                                }
-                            }, this)
-                        }
+                            if (checked) {
+                                var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
+                                record.set('flagged', true);
+                            }
+                        }, this)
+                    }
                 }
-            },{
+            }, {
                 xtype:'checkcolumn',
                 width:55,
                 header: this.i18n._("Flag"),
                 dataIndex: 'flagged',
                 resizable: false,
                 tooltip: this.i18n._("Flag as Violation")
-            },{
+            }, {
                 header: this.i18n._("Description"),
                 flex:1,
                 width: 400,
@@ -109,89 +103,82 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     allowBlank: false
                 }
             }],
-            sortField: 'name',
-            columnsDefaultSortable: true,
-            rowEditorInputLines: [
-                {
-                    xtype:'textfield',
-                    name: "Category",
-                    dataIndex: "name",
-                    fieldLabel: this.i18n._("Category"),
-                    allowBlank: false,
-                    width: 400,
-                    disabled: true
-                },{
-                    xtype:'checkbox',
-                    name: "Block",
-                    dataIndex: "blocked",
-                    fieldLabel: this.i18n._("Block"),
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, checked) {
-                                    var rowEditor = this.gridCategories.rowEditor;
-                                    if (checked) {
-                                        rowEditor.down('checkbox[name="Flag"]').setValue(true);
-                                    }
-                                }, this)
+            rowEditorInputLines: [{
+                xtype:'textfield',
+                name: "Category",
+                dataIndex: "name",
+                fieldLabel: this.i18n._("Category"),
+                allowBlank: false,
+                width: 400,
+                disabled: true
+            }, {
+                xtype:'checkbox',
+                name: "Block",
+                dataIndex: "blocked",
+                fieldLabel: this.i18n._("Block"),
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, checked) {
+                            var rowEditor = this.gridCategories.rowEditor;
+                            if (checked) {
+                                rowEditor.down('checkbox[name="Flag"]').setValue(true);
                             }
+                        }, this)
                     }
-                },{
-                    xtype:'checkbox',
-                    name: "Flag",
-                    dataIndex: "flagged",
-                    fieldLabel: this.i18n._("Flag"),
-                    tooltip: this.i18n._("Flag as Violation")
-                },{
-                    xtype:'textarea',
-                    name: "Description",
-                    dataIndex: "description",
-                    fieldLabel: this.i18n._("Description"),
-                    width: 400,
-                    height: 60
-                }]
+                }
+            }, {
+                xtype:'checkbox',
+                name: "Flag",
+                dataIndex: "flagged",
+                fieldLabel: this.i18n._("Flag"),
+                tooltip: this.i18n._("Flag as Violation")
+            }, {
+                xtype:'textarea',
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: this.i18n._("Description"),
+                width: 400,
+                height: 60
+            }]
         });
         this.blockedCategoriesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockCategories',
             title: this.i18n._('Block Categories'),
+            //helpSource: 'web_filter_block_categories',
+            //helpSource: 'web_filter_lite_block_categories',
             helpSource: this.helpSourceName + '_block_categories',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block Categories"),
-                html: this.i18n . _("Block or flag access to sites associated with the specified category."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridCategories
-            ]
+                html: this.i18n . _("Block or flag access to sites associated with the specified category.")
+            }, this.gridCategories ]
         });
         return this.blockedCategoriesPanel;
     },
     // Blocked sites
     buildPanelBlockedSites: function() {
-        this.gridBlockedSites = Ext.create('Ung.EditorGrid',{
+        this.gridBlockedSites = Ext.create('Ung.grid.Panel',{
             name: 'Sites',
             title: this.i18n._("Sites"),
             settingsCmp: this,
+            flex: 1,
+            dataProperty: "blockedUrls",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "blocked": true,
                 "flagged": true,
                 "description": ""
             },
-            flex: 1,
-            paginated: false,
-            dataProperty: "blockedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
                 header: this.i18n._("Site"),
@@ -226,8 +213,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
@@ -261,35 +246,35 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         this.blockedSitesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockSites',
             title: this.i18n._('Block Sites'),
+            //helpSource: 'web_filter_block_sites',
+            //helpSource: 'web_filter_lite_block_sites',
             helpSource: this.helpSourceName + '_block_sites',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Blocked Sites"),
-                html: this.i18n . _("Block or flag access to the specified site."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedSites
-            ]
+                html: this.i18n . _("Block or flag access to the specified site.")
+            }, this.gridBlockedSites ]
         });
         return this.blockedSitesPanel;
     },
     // Blocked File Types
     buildPanelBlockedFileTypes: function() {
-        this.gridBlockedFileTypes = Ext.create('Ung.EditorGrid',{
+        this.gridBlockedFileTypes = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: 'File Types',
+            sizetoParent: true,
             settingsCmp: this,
+            title: this.i18n._("File Types"),
+            dataProperty: "blockedExtensions",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "blocked": true,
@@ -297,12 +282,8 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 "category": "",
                 "description": ""
             },
-            title: this.i18n._("File Types"),
-            dataProperty: "blockedExtensions",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'string',
             fields: this.genericRuleFields,
-            sizetoParent: true,
-            paginated: false,
             columns: [{
                 header: this.i18n._("File Type"),
                 width: 200,
@@ -343,10 +324,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
-            rowEditorInputLines: [
-            {
+            rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "File Type",
                 dataIndex: "string",
@@ -385,35 +363,34 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         this.blockedFileTypesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockFileTypes',
             title: this.i18n._('Block File Types'),
+            //helpSource: 'web_filter_block_filetypes',
+            //helpSource: 'web_filter_lite_block_filetypes',
             helpSource: this.helpSourceName + '_block_filetypes',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block File Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified file type."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedFileTypes
-            ]
+                html: this.i18n . _("Block or flag access to files associated with the specified file type.")
+            }, this.gridBlockedFileTypes ]
         });
         return this.blockedFileTypesPanel;
     },
     // Blocked MIME Types
     buildPanelBlockedMimeTypes: function() {
-        this.gridBlockedMimeTypes = Ext.create('Ung.EditorGrid',{
+        this.gridBlockedMimeTypes = Ext.create('Ung.grid.Panel',{
+            flex: 1,
             name: 'MIME Types',
-            paginated: false,
             settingsCmp: this,
+            title: this.i18n._("MIME Types"),
+            dataProperty: "blockedMimeTypes",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "blocked": true,
@@ -421,11 +398,8 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 "category": "",
                 "description": ""
             },
-            title: this.i18n._("MIME Types"),
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'string',
             fields: this.genericRuleFields,
-            dataProperty: "blockedMimeTypes",
-            flex: 1,
             columns: [{
                 header: this.i18n._("MIME type"),
                 width: 200,
@@ -466,8 +440,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "MIME Type",
@@ -507,44 +479,40 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         this.blockedMimeTypesPanel = Ext.create('Ext.panel.Panel',{
             name: 'BlockMimeTypes',
             title: this.i18n._('Block Mime Types'),
+            //helpSource: 'web_filter_block_mimetypes',
+            //helpSource: 'web_filter_lite_block_mimetypes',
             helpSource: this.helpSourceName + '_block_mimetypes',
-            parentId: this.getId(),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Block MIME Types"),
-                html: this.i18n . _("Block or flag access to files associated with the specified MIME type."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridBlockedMimeTypes
-            ]
+                html: this.i18n . _("Block or flag access to files associated with the specified MIME type.")
+            }, this.gridBlockedMimeTypes ]
         });
         return this.blockedMimeTypesPanel;
     },
     // Allowed Sites
     buildPanelPassedSites: function() {
-        this.gridAllowedSites = Ext.create('Ung.EditorGrid',{
+        this.gridAllowedSites = Ext.create('Ung.grid.Panel',{
             name: 'Sites',
             settingsCmp: this,
+            flex: 1,
+            title: this.i18n._("Sites"),
+            dataProperty: "passedUrls",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
                 "description": ""
             },
-            paginated: false,
-            flex: 1,
-            title: this.i18n._("Sites"),
-            dataProperty: "passedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'string',
             fields: this.genericRuleFields,
             columns: [{
                 header: this.i18n._("Site"),
@@ -572,8 +540,6 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Site",
@@ -600,47 +566,42 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         });
         this.allowedSitesPanel = Ext.create('Ext.panel.Panel',{
             name: 'PassSites',
+            //helpSource: 'web_filter_pass_sites',
+            //helpSource: 'web_filter_lite_pass_sites',
             helpSource: this.helpSourceName + '_pass_sites',
-            parentId: this.getId(),
-
             title: this.i18n._('Pass Sites'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Sites"),
-                html: this.i18n . _("Allow access to the specified site regardless of matching block policies."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridAllowedSites
-            ]
+                html: this.i18n . _("Allow access to the specified site regardless of matching block policies.")
+            }, this.gridAllowedSites ]
         });
         return this.allowedSitesPanel;
     },
     // Allowed Clients
     buildPanelPassedClients: function() {
-        this.gridAllowedClients = Ext.create('Ung.EditorGrid',{
+        this.gridAllowedClients = Ext.create('Ung.grid.Panel',{
+            flex: 1,
             name: 'Client IP addresses',
-            paginated: false,
             settingsCmp: this,
+            title: this.i18n._("Client IP addresses"),
+            dataProperty: "passedClients",
+            recordJavaClass: "com.untangle.uvm.node.GenericRule",
             emptyRow: {
                 "string": "1.2.3.4",
                 "enabled": true,
                 "description": ""
             },
-            title: this.i18n._("Client IP addresses"),
-            dataProperty: "passedClients",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            sortField: 'string',
             fields: this.genericRuleFields,
-            flex: 1,
             columns: [{
                 header: this.i18n._("IP address/range"),
                 width: 200,
@@ -667,10 +628,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'string',
-            columnsDefaultSortable: true,
-            rowEditorInputLines: [
-            {
+            rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "IP address/range",
                 dataIndex: "string",
@@ -696,28 +654,23 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
         });
         this.allowedClientsPanel = Ext.create('Ext.panel.Panel',{
             name: 'PassClients',
+            //helpSource: 'web_filter_pass_clients',
+            //helpSource: 'web_filter_lite_pass_clients',
             helpSource: this.helpSourceName + '_pass_clients',
-            parentId: this.getId(),
-
             title: this.i18n._('Pass Clients'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [{
-                cls: 'description',
                 title: this.i18n . _("Pass Clients"),
-                html: this.i18n . _("Allow access for client networks regardless of matching block policies."),
-                style: "margin-bottom: 10px;"
-            },
-                this.gridAllowedClients
-            ]
+                html: this.i18n . _("Allow access for client networks regardless of matching block policies.")
+            }, this.gridAllowedClients ]
         });
         return this.allowedClientsPanel;
     },
@@ -725,14 +678,15 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
     buildPanelAdvanced: function() {
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
             name: 'Advanced',
+            //helpSource: 'web_filter_advanced',
+            //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
 
             title: this.i18n._('Advanced'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 name: "fieldset_miscellaneous",
@@ -844,6 +798,8 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
     },
     // Event Log
     buildEventLog: function() {
+        //helpSource: 'web_filter_event_log',
+        //helpSource: 'web_filter_lite_event_log',
         this.gridEventLog = Ung.CustomEventLog.buildHttpEventLog (this, 'EventLog', i18n._('Event Log'),
                 this.helpSourceName + '_event_log',
                 ['time_stamp','username','c_client_addr','c_server_addr','s_server_port','host','uri',this.getRpcNode().getName() + '_blocked',

@@ -1,5 +1,5 @@
-Ext.define("Webui.config.about", {
-    extend: "Ung.StatusWin",
+Ext.define('Webui.config.about', {
+    extend: 'Ung.StatusWin',
     panelServer: null,
     panelLicenses: null,
     panelLicenseAgreement: null,
@@ -38,7 +38,6 @@ Ext.define("Webui.config.about", {
         this.panelServer = Ext.create('Ext.panel.Panel',{
             name: 'Server',
             helpSource: 'about_server',
-            parentId: this.getId(),
             title: this.i18n._('Server'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -46,7 +45,6 @@ Ext.define("Webui.config.about", {
                 title: this.i18n._('About'),
                 name: 'About',
                 xtype: 'fieldset',
-                buttonAlign: 'left',
                 items: [{
                     xtype: 'textarea',
                     name: 'UID',
@@ -80,6 +78,9 @@ Ext.define("Webui.config.about", {
             type: 'GET',
             success: function(response, opts) {
                 if( response!=null && response.account) {
+                    if(!me || !me.isVisible()) {
+                        return;
+                    }
                     var uidComponent = me.panelServer.down('textarea[name="UID"]');
                     uidComponent.setValue(uidComponent.getValue() + "\n" + this.i18n._('Account') + ": " + response.account);
                 }
@@ -93,7 +94,6 @@ Ext.define("Webui.config.about", {
         this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
             name: 'License Agreement',
             helpSource: 'about_license_agreement',
-            parentId: this.getId(),
             title: this.i18n._('License Agreement'),
             cls: 'ung-panel',
             bodyStyle: 'padding:5px 5px 0px; 5px;',
@@ -103,7 +103,7 @@ Ext.define("Webui.config.about", {
                 name: "View License",
                 iconCls: "reboot-icon",
                 handler: function() {
-                    main.openLegal();
+                    Ung.Main.openLegal();
                 }
             }]
             
@@ -115,13 +115,11 @@ Ext.define("Webui.config.about", {
         this.panelLicenses = Ext.create('Ext.panel.Panel',{
             name: 'Licenses',
             helpSource: 'about_licenses',
-            parentId: this.getId(),
             title: this.i18n._('Licenses'),
             cls: 'ung-panel',
             layout: { type: 'vbox', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Licenses'),
                 flex: 0,
                 html: Ext.String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>')
@@ -129,40 +127,33 @@ Ext.define("Webui.config.about", {
        });
     },
     buildGridLicenses: function() {
-        this.gridLicenses = Ext.create('Ung.EditorGrid',{
+        this.gridLicenses = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: "gridLicenses",
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
             title: this.i18n._("Licenses"),
-            //TODO: qtip is not displayed, fix this
+            //TODO ext5 - qtip is not displayed, fix this
             qtip: this.i18n._("The Current list of Licenses available on this Server."),
-            paginated: false,
             bbar: new Ext.Toolbar({
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        id: "refresh_"+this.getId(),
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            //reload licenses for each node in rack
-                            main.loadLicenses();
-                            //reload grid
-                            this.gridLicenses.reload();
-                        }, this)
-                    }
-                ]
+                items: [ '-', {
+                    xtype: 'button',
+                    text: i18n._('Refresh'),
+                    name: "Refresh",
+                    tooltip: i18n._('Refresh'),
+                    iconCls: 'icon-refresh',
+                    handler: Ext.bind(function() {
+                        //reload licenses for each node in rack
+                        Ung.Main.reloadLicenses();
+                        //reload grid
+                        this.gridLicenses.reload();
+                    }, this)
+                }]
             }),
+            dataFn: Ung.Main.getLicenseManager().getLicenses,
             recordJavaClass: "com.untangle.uvm.node.License",
-            dataFn: main.getLicenseManager().getLicenses,
             fields: [{
                 name: "displayName"
             },{

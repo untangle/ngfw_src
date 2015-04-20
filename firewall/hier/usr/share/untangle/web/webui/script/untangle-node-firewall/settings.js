@@ -4,10 +4,8 @@ Ext.define('Webui.untangle-node-firewall.settings', {
     gridRules: null,
     gridEventLog: null,
     initComponent: function() {
-        // builds the tabs
         this.buildRules();
         this.buildEventLog();
-        // builds the tab panel with the tabs
         this.buildTabPanel([this.panelRules, this.gridEventLog]);
         this.callParent(arguments);
     },
@@ -43,34 +41,30 @@ Ext.define('Webui.untangle-node-firewall.settings', {
         this.panelRules = Ext.create('Ext.panel.Panel',{
             name: 'panelRules',
             helpSource: 'firewall_rules',
-            parentId: this.getId(),
             title: this.i18n._('Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Note'),
                 flex: 0,
                 html: Ext.String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and flag network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."), rpc.companyName)
-            },  this.gridRules= Ext.create('Ung.EditorGrid',{
+            },  this.gridRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
                 name: 'Rules',
                 settingsCmp: this,
-                paginated: false,
                 hasReorder: true,
                 addAtTop: false,
+                title: this.i18n._("Rules"),
+                dataProperty:'rules',
+                recordJavaClass: "com.untangle.node.firewall.FirewallRule",
                 emptyRow: {
                     "ruleId": 0,
                     "enabled": true,
                     "block": false,
                     "flag": false,
-                    "description": "",
-                    "javaClass": "com.untangle.node.firewall.FirewallRule"
+                    "description": ""
                 },
-                title: this.i18n._("Rules"),
-                recordJavaClass: "com.untangle.node.firewall.FirewallRule",
-                dataProperty:'rules',
                 fields: [{
                     name: 'ruleId'
                 }, {
@@ -91,11 +85,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     width: 50,
                     dataIndex: 'ruleId',
                     renderer: function(value) {
-                        if (value < 0) {
-                            return i18n._("new");
-                        } else {
-                            return value;
-                        }
+                        return (value < 0) ? i18n._("new") : value;
                     }
                 }, {
                     xtype:'checkcolumn',
@@ -121,7 +111,6 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     resizable: false,
                     width:55
                 }],
-                columnsDefaultSortable: false,
                 rowEditorInputLines: [{
                     xtype:'checkbox',
                     name: "Enable Rule",
@@ -146,9 +135,7 @@ Ext.define('Webui.untangle-node-firewall.settings', {
                     }]
                 }, {
                     xtype: 'fieldset',
-                    cls:'description',
                     title: i18n._('Perform the following action(s):'),
-                    border: false,
                     items:[{
                         xtype: "combo",
                         name: "actionType",
@@ -176,10 +163,8 @@ Ext.define('Webui.untangle-node-firewall.settings', {
             this.getRpcNode().getEventQueries);
     },
     beforeSave: function(isApply, handler) {
-        this.gridRules.getList(Ext.bind(function(saveList) {
-            this.settings.rules = saveList;
-            handler.call(this, isApply);
-        }, this));
+        this.settings.rules.list = this.gridRules.getList();
+        handler.call(this, isApply);
     }
 });
 //# sourceURL=firewall-settings.js

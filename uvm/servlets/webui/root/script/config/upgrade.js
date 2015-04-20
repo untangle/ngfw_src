@@ -32,7 +32,7 @@ Ext.define('Webui.config.upgrade', {
             var statusDescription = result? '<i><font color="green">' + i18n._("Upgrades are available!") + ' </font></i>' :
                 '<font color="grey">' + i18n._("No upgrades available.") + ' </font>';
             var statusCmp = this.panelSettings.down('[name="statusMessage"]');
-            statusCmp.setText(statusDescription, false);
+            statusCmp.update(statusDescription);
             statusCmp.show();
             if(result) {
                 var upgradeButton = this.panelSettings.down('[name="upgradeButton"]');
@@ -94,7 +94,7 @@ Ext.define('Webui.config.upgrade', {
             //console.log("rpc.systemManager.downloadUpgrades", result);
             Ext.MessageBox.hide();
             if(result) {
-                main.upgrade();
+                Ung.Main.upgrade();
             } else {
                 Ext.MessageBox.alert(i18n._("Warning"), i18n._("Downloading upgrades failed."));
             }
@@ -107,10 +107,8 @@ Ext.define('Webui.config.upgrade', {
         upgradeTime.setHours(this.getSystemSettings().autoUpgradeHour);
         upgradeTime.setMinutes(this.getSystemSettings().autoUpgradeMinute);
         this.panelSettings = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: 'Upgrade Settings',
             helpSource: 'upgrade_upgrade_settings',
-            parentId: this.getId(),
             title: this.i18n._('Upgrade Settings'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -118,27 +116,23 @@ Ext.define('Webui.config.upgrade', {
                 xtype: 'fieldset'
             },
             items: [{
-                xtype: 'fieldset',
-                cls: 'description',
                 title: this.i18n._('Status'),
                 items: [{
                     xtype: 'progressbar',
                     name: 'checkUpgradesProgressbar',
                     width: 300
                 }, {
-                    xtype: 'label',
+                    xtype: 'component',
                     name: "statusMessage",
                     html: "<i>" + i18n._("Checking for upgrades...") + "</i>",
                     hidden: true,
-                    cls: 'description',
-                    margin: '0 25 0 0',
-                    border: false
+                    margin: '0 25 10 0'
                 }, {
                     xtype: "button",
                     name: 'upgradeButton',
                     hidden: true,
                     text: this.i18n._("Upgrade"),
-                    iconCls: "action-icon",
+                    iconCls: "icon-upgrade",
                     handler: Ext.bind(function() {
                         this.downloadUpgrades();
                     }, this)
@@ -159,8 +153,8 @@ Ext.define('Webui.config.upgrade', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: this.i18n._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                 }, {
                     xtype: 'radio',
@@ -176,12 +170,12 @@ Ext.define('Webui.config.upgrade', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: this.i18n._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 10 20',
                     html: "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates") + "</i>"
                 }]
             }, {

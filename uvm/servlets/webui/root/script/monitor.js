@@ -4,36 +4,16 @@ Ext.define('Ung.MonitorGrid', {
     selType: 'rowmodel',
     // settings component
     settingsCmp: null,
-    // the default sort field
-    sortField: null,
-    // the default sort order
-    sortOrder: null,
-    // the default group field
-    groupField: null,
-    // the columns are sortable by default, if sortable is not specified
-    columnsDefaultSortable: true,
-    async: true,
-    //an applicaiton selector
+    //an application selector
     appList: null,
     // the total number of records
-    totalRecords: null,
     autoRefreshEnabled: false,
     stateful: true,
-    plugins: {
-        ptype: 'bufferedrenderer',
-        trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
-        leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
-    },
     features: [{
-        ftype: 'filters',
-        encode: false,
-        local: true
-    }, {
         ftype: 'groupingsummary'
     }],
     constructor: function(config) {
         var defaults = {
-            data: [],
             viewConfig: {
                 enableTextSelection: true,
                 stripeRows: true,
@@ -41,6 +21,7 @@ Ext.define('Ung.MonitorGrid', {
                     msg: i18n._("Loading...")
                 }
             },
+            plugins: [],
             changedData: {},
             subCmps:[],
             stateId: "monitorGrid-"+config.name
@@ -55,48 +36,36 @@ Ext.define('Ung.MonitorGrid', {
                 col.sortable = this.columnsDefaultSortable;
             }
             if( col.stateId === undefined ){
-                col.stateId=col.dataIndex;
+                col.stateId = col.dataIndex;
             }
-        }
-        if(this.dataFn) {
-            if(this.dataRoot === undefined) {
-                this.dataRoot="list";
-            }
-        } else {
-            this.async=false;
         }
         this.store=Ext.create('Ext.data.Store', {
             data: [],
             fields: this.fields,
-            buffered: false,
             proxy: {
                 type: 'memory',
                 reader: {
                     type: 'json'
                 }
             },
-            autoLoad: false,
             sorters: this.sortField ? {
                 property: this.sortField,
                 direction: this.sortOrder ? this.sortOrder: "ASC"
-            }: null,
-            groupField: this.groupField,
-            remoteSort:false,
-            remoteFilter: false
+            }: undefined,
+            groupField: this.groupField
         });
         this.bbar=[];
         if(this.appList!=null) {
             this.bbar.push({
                 xtype: 'tbtext',
-                id: "appSelectorBox_"+this.getId(),
+                name: 'appSelectorBox',
                 text: ''
             });
         }
         this.bbar.push({
             xtype: 'button',
-            id: "refresh_"+this.getId(),
+            name: 'refresh',
             text: i18n._('Refresh'),
-            name: "Refresh",
             tooltip: i18n._('Refresh'),
             iconCls: 'icon-refresh',
             handler: Ext.bind(function() {
@@ -104,16 +73,14 @@ Ext.define('Ung.MonitorGrid', {
             }, this)
         },{
             xtype: 'button',
-            id: "auto_refresh_"+this.getId(),
+            name: 'auto_refresh',
             text: i18n._('Auto Refresh'),
             enableToggle: true,
             pressed: false,
-            name: "Auto Refresh",
             tooltip: i18n._('Auto Refresh'),
             iconCls: 'icon-autorefresh',
             handler: Ext.bind(function() {
-                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-                if(autoRefreshButton.pressed) {
+                if(this.down('button[name=auto_refresh]').pressed) {
                     this.startAutoRefresh();
                 } else {
                     this.stopAutoRefresh();
@@ -147,7 +114,8 @@ Ext.define('Ung.MonitorGrid', {
             text: i18n._('Clear Filters'),
             tooltip: i18n._('Filters can be added by clicking on column headers arrow down menu and using Filters menu'),
             handler: Ext.bind(function () {
-                this.filters.clearFilters();
+                this.clearFilters();
+                this.searchField.setValue("");
             }, this)
         },{
                 text: i18n._('Clear Grouping'),
@@ -163,8 +131,11 @@ Ext.define('Ung.MonitorGrid', {
                 this.reconfigure(this.getStore(), this.initialConfig.columns);
             }, this)
         });
-        this.filterFeature=Ext.create('Ung.GlobalFiltersFeature', {});
+        
+        this.plugins.push('gridfilters');
+        this.filterFeature=Ext.create('Ung.grid.feature.GlobalFilter', {});
         this.features.push(this.filterFeature);
+        
         this.callParent(arguments);
         this.searchField=this.down('textfield[name=searchField]');
         this.caseSensitive = this.down('checkbox[name=caseSensitive]');
@@ -180,9 +151,8 @@ Ext.define('Ung.MonitorGrid', {
                 out.push('<option value="' + app.value + '" ' + selOpt + '>' + app.name + '</option>');
             }
             out.push('</select>');
-            Ext.getCmp('appSelectorBox_' + this.getId()).setText(out.join(""));
+            this.down('[name=appSelectorBox]').setText(out.join(""));
         }
-        this.initialLoad();
     },
     setSelectedApp: function(dataFnArg) {
         this.dataFnArg=dataFnArg;
@@ -207,105 +177,52 @@ Ext.define('Ung.MonitorGrid', {
         this.dataFnArg=this.getSelectedApp();
         this.reload();
     },
-    initialLoad: function() {
-        this.getView().setLoading(true);
-        this.getData({list:[]}); //Inital load with empty data
-        this.afterDataBuild(Ext.bind(function() {
-            this.getStore().loadPage(1, {
-                callback: function() {
-                    this.getView().setLoading(false);
-                },
-                scope: this
-            });
-        }, this));
-    },
-    getData: function(data) {
-        if(!data) {
-            if(this.dataFn) {
-                if (this.dataFnArg !== undefined && this.dataFnArg != null) {
-                    data = this.dataFn(this.dataFnArg);
-                } else {
-                    data = this.dataFn();
-                }
-                this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+    reload: function(hideLoadingMask, handler) {
+        var dataFnHandler = Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.getStore().getProxy().setData(result.list);
+            this.getStore().load();
+            if(!hideLoadingMask) {
+                this.getView().setLoading(false);
             }
-        } else {
-            this.data=(this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
-        }
-
-        if(!this.data) {
-            this.data=[];
-        }
-        return this.data;
-    },
-    buildData: function(handler) {
-        if(this.async) {
-            if (this.dataFnArg !== undefined && this.dataFnArg != null) {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.getData(result);
-                    this.afterDataBuild(handler);
-                }, this),this.dataFnArg);
-            } else {
-                this.dataFn(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.getData(result);
-                    this.afterDataBuild(handler);
-                }, this));
+            if(handler) {
+                handler();
             }
-        } else {
-            this.getData();
-            this.afterDataBuild(handler);
+        }, this);
+        if(!hideLoadingMask) {
+            this.getView().setLoading(true);
         }
-
-    },
-    afterDataBuild: function(handler) {
-        this.getStore().getProxy().data = this.data;
-        if(handler) {
-            handler();
+        if (this.dataFnArg !== undefined ) {
+            this.dataFn( dataFnHandler ,this.dataFnArg);
+        } else {
+            this.dataFn(dataFnHandler);
         }
     },
     beforeDestroy: function() {
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
-    },
-    reload: function() {
-        this.getView().setLoading(true);
-        Ext.defer(function(){
-            this.buildData(Ext.bind(function() {
-                this.getStore().loadPage(1, {
-                    callback: function() {
-                        this.getView().setLoading(false);
-                    },
-                    scope: this
-                });
-            }, this));
-        },10, this);
     },
     startAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=true;
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-            autoRefreshButton.toggle(true);
+            this.down('button[name=auto_refresh]').toggle(true);
         }
-        var refreshButton=Ext.getCmp("refresh_"+this.getId());
-        refreshButton.disable();
+        this.down('button[name=refresh]').disable();
         this.autorefreshList();
 
     },
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
-            autoRefreshButton.toggle(false);
+            this.down('button[name=auto_refresh]').toggle(false);
         }
-        var refreshButton=Ext.getCmp("refresh_"+this.getId());
-        refreshButton.enable();
+        this.down('button[name=refresh]').enable();
     },
     autorefreshList: function() {
         if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-            this.reload();
-            Ext.defer(this.autorefreshList, 9000, this);
+            this.reload(true, Ext.bind(function() {
+                Ext.defer(this.autorefreshList, 9000, this);
+            }, this));
         }
     },
     isDirty: function() {

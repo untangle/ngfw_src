@@ -83,7 +83,7 @@ if (node == null || !reportsAvailable || !reportingEnabled) {
     <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/reports.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/util.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/baseEventLog.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/baseEventLogOld.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="script/eventLog.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">

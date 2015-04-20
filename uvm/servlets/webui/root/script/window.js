@@ -15,6 +15,7 @@ Ext.define('Ung.Window', {
             }
         }
     },
+    width: 800,
     modal: true,
     // window title
     title: null,
@@ -26,9 +27,8 @@ Ext.define('Ung.Window', {
     subCmps: null,
     // size to rack right side on show
     sizeToRack: true,
-    layout: 'anchor',
+    layout: 'fit',
     defaults: {
-        anchor: '100% 100%',
         autoScroll: true
     },
     constructor: function(config) {
@@ -58,11 +58,10 @@ Ext.define('Ung.Window', {
                 elements: this.breadcrumbs
             }));
         }
-        Ext.QuickTips.init();
     },
 
     beforeDestroy: function() {
-        Ext.each(this.subCmps, Ext.destroy);
+        Ext.destroy(this.subCmps);
         this.callParent(arguments);
     },
     // on show position and size
@@ -76,9 +75,9 @@ Ext.define('Ung.Window', {
         }
     },
     setSizeToRack: function () {
-        var objSize = main.viewport.getSize();
-        objSize.width = objSize.width - main.contentLeftWidth;
-        this.setPosition(main.contentLeftWidth, 0);
+        var objSize = Ung.Main.viewport.getSize();
+        objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+        this.setPosition(Ung.Main.contentLeftWidth, 0);
         this.setSize(objSize);
     },
     // to override if needed
@@ -149,11 +148,11 @@ Ext.define("Ung.SettingsWin", {
     // build Tab panel from an array of tab items
     constructor: function(config) {
         config.rpc = {};
-        var objSize = main.viewport.getSize();
+        var objSize = Ung.Main.viewport.getSize();
         Ext.applyIf(config, {
             height: objSize.height,
-            width: objSize.width - main.contentLeftWidth,
-            x: main.contentLeftWidth,
+            width: objSize.width - Ung.Main.contentLeftWidth,
+            x: Ung.Main.contentLeftWidth,
             y: 0
         });
         this.callParent(arguments);
@@ -163,7 +162,6 @@ Ext.define("Ung.SettingsWin", {
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,
-            parentId: this.getId(),
             items: itemsArray
         });
         this.items=this.tabs;
@@ -173,8 +171,8 @@ Ext.define("Ung.SettingsWin", {
         }, this);
     },
     openTarget: function() {
-        if(main.target) {
-            var targetTokens = main.target.split(".");
+        if(Ung.Main.target) {
+            var targetTokens = Ung.Main.target.split(".");
             if(targetTokens.length >= 3 && targetTokens[2] !=null ) {
                 var tabIndex = this.tabs.items.findIndex('name', targetTokens[2]);
                 if(tabIndex != -1) {
@@ -199,7 +197,7 @@ Ext.define("Ung.SettingsWin", {
                     }
                 }
             }
-            main.target = null;
+            Ung.Main.target = null;
         }
     },
     helpAction: function() {
@@ -211,11 +209,12 @@ Ext.define("Ung.SettingsWin", {
                 helpSource = this.tabs.getActiveTab().getHelpSource();
             }
 
-        } else {
+        }
+        if(!helpSource) {
             helpSource = this.helpSource;
         }
 
-        main.openHelp(helpSource);
+        Ung.Main.openHelp(helpSource);
     },
     closeWindow: function(handler) {
         Ext.get("racks").show();
@@ -284,15 +283,14 @@ Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
     node: null,
     constructor: function(config) {
-        var nodeName=config.node.name;
-        this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.policyId;
+        this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
         // initializes the node i18n instance
-        config.i18n = Ung.i18nModuleInstances[nodeName];
+        config.i18n = Ung.i18nModuleInstances[config.name];
         this.callParent(arguments);
     },
     initComponent: function() {
         if (this.helpSource == null) {
-            this.helpSource = this.node.helpSource;
+            this.helpSource = this.helpSource;
         }
         this.breadcrumbs = [{
             title: i18n._(rpc.currentPolicy.name),
@@ -300,7 +298,7 @@ Ext.define("Ung.NodeWin", {
                 this.cancelAction(); // TODO check if we need more checking
             }, this)
         }, {
-            title: this.node.displayName
+            title: this.displayName
         }];
         if(this.bbar==null) {
             this.bbar=["-",{
@@ -351,11 +349,20 @@ Ext.define("Ung.NodeWin", {
         this.callParent(arguments);
     },
     removeAction: function() {
-        this.node.removeAction();
+        var message = Ext.String.format( i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"), this.displayName);
+        Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
+            if (btn == 'yes') {
+                var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                this.closeWindow();
+                if(nodeCmp) {
+                    nodeCmp.removeAction();
+                }
+            }
+        }, this));
     },
     // get rpcNode object
     getRpcNode: function() {
-        return this.node.rpcNode;
+        return this.rpcNode;
     },
     // get node settings object
     getSettings: function(handler) {
@@ -375,17 +382,6 @@ Ext.define("Ung.NodeWin", {
             }
         }
         return this.settings;
-    },
-    // get Validator object
-    getValidator: function() {
-        if (this.node.rpcNode.validator === undefined) {
-            try {
-                this.node.rpcNode.validator = this.getRpcNode().getValidator();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.node.rpcNode.validator;
     },
     save: function(isApply) {
         this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
@@ -407,9 +403,11 @@ Ext.define("Ung.NodeWin", {
         }, this), this.getSettings());
     },
     reload: function() {
-        var nodeWidget=this.node;
+        var nodeCmp = Ung.Node.getCmp(this.nodeId);
         this.closeWindow();
-        nodeWidget.onSettingsAction();
+        if(nodeCmp) {
+            nodeCmp.loadSettings();
+        }
     }
 });
 
@@ -606,33 +604,97 @@ Ext.define('Ung.EditWindow', {
     },
     // on click help
     helpAction: function() {
-        main.openHelp(this.helpSource);
+        Ung.Main.openHelp(this.helpSource);
     }
 });
-
-// Manage list popup window
-Ext.define("Ung.ManageListWindow", {
-    extend: "Ung.UpdateWindow",
-    // the editor grid
-    grid: null,
-    layout: 'fit',
+Ext.define("Ung.window.SelectDateTime", {
+    extend: "Ext.window.Window",
+    date: null,
+    buttonObj: null,
+    modal:true,
+    closeAction: 'hide',
     initComponent: function() {
-        this.items=this.grid;
+        this.items = [{
+            xtype: 'textfield',
+            name: 'dateAndTime',
+            readOnly: true,
+            hideLabel: true,
+            width: 180,
+            emptyText: this.dateTimeEmptyText
+        }, {
+            xtype: 'datepicker',
+            name: 'date',
+            handler: function(picker, date) {
+                var timeValue = this.down("timefield[name=time]").getValue();
+                if(timeValue != null) {
+                    date.setHours(timeValue.getHours());
+                    date.setMinutes(timeValue.getMinutes());
+                }
+                this.setDate(date);
+            },
+            scope: this
+        }, {
+            xtype: 'timefield',
+            name: 'time',
+            hideLabel: true,
+            margin: '5px 0 0 0',
+            increment: 30,
+            width: 180,
+            emptyText: i18n._('Time'),
+            value: Ext.Date.parse('12:00 AM','h:i A'),
+            listeners: {
+                change: {
+                    fn: function(combo, newValue, oldValue, opts) {
+                        if(!this.buttonObj) {
+                            return;
+                        }
+                        if (combo.getValue()!=null) {
+                            if(!this.date) {
+                                var selDate=this.down("datepicker[name=date]").getValue();
+                                if(!selDate) {
+                                    selDate=new Date();
+                                    selDate.setHours(0,0,0,0);
+                                }
+                                this.date = new Date(selDate.getTime()+i18n.timeoffset);
+                            }
+                            this.date.setHours(combo.getValue().getHours());
+                            this.date.setMinutes(combo.getValue().getMinutes());
+                            this.setDate(this.date);
+                        }
+                    },
+                    scope: this
+                }
+            }
+        }];
+        this.buttons = [{
+            text: i18n._("Done"),
+            handler: function() {
+                this.hide();
+            },
+            scope: this
+        }, '->', {
+            name: 'Clear',
+            text: i18n._("Clear Value"),
+            handler: function() {
+                this.setDate(null);
+                this.hide();
+                },
+            scope: this
+        }];
         this.callParent(arguments);
     },
-    closeWindow: function(skipLoad) {
-        if(!skipLoad) {
-            this.grid.reload();
+    setDate: function(date) {
+        this.date = date;
+        var dateStr ="";
+        var buttonLabel = null;
+        if(this.date) {
+            this.date.setTime(this.date.getTime()-i18n.timeoffset);
+            dateStr = i18n.timestampFormat({time: this.date.getTime()});
+            buttonLabel = i18n.timestampFormat({time: this.date.getTime()});
         }
-        this.hide();
-    },
-    isDirty: function() {
-        return this.grid.isDirty();
-    },
-    updateAction: function() {
-        this.hide();
-    },
-    saveAction: function() {
-        this.applyAction(Ext.bind(this.hide, this));
+        this.down("textfield[name=dateAndTime]").setValue(dateStr);
+        if(this.buttonObj) {
+            this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
+        }
     }
 });

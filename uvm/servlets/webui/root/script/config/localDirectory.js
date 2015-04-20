@@ -17,25 +17,22 @@ Ext.define('Webui.config.localDirectory', {
         this.callParent(arguments);
     },
     buildLocalDirectory: function() {
-        this.gridUsers = Ext.create('Ung.EditorGrid',{
+        this.gridUsers = Ext.create('Ung.grid.Panel',{
             name: 'Local Users',
             helpSource: 'local_directory_local_users',
             title: this.i18n._('Local Users'),
             settingsCmp: this,
             height: 500,
-            paginated: false,
-            bbar: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Cleanup expired users'),
-                        iconCls: 'icon-delete-row',
-                        handler: Ext.bind(function() {
-                            this.cleanupExpiredUsers();
-                        }, this)
-                    },
-                    '-'
-            ],
+            dataFn: Ung.Main.getLocalDirectory().getUsers,
+            bbar: ['-', {
+                xtype: 'button',
+                text: i18n._('Cleanup expired users'),
+                iconCls: 'icon-delete-row',
+                handler: Ext.bind(function() {
+                    this.cleanupExpiredUsers();
+                }, this)
+            }, '-' ],
+            recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
             emptyRow: {
                 "username": "",
                 "firstName": "",
@@ -43,11 +40,9 @@ Ext.define('Webui.config.localDirectory', {
                 "email": "",
                 "password": "",
                 "passwordBase64Hash": "",
-                "expirationTime": 0,
-                "javaClass": "com.untangle.uvm.LocalDirectoryUser"
+                "expirationTime": 0
             },
-            recordJavaClass: "com.untangle.uvm.LocalDirectoryUser",
-            dataFn: main.getLocalDirectory().getUsers,
+            sortField: 'username',
             fields: [{
                 name: 'username'
             }, {
@@ -124,8 +119,7 @@ Ext.define('Webui.config.localDirectory', {
                     }
                     return result;
                 },this)
-            },
-            {
+            }, {
                 header: this.i18n._("expiration time"),
                 width: 150,
                 dataIndex: 'expirationTime',
@@ -136,9 +130,7 @@ Ext.define('Webui.config.localDirectory', {
                         return i18n.timestampFormat(value);
                     }
                 },this)
-            }],
-            sortField: 'username',
-            columnsDefaultSortable: true
+            }]
         });
         this.gridUsers.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             inputLines: [{
@@ -151,8 +143,7 @@ Ext.define('Webui.config.localDirectory', {
                  regex: /^[\w ]+$/,
                  regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "First Name",
                  dataIndex: "firstName",
@@ -160,16 +151,14 @@ Ext.define('Webui.config.localDirectory', {
                  emptyText: this.i18n._('[enter first name]'),
                  allowBlank: false,
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "Last Name",
                  dataIndex: "lastName",
                  fieldLabel: this.i18n._("Last Name"),
                  emptyText: this.i18n._('[last name]'),
                  width: 300
-             },
-             {
+             }, {
                  xtype:'textfield',
                  name: "Email Address",
                  dataIndex: "email",
@@ -177,8 +166,7 @@ Ext.define('Webui.config.localDirectory', {
                  emptyText: this.i18n._('[email address]'),
                  vtype: 'email',
                  width: 300
-             },
-             {
+             }, {
                  xtype: 'container',
                  layout: 'column',
                  margin: '0 0 5 0',
@@ -196,8 +184,7 @@ Ext.define('Webui.config.localDirectory', {
                      html: this.i18n._("(leave empty to keep the current password unchanged)"),
                      cls: 'boxlabel'
                  }]
-             },
-             {
+             }, {
                  xtype:'container',
                  layout: {
                      type: 'hbox',
@@ -258,7 +245,7 @@ Ext.define('Webui.config.localDirectory', {
     },
     validate: function() {
         //validate local directory users
-        var listUsers = this.gridUsers.getPageList();
+        var listUsers = this.gridUsers.getList();
         var mapUsers = {}, user;
         for(var i=0; i<listUsers.length;i++) {
             user = listUsers[i];
@@ -322,7 +309,7 @@ Ext.define('Webui.config.localDirectory', {
     },
     save: function (isApply) {
         // Calculate passwordBase64Hash for changed passwords and remove cleartext password before saving
-        var user, listUsers = this.gridUsers.getPageList();
+        var user, listUsers = this.gridUsers.getList();
         for(var i=0; i<listUsers.length;i++) {
             user = listUsers[i];
             if(user.password == null) {
@@ -332,7 +319,7 @@ Ext.define('Webui.config.localDirectory', {
                 user.password = "";
             }
         }
-        main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
+        Ung.Main.getLocalDirectory().setUsers(Ext.bind(function(result, exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             if (!isApply) {
@@ -348,7 +335,7 @@ Ext.define('Webui.config.localDirectory', {
             return;
         }
         Ext.MessageBox.wait(this.i18n._("Cleaning up expired users..."), i18n._("Please wait"));
-        main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
+        Ung.Main.getLocalDirectory().cleanupExpiredUsers(Ext.bind(function(result, exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             this.gridUsers.reload();

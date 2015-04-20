@@ -35,7 +35,6 @@ Ext.define('Webui.config.hostMonitor', {
                     result.list.push({
                         "address": "184.27.239."+(ii%10),
                         "macAddress": "11:22:33:44:55:6"+(ii%10),
-                        "macVendor": "MAC Vendor "+i,
                         "hostname": i%3?("p.twitter.com"+i):null,
                         "licensed": true,
                         "lastAccessTime": 0,//d.getTime()+(i*86400000),
@@ -59,9 +58,6 @@ Ext.define('Webui.config.hostMonitor', {
             handler(result, exception);
         }, this));
     },
-    getPenaltyBoxedHosts: function() {
-        return rpc.hostTable.getPenaltyBoxedHosts();
-    },
     megaByteRenderer: function(bytes) {
         var units = ["bytes","Kbytes","Mbytes","Gbytes"];
         var units_itr = 0;
@@ -74,9 +70,6 @@ Ext.define('Webui.config.hostMonitor', {
         bytes = Math.round(bytes*100)/100;
 
         return "" + bytes + " " + units[units_itr];
-    },
-    getQuotaHosts: function() {
-        return rpc.hostTable.getQuotaHosts();
     },
     // Current Hosts Grid
     buildGridCurrentHosts: function(columns, groupField) {
@@ -94,23 +87,20 @@ Ext.define('Webui.config.hostMonitor', {
             helpSource: 'host_viewer_current_hosts',
             settingsCmp: this,
             height: 500,
-            sortField: this.sortField,
-            sortOrder: this.sortOrder,
-            groupField: this.groupField,
             title: this.i18n._("Current Hosts"),
             tooltip: this.i18n._("This shows all current hosts."),
             dataFn: Ext.bind(this.getHosts, this),
+            sortField: this.sortField,
+            sortOrder: this.sortOrder,
+            groupField: this.groupField,
             fields: [{
                 name: "id"
             },{
                 name: "address",
                 type: 'string',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "macAddress",
-                type: 'string'
-            },{
-                name: "macVendor",
                 type: 'string'
             },{
                 name: "hostname",
@@ -195,13 +185,6 @@ Ext.define('Webui.config.hostMonitor', {
                 header: this.i18n._("MAC Address"),
                 dataIndex: "macAddress",
                 width: 100,
-                filter: {
-                    type: 'string'
-                }
-            }, {
-                header: this.i18n._("MAC Vendor"),
-                dataIndex: "macVendor",
-                width: 150,
                 filter: {
                     type: 'string'
                 }
@@ -383,39 +366,21 @@ Ext.define('Webui.config.hostMonitor', {
         });
     },
     buildGridPenaltyBox: function() {
-        this.gridPenaltyBox = Ext.create('Ung.EditorGrid',{
-            anchor: '100% -60',
+        this.gridPenaltyBox = Ext.create('Ung.grid.Panel',{
             helpSource: 'host_viewer_penalty_box_hosts',
             name: "PenaltyBoxHosts",
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
+            hasRefresh: true,
             title: this.i18n._("Penalty Box Hosts"),
             qtip: this.i18n._("This shows all hosts currently in the Penalty Box."),
-            paginated: false,
-            bbar: Ext.create('Ext.toolbar.Toolbar',{
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.gridPenaltyBox.reload();
-                        }, this)
-                    }
-                ]
-            }),
+            dataFn: Ext.bind(rpc.hostTable.getPenaltyBoxedHosts, this),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
-            dataFn: Ext.bind(this.getPenaltyBoxedHosts, this),
             fields: [{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "penaltyBoxEntryTime"
             },{
@@ -470,39 +435,21 @@ Ext.define('Webui.config.hostMonitor', {
 
     },
     buildGridQuotaBox: function() {
-        this.gridQuotaBox = Ext.create('Ung.EditorGrid',{
-            anchor: '100% -60',
+        this.gridQuotaBox = Ext.create('Ung.grid.Panel',{
             name: "CurrentQuotas",
             helpSource: 'host_viewer_current_quotas',
             settingsCmp: this,
-            parentId: this.getId(),
             hasAdd: false,
             hasEdit: false,
             hasDelete: false,
-            columnsDefaultSortable: true,
+            hasRefresh: true,
             title: this.i18n._("Current Quotas"),
             qtip: this.i18n._("This shows all hosts currently with quotas."),
-            paginated: false,
-            bbar: Ext.create('Ext.toolbar.Toolbar',{
-                items: [
-                    '-',
-                    {
-                        xtype: 'button',
-                        text: i18n._('Refresh'),
-                        name: "Refresh",
-                        tooltip: i18n._('Refresh'),
-                        iconCls: 'icon-refresh',
-                        handler: Ext.bind(function() {
-                            this.gridQuotaBox.reload();
-                        }, this)
-                    }
-                ]
-            }),
+            dataFn: Ext.bind(rpc.hostTable.getQuotaHosts, this),
             recordJavaClass: "com.untangle.uvm.HostTableEntry",
-            dataFn: Ext.bind(this.getQuotaHosts, this),
             fields: [{
                 name: "address",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "quotaSize"
             },{
@@ -598,7 +545,7 @@ Ext.define('Webui.config.hostMonitor', {
         });
     },
     buildPenaltyBoxEventLog: function() {
-        this.gridPenaltyBoxEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridPenaltyBoxEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'PenaltyBoxEventLog',
             helpSource: 'host_viewer_penalty_box_event_log',
@@ -606,16 +553,16 @@ Ext.define('Webui.config.hostMonitor', {
             title: this.i18n._("Penalty Box Event Log"),
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'start_time',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'end_time',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'reason'
             }],
@@ -649,7 +596,7 @@ Ext.define('Webui.config.hostMonitor', {
         });
     },
     buildQuotaEventLog: function() {
-        this.gridQuotaEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridQuotaEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'QuotaEventLog',
             helpSource: 'host_viewer_quota_event_log',
@@ -657,12 +604,12 @@ Ext.define('Webui.config.hostMonitor', {
             title: this.i18n._("Quota Event Log"),
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'action'
             }, {
                 name: 'address',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'size'
             }, {

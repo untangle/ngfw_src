@@ -11,7 +11,9 @@ Ext.define('Webui.config.sessionMonitor', {
             }];
         }
         this.buildGridCurrentSessions();
-        this.items = [this.gridCurrentSessions];
+        //this.buildChartSessions();
+        //this.buildTabPanel([this.gridCurrentSessions]);
+        this.items=[this.gridCurrentSessions];
         this.callParent(arguments);
     },
     closeWindow: function() {
@@ -30,6 +32,12 @@ Ext.define('Webui.config.sessionMonitor', {
             }
             var sessions = result.list;
             if(testMode) {
+                sessions = [];
+                for(var tt = 0; tt<100; tt++) {
+                    sessions = sessions.concat(Ext.decode(Ext.encode(result.list)));
+                }
+            }
+            if(false) { 
                 var testSessionsSize=5000;//400 + Math.floor((Math.random()*150));
                 for(var t=0;t<testSessionsSize;t++) {
                     var ii=t+Math.floor((Math.random()*5));
@@ -105,7 +113,7 @@ Ext.define('Webui.config.sessionMonitor', {
             var nodeProperties = allNodeProperties.map[nodeId];
             var nodeSettings = allNodeSettings.map[nodeId];
             if (nodeProperties.viewPosition != null) {
-                appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + main.getPolicyName(nodeSettings.policyId) + "] "});
+                appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + Ung.Main.getPolicyName(nodeSettings.policyId) + "] "});
             }
         }
         return appList;
@@ -116,11 +124,11 @@ Ext.define('Webui.config.sessionMonitor', {
             var policy = rpc.policies[i];
             policyListOptions.push([policy.policyId+"", policy.name]);
         }
-        var policyListOptionsStore = new Ext.data.ArrayStore({
+        var policyListOptionsStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'id', 'text' ],
             data: policyListOptions
         });
-        var priorityOptionsStore = new Ext.data.ArrayStore({
+        var priorityOptionsStore = Ext.create('Ext.data.ArrayStore', {
             fields: [ 'id', 'text' ],
             data: [
                 [1, i18n._("Very High")],
@@ -163,7 +171,7 @@ Ext.define('Webui.config.sessionMonitor', {
             dataIndex: "policy",
             width: 80,
             renderer: function(value) {
-                return (value == null || value == "" ? "" : main.getPolicyName(value) );
+                return (value == null || value == "" ? "" : Ung.Main.getPolicyName(value) );
             },
             filter: {
                 type: 'list',
@@ -506,18 +514,18 @@ Ext.define('Webui.config.sessionMonitor', {
             name: this.name+"Grid",
             settingsCmp: this,
             height: 500,
-            sortField: this.sortField,
-            sortOrder: this.sortOrder,
-            groupField: this.groupField,
             title: this.i18n._("Current Sessions"),
             tooltip: this.i18n._("This shows all current sessions."),
             dataFn: Ext.bind(this.getSessions, this),
             dataFnArg: 0,
             appList: this.getAppList(),
+            sortField: this.sortField,
+            sortOrder: this.sortOrder,
+            groupField: this.groupField,
             columns: this.getColumns(),
             fields: [{
                 name: "creationTime",
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             },{
                 name: "id"
             },{
@@ -528,10 +536,10 @@ Ext.define('Webui.config.sessionMonitor', {
                 name: "policy"
             },{
                 name: "preNatClient",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "preNatServer",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "preNatClientPort",
                 sortType: 'asInt'
@@ -540,10 +548,10 @@ Ext.define('Webui.config.sessionMonitor', {
                 sortType: 'asInt'
             },{
                 name: "postNatClient",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "postNatServer",
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             },{
                 name: "postNatClientPort",
                 sortType: 'asInt'
@@ -630,6 +638,13 @@ Ext.define('Webui.config.sessionMonitor', {
             },{
                 name: "qosPriority"
             }]
+        });
+    },
+     // Current Sessions Grid
+    buildChartSessions: function() {
+        this.chartSessions = Ext.create('Ext.panel.Panel', {
+            title: this.i18n._("Chart"),
+            html: '<p>World!</p>'
         });
     }
 });

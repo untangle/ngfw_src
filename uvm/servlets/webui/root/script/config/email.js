@@ -90,7 +90,7 @@ Ext.define('Webui.config.email', {
     getMailSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
             try {
-                this.rpc.mailSettings = main.getMailSender().getSettings();
+                this.rpc.mailSettings = Ung.Main.getMailSender().getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -133,7 +133,7 @@ Ext.define('Webui.config.email', {
         return hh + ":" + mm;
     },
     sendTestMessage: function(emailAddress) {
-        var message = main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
+        var message = Ung.Main.getMailSender().sendTestMessage( Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             this.testEmailResultMessage = result;
             var color = result == 'Completed' ? 'green': 'red';
@@ -145,7 +145,6 @@ Ext.define('Webui.config.email', {
         this.panelOutgoingServer = Ext.create('Ext.panel.Panel', {
             name: 'Outgoing Server',
             helpSource: 'email_outgoing_server',
-            parentId: this.getId(),
             title: this.i18n._('Outgoing Server'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -182,7 +181,6 @@ Ext.define('Webui.config.email', {
                         closeAction: 'hide',
                         plain: false,
                         items: Ext.create('Ext.panel.Panel',{
-                            header: false,
                             border: false,
                             items: [{
                                 xtype: 'fieldset',
@@ -238,8 +236,7 @@ Ext.define('Webui.config.email', {
             }, this),
 
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Outgoing Email Server'),
@@ -289,10 +286,12 @@ Ext.define('Webui.config.email', {
                     xtype: 'fieldset',
                     height: 150,
                     style: "margin-left: 50px;",
-                    items: [{
-                        xtype: 'textfield',
+                    defaults: {
                         labelWidth: 230,
                         labelAlign: 'right',
+                    },
+                    items: [{
+                        xtype: 'textfield',
                         name: 'Server Address or Hostname',
                         id: 'email_smtpHost',
                         fieldLabel: this.i18n._('Server Address or Hostname'),
@@ -325,17 +324,13 @@ Ext.define('Webui.config.email', {
                             }
 
                         },{
-                            border: false,
+                            xtype: 'component',
                             id: 'email_smtpPort_TLS_Warning',
                             hidden: (this.getMailSettings().smtpPort != 465),
-                            cls: "description",
                             html: "<b>" + "<font color=\"red\">&nbsp;" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("SMTPS (465) is deprecated and not supported. Use STARTTLS (587).") + "</b>"
                         }]
                     }, {
                         xtype: 'checkbox',
-                        labelWidth: 230,
-                        labelAlign: 'right',
-                        itemCls: 'left-indent-5',
                         name: 'Use Authentication',
                         id: 'email_smtpUseAuthentication',
                         fieldLabel: this.i18n._('Use Authentication'),
@@ -353,16 +348,12 @@ Ext.define('Webui.config.email', {
                         name: 'Login',
                         id: 'email_smtpLogin',
                         fieldLabel: this.i18n._('Login'),
-                        labelWidth: 230,
-                        labelAlign: 'right',
                         width: 375,
                         value: this.getMailSettings().authUser
                     }, {
                         xtype: 'textfield',
                         hidden: true,
                         name: 'Password',
-                        labelWidth: 230,
-                        labelAlign: 'right',
                         id: 'email_smtpPassword',
                         inputType: 'password',
                         fieldLabel: this.i18n._('Password'),
@@ -373,8 +364,8 @@ Ext.define('Webui.config.email', {
             }, {
                 title: this.i18n._('Email From Address'),
                 items: [{
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: Ext.String.format(this.i18n._("The {0} Server will send email from this address."), rpc.companyName)
                 }, {
                     xtype: 'textfield',
@@ -390,8 +381,8 @@ Ext.define('Webui.config.email', {
             }, {
                 title: this.i18n._('Email Test'),
                 items: [{
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
+                    margin: '0 0 5 0',
                     html: this.i18n._('The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.')
                 },{
                     xtype: 'button',
@@ -409,7 +400,7 @@ Ext.define('Webui.config.email', {
                                            if (this.validate()) {
                                             Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                             // save mail settings
-                                            main.getMailSender().setSettings(Ext.bind(function(result, exception) {
+                                            Ung.Main.getMailSender().setSettings(Ext.bind(function(result, exception) {
                                                 if(Ung.Util.handleException(exception)) return;
                                                 Ext.MessageBox.hide();
                                                 Ung.Util.clearDirty(this.panelOutgoingServer);
@@ -438,8 +429,7 @@ Ext.define('Webui.config.email', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // select current row
                 this.grid.getSelectionModel().select(record);
                 // show details
@@ -447,17 +437,21 @@ Ext.define('Webui.config.email', {
             }
         });
         this.loadedGlobalSafelist = true;
-        this.gridSafelistGlobal = Ext.create('Ung.EditorGrid', {
+        this.gridSafelistGlobal = Ext.create('Ung.grid.Panel', {
             name: 'Global',
             title: this.i18n._('Global Safe List'),
             hasEdit: false,
             settingsCmp: this,
-            paginated: false,
             flex: 1,
-            style: "margin-bottom:10px;",
+            dataFn: Ext.bind(function(handler) {
+                this.getSafelistAdminView().getSafelistContents(Ext.bind(function(result, exception) {
+                    handler({list: Ung.Util.buildJsonListFromStrings(result, 'emailAddress')}, exception);
+                }, this),'GLOBAL');
+            }, this),
             emptyRow: {
                 "emailAddress": ""
             },
+            sortField: 'emailAddress',
             fields: [{
                 name: 'emailAddress'
             }],
@@ -467,8 +461,6 @@ Ext.define('Webui.config.email', {
                 width: 450,
                 dataIndex: 'emailAddress'
             }],
-            sortField: 'emailAddress',
-            columnsDefaultSortable: true,
             rowEditorInputLines: [{
                 xtype: 'textfield',
                 name: "Email Address",
@@ -478,17 +470,10 @@ Ext.define('Webui.config.email', {
                 vtype: 'email',
                 allowBlank: false,
                 width: 400
-            }],
-            dataRoot: '',
-            dataFn: Ext.bind(function() {
-                var safeListContents = this.getSafelistAdminView().getSafelistContents('GLOBAL');
-                //var safeListContents = ['test@aaa.com', 'test1@bbb.com'];
-                this.loadedGlobalSafelist = true;
-                return Ung.Util.buildJsonListFromStrings(safeListContents, 'emailAddress');
-            }, this)
+            }]
         });
 
-        this.gridSafelistUser = Ext.create('Ung.EditorGrid', {
+        this.gridSafelistUser = Ext.create('Ung.grid.Panel', {
             name: 'Per User',
             title: this.i18n._('Per User Safe Lists'),
             selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
@@ -496,8 +481,8 @@ Ext.define('Webui.config.email', {
             hasAdd: false,
             hasDelete: false,
             settingsCmp: this,
-            paginated: false,
             flex: 1,
+            margin: '5 0 0 0',
             dataFn: this.getSafelistAdminView().getUserSafelistCounts,
             /*testData: [
                 {id: 5, emailAddress: "aaa@aaa.com", count: 353},
@@ -509,7 +494,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.gridSafelistUser.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -528,6 +512,8 @@ Ext.define('Webui.config.email', {
                     }, this), accounts);
                 }, this)
             }],
+            plugins: [showDetailColumn],
+            sortField: 'emailAddress',
             fields: [{
                 name: 'id'
             }, {
@@ -536,25 +522,21 @@ Ext.define('Webui.config.email', {
                 name: 'count'
             }],
             columns: [{
-                    header: this.i18n._("account address"),
-                    width: 350,
-                    dataIndex: 'emailAddress',
-                    flex: 1
-                }, {
-                    header: this.i18n._("safe list size"),
-                    width: 150,
-                    align: 'right',
-                    dataIndex: 'count'
-                }, showDetailColumn],
-            plugins: [showDetailColumn],
-            sortField: 'emailAddress',
-            columnsDefaultSortable: true,
-
+                header: this.i18n._("account address"),
+                width: 350,
+                dataIndex: 'emailAddress',
+                flex: 1
+            }, {
+                header: this.i18n._("safe list size"),
+                width: 150,
+                align: 'right',
+                dataIndex: 'count'
+            }, showDetailColumn],
             onShowDetail: Ext.bind(function(record) {
                 if(!this.safelistDetailsWin) {
                     this.buildGridSafelistUserDetails();
                     this.safelistDetailsWin = Ext.create('Webui.config.email.EmailAddressDetails', {
-                        detailsPanel: this.gridSafelistUserDetails,
+                        items: this.gridSafelistUserDetails,
                         settingsCmp: this,
                         showForCurrentAccount: function(emailAddress) {
                             this.account = emailAddress;
@@ -583,7 +565,6 @@ Ext.define('Webui.config.email', {
         this.panelEmailSafeList = Ext.create('Ext.panel.Panel', {
             name: 'Safe List',
             helpSource: 'email_safe_list',
-            parentId: this.getId(),
             title: this.i18n._('Safe List'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -591,20 +572,17 @@ Ext.define('Webui.config.email', {
         });
     },
     buildGridSafelistUserDetails: function() {
-        this.gridSafelistUserDetails = Ext.create('Ung.EditorGrid',{
-            anchor: "100% 100%",
+        this.gridSafelistUserDetails = Ext.create('Ung.grid.Panel',{
             name: 'gridSafelistUserDetails',
             selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
             hasEdit: false,
             hasAdd: false,
             hasDelete: false,
-            paginated: false,
             tbar: [{
                 text: this.i18n._('Purge Selected'),
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.gridSafelistUserDetails.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -626,7 +604,7 @@ Ext.define('Webui.config.email', {
                     this.gridSafelistUser.reload();
                 }, this)
             }],
-            data: [],
+            sortField: 'sender',
             fields: [{
                 name: 'sender'
             }],
@@ -635,9 +613,7 @@ Ext.define('Webui.config.email', {
                 flex: 1,
                 width: 400,
                 dataIndex: 'sender'
-            }],
-            sortField: 'sender',
-            columnsDefaultSortable: true
+            }]
         });
     },
 
@@ -649,8 +625,7 @@ Ext.define('Webui.config.email', {
             init: function(grid) {
                 this.grid = grid;
             },
-            handler: function(view, rowIndex) {
-                var record = view.getStore().getAt(rowIndex);
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // select current row
                 this.grid.getSelectionModel().select(record);
                 // show details
@@ -668,7 +643,6 @@ Ext.define('Webui.config.email', {
         this.panelQuarantine = Ext.create('Ext.panel.Panel',{
             name: 'panelQuarantine',
             helpSource: 'email_quarantine',
-            parentId: this.getId(),
             title: this.i18n._('Quarantine'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -676,10 +650,11 @@ Ext.define('Webui.config.email', {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
+                defaults: {
+                    labelWidth: 230
+                },
                 items: [{
                     xtype: 'textfield',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     name: 'Maximum Holding Time (days)',
                     fieldLabel: this.i18n._('Maximum Holding Time (days)'),
                     allowBlank: false,
@@ -699,8 +674,6 @@ Ext.define('Webui.config.email', {
                     xtype: 'checkbox',
                     name: 'Send Daily Quarantine Digest Emails',
                     id: 'quarantine_sendDailyDigest',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     fieldLabel: this.i18n._('Send Daily Quarantine Digest Emails'),
                     checked: this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
                     width: 320,
@@ -730,8 +703,6 @@ Ext.define('Webui.config.email', {
                     xtype: 'timefield',
                     name: 'Digest Sending Time',
                     id: 'quarantine_dailySendingTime',
-                    labelWidth: 230,
-                    labelAlign: 'left',
                     fieldLabel: this.i18n._('Quarantine Digest Sending Time'),
                     allowBlank: false,
                     increment: 1,
@@ -748,32 +719,29 @@ Ext.define('Webui.config.email', {
                         }
                     }
                 }, {
-                    cls: 'description',
-                    border: false,
+                    xtype: 'component',
                     html: Ext.String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'), publicUrl)
                 }]
             },
-            this.userQuarantinesGrid = Ext.create('Ung.EditorGrid', {
+            this.userQuarantinesGrid = Ext.create('Ung.grid.Panel', {
                 title: this.i18n._('User Quarantines'),
                 name: 'User Quarantines',
                 selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
                 hasEdit: false,
                 hasAdd: false,
                 hasDelete: false,
-                paginated: false,
                 settingsCmp: this,
                 height: 250,
                 dataFn: this.getQuarantineMaintenenceView().listInboxes,
-                //testData: [
-                //    {id: 34, address: "aaa@ddd.com", numMails: 115, totalSz: 150124},
-                //    {id: 35, address: "bbb@ddd.com", numMails: 76, totalSz: 560777}
-                //],
+                /*testData: [
+                    {id: 34, address: "aaa@ddd.com", numMails: 115, totalSz: 150124},
+                    {id: 35, address: "bbb@ddd.com", numMails: 76, totalSz: 560777}
+                ],*/
                 tbar: [{
                     text: this.i18n._('Purge Selected'),
                     tooltip: this.i18n._('Purge Selected'),
                     iconCls: 'purge-icon',
                     name: 'Purge Selected',
-                    parentId: this.getId(),
                     handler: Ext.bind(function() {
                         var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -796,7 +764,6 @@ Ext.define('Webui.config.email', {
                     tooltip: this.i18n._('Release Selected'),
                     iconCls: 'release-icon',
                     name: 'Release Selected',
-                    parentId: this.getId(),
                     handler: Ext.bind(function() {
                         var selectedRecords = this.userQuarantinesGrid.getSelectionModel().selected;
                         if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -820,6 +787,8 @@ Ext.define('Webui.config.email', {
                     xtype: 'tbtext',
                     text: Ext.String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
                 }],
+                plugins: [showDetailColumn],
+                sortField: 'address',
                 fields: [{
                     name: 'address'
                 }, {
@@ -847,14 +816,11 @@ Ext.define('Webui.config.email', {
                         return i18n.numberFormat((value /1024.0).toFixed(3));
                     }
                 }, showDetailColumn],
-                plugins: [showDetailColumn],
-                sortField: 'address',
-                columnsDefaultSortable: true,
                 onShowDetail: Ext.bind(function(record) {
                     if(!this.quarantinesDetailsWin) {
                         this.buildUserQuarantinesGrid();
                         this.quarantinesDetailsWin = Ext.create('Webui.config.email.EmailAddressDetails', {
-                            detailsPanel: this.userQuarantinesDetailsGrid,
+                            items: this.userQuarantinesDetailsGrid,
                             settingsCmp: this,
                             showForCurrentAccount: function(emailAddress) {
                                 this.account = emailAddress;
@@ -875,19 +841,16 @@ Ext.define('Webui.config.email', {
                 border: false,
                 html: this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
             },
-            this.quarantinableAddressesGrid = Ext.create('Ung.EditorGrid',{
+            this.quarantinableAddressesGrid = Ext.create('Ung.grid.Panel',{
                 title: this.i18n._('Quarantinable Addresses'),
                 name: 'Quarantinable Addresses',
                 settingsCmp: this,
                 height: 250,
-                paginated: false,
+                dataExpression: "getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list",
+                recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
                 emptyRow: {
                     "address": ""
                 },
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
-                dataFn: Ext.bind(function() {
-                    return this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns;
-                }, this),
                 fields: [{
                     name: 'address'
                 }],
@@ -917,20 +880,17 @@ Ext.define('Webui.config.email', {
                 border: false,
                 html: this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
             },
-            this.quarantineForwardsGrid = Ext.create('Ung.EditorGrid', {
+            this.quarantineForwardsGrid = Ext.create('Ung.grid.Panel', {
                 title: this.i18n._('Quarantine Forwards'),
                 name: 'Quarantine Forwards',
                 settingsCmp: this,
                 height: 250,
-                paginated: false,
+                dataExpression: "getMailNodeSettings().quarantineSettings.addressRemaps.list",
+                recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
                 emptyRow: {
                     "address1": "",
                     "address2": ""
                 },
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
-                dataFn: Ext.bind( function() {
-                    return this.getMailNodeSettings().quarantineSettings.addressRemaps;
-                }, this),
                 fields: [{
                     name: 'address1'
                 }, {
@@ -986,28 +946,37 @@ Ext.define('Webui.config.email', {
     },
 
     buildUserQuarantinesGrid: function() {
-        this.userQuarantinesDetailsGrid = Ext.create('Ung.EditorGrid', {
-            anchor: "100% 100%",
+        this.userQuarantinesDetailsGrid = Ext.create('Ung.grid.Panel', {
             name: 'userQuarantinesDetailsGrid',
             selModel: Ext.create('Ext.selection.CheckboxModel', {singleSelect: false}),
             hasEdit: false,
             hasAdd: false,
             hasDelete: false,
-            paginated:false,
             columnMenuDisabled: false,
-            features: [{ftype: "filters"}],
-            verticalScrollerType: 'paginggridscroller',
-            plugins: {
-                ptype: 'bufferedrenderer',
-                trailingBufferZone: 20,  // Keep 20 rows rendered in the table behind scroll
-                leadingBufferZone: 50   // Keep 50 rows rendered in the table ahead of scroll
-            },
+            dataFn: Ext.bind(function(handler) {
+                if(this.userQuarantinesDetailsGrid != null && this.quarantinesDetailsWin.account!= null) {
+                    this.getQuarantineMaintenenceView().getInboxRecords(Ext.bind(function(result, exception) {
+                        if(result && result.list) {
+                            for(var i=0; i< result.list.length; i++) {
+                                /* copy values from mailSummary to object */
+                                result.list[i].subject = result.list[i].mailSummary.subject;
+                                result.list[i].sender = result.list[i].mailSummary.sender;
+                                result.list[i].quarantineCategory = result.list[i].mailSummary.quarantineCategory;
+                                result.list[i].quarantineDetail = result.list[i].mailSummary.quarantineDetail;
+                            }
+                        }
+                        handler(result, exception);
+                        //handler({list:[]}); //For testData
+                    }, this), this.quarantinesDetailsWin.account);
+                } else {
+                    handler({ list: [] });
+                }
+            }, this),
             tbar: [{
                 text: this.i18n._('Purge Selected'),
                 tooltip: this.i18n._('Purge Selected'),
                 iconCls: 'purge-icon',
                 name: 'Purge Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -1032,7 +1001,6 @@ Ext.define('Webui.config.email', {
                 tooltip: this.i18n._('Release Selected'),
                 iconCls: 'release-icon',
                 name: 'Release Selected',
-                parentId: this.getId(),
                 handler: Ext.bind(function() {
                     var selectedRecords = this.userQuarantinesDetailsGrid.getSelectionModel().selected;
                     if(selectedRecords === undefined || selectedRecords.length == 0) {
@@ -1053,30 +1021,8 @@ Ext.define('Webui.config.email', {
                     }, this), this.quarantinesDetailsWin.account, emails);
                 }, this)
             }],
-            dataFn: Ext.bind(function() {
-                if(this.userQuarantinesDetailsGrid != null && this.quarantinesDetailsWin.account!= null) {
-                    try {
-                        var mails = this.getQuarantineMaintenenceView().getInboxRecords(this.quarantinesDetailsWin.account);
-                        for(var i=0; i<mails.list.length; i++) {
-                            /* copy values from mailSummary to object */
-                            mails.list[i].subject = mails.list[i].mailSummary.subject;
-                            mails.list[i].sender = mails.list[i].mailSummary.sender;
-                            mails.list[i].quarantineCategory = mails.list[i].mailSummary.quarantineCategory;
-                            mails.list[i].quarantineDetail = mails.list[i].mailSummary.quarantineDetail;
-                        }
-                        return mails;
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e, true);
-                        return {
-                            list: []
-                        };
-                    }
-                } else {
-                    return {
-                        list: []
-                    };
-                }
-            }, this),
+            plugins: ['gridfilters'],
+            sortField: 'quarantinedDate',
             fields: [{
                 name: 'mailID'
             }, {
@@ -1107,7 +1053,9 @@ Ext.define('Webui.config.email', {
                     var date = new Date();
                     date.setTime( value );
                     return i18n.timestampFormat(value);
-                },
+                }/*
+                TODO: ext5
+                ,
                 filter: { type: 'datetime',
                     dataIndex: 'quarantinedDate',
                     date: {
@@ -1145,7 +1093,7 @@ Ext.define('Webui.config.email', {
                         }
                         return true;
                     }
-                  }
+                  }*/
             }, {
                 header: this.i18n._("Sender"),
                 width: 180,
@@ -1196,9 +1144,7 @@ Ext.define('Webui.config.email', {
                 filter: {
                     type: 'numeric'
                 }
-            }],
-            sortField: 'quarantinedDate',
-            columnsDefaultSortable: true
+            }]
         });
     },
     validate: function() {
@@ -1279,7 +1225,7 @@ Ext.define('Webui.config.email', {
     save: function (isApply) {
         this.saveSemaphore = this.isMailLoaded() ? 2: 1;
         // save mail settings
-        main.getMailSender().setSettings(Ext.bind(function(result, exception) {
+        Ung.Main.getMailSender().setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
         }, this), this.getMailSettings());
 
@@ -1287,13 +1233,13 @@ Ext.define('Webui.config.email', {
             var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
             // save mail node settings
             quarantineSettings.allowedAddressPatterns.javaClass="java.util.LinkedList";
-            quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getPageList();
-            quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getPageList();
+            quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getList();
+            quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getList();
             this.getMailNode().setSmtpNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 // save global safelist
                 if ( this.loadedGlobalSafelist == true) {
-                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getPageList();
+                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getList();
                     var globalList = [];
                     for(var i=0; i<gridSafelistGlobalValues.length; i++) {
                         globalList.push(gridSafelistGlobalValues[i].emailAddress);
@@ -1315,6 +1261,9 @@ Ext.define('Webui.config.email', {
         if (this.saveSemaphore == 0) {
             if(isApply) {
                 this.getMailSettings(true);
+                if( this.isMailLoaded() ) {
+                    this.getMailNodeSettings(true);
+                }
                 this.clearDirty();
                 Ext.MessageBox.hide();
             } else {
@@ -1329,7 +1278,6 @@ Ext.define('Webui.config.email', {
 Ext.define('Webui.config.email.EmailAddressDetails', {
     extend: 'Ung.Window',
     settingsCmp: null,
-    detailsPanel: null,
     account: null,
     initComponent: function() {
         this.bbar= ['->',{
@@ -1347,7 +1295,6 @@ Ext.define('Webui.config.email.EmailAddressDetails', {
                 this.settingsCmp.helpAction();
             }, this)
         },'-'];
-        this.items=this.detailsPanel;
         this.callParent(arguments);
     }
 });

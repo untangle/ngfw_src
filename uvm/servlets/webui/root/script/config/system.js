@@ -1,5 +1,5 @@
-Ext.define("Webui.config.system", {
-    extend: "Ung.ConfigWin",
+Ext.define('Webui.config.system', {
+    extend: 'Ung.ConfigWin',
     panelRegional: null,
     panelSupport: null,
     panelBackup: null,
@@ -16,7 +16,7 @@ Ext.define("Webui.config.system", {
             title: i18n._("System")
         }];
         try {
-            this.oemName=main.getOemManager().getOemName();
+            this.oemName=Ung.Main.getOemManager().getOemName();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -201,10 +201,8 @@ Ext.define("Webui.config.system", {
     },
     buildSupport: function() {
         this.panelSupport = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Support",
             helpSource: "system_support",
-            parentId: this.getId(),
             title: this.i18n._("Support"),
             cls: "ung-panel",
             autoScroll: true,
@@ -229,11 +227,11 @@ Ext.define("Webui.config.system", {
                 xtype: "fieldset",
                 title: this.i18n._("Manual Reboot"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Reboot the server.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Reboot"),
                     name: "Manual Reboot",
                     iconCls: "reboot-icon",
@@ -257,11 +255,11 @@ Ext.define("Webui.config.system", {
                 xtype: "fieldset",
                 title: this.i18n._("Manual Shutdown"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Power off the server.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Shutdown"),
                     name: "Manual Shutdown",
                     iconCls: "reboot-icon",
@@ -285,70 +283,70 @@ Ext.define("Webui.config.system", {
                 xtype: "fieldset",
                 title: this.i18n._("Setup Wizard"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Launch the Setup Wizard.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Setup Wizard"),
                     name: "Setup Wizard",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                                               Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
-                                               Ext.bind(function(btn) {
-                                                   if (btn == "yes") {
-                                                       main.openSetupWizardScreen();
-                                                   }
-                                               }, this));
+                            Ext.String.format(this.i18n._("The Setup Wizard is about to be re-run.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), rpc.companyName, "<b>", "</b>" ),
+                            Ext.bind(function(btn) {
+                                if (btn == "yes") {
+                                    Ung.Main.openSetupWizardScreen();
+                                }
+                            }, this));
                     }, this)
                 }]
             },{
                 xtype: "fieldset",
                 title: this.i18n._("Factory Defaults"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Reset all settings to factory defaults.")
                 },{
                     xtype: "button",
+                    margin: '5 0 0 0',
                     text: this.i18n._("Reset to Factory Defaults"),
                     name: "Factory Defaults",
                     iconCls: "reboot-icon",
                     handler: Ext.bind(function() {
                         Ext.MessageBox.confirm(this.i18n._("Reset to Factory Defaults Warning"),
-                                               this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
-                                               Ext.bind(function(btn) {
-                                                   if (btn == "yes") {
-
-                                                       Ung.MetricManager.stop();
-
-                                                       var resettingWindow=Ext.create('Ext.window.MessageBox', {
-                                                           minProgressWidth: 360
-                                                       });
-                                                       resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"));
-
-                                                       main.getExecManager().exec(Ext.bind(function(result, exception) {
-                                                           Ext.MessageBox.hide();
-                                                           var resettingWindow=Ext.create('Ext.window.MessageBox', {
-                                                               minProgressWidth: 360
-                                                           });
-                                                           resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"), {
-                                                               interval: 500,
-                                                               increment: 120,
-                                                               duration: 45000,
-                                                               scope: this,
-                                                               fn: function() {
-                                                                   console.log("Reset to factory defaults. Press ok to go to the Start Page...");
-                                                                   Ext.MessageBox.hide();
-                                                                   Ext.MessageBox.alert(
-                                                                       i18n._("Factory Defaults"),
-                                                                       i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
-                                                               }
-                                                           });
-                                                       }, this), "nohup /usr/share/untangle/bin/factory-defaults");
-                                                   }
-                                               }, this));
+                           this.i18n._("This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST."),
+                           Ext.bind(function(btn) {
+                               if (btn == "yes") {
+    
+                                   Ung.MetricManager.stop();
+    
+                                   var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                       minProgressWidth: 360
+                                   });
+                                   resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"));
+    
+                                   Ung.Main.getExecManager().exec(Ext.bind(function(result, exception) {
+                                       Ext.MessageBox.hide();
+                                       var resettingWindow=Ext.create('Ext.window.MessageBox', {
+                                           minProgressWidth: 360
+                                       });
+                                       resettingWindow.wait(i18n._("Resetting to factory defaults..."), i18n._("Please wait"), {
+                                           interval: 500,
+                                           increment: 120,
+                                           duration: 45000,
+                                           scope: this,
+                                           fn: function() {
+                                               console.log("Reset to factory defaults. Press ok to go to the Start Page...");
+                                               Ext.MessageBox.hide();
+                                               Ext.MessageBox.alert(
+                                                   i18n._("Factory Defaults"),
+                                                   i18n._("All settings have been reset to factory defaults."), Ung.Util.goToStartPage);
+                                           }
+                                       });
+                                   }, this), "nohup /usr/share/untangle/bin/factory-defaults");
+                               }
+                           }, this));
                     }, this)
                 }]
             }]
@@ -357,10 +355,8 @@ Ext.define("Webui.config.system", {
     },
     buildBackup: function() {
         this.panelBackup = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Backup",
             helpSource: "system_backup",
-            parentId: this.getId(),
             title: this.i18n._("Backup"),
             cls: "ung-panel",
             autoScroll: true,
@@ -375,13 +371,13 @@ Ext.define("Webui.config.system", {
                 xtype: "fieldset",
                 title: this.i18n._("Backup to File"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Backup can save the current system configuration to a file on your local computer for later restoration. The file name will end with \".backup\"") +
                             "<br> <br> " +
                             this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From File\".")
                 },{
                     xtype:"button",
+                    margin: '10 0 0 0',
                     text: this.i18n._("Backup to File"),
                     name: "Backup to File",
                     handler: Ext.bind(function() {
@@ -394,52 +390,43 @@ Ext.define("Webui.config.system", {
     },
     buildRestore: function() {
         this.panelRestore = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Restore",
             helpSource: "system_restore",
-            parentId: this.getId(),
             title: this.i18n._("Restore"),
             cls: "ung-panel",
             autoScroll: true,
-            onRestoreFromFile: function() {
-                var prova = Ext.getCmp("upload_restore_file_form");
-                var cmp = Ext.getCmp(this.parentId);
-                var fileText = prova.items.get(1);
-                if (fileText.getValue().length === 0) {
-                    Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Please select a file to upload."));
-                    return false;
+            onRestoreFromFile: Ext.bind(function() {
+                var fileForm = this.panelRestore.down("form[name=upload_restore_file_form]");
+                var fileField = fileForm.down("filefield");
+                if (fileField.getValue().length === 0) {
+                    Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("Please select a file to upload."));
+                    return;
                 }
-                var form = prova.getForm();
-                form.submit({
-                    parentId: cmp.getId(),
-                    waitMsg: cmp.i18n._("Inspecting File..."),
-                    success: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
+                fileForm.getForm().submit({
+                    waitMsg: this.i18n._("Inspecting File..."),
+                    success: Ext.bind(function(form, action) {
                         Ung.MetricManager.stop();
-                        Ext.MessageBox.alert(cmp.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
-                    },
-                    failure: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
-                        var errorMsg = cmp.i18n._("The File restore procedure failed.");
+                        Ext.MessageBox.alert(this.i18n._("Restore"), action.result.msg, Ung.Util.goToStartPage);
+                    }, this),
+                    failure: Ext.bind(function(form, action) {
+                        var errorMsg = this.i18n._("The File restore procedure failed.");
                         if (action.result && action.result.msg) {
                             errorMsg = action.result.msg;
                         }
-
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-                    }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this)
                 });
-                return true;
-            },
+            }, this),
             items: [{
                 title: this.i18n._("Restore from File"),
                 xtype: "fieldset",
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Restore can restore a previous system configuration to the server from a backup file on your local computer.  The backup file name ends with \".backup\"")
                 }, {
                     xtype: "form",
-                    id: "upload_restore_file_form",
+                    margin: '20 0 0 0',
+                    name: "upload_restore_file_form",
                     url: "upload",
                     border: false,
                     items: [{
@@ -454,15 +441,15 @@ Ext.define("Webui.config.system", {
                         editable: false
                     }, {
                         xtype: 'filefield',
+                        margin: '10 0 0 0',
                         fieldLabel: this.i18n._("File"),
                         name: "file",
                         id: "upload_restore_file_textfield",
                         width: 500,
-                        size: 50,
-                        labelWidth: 50,
                         allowBlank: false
                     }, {
                         xtype: "button",
+                        margin: '10 0 0 0',
                         text: this.i18n._("Restore from File"),
                         name: "Restore from File",
                         handler: Ext.bind(function() {
@@ -481,8 +468,6 @@ Ext.define("Webui.config.system", {
         var protocolSettingsItems = [];
 
         protocolSettingsItems.push({
-            border: false,
-            cls: "description",
             html: "<b>" + "<font color=\"red\">" + this.i18n._("Warning:") + "</font>&nbsp;" + this.i18n._("These settings should not be changed unless instructed to do so by support.") + "</b>"
         });
 
@@ -636,9 +621,6 @@ Ext.define("Webui.config.system", {
         this.panelProtocols = Ext.create('Ext.panel.Panel',{
             name: "Protocols",
             helpSource: "system_protocols",
-            // private fields
-            parentId: this.getId(),
-
             title: this.i18n._("Protocols"),
             cls: "ung-panel",
             autoScroll: true,
@@ -674,27 +656,22 @@ Ext.define("Webui.config.system", {
             timeZones.push([timeZoneData[i][0], "(" + timeZoneData[i][1] + ") " + timeZoneData[i][0]]);
         }
         this.panelRegional = Ext.create('Ext.panel.Panel',{
-            // private fields
             name: "Regional",
             helpSource: "system_regional",
-            parentId: this.getId(),
             title: this.i18n._("Regional"),
             cls: "ung-panel",
             autoScroll: true,
             defaults: {
-                xtype: "fieldset",
-                buttonAlign: "left"
+                xtype: "fieldset"
             },
             items: [{
                 title: this.i18n._("Current Time"),
-                defaults: {
-                    border: false,
-                    cls: "description"
-                },
                 items: [{
+                    xtype: 'component',
                     html: this.i18n._("Time is automatically synced via NTP")
                 }, {
-                    xtype: 'container',
+                    xtype: 'component',
+                    margin: '10 0 0 0',
                     name: 'currentTime',
                     html: ".",
                     listeners: {
@@ -737,12 +714,11 @@ Ext.define("Webui.config.system", {
                     valueField: "code",
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     hideLabel: true,
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(elem, record) {
-                                this.getLanguageSettings().language = record[0].data.code;
+                                this.getLanguageSettings().language = record.get("code");
                             }, this)
                         },
                         "afterrender": {
@@ -766,14 +742,13 @@ Ext.define("Webui.config.system", {
                 title: this.i18n._("Upload New Language Pack"),
                 items: {
                     xtype: "form",
-                    id: "upload_language_form",
+                    name: "upload_language_form",
                     url: "upload",
                     border: false,
                     items: [{
                         xtype: 'filefield',
                         fieldLabel:this.i18n._("File"),
                         width: 500,
-                        size: 50,
                         labelWidth: 50,
                         name: 'file',
                         allowBlank: false
@@ -796,11 +771,11 @@ Ext.define("Webui.config.system", {
                 xtype: "fieldset",
                 title: this.i18n._("Force Sync Time"),
                 items: [{
-                    border: false,
-                    cls: "description",
+                    xtype: "component",
                     html: this.i18n._("Click to force instant time synchronization.")
                 },{
                     xtype: "button",
+                    margin: '10 0 0 0',
                     text: this.i18n._("Synchronize Time"),
                     name: "Setup Wizard",
                     iconCls: "reboot-icon",
@@ -827,15 +802,11 @@ Ext.define("Webui.config.system", {
                     }, this)
                 }]
             }],
-            onUpload: function() {
-                var prova = Ext.getCmp("upload_language_form");
-                var cmp = Ext.getCmp(this.parentId);
-
-                var form = prova.getForm();
-                form.submit({
-                    parentId: cmp.getId(),
-                    waitMsg: cmp.i18n._("Please wait while your language pack is uploaded..."),
-                    success: function(form, action) {
+            onUpload: Ext.bind(function() {
+                var languageForm = this.panelRegional.down("form[name=upload_language_form]");
+                languageForm.getForm().submit({
+                    waitMsg: this.i18n._("Please wait while your language pack is uploaded..."),
+                    success: Ext.bind(function(form, action) {
                         var languagesList;
                         try {
                             languagesList = rpc.languageManager.getLanguagesList();
@@ -844,40 +815,32 @@ Ext.define("Webui.config.system", {
                         }
 
                         languagesStore.loadData(languagesList.list);
-                        var cmp = Ext.getCmp(action.parentId);
                         if(action.result.success===true) {
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"));
+                            Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload language pack succeeded"));
                         } else {
                             var msg = "An error occured while uploading the language pack";
                             if(action.result.msg) {
                                 msg = action.result.msg;
                             }
-                            Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));
+                            Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._(msg));
                         }
-                    },
-                    failure: function(form, action) {
-                        var cmp = Ext.getCmp(action.parentId);
-                        var errorMsg = cmp.i18n._("Upload language pack failed");
+                    }, this),
+                    failure: Ext.bind(function(form, action) {
+                        var errorMsg = this.i18n._("Upload language pack failed");
                         if (action.result && action.result.msg) {
                             msg = action.result.msg;
-                            switch (true) {
-                                case (msg === "Invalid Language Pack"):
-                                    errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
-                                break;
-                                case ((/.*MO file.*/).test(msg)):
-                                    errorMsg = cmp.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
-                                break;
-                                case ((/.*bundle file.*/).test(msg)):
-                                    errorMsg = cmp.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
-                                break;
-                                default:
-                                    errorMsg = cmp.i18n._("Upload language pack failed");
+                            if(msg === "Invalid Language Pack") {
+                                errorMsg = this.i18n._("Invalid language pack; not a zip file");
+                            } else if((/.*MO file.*/).test(msg)) {
+                                errorMsg = this.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
+                            } else if((/.*bundle file.*/).test(msg)) {
+                                errorMsg = this.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
                             }
                         }
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-                    }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this)
                 });
-            }
+            }, this)
         });
     },
     timeUpdateId:-1,
@@ -885,7 +848,7 @@ Ext.define("Webui.config.system", {
         if(this.isVisible()) {
             rpc.adminManager.getDate(Ext.bind(function(result, exception) {
                 if( exception != null ) return; // ignore exception
-                var currentTimeObj = this.panelRegional.down('container[name="currentTime"]');
+                var currentTimeObj = this.panelRegional.down('component[name="currentTime"]');
                 if (currentTimeObj) {
                     currentTimeObj.update(result);
                     if ( this.timeUpdateId != -1) {
@@ -908,22 +871,20 @@ Ext.define("Webui.config.system", {
             [100, 100 + ' ' + this.i18n._("users")],
             [-1, this.i18n._("unlimited")]
         ];
-        this.gridShieldRules = Ext.create( 'Ung.EditorGrid', {
+        this.gridShieldRules = Ext.create( 'Ung.grid.Panel', {
             name: 'Shield Rules',
             settingsCmp: this,
-            paginated: false,
             hasReorder: true,
             addAtTop: false,
+            title: this.i18n._("Shield Rules"),
+            dataExpression:'getShieldSettings().rules.list',
+            recordJavaClass: "com.untangle.node.shield.ShieldRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
                 "description": "",
-                "multiplier": -1,
-                "javaClass": "com.untangle.node.shield.ShieldRule"
+                "multiplier": -1
             },
-            title: this.i18n._("Shield Rules"),
-            recordJavaClass: "com.untangle.node.shield.ShieldRule",
-            dataExpression:'getShieldSettings().rules.list',
             fields: [{
                 name: 'ruleId'
             }, {
@@ -970,7 +931,6 @@ Ext.define("Webui.config.system", {
                     return value;
                 }
             }],
-            columnsDefaultSortable: false,
             rowEditorInputLines:[{
                 xtype:'checkbox',
                 dataIndex: "enabled",
@@ -993,9 +953,7 @@ Ext.define("Webui.config.system", {
                 }]
             }, {
                 xtype: 'fieldset',
-                cls:'description',
                 title: i18n._('Perform the following action(s):'),
-                border: false,
                 items: [{
                     xtype: 'combo',
                     store: multiplierData,
@@ -1007,25 +965,25 @@ Ext.define("Webui.config.system", {
             }]
         });
 
-        this.gridShieldEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridShieldEventLog = Ext.create('Ung.grid.EventLog',{
             eventQueriesFn: this.getShieldNode().getEventQueries,
             settingsCmp: this,
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'username'
             }, {
                 name: 'shield_blocked'
             }, {
                 name: 'c_client_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 'c_client_port',
                 sortType: 'asInt'
             }, {
                 name: 'c_server_addr',
-                sortType: Ung.SortTypes.asIp
+                sortType: 'asIp'
             }, {
                 name: 's_server_port',
                 sortType: 'asInt'
@@ -1078,7 +1036,6 @@ Ext.define("Webui.config.system", {
         });
 
         this.panelShield = Ext.create('Ext.panel.Panel',{
-            parentId: this.getId(),
             name: 'Shield',
             title: this.i18n._('Shield'),
             helpSource: "system_shield",
@@ -1086,7 +1043,6 @@ Ext.define("Webui.config.system", {
             layout: { type: 'vbox', pack: 'start', align: 'stretch' },
             items: [{
                 xtype: 'fieldset',
-                cls: 'description',
                 flex: 0,
                 title: this.i18n._("Shield Settings"),
                 items:[{
@@ -1157,7 +1113,7 @@ Ext.define("Webui.config.system", {
 
         // save shield settings
         if (this.isShieldLoaded()) {
-            this.getShieldSettings().rules.list = this.gridShieldRules.getPageList();
+            this.getShieldSettings().rules.list = this.gridShieldRules.getList();
             this.getShieldNode().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getShieldSettings());

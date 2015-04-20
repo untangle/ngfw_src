@@ -16,7 +16,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
         this.panelStatus = Ext.create('Ext.panel.Panel',{
             name: 'Status',
             helpSource: 'application_control_lite_status',
-            parentId: this.getId(),
             isDirty: function() {
                 return false;
             },
@@ -26,14 +25,12 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             items: [{
                 xtype: 'fieldset',
                 title: this.i18n._('Status'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("Application Control Lite logs and blocks sessions using custom signatures on the session content."))
             }, {
                 xtype: 'fieldset',
                 defaults: {
-                    xtype: "textfield",
-                    labelWidth: 200,
-                    disabled: true
+                    xtype: "displayfield",
+                    labelWidth: 200
                 },
                 items: [{
                     fieldLabel: this.i18n._('Total Signatures Available'),
@@ -51,19 +48,19 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             }, {
                 xtype: 'fieldset',
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: Ext.String.format(this.i18n._("Caution and discretion is advised in configuring Application Control Lite at the the risk of harmful false positives."))
             }]
         });
     },
     // Protocol list grid
     buildProtocolList: function() {
-        this.gridProtocolList = Ext.create('Ung.EditorGrid',{
+        this.gridProtocolList = Ext.create('Ung.grid.Panel',{
             settingsCmp: this,
             name: 'Signatures',
             helpSource: 'application_control_lite_signatures',
-            paginated: false,
+            title: this.i18n._("Signatures"),
             dataProperty: "patterns",
+            recordJavaClass: "com.untangle.node.protofilter.ProtoFilterPattern",
             emptyRow: {
                 "protocol": "",
                 "category": "",
@@ -72,29 +69,16 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
                 "description": "",
                 "definition": ""
             },
-            title: this.i18n._("Signatures"),
-            // the column is autoexpanded if the grid width permits
-            recordJavaClass: "com.untangle.node.protofilter.ProtoFilterPattern",
-            // the list of fields
+            sortField: 'category',
             fields: [{
-                name: 'id',
-                type: 'int'
+                name: 'id'
             },{
                 name: 'alert',
                 type: 'boolean'
             },{
-                name: 'metavizeId',
-                type: 'int'
-            },{
                 name: 'quality',
                 type: 'string'
             },{
-                name: 'readOnly',
-                type: 'boolean'
-            },
-            // this field is internationalized so a converter was
-            // added
-            {
                 name: 'protocol',
                 type: 'string'
             },{
@@ -113,7 +97,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
                 name: 'definition',
                 type: 'string'
             }],
-            // the list of columns for the column model
             columns: [{
                 header: this.i18n._("Protocol"),
                 width: 200,
@@ -154,9 +137,6 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
                     emptyText: this.i18n._("[no description]")
                 }
             }],
-            sortField: 'category',
-            columnsDefaultSortable: true,
-            // the row input lines used by the row editor window
             rowEditorInputLines: [{
                 xtype:'textfield',
                 name: "Protocol",
@@ -209,7 +189,7 @@ Ext.define('Webui.untangle-node-protofilter.settings', {
             ['time_stamp','protofilter_blocked','c_client_addr','username','c_server_addr','protofilter_protocol'], this.getRpcNode().getEventQueries);
     },
     beforeSave: function(isApply, handler) {
-        this.getSettings().patterns.list = this.gridProtocolList.getPageList();
+        this.getSettings().patterns.list = this.gridProtocolList.getList();
         handler.call(this, isApply);
     }
 });

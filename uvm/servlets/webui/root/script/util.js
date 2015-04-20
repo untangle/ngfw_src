@@ -1,4 +1,5 @@
-Ung.Util = {
+Ext.define('Ung.Util', {
+    singleton: true,
     isDirty: function (item, depth) {
         if(depth==null) {
             depth=0;
@@ -85,10 +86,10 @@ Ung.Util = {
             closable:false,
             layout: "fit",
             setSizeToRack: function () {
-                if(main && main.viewport) {
-                    var objSize = main.viewport.getSize();
-                    objSize.width = objSize.width - main.contentLeftWidth;
-                    this.setPosition(main.contentLeftWidth, 0);
+                if(Ung.Main && Ung.Main.viewport) {
+                    var objSize = Ung.Main.viewport.getSize();
+                    objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+                    this.setPosition(Ung.Main.contentLeftWidth, 0);
                     this.setSize(objSize);
                 } else {
                     this.maximize();
@@ -241,22 +242,8 @@ Ung.Util = {
         }
         return false;
     },
-    encode: function (obj) {
-        if(obj == null || typeof(obj) != 'object') {
-            return obj;
-        }
-        var msg="";
-        var val=null;
-        for(var key in obj) {
-            val=obj[key];
-            if(val!=null) {
-                msg+=" | "+key+" - "+val;
-            }
-        }
-        return msg;
-    },
     addBuildStampToUrl: function(url) {
-        var scriptArgs = "s=" + main.debugMode ? (new Date()).getTime(): main.buildStamp;
+        var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
         if (url.indexOf("?") >= 0) {
             return url + "&" + scriptArgs;
         } else {
@@ -264,7 +251,7 @@ Ung.Util = {
         }
     },
     getScriptSrc: function(sScriptSrc) {
-        //return main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
+        //return Ung.Main.debugMode ? sScriptSrc: sScriptSrc.replace(/\.js$/, "-min.js");
         return sScriptSrc ;
     },
     // Load css file Dynamically
@@ -307,8 +294,8 @@ Ung.Util = {
                 if(Ung.Util.handleException(exception)) return;
                 var moduleMap=result.map;
                 Ung.i18nModuleInstances[moduleName] = Ext.create('Ung.ModuleI18N',{
-                    "map": i18n.map,
-                    "moduleMap": moduleMap
+                    map: i18n.map,
+                    moduleMap: moduleMap
                 });
                 handler.call(this);
             }, this,[moduleName, handler],true), moduleName);
@@ -372,7 +359,7 @@ Ung.Util = {
     },
     getInterfaceListSystemDev: function( wanMatchers, anyMatcher, systemDev ) {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -401,7 +388,7 @@ Ung.Util = {
     },
     getInterfaceAddressedList: function() {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -425,7 +412,7 @@ Ung.Util = {
     },
     getWanList: function() {
         var data = [];
-        var networkSettings = main.getNetworkSettings();
+        var networkSettings = Ung.Main.getNetworkSettings();
         for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
             var intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -453,63 +440,6 @@ Ung.Util = {
             break;
         }
         return hasData;
-    },
-    // Check if two object are equal
-    equals: function(obj1, obj2) {
-        // the two objects have different types
-        if (typeof obj1 !== typeof obj2) {
-            return false;
-        }
-        // check null objects
-        if (obj1 === null || obj2 === null) {
-            return obj1 === null && obj2 === null;
-        }
-        var count = 0;
-        for (var prop in obj1) {
-            // the two properties have different types
-            if (typeof obj1[prop] !== typeof obj2[prop]) {
-                return false;
-            }
-
-            switch (typeof obj1[prop]) {
-              case 'number':
-              case 'string':
-              case 'boolean':
-                if (obj1[prop] !== obj2[prop]) {
-                    return false;
-                }
-                break;
-              case 'undefined':
-                break;
-              case 'object':
-                if (!Ung.Util.equals(obj1[prop], obj2[prop])) {
-                    return false;
-                }
-                break;
-            }
-            count++;
-        }
-
-        // check that the two objects have the same number of properties
-        for (prop in obj2) {
-            count--;
-        }
-        if (count !== 0) {
-            return false;
-        }
-        return true;
-    },
-
-    // Clone object
-    clone: function (obj) {
-        if(obj === null || typeof(obj) != 'object')
-            return obj;
-
-        var temp = new obj.constructor();
-        for(var key in obj)
-            temp[key] = Ung.Util.clone(obj[key]);
-
-        return temp;
     },
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
@@ -574,32 +504,12 @@ Ung.Util = {
         }
         return jsonList;
     },
-    makeDataFn: function(dataProperty, dataFn, dataFnArgs) {
-        return function(forceReloadOrHandler) {
-            if (forceReloadOrHandler !== undefined || dataProperty === undefined) {
-                if(Ext.isFunction(forceReloadOrHandler)) {
-                    dataFn(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        dataProperty = result;
-                        forceReloadOrHandler.call(this);
-                    }, this, dataFnArgs, true));
-                } else {
-                    try {
-                        dataProperty = dataFn(dataFnArgs);
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-                }
-            }
-            return dataProperty;
-        };
-    },
     createStoreMap : function(pairArray) {
         var map = {};
         for(var i=0; i<pairArray.length; i++) {
             map[pairArray[i][0]] = pairArray[i][1];
         }
-            return map;
+        return map;
     },
     createRecordsMap : function(recList, property) {
         var map = {};
@@ -666,7 +576,7 @@ Ung.Util = {
     usernameFieldWidth: 120,
     booleanFieldWidth: 60,
     emailFieldWidth: 150
-};
+});
 
 Ung.Util.RetryHandler = {
     /**
@@ -737,6 +647,6 @@ Ung.Util.RetryHandler = {
                 params = params.concat( input.params );
         }
 
-            fn.apply( fnScope, params );
+        fn.apply( fnScope, params );
     }
 };

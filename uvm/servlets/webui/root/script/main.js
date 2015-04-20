@@ -1,63 +1,34 @@
-Ext.namespace('Ung');
 Ext.Loader.setConfig({
     enabled: true,
     disableCaching: false,
     paths: {
-        'Ext.ux': '/ext4/examples/ux',
+        'Ext.ux': '/ext5/examples/ux',
         'Webui': 'script'
     }
 });
 
-Ext.Loader.loadScriptFileInitial=Ext.Loader.loadScriptFile;
-Ext.Loader.loadScriptFile=Ext.bind(function() {
-    var args = arguments;
-    args[0]=arguments[0]+"?_dc="+Ext.buildStamp;
-    Ext.Loader.loadScriptFileInitial.apply(this, args);
-}, Ext.Loader);
-
-var rpc=null; // the main json rpc object
+var rpc = {}; // the main json rpc object
 var testMode = false;
 
-Ext.require([
-    'Ext.ux.data.PagingMemoryProxy',
-    'Ext.ux.grid.FiltersFeature'
-]);
-//resources map
-Ung.hasResource = {};
-
-//Global Variables
-// the main object instance
-var main=null;
 // Main object class
 Ext.define("Ung.Main", {
+    singleton: true,
     debugMode: false,
     buildStamp: null,
     disableThreads: false, // in development environment is useful to disable threads.
-    leftTabs: null,
-    appsSemaphore: null,
-    apps: null,
-    appsLastState: null,
-    nodePreviews: null,
+    apps: [],
+    nodePreviews: {},
     config: null,
     totalMemoryMb: 2000,
     nodes: null,
     // the Ext.Viewport object for the application
     viewport: null,
-    policySemaphore: null,
     contentLeftWidth: null,
-    // the application build version
-    version: null,
     iframeWin: null,
-    IEWin: null,
-    policyNodeWidget:null,
     initialScreenAlreadyShown: false,
 
-    // init function
-    constructor: function(config) {
+    init: function(config) {
         Ext.apply(this, config);
-    },
-
-    init: function() {
         if (Ext.isGecko) {
             document.onkeypress = function(e) {
                 if (e.keyCode==27) {
@@ -66,39 +37,34 @@ Ext.define("Ung.Main", {
                 return true;
             };
         }
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
+        JSONRpcClient.max_req_active = 25;
+
+        // get JSONRpcClient
+        rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+        rpc.jsonrpc.UvmContext.getWebuiStartupInfo(Ext.bind(function (result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            Ext.applyIf(rpc, result);
+            rpc.nodeManager.node(Ext.bind(function (result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.policyManager = result;
+                this.startApplication();
+            }, this), "untangle-node-policy");
+        }, this));
+    },
+    startApplication: function() {
         if(Ext.supports.LocalStorage) {
             Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
         }
         this.target = Ung.Util.getQueryStringParam("target");
-        this.appsLastState = {};
-        this.nodePreviews = {};
-        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        JSONRpcClient.max_req_active = 25;
-
-        rpc = {};
-        // get JSONRpcClient
-        rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        //load all managers and startup info
-        var startupInfo;
-        try {
-            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        Ext.applyIf(rpc, startupInfo);
-        //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
-        try {
-            rpc.policyManager=rpc.nodeManager.node("untangle-node-policy");
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-
-        i18n=new Ung.I18N({"map":rpc.translations});
-        i18n.timeoffset = (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset;
+        i18n = Ext.create('Ung.I18N',{
+            map: rpc.translations,
+            timeoffset: (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset
+        });
         Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
         if (rpc.skinSettings.outOfDate) {
-            var win = new Ext.Window({
+            var win = Ext.create('Ext.Window', {
                 layout: 'fit',
                 width: 300,
                 height: 200,
@@ -115,27 +81,13 @@ Ext.define("Ung.Main", {
             });
             win.show();
         }
-        this.setDocumentTitle();
-        this.startApplication();
-    },
-    setDocumentTitle: function() {
-        document.title = rpc.companyName + ((rpc.hostname!=null)?(" - " + rpc.hostname):"");
-    },
-    resetAppLastState: function(displayName) {
-      main.appsLastState[displayName]=null;
-    },
-    setAppLastState: function(displayName,state,options,download) {
-        if(state==null) {
-            main.appsLastState[displayName]=null;
-        } else {
-            main.appsLastState[displayName]={state:state, options:options, download:download};
+        document.title = rpc.companyName + (rpc.hostname ? " - " + rpc.hostname : "");
+        if(rpc.languageSettings.language) {
+            Ung.Util.loadScript('/ext5/packages/ext-locale/build/ext-locale-' + rpc.languageSettings.language + '.js');
         }
-    },
-    startApplication: function() {
-        this.initExtI18n();
-        this.initExtGlobal();
-        this.initExtVTypes();
-        Ext.EventManager.onWindowResize(Ung.Util.resizeWindows);
+        Ung.VTypes.init(i18n);
+        Ext.tip.QuickTipManager.init();
+        Ext.on("resize", Ung.Util.resizeWindows);
         // initialize viewport object
         var contentRightArr=[
             '<div id="content-right">',
@@ -165,13 +117,14 @@ Ext.define("Ung.Main", {
                     xtype: 'container',
                     cls: "logo",
                     html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
-                    border: false,
                     height: 141,
                     flex: 0
-                }, this.leftTabs = new Ext.TabPanel({
+                }, {
+                    xtype: 'tabpanel',
                     activeTab: 0,
                     deferredRender: false,
                     border: false,
+                    plain: true,
                     flex: 1,
                     bodyStyle: 'background-color: transparent;',
                     defaults: {
@@ -183,7 +136,8 @@ Ext.define("Ung.Main", {
                         xtype: 'panel',
                         title: i18n._('Apps'),
                         id: 'leftTabApps',
-                        html:'<div id="appsItems"></div>',name:'Apps'
+                        html:'<div id="appsItems"></div>',
+                        name:'Apps'
                     },{
                         xtype: 'panel',
                         title: i18n._('Config'),
@@ -197,7 +151,7 @@ Ext.define("Ung.Main", {
                         iconCls: 'icon-help',
                         text: i18n._('Help'),
                         handler: function() {
-                            main.openHelp(null);
+                            Ung.Main.openHelp(null);
                         }
                     }, {
                         name: 'MyAccount',
@@ -205,7 +159,7 @@ Ext.define("Ung.Main", {
                         text: i18n._('My Account'),
                         tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
                         handler: function() {
-                           main.openMyAccountScreen();
+                            Ung.Main.openMyAccountScreen();
                         }
                     }, {
                         xtype: 'button',
@@ -216,7 +170,7 @@ Ext.define("Ung.Main", {
                             window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                         }
                     }]
-                })
+                }
             ]}, {
                 region:'center',
                 id: 'center',
@@ -228,8 +182,8 @@ Ext.define("Ung.Main", {
         ]});
         Ext.QuickTips.init();
 
-        main.systemStats = new Ung.SystemStats({});
-        this.loadConfig();
+        Ung.Main.systemStats = Ext.create('Ung.SystemStats',{});
+        this.buildConfig();
         this.loadPolicies();
     },
     about: function (forceReload) {
@@ -280,7 +234,7 @@ Ext.define("Ung.Main", {
         var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
         window.open(url); // open a new window
     },
-    openRegisterScreen: function() {
+    openRegistrationScreen: function() {
         var url = rpc.storeUrl + "?" + "action=register" + "&" + this.about();
         this.openIFrame( url, i18n._("Register"));
     },
@@ -298,155 +252,6 @@ Ext.define("Ung.Main", {
         var url = "/setup";
         window.open(url);
     },
-    closeIframe: function() {
-        if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
-            this.iframeWin.closeWindow();
-        }
-        this.reloadLicenses();
-    },
-
-    initExtI18n: function() {
-        var locale = rpc.languageSettings.language;
-        if(locale) {
-          Ung.Util.loadScript('/ext4/locale/ext-lang-' + locale + '.js', main.overrideLanguageSettings);
-        } else {
-            main.overrideLanguageSettings();
-        }
-    },
-    overrideLanguageSettings: function () {
-        // Uncomment this to override the language timefield format for the current language
-        //TODO: consider adding support to set this in a Time Format section in Config -> Settings -> Regional Settings (would be stored in AdminManager.AdminSettings)
-        /*
-        Ext.apply(Ext.form.field.Time.prototype, {
-            format : "H:i"    //may also use: "g:i A"
-        });
-        */
-    },
-    initExtGlobal: function() {
-        // init quick tips
-        Ext.QuickTips.init();
-    },
-    // Add the additional 'advanced' VTypes
-    initExtVTypes: function() {
-        var macAddrMaskRe = /^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/;
-        var ip4AddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        var ip6AddrMaskRe = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/;
-        var email = /^(")?(?:[^\."])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,63}$/;
-        Ext.apply(Ext.form.VTypes, {
-            email: function (v) {
-                return email.test(v);
-            },
-            ipMatcher: function(val) {
-                if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
-                    switch(val) {
-                      case 'any':
-                        return true;
-                    default:
-                        return Ung.RuleValidator.isSingleIpValid(val);
-                    }
-                }
-                if ( val.indexOf(",") != -1) {
-                    return Ung.RuleValidator.isIpListValid(val);
-                } else {
-                    if ( val.indexOf("-") != -1) {
-                        return Ung.RuleValidator.isIpRangeValid(val);
-                    }
-                    if ( val.indexOf("/") != -1) {
-                        var cidrValid = Ung.RuleValidator.isCIDRValid(val);
-                        var ipNetmaskValid = Ung.RuleValidator.isIpNetmaskValid(val);
-                        return cidrValid || ipNetmaskValid;
-                    }
-                    console.log("Unhandled case while handling vtype for ipAddr:", val, " returning true !");
-                    return true;
-                }
-            },
-            ipMatcherText: i18n._('Invalid IP Address.'),
-
-            ip4Address: function(val) {
-                return ip4AddrMaskRe.test(val);
-            },
-            ip4AddressText: i18n._('Invalid IPv4 Address.'),
-
-            ip4AddressList:  function(v) {
-                var addr = v.split(",");
-                for ( var i = 0 ; i < addr.length ; i++ ) {
-                    if ( ! ip4AddrMaskRe.test(addr[i]) )
-                        return false;
-                }
-                return true;
-            },
-            ip4AddressListText: i18n._('Invalid IPv4 Address(es).'),
-
-            ip6Address: function(val) {
-                return ip6AddrMaskRe.test(val);
-            },
-            ip6AddressText: i18n._('Invalid IPv6 Address.'),
-
-            ipAddress: function(val) {
-                return ip4AddrMaskRe.test(val) || ip6AddrMaskRe.test(val);
-            },
-            ipAddressText: i18n._('Invalid IP Address.'),
-
-            macAddress: function(val) {
-                return macAddrMaskRe.test(val);
-            },
-            macAddressText: i18n._('Invalid Mac Address.'),
-            
-            cidrBlock:  function(v) {
-                return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
-            },
-            cidrBlockText: i18n._('Must be a network in CIDR format.') + ' ' + '(192.168.123.0/24)',
-
-            cidrBlockList:  function(v) {
-                var blocks = v.split(",");
-                for ( var i = 0 ; i < blocks.length ; i++ ) {
-                    if ( ! (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(blocks[i])) )
-                        return false;
-                }
-                return true;
-            },
-            cidrBlockListText: i18n._('Must be a comma seperated list of networks in CIDR format.') + ' ' + '(192.168.123.0/24,1.2.3.4/24)',
-
-            portMatcher: function(val) {
-                switch(val) {
-                  case 'any':
-                    return true;
-                default:
-                    if ( val.indexOf('>') != -1 && val.indexOf(',') == -1) {
-                        return Ung.RuleValidator.isSinglePortValid( val.substring( val.indexOf('>') + 1 ));
-                    }
-                    if ( val.indexOf('<') != -1 && val.indexOf(',') == -1) {
-                        return Ung.RuleValidator.isSinglePortValid( val.substring( val.indexOf('<') + 1 ));
-                    }
-                    if ( val.indexOf('-') == -1 && val.indexOf(',') == -1) {
-                        return Ung.RuleValidator.isSinglePortValid(val);
-                    }
-                    if ( val.indexOf('-') != -1 && val.indexOf(',') == -1) {
-                        return Ung.RuleValidator.isPortRangeValid(val);
-                    }
-                    return Ung.RuleValidator.isPortListValid(val);
-                }
-            },
-            portMatcherText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
-
-            port: function(val) {
-                var minValue = 1;
-                var maxValue = 65535;
-                return (minValue <= val && val <= maxValue);
-            },
-            portText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
-
-            password: function(val) {
-                if (field.initialPassField) {
-                    var pwd = Ext.getCmp(field.initialPassField);
-                    return (val == pwd.getValue());
-                }
-                return true;
-            },
-            passwordText: i18n._('Passwords do not match')
-        });
-    },
-
     upgrade: function () {
         Ung.MetricManager.stop();
 
@@ -478,8 +283,8 @@ Ext.define("Ung.Main", {
                 scope: this,
                 fn: function() {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
-                    if(main.configWin!=null && main.configWin.isVisible()) {
-                        main.configWin.closeWindow();
+                    if(Ung.Main.configWin!=null && Ung.Main.configWin.isVisible()) {
+                        Ung.Main.configWin.closeWindow();
                     }
                     applyingUpgradesWindow.hide();
                     Ext.MessageBox.hide();
@@ -600,7 +405,7 @@ Ext.define("Ung.Main", {
     getNetworkSettings: function(forceReload) {
         if (forceReload || rpc.networkSettings === undefined) {
             try {
-                rpc.networkSettings = main.getNetworkManager().getNetworkSettings();
+                rpc.networkSettings = Ung.Main.getNetworkManager().getNetworkSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -640,56 +445,51 @@ Ext.define("Ung.Main", {
         return null;
     },
     createNode: function (nodeProperties, nodeSettings, nodeMetrics, license, runState) {
-        var node={};
-        node.nodeId=nodeSettings.id;
-        node.nodeSettings=nodeSettings;
-        node.type=nodeProperties.type;
-        node.hasPowerButton=nodeProperties.hasPowerButton;
-        node.name=nodeProperties.name;
-        node.displayName=nodeProperties.displayName;
-        node.license=license;
-        node.image='chiclet?name='+node.name;
-        node.metrics=nodeMetrics;
-        node.runState=runState;
-        node.viewPosition=nodeProperties.viewPosition;
+        var node = {
+            nodeId: nodeSettings.id,
+            nodeSettings: nodeSettings,
+            type: nodeProperties.type,
+            hasPowerButton: nodeProperties.hasPowerButton,
+            name: nodeProperties.name,
+            displayName: nodeProperties.displayName,
+            license: license,
+            image: 'chiclet?name='+nodeProperties.name,
+            metrics: nodeMetrics,
+            runState: runState,
+            viewPosition: nodeProperties.viewPosition
+        };
         return node;
     },
     buildApps: function () {
         //destroy Apps
         var i;
-        if(main.apps!=null) {
-            for(i=0; i<main.apps.length; i++) {
-                Ext.destroy(main.apps[i]);
-            }
-            this.apps=null;
+        for(i=0; i<Ung.Main.apps.length; i++) {
+            Ext.destroy(Ung.Main.apps[i]);
         }
         //build Apps
-        main.apps=[];
+        Ung.Main.apps=[];
         for(i=0;i<rpc.rackView.installable.list.length;i++) {
-            var application=rpc.rackView.installable.list[i];
-            var appCmp=new Ung.AppItem(application);
-            main.apps.push(appCmp);
+            Ung.Main.apps.push(Ext.create("Ung.AppItem", {nodeProperties: rpc.rackView.installable.list[i]}));
         }
     },
     buildNodes: function() {
         //build nodes
         Ung.MetricManager.stop();
         Ext.getCmp('policyManagerMenuItem').disable();
-        var nodePreviews = Ext.clone(main.nodePreviews);
+        var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
         this.destoyNodes();
         this.nodes=[];
-        var i;
-        var node;
+        var i, node;
 
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];
 
-            node=this.createNode(nodeProperties,
-                                     nodeSettings,
-                                     rpc.rackView.nodeMetrics.map[nodeSettings.id],
-                                     rpc.rackView.licenseMap.map[nodeProperties.name],
-                                     rpc.rackView.runStates.map[nodeSettings.id]);
+            node = this.createNode(nodeProperties,
+                     nodeSettings,
+                     rpc.rackView.nodeMetrics.map[nodeSettings.id],
+                     rpc.rackView.licenseMap.map[nodeProperties.name],
+                     rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
         }
         if(!rpc.isRegistered) {
@@ -700,7 +500,7 @@ Ext.define("Ung.Main", {
             node=this.nodes[i];
             this.addNode(node, nodePreviews[node.name]);
         }
-        if(!main.disableThreads) {
+        if(!Ung.Main.disableThreads) {
             Ung.MetricManager.start(true);
         }
         if(this.target) {
@@ -715,15 +515,15 @@ Ext.define("Ung.Main", {
                 if(firstToken == "config" ) {
                     var configItem =this.configMap[targetTokens[1]];
                     if(configItem) {
-                        main.openConfig(configItem);
+                        Ung.Main.openConfig(configItem);
                     }
                 } else if(firstToken == "node") {
                     var nodeName = targetTokens[1].toLowerCase();
-                    for( i=0 ; i<main.nodes.length ; i++) {
-                        if(main.nodes[i].name == nodeName) {
-                            var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                    for( i=0 ; i<Ung.Main.nodes.length ; i++) {
+                        if(Ung.Main.nodes[i].name == nodeName) {
+                            var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
                             if (nodeCmp != null) {
-                                nodeCmp.onSettingsAction();
+                                nodeCmp.loadSettings();
                             }
                             break;
                         }
@@ -731,9 +531,9 @@ Ext.define("Ung.Main", {
                 } else if(firstToken == "monitor") {
                     var secondToken = targetTokens[1].toLowerCase();
                     if(secondToken == 'sessions') {
-                        main.showSessions();
+                        Ung.Main.showSessions();
                     } else if(secondToken == 'hosts') {
-                        main.showHosts();
+                        Ung.Main.showHosts();
                     }
                 }
             } else {
@@ -741,7 +541,7 @@ Ext.define("Ung.Main", {
             }
             // remove target in max 10 seconds to prevent using it again
             Ext.Function.defer(function() {
-                main.target = null;
+                Ung.Main.target = null;
             }, 10000, this);
         }
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.title==i18n._("Please wait")) {
@@ -756,7 +556,7 @@ Ext.define("Ung.Main", {
             var parentRackName = this.getParentName( rpc.currentPolicy.parentId );
             var parentRackDisplay = Ext.get('parent-rack-container');
 
-            if (parentRackName === "None") {
+            if (parentRackName == null) {
                 parentRackDisplay.dom.innerHTML = "";
                 parentRackDisplay.hide();
             } else {
@@ -764,16 +564,8 @@ Ext.define("Ung.Main", {
                 parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+":<br/>" + parentRackName;
             }
 
-            main.buildApps();
-            main.buildNodes();
-        }, this);
-        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
-    },
-    loadApps: function() {
-        var callback = Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.rackView=result;
-            main.buildApps();
+            Ung.Main.buildApps();
+            Ung.Main.buildNodes();
         }, this);
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
@@ -783,57 +575,37 @@ Ext.define("Ung.Main", {
             rpc.rackView=result;
             var i=0, j=0; installableNodes=rpc.rackView.installable.list;
             var updatedApps = [];
-            while(i<installableNodes.length || j<main.apps.length) {
+            while(i<installableNodes.length || j<Ung.Main.apps.length) {
                 var appCmp;
                 if(i==installableNodes.length) {
-                    Ext.destroy(main.apps[j]);
-                    main.apps[j]=null;
+                    Ext.destroy(Ung.Main.apps[j]);
+                    Ung.Main.apps[j]=null;
                     j++;
-                } else if(j == main.apps.length) {
-                    appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                } else if(j == Ung.Main.apps.length) {
+                    appCmp = Ext.create("Ung.AppItem", {nodeProperties: installableNodes[i], renderPosition: updatedApps.length});
                     updatedApps.push(appCmp);
                     i++;
-                } else if(installableNodes[i].name == main.apps[j].nodeProperties.name) {
-                    updatedApps.push(main.apps[j]);
+                } else if(installableNodes[i].name == Ung.Main.apps[j].nodeProperties.name) {
+                    updatedApps.push(Ung.Main.apps[j]);
                     i++;
                     j++;
-                } else if(installableNodes[i].viewPosition < main.apps[j].nodeProperties.viewPosition) {
-                    appCmp=new Ung.AppItem(installableNodes[i], updatedApps.length);
+                } else if(installableNodes[i].viewPosition < Ung.Main.apps[j].nodeProperties.viewPosition) {
+                    appCmp = Ext.create("Ung.AppItem", {nodeProperties: installableNodes[i], renderPosition: updatedApps.length});
                     updatedApps.push(appCmp);
                     i++;
-                } else if(installableNodes[i].viewPosition >= main.apps[j].nodeProperties.viewPosition){
-                    Ext.destroy(main.apps[j]);
-                    main.apps[j]=null;
+                } else if(installableNodes[i].viewPosition >= Ung.Main.apps[j].nodeProperties.viewPosition){
+                    Ext.destroy(Ung.Main.apps[j]);
+                    Ung.Main.apps[j]=null;
                     j++;
                 }
             }
-            main.apps=updatedApps;
-            main.buildNodes();
+            Ung.Main.apps=updatedApps;
+            Ung.Main.buildNodes();
         }, this);
-        Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
-    },
-    loadLicenses: function() {
-        try {
-          //force re-sync with server
-          main.getLicenseManager().reloadLicenses();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e, true);
-        }
-        var callback = Ext.bind(function(result,exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.rackView=result;
-            for (var i = 0; i < main.nodes.length; i++) {
-                var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
-                if (nodeCmp && nodeCmp.license) {
-                    nodeCmp.updateLicense(rpc.rackView.licenseMap.map[nodeCmp.name]);
-                }
-            }
-        }, this);
-
         Ung.Util.RetryHandler.retry( rpc.rackManager.getRackView, rpc.rackManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     reloadLicenses: function() {
-        main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
+        Ung.Main.getLicenseManager().reloadLicenses(Ext.bind(function(result,exception) {
             // do not pop-up license managerexceptions because they happen when offline
             // if(Ung.Util.handleException(exception)) return;
             if (exception) return;
@@ -841,8 +613,8 @@ Ext.define("Ung.Main", {
             var callback = Ext.bind(function(result,exception) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.rackView=result;
-                for (var i = 0; i < main.nodes.length; i++) {
-                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
+                for (var i = 0; i < Ung.Main.nodes.length; i++) {
+                    var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
                     if (nodeCmp && nodeCmp.license) {
                         nodeCmp.updateLicense(rpc.rackView.licenseMap.map[nodeCmp.name]);
                     }
@@ -855,99 +627,79 @@ Ext.define("Ung.Main", {
 
     installNode: function(nodeProperties, appItem, completeFn) {
         if(!rpc.isRegistered) {
-            main.openRegisterScreen();
+            Ung.Main.openRegistrationScreen();
             return;
         }
         if( nodeProperties === null ) {
             return;
         }
         // Sanity check to see if the node is already installed.
-        var node = main.getNode( nodeProperties.name );
+        var node = Ung.Main.getNode( nodeProperties.name );
         if (( node !== null ) && ( node.nodeSettings.policyId == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
         }
 
-        Ung.AppItem.updateState( nodeProperties.displayName, "loadapp");
-        main.addNodePreview( nodeProperties );
+        Ung.AppItem.setLoading(nodeProperties.name, true);
+        Ung.Main.addNodePreview( nodeProperties );
         rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
-                Ung.AppItem.updateState( nodeProperties.displayName, null );
-                main.removeNodePreview( nodeProperties.name );
-                main.updateRackView();
+                Ung.AppItem.setLoading(nodeProperties.name, false);
+                Ung.Main.removeNodePreview( nodeProperties.name );
+                Ung.Main.updateRackView();
                 Ung.Util.handleException(exception);
                 return;
             }
-            main.updateRackView();
+            Ung.Main.updateRackView();
             if (completeFn)
                 completeFn();
         }, this), nodeProperties.name, rpc.currentPolicy.policyId);
     },
-    getIframeWin: function() {
-        if(this.iframeWin==null) {
-            this.iframeWin=Ext.create("Ung.Window",{
-                id: 'iframeWin',
-                layout: 'fit',
-                defaults: {},
-                items: {
-                    html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
-                },
-                closeWindow: function() {
-                    this.setTitle('');
-                    this.hide();
-                    window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
-                    main.reloadLicenses();
-                }
-            });
-        }
-        return this.iframeWin;
-    },
-    // load Config
-    loadConfig: function() {
-        this.config =
-            [{
-                "name":"network",
-                "displayName":i18n._("Network"),
-                "iconClass":"icon-config-network",
-                "helpSource":"network",
-                "className":"Webui.config.network"
-            }, {
-                "name":"administration",
-                "displayName":i18n._("Administration"),
-                "iconClass":"icon-config-admin",
-                "helpSource":"administration",
-                "className":"Webui.config.administration"
-            }, {
-                "name":"email",
-                "displayName":i18n._("Email"),
-                "iconClass":"icon-config-email",
-                "helpSource":"email",
-                "className":"Webui.config.email"
-            }, {
-                "name":"localDirectory",
-                "displayName":i18n._("Local Directory"),
-                "iconClass":"icon-config-directory",
-                "helpSource":"local_directory",
-                "className":"Webui.config.localDirectory"
-            }, {
-                "name":"upgrade",
-                "displayName":i18n._("Upgrade"),
-                "iconClass":"icon-config-upgrade",
-                "helpSource":"upgrade",
-                "className":"Webui.config.upgrade"
-            }, {
-                "name":"system",
-                "displayName":i18n._("System"),
-                "iconClass":"icon-config-setup",
-                "helpSource":"system",
-                "className":"Webui.config.system"
-            }, {
-                "name":"about",
-                "displayName":i18n._("About"),
-                "iconClass":"icon-config-support",
-                "helpSource":"about",
-                "className":"Webui.config.about"
-            }];
+    // build Config
+    buildConfig: function() {
+        this.config =[{
+            name: 'network',
+            displayName: i18n._('Network'),
+            iconClass: 'icon-config-network',
+            helpSource: 'network',
+            className: 'Webui.config.network'
+        }, {
+            name: 'administration',
+            displayName: i18n._('Administration'),
+            iconClass: 'icon-config-admin',
+            helpSource: 'administration',
+            className: 'Webui.config.administration'
+        }, {
+            name: 'email',
+            displayName: i18n._('Email'),
+            iconClass: 'icon-config-email',
+            helpSource: 'email',
+            className: 'Webui.config.email'
+        }, {
+            name: 'localDirectory',
+            displayName: i18n._('Local Directory'),
+            iconClass: 'icon-config-directory',
+            helpSource: 'local_directory',
+            className: 'Webui.config.localDirectory'
+        }, {
+            name: 'upgrade',
+            displayName: i18n._('Upgrade'),
+            iconClass: 'icon-config-upgrade',
+            helpSource: 'upgrade',
+            className: 'Webui.config.upgrade'
+        }, {
+            name: 'system',
+            displayName: i18n._('System'),
+            iconClass: 'icon-config-setup',
+            helpSource: 'system',
+            className: 'Webui.config.system'
+        }, {
+            name: 'about',
+            displayName: i18n._('About'),
+            iconClass: 'icon-config-support',
+            helpSource: 'about',
+            className: 'Webui.config.about'
+        }];
         this.configMap = Ung.Util.createRecordsMap(this.config, "name");
         for(var i=0;i<this.config.length;i++) {
             Ext.create('Ung.ConfigItem', {
@@ -1011,7 +763,7 @@ Ext.define("Ung.Main", {
                     text: i18n._('Help with Administration Alerts'),
                     handler: function() {
                         //helpSource: 'admin_alerts'
-                        main.openHelp('admin_alerts');
+                        Ung.Main.openHelp('admin_alerts');
                     }
                 }]
             });
@@ -1021,8 +773,8 @@ Ext.define("Ung.Main", {
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         var createWinFn= function(config) {
-            main.configWin = Ext.create(config.className, config);
-            main.configWin.show();
+            Ung.Main.configWin = Ext.create(config.className, config);
+            Ung.Main.configWin.show();
             Ext.MessageBox.hide();
         };
         Ext.Function.defer(function() {
@@ -1039,16 +791,11 @@ Ext.define("Ung.Main", {
     destoyNodes: function () {
         if(this.nodes!==null) {
             for(var i=0;i<this.nodes.length;i++) {
-                var node=this.nodes[i];
-                var cmp=Ung.Node.getCmp(this.nodes[i].nodeId);
-                if(cmp) {
-                    cmp.destroy();
-                    cmp=null;
-                }
+                Ext.destroy(Ung.Node.getCmp(this.nodes[i].nodeId));
             }
         }
         for(var nodeName in this.nodePreviews) {
-            main.removeNodePreview(nodeName);
+            Ung.Main.removeNodePreview(nodeName);
         }
     },
     getNodePosition: function(place, viewPosition) {
@@ -1066,114 +813,72 @@ Ext.define("Ung.Main", {
         return position;
     },
     addNode: function (node, fadeIn) {
-        var nodeWidget=new Ung.Node(node);
-        nodeWidget.fadeIn=fadeIn;
+        var nodeCmp = Ext.create('Ung.Node', node);
+        nodeCmp.fadeIn=fadeIn;
         var place=(node.type=="FILTER")?'filter_nodes':'service_nodes';
-        var position=this.getNodePosition(place,node.viewPosition);
-        nodeWidget.render(place,position);
-        Ung.AppItem.updateState(node.displayName, null);
+        var position=this.getNodePosition(place, node.viewPosition);
+        nodeCmp.render(place, position);
+        Ung.AppItem.setLoading(node.name, false);
         if ( node.name == 'untangle-node-policy') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            try {
-                rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            Ext.getCmp('policyManagerMenuItem').enable();
-            this.policyNodeWidget = nodeWidget;
+            rpc.jsonrpc.UvmContext.nodeManager().node(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.getCmp('policyManagerMenuItem').enable();
+            }, this),"untangle-node-policy");
         }
     },
     addNodePreview: function ( nodeProperties ) {
-        var nodeWidget=new Ung.NodePreview( nodeProperties );
+        var nodeCmp = Ext.create('Ung.NodePreview', nodeProperties );
         var place = ( nodeProperties.viewPosition < 1000) ? 'filter_nodes' : 'service_nodes';
         var position = this.getNodePosition( place, nodeProperties.viewPosition );
-        nodeWidget.render(place,position);
-        main.nodePreviews[ nodeProperties.name ]=true;
+        nodeCmp.render(place, position);
+        Ung.Main.nodePreviews[nodeProperties.name] = true;
     },
     removeNodePreview: function(nodeName) {
-        if(main.nodePreviews[nodeName] !== undefined) {
-            delete main.nodePreviews[nodeName];
+        if(Ung.Main.nodePreviews[nodeName] !== undefined) {
+            delete Ung.Main.nodePreviews[nodeName];
         }
-        var nodePreview=Ext.getCmp("node_preview_"+nodeName);
-        if(nodePreview) {
-            Ext.destroy(nodePreview);
-        }
+        Ext.destroy(Ext.getCmp("node_preview_"+nodeName));
     },
     removeNode: function(index) {
-        var tid = main.nodes[index].nodeId;
-        var nodeUI = (tid != null) ? Ext.getCmp('node_'+tid): null;
-        main.nodes.splice(index, 1);
-        if(nodeUI) {
-            Ext.destroy(nodeUI);
+        var nodeId = Ung.Main.nodes[index].nodeId;
+        var nodeCmp = (nodeId != null) ? Ext.getCmp('node_'+nodeId): null;
+        Ung.Main.nodes.splice(index, 1);
+        if(nodeCmp) {
+            Ext.destroy(nodeCmp);
             return true;
         }
         return false;
     },
-    getNode: function(nodeName, nodePolicyId) {
-        var cp = rpc.currentPolicy.policyId ,np = null;
-        if(main.nodes) {
-            for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicyId==null) {
-                    cp = null;
-                } else {
-                    cp = main.nodes[i].nodeSettings.policyId;
-                }
-                if ((nodeName == main.nodes[i].name)&& (nodePolicyId==cp)) {
-                    return main.nodes[i];
+    getNode: function(nodeName) {
+        if(Ung.Main.nodes) {
+            var nodePolicyId;
+            for (var i = 0; i < Ung.Main.nodes.length; i++) {
+                nodePolicyId = Ung.Main.nodes[i].nodeSettings.policyId;
+                if (nodeName == Ung.Main.nodes[i].name && (nodePolicyId == null || nodePolicyId == rpc.currentPolicy.policyId)) {
+                    return Ung.Main.nodes[i];
                 }
             }
         }
         return null;
     },
-    removeParentNode: function (node, nodePolicyId) {
-        var cp = rpc.currentPolicy.policyId;
-        if(main.nodes) {
-            for (var i = 0; i < main.nodes.length; i++) {
-                cp = (nodePolicyId==null) ? null : main.nodes[i].nodeSettings.policyId;
-                if (node.name === main.nodes[i].name) {
-                    if(nodePolicyId!=cp) {
-                        //parent found
-                        return main.removeNode(i);
-                    }
-                }
-            }
-        }
-        return false;
-    },
-    isNodeRunning: function(nodeName) {
-        var node = main.getNode(nodeName);
-        if (node != null) {
-             var nodeCmp = Ung.Node.getCmp(node.nodeId);
-             if (nodeCmp != null && nodeCmp.isRunning()) {
-                return true;
-             }
-        }
-        return false;
-    },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-        var hasUtil=false;
         var hasService=false;
         for(var i=0;i<this.nodes.length;i++) {
             if(this.nodes[i].type != "FILTER") {
                 hasService=true;
-                if(this.nodes[i].type != "SERVICE") {
-                    hasUtil=true;
-                }
+                break;
             }
         }
-        document.getElementById("nodes-separator-text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
-        document.getElementById("nodes-separator").style.display= hasService?"":"none";
-        if(hasService) {
-            document.getElementById("racks").style.backgroundPosition="0px 100px";
-        } else {
-            document.getElementById("racks").style.backgroundPosition="0px 50px";
-        }
+        document.getElementById("nodes-separator-text").innerHTML=hasService ? i18n._("Services") : "";
+        document.getElementById("nodes-separator").style.display= hasService ? "" : "none";
+        document.getElementById("racks").style.backgroundPosition = hasService ? "0px 100px" : "0px 50px";
     },
     // build policies select box
     buildPolicies: function () {
-        if(main.rackSelect!=null) {
-            Ext.destroy(main.rackSelect);
+        if(Ung.Main.rackSelect!=null) {
+            Ext.destroy(Ung.Main.rackSelect);
             Ext.get('rack-select-container').dom.innerHTML = '';
         }
         var items=[];
@@ -1182,27 +887,25 @@ Ext.define("Ung.Main", {
         rpc.policyNamesMap[0] = i18n._("No Rack");
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
             var policy = rpc.policies[i];
-
-            selVirtualRackIndex = (policy.policyId ==1 ? i: selVirtualRackIndex);
-
             rpc.policyNamesMap[policy.policyId] = policy.name;
             items.push({
                 text: policy.name,
                 value: policy.policyId,
                 index: i,
-                handler: main.changeRack,
+                handler: Ung.Main.changeRack,
                 hideDelay: 0
             });
             if( policy.policyId == 1 ) {
                 rpc.currentPolicy = policy;
+                selVirtualRackIndex = i;
             }
         }
         items.push('-');
-        items.push({text: i18n._('Show Policy Manager'), value: 'SHOW_POLICY_MANAGER', handler: main.showPolicyManager, id:'policyManagerMenuItem', disabled: true, hideDelay: 0});
+        items.push({text: i18n._('Show Policy Manager'), value: 'SHOW_POLICY_MANAGER', handler: Ung.Main.showPolicyManager, id:'policyManagerMenuItem', disabled: true, hideDelay: 0});
         items.push('-');
-        items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: main.showSessions, hideDelay: 0});
-        items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: main.showHosts, hideDelay: 0});
-        main.rackSelect = new Ext.SplitButton({
+        items.push({text: i18n._('Show Sessions'), value: 'SHOW_SESSIONS', handler: Ung.Main.showSessions, hideDelay: 0});
+        items.push({text: i18n._('Show Hosts'), value: 'SHOW_HOSTS', handler: Ung.Main.showHosts, hideDelay: 0});
+        Ung.Main.rackSelect = Ext.create('Ext.SplitButton', {
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
             id:'rack-select',
@@ -1214,12 +917,12 @@ Ext.define("Ung.Main", {
         this.checkForAlerts();
         this.checkForIE();
 
-        main.loadRackView();
+        Ung.Main.loadRackView();
     },
     getPolicyName: function(policyId) {
-        if (policyId == null || policyId == "")
+        if (Ext.isEmpty(policyId)){
             return i18n._( "Services" );
-
+        }
         if (rpc.policyNamesMap[policyId] !== undefined) {
             return rpc.policyNamesMap[policyId];
         } else {
@@ -1227,100 +930,117 @@ Ext.define("Ung.Main", {
         }
     },
     showHosts: function() {
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        Ext.Function.defer(function() {
-            if ( main.hostMonitorWin == null) {
-                main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
+        Ext.require(['Webui.config.hostMonitor'], function() {
+            if ( Ung.Main.hostMonitorWin == null) {
+                Ung.Main.hostMonitorWin=Ext.create('Webui.config.hostMonitor', {"name":"hostMonitor", "helpSource":"host_viewer"});
             }
-            main.hostMonitorWin.show();
-            main.hostMonitorWin.gridCurrentHosts.reload();
-            Ext.MessageBox.hide();
-        }, 10, this);
+            Ung.Main.hostMonitorWin.show();
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function() {
+                Ung.Main.hostMonitorWin.gridCurrentHosts.reload();
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
     },
     showSessions: function() {
-        main.showNodeSessions(0);
+        Ung.Main.showNodeSessions(0);
     },
     showNodeSessions: function(nodeIdArg) {
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        Ext.Function.defer(function() {
-            if ( main.sessionMonitorWin == null) {
-                main.sessionMonitorWin=Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
+        Ext.require(['Webui.config.sessionMonitor'], function() {
+            if ( Ung.Main.sessionMonitorWin == null) {
+                Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {"name":"sessionMonitor", "helpSource":"session_viewer"});
             }
-            main.sessionMonitorWin.show();
-            main.sessionMonitorWin.gridCurrentSessions.reload();
-            Ext.MessageBox.hide();
-        }, 10, this);
+            Ung.Main.sessionMonitorWin.show();
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function() {
+                Ung.Main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
     },
     showPolicyManager: function() {
-        if (main.policyNodeWidget) {
-            main.policyNodeWidget.loadSettings();
+        var node = Ung.Main.getNode("untangle-node-policy");
+        if (node != null) {
+            var nodeCmp = Ung.Node.getCmp(node.nodeId);
+            if (nodeCmp != null) {
+                nodeCmp.loadSettings();
+            }
         }
     },
     // change current policy
     changeRack: function () {
-        Ext.getCmp('rack-select').setText(this.text);
-        rpc.currentPolicy=rpc.policies[this.index];
-        main.loadRackView();
+        Ung.Main.rackSelect.setText(this.text);
+        rpc.currentPolicy = rpc.policies[this.index];
+        Ung.Main.loadRackView();
     },
     getParentName: function( parentId ) {
-        if( parentId == null ) {
-            return i18n._("None");
-        }
-        if ( rpc.policies === null ) {
-            return i18n._("None");
+        if( parentId == null || rpc.policies === null) {
+            return null;
         }
         for ( var c = 0 ; c < rpc.policies.length ; c++ ) {
             if ( rpc.policies[c].policyId == parentId ) {
                 return rpc.policies[c].name;
             }
         }
-        return i18n._("None");
+        return null;
     },
-    /**
-     * Opens a link in a iframe pop-up window in the middle of the rack
-     */
+    // Opens a link in a iframe pop-up window in the middle of the rack
     openIFrame: function( url, title ) {
         console.log("Open IFrame:", url);
         if ( url == null ) {
             alert("can not open window to null URL");
         }
-        var iframeWin = main.getIframeWin();
-
-        var position = [];
-        var size = main.viewport.getSize();
-        var centerSize = Ext.getCmp('center').getSize();
-        var centerPosition = Ext.getCmp('center').getPosition();
-        var scale = 0.90;
-        if ( centerSize.width < 850 ) {
-            scale = 1.00; // if we are in a low resolution, use the whole rack screen
-            position[0] = centerPosition[0];
-            position[1] = centerPosition[1];
-        } else {
-            scale = 0.90; // use 90% of the screen for the popup
-            position[0] = centerPosition[0]+Math.round(centerSize.width/20);
-            position[1] = centerPosition[1]+Math.round(centerSize.height/20);
+        if(!this.iframeWin) {
+            this.iframeWin = Ext.create("Ung.Window",{
+                id: 'iframeWin',
+                layout: 'fit',
+                defaults: {},
+                items: {
+                    html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
+                },
+                closeWindow: function() {
+                    this.setTitle('');
+                    this.hide();
+                    window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
+                    Ung.Main.reloadLicenses();
+                },
+                doSize: function() {
+                    var objSize = Ung.Main.viewport.getSize();
+                    objSize.width = objSize.width - Ung.Main.contentLeftWidth;
+                    
+                    if(objSize.width < 850 || objSize.height < 470) {
+                        this.setPosition(Ung.Main.contentLeftWidth, 0);
+                    } else {
+                        var scale = 0.9;
+                        this.setPosition(Ung.Main.contentLeftWidth + Math.round(objSize.width*(1-scale)/2), Math.round(objSize.height*(1-scale)/2));
+                        objSize.width = Math.round(objSize.width * scale);
+                        objSize.height = Math.round(objSize.height * scale);
+                        
+                    }
+                    this.setSize(objSize);
+                }
+            });
         }
-        iframeWin.show();
-
-        iframeWin.setSize({width:centerSize.width*scale,height:centerSize.height*scale});
-        iframeWin.setPosition(position[0],position[1]);
-        iframeWin.setTitle(title);
-
+        this.iframeWin.setTitle(title);
+        this.iframeWin.show();
         window.frames["iframeWin_iframe"].location.href = url;
+    },
+    closeIframe: function() {
+        if(this.iframeWin!=null && this.iframeWin.isVisible() ) {
+            this.iframeWin.closeWindow();
+        }
+        this.reloadLicenses();
     },
     openFailureScreen: function () {
         var url = "/webui/offline.jsp";
         this.openIFrame( url, i18n._("Warning") );
     },
-    /**
-     *  Prepares the uvm to display the welcome screen
-     */
+    // Prepares the uvm to display the welcome screen
     showWelcomeScreen: function () {
         if(this.welcomeScreenAlreadShown) {
             return;
         }
         this.welcomeScreenAlreadShown = true;
-
         //Test if box is online (store is available)
         Ext.MessageBox.wait(i18n._("Determining Connectivity..."), i18n._("Please wait"));
 
@@ -1330,18 +1050,12 @@ Ext.define("Ung.Main", {
             // If box is not online - show error message.
             // Otherwise show registration screen
             if(!result) {
-                main.openFailureScreen();
+                Ung.Main.openFailureScreen();
             } else {
-                main.openRegisterScreen();
+                Ung.Main.openRegistrationScreen();
                 Ung.CheckStoreRegistration.start();
             }
         }, this));
-    },
-    /**
-     *  Hides the welcome screen
-     */
-    hideWelcomeScreen: function() {
-        main.closeIframe();
     },
     showPostRegistrationPopup: function() {
         if (this.nodes.length != 0) {
@@ -1354,37 +1068,38 @@ Ext.define("Ung.Main", {
                 name: 'Yes',
                 text: i18n._("Yes, install the recommended apps."),
                 handler: Ext.bind(function() {
-                    var apps = [ "Web Filter",
-                                 //"Web Filter Lite",
-                                 "Virus Blocker",
-                                 //"Virus Blocker Lite",
-                                 "Spam Blocker",
-                                 //"Spam Blocker Lite",
-                                 //"Phish Blocker",
-                                 //"Web Cache",
-                                 "Bandwidth Control",
-                                 "HTTPS Inspector",
-                                 "Application Control",
-                                 //"Application Control Lite",
-                                 "Captive Portal",
-                                 "Firewall",
-                                 //"Intrusion Prevention",
-                                 //"Ad Blocker",
-                                 "Reports",
-                                 "Policy Manager",
-                                 "Directory Connector",
-                                 "WAN Failover",
-                                 "WAN Balancer",
-                                 "IPsec VPN",
-                                 "OpenVPN",
-                                 "Configuration Backup",
-                                 "Branding Manager",
-                                 "Live Support"];
+                    var apps = [
+                        { displayName: "Web Filter", name: 'untangle-node-sitefilter'},
+                        //{ displayName: "Web Filter Lite", name: 'untangle-node-webfilter'},
+                        { displayName: "Virus Blocker", name: 'untangle-node-virusblocker'},
+                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'},
+                        { displayName: "Spam Blocker", name: 'untangle-node-spamblocker'},
+                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spamassassin'},
+                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish'},
+                        //{ displayName: "Web Cache", name: 'untangle-node-webcache'},
+                        { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth'},
+                        { displayName: "HTTPS Inspector", name: 'untangle-casing-https'},
+                        { displayName: "Application Control", name: 'untangle-node-classd'},
+                        //{ displayName: "Application Control Lite", name: 'untangle-node-protofilter'},
+                        { displayName: "Captive Portal", name: 'untangle-node-capture'},
+                        { displayName: "Firewall", name: 'untangle-node-firewall'},
+                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-ips'},
+                        //{ displayName: "Ad Blocker", name: 'untangle-node-adblocker'},
+                        { displayName: "Reports", name: 'untangle-node-reporting'},
+                        { displayName: "Policy Manager", name: 'untangle-node-policy'},
+                        { displayName: "Directory Connector", name: 'untangle-node-adconnector'},
+                        { displayName: "WAN Failover", name: 'untangle-node-faild'},
+                        { displayName: "WAN Balancer", name: 'untangle-node-splitd'},
+                        { displayName: "IPsec VPN", name: 'untangle-node-ipsec'},
+                        { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
+                        { displayName: "Configuration Backup", name: 'untangle-node-boxbackup'},
+                        { displayName: "Branding Manager", name: 'untangle-node-branding'},
+                        { displayName: "Live Support", name: 'untangle-node-support'}];
 
                     // only install this on 1gig+ machines
-                    if ( main.totalMemoryMb > 900 ) {
-                        apps.splice(2,0,"Virus Blocker Lite");
-                        apps.splice(4,0,"Phish Blocker");
+                    if ( Ung.Main.totalMemoryMb > 900 ) {
+                        apps.splice(4,0,{ displayName: "Phish Blocker", name: 'untangle-node-phish'});
+                        apps.splice(2,0,{ displayName: "Virus Blocker Lite", name: 'untangle-node-clam'});
                     }
 
                     var fn = function( appsToInstall ) {
@@ -1393,7 +1108,7 @@ Ext.define("Ung.Main", {
                             Ext.MessageBox.alert(i18n._("Installation Complete!"), i18n._("Thank you for using Untangle!"));
                             return;
                         }
-                        var name = appsToInstall[0];
+                        var name = appsToInstall[0].name;
                         appsToInstall.shift();
                         var completeFn = Ext.bind( fn, this, [appsToInstall] ); // function to install remaining apps
                         var app = Ung.AppItem.getApp(name);

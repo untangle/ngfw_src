@@ -87,11 +87,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             title: this.i18n._('Email'),
             name: 'Email',
             helpSource: 'spam_blocker_lite_email',
-            layout: "anchor",
-            defaults: {
-                anchor: '98%',
-                autoScroll: true
-            },
             autoScroll: true,
             cls: 'ung-panel',
             items: [{
@@ -135,23 +130,20 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                             editable: false,
                             store: strengthsData,
                             fieldLabel: this.i18n._('Strength'),
-                            itemCls: 'left-indent-1',
                             width: 300,
                             queryMode: 'local',
                             value: this.getStrengthSelectionValue(this.settings.smtpConfig.strength),
                             listeners: {
-                                select: {
-                                    fn: Ext.bind(function(elem, record) {
-                                        var smtpStrengthValue = this.emailPanel.down('numberfield[name=smtpStrengthValue]');
-                                        if (record[0].data.field1 == 0) {
-                                            smtpStrengthValue.setVisible(true);
-                                        } else {
-                                            smtpStrengthValue.setVisible(false);
-                                            this.settings.smtpConfig.strength = record[0].data.field1;
-                                        }
-                                        smtpStrengthValue.setValue(this.settings.smtpConfig.strength / 10.0);
-                                    }, this)
-                                }
+                                select: Ext.bind(function(elem, record) {
+                                    var smtpStrengthValue = this.emailPanel.down('numberfield[name=smtpStrengthValue]');
+                                    if (record.get("field1") == 0) {
+                                        smtpStrengthValue.setVisible(true);
+                                    } else {
+                                        smtpStrengthValue.setVisible(false);
+                                        this.settings.smtpConfig.strength = record.get("field1");
+                                    }
+                                    smtpStrengthValue.setValue(this.settings.smtpConfig.strength / 10.0);
+                                }, this)
                             }
                         }]
                     },{
@@ -161,7 +153,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                             xtype: 'numberfield',
                             fieldLabel: '&nbsp;&nbsp;&nbsp;' + this.i18n._('Strength Value'),
                             name: 'smtpStrengthValue',
-                            itemCls: 'left-indent-1',
                             value: this.settings.smtpConfig.strength / 10.0,
                             toValidate: true,
                             width: 200,
@@ -188,7 +179,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                     valueField: 'key',
                     displayField: 'name',
                     fieldLabel: this.i18n._('Action'),
-                    itemCls: 'left-indent-1',
                     width: 300,
                     queryMode: 'local',
                     value: this.settings.smtpConfig.msgAction,
@@ -214,7 +204,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                     name: 'dropSuperSpam',
                     boxLabel: this.i18n._('Drop Super Spam'),
                     hideLabel: true,
-                    itemCls: 'left-indent-4',
                     checked: this.settings.smtpConfig.blockSuperSpam,
                     listeners: {
                         "afterrender": {
@@ -240,7 +229,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
                              allowDecimals: false,
                              allowBlank: false,
                              minValue: 0,
-                             itemCls: 'left-indent-4 super-spam-threshold x-item-disabled',
                              maxValue: 2147483647,
                              hideTrigger:true,
                              listeners: {
@@ -409,7 +397,6 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             }, {
                 xtype: 'fieldset',
                 title: this.i18n._('Note'),
-                cls: 'description',
                 html: this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
                     (this.lastCheck != null&& this.lastCheck.time != 0 ? i18n.timestampFormat(this.lastCheck): i18n._("never")) + '<br\>' +
                     this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
@@ -426,7 +413,7 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
     },
     // Dnsbl Event Log
     buildDnsblEventLog: function() {
-        this.gridDnsblEventLog = Ext.create('Ung.GridEventLog',{
+        this.gridDnsblEventLog = Ext.create('Ung.grid.EventLog',{
             settingsCmp: this,
             name: 'Tarpit Event Log',
             helpSource: 'spam_blocker_lite_tarpit_event_log',
@@ -435,7 +422,7 @@ Ext.define('Webui.untangle-node-spamassassin.settings', {
             // the list of fields
             fields: [{
                 name: 'time_stamp',
-                sortType: Ung.SortTypes.asTimestamp
+                sortType: 'asTimestamp'
             }, {
                 name: 'skipped',
                 type: 'string',

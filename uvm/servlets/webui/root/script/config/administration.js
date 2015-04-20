@@ -1,58 +1,5 @@
-Ext.define("Webui.config.administration.SkinManager", {
-    constructor: function( config ) {
-        /* List of stores to be refreshed, dynamically generated. */
-        this.refreshList = [];
-        this.i18n = config.i18n;
-    },
-    addRefreshableStore: function( store ) {
-        this.refreshList.push( store );
-    },
-    uploadSkin: function( cmp, form ) {
-        form.submit({
-            parentId: cmp.getId(),
-            waitMsg: this.i18n._('Please wait while your skin is uploaded...'),
-            success: Ext.bind(this.uploadSkinSuccess, this ),
-            failure: Ext.bind(this.uploadSkinFailure, this )
-        });
-    },
-    uploadSkinSuccess: function( form, action ) {
-        this.storeSemaphore = this.refreshList.length;
-
-        var handler = Ext.bind(function() {
-            this.storeSemaphore--;
-            if (this.storeSemaphore == 0) {
-                Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
-                var field = form.findField( "upload_skin_textfield" );
-                if ( field != null ) field.reset();
-            }
-        }, this);
-
-        for ( var c = 0 ; c < this.storeSemaphore ; c++ ) this.refreshList[c].load({callback:handler});
-    },
-    uploadSkinFailure: function( form, action ) {
-        var cmp = Ext.getCmp(action.parentId);
-        var errorMsg = cmp.i18n._("Upload Skin Failed");
-        if (action.result && action.result.msg) {
-            switch (action.result.msg) {
-            case 'Invalid Skin':
-                errorMsg = cmp.i18n._("Invalid Skin");
-                break;
-            case 'The default skin can not be overwritten':
-                errorMsg = cmp.i18n._("The default skin can not be overwritten");
-                break;
-            case 'Error creating skin folder':
-                errorMsg = cmp.i18n._("Error creating skin folder");
-                break;
-            default:
-                errorMsg = cmp.i18n._("Upload Skin Failed");
-            }
-        }
-        Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-    }
-});
-
-Ext.define("Webui.config.administration", {
-    extend: "Ung.ConfigWin",
+Ext.define('Webui.config.administration', {
+    extend: 'Ung.ConfigWin',
     panelAdmin: null,
     panelPublicAddress: null,
     panelCertificates: null,
@@ -61,6 +8,69 @@ Ext.define("Webui.config.administration", {
     panelSkins: null,
     uploadedCustomLogo: false,
     initComponent: function() {
+        this.countries = [
+            [ "US", i18n._("United States") ], [ "AF", i18n._("Afghanistan") ], [ "AL", i18n._("Albania") ], [ "DZ", i18n._("Algeria") ],
+            [ "AS", i18n._("American Samoa") ], [ "AD", i18n._("Andorra") ], [ "AO", i18n._("Angola") ], [ "AI", i18n._("Anguilla") ],
+            [ "AQ", i18n._("Antarctica") ], [ "AG", i18n._("Antigua and Barbuda") ], [ "AR", i18n._("Argentina") ], [ "AM", i18n._("Armenia") ],
+            [ "AW", i18n._("Aruba") ], [ "AU", i18n._("Australia") ], [ "AT", i18n._("Austria") ], [ "AZ", i18n._("Azerbaijan") ],
+            [ "BS", i18n._("Bahamas") ], [ "BH", i18n._("Bahrain") ], [ "BD", i18n._("Bangladesh") ], [ "BB", i18n._("Barbados") ],
+            [ "BY", i18n._("Belarus") ], [ "BE", i18n._("Belgium") ], [ "BZ", i18n._("Belize") ], [ "BJ", i18n._("Benin") ], [ "BM", i18n._("Bermuda") ],
+            [ "BT", i18n._("Bhutan") ], [ "BO", i18n._("Bolivia") ], [ "BA", i18n._("Bosnia and Herzegovina") ], [ "BW", i18n._("Botswana") ],
+            [ "BV", i18n._("Bouvet Island") ], [ "BR", i18n._("Brazil") ], [ "IO", i18n._("British Indian Ocean Territory") ],
+            [ "VG", i18n._("British Virgin Islands") ], [ "BN", i18n._("Brunei") ], [ "BG", i18n._("Bulgaria") ], [ "BF", i18n._("Burkina Faso") ],
+            [ "BI", i18n._("Burundi") ], [ "KH", i18n._("Cambodia") ], [ "CM", i18n._("Cameroon") ], [ "CA", i18n._("Canada") ],
+            [ "CV", i18n._("Cape Verde") ], [ "KY", i18n._("Cayman Islands") ], [ "CF", i18n._("Central African Republic") ],
+            [ "TD", i18n._("Chad") ], [ "CL", i18n._("Chile") ], [ "CN", i18n._("China") ], [ "CX", i18n._("Christmas Island") ],
+            [ "CC", i18n._("Cocos Islands") ], [ "CO", i18n._("Colombia") ], [ "KM", i18n._("Comoros") ], [ "CG", i18n._("Congo - Brazzaville") ],
+            [ "CK", i18n._("Cook Islands") ], [ "CR", i18n._("Costa Rica") ], [ "HR", i18n._("Croatia") ], [ "CU", i18n._("Cuba") ],
+            [ "CY", i18n._("Cyprus") ], [ "CZ", i18n._("Czech Republic") ], [ "DK", i18n._("Denmark") ], [ "DJ", i18n._("Djibouti") ],
+            [ "DM", i18n._("Dominica") ], [ "DO", i18n._("Dominican Republic") ], [ "EC", i18n._("Ecuador") ], [ "EG", i18n._("Egypt") ],
+            [ "SV", i18n._("El Salvador") ], [ "GQ", i18n._("Equatorial Guinea") ], [ "ER", i18n._("Eritrea") ], [ "EE", i18n._("Estonia") ],
+            [ "ET", i18n._("Ethiopia") ], [ "FK", i18n._("Falkland Islands") ], [ "FO", i18n._("Faroe Islands") ], [ "FJ", i18n._("Fiji") ],
+            [ "FI", i18n._("Finland") ], [ "FR", i18n._("France") ], [ "GF", i18n._("French Guiana") ], [ "PF", i18n._("French Polynesia") ],
+            [ "TF", i18n._("French Southern Territories") ], [ "GA", i18n._("Gabon") ], [ "GM", i18n._("Gambia") ], [ "GE", i18n._("Georgia") ],
+            [ "DE", i18n._("Germany") ], [ "GH", i18n._("Ghana") ], [ "GI", i18n._("Gibraltar") ], [ "GR", i18n._("Greece") ],
+            [ "GL", i18n._("Greenland") ], [ "GD", i18n._("Grenada") ], [ "GP", i18n._("Guadeloupe") ], [ "GU", i18n._("Guam") ],
+            [ "GT", i18n._("Guatemala") ], [ "GN", i18n._("Guinea") ], [ "GW", i18n._("Guinea-Bissau") ], [ "GY", i18n._("Guyana") ],
+            [ "HT", i18n._("Haiti") ], [ "HM", i18n._("Heard Island and McDonald Islands") ], [ "HN", i18n._("Honduras") ],
+            [ "HK", i18n._("Hong Kong SAR China") ], [ "HU", i18n._("Hungary") ], [ "IS", i18n._("Iceland") ], [ "IN", i18n._("India") ],
+            [ "ID", i18n._("Indonesia") ], [ "IR", i18n._("Iran") ], [ "IQ", i18n._("Iraq") ], [ "IE", i18n._("Ireland") ],
+            [ "IL", i18n._("Israel") ], [ "IT", i18n._("Italy") ], [ "CI", i18n._("Ivory Coast") ], [ "JM", i18n._("Jamaica") ],
+            [ "JP", i18n._("Japan") ], [ "JO", i18n._("Jordan") ], [ "KZ", i18n._("Kazakhstan") ], [ "KE", i18n._("Kenya") ],
+            [ "KI", i18n._("Kiribati") ], [ "KW", i18n._("Kuwait") ], [ "KG", i18n._("Kyrgyzstan") ], [ "LA", i18n._("Laos") ],
+            [ "LV", i18n._("Latvia") ], [ "LB", i18n._("Lebanon") ], [ "LS", i18n._("Lesotho") ], [ "LR", i18n._("Liberia") ],
+            [ "LY", i18n._("Libya") ], [ "LI", i18n._("Liechtenstein") ], [ "LT", i18n._("Lithuania") ], [ "LU", i18n._("Luxembourg") ],
+            [ "MO", i18n._("Macao SAR China") ], [ "MK", i18n._("Macedonia") ], [ "MG", i18n._("Madagascar") ], [ "MW", i18n._("Malawi") ],
+            [ "MY", i18n._("Malaysia") ], [ "MV", i18n._("Maldives") ], [ "ML", i18n._("Mali") ], [ "MT", i18n._("Malta") ],
+            [ "MH", i18n._("Marshall Islands") ], [ "MQ", i18n._("Martinique") ], [ "MR", i18n._("Mauritania") ], [ "MU", i18n._("Mauritius") ],
+            [ "YT", i18n._("Mayotte") ], [ "FX", i18n._("Metropolitan France") ], [ "MX", i18n._("Mexico") ], [ "FM", i18n._("Micronesia") ],
+            [ "MD", i18n._("Moldova") ], [ "MC", i18n._("Monaco") ], [ "MN", i18n._("Mongolia") ], [ "MS", i18n._("Montserrat") ],
+            [ "MA", i18n._("Morocco") ], [ "MZ", i18n._("Mozambique") ], [ "MM", i18n._("Myanmar") ], [ "NA", i18n._("Namibia") ],
+            [ "NR", i18n._("Nauru") ], [ "NP", i18n._("Nepal") ], [ "NL", i18n._("Netherlands") ], [ "AN", i18n._("Netherlands Antilles") ],
+            [ "NC", i18n._("New Caledonia") ], [ "NZ", i18n._("New Zealand") ], [ "NI", i18n._("Nicaragua") ], [ "NE", i18n._("Niger") ],
+            [ "NG", i18n._("Nigeria") ], [ "NU", i18n._("Niue") ], [ "NF", i18n._("Norfolk Island") ], [ "KP", i18n._("North Korea") ],
+            [ "MP", i18n._("Northern Mariana Islands") ], [ "NO", i18n._("Norway") ], [ "OM", i18n._("Oman") ], [ "PK", i18n._("Pakistan") ],
+            [ "PW", i18n._("Palau") ], [ "PA", i18n._("Panama") ], [ "PG", i18n._("Papua New Guinea") ], [ "PY", i18n._("Paraguay") ],
+            [ "PE", i18n._("Peru") ], [ "PH", i18n._("Philippines") ], [ "PN", i18n._("Pitcairn") ], [ "PL", i18n._("Poland") ],
+            [ "PT", i18n._("Portugal") ], [ "PR", i18n._("Puerto Rico") ], [ "QA", i18n._("Qatar") ], [ "RE", i18n._("Reunion") ],
+            [ "RO", i18n._("Romania") ], [ "RU", i18n._("Russia") ], [ "RW", i18n._("Rwanda") ], [ "SH", i18n._("Saint Helena") ],
+            [ "KN", i18n._("Saint Kitts and Nevis") ], [ "LC", i18n._("Saint Lucia") ], [ "PM", i18n._("Saint Pierre and Miquelon") ],
+            [ "VC", i18n._("Saint Vincent and the Grenadines") ], [ "WS", i18n._("Samoa") ], [ "SM", i18n._("San Marino") ],
+            [ "ST", i18n._("Sao Tome and Principe") ], [ "SA", i18n._("Saudi Arabia") ], [ "SN", i18n._("Senegal") ], [ "SC", i18n._("Seychelles") ],
+            [ "SL", i18n._("Sierra Leone") ], [ "SG", i18n._("Singapore") ], [ "SK", i18n._("Slovakia") ], [ "SI", i18n._("Slovenia") ],
+            [ "SB", i18n._("Solomon Islands") ], [ "SO", i18n._("Somalia") ], [ "ZA", i18n._("South Africa") ],
+            [ "GS", i18n._("South Georgia and the South Sandwich Islands") ], [ "KR", i18n._("South Korea") ], [ "ES", i18n._("Spain") ],
+            [ "LK", i18n._("Sri Lanka") ], [ "SD", i18n._("Sudan") ], [ "SR", i18n._("Suriname") ], [ "SJ", i18n._("Svalbard and Jan Mayen") ],
+            [ "SZ", i18n._("Swaziland") ], [ "SE", i18n._("Sweden") ], [ "CH", i18n._("Switzerland") ], [ "SY", i18n._("Syria") ],
+            [ "TW", i18n._("Taiwan") ], [ "TJ", i18n._("Tajikistan") ], [ "TZ", i18n._("Tanzania") ], [ "TH", i18n._("Thailand") ],
+            [ "TG", i18n._("Togo") ], [ "TK", i18n._("Tokelau") ], [ "TO", i18n._("Tonga") ], [ "TT", i18n._("Trinidad and Tobago") ],
+            [ "TN", i18n._("Tunisia") ], [ "TR", i18n._("Turkey") ], [ "TM", i18n._("Turkmenistan") ], [ "TC", i18n._("Turks and Caicos Islands") ],
+            [ "TV", i18n._("Tuvalu") ], [ "VI", i18n._("U.S. Virgin Islands") ], [ "UG", i18n._("Uganda") ], [ "UA", i18n._("Ukraine") ],
+            [ "AE", i18n._("United Arab Emirates") ], [ "GB", i18n._("United Kingdom") ], [ "UM", i18n._("United States Minor Outlying Islands") ],
+            [ "UY", i18n._("Uruguay") ], [ "UZ", i18n._("Uzbekistan") ], [ "VU", i18n._("Vanuatu") ], [ "VA", i18n._("Vatican") ],
+            [ "VE", i18n._("Venezuela") ], [ "VN", i18n._("Vietnam") ], [ "WF", i18n._("Wallis and Futuna") ], [ "EH", i18n._("Western Sahara") ],
+            [ "YE", i18n._("Yemen") ], [ "ZM", i18n._("Zambia") ], [ "ZW", i18n._("Zimbabwe") ]
+        ];
         this.breadcrumbs = [{
             title: i18n._("Configuration"),
             action: Ext.bind(function() {
@@ -69,7 +79,6 @@ Ext.define("Webui.config.administration", {
         }, {
             title: i18n._('Administration')
         }];
-        this.skinManager = Ext.create('Webui.config.administration.SkinManager', {'i18n': i18n});
         this.initialSkin = this.getSkinSettings().skinName;
         this.buildAdmin();
         this.buildPublicAddress();
@@ -121,7 +130,7 @@ Ext.define("Webui.config.administration", {
     getCertificateInformation: function(forceReload) {
         if (forceReload || this.rpc.currentServerCertInfo === undefined) {
             try {
-                this.rpc.currentServerCertInfo = main.getCertificateManager().getCertificateInformation();
+                this.rpc.currentServerCertInfo = Ung.Main.getCertificateManager().getCertificateInformation();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -147,17 +156,13 @@ Ext.define("Webui.config.administration", {
     },
 
     buildAdmin: function() {
-        // keep initial system and address settings
-        this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings());
-
         var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
             header: this.i18n._("change password"),
             width: 130,
             iconClass: 'icon-edit-row',
-            handler: function(view, rowIndex, colIndex) {
+            handler: function(view, rowIndex, colIndex, item, e, record) {
                 // populate row editor
-                var rec = view.getStore().getAt(rowIndex);
-                this.grid.rowEditorChangePass.populate(rec);
+                this.grid.rowEditorChangePass.populate(record);
                 this.grid.rowEditorChangePass.show();
             }
         });
@@ -175,7 +180,7 @@ Ext.define("Webui.config.administration", {
             confirmPwd.clearInvalid();
             return true;
         };
-        this.gridAdminAccounts=Ext.create('Ung.EditorGrid', {
+        this.gridAdminAccounts=Ext.create('Ung.grid.Panel', {
             flex: 1,
             settingsCmp: this,
             title: this.i18n._("Admin Accounts"),
@@ -183,6 +188,7 @@ Ext.define("Webui.config.administration", {
             autoScroll: true,
             hasEdit: false,
             name: 'gridAdminAccounts',
+            dataExpression: "getAdminSettings().users.list",
             recordJavaClass: "com.untangle.uvm.AdminUserSettings",
             emptyRow: {
                 "username": "",
@@ -191,9 +197,8 @@ Ext.define("Webui.config.administration", {
                 "password": null,
                 "passwordHashBase64": null
             },
-            data: this.getAdminSettings().users.list,
-            paginated: false,
-            // the list of fields; we need all as we get/set all records once
+            sortField: 'username',
+            plugins: [changePasswordColumn],
             fields: [{
                 name: 'username'
             }, {
@@ -205,7 +210,6 @@ Ext.define("Webui.config.administration", {
             }, {
                 name: 'passwordHashBase64'
             }],
-            // the list of columns for the column model
             columns: [{
                 header: this.i18n._("Username"),
                 width: 200,
@@ -235,10 +239,6 @@ Ext.define("Webui.config.administration", {
                     vtype: 'email'
                 }
             }, changePasswordColumn],
-            sortField: 'username',
-            columnsDefaultSortable: true,
-            plugins: [changePasswordColumn],
-            // the row input lines used by the row editor window
             rowEditorInputLines: [{
                 xtype: "textfield",
                 name: "Username",
@@ -310,8 +310,6 @@ Ext.define("Webui.config.administration", {
         this.panelAdmin = Ext.create('Ext.panel.Panel',{
             name: 'panelAdmin',
             helpSource: 'administration_admin',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Admin'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -345,18 +343,15 @@ Ext.define("Webui.config.administration", {
         this.panelPublicAddress = Ext.create('Ext.panel.Panel',{
             name: 'panelPublicAddress',
             helpSource: 'administration_public_address',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Public Address'),
             cls: 'ung-panel',
             autoScroll: true,
             items: {
                 xtype: 'fieldset',
                 items: [{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName),
-                    bodyStyle: 'padding-bottom:10px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: Ext.String.format(this.i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName)
                 },{
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use IP address from External interface (default)'),
@@ -375,10 +370,9 @@ Ext.define("Webui.config.administration", {
                         }
                     }
                 },{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 10px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(this.i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName)
                 },{
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use Hostname'),
@@ -397,16 +391,14 @@ Ext.define("Webui.config.administration", {
                         }
                     }
                 },{
-                    cls: 'description',
+                    xtype: 'component',
+                    margin: '0 0 5 25',
                     html: Ext.String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
-                            rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 5px 25px;',
-                    border: false
+                            rpc.companyName)
                 }, {
-                    cls: 'description',
-                    html: Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + this.getHostname(true) + '</i>' ),
-                    bodyStyle: 'padding:0px 5px 10px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + this.getHostname(true) + '</i>' )
                 }, {
                     xtype: 'radio',
                     boxLabel: this.i18n._('Use Manually Specified Address'),
@@ -436,87 +428,70 @@ Ext.define("Webui.config.administration", {
                         }
                     }
                 },{
-                    cls: 'description',
-                    html: Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'),
-                            rpc.companyName),
-                    bodyStyle: 'padding:0px 5px 5px 25px;',
-                    border: false
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'), rpc.companyName)
                 },{
-                    xtype: 'panel',
-                    bodyStyle: 'padding-left:25px;',
-                    border: false,
-                    items: [{
-                        xtype: 'textfield',
-                        fieldLabel: this.i18n._('IP/Hostname'),
-                        name: 'publicUrlAddress',
-                        value: this.getSystemSettings().publicUrlAddress,
-                        allowBlank: false,
-                        width: 400,
-                        blankText: this.i18n._("You must provide a valid IP Address or hostname."),
-                        disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
-                    },{
-                        xtype: 'numberfield',
-                        fieldLabel: this.i18n._('Port'),
-                        name: 'publicUrlPort',
-                        value: this.getSystemSettings().publicUrlPort,
-                        allowDecimals: false,
-                        minValue: 0,
-                        allowBlank: false,
-                        width: 210,
-                        blankText: this.i18n._("You must provide a valid port."),
-                        vtype: 'port',
-                        disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
-                    }]
+                    xtype: 'textfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: this.i18n._('IP/Hostname'),
+                    name: 'publicUrlAddress',
+                    value: this.getSystemSettings().publicUrlAddress,
+                    allowBlank: false,
+                    width: 400,
+                    blankText: this.i18n._("You must provide a valid IP Address or hostname."),
+                    disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
+                },{
+                    xtype: 'numberfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: this.i18n._('Port'),
+                    name: 'publicUrlPort',
+                    value: this.getSystemSettings().publicUrlPort,
+                    allowDecimals: false,
+                    minValue: 0,
+                    allowBlank: false,
+                    width: 210,
+                    blankText: this.i18n._("You must provide a valid port."),
+                    vtype: 'port',
+                    disabled: this.getSystemSettings().publicUrlMethod != "address_and_port"
                 }]
             }
         });
     },
 
     buildCertificates: function() {
-        this.panelCertificates = Ext.create('Ext.panel.Panel',{
+        this.panelCertificates = Ext.create('Ext.panel.Panel', {
             name: 'panelCertificates',
             helpSource: 'administration_certificates',
-            // private fields
-            parentId: this.getId(),
-
             title: this.i18n._('Certificates'),
-            layout: "anchor",
             cls: 'ung-panel',
             autoScroll: true,
-            defaults: { anchor: '98%', xtype: 'fieldset' },
+            defaults: {
+                xtype: 'fieldset'
+            },
             items: [{
                 title: this.i18n._('Certificate Authority'),
                 defaults: { labelWidth: 150 },
                 html: '<HR>',
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
+                    html:  this.i18n._("The Certificate Authority is used to create and sign the HTTPS certificates used by several applications and services such as HTTPS Inspector and Captive Portal.  It can also be used to sign the internal web server certificate. To eliminate certificate security warnings on client computers and devices, you should download the root certificate and add it to the list of trusted authorities on each client connected to your network.")
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid starting'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateValid)
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid until'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().rootcaDateExpires)
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Subject DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'rootca_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().rootcaSubject
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -530,10 +505,10 @@ Ext.define("Webui.config.administration", {
                             this.certGeneratorPopup("ROOT", null, this.i18n._('Generate Certificate Authority'));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate.')
+                        html: this.i18n._('Click here to re-create the internal certificate authority.  Use this to change the information in the Subject DN of the root certificate.')
                     }]
                 },{
                     xtype: 'fieldset',
@@ -550,10 +525,10 @@ Ext.define("Webui.config.administration", {
                             downloadForm.submit();
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server.')
+                        html: this.i18n._('Click here to download the root certificate.  Installing this certificate on client devices will allow them to trust certificates generated by this server.')
                     }]
                 }]
             },{
@@ -561,52 +536,34 @@ Ext.define("Webui.config.administration", {
                 defaults: { labelWidth: 150 },
                 html: '<HR>',
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.")
+                    html:  this.i18n._("The Server Certificate is used to secure all HTTPS connections with this server.  There are two options for creating this certificate.  You can create a certificate signed by the Certificate Authority created and displayed above, or you can purchase a certificate that is signed by a third party certificate authority such as Thawte, Verisign, etc.")
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid starting'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_notBefore',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateValid)
                 },{
-                    xtype: 'textfield',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Valid until'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_notAfter',
-                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires),
-                    disabled: true,
-                    anchor:'100%'
+                    value: this.getCertificateInformation() == null ? "" : i18n.timestampFormat(this.getCertificateInformation().serverDateExpires)
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Issuer DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_issuerDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverIssuer
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Subject DN'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_subjectDN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverSubject
                 },{
-                    xtype: 'textarea',
+                    xtype: 'displayfield',
                     fieldLabel: this.i18n._('Alternative Names'),
-                    labelStyle: 'font-weight:bold',
                     id: 'server_status_SAN',
-                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames,
-                    disabled: true,
-                    anchor:'100%',
-                    height: 40
+                    value: this.getCertificateInformation() == null ? "" : this.getCertificateInformation().serverNames
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
@@ -620,26 +577,27 @@ Ext.define("Webui.config.administration", {
                             this.certGeneratorPopup("SERVER", this.getHostname(true), this.i18n._('Generate Server Certificate'));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.')
+                        html: this.i18n._('Click here to create a server certificate signed by the Certificate Authority displayed above.  Use this to change the information in the Subject DN of the server certificate.')
                     }]
                 }]
             },{
                 title: this.i18n._('Third Party Server Certificate'),
                 defaults: { labelWidth: 150 },
                 items: [{
-                    xtype: 'displayfield',
+                    xtype: 'component',
                     margin: '5 0 5 0',
-                    value:  this.i18n._("To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.")
+                    html:  this.i18n._("To use a server certificate signed by a third party certificate authority, you must first generate a Certificate Signing Request (CSR) using the first button below.  This will allow you to create a new CSR which will be downloaded to your computer.  You will provide this file to the certificate vendor of your choice, and they will use it to create a signed server certificate which you can import using the second button below.")
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
                     items: [{
-                        border: false,
+                        xtype: 'component',
                         width: 20,
-                        html: '<div class="step_counter">1</div>'
+                        cls: 'step_counter',
+                        html: '1'
                     },{
                         xtype: 'button',
                         margin: '0 5 0 5',
@@ -650,18 +608,19 @@ Ext.define("Webui.config.administration", {
                             this.certGeneratorPopup("CSR", this.getHostname(true), this.i18n._("Create Signature Signing Request"));
                         }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to generate and download a new Certificate Signing Request (CSR) to your computer.')
+                        html: this.i18n._('Click here to generate and download a new Certificate Signing Request (CSR) to your computer.')
                     }]
                 },{
                     xtype: 'fieldset',
                     layout: 'column',
                     items: [{
-                        border: false,
+                        xtype: 'component',
                         width: 20,
-                        html: '<div class="step_counter">2</div>'
+                        cls: 'step_counter',
+                        html: '2'
                     },{
                         xtype: 'button',
                         margin: '0 5 0 5',
@@ -670,18 +629,17 @@ Ext.define("Webui.config.administration", {
                         iconCls: 'action-icon',
                         handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
                     },{
-                        xtype: 'displayfield',
+                        xtype: 'component',
                         margin: '0 5 0 5',
                         columnWidth: 1,
-                        value: this.i18n._('Click here to upload a signed server certificate that you received from the CSR you created in step one.')
+                        html: this.i18n._('Click here to upload a signed server certificate that you received from the CSR you created in step one.')
                     }]
                 }]
             }]
         });
     },
 
-    certGeneratorPopup: function(certMode, hostName, titleText)
-    {
+    certGeneratorPopup: function(certMode, hostName, titleText) {
         var helptipRenderer = function(c) {
             Ext.create('Ext.tip.ToolTip', {
                 target: c.getEl(),
@@ -692,7 +650,7 @@ Ext.define("Webui.config.administration", {
         };
 
         try {
-            netStatus = main.getNetworkManager().getInterfaceStatus();
+            netStatus = Ung.Main.getNetworkManager().getInterfaceStatus();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -714,108 +672,75 @@ Ext.define("Webui.config.administration", {
             width: 600,
             height: (certMode === "ROOT" ? 320 : 360),
             border: true,
-            xtype: 'form',
             modal: true,
             items: [{
                 xtype: "form",
+                layout: 'anchor',
                 border: false,
+                defaults: {
+                    anchor: '98%',
+                    margin: "10 10 10 10",
+                    labelWidth: 150,
+                    listeners: {
+                        render: helptipRenderer
+                    }
+                },
                 items: [{
                     xtype: 'combo',
                     fieldLabel: this.i18n._('Country') + " (C)",
-                    labelWidth: 150,
                     name: 'Country',
                     id: 'Country',
                     helptip: this.i18n._("Select the country in which your organization is legally registered."),
-                    margin: "10 10 10 10",
-                    size: 50,
                     allowBlank: true,
-                    store: Ung.Country.getCountryStore(i18n),
+                    store: this.countries,
                     queryMode: 'local',
-                    editable: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    editable: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('State/Province') + " (ST)",
-                    labelWidth: 150,
                     name: "State",
                     helptip: this.i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
+                    
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('City/Locality') + " (L)",
-                    labelWidth: 150,
                     name: "Locality",
                     helptip: this.i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organization') + " (O)",
-                    labelWidth: 150,
                     name: "Organization",
                     helptip: this.i18n._("The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the 'Organization' field, and the DBA (doing business as) name in the 'Organizational Unit' field."),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: false,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: false
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Organizational Unit ') + " (OU)",
-                    labelWidth: 150,
                     name: "OrganizationalUnit",
                     helptip: this.i18n._("Optional. Use this field to differentiate between divisions within an organization. For example, 'Engineering' or 'Human Resources.' If applicable, you may enter the DBA (doing business as) name in this field."),
-                    margin: "10 10 10 10",
-                    size: 200,
-                    allowBlank: true,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    allowBlank: true
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Common Name') + " (CN)",
-                    labelWidth: 150,
                     name: "CommonName",
                     helptip: this.i18n._("The name entered in the 'CN' (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (e.g., 'www.domainnamegoeshere'). Do not include the 'http://' or 'https://' prefixes in your common name. Do NOT enter your personal name in this field."),
-                    margin: "10 10 10 10",
-                    size: 200,
                     allowBlank: false,
-                    value: hostName,
-                    listeners: {
-                        render: helptipRenderer
-                    }
+                    value: hostName
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Subject Alternative Names'),
-                    labelWidth: 150,
                     name: "AltNames",
                     helptip: this.i18n._("Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
-                    margin: "10 10 10 10",
-                    size: 200,
                     allowBlank: true,
                     value: (certMode === "ROOT" ? "" : addressList),
-                    hidden: (certMode === "ROOT" ? true : false),
-                    listeners: {
-                        render: helptipRenderer
-                    }
-                },{
+                    hidden: (certMode === "ROOT" ? true : false)
+                }],
+                buttons: [{
                     xtype: "button",
                     text: this.i18n._("Generate"),
                     name: "Accept",
-                    width: 100,
-                    margin: "20 10 10 180",
+                    width: 120,
                     handler: Ext.bind(function() {
                         this.certGeneratorWorker(certMode);
                     }, this)
@@ -823,8 +748,7 @@ Ext.define("Webui.config.administration", {
                     xtype: "button",
                     text: this.i18n._("Cancel"),
                     name: "Cancel",
-                    width: 100,
-                    margin: "20 10 10 10",
+                    width: 120,
                     handler: Ext.bind(function() {
                         this.certGeneratorWindow.close();
                     }, this)
@@ -893,7 +817,7 @@ Ext.define("Webui.config.administration", {
         // for ROOT mode we just throw up a success dialog and refresh the display
         if (certMode === "ROOT")
         {
-        certFunction = main.getCertificateManager().generateCertificateAuthority;
+        certFunction = Ung.Main.getCertificateManager().generateCertificateAuthority;
 
             certFunction(Ext.bind(function(result)
             {
@@ -915,7 +839,7 @@ Ext.define("Webui.config.administration", {
         // deal with restarting apache when creating a new server certificate
         if (certMode === "SERVER")
         {
-        certFunction = main.getCertificateManager().generateServerCertificate;
+        certFunction = Ung.Main.getCertificateManager().generateServerCertificate;
 
             certFunction(Ext.bind(function(result)
             {
@@ -972,15 +896,19 @@ Ext.define("Webui.config.administration", {
                     id: "filename",
                     margin: "10 10 10 10",
                     width: 560,
-                    size: 50,
                     labelWidth: 50,
                     allowBlank: false
                 }, {
+                    xtype: "hidden",
+                    name: "type",
+                    value: "server_cert"
+                    }]
+                }],
+                buttons: [{
                     xtype: "button",
                     text: this.i18n._("Upload Certificate"),
                     name: "Upload Certificate",
                     width: 200,
-                    margin: "10 10 10 80",
                     handler: Ext.bind(function() {
                         this.handleFileUpload();
                     }, this)
@@ -988,16 +916,10 @@ Ext.define("Webui.config.administration", {
                     xtype: "button",
                     text: this.i18n._("Cancel"),
                     name: "Cancel",
-                    width: 200,
-                    margin: "10 10 10 10",
+                    width: 100,
                     handler: Ext.bind(function() {
                         popup.close();
                     }, this)
-                }, {
-                    xtype: "hidden",
-                    name: "type",
-                    value: "server_cert"
-                    }]
                 }]
         });
 
@@ -1048,11 +970,9 @@ Ext.define("Webui.config.administration", {
         return true;
     },
 
-    updateCertificateDisplay: function()
-    {
+    updateCertificateDisplay: function() {
         var certInfo = this.getCertificateInformation(true);
-        if (certInfo != null)
-        {
+        if (certInfo != null) {
             Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
             Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
             Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
@@ -1080,7 +1000,7 @@ Ext.define("Webui.config.administration", {
             }
             if( pwd.getValue().length < 8 ){
                 pwd.markInvalid();
-                return i18n._('Password is too short.');                    
+                return i18n._('Password is too short.');
             }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();
@@ -1090,8 +1010,6 @@ Ext.define("Webui.config.administration", {
         this.panelSnmp = Ext.create('Ext.panel.Panel',{
             name: 'panelSnmp',
             helpSource: 'administration_snmp',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('SNMP'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -1161,7 +1079,6 @@ Ext.define("Webui.config.administration", {
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('Community'),
                     name: 'communityString',
-//                        itemCls: 'left-indent-1',
                     id: 'administration_snmp_communityString',
                     value: this.getSystemSettings().snmpSettings.communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME'): this.getSystemSettings().snmpSettings.communityString,
                     allowBlank: false,
@@ -1174,7 +1091,6 @@ Ext.define("Webui.config.administration", {
                     id: 'administration_snmp_sysContact',
                     value: this.getSystemSettings().snmpSettings.sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO'): this.getSystemSettings().snmpSettings.sysContact,
                     disabled: !this.getSystemSettings().snmpSettings.enabled
-                    //vtype: 'email'
                 },{
                     xtype: 'textfield',
                     fieldLabel: this.i18n._('System Location'),
@@ -1272,7 +1188,6 @@ Ext.define("Webui.config.administration", {
                     }
                 },{
                     xtype: 'textfield',
-                    itemCls: 'left-indent-2',
                     fieldLabel: this.i18n._('Username'),
                     name: 'snmpv3Username',
                     id: 'administration_snmp_v3username',
@@ -1291,16 +1206,8 @@ Ext.define("Webui.config.administration", {
                     ],
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     value: this.getSystemSettings().snmpSettings.v3AuthenticationProtocol ? this.getSystemSettings().snmpSettings.v3AuthenticationProtocol : "sha",
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
-                    listeners: {
-                        "select": {
-                            fn: Ext.bind(function(elem, record) {
-//                                    this.getSkinSettings().skinName = record[0].data.name;
-                            }, this)
-                        }
-                    }
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1334,16 +1241,8 @@ Ext.define("Webui.config.administration", {
                     ],
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     value: this.getSystemSettings().snmpSettings.v3PrivacyProtocol ? this.getSystemSettings().snmpSettings.v3PrivacyProtocol : "des",
-                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled,
-                    listeners: {
-                        "select": {
-                            fn: Ext.bind(function(elem, record) {
-//                                    this.getSkinSettings().skinName = record[0].data.name;
-                            }, this)
-                        }
-                    }
+                    disabled: !this.getSystemSettings().snmpSettings.v3Enabled || !this.getSystemSettings().snmpSettings.enabled
                 },{
                     xtype: 'textfield',
                     inputType: 'password',
@@ -1381,8 +1280,7 @@ Ext.define("Webui.config.administration", {
     },
 
     buildSkins: function() {
-        // keep initial skin settings
-        var adminSkinsStore = Ext.create("Ext.data.Store",{
+        this.adminSkinsStore = Ext.create("Ext.data.JsonStore",{
             fields: [{
                 name: 'name'
             },{
@@ -1391,54 +1289,35 @@ Ext.define("Webui.config.administration", {
                     if ( v == "Default" ) return this.i18n._("Default");
                     return v;
                 }, this)
-            }],
-            proxy: Ext.create("Ext.data.proxy.Server",{
-                doRequest: function(operation, callback, scope) {
-                    rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.processResponse(exception==null, operation, null, result, callback, scope);
-                    }, this));
-                },
-                reader: {
-                    type: 'json',
-                    root: 'list'
-                }
-            })
+            }]
         });
-
-        this.skinManager.addRefreshableStore( adminSkinsStore );
 
         this.panelSkins = Ext.create('Ext.panel.Panel',{
             name: "panelSkins",
             helpSource: 'administration_skins',
-            // private fields
-            parentId: this.getId(),
             title: this.i18n._('Skins'),
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
-                xtype: 'fieldset',
-                buttonAlign: 'left'
+                xtype: 'fieldset'
             },
             items: [{
                 title: this.i18n._('Administration Skin'),
                 items: [{
                     xtype: 'combo',
                     name: "skinName",
-                    id: "administration_admin_client_skin_combo",
-                    store: adminSkinsStore,
+                    store: this.adminSkinsStore,
                     displayField: 'displayName',
                     valueField: 'name',
                     forceSelection: true,
                     editable: false,
                     queryMode: 'local',
-                    selectOnFocus: true,
                     hideLabel: true,
                     width: 300,
                     listeners: {
                         "select": {
                             fn: Ext.bind(function(elem, record) {
-                                this.getSkinSettings().skinName = record[0].data.name;
+                                this.getSkinSettings().skinName = record.get("name");
                             }, this)
                         }
                     }
@@ -1447,15 +1326,14 @@ Ext.define("Webui.config.administration", {
                 title: this.i18n._('Upload New Skin'),
                 items: {
                     xtype: 'form',
-                    id: 'upload_skin_form',
+                    name: 'uploadSkinForm',
                     url: 'upload',
                     border: false,
                     items: [{
                         xtype: 'filefield',
                         fieldLabel: this.i18n._('File'),
-                        name: 'upload_skin_textfield',
+                        name: 'uploadSkinFile',
                         width: 500,
-                        size: 50,
                         labelWidth: 50,
                         allowBlank: false
                     },{
@@ -1471,23 +1349,52 @@ Ext.define("Webui.config.administration", {
                     }]
                 }
             }],
-            onUpload: function() {
-                var prova = Ext.getCmp('upload_skin_form');
-                var cmp = Ext.getCmp(this.parentId);
-                var form = prova.getForm();
-
-                cmp.skinManager.uploadSkin( cmp, form );
-            }
-        });
-        adminSkinsStore.load({
-            callback: Ext.bind(function() {
-                var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
-                if(skinCombo!=null) {
-                    skinCombo.setValue(this.getSkinSettings().skinName);
-                    skinCombo.clearDirty();
-                }
+            onUpload: Ext.bind(function() {
+                var form = this.panelSkins.down('form[name="uploadSkinForm"]');
+                form.submit({
+                    waitMsg: this.i18n._('Please wait while your skin is uploaded...'),
+                    success: Ext.bind(function( form, action ) {
+                        rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            var filefield = this.panelSkins.down('filefield[name="uploadSkinFile"]');
+                            if ( filefield) {
+                                filefield.reset();
+                            }
+                            this.adminSkinsStore.loadData(result.list);
+                            Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
+                        }, this));
+                    }, this ),
+                    failure: Ext.bind(function( form, action ) {
+                        var errorMsg = this.i18n._("Upload Skin Failed");
+                        if (action.result && action.result.msg) {
+                            switch (action.result.msg) {
+                            case 'Invalid Skin':
+                                errorMsg = this.i18n._("Invalid Skin");
+                                break;
+                            case 'The default skin can not be overwritten':
+                                errorMsg = this.i18n._("The default skin can not be overwritten");
+                                break;
+                            case 'Error creating skin folder':
+                                errorMsg = this.i18n._("Error creating skin folder");
+                                break;
+                            default:
+                                errorMsg = this.i18n._("Upload Skin Failed");
+                            }
+                        }
+                        Ext.MessageBox.alert(this.i18n._("Failed"), errorMsg);
+                    }, this )
+                });
             }, this)
         });
+        rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.adminSkinsStore.loadData(result.list);
+            var skinCombo=this.panelSkins.down('combo[name="skinName"]');
+            if(skinCombo!=null) {
+                skinCombo.setValue(this.getSkinSettings().skinName);
+                skinCombo.clearDirty();
+            }
+        }, this));
     },
 
     // validation function
@@ -1497,7 +1404,7 @@ Ext.define("Webui.config.administration", {
 
     //validate Admin Accounts
     validateAdminAccounts: function() {
-        var listAdminAccounts = this.gridAdminAccounts.getPageList();
+        var listAdminAccounts = this.gridAdminAccounts.getList();
         var oneWritableAccount = false;
 
         // verify that the username is not duplicated
@@ -1663,7 +1570,7 @@ Ext.define("Webui.config.administration", {
         this.saveSemaphore = 2;
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-        this.getAdminSettings().users.list=this.gridAdminAccounts.getPageList();
+        this.getAdminSettings().users.list=this.gridAdminAccounts.getList();
 
         rpc.adminManager.setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
@@ -1686,8 +1593,7 @@ Ext.define("Webui.config.administration", {
                     return;
                 }
                 if(isApply) {
-                    this.gridAdminAccounts.reload({data: this.getAdminSettings(true).users.list});
-                    this.initialSystemSettings = Ung.Util.clone(this.getSystemSettings(true));
+                    this.getAdminSettings(true);
                     this.getCertificateInformation(true);
                     this.getHostname(true);
                     this.clearDirty();

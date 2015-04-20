@@ -10,8 +10,7 @@ Ext.define('Ung.RuleBuilder', {
 
     initComponent: function() {
         Ext.applyIf(this, {
-            height: 220,
-            anchor: "99%"
+            height: 220
         });
         this.selModel= Ext.create('Ext.selection.Model',{});
         this.tbar = [{
@@ -20,15 +19,12 @@ Ext.define('Ung.RuleBuilder', {
             handler: this.addHandler,
             scope: this
         }];
-        this.modelName='Ung.RuleBuilder.Model-' + this.id;
-        if ( Ext.ModelManager.get(this.modelName) == null) {
-            Ext.define(this.modelName, {
-                extend: 'Ext.data.Model',
-                requires: ['Ext.data.SequentialIdGenerator'],
-                idgen: 'sequential',
-                fields: [{name: 'name'},{name: 'invert'},{name: 'value'},{name:'vtype'}]
-            });
-        }
+        this.modelName='Ung.RuleBuilder.Model-' + this.getId();
+        Ext.define(this.modelName, {
+            extend: 'Ext.data.Model',
+            identifier: 'sequential',
+            fields: [{name: 'name'},{name: 'invert'},{name: 'value'},{name:'vtype'}]
+        });
         this.store = Ext.create('Ext.data.Store', { model:this.modelName});
         this.matchersMap=Ung.Util.createRecordsMap(this.matchers, 'name');
         this.recordDefaults={name:"", value:"", vtype:""};
@@ -95,7 +91,7 @@ Ext.define('Ung.RuleBuilder', {
             dataIndex: "value",
             renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store) {
                 var name=record.get("name");
-                value=record.data.value;
+                value=record.get("value");
                 var rule=this.matchersMap[name];
                 var res="";
                 if (!rule) {
@@ -103,14 +99,14 @@ Ext.define('Ung.RuleBuilder', {
                 }
                 switch(rule.type) {
                   case "text":
-                    res='<input type="text" size="30" class="x-form-text x-form-field rule_builder_value" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
+                    res='<input type="text" class="row-editor-textfield" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+value+'"/>';
                     break;
                   case "boolean":
                     res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                     break;
                   case "editor":
                     var displayValue= Ext.isFunction(rule.formatValue) ? Ext.String.htmlEncode(rule.formatValue(value)) : Ext.String.htmlEncode(value);
-                    res='<input type="text" style="width: 90%" class="x-form-text x-form-field rule_builder_value" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+displayValue+'"/>';
+                    res='<input type="text" class="row-editor-textfield" onclick="Ext.getCmp(\''+this.getId()+'\').openRowEditor(\''+record.getId()+'\', \''+rule.editor.getId()+'\', this)" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.getId()+'\', this)" value="'+displayValue+'"/>';
                     break;
                   case "checkgroup":
                     var values_arr=(value!=null && value.length>0)?value.split(","):[];
@@ -178,16 +174,18 @@ Ext.define('Ung.RuleBuilder', {
             newValue="true";
         }
         selObj.value.vtype=rule.vtype;
-        record.data.vtype=rule.vtype;
-        record.data.value=newValue;
-        record.set("name",newName);
+        record.set({
+            "vtype": rule.vtype,
+            "value": newValue,
+            "name": newName
+        });
+        this.getView().refresh();
         this.dirtyFlag=true;
-        this.fireEvent("afteredit");
     },
     changeRowInvert: function(recordId,selObj) {
         var record=this.store.getById(recordId);
         var newValue=selObj.options[selObj.selectedIndex].value;
-        record.data.invert = newValue;
+        record.set("invert", newValue);
         this.dirtyFlag=true;
     },
     changeRowValue: function(recordId,valObj) {
@@ -206,7 +204,7 @@ Ext.define('Ung.RuleBuilder', {
                     }
                 }
             }
-            record.data.value=values_arr.join(",");
+            record.set("value",values_arr.join(","));
             break;
           case "text":
             var new_value=valObj.value;
@@ -220,24 +218,21 @@ Ext.define('Ung.RuleBuilder', {
                 } else {
                     valObj.removeAttribute('style');
                     valObj.value=new_value;
-                    record.data.value=new_value;
+                    record.set("value",new_value);
                 }
             } else {
-                record.data.value=new_value;
+                record.set("value",new_value);
             }
             break;
         }
         this.dirtyFlag = true;
-        this.fireEvent("afteredit");
     },
     addHandler: function() {
         var record=Ext.create(this.modelName,Ext.decode(Ext.encode(this.recordDefaults)));
         this.getStore().add([record]);
-        this.fireEvent("afteredit");
     },
     deleteHandler: function (record) {
         this.store.remove(record);
-        this.fireEvent("afteredit");
     },
     setValue: function(value) {
         this.dirtyFlag=false;
