@@ -436,7 +436,8 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
     
     int ret = netcap_arp_lookup( ipAddressStr, mac, 20 );
     if ( ret != 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_arp_lookup\n" );
+        // -1 does not mean an error, it just means it was not found
+        //jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_arp_lookup\n" );
         return (*env)->NewStringUTF(env, "");
     }
 
