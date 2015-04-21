@@ -28,14 +28,14 @@ function imgLoadFailure(isRequired) {
     var push = find[0];
 
     var newParagraph = document.createElement('H4');
+    var text;
+    if (isRequired == true) {
+        text = document.createTextNode("ERROR: The server root certificate is not installed on your computer or device.  You must install the root certificate to continue.");
+    } else {
+        text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
+    }
 
-    if (isRequired == true)
-        var text = document.createTextNode("ERROR: The server root certificate is not installed on your computer or device.  You must install the root certificate to continue.");
-    else
-        var text = document.createTextNode("NOTICE: The server root certificate is not installed on your computer or device.  This may cause warnings or errors when connecting to HTTPS web sites.");
-
-    if (isRequired == true)
-    {
+    if (isRequired == true) {
         push.setAttribute('disabled', 'true');
         push.setAttribute('hidden', 'true');
     }
@@ -47,7 +47,7 @@ function imgLoadFailure(isRequired) {
     var linkText = document.createTextNode("Click this link to download and install the root certificate.");
     newLink.appendChild(linkText);
     newLink.href = '/cert';
-    newLink.title ="Download server root CA certificate"
+    newLink.title ="Download server root CA certificate";
     newParagraph.appendChild(newLink);
     cont.parentElement.appendChild(newParagraph);
 }

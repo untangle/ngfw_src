@@ -247,7 +247,7 @@ Ung.Quarantine.prototype = {
             this.messageDisplayTip.show();
         }
     }
-}
+};
 
 Ext.define('Ung.QuarantineModel', {
     extend:'Ext.data.Model',
@@ -288,14 +288,15 @@ Ext.define('Ung.QuarantineStore', {
         config.sortOnLoad = true;
         config.sortRoot='data';
 
-        config.sorters={
+        config.sorters = {
             property: 'internDate',
             direction: "DESC"
-        },
+        };
         Ung.QuarantineStore.superclass.constructor.apply(this, arguments);
         this.quarantine = config.quarantine;
     },
     refresh: function () {
+        var data;
         var dataFn = Ext.bind( function () {
         	var mails = quarantine.rpc.getInboxRecords(inboxDetails.token); 
         	for(var i=0; i<mails.list.length; i++) {
@@ -309,7 +310,7 @@ Ext.define('Ung.QuarantineStore', {
             return mails;
         }, this);
         try {
-            var data = dataFn();
+            data = dataFn();
             if(testMode) {
                 var getTestRecord = function(index) {
                     return { 
@@ -321,7 +322,7 @@ Ext.define('Ung.QuarantineStore', {
                         attachmentCount: 1000-index,
                         quarantineDetail: parseFloat(index)/100,
                         truncatedSubject: "subject spam"+index
-                    }
+                    };
                 };
                 var length = Math.floor((Math.random()*5000));
                 var start = parseInt(length/3);

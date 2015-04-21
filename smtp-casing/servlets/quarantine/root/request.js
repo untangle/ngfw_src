@@ -5,8 +5,7 @@ Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/gray/tree/s.gif';
 
 var i18n;
 var qr;
-Ung.QuarantineRequest = function() {
-}
+Ung.QuarantineRequest = function() {};
 
 Ung.QuarantineRequest.prototype = {
     init : function()
@@ -73,8 +72,9 @@ Ung.QuarantineRequest.prototype = {
     },
 
     requestEmail : function( result, exception ) {
+        var message;
         if ( exception ) {
-            var message = exception.message;
+            message = exception.message;
             if (message == null || message == "Unknown") {
                 message = i18n._("Please Try Again");
             }

@@ -17,7 +17,7 @@ Ext.define('Ung.SafelistSelectionModel', {
 
 Ung.Safelist = function() {
     this.cm = null;
-}
+};
 
 Ung.Safelist.prototype = {
     init : function() {
@@ -135,8 +135,9 @@ Ung.Safelist.prototype = {
     },
 
     deleteAddresses : function( result, exception, foo ) {
+        var message;
         if ( exception ) {
-            var message = exception.message;
+            message = exception.message;
             if (message == null || message == "Unknown") {
                 message = i18n._("Please Try Again");
             }
@@ -150,7 +151,7 @@ Ung.Safelist.prototype = {
         var count = result.safelistCount;
         count = -count;
 
-        var message = i18n.pluralise( i18n._( "Deleted one address" ), Ext.String.format( i18n._( "Deleted {0} addresses" ), count ), count );
+        message = i18n.pluralise( i18n._( "Deleted one address" ), Ext.String.format( i18n._( "Deleted {0} addresses" ), count ), count );
 
         quarantine.showMessage( message );
 
