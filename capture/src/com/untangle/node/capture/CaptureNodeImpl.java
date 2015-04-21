@@ -59,7 +59,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     private final CaptureHttpsHandler httpsHandler = new CaptureHttpsHandler(this);
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
-    
+
     private final PipelineConnector trafficConnector;
     private final PipelineConnector httpsConnector;
     private final PipelineConnector httpConnector;
@@ -195,6 +195,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public void setCaptureSettings(CaptureSettings newSettings)
     {
+        // this is an old settings that is no longer used so always
+        // set to null so it will be removed from the config file
+        newSettings.setCheckServerCertificate(null);
+
         // first we commit the new settings to disk
         saveNodeSettings(newSettings);
 
@@ -226,7 +230,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public void incrementBlinger(BlingerType blingerType, long delta)
     {
-        switch (blingerType) {
+        switch (blingerType)
+        {
         case SESSALLOW:
             adjustMetric(STAT_SESSALLOW, delta);
             break;
@@ -308,8 +313,15 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return (null);
         }
 
-        if (readSettings != null)
-            logger.info("Loaded node settings from " + settingsFile);
+        if (readSettings != null) logger.info("Loaded node settings from " + settingsFile);
+
+        // if the old check certificate boolean is present we use it
+        // to initialize the new certificate detection option
+        Boolean oldCertCheck = readSettings.getCheckServerCertificate();
+        if ((oldCertCheck != null) && (oldCertCheck.booleanValue() == true)) {
+            readSettings.setCertificateDetection(CaptureSettings.CertificateDetection.CHECK_CERTIFICATE);
+        }
+
         return (readSettings);
     }
 
@@ -321,7 +333,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             rule.setId(++idx);
 
         try {
-            settingsManager.save( settingsFile, argSettings );
+            settingsManager.save(settingsFile, argSettings);
         } catch (Exception e) {
             logger.warn("Error in saveNodeSettings", e);
             return;
@@ -355,23 +367,19 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             {
                 // if userAddress is not null and this session is for someone
                 // other than userAddress then we just leave it alone
-                if ((userAddress != null) && (clientAddr.equals(userAddress) == false))
-                    return (false);
+                if ((userAddress != null) && (clientAddr.equals(userAddress) == false)) return (false);
 
                 // if session is for any active authenticated user return false
-                if (captureUserTable.searchByAddress(clientAddr) != null)
-                    return (false);
+                if (captureUserTable.searchByAddress(clientAddr) != null) return (false);
 
                 // if session matches any pass list return false
-                if (isSessionAllowed(clientAddr, serverAddr) != null)
-                    return (false);
+                if (isSessionAllowed(clientAddr, serverAddr) != null) return (false);
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList) {
                     if (rule.isMatch(protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort)) {
                         // on a matching rule continue if capture is false
-                        if (rule.getCapture() == false)
-                            continue;
+                        if (rule.getCapture() == false) continue;
 
                         // capture is true so log and kill the session
                         logger.debug("Validate killing " + clientAddr.getHostAddress().toString() + ":" + clientPort + " --> " + serverAddr.getHostAddress().toString() + ":" + serverPort);
@@ -425,7 +433,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // save user state to file
         saveUserState();
-        
+
         // clear out the list of active users
         captureUserTable.purgeAllUsers();
         captureUserCookieTable.purgeAllUsers();
@@ -446,11 +454,10 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             // the initialize function which will take care of
             // creating, writing, and applying a new settings object
             initializeSettings();
-        }
-        else {
+        } else {
             // we got something back from the load so pass it
             // to the common apply function
-            if( readSettings.getSecretKey() == null ){
+            if (readSettings.getSecretKey() == null) {
                 initializeCookieKey(readSettings);
                 saveNodeSettings(readSettings);
             }
@@ -504,7 +511,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             }
         }
 
-        switch (captureSettings.getAuthenticationType()) {
+        switch (captureSettings.getAuthenticationType())
+        {
         case NONE:
             isAuthenticated = true;
             break;
@@ -526,13 +534,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
                 username = strippedUsername;
 
                 DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                if (adconnector == null)
-                    break;
+                if (adconnector == null) break;
 
                 // try the original first and then the stripped version
                 isAuthenticated = adconnector.activeDirectoryAuthenticate(originalUsername, password);
-                if (isAuthenticated == false)
-                    isAuthenticated = adconnector.activeDirectoryAuthenticate(strippedUsername, password);
+                if (isAuthenticated == false) isAuthenticated = adconnector.activeDirectoryAuthenticate(strippedUsername, password);
             } catch (Exception e) {
                 logger.warn("Active Directory failure", e);
                 isAuthenticated = false;
@@ -551,8 +557,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         case RADIUS:
             try {
                 DirectoryConnector adconnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-                if (adconnector != null)
-                    isAuthenticated = adconnector.radiusAuthenticate(username, password);
+                if (adconnector != null) isAuthenticated = adconnector.radiusAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Radius Directory failure", e);
                 isAuthenticated = false;
@@ -594,17 +599,16 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         incrementBlinger(BlingerType.AUTHGOOD, 1);
         logger.info("Activate success " + address);
 
-        if( captureSettings.getSessionCookiesEnabled() ){
+        if (captureSettings.getSessionCookiesEnabled()) {
             captureUserCookieTable.removeActiveUser(address);
         }
 
         return (0);
     }
 
-
     public int userActivate(InetAddress address, String agree)
     {
-        return userActivate(address, "Anonymous", agree );
+        return userActivate(address, "Anonymous", agree);
     }
 
     public int userLogin(InetAddress address, String username)
@@ -648,7 +652,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         logEvent(event);
         logger.info("Logout success: " + address);
 
-        if( captureSettings.getSessionCookiesEnabled() ){
+        if (captureSettings.getSessionCookiesEnabled()) {
             captureUserCookieTable.insertInactiveUser(user);
         }
 
@@ -680,10 +684,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // see if the client is in the pass list
         for (int cc = 0; cc < clientList.size(); cc++) {
             checker = clientList.get(cc);
-            if (checker.getLive() != true)
-                continue;
-            if (checker.getAddress().isMatch(clientAddr) != true)
-                continue;
+            if (checker.getLive() != true) continue;
+            if (checker.getAddress().isMatch(clientAddr) != true) continue;
             logger.debug("Client " + clientAddr.getHostAddress().toString() + " found in pass list");
             return (checker);
         }
@@ -691,10 +693,8 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         // see if the server is in the pass list
         for (int ss = 0; ss < serverList.size(); ss++) {
             checker = serverList.get(ss);
-            if (checker.getLive() != true)
-                continue;
-            if (checker.getAddress().isMatch(serverAddr) != true)
-                continue;
+            if (checker.getLive() != true) continue;
+            if (checker.getAddress().isMatch(serverAddr) != true) continue;
             logger.debug("Server " + serverAddr.getHostAddress().toString() + " found in pass list");
             return (checker);
         }
@@ -716,11 +716,13 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return (null);
     }
 
-    public boolean isUserInCookieTable(InetAddress address, String username){
-        return captureUserCookieTable.searchByAddressUsername(address,username) != null;
+    public boolean isUserInCookieTable(InetAddress address, String username)
+    {
+        return captureUserCookieTable.searchByAddressUsername(address, username) != null;
     }
 
-    public void removeUserFromCookieTable(InetAddress address){
+    public void removeUserFromCookieTable(InetAddress address)
+    {
         captureUserCookieTable.removeActiveUser(address);
     }
 
@@ -730,7 +732,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
         // check the session against the rule list
         for (CaptureRule rule : ruleList) {
-            if ( rule.isMatch( session ) ) {
+            if (rule.isMatch(session)) {
                 return (rule);
             }
         }
@@ -750,27 +752,24 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
              * If there is no save file, just return
              */
             File saveFile = new File(filename);
-            if ( ! saveFile.exists() )
-                return;
-
+            if (!saveFile.exists()) return;
 
             logger.info("Loading user state from file... ");
-            ArrayList<CaptureUserEntry> users = UvmContextFactory.context().settingsManager().load( ArrayList.class, filename );
+            ArrayList<CaptureUserEntry> users = UvmContextFactory.context().settingsManager().load(ArrayList.class, filename);
 
             int usersLoaded = 0;
             long userTimeout = getCaptureSettings().getUserTimeout();
             long currentTime = System.currentTimeMillis();
-                
-            /**
-             * Insert all the non-expired users into the table.
-             * Since the untangle-vm has likely been down, don't check idle timeout
-             */
-            for ( CaptureUserEntry user : users ) {
-                long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
-                if (currentTime > userTrigger)
-                    continue;
 
-                captureUserTable.insertActiveUser( user );
+            /**
+             * Insert all the non-expired users into the table. Since the
+             * untangle-vm has likely been down, don't check idle timeout
+             */
+            for (CaptureUserEntry user : users) {
+                long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
+                if (currentTime > userTrigger) continue;
+
+                captureUserTable.insertActiveUser(user);
                 usersLoaded++;
             }
 
@@ -778,31 +777,30 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
              * Delete the save file
              */
             saveFile.delete();
-                
+
             logger.info("Loading user state from file... (" + usersLoaded + " entries)");
 
         } catch (Exception e) {
-            logger.warn("Exception loading user state",e);
+            logger.warn("Exception loading user state", e);
         }
     }
 
     /**
-     * This method saves the current user state in a file in conf/
-     * This is so we preserve user login state on untangle-vm or server reboots
+     * This method saves the current user state in a file in conf/ This is so we
+     * preserve user login state on untangle-vm or server reboots
      */
     private void saveUserState()
     {
         try {
             String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
             ArrayList<CaptureUserEntry> users = this.captureUserTable.buildUserList();
-            if ( users.size() < 1 )
-                return;
-            
+            if (users.size() < 1) return;
+
             logger.info("Saving user state to file... (" + users.size() + " entries)");
-            UvmContextFactory.context().settingsManager().save( filename, users, false, false );
+            UvmContextFactory.context().settingsManager().save(filename, users, false, false);
             logger.info("Saving user state to file... done");
         } catch (Exception e) {
-            logger.warn("Exception saving user state",e);
+            logger.warn("Exception saving user state", e);
         }
     }
 }

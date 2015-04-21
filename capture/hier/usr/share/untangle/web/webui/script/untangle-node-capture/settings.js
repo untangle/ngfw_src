@@ -342,13 +342,13 @@ Ext.define('Webui.untangle-node-capture.settings', {
     },
 
     buildUserAuthentication: function() {
-        var onUpdateRadioButton = Ext.bind(function( elem, checked ) {
+        var onUpdateAuthenticationType = Ext.bind(function( elem, checked ) {
             if ( checked ) {
                 this.settings.authenticationType = elem.inputValue;
             }
         }, this);
 
-        var onRenderRadioButton = Ext.bind(function( elem ) {
+        var onRenderAuthenticationType = Ext.bind(function( elem ) {
             elem.setValue(this.settings.authenticationType);
             elem.clearDirty();
         }, this);
@@ -375,8 +375,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "NONE",
                     listeners: {
-                        "change": onUpdateRadioButton,
-                        "afterrender": onRenderRadioButton
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
                     }
                 },{
                     xtype: "radio",
@@ -385,8 +385,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "LOCAL_DIRECTORY",
                     listeners: {
-                        "change": onUpdateRadioButton,
-                        "afterrender": onRenderRadioButton
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
                     }
                 },{
                     xtype: "button",
@@ -402,8 +402,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "RADIUS",
                     listeners: {
-                        "change": onUpdateRadioButton,
-                        "afterrender": onRenderRadioButton
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
                     }
                 },{
                     xtype: "button",
@@ -420,8 +420,8 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "authenticationType",
                     inputValue: "ACTIVE_DIRECTORY",
                     listeners: {
-                        "change": onUpdateRadioButton,
-                        "afterrender": onRenderRadioButton
+                        "change": onUpdateAuthenticationType,
+                        "afterrender": onRenderAuthenticationType
                     }
                 },{
                     xtype: "button",
@@ -548,18 +548,28 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     component.setVisible( currentValue == item );
                 }
             }, this));
+
+            Ext.each( this.panelCaptivePage.query('[optionType=CERT_DETECTION]'), Ext.bind(function( component ) {
+                if ( currentValue == "CUSTOM" ) {
+                    component.setVisible( false );
+                } else {
+                    component.setVisible( true );
+                }
+            }, this));
         }
     },
     buildCaptivePage: function() {
-        var onUpdateRadioButton = Ext.bind(function( elem, checked ) {
+        var onUpdatePageType = Ext.bind(function( elem, checked ) {
             if ( checked ) {
                 this.settings.pageType = elem.inputValue;
                 this.captivePageHideComponents( elem.inputValue );
             }
         }, this);
 
-        var onRenderRadioButton = Ext.bind(function( elem ) {
-            this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
+        var onUpdateCertificateDetection = Ext.bind(function( elem, checked ) {
+            if (checked ) {
+                this.settings.certificateDetection = elem.inputValue;
+            }
         }, this);
 
         this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
@@ -572,6 +582,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
             listeners: {
                 "afterrender": Ext.bind(function () {
                     this.panelCaptivePage.down('radio[name="pageType"]').setValue(this.settings.pageType);
+                    this.panelCaptivePage.down('radio[name="certificateDetection"]').setValue(this.settings.certificateDetection);
                     this.captivePageHideComponents(this.settings.pageType );
                     Ung.Util.clearDirty(this.panelCaptivePage);
                 }, this)
@@ -586,7 +597,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "BASIC_MESSAGE",
                     listeners: {
-                        "change": onUpdateRadioButton
+                        "change": onUpdatePageType
                     }
                 },{
                     xtype: "radio",
@@ -595,7 +606,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "BASIC_LOGIN",
                     listeners: {
-                        "change": onUpdateRadioButton
+                        "change": onUpdatePageType
                     }
                 },{
                     xtype: "radio",
@@ -604,7 +615,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                     name: "pageType",
                     inputValue: "CUSTOM",
                     listeners: {
-                        "change": onUpdateRadioButton
+                        "change": onUpdatePageType
                     }
                 },{
                     xtype: "fieldset",
@@ -816,20 +827,37 @@ Ext.define('Webui.untangle-node-capture.settings', {
                         }]
                     }]
                 },{
-                    xtype: "checkbox",
-                    margin: '10 0 0 0',
-                    boxLabel: this.i18n._("Enable test to verify that the server root certificate is installed on the client device."),
-                    hideLabel: true,
-                    checked: this.settings.checkServerCertificate,
-                    listeners: {
-                            "change": Ext.bind(function(elem, checked) {
-                                this.settings.checkServerCertificate = checked;
-                            }, this)
-                    }
-                },{
-                    xtype: 'component',
-                    margin: '10 0 10 0',
-                    html: this.i18n._('NOTE: When enabled and the root certificate is not detected, a notification message and download link will appear on the captive page.')
+                    xtype: "fieldset",
+                    title: this.i18n._( "HTTPS/SSL Root Certificate Detection" ),
+                    optionType: "CERT_DETECTION",
+                    items: [{
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Disable certificate detection."),
+                        hideLabel: true,
+                        name: "certificateDetection",
+                        inputValue: "DISABLE_DETECTION",
+                        listeners: {
+                            "change": onUpdateCertificateDetection
+                        }
+                    },{
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Check certificate. Show warning when not detected."),
+                        hideLabel: true,
+                        name: "certificateDetection",
+                        inputValue: "CHECK_CERTIFICATE",
+                        listeners: {
+                            "change": onUpdateCertificateDetection
+                        }
+                    },{
+                        xtype: "radio",
+                        boxLabel: this.i18n._("Require certificate. Prohibit login when not detected."),
+                        hideLabel: true,
+                        name: "certificateDetection",
+                        inputValue: "REQUIRE_CERTIFICATE",
+                        listeners: {
+                            "change": onUpdateCertificateDetection
+                        }
+                    }]
                 },{
                     xtype: "button",
                     name: "viewPage",

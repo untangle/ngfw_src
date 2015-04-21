@@ -55,6 +55,8 @@ public class CaptureSettings implements Serializable
     private String basicMessageFooter = "";
     private CertificateDetection certificateDetection = CertificateDetection.DISABLE_DETECTION;
 
+    private Boolean checkServerCertificate = null;
+
     private String secretKey;
     private byte[] binaryKey;
 
@@ -251,6 +253,11 @@ public class CaptureSettings implements Serializable
         return this.certificateDetection;
     }
 
+    public Boolean getCheckServerCertificate()
+    {
+        return this.checkServerCertificate;
+    }
+
     public void setBasicLoginPageTitle(String newValue)
     {
         this.basicLoginPageTitle = newValue;
@@ -314,6 +321,11 @@ public class CaptureSettings implements Serializable
     public void setCertificateDetection(CertificateDetection newValue)
     {
         this.certificateDetection = newValue;
+    }
+
+    public void setCheckServerCertificate(Boolean newValue)
+    {
+        this.checkServerCertificate = newValue;
     }
 
     public String getSecretKey()
