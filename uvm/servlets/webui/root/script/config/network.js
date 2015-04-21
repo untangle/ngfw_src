@@ -306,7 +306,6 @@ Ext.define('Webui.config.network', {
         this.gridIfconfigLists = Ext.create( 'Ung.grid.Panel', {
             name: 'Interface Status',
             margin: 5,
-            helpSource: 'network_ifconfig_connections',
             title: this.i18n._('Interface Status'),
             settingsCmp: this,
             hasAdd: false,
@@ -435,7 +434,6 @@ Ext.define('Webui.config.network', {
             name: 'ARP Lists',
             margin: 5,
             flex: 2,
-            helpSource: 'network_arp_connections',
             title: this.i18n._('ARP Entry List'),
             settingsCmp: this,
             hasAdd: false,
@@ -488,7 +486,6 @@ Ext.define('Webui.config.network', {
             name: 'Wireless Lists',
             margin: 5,
             flex: 3,
-            helpSource: 'network_wireless_connections',
             title: this.i18n._('Wireless Connections List'),
             settingsCmp: this,
             hasAdd: false,
@@ -575,7 +572,7 @@ Ext.define('Webui.config.network', {
         });
         
         this.winInterfaceStatus = Ext.create('Ung.EditWindow', {
-            helpSource: 'network_ifconfig_connections',
+            helpSource: 'network_interface_connections',
             breadcrumbs: [{
                 title: this.i18n._("Interface"),
                 action: Ext.bind(function() {
