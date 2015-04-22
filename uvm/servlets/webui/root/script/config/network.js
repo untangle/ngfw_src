@@ -493,6 +493,7 @@ Ext.define('Webui.config.network', {
             hasEdit: false,
             initialLoad: function() {}, //Don't load automatically
             dataFn: function(handler) {
+                var dnsmasqCommand = "cat /var/lib/misc/dnsmasq.leases";
                 var connectionsCommand = "/sbin/iw dev "+this.systemDev+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
                 var addressMap = {};
 
@@ -510,7 +511,7 @@ Ext.define('Webui.config.network', {
                     Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         var lines = Ext.isEmpty(result) ? []: result.split("\n");
-                        var total = Math.floor(lines.legth/5) ;
+                        var total = Math.floor(lines.length/5) ;
                         var ptr, macAddress, connections = [];
 
                         for (var i = 0 ; i < total ; i++ ) {
@@ -528,7 +529,7 @@ Ext.define('Webui.config.network', {
                         }
                         handler({list: connections});
                     }, this), connectionsCommand);
-                }, this),"cat /var/lib/misc/dnsmasq.leases");
+                }, this), dnsmasqCommand);
             }, 
             fields: [{
                 name: "macAddress"
