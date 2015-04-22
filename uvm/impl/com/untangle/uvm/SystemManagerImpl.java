@@ -6,14 +6,20 @@ package com.untangle.uvm;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +31,9 @@ import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.IOUtil;
+
 
 /**
  * The Manager for system-related settings
@@ -109,6 +117,8 @@ public class SystemManagerImpl implements SystemManager
         
         if ( settings.getSnmpSettings().isEnabled() ) 
             restartSnmpDaemon();
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
 
         logger.info("Initialized SystemManager");
     }
@@ -642,6 +652,59 @@ public class SystemManagerImpl implements SystemManager
         } catch (IOException ex) {
             logger.error("Unable to close file", ex);
             return;
+        }
+    }
+    private class SystemSupportLogDownloadHandler implements DownloadHandler
+    {
+        private static final String CHARACTER_ENCODING = "utf-8";
+
+        @Override
+        public String getName()
+        {
+            return "SystemSupportLogs";
+        }
+        
+        public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
+        {
+            try{
+                resp.setCharacterEncoding(CHARACTER_ENCODING);
+                resp.setHeader("Content-Type","application/octet-stream");
+                resp.setHeader("Content-Disposition","attachment; filename=sytem_logs.zip");
+
+                byte[] buffer = new byte[1024];
+                int read;
+                ZipOutputStream out = new ZipOutputStream(resp.getOutputStream());
+                
+                File directory = new File( "/var/log/uvm" );
+                File[] files = directory.listFiles( 
+                    new FilenameFilter() 
+                    {
+                        @Override
+                        public boolean accept( File directory, String name )
+                        {
+                            if( name.endsWith(".log") == true ){
+                                return true;
+                            }
+                            return false;
+                        }
+                    } 
+                );
+
+                for( File f: files ){                
+                    FileInputStream fis = new FileInputStream(f.getCanonicalFile());
+                    out.putNextEntry(new ZipEntry(f.getName())); 
+                    while ( ( read = fis.read( buffer ) ) > 0 ) {
+                        out.write( buffer, 0, read);
+                    }
+
+                    fis.close();
+                }
+                out.flush();
+                out.close();
+
+            } catch (Exception e) {
+                logger.warn("Failed to archive files.",e);
+            }
         }
     }
 }

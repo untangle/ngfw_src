@@ -222,6 +222,18 @@ Ext.define('Webui.config.system', {
                             }, this)
                         }
                     }
+                },{
+                    xtype: "component",
+                    html: this.i18n._("Download system logs.")
+                },{
+                    xtype: "button",
+                    name: 'logButton',
+                    text: this.i18n._("Download"),
+                    handler: Ext.bind(function() {
+                        var downloadForm = document.getElementById('downloadForm');
+                        downloadForm["type"].value="SystemSupportLogs";
+                        downloadForm.submit();
+                    }, this)
                 }]
             },{
                 xtype: "fieldset",
