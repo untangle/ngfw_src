@@ -258,7 +258,6 @@ class IdpsTests(unittest2.TestCase):
 
     def setUp(self):
         global node
-        #raise unittest2.SkipTest("Disable broken tests for now")
         if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
