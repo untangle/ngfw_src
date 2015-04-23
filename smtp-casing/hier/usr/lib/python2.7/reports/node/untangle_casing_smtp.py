@@ -31,7 +31,6 @@ class SmtpCasing(Node):
                        [Column('hostname', 'text'), 
                         Column('username', 'text'),
                         Column('client_intf', 'smallint'),
-                        Column('addr_pos', 'text'), 
                         Column('addr', 'text'),
                         Column('addr_kind', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)')])
@@ -65,7 +64,6 @@ CREATE TABLE reports.mail_addrs (
     username text,
     msg_id bigint,
     subject text,
-    addr_pos integer,
     addr text,
     addr_name text,
     addr_kind char(1),
@@ -88,6 +86,9 @@ CREATE TABLE reports.mail_addrs (
     phish_action character,
     virusblocker_clean boolean,
     virusblocker_name text)""", ["event_id"],["policy_id","time_stamp","addr_kind","msg_id"])
+
+        # remove obsolete columns (11.1)
+        sql_helper.drop_column( 'mail_addrs', 'addr_pos' )
 
         # remove obsolete columns (11.2)
         sql_helper.drop_column( 'mail_addrs', 'msg_attachments' )

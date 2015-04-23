@@ -238,7 +238,7 @@ def clean_table(tablename, cutoff):
     # on relevent partitions
     if column_exists( tablename, "time_stamp" ):
         sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (SCHEMA, tablename)
-        logger.info(sql)
+        logger.debug(sql)
         run_sql(sql, (cutoff,))
     else: 
         logger.warn("Table %s missing time_stamp column!" % tablename)

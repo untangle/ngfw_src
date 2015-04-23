@@ -139,8 +139,6 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
         if email:
             query += " AND addr = %s"
-        else:
-            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -186,8 +184,6 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
         if email:
             query += " AND addr = %s"
-        else:
-            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         try:
@@ -257,8 +253,6 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
             if email:
                 ks_query += " AND addr = %s"
-            else:
-                ks_query += " AND addr_pos = '1'"
                 
             if email:
                 curs.execute(ks_query, (report_days, report_days, email,
@@ -287,7 +281,7 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             if email:
                 extra_where = (("addr_kind = 'T' AND addr = %(email)s", { 'email' : email }),)
             else:
-                extra_where = (("addr_kind = 'T' AND addr_pos = '1'", {}),)
+                extra_where = (("addr_kind = 'T' ", {}),)
                 
             q, h = sql_helper.get_averaged_query(sums, "reports.mail_addr_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -349,8 +343,6 @@ class DailySpamRate(Graph):
             extra_where = [("addr_kind = 'T'", {})]
             if email:
                 extra_where.append(("addr = %(email)s", { 'email' : email }))
-            else:
-                extra_where.append(("addr_pos = '1'" , {}))
 
             if report_days == 1:
                 time_interval = 60 * 60
@@ -450,7 +442,6 @@ SELECT foo.addr, foo.spam_msgs
 FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
       FROM reports.mail_addr_totals
       WHERE addr_kind = 'T'
-      AND addr_pos = '1'
       AND time_stamp >= %%s AND time_stamp < %%s
       GROUP BY addr) AS foo
 WHERE foo.spam_msgs > 0
