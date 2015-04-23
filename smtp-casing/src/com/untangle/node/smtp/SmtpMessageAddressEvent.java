@@ -100,7 +100,7 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
             "session_id, client_intf, server_intf, " + "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
             "s_client_addr, s_client_port, s_server_addr, s_server_port, " + "policy_id,  " + "username,  " + 
             "msg_id, subject, " + "addr, addr_name, addr_kind,  " + "sender,  " + 
-            "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "hostname) " + " VALUES " + "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         SessionEvent se = messageInfo.getSessionEvent();
         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
