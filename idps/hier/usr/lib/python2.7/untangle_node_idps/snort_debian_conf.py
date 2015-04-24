@@ -46,9 +46,6 @@ class SnortDebianConf:
             conf_file.write( line + "\n" )
         conf_file.close()
         
-        # if os.path.isfile( SnortDebianConf.file_name ):
-        #     os.remove( SnortDebianConf.file_name )
-        # os.rename( temp_file_name, SnortDebianConf.file_name )
         backup_file_name = SnortDebianConf.file_name + ".bak"
         if os.path.isfile(backup_file_name):        
             os.remove(backup_file_name)
