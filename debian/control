@@ -84,15 +84,12 @@ Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 Description: OpenVPN
  The OpenVPN application.
 
-Package: untangle-node-ips
-Architecture: all
-Depends: untangle-vm, untangle-snort-rules
-Description: Intrusion Prevention
- The Intrusion Prevention application.
-
 Package: untangle-node-idps
 Architecture: all
 Depends: untangle-vm, untangle-snort-config, snort
+Conflicts: untangle-node-ips
+Replaces: untangle-node-ips
+Provides: untangle-node-ips
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
