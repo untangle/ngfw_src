@@ -50,10 +50,17 @@ class SnortConf:
         for line in self.conf:
             conf_file.write( line + "\n" )
         conf_file.close()
-        
-        if os.path.isfile( SnortConf.file_name ):
-            os.remove( SnortConf.file_name )
-        os.rename( temp_file_name, SnortConf.file_name )
+
+        backup_file_name = SnortConf.file_name + ".bak"
+        if os.path.isfile(backup_file_name):        
+            os.remove(backup_file_name)
+        os.rename(SnortConf.file_name,backup_file_name)
+
+        if os.path.getsize(temp_file_name) != 0:
+            os.rename(temp_file_name, SnortConf.file_name)
+            os.remove(backup_file_name)
+        else:
+            os.rename(backup_file_name,SnortConf.file_name)
         
     def save_variables(self):
         """
