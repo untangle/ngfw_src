@@ -81,7 +81,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         super( nodeSettings, nodeProperties );
 
         handler = new EventHandler(this);
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), false );
         this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.listener = new NetworkListener();
 
@@ -502,15 +502,20 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
     /*
      * Build non-WAN networks
      */
-    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings )
+    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings, boolean getWan )
     {
         boolean match;
         IPMaskedAddress maskedAddress;
         List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() || interfaceSettings.getIsWan() == true ){
+            if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
                 continue;
             }
+            if( ( ( getWan == false ) && ( interfaceSettings.getIsWan() == true ) ) ||
+                ( ( getWan == true ) && ( interfaceSettings.getIsWan() == false ) ) ){
+                continue;
+            }
+            
             addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
             for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
                 /*
@@ -528,6 +533,14 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
                     addresses.add( maskedAddress );
                 }
             }   
+        }
+        if( addresses.size() == 0 ){
+            /*
+             * No LAN interfaces were found.  This means the system
+             * is in bridged-to-WAN networking mode and we should
+             * use the WAN network as home.
+             */
+            addresses = calculateHomeNetworks(networkSettings, true);
         }
         return addresses; 
     }
@@ -553,7 +566,7 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
      */
     private void networkSettingsEvent( NetworkSettings networkSettings ) throws Exception
     {
-        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings );
+        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings, false );
 
         boolean sameNetworks = true;
         if( newHomeNetworks.size() != this.homeNetworks.size() ){
