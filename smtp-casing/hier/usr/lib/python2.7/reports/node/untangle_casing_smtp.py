@@ -34,7 +34,6 @@ class SmtpCasing(Node):
                        [Column('hostname', 'text'), 
                         Column('username', 'text'),
                         Column('client_intf', 'smallint'),
-                        Column('addr_pos', 'text'), 
                         Column('addr', 'text'),
                         Column('addr_kind', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)')])
@@ -65,7 +64,6 @@ CREATE TABLE reports.mail_addrs (
     username text,
     msg_id bigint,
     subject text,
-    addr_pos integer,
     addr text,
     addr_name text,
     addr_kind char(1),
@@ -102,6 +100,9 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.drop_column('reports', 'mail_addrs', 'server_type')
         sql_helper.drop_column('reports', 'mail_addrs', 'msg_attachments')
         sql_helper.drop_column('reports', 'mail_addrs', 'msg_bytes')
+
+        # remove obsolete columns (11.1)
+        sql_helper.drop_column( 'mail_addrs', 'addr_pos' )
 
         # rename old commtouch columns
         sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_score', 'spamblocker_score')

@@ -139,12 +139,10 @@ SELECT coalesce(sum(msgs), 0)::int AS messages,
        coalesce(sum(%s_spam_msgs), 0)::int AS spam
 FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND addr_kind = 'T'""" % (self.__short_name,)
+AND addr_kind = 'G'""" % (self.__short_name,)
 
         if email:
             query += " AND addr = %s"
-        else:
-            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -186,12 +184,10 @@ SELECT coalesce(sum(msgs), 0)::int,
        coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND addr_kind = 'T'""" % (self.__short_name,)
+AND addr_kind = 'G'""" % (self.__short_name,)
 
         if email:
             query += " AND addr = %s"
-        else:
-            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         try:
@@ -257,12 +253,10 @@ SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
 FROM reports.mail_addr_totals
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND addr_kind = 'T'""" % (self.__short_name,)
+AND addr_kind = 'G'""" % (self.__short_name,)
 
             if email:
                 ks_query += " AND addr = %s"
-            else:
-                ks_query += " AND addr_pos = '1'"
                 
             if email:
                 curs.execute(ks_query, (report_days, report_days, email,
@@ -289,9 +283,9 @@ AND addr_kind = 'T'""" % (self.__short_name,)
                     "coalesce(sum(%s_spam_msgs), 0)::float * 60 * 60 " % (self.__short_name)]
 
             if email:
-                extra_where = (("addr_kind = 'T' AND addr = %(email)s", { 'email' : email }),)
+                extra_where = (("addr_kind = 'G' AND addr = %(email)s", { 'email' : email }),)
             else:
-                extra_where = (("addr_kind = 'T' AND addr_pos = '1'", {}),)
+                extra_where = (("addr_kind = 'G' ", {}),)
                 
             q, h = sql_helper.get_averaged_query(sums, "reports.mail_addr_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -350,11 +344,9 @@ class DailySpamRate(Graph):
             sums = ["COALESCE(SUM(msgs)-SUM(%s_spam_msgs), 0)::float" % (self.__short_name,),
                     "COALESCE(SUM(%s_spam_msgs), 0)::float" % (self.__short_name,)]
             
-            extra_where = [("addr_kind = 'T'", {})]
+            extra_where = [("addr_kind = 'G'", {})]
             if email:
                 extra_where.append(("addr = %(email)s", { 'email' : email }))
-            else:
-                extra_where.append(("addr_pos = '1'" , {}))
 
             if report_days == 1:
                 time_interval = 60 * 60
@@ -453,8 +445,7 @@ class TopSpammedUsers(Graph):
 SELECT foo.addr, foo.spam_msgs
 FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
       FROM reports.mail_addr_totals
-      WHERE addr_kind = 'T'
-      AND addr_pos = '1'
+      WHERE addr_kind = 'G'
       AND time_stamp >= %%s AND time_stamp < %%s
       GROUP BY addr) AS foo
 WHERE foo.spam_msgs > 0
@@ -531,7 +522,7 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subjec
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
-AND m1.%s_is_spam AND m1.addr_kind = 'T'
+AND m1.%s_is_spam AND m1.addr_kind = 'G'
 AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
@@ -597,7 +588,7 @@ SELECT m1.time_stamp, m1.hostname, m1.%s_score, m2.addr AS from_addrs, m1.subjec
 FROM reports.mail_addrs AS m1, reports.mail_addrs AS m2
 WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
 AND m2.time_stamp >= %s AND m2.time_stamp < %s
-AND m1.addr_kind = 'T'
+AND m1.addr_kind = 'G'
 AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
