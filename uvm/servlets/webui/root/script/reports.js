@@ -119,8 +119,7 @@ Ext.define('Ung.panel.Reports', {
                     }]
                 };
             } else if(rep.type == 'TIME_GRAPH') {
-                var axesFields = [];
-                var series = [], column;
+                var axesFields = [],column;
                 var markerFx = {
                     duration: 200,
                     easing: 'backOut'
@@ -136,28 +135,6 @@ Ext.define('Ung.panel.Reports', {
                     column = rep.timeDataColumns[i].split(" ").splice(-1)[0];
                     axesFields.push(column);
                     storeFields.push({name: column, convert: zeroFn});
-                    series.push({
-                        type: 'line',
-                        axis: 'left',
-                        title: column,
-                        xField: 'time_trunc',
-                        yField: column,
-                        marker: {
-                            type: 'square',
-                            fx: markerFx
-                        },
-                        highlightCfg: {
-                            scaling: 2
-                        },
-                        tooltip: {
-                            trackMouse: true,
-                            style: 'background: #fff',
-                            renderer: function(storeItem, item) {
-                                var title = item.series.getTitle();
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + ' Hits');
-                            }
-                        }
-                    });
                 }
                 dataStore = Ext.create('Ext.data.JsonStore', {
                     fields: storeFields,
@@ -209,7 +186,25 @@ Ext.define('Ung.panel.Reports', {
                             }
                         }
                     }],
-                    series: series
+                    series: [{
+                        type: 'bar',
+                        axis: 'left',
+                        title: axesFields,
+                        xField: 'time_trunc',
+                        yField: axesFields,
+                        stacked: true,
+                        style: {
+                            opacity: 0.90
+                        },
+                        tooltip: {
+                            trackMouse: true,
+                            style: 'background: #fff',
+                            renderer: function(storeItem, item) {
+                                var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + ' Hits');
+                            }
+                        }
+                    }]
                 };
             }
             this.chartContainer.add(chart); 
