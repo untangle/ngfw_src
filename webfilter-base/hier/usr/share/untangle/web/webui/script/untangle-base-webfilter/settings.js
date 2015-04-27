@@ -12,7 +12,8 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
             this.buildPanelPassedSites(),
             this.buildPanelPassedClients(),
             this.buildPanelAdvanced(),
-            this.buildEventLog()
+            this.buildEventLog(),
+            this.buildReports()
         ]);
         this.callParent(arguments);
     },
@@ -807,6 +808,14 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                 this.getRpcNode().getEventQueries);
         return this.gridEventLog;
     },
+    // Event Log
+    buildReports: function() {
+        //helpSource: 'web_filter_reports',
+        //helpSource: 'web_filter_lite_reports',
+        this.panelReports =  Ext.create('Ung.panel.Reports',{});
+        return this.panelReports;
+    },
+
     // private method
     alterUrls: function(saveList) {
         if (saveList != null) {
