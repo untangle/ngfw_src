@@ -12,8 +12,9 @@ class SnortRules:
     """
     var_regex = re.compile(r'^\$(.+)')
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
+    file_name_category_regex =re.compile(r'(/|\-)([^/\-]+)\.rules$')
 
-    rule_paths = ["rules", "preproc_rules"]
+    rule_paths = ["rules", "preproc_rules", "emerging_rules"]
     
     def __init__(self, node_id="0", path="", file_name=""):
         self.node_id = node_id
@@ -61,6 +62,11 @@ class SnortRules:
         category = name
 
         rule_count = 0
+        # defalt category is from filename, remove prefix
+        match_file_name_category = re.search(SnortRules.file_name_category_regex, file_name)
+        if match_file_name_category:
+            category = self.format_category(match_file_name_category.group(2))
+
         rules_file = open( file_name )
         for line in rules_file:
             # Alternate category match from pulledpork output
@@ -297,6 +303,10 @@ class SnortRules:
                     if sync_enabled == True:
                         rule.set_action(True,False)
                     self.modify_rule(rule)
+
+    def format_category(self, category):
+        category = category.replace("_","-")
+        return category
 
     def get_rules(self):
         """
