@@ -5534,7 +5534,10 @@ Ext.define('Webui.config.network', {
     },
     needRackReload: false,
     save: function (isApply) {
+        Ung.MetricManager.stop(); //stop all RPC calls
         Ung.Main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
+            Ung.MetricManager.start(false); //resume all RPC calls 
+
             if(Ung.Util.handleException(exception)) return;
             delete rpc.networkSettings; // clear cached settings object
             if(isApply) {
