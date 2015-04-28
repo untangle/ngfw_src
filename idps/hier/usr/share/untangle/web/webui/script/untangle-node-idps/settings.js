@@ -92,11 +92,17 @@ Ext.define('Webui.untangle-node-idps.settings', {
 
         this.storeCategories = Ext.create('Ext.data.ArrayStore', {
             fields: ['id', 'value'],
-            data: categories
+            data: categories,
+            sorters: [{
+                property: "value", direction: "ASC"
+            }]
         });
         this.storeClasstypes = Ext.create('Ext.data.ArrayStore', {
             fields: ['id', 'value'],
-            data: classtypes
+            data: classtypes,
+            sorters: [{
+                property: "value", direction: "ASC"
+            }]
         });
 
         this.referencesMap = {
