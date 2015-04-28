@@ -102,7 +102,7 @@ CREATE TABLE reports.mail_addrs (
         sql_helper.drop_column('reports', 'mail_addrs', 'msg_bytes')
 
         # remove obsolete columns (11.1)
-        sql_helper.drop_column( 'mail_addrs', 'addr_pos' )
+        sql_helper.drop_column('reports', 'mail_addrs', 'addr_pos')
 
         # rename old commtouch columns
         sql_helper.rename_column('reports', 'mail_addrs', 'commtouchas_score', 'spamblocker_score')
