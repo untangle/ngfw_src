@@ -652,7 +652,9 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         logEvent(event);
         logger.info("Logout success: " + address);
 
-        if (captureSettings.getSessionCookiesEnabled()) {
+        if (captureSettings.getSessionCookiesEnabled() &&
+            ((reason == CaptureUserEvent.EventType.USER_LOGOUT) ||
+             (reason == CaptureUserEvent.EventType.ADMIN_LOGOUT))) {
             captureUserCookieTable.insertInactiveUser(user);
         }
 
