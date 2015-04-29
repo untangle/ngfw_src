@@ -35,6 +35,7 @@ Ext.define('Webui.config.hostMonitor', {
                     result.list.push({
                         "address": "184.27.239."+(ii%10),
                         "macAddress": "11:22:33:44:55:6"+(ii%10),
+                        "macVendor": "MAC vendor"+i,
                         "hostname": i%3?("p.twitter.com"+i):null,
                         "licensed": true,
                         "lastAccessTime": 0,//d.getTime()+(i*86400000),
@@ -101,6 +102,9 @@ Ext.define('Webui.config.hostMonitor', {
                 sortType: 'asIp'
             },{
                 name: "macAddress",
+                type: 'string'
+            },{
+                name: "macVendor",
                 type: 'string'
             },{
                 name: "hostname",
@@ -184,6 +188,13 @@ Ext.define('Webui.config.hostMonitor', {
             }, {
                 header: this.i18n._("MAC Address"),
                 dataIndex: "macAddress",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: this.i18n._("MAC Vendor"),
+                dataIndex: "macVendor",
                 width: 100,
                 filter: {
                     type: 'string'
