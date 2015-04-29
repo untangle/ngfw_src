@@ -401,7 +401,6 @@ Ext.define("Ung.Main", {
         }
         return rpc.mailSender;
     },
-
     getNetworkSettings: function(forceReload) {
         if (forceReload || rpc.networkSettings === undefined) {
             try {
@@ -412,7 +411,46 @@ Ext.define("Ung.Main", {
         }
         return rpc.networkSettings;
     },
-
+    getReportingManagerNew: function(forceReload) {
+        if (forceReload || rpc.reportingManagerNew === undefined) {
+            try {
+                rpc.reportingManagerNew = this.getNodeReporting().getReportingManagerNew();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.reportingManagerNew;
+    },
+    // get node reporting
+    getNodeReporting: function(forceReload) {
+        if (forceReload || rpc.nodeReporting === undefined) {
+            try {
+                rpc.nodeReporting = rpc.nodeManager.node("untangle-node-reporting");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.nodeReporting;
+    },
+    // is reports node installed
+    isReportsAppInstalled: function(forceReload) {
+        if (forceReload || rpc.reportsAppInstalledAndEnabled === undefined) {
+            try {
+                if (!Ung.Main.getNodeReporting(true)) {
+                    rpc.reportsAppInstalledAndEnabled = false;
+                } else {
+                    if (rpc.nodeReporting.getRunState() == "RUNNING"){
+                        rpc.reportsAppInstalledAndEnabled = true;
+                    } else {
+                        rpc.reportsAppInstalledAndEnabled = false;
+                    }
+                }
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.reportsAppInstalledAndEnabled;
+    },
     // load policies list
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));

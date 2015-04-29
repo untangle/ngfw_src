@@ -812,7 +812,9 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
     buildReports: function() {
         //helpSource: 'web_filter_reports',
         //helpSource: 'web_filter_lite_reports',
-        this.panelReports =  Ext.create('Ung.panel.Reports',{});
+        this.panelReports =  Ext.create('Ung.panel.Reports',{
+            settingsCmp: this
+        });
         return this.panelReports;
     },
 
