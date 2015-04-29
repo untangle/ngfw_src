@@ -309,7 +309,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
 
         if (logger.isDebugEnabled()) {
-            logger.debug(" GOT END MARER!!");
+            logger.debug(" GOT END MARKER!!");
         }
 
         ByteBuffer buf = null;
