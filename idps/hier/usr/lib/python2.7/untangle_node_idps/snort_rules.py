@@ -44,6 +44,8 @@ class SnortRules:
             #
             for rule_path in SnortRules.rule_paths:
                 parse_path = self.path + "/" + rule_path 
+                if os.path.isdir(parse_path) == False:
+                    continue
                 for file_name in os.listdir( parse_path ):
                     extension = os.path.splitext( file_name )[1]
                     if extension != ".rules":
