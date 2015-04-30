@@ -5,6 +5,8 @@ package com.untangle.node.reporting;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -21,6 +23,21 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     private ReportingNodeImpl node;
 
+    private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
+    {
+        public int compare( ReportEntry entry1, ReportEntry entry2 ) 
+        {
+            int num = entry1.getDisplayOrder() - entry2.getDisplayOrder();
+            if ( num != 0 )
+                return num;
+            else {
+                if (entry1.getTitle() == null || entry2.getTitle() == null )
+                    return 0;
+                return entry1.getTitle().compareTo( entry2.getTitle() );
+            }
+        }
+    }    
+
     public ReportingManagerNewImpl( ReportingNodeImpl node )
     {
         this.node = node;
@@ -32,6 +49,9 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     {
         ArrayList<ReportEntry> allReportEntries = new ArrayList<ReportEntry>( this.systemReportEntries );
         allReportEntries.addAll( this.customReportEntries );
+
+        Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
+
         return allReportEntries;
     }
 

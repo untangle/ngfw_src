@@ -48,7 +48,8 @@ public class ReportEntry implements Serializable, JSONString
     private String title; /* title of the entry/graph */
     private String category; /* category of the entry/graph */
     private String description; /* A text description */
-
+    private int displayOrder = 9999; /* The order to display this report entry (relative to others) */
+    
     private boolean preCompileResults = false; /* if the results should be pre-compiled each night */
     private String table; /* table to query data from */
     private ReportEntryCondition[] conditions;
@@ -86,6 +87,9 @@ public class ReportEntry implements Serializable, JSONString
     public String getDescription() { return this.description; }
     public void setDescription( String newValue ) { this.description = newValue; }
 
+    public int getDisplayOrder() { return this.displayOrder; }
+    public void setDisplayOrder( int newValue ) { this.displayOrder = newValue; }
+    
     public boolean getPreCompileResults() { return this.preCompileResults; }
     public void setPreCompileResults( boolean newValue ) { this.preCompileResults = newValue; }
     
