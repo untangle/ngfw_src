@@ -298,7 +298,12 @@ class CopyFiles < Target
       cp(src,dest)
     else
       File.open(dest, 'w') do |d|
-        File.open(src, 'r', :encoding => "UTF-8") do |s|
+        if RUBY_VERSION =~ /^1\.8/ then
+          fd = File.open(src, 'r')
+        else
+          fd = File.open(src, 'r', :encoding => "UTF-8")
+        end
+        fd do |s|
           s.each_line do |l|
             filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
             d.puts(l)
