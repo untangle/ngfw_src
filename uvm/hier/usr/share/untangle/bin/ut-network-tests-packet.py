@@ -39,10 +39,6 @@ class DumpWriter:
         args.append( file_name )
  
         self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb') )
-        while timeout > 0:
-            timeout = timeout - 1
-            time.sleep(1)
-        self.terminate()
 
     def terminate(self):
         self.process.terminate()
@@ -179,6 +175,7 @@ def main(argv):
         timeout = timeout -1
         time.sleep(1) 
 
+    dump_writer.terminate()
     dump_reader.read()
     
     cleanup( path )
