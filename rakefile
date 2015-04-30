@@ -42,7 +42,9 @@ end
 task :core => :download do
   require "./buildtools/untangle-core.rb"
 end
-task :builduvmcore => [:core, :libuvmcore_so]
+task :builduvmcore => :core do
+  Rake::Task[:libuvmcore_so].invoke
+end
 task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
 
 ## arch-indep tasks
@@ -78,13 +80,23 @@ task :targets => :download do
   require "#{SRC_HOME}/capture/package.rb"
 end
 
-task :build => [:builduvmcore, :targets, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
+task :build => [:builduvmcore, :targets] do
+  Rake::Task[BuildEnv::SRC['untangle-vm']].invoke
+  Rake::Task[BuildEnv::SRC['node']].invoke
+end
 
-task :hier => [:targets, BuildEnv::SRC.hierTarget]
+task :hier => :targets do
+  Rake::Task[BuildEnv::SRC.hierTarget].invoke
+end
 
-task :i18n => BuildEnv::SRC.i18nTarget
+task :devel => [:build, :hier, :installuvmcore] do
+  Rake::Task[BuildEnv::SRC['install']].invoke
+  Rake::Task[BuildEnv::SRC.installTarget].invoke
+end
 
-task :devel => [:build, :hier, :installuvmcore, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
+task :i18n => [:builduvmcore, :targets] do
+  Rake::Task[BuildEnv::SRC.i18nTarget].invoke
+end
 
 task :debian_init_files do
   FileList["./debian/**/etc/init.d/*"].each do |f|
