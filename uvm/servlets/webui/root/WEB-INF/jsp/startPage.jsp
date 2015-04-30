@@ -91,7 +91,6 @@
     <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
- <script type="text/javascript" src="script/untangle-node-idps/settings.js?s=${buildStamp}"></script>
     
 <%--
 <c:if test="${param['expert']==1}">
