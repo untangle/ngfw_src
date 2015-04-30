@@ -303,12 +303,11 @@ class CopyFiles < Target
         else
           fd = File.open(src, 'r', :encoding => "UTF-8")
         end
-        fd do |s|
-          s.each_line do |l|
-            filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
-            d.puts(l)
-          end
+        fd.each_line do |l|
+          filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
+          d.puts(l)
         end
+        fd.close()
       end
     end
   end
