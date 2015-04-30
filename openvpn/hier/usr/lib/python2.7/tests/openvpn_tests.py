@@ -171,9 +171,22 @@ class OpenVpnTests(unittest2.TestCase):
         global nodeData, vpnServerResult, vpnClientResult, vpnClientVpnIP
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
-        running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP)
+
+        running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP,)
+        loopLimit = 5
+        while ((running == 0) and (loopLimit > 0)):
+            # OpenVPN is running, wait 5 sec to see if openvpm is done
+            loopLimit -= 1
+            time.sleep(5)
+            running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP)
+        if loopLimit == 0:
+            # try killing the openvpn session as it is probably stuck
+            remote_control.runCommand("sudo pkill openvpn", host=vpnClientVpnIP)
+            time.sleep(2)
+            running = remote_control.runCommand("pidof openvpn", host=vpnClientVpnIP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
+            
         nodeData = node.getSettings()
         nodeData["serverEnabled"]=True
         siteName = nodeData['siteName']
