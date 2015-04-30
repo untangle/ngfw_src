@@ -2,13 +2,17 @@
 # $Id$
 
 require 'find'
-require 'ftools'
+begin
+  require 'ftools'
+rescue LoadError
+  require 'fileutils'
+end
 require 'set'
 require 'tempfile'
 require 'thread'
 
 def ensureDirectory(t)
-  mkdir_p t unless File.exist?(t)
+  FileUtils.mkdir_p t unless File.exist?(t)
 end
 
 ## This is overly complicated

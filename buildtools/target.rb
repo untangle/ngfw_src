@@ -1,7 +1,11 @@
 # -*-ruby-*-
 # $Id$
 
-require 'gettext/utils'
+begin
+  require 'gettext/utils'
+rescue LoadError
+  require 'gettext/tools'
+end
 
 class Target
   attr_reader :package, :dependencies
@@ -56,6 +60,8 @@ class Target
 end
 
 class InstallTarget < Target
+  include Rake::DSL if defined?(Rake::DSL)
+  
   def initialize(package, deps, targetName)
     super(package, deps, targetName)
     @targetName=targetName
@@ -224,6 +230,8 @@ end
 task '' # XXX hack attack
 
 class CopyFiles < Target
+  include Rake::DSL if defined?(Rake::DSL)
+  
   @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
@@ -414,6 +422,8 @@ class JsLintTarget < Target
 end
 
 class JavaCompilerTarget < Target
+  include Rake::DSL if defined?(Rake::DSL)
+  
   def initialize(package, jars, destination, suffix, basepaths)
     @targetName = "javac:#{package.name}-#{suffix}"
 
@@ -446,7 +456,7 @@ class JavaCompilerTarget < Target
       file classFile => f do
         directory = File.dirname classFile
         ## XXX Hokey way to update the timestamp XXX
-        mkdir_p directory if !File.exist?(directory)
+        FileUtils.mkdir_p directory if !File.exist?(directory)
         Kernel.system("touch #{classFile}")
       end
 
@@ -543,6 +553,8 @@ end
 
 ## This is a JAR that must be built from Java Files
 class JarTarget < Target
+  include Rake::DSL if defined?(Rake::DSL)
+  
   def initialize(package, deps, suffix, build_dir, registerTarget=true)
     @package = package
     @suffix = "#{suffix}"

@@ -151,6 +151,8 @@ class CBuilder
 end
 
 class CCompilerTarget < Target
+  include Rake::DSL if defined?(Rake::DSL)
+  
   def initialize(package, deps, builder, build_dir, basepaths)
     @targetName = "c-compiler:#{package.name}"
 
