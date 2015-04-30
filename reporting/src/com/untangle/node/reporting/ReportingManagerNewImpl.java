@@ -16,7 +16,8 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 {
     private static final Logger logger = Logger.getLogger(ReportingManagerNewImpl.class);
 
-    private ArrayList<ReportEntry> reportEntries;
+    private ArrayList<ReportEntry> systemReportEntries;
+    private ArrayList<ReportEntry> customReportEntries;
 
     private ReportingNodeImpl node;
 
@@ -29,27 +30,31 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     public ArrayList<ReportEntry> getReportEntries()
     {
-        return this.reportEntries;
+        ArrayList<ReportEntry> allReportEntries = new ArrayList<ReportEntry>( this.systemReportEntries );
+        allReportEntries.addAll( this.customReportEntries );
+        return allReportEntries;
     }
 
     public ArrayList<ReportEntry> getReportEntries( String category )
     {
+        ArrayList<ReportEntry> allReportEntries = getReportEntries();
         ArrayList<ReportEntry> entries = new ArrayList<ReportEntry>();
-        for ( ReportEntry entry: this.reportEntries ) {
+
+        for ( ReportEntry entry: allReportEntries ) {
             if ( category == null || category.equals( entry.getCategory() ) )
                  entries.add( entry );
         }
         return entries;
     }
     
-    public void setReportEntries( ArrayList<ReportEntry> newEntries )
+    public void setCustomReportEntries( ArrayList<ReportEntry> newEntries )
     {
-        this.reportEntries = newEntries;
+        this.customReportEntries = newEntries;
 
         try {
             String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
-            UvmContextFactory.context().settingsManager().save( settingsFileName, this.reportEntries );
+            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "custom_report_entries_" + nodeID + ".js";
+            UvmContextFactory.context().settingsManager().save( settingsFileName, this.customReportEntries );
         } catch ( Exception e ) {
             logger.warn( "Failed to save report entries.", e );
         }
@@ -70,29 +75,31 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     {
         try {
             String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
+            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "custom_report_entries_" + nodeID + ".js";
 
             logger.info("Loading report entries from file... ");
-            this.reportEntries = UvmContextFactory.context().settingsManager().load( ArrayList.class, settingsFileName );
+            this.customReportEntries = UvmContextFactory.context().settingsManager().load( ArrayList.class, settingsFileName );
 
-            if ( this.reportEntries == null ) {
-                this.reportEntries = new ArrayList<ReportEntry>();
+            if ( this.customReportEntries == null ) {
+                this.customReportEntries = new ArrayList<ReportEntry>();
             }
 
-            checkForNewReportEntries( this.reportEntries );
+            this.systemReportEntries = loadSystemReportEntries();
 
         } catch (Exception e) {
             logger.warn( "Failed to load report entries", e );
         }
     }
 
-    private void checkForNewReportEntries( ArrayList<ReportEntry> reportEntries )
+    private ArrayList<ReportEntry> loadSystemReportEntries()
     {
+        ArrayList<ReportEntry> systemReportEntries = new ArrayList<ReportEntry>();
+        
         String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/reports/*.js' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
         if (result.getResult() != 0) {
             logger.warn("Failed to find report entries: \"" + cmd + "\" -> "  + result.getResult());
-            return;
+            return systemReportEntries;
         }
         try {
             boolean added = false;
@@ -102,41 +109,20 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                 logger.info("Reading file: " + line);
                 try {
                     ReportEntry newEntry = UvmContextFactory.context().settingsManager().load( ReportEntry.class, line );
-                    if ( ! reportEntriesContainsEntryWithTitle( reportEntries, newEntry.getTitle() ) ) {
-                        logger.info("Adding new Report Entry: " + newEntry.getTitle());
-                        reportEntries.add( newEntry );
-                        added = true;
-                    }
+                    systemReportEntries.add( newEntry );
 
-                    Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
-                    logger.info("XXX DEBUG: " + newEntry.toSql(oneDayAgo, null));
+                    //Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
+                    //logger.info("XXX DEBUG: " + newEntry.toSql(oneDayAgo, null));
                 } catch (Exception e) {
                     logger.warn( "Failed to read report entry from: " + line, e );
                 }
             }
-
-            if ( added ) {
-                setReportEntries( reportEntries );
-            }
-            
         } catch (Exception e) {
             logger.warn( "Failed to check for new entries.", e );
         }
 
-        return;
+        return systemReportEntries;
     }
 
-    private boolean reportEntriesContainsEntryWithTitle( ArrayList<ReportEntry> reportEntries, String title )
-    {
-        if ( title == null )
-            return false;
-        
-        for ( ReportEntry reportEntry : reportEntries ) {
-            if ( title.equals( reportEntry.getTitle() ) )
-                return true;
-        }
-
-        return false;
-    }
     
 }

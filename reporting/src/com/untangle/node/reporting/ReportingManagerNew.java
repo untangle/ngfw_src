@@ -17,7 +17,7 @@ public interface ReportingManagerNew
 
     ArrayList<ReportEntry> getReportEntries( String category );
     
-    void setReportEntries( ArrayList<ReportEntry> newEntries );
+    void setCustomReportEntries( ArrayList<ReportEntry> newEntries );
 
     ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 }
