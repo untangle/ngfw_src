@@ -294,7 +294,7 @@ class CopyFiles < Target
   
   private
   def filter_copy(src, dest, filterset)
-    if src =~ /(\.(gif|ico|jpg|png)|img_1|px)$/i then
+    if src =~ /(\.(gif|ico|jks|jpg|png)|img_1|px)$/i then
       cp(src,dest)
     else
       File.open(dest, 'w') do |d|
