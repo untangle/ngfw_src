@@ -332,7 +332,6 @@ class CaptureTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(localUserName)
         assert(not foundUsername)        
 
-
     def test_035_captureADLogin(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
         if (adResult != 0):
@@ -449,6 +448,138 @@ class CaptureTests(unittest2.TestCase):
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040d.out")
         assert (search == 0)
+
+    def test_050_captureCookie(self):
+        """
+        Cookie test
+        """
+        global node, nodeData, captureIP
+
+        # variable for local test
+        capture_file_name = "/tmp/capture_test_050.out"
+        cookie_file_name = "/tmp/capture_test_050_cookie.txt"
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+
+        nodeData['authenticationType']="LOCAL_DIRECTORY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 120
+        nodeData['sessionCookiesEnabled'] = True
+        nodeData['sessionCookiesTimeout'] = 86400
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'username and password' " + capture_file_name)
+        assert (search == 0)
+
+        # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+
+        # connect and auth to get cookie
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
+        assert (search == 0)
+
+        # Wait for captive timeout
+        time.sleep(180)
+
+        # try again without cookie (confirm session not active)
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
+        assert (search == 1)
+
+        # try again with cookie
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + cookie_file_name)
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
+        assert (search == 0)
+
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername)        
+
+        # Wait for captive timeout
+        time.sleep(180)
+
+    def test_051_captureCookie_timeout(self):
+        """
+        Cookie expiration
+        """
+        global node, nodeData, captureIP
+
+        # variable for local test
+        capture_file_name = "/tmp/capture_test_051.out"
+        cookie_file_name = "/tmp/capture_test_051_cookie.txt"
+        cookie_timeout = 2
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+
+        nodeData['authenticationType']="LOCAL_DIRECTORY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 120
+        nodeData['sessionCookiesEnabled'] = True
+        nodeData['sessionCookiesTimeout'] = cookie_timeout
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'username and password' " + capture_file_name)
+        assert (search == 0)
+
+        # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+
+        # connect and auth to get cookie
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
+        assert (search == 0)
+
+        # Wait for captive timeout
+        time.sleep(180)
+
+        # Cookie expiration is handled by browser so check that after the cookie timeout,
+        # the client side's expiration difference from current is greater than timeout.
+        cookie_expires = remote_control.runCommand("tail -1 " + cookie_file_name + " | cut -f5",stdout=True)
+        second_difference = int(remote_control.runCommand("expr $(date +%s) - " + cookie_expires,stdout=True))
+        assert(second_difference > cookie_timeout)
+
+    def test_052_captureCookie_disabled_try_cookie(self):
+        """
+        User has a cookie but cookies have been disabled
+        """
+        global node, nodeData, captureIP
+
+        # variable for local test
+        capture_file_name = "/tmp/capture_test_052.out"
+        cookie_file_name = "/tmp/capture_test_051_cookie.txt"
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'].append(createCaptureInternalNicRule())
+
+        nodeData['authenticationType']="LOCAL_DIRECTORY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 120
+        nodeData['sessionCookiesEnabled'] = False
+        nodeData['sessionCookiesTimeout'] = 120
+        node.setSettings(nodeData)
+
+        # # check if local directory login and password 
+        appid = str(node.getNodeSettings()["id"])
+
+        result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + cookie_file_name)
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' " + capture_file_name)
+        assert (search == 1)
+
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername == False)        
 
     @staticmethod
     def finalTearDown(self):
