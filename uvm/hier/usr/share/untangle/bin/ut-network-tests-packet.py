@@ -7,28 +7,19 @@ import signal
 import subprocess
 import sys
 import time
-import threading
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
 Max_file_time = 4 * 60 * 60 
-dump_writer = None
-exit_flag = False
 
 ##
 ## Capture all signals that should interrupt so 
 ## the writer process can be properly stopped.
 ##
 def signal_handler( signal, frame ):
-    global dump_writer
-    global exit_flag
-
-    exit_flag = True
-
-    if dump_writer != None:
-        dump_writer.terminate()
+    dump_writer.terminate()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -42,24 +33,15 @@ signal.signal(signal.SIGQUIT, signal_handler)
 ##
 class DumpWriter:	
     def start( self, arguments, timeout, file_name, error_file_name ):
-        global exit_flag
-
         args = shlex.split( arguments )
         args.insert( 0, tcpdump )
         args.append( "-w" )
         args.append( file_name )
  
         self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb') )
-        while timeout > 0 and not exit_flag:
-            timeout = timeout - 1
-            time.sleep(1)
-        self.terminate()
 
     def terminate(self):
-        process = self.process
-        self.process = None
-        if process != None:
-            process.terminate()
+        self.process.terminate()
 
 ##
 ## Read packet dump and output to stdout
@@ -112,7 +94,6 @@ class DumpReader:
 			
             if show_lines == 1:
                 print line.strip()
-                sys.stdout.flush()
         self.last_line_count = line_count
 
 ##
@@ -185,17 +166,16 @@ def main(argv):
 	
     dump_reader = DumpReader( filename, tcpdump_stderr_filename )
     dump_writer = DumpWriter()
-    thread = threading.Thread( target=dump_writer.start, args = ( arguments, timeout, filename, tcpdump_stderr_filename, ) )
-    thread.start()
+    dump_writer.start( arguments, timeout, filename, tcpdump_stderr_filename )
 	
-    while timeout > 0 and not exit_flag:
-        sys.stdout.flush()
+    while timeout > 0:
         dump_reader.header()
         dump_reader.read()
 
         timeout = timeout -1
         time.sleep(1) 
 
+    dump_writer.terminate()
     dump_reader.read()
     
     cleanup( path )
