@@ -540,21 +540,12 @@ class JavaMsgFmtTarget
   def build()
     ensureDirectory @dest
 
-    # ignore output of create_mofiles
-    $stderr2 = $stderr.clone
-    $stderr.reopen('/dev/null')
-
-    GetText::create_mofiles(false, @src, @mo_dest)
-
-    # reenable stderr
-    $stderr.reopen($stderr2)
-
     info "[msgfmt  ] #{@po_file} => #{@dest}official/#{@lang}/#{@basename}.mo"
 
-    command = "msgfmt --java2 -d #{@dest} -r \"i18n.official.#{@basename.gsub('-', '_')}\" -l #{@lang} #{@po_file}"
+    command = "msgfmt --java2 -d #{@dest} -r \"i18n.official.#{@basename.gsub('-', '_')}\" -l #{@lang} #{@po_file} 2> /dev/null"
     raise "msgfmt failed" unless Kernel.system command
 
-    command = "msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file}"
+    command = "msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file} 2> /dev/null"
     ensureDirectory "#{@dest}/official/#{@lang}"
     raise "msgfmt failed" unless Kernel.system command
   end
