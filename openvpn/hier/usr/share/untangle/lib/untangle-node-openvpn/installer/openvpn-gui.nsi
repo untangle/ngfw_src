@@ -1,7 +1,7 @@
 ; ****************************************************************************
 ; * Copyright (C) 2002-2010 OpenVPN Technologies, Inc.                       *
 ; * Copyright (C) 2012 Alon Bar-Lev <alon.barlev@gmail.com>                  *
-; * Copyright (C) 2014 Björn Gustavsson <bjorn@gustavsson.it>                *
+; * Copyright (C) 2014 BjÃ¶rn Gustavsson <bjorn@gustavsson.it>                *
 ; *  This program is free software; you can redistribute it and/or modify    *
 ; *  it under the terms of the GNU General Public License version 2          *
 ; *  as published by the Free Software Foundation.                           *

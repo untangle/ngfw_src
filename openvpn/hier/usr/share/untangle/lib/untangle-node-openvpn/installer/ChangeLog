@@ -67,7 +67,7 @@ Josh Cepek (2):
 Matthias Andree (1):
       Enable TCP_NODELAY configuration on FreeBSD.
 
-Samuli Sepp‰nen (4):
+Samuli Sepp√§nen (4):
       Removed ChangeLog.IPv6
       Added cross-compilation information INSTALL-win32.txt
       Updated README
@@ -386,7 +386,7 @@ Jonathan K. Bullard (2):
       Fix file access checks on commands
       Clarified the docs and help screen about what a 'cmd' is
 
-Samuli Sepp‰nen (1):
+Samuli Sepp√§nen (1):
       Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win32.txt
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
@@ -837,7 +837,7 @@ Robert Fischer (8):
       Update man page with info about --remote-random-hostname
       Added man page entry for --management-client
 
-Samuli Sepp‰nen (19):
+Samuli Sepp√§nen (19):
       Add man page entry for --redirect-private
       Change all CRLF linefeeds to LF linefeeds
       Fix a bug in devcon source code handling
