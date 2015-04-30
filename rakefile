@@ -45,7 +45,9 @@ end
 task :builduvmcore => :core do
   Rake::Task[:libuvmcore_so].invoke
 end
-task :installuvmcore => [:builduvmcore, :dest_uvmcore_so]
+task :installuvmcore => :builduvmcore do
+  Rake::Task[:dest_uvmcore_so].invoke
+end
 
 ## arch-indep tasks
 task :targets => :download do
