@@ -984,19 +984,22 @@ class NetworkTests(unittest2.TestCase):
     def test_130_sessionview(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
-        time.sleep(2) # since we launched netcat in background, give it a second to establish connection
-        result = uvmContext.sessionMonitor().getMergedSessions()
-        sessionList = result['list']
-        # find session generated with netcat in session table.
-        for i in range(len(sessionList)):
-            # print sessionList[i]
-            # print "------------------------------"
-            if (sessionList[i]['preNatClient'] == remote_control.clientIP) and \
-               (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
-               (sessionList[i]['postNatServerPort'] == 80) and \
-               (not sessionList[i]['bypassed']):
-                foundTestSession = True
-                break
+        loopLimit = 5
+        while ((not foundTestSession) and (loopLimit > 0)):
+            loopLimit -= 1
+            time.sleep(1)
+            result = uvmContext.sessionMonitor().getMergedSessions()
+            sessionList = result['list']
+            # find session generated with netcat in session table.
+            for i in range(len(sessionList)):
+                # print sessionList[i]
+                # print "------------------------------"
+                if (sessionList[i]['preNatClient'] == remote_control.clientIP) and \
+                   (sessionList[i]['postNatServer'] == test_untangle_com_ip) and \
+                   (sessionList[i]['postNatServerPort'] == 80) and \
+                   (not sessionList[i]['bypassed']):
+                    foundTestSession = True
+                    break
         remote_control.runCommand("pkill netcat")
         assert(foundTestSession)
         
