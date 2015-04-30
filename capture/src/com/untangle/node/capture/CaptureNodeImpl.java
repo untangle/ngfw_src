@@ -582,7 +582,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         return (0);
     }
 
-    public int userActivate(InetAddress address, String username, String agree)
+    public int userActivate(InetAddress address, String username, String agree, boolean anonymous)
     {
         if (agree.equals("agree") == false) {
             CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.FAILED);
@@ -592,7 +592,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
             return (1);
         }
 
-        captureUserTable.insertActiveUser(address, username, true);
+        captureUserTable.insertActiveUser(address, username, anonymous);
 
         CaptureUserEvent event = new CaptureUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptureUserEvent.EventType.LOGIN);
         logEvent(event);
@@ -608,7 +608,7 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
 
     public int userActivate(InetAddress address, String agree)
     {
-        return userActivate(address, "Anonymous", agree);
+        return userActivate(address, "Anonymous", agree, true);
     }
 
     public int userLogin(InetAddress address, String username)

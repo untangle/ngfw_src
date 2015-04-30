@@ -34,7 +34,7 @@ public interface CaptureNode extends Node
 
     int userAuthenticate(InetAddress address, String username, String password);
 
-    int userActivate(InetAddress address, String username, String agree);
+    int userActivate(InetAddress address, String username, String agree, boolean anonymous);
 
     int userActivate(InetAddress address, String agree);
 

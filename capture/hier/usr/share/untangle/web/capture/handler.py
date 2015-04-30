@@ -93,7 +93,7 @@ def index(req):
             cookie.expire()
         elif ((cookie != None) and
             (cookie.is_valid() == True) and 
-            (captureNode.userActivate(address,cookie.get_field("username"),"agree") == 0)):
+            (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
             # Cookie checks out.  Active them, let them through.
             if (len(captureSettings['redirectUrl']) != 0) and (captureSettings['redirectUrl'].isspace() == False):
                 target = str(captureSettings['redirectUrl'])
