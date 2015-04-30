@@ -98,6 +98,7 @@ class DumpReader:
 			
             if show_lines == 1:
                 print line.strip()
+                sys.stdout.flush()
         self.last_line_count = line_count
 
 ##
