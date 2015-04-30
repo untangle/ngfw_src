@@ -315,6 +315,9 @@ class ServletBuilder < Target
     @path = path
     @nodedeps = nodedeps
     @jsp_list = Set.new(jsp_list)
+    if path.kind_of?(Array) then
+      path = path[0]
+    end
     name = File.basename(path)
     @destRoot = package.getWebappDir(name)
 
@@ -491,6 +494,8 @@ class JavaCompilerTarget < Target
 end
 
 class JavaMsgFmtTarget
+  include Rake::DSL if defined?(Rake::DSL)
+
   attr_reader :filename
 
   def initialize(src, package, lang, po_file, dest, basename)
@@ -618,6 +623,9 @@ class JarTarget < Target
   end
 
   def JarTarget.buildCopyFilesTargets(package, basepaths, suffix, build_dir)
+    if not basepaths.kind_of?(Array) then
+      basepaths = [basepaths]
+    end
     moveSpecs = basepaths.map do |path|
       ms = []
 

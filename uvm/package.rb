@@ -31,7 +31,7 @@ uvm.registerTarget('python-jsonrpc3', cf)
 jts = []
 
 ## Bootstrap
-jts << JarTarget.build_target(uvm_lib, Jars::Base, 'bootstrap', "./uvm/bootstrap")
+jts << JarTarget.build_target(uvm_lib, Jars::Base, 'bootstrap', ["./uvm/bootstrap"])
 
 ## API
 jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm/api", 'version']))
@@ -41,24 +41,24 @@ BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), n
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::JFreeChart + 
   [ uvm_lib['bootstrap'], uvm_lib['api'], jnetcap['impl'], jvector['impl']]
 
-jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm/impl")
+jts << JarTarget.build_target(uvm_lib, deps, 'impl', ["./uvm/impl"])
 
 ## This little piggy doesn't go to the normal place.
-taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm/taglib")
+taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', ["./uvm/taglib"])
 BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", "uvm/servlets/library", [])
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", ["uvm/servlets/library"], [])
 
 deps=[]
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", "./uvm/servlets/webui", deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", ["./uvm/servlets/webui"], deps)
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", "./uvm/servlets/setup", deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps)
 
 # Ajax Tk
 #deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 deps=[]
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', "./uvm/servlets/blockpage", deps, [], [])
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps, [], [])
 
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)
 

@@ -95,7 +95,7 @@ class CBuilder
   ## defined in makeLibrary
   def initialize(buildEnv, env, includes = [])
     @env        = env
-    @objectArgs = [@env.objectFlags(includes + [buildEnv.include])].flatten
+    @objectArgs = [@env.objectFlags(includes + [buildEnv.include])].flatten.join(" ")
   end
 
   def makeObject(sourceFile, objectFile)
