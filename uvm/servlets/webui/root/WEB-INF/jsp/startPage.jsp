@@ -84,7 +84,7 @@
     <script type="text/javascript" src="script/untangle-node-capture/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-idps/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
