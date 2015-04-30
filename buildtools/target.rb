@@ -298,7 +298,7 @@ class CopyFiles < Target
       cp(src,dest)
     else
       File.open(dest, 'w') do |d|
-        File.open(src, 'r') do |s|
+        File.open(src, 'r', :encoding => "UTF-8") do |s|
           s.each_line do |l|
             filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
             d.puts(l)
