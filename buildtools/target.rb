@@ -294,11 +294,15 @@ class CopyFiles < Target
   
   private
   def filter_copy(src, dest, filterset)
-    File.open(dest, 'w') do |d|
-      File.open(src, 'r') do |s|
-        s.each_line do |l|
-          filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
-          d.puts(l)
+    if src =~ /(\.(gif|ico|jpg|png)|img_1|px)$/i then
+      cp(src,dest)
+    else
+      File.open(dest, 'w') do |d|
+        File.open(src, 'r') do |s|
+          s.each_line do |l|
+            filterset.each_key { |pat| l.gsub!(pat, filterset[pat]) }
+            d.puts(l)
+          end
         end
       end
     end
