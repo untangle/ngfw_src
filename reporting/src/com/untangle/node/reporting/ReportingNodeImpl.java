@@ -284,6 +284,29 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.reportingManagerNew;
     }
     
+    public String[] getColumnsForTable( String tableName )
+    {
+        ResultSet rs = null;
+
+        ArrayList<String> columnNames = new ArrayList<String>();        
+        try {
+            rs = getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
+
+            while(rs.next()){
+                String columnName = rs.getString(4);
+                //int    columnType = rs.getInt(5);
+                columnNames.add( columnName );
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve column names", e);
+            return null;
+        }
+
+        String[] array = new String[columnNames.size()];
+        array = columnNames.toArray(array);
+        return array;
+    }
+
     @Override
     protected PipelineConnector[] getConnectors()
     {

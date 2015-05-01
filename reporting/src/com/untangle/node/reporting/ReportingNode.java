@@ -31,6 +31,9 @@ public interface ReportingNode extends Node, HostnameLookup
 
     ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
 
+    String[] getColumnsForTable( String tableName );
+
+        
     // /**
     //  * WARNING
     //  * You must call getEventsResultSetCommit ALWAYS after calling this function
