@@ -1406,7 +1406,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleSsh = new FilterRule();
         filterRuleSsh.setReadOnly( true );
         filterRuleSsh.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
-        filterRuleSsh.setipv6_enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
+        filterRuleSsh.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
         filterRuleSsh.setReadOnly( true );
@@ -1424,7 +1424,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleHttpsWan = new FilterRule();
         filterRuleHttpsWan.setReadOnly( true );
         filterRuleHttpsWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
-        filterRuleHttpsWan.setipv6_enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
+        filterRuleHttpsWan.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
         filterRuleHttpsWan.setReadOnly( true );
@@ -1446,7 +1446,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleHttpsNonWan = new FilterRule();
         filterRuleHttpsNonWan.setReadOnly( true );
         filterRuleHttpsNonWan.setEnabled( true );
-        filterRuleHttpsNonWan.setipv6_enabled( true );
+        filterRuleHttpsNonWan.setIpv6Enabled( true );
         filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
         filterRuleHttpsNonWan.setBlocked( false );
         filterRuleHttpsNonWan.setReadOnly( true );
@@ -1468,7 +1468,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRulePing = new FilterRule();
         filterRulePing.setReadOnly( true );
         filterRulePing.setEnabled( true );
-        filterRulePing.setipv6_enabled( true );
+        filterRulePing.setIpv6Enabled( true );
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
         filterRulePing.setReadOnly( true );
@@ -1482,7 +1482,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleDns = new FilterRule();
         filterRuleDns.setReadOnly( true );
         filterRuleDns.setEnabled( true );
-        filterRuleDns.setipv6_enabled( true );
+        filterRuleDns.setIpv6Enabled( true );
         filterRuleDns.setDescription( "Allow DNS on non-WANs" );
         filterRuleDns.setBlocked( false );
         List<FilterRuleMatcher> ruleDnsMatchers = new LinkedList<FilterRuleMatcher>();
@@ -1503,7 +1503,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleDhcp = new FilterRule();
         filterRuleDhcp.setReadOnly( true );
         filterRuleDhcp.setEnabled( true );
-        filterRuleDhcp.setipv6_enabled( true );
+        filterRuleDhcp.setIpv6Enabled( true );
         filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
         filterRuleDhcp.setBlocked( false );
         filterRuleDhcp.setReadOnly( true );
@@ -1525,7 +1525,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleHttp = new FilterRule();
         filterRuleHttp.setReadOnly( true );
         filterRuleHttp.setEnabled( true );
-        filterRuleHttp.setipv6_enabled( true );
+        filterRuleHttp.setIpv6Enabled( true );
         filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
         filterRuleHttp.setBlocked( false );
         filterRuleHttp.setReadOnly( true );
@@ -1547,7 +1547,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleSnmp = new FilterRule();
         filterRuleSnmp.setReadOnly( true );
         filterRuleSnmp.setEnabled( true );
-        filterRuleSnmp.setipv6_enabled( true );
+        filterRuleSnmp.setIpv6Enabled( true );
         filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
         filterRuleSnmp.setBlocked( false );
         filterRuleSnmp.setReadOnly( true );
@@ -1569,7 +1569,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
         filterRuleAhEsp.setEnabled( true );
-        filterRuleAhEsp.setipv6_enabled( true );
+        filterRuleAhEsp.setIpv6Enabled( true );
         filterRuleAhEsp.setDescription( "Allow AH/ESP for IPsec" );
         filterRuleAhEsp.setBlocked( false );
         filterRuleAhEsp.setReadOnly( true );
@@ -1583,7 +1583,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleIke = new FilterRule();
         filterRuleIke.setReadOnly( true );
         filterRuleIke.setEnabled( true );
-        filterRuleIke.setipv6_enabled( true );
+        filterRuleIke.setIpv6Enabled( true );
         filterRuleIke.setDescription( "Allow IKE for IPsec" );
         filterRuleIke.setBlocked( false );
         filterRuleIke.setReadOnly( true );
@@ -1601,7 +1601,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleNatT = new FilterRule();
         filterRuleNatT.setReadOnly( true );
         filterRuleNatT.setEnabled( true );
-        filterRuleNatT.setipv6_enabled( true );
+        filterRuleNatT.setIpv6Enabled( true );
         filterRuleNatT.setDescription( "Allow NAT-T for IPsec" );
         filterRuleNatT.setBlocked( false );
         filterRuleNatT.setReadOnly( true );
@@ -1619,7 +1619,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleL2tp = new FilterRule();
         filterRuleL2tp.setReadOnly( true );
         filterRuleL2tp.setEnabled( true );
-        filterRuleL2tp.setipv6_enabled( true );
+        filterRuleL2tp.setIpv6Enabled( true );
         filterRuleL2tp.setDescription( "Allow L2TP" );
         filterRuleL2tp.setBlocked( false );
         filterRuleL2tp.setReadOnly( true );
@@ -1637,7 +1637,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleOpenVpn = new FilterRule();
         filterRuleOpenVpn.setReadOnly( true );
         filterRuleOpenVpn.setEnabled( true );
-        filterRuleOpenVpn.setipv6_enabled( true );
+        filterRuleOpenVpn.setIpv6Enabled( true );
         filterRuleOpenVpn.setDescription( "Allow OpenVPN" );
         filterRuleOpenVpn.setBlocked( false );
         filterRuleOpenVpn.setReadOnly( true );
@@ -1659,7 +1659,7 @@ public class NetworkManagerImpl implements NetworkManager
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
         filterRuleBlock.setEnabled( true );
-        filterRuleBlock.setipv6_enabled( true );
+        filterRuleBlock.setIpv6Enabled( true );
         filterRuleBlock.setDescription( "Block All" );
         filterRuleBlock.setBlocked( true );
         filterRuleBlock.setReadOnly( true );

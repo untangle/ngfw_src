@@ -170,7 +170,7 @@ Ext.define('Ung.grid.Panel', {
                 col.sortable = this.columnsDefaultSortable;
             }
             if(this.hasReadOnly && col.dataIndex != 'enabled' ) {
-                if(col.dataIndex != 'ipv6_enabled') {
+                if(col.dataIndex != 'ipv6Enabled') {
                 if(col.xtype == "checkcolumn") {
                     if (!col.listeners) {
                         col.listeners = {};
@@ -858,7 +858,7 @@ Ext.define('Ung.RowEditorWindow', {
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
             if(component.dataIndex != 'enabled' && this.grid.hasReadOnly) {
-                if(component.dataIndex != 'ipv6_enabled')
+                if(component.dataIndex != 'ipv6Enabled')
                 component.setDisabled(record.get("readOnly") === true);
             }
             return;

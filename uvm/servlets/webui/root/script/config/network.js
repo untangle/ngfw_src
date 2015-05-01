@@ -4524,7 +4524,7 @@ Ext.define('Webui.config.network', {
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
-                "ipv6_enabled": false,
+                "ipv6Enabled": false,
                 "blocked": false,
                 "description": ""
             },
@@ -4533,7 +4533,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'enabled'
             }, {
-                name: 'ipv6_enabled'
+                name: 'ipv6Enabled'
             }, {
                 name: 'blocked'
             }, {
@@ -4563,7 +4563,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkcolumn',
                 header: this.i18n._("IPv6"),
-                dataIndex: 'ipv6_enabled',
+                dataIndex: 'ipv6Enabled',
                 resizable: false,
                 width:55
             }, {
@@ -4596,7 +4596,7 @@ Ext.define('Webui.config.network', {
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
-                "ipv6_enabled": false,
+                "ipv6Enabled": false,
                 "blocked": false,
                 "readOnly": null,
                 "description": ""
@@ -4606,7 +4606,7 @@ Ext.define('Webui.config.network', {
             }, {
                 name: 'enabled'
             }, {
-                name: 'ipv6_enabled'
+                name: 'ipv6Enabled'
             }, {
                 name: 'blocked'
             }, {
@@ -4638,7 +4638,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkcolumn',
                 header: this.i18n._("IPv6"),
-                dataIndex: 'ipv6_enabled',
+                dataIndex: 'ipv6Enabled',
                 resizable: false,
                 width:55
             }, {
@@ -4677,7 +4677,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkbox',
                 name: "Enable IPv6 Support",
-                dataIndex: "ipv6_enabled",
+                dataIndex: "ipv6Enabled",
                 fieldLabel: this.i18n._("Enable IPv6 Support")
             }, {
                 xtype:'textfield',
@@ -4722,7 +4722,7 @@ Ext.define('Webui.config.network', {
             }, {
                 xtype:'checkbox',
                 name: "Enable IPv6 Support",
-                dataIndex: "ipv6_enabled",
+                dataIndex: "ipv6Enabled",
                 fieldLabel: this.i18n._("Enable IPv6 Support")
             }, {
                 xtype:'textfield',
