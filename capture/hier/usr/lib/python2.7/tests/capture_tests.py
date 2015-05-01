@@ -514,7 +514,7 @@ class CaptureTests(unittest2.TestCase):
         # variable for local test
         capture_file_name = "/tmp/capture_test_051.out"
         cookie_file_name = "/tmp/capture_test_051_cookie.txt"
-        cookie_timeout = 2
+        cookie_timeout = 60
 
         # Create Internal NIC capture rule with basic login page
         nodeData['captureRules']['list'].append(createCaptureInternalNicRule())

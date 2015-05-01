@@ -52,7 +52,7 @@ class HandlerCookie:
         }
         cookie = Cookie.MarshalCookie(self.cookie_key, value, secret=str(self.captureSettings["secretKey"]))
         cookie.path = "/"
-        cookie.expires = time.time() + self.captureSettings["sessionCookiesTimeout"]
+        cookie.expires = time.time() + int(self.captureSettings["sessionCookiesTimeout"])
         Cookie.add_cookie(self.req, cookie)
 
     def expire(self):
