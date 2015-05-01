@@ -48,7 +48,6 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean strictArpMode = true;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
-    private boolean blockIpv6Forwarding = false;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -132,9 +131,6 @@ public class NetworkSettings implements Serializable, JSONString
     public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
     public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
 
-    public boolean getBlockIpv6Forwarding() { return this.blockIpv6Forwarding; }
-    public void setBlockIpv6Forwarding( boolean newValue ) { this.blockIpv6Forwarding = newValue; }
-    
     public QosSettings getQosSettings() { return this.qosSettings; }
     public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }
 

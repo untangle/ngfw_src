@@ -26,16 +26,18 @@ public class FilterRule implements JSONString, Serializable
 
     private Integer ruleId;
     private boolean enabled = true;
+    private boolean ipv6_enabled = true;
     private boolean blocked = false;
     private Boolean readOnly = null;
     private String description;
     
     public FilterRule() { }
 
-    public FilterRule(boolean enabled, List<FilterRuleMatcher> matchers, boolean blocked, String description)
+    public FilterRule(boolean enabled, boolean ipv6_enabled, List<FilterRuleMatcher> matchers, boolean blocked, String description)
     {
         this.setMatchers(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
+        this.setipv6_enabled(Boolean.valueOf(ipv6_enabled));
         this.setBlocked(blocked);
         this.setDescription(description);
     }
@@ -47,7 +49,9 @@ public class FilterRule implements JSONString, Serializable
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }
 
     public boolean getEnabled() { return enabled; }
+    public boolean getipv6_enabled() { return ipv6_enabled; }
     public void setEnabled( boolean enabled ) { this.enabled = enabled; }
+    public void setipv6_enabled( boolean ipv6_enabled ) { this.ipv6_enabled = ipv6_enabled; }
 
     public String getDescription() { return description; }
     public void setDescription( String description ) { this.description = description; }
