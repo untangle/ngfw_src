@@ -589,6 +589,20 @@ Ext.define('Webui.config.network', {
                     this.winInterfaceStatus.helpAction();
                 },
                 scope: this
+            },'-',{
+                xtype: "button",
+                iconCls: 'icon-refresh',
+                text: this.i18n._("Refresh"),
+                handler: function() {
+                    this.gridIfconfigLists.reload();
+                    this.gridArpLists.reload();
+                    if(isWirelessInterface) {
+                        this.gridWirelessLists.reload();
+                    }
+                
+                    this.winInterfaceStatus.show();
+                },
+                scope : this
             },'->',{
                 name: "Close",
                 iconCls: 'cancel-icon',
