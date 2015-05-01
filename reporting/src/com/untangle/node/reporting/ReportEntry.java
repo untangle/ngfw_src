@@ -50,6 +50,8 @@ public class ReportEntry implements Serializable, JSONString
     private String description; /* A text description */
     private int displayOrder = 9999; /* The order to display this report entry (relative to others) */
     
+    private String units;
+    
     private boolean preCompileResults = false; /* if the results should be pre-compiled each night */
     private String table; /* table to query data from */
     private ReportEntryCondition[] conditions;
@@ -89,6 +91,9 @@ public class ReportEntry implements Serializable, JSONString
 
     public int getDisplayOrder() { return this.displayOrder; }
     public void setDisplayOrder( int newValue ) { this.displayOrder = newValue; }
+
+    public String getUnits() { return this.units; }
+    public void setUnits( String newValue ) { this.units = newValue; }
     
     public boolean getPreCompileResults() { return this.preCompileResults; }
     public void setPreCompileResults( boolean newValue ) { this.preCompileResults = newValue; }
@@ -223,89 +228,89 @@ public class ReportEntry implements Serializable, JSONString
     }
    
     static {
-        try {
-            ReportEntry entry;
-            ReportEntryCondition condition;
-            Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
-            Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
+        // try {
+        //     ReportEntry entry;
+        //     ReportEntryCondition condition;
+        //     Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
+        //     Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
             
-            entry = new ReportEntry();
-            entry.setEnabled( true );
-            entry.setReadOnly( true );
-            entry.setCategory("Web Filter");
-            entry.setTitle("Top Hosts (by violations)");
-            entry.setDescription("The number of web violations by each host.");
-            entry.setTable("http_events");
-            condition = new ReportEntryCondition();
-            condition.setColumn("sitefilter_flagged");
-            condition.setOperator("=");
-            condition.setValue("true");
-            entry.setConditions(new ReportEntryCondition[] { condition });
-            entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
-            entry.setPieSumColumn("count(*)");
-            entry.setPieGroupColumn("hostname");
-            entry.setOrderByColumn("value");
-            entry.setOrderDesc(Boolean.TRUE);
+        //     entry = new ReportEntry();
+        //     entry.setEnabled( true );
+        //     entry.setReadOnly( true );
+        //     entry.setCategory("Web Filter");
+        //     entry.setTitle("Top Hosts (by violations)");
+        //     entry.setDescription("The number of web violations by each host.");
+        //     entry.setTable("http_events");
+        //     condition = new ReportEntryCondition();
+        //     condition.setColumn("sitefilter_flagged");
+        //     condition.setOperator("=");
+        //     condition.setValue("true");
+        //     entry.setConditions(new ReportEntryCondition[] { condition });
+        //     entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
+        //     entry.setPieSumColumn("count(*)");
+        //     entry.setPieGroupColumn("hostname");
+        //     entry.setOrderByColumn("value");
+        //     entry.setOrderDesc(Boolean.TRUE);
 
-            logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-flagged.js", entry, false );
+        //     logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
+        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-flagged.js", entry, false );
 
-            entry = new ReportEntry();
-            entry.setEnabled( true );
-            entry.setReadOnly( true );
-            entry.setCategory("Web Filter");
-            entry.setTitle("Top Hosts (by requests)");
-            entry.setDescription("The number of web requests by each host.");
-            entry.setTable("http_events");
-            entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
-            entry.setPieSumColumn("count(*)");
-            entry.setPieGroupColumn("hostname");
-            entry.setOrderByColumn("value");
-            entry.setOrderDesc(Boolean.TRUE);
+        //     entry = new ReportEntry();
+        //     entry.setEnabled( true );
+        //     entry.setReadOnly( true );
+        //     entry.setCategory("Web Filter");
+        //     entry.setTitle("Top Hosts (by requests)");
+        //     entry.setDescription("The number of web requests by each host.");
+        //     entry.setTable("http_events");
+        //     entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
+        //     entry.setPieSumColumn("count(*)");
+        //     entry.setPieGroupColumn("hostname");
+        //     entry.setOrderByColumn("value");
+        //     entry.setOrderDesc(Boolean.TRUE);
 
-            logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-request.js", entry, false );
+        //     logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
+        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-request.js", entry, false );
             
-            entry = new ReportEntry();
-            entry.setEnabled( true );
-            entry.setReadOnly( true );
-            entry.setCategory("Web Filter");
-            entry.setTitle("Web Usage");
-            entry.setDescription("The number of web requests by each host.");
-            entry.setTable("http_events");
-            entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
-            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
-            entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
-            //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
-            entry.setOrderDesc(Boolean.FALSE);
+        //     entry = new ReportEntry();
+        //     entry.setEnabled( true );
+        //     entry.setReadOnly( true );
+        //     entry.setCategory("Web Filter");
+        //     entry.setTitle("Web Usage");
+        //     entry.setDescription("The number of web requests by each host.");
+        //     entry.setTable("http_events");
+        //     entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
+        //     entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
+        //     entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
+        //     //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
+        //     entry.setOrderDesc(Boolean.FALSE);
 
-            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage.js", entry, false );
+        //     logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
+        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage.js", entry, false );
 
-            entry = new ReportEntry();
-            entry.setEnabled( false );
-            entry.setReadOnly( false );
-            entry.setCategory("Web Filter");
-            entry.setTitle("Web Usage [1.2.3.4]");
-            entry.setDescription("The number of web requests by each host.");
-            entry.setTable("http_events");
-            condition = new ReportEntryCondition();
-            condition.setColumn("c_client_addr");
-            condition.setOperator("=");
-            condition.setValue("'1.2.3.4'");
-            entry.setConditions(new ReportEntryCondition[] { condition });
-            entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
-            entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
-            entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
-            //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
-            entry.setOrderDesc(Boolean.FALSE);
+        //     entry = new ReportEntry();
+        //     entry.setEnabled( false );
+        //     entry.setReadOnly( false );
+        //     entry.setCategory("Web Filter");
+        //     entry.setTitle("Web Usage [1.2.3.4]");
+        //     entry.setDescription("The number of web requests by each host.");
+        //     entry.setTable("http_events");
+        //     condition = new ReportEntryCondition();
+        //     condition.setColumn("c_client_addr");
+        //     condition.setOperator("=");
+        //     condition.setValue("'1.2.3.4'");
+        //     entry.setConditions(new ReportEntryCondition[] { condition });
+        //     entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
+        //     entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
+        //     entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
+        //     //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
+        //     entry.setOrderDesc(Boolean.FALSE);
 
-            logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-            UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage-host-example.js", entry, false );
+        //     logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
+        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage-host-example.js", entry, false );
              
-        } catch (Exception e) {
-            logger.warn("Exception.",e);
-        }
+        // } catch (Exception e) {
+        //     logger.warn("Exception.",e);
+        // }
         
     }
 }
