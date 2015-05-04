@@ -169,8 +169,7 @@ Ext.define('Ung.grid.Panel', {
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }
-            if(this.hasReadOnly && col.dataIndex != 'enabled' ) {
-                if(col.dataIndex != 'ipv6Enabled') {
+            if(this.hasReadOnly && col.dataIndex != 'enabled' && col.dataIndex != 'ipv6Enabled') {
                 if(col.xtype == "checkcolumn") {
                     if (!col.listeners) {
                         col.listeners = {};
@@ -183,7 +182,6 @@ Ext.define('Ung.grid.Panel', {
                             }
                         }
                     };
-                }
                 }
             }
         }

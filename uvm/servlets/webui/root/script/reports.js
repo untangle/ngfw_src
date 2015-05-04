@@ -15,7 +15,7 @@ Ext.define('Ung.panel.Reports', {
         if (!Ung.Main.isReportsAppInstalled()) {
             this.items = [{
                 xtype: 'component',
-                html: i18n._("Event Logs require the Reports application. Please install and enable the Reports application.")
+                html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
             }];
             this.callParent(arguments);
             return;
@@ -31,8 +31,18 @@ Ext.define('Ung.panel.Reports', {
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
         
-        var reportEntries = Ung.Main.getReportingManagerNew().getReportEntries(this.settingsCmp.displayName).list; //TODO: change to this.settingsCmp.name to be i18n proof
-        console.log(this.settingsCmp);
+        //var reportEntries = Ung.Main.getReportingManagerNew().getReportEntries(this.settingsCmp.displayName).list; //TODO: change to this.settingsCmp.name to be i18n proof
+        var reportEntriesStore = Ext.create('Ext.data.Store', {
+            fields: ["title"],
+            data: []
+        });
+        
+        Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.reportEntries = result.list;
+            reportEntriesStore.loadData(this.reportEntries);
+        }, this), this.settingsCmp.displayName);
+        
         this.items = [{
             region: 'west',
             title: i18n._("Select Report"),
@@ -43,10 +53,7 @@ Ext.define('Ung.panel.Reports', {
             floatable: false,
             xtype: 'grid',
             hideHeaders: true,
-            store: Ext.create('Ext.data.Store', {
-                fields: ["title"],
-                data: reportEntries
-            }),
+            store:  reportEntriesStore,
             columns: [{
                 dataIndex: 'title',
                 flex: 1,
@@ -136,14 +143,15 @@ Ext.define('Ung.panel.Reports', {
             }
             
             var data = result.list;
-            //console.log(data);
             var chart = {xtype: 'component', html: ""}, dataStore;
             if(reportEntry.type == 'PIE_GRAPH') {
-                var othersFn = function(val) {
-                    return (val==null)?i18n._("others"):val;
+                var descriptionFn = function(val, record) {
+                    var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("others") : record.get(reportEntry.pieGroupColumn);
+                    var value = (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(reportEntry.units);
+                    return title + ": " + value;
                 };
                 dataStore = Ext.create('Ext.data.JsonStore', {
-                    fields: [{name: reportEntry.pieGroupColumn, convert: othersFn}, {name:'value'} ],
+                    fields: [{name: "description", convert: descriptionFn }, {name:'value'} ],
                     data: data
                 }); 
 
@@ -180,7 +188,7 @@ Ext.define('Ung.panel.Reports', {
                         type: 'pie',
                         angleField: 'value',
                         label: {
-                            field: reportEntry.pieGroupColumn,
+                            field: "description",
                             calloutLine: {
                                 length: 60,
                                 width: 3
@@ -190,8 +198,12 @@ Ext.define('Ung.panel.Reports', {
                         highlight: true,
                         tooltip: {
                             trackMouse: true,
+                            style: 'background: #fff',
+                            showDelay: 0,
+                            dismissDelay: 0,
+                            hideDelay: 0,
                             renderer: function(storeItem, item) {
-                                this.setHtml(storeItem.get(reportEntry.pieGroupColumn) + ": "+ storeItem.get('value') +" Hits");
+                                this.setHtml(storeItem.get("description"));
                             }
                         }
                     }]
@@ -269,7 +281,7 @@ Ext.define('Ung.panel.Reports', {
                         grid: true,
                         minimum: 0,
                         renderer: function (v) {
-                            return v + ' Hits';
+                            return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
                         }
                     }, {
                         type: 'category',
@@ -298,7 +310,7 @@ Ext.define('Ung.panel.Reports', {
                             style: 'background: #fff',
                             renderer: function(storeItem, item) {
                                 var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + ' Hits');
+                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units));
                             }
                         }
                     }]
@@ -365,6 +377,13 @@ Ext.define('Ung.panel.Reports', {
         return false;
     },
     listeners: {
+        "activate": {
+            fn: function() {
+                if(!this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
+                    this.loadReport(this.reportEntries[0]);
+                }
+            }
+        },
         "deactivate": {
             fn: function() {
                 if(this.autoRefreshEnabled) {
@@ -372,5 +391,5 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
         }
-    },
+    }
 });

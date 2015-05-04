@@ -444,6 +444,16 @@ Ext.define('Ung.Util', {
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
     },
+    bytesRenderer: function(bytes) {
+        var units = [i18n._("bytes"), i18n._("Kbytes"), i18n._("Mbytes"), i18n._("Gbytes")];
+        var units_itr = 0;
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+            bytes = bytes/1000;
+            units_itr++;
+        }
+        bytes = Math.round(bytes*100)/100;
+        return bytes + " " + units[units_itr];
+    },
     resizeWindows: function() {
         Ext.WindowMgr.each(Ung.Util.doSize);
     },
