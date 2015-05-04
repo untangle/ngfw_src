@@ -1,12 +1,4 @@
 #! /bin/bash
 
-##
-## Maintain visible status for node.
-## This code can be removed after 11.x release
-##
-if [ -f /usr/share/untangle/bin/idps-beta ] ; then
-    /usr/share/untangle/bin/idps-beta checkset
-fi
-
 exit 0
 
