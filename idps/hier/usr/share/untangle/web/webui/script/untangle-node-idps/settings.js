@@ -1067,6 +1067,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 dataIndex: 'source_port',
                 filter: {
                     type: 'numeric'
+                },
+                renderer: function(value, metaData, record, row, col, store, gridView){
+                    if( record.get("protocol") == 1 ){
+                        return "";
+                    }
+                    return value;
                 }
             }, {
                 hidden: visibleColumns.indexOf('dest_addr') < 0,
@@ -1082,6 +1088,12 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 dataIndex: 'dest_port',
                 filter: {
                     type: 'numeric'
+                },
+                renderer: function(value, metaData, record, row, col, store, gridView){
+                    if( record.get("protocol") == 1 ){
+                        return "";
+                    }
+                    return value;
                 }
             }, {
                 hidden: visibleColumns.indexOf('protocol') < 0,
@@ -1089,8 +1101,16 @@ Ext.define('Webui.untangle-node-idps.settings', {
                 width: 70,
                 sortable: true,
                 dataIndex: 'protocol',
-                filter: {
-                    type: 'numeric'
+                renderer: function(value, metaData, record, row, col, store, gridView){
+                    switch(value){
+                        case 1:
+                            return i18n._("ICMP");
+                        case 17:
+                            return i18n._("UDP");
+                        case 6:
+                            return i18n._("TCP");
+                    }
+                    return value;
                 }
             }, {
                 hidden: visibleColumns.indexOf('blocked') < 0,
