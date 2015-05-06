@@ -516,9 +516,9 @@ Ext.define("Ung.Main", {
         Ext.getCmp('policyManagerMenuItem').disable();
         var nodePreviews = Ext.clone(Ung.Main.nodePreviews);
         this.destoyNodes();
+        delete rpc.reportsAppInstalledAndEnabled;
         this.nodes=[];
         var i, node;
-
         for(i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeSettings=rpc.rackView.instances.list[i];
             var nodeProperties=rpc.rackView.nodeProperties.list[i];

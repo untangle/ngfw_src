@@ -1,5 +1,6 @@
 Ext.define('Webui.untangle-node-reporting.settings', {
     extend:'Ung.NodeWin',
+    hasReports: false,
     panelStatus: null,
     panelGeneration: null,
     panelEmail: null,
@@ -15,17 +16,30 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildEmail();
         this.buildSyslog();
         this.buildHostnameMap();
-        this.buildDatabase();
+        this.buildReportEntries();
         this.buildAlertRules();
         this.buildAlertEventLog();
-
+        var panels = [this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.gridReportEntries, this.panelAlertRules, this.gridAlertEventLog ];
+        
         // only show DB settings if set to something other than localhost
-        if (this.getSettings().dbHost != "localhost" || true) {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog, this.panelDatabase]);
-        } else {
-            this.buildTabPanel([this.panelStatus, this.panelGeneration, this.panelEmail, this.panelSyslog, this.gridHostnameMap, this.panelAlertRules, this.gridAlertEventLog ]);
+        if (this.getSettings().dbHost != "localhost") {
+            this.buildDatabase();
+            panels.push(this.panelDatabase);
         }
+        
+        this.buildTabPanel(panels);
         this.callParent(arguments);
+    },
+    getReportsMatchers: function () {
+        return [
+            {name:"SQL_CONDITION",displayName: this.i18n._("Sql condition"), type: "editor", editor: Ext.create('Ung.SqlConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false, formatValue: function(value) {
+                var result= "";
+                if(value) {
+                    result = value.field + " " + value.comparator + " " + value.value;
+                }
+                return result;
+            }}
+        ];
     },
     getAlertRuleMatchers: function () {
         return [
@@ -713,6 +727,203 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }]
         });
     },
+    // Manage Reports Panel
+    buildReportEntries: function() {
+        var categoryList=[];
+        var nodeProperties, allNodeProperties;
+        try {
+            allNodeProperties = rpc.nodeManager.allNodeProperties().map;
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        for (var key in allNodeProperties) {
+            if (allNodeProperties.hasOwnProperty(key)) {
+                nodeProperties = allNodeProperties[key];
+              if(!nodeProperties.invisible || nodeProperties.displayName == 'Shield')
+                  categoryList.push(nodeProperties.displayName);
+            }
+          }
+        categoryList.sort();
+        this.gridReportEntries= Ext.create('Ung.grid.Panel',{
+            name: 'Manage Reports',
+            settingsCmp: this,
+            hasReadOnly: true,
+            addAtTop: false,
+            title: this.i18n._("Manage Reports"),
+            features: [{
+                ftype: 'grouping',
+            }],
+            groupField: 'category',
+            recordJavaClass: "com.untangle.node.reporting.ReportEntry",
+            emptyRow: {
+                "uniqueId": null,
+                "enabled": true,
+                "readOnly": false,
+                "displayOrder": 500,
+                "preCompileResults": false
+            },
+            //dataFn: Ung.Main.getReportingManagerNew().getReportEntries,
+            dataProperty: "reportEntries",
+            sortField: 'displayOrder',
+            columnsDefaultSortable: false,
+            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'preCompileResults', 'table', 'conditions', 
+                     'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
+            columns: [{
+                header: this.i18n._("Title"),
+                width: 230,
+                dataIndex: 'title'
+            }, {
+                xtype:'checkcolumn',
+                header: this.i18n._("Enabled"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width: 55
+            }, {
+                header: this.i18n._("Type"),
+                width: 90,
+                dataIndex: 'type'
+            }, {
+                header: this.i18n._("Description"),
+                width: 200,
+                dataIndex: 'description',
+                flex: 1
+            }, {
+                header: this.i18n._("Units"),
+                width: 90,
+                dataIndex: 'units'
+            }, {
+                header: this.i18n._("Display Order"),
+                width: 90,
+                dataIndex: 'displayOrder'
+            }]
+        });
+        this.gridReportEntries.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            rowEditorLabelWidth: 150,
+            inputLines: [{
+                xtype: 'combo',
+                name: 'Category',
+                dataIndex: "category",
+                allowBlank: false,
+                editable: false,
+                fieldLabel: this.i18n._('Category'),
+                queryMode: 'local',
+                width: 400,
+                store: categoryList
+            }, {
+                xtype:'textfield',
+                name: "Title",
+                dataIndex: "title",
+                allowBlank: false,
+                fieldLabel: this.i18n._("Title"),
+                emptyText: this.i18n._("[enter title]"),
+                width: 500
+            }, {
+                xtype:'checkbox',
+                name: "Enabled",
+                dataIndex: "enabled",
+                fieldLabel: this.i18n._("Enabled")
+            }, {
+                xtype:'textfield',
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: this.i18n._("Description"),
+                emptyText: this.i18n._("[no description]"),
+                width: 500
+            }, {
+                xtype: 'numberfield',
+                name: 'Display Order',
+                fieldLabel: this.i18n._('Display Order'),
+                dataIndex: "displayOrder",
+                allowDecimals: false,
+                minValue: 0,
+                maxValue: 100000,
+                allowBlank: false,
+                width: 400
+            }, {
+                xtype:'textfield',
+                name: "Table",
+                dataIndex: "table",
+                allowBlank: false,
+                fieldLabel: this.i18n._("Table"),
+                emptyText: this.i18n._("[enter table]"),
+                width: 500
+            }, {
+                xtype:'textfield',
+                name: "Units",
+                dataIndex: "units",
+                fieldLabel: this.i18n._("Units"),
+                emptyText: this.i18n._("[no units]"),
+                width: 500
+            }, {
+                xtype: 'combo',
+                name: 'Type',
+                dataIndex: "type",
+                allowBlank: false,
+                editable: false,
+                fieldLabel: this.i18n._('Type'),
+                queryMode: 'local',
+                width: 400,
+                store: ["TEXT","PIE_GRAPH","TIME_GRAPH"]
+            }, /*{
+                xtype:'fieldset',
+                title: this.i18n._("If all of the following conditions are met:"),
+                items:[{
+                    xtype:'rulebuilder',
+                    settingsCmp: this,
+                    javaClass: "java.util.ArrayList",
+                    dataIndex: "conditions",
+                    matchers: this.getReportsMatchers()
+                }]
+            }, */{
+                xtype:'textfield',
+                name: "pieGroupColumn",
+                dataIndex: "pieGroupColumn",
+                fieldLabel: this.i18n._("Pie Group Column"),
+                width: 500
+            }, {
+                xtype:'textfield',
+                name: "pieSumColumn",
+                dataIndex: "pieSumColumn",
+                fieldLabel: this.i18n._("Pie Sum Column"),
+                width: 500
+            }, {
+                xtype: 'combo',
+                name: 'timeDataInterval',
+                dataIndex: "timeDataInterval",
+                editable: false,
+                fieldLabel: this.i18n._('Time Data Interval'),
+                queryMode: 'local',
+                width: 400,
+                store: ["AUTO","SECOND","MINUTE", "HOUR", "DAY", "WEEK", "MONTH"]
+            }, {
+                xtype:'textfield',
+                name: "timeDataColumns",
+                dataIndex: "timeDataColumns",
+                fieldLabel: this.i18n._("Time Data Columns"),
+                width: 500
+            }, {
+                xtype:'textfield',
+                name: "orderByColumn",
+                dataIndex: "orderByColumn",
+                fieldLabel: this.i18n._("Order By Column"),
+                width: 500
+            },{
+                xtype: 'combo',
+                name: 'orderDesc',
+                dataIndex: "orderDesc",
+                editable: false,
+                fieldLabel: this.i18n._('Order'),
+                queryMode: 'local',
+                width: 350,
+                store: [["", this.i18n._("None")], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
+            }, ],
+            syncComponents: function () {
+//                var sendAlert=this.down('checkbox[dataIndex=alert]').getValue();
+//                this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendAlert);
+//                this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
+            }
+        }));
+    },    
     // AlertRules Panel
     buildAlertRules: function() {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
@@ -928,6 +1139,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     beforeSave: function(isApply,handler) {
         this.getSettings().reportingUsers.list = this.gridReportingUsers.getList();
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
+        this.getSettings().reportEntries.list = this.gridReportEntries.getList();
         this.getSettings().alertRules.list = this.gridAlertRules.getList();
 
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();

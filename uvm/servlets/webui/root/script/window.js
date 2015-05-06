@@ -144,6 +144,7 @@ Ext.define("Ung.SettingsWin", {
     tabs: null,
     dirtyFlag: false,
     hasApply: true,
+    hasReports: true,
     layout: 'fit',
     // build Tab panel from an array of tab items
     constructor: function(config) {
@@ -159,6 +160,13 @@ Ext.define("Ung.SettingsWin", {
     },
     buildTabPanel: function(itemsArray) {
         Ext.get("racks").hide();
+        if(this.hasReports) {
+            this.panelReports =  Ext.create('Ung.panel.Reports',{
+                category: this.displayName
+            });
+            itemsArray.push(this.panelReports);
+        }
+        
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,

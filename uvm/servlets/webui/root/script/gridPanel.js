@@ -169,7 +169,7 @@ Ext.define('Ung.grid.Panel', {
             if( col.sortable == null) {
                 col.sortable = this.columnsDefaultSortable;
             }
-            if(this.hasReadOnly && col.dataIndex != 'enabled' && col.dataIndex != 'ipv6Enabled') {
+            if(this.hasReadOnly && (this.changableFields || []).indexOf(col.dataIndex) == -1) {
                 if(col.xtype == "checkcolumn") {
                     if (!col.listeners) {
                         col.listeners = {};
@@ -206,7 +206,7 @@ Ext.define('Ung.grid.Panel', {
             fields: this.fields
         });
         this.subCmps.push(model);
-        var storeData = this.dataProperty? this.settingsCmp.settings[this.dataProperty].list:
+        var storeData = this.dataProperty? this.settingsCmp.settings[this.dataProperty]?this.settingsCmp.settings[this.dataProperty].list:[]:
                         this.dataExpression? eval("this.settingsCmp."+this.dataExpression):
                         this.storeData || [];
         this.store = Ext.create('Ext.data.Store',{
@@ -855,8 +855,7 @@ Ext.define('Ung.RowEditorWindow', {
             component.suspendEvents();
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
-            if(component.dataIndex != 'enabled' && this.grid.hasReadOnly) {
-                if(component.dataIndex != 'ipv6Enabled')
+            if(this.grid.hasReadOnly && (this.grid.changableFields || []).indexOf(component.dataIndex) == -1) {
                 component.setDisabled(record.get("readOnly") === true);
             }
             return;

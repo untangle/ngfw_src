@@ -4603,6 +4603,7 @@ Ext.define('Webui.config.network', {
             settingsCmp: this,
             hasReorder: true,
             hasReadOnly: true,
+            changableFields: ['enabled', 'ipv6Enabled'],
             addAtTop: false,
             title: this.i18n._("Input Filter Rules"),
             dataProperty:'inputFilterRules',
@@ -4683,6 +4684,7 @@ Ext.define('Webui.config.network', {
         this.gridForwardFilterRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
             sizeToParent: true,
             helpSource: 'network_filter_rules',
+            rowEditorLabelWidth: 160,
             inputLines:[{
                 xtype:'checkbox',
                 name: "Enable Forward Filter Rule",

@@ -1,6 +1,5 @@
 Ext.define('Ung.panel.Reports', {
     extend: 'Ext.panel.Panel',
-    settingsCmp: null,
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
     beforeDestroy: function() {
@@ -14,7 +13,9 @@ Ext.define('Ung.panel.Reports', {
         }
         if (!Ung.Main.isReportsAppInstalled()) {
             this.items = [{
-                xtype: 'component',
+                region: 'center',
+                xtype: 'panel',
+                bodyPadding: 10,
                 html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
             }];
             this.callParent(arguments);
@@ -31,7 +32,6 @@ Ext.define('Ung.panel.Reports', {
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
         
-        //var reportEntries = Ung.Main.getReportingManagerNew().getReportEntries(this.settingsCmp.displayName).list; //TODO: change to this.settingsCmp.name to be i18n proof
         var reportEntriesStore = Ext.create('Ext.data.Store', {
             fields: ["title"],
             data: []
@@ -41,7 +41,7 @@ Ext.define('Ung.panel.Reports', {
             if(Ung.Util.handleException(exception)) return;
             this.reportEntries = result.list;
             reportEntriesStore.loadData(this.reportEntries);
-        }, this), this.settingsCmp.displayName);
+        }, this), this.category);
         
         this.items = [{
             region: 'west',
@@ -146,7 +146,7 @@ Ext.define('Ung.panel.Reports', {
             var chart = {xtype: 'component', html: ""}, dataStore;
             if(reportEntry.type == 'PIE_GRAPH') {
                 var descriptionFn = function(val, record) {
-                    var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("others") : record.get(reportEntry.pieGroupColumn);
+                    var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("none") : record.get(reportEntry.pieGroupColumn);
                     var value = (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(reportEntry.units);
                     return title + ": " + value;
                 };
