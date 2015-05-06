@@ -41,6 +41,7 @@ public class ReportEntry implements Serializable, JSONString
             AUTO
             };
 
+    private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
 
@@ -72,8 +73,11 @@ public class ReportEntry implements Serializable, JSONString
         return jO.toString();
     }
 
+    public String getUniqueId() { return uniqueId; }
+    public void setUniqueId( String newValue ) { this.uniqueId = newValue; }
+
     public boolean getEnabled() { return enabled; }
-    public void setEnabled( boolean enabled ) { this.enabled = enabled; }
+    public void setEnabled( boolean newValue ) { this.enabled = newValue; }
 
     public Boolean getReadOnly() { return this.readOnly; }
     public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }

@@ -3,7 +3,7 @@
  */
 package com.untangle.node.reporting;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -15,13 +15,13 @@ import com.untangle.uvm.SqlCondition;
  */
 public interface ReportingManagerNew
 {
-    ArrayList<ReportEntry> getReportEntries();
+    List<ReportEntry> getReportEntries();
 
-    ArrayList<ReportEntry> getReportEntries( String category );
+    List<ReportEntry> getReportEntries( String category );
     
-    void setCustomReportEntries( ArrayList<ReportEntry> newEntries );
+    void setReportEntries( List<ReportEntry> newEntries );
 
-    ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
+    List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 
-    ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
+    List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
 }

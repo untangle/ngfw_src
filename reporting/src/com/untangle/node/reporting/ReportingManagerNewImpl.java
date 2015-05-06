@@ -3,7 +3,9 @@
  */
 package com.untangle.node.reporting;
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,8 +21,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 {
     private static final Logger logger = Logger.getLogger(ReportingManagerNewImpl.class);
 
-    private ArrayList<ReportEntry> systemReportEntries;
-    private ArrayList<ReportEntry> customReportEntries;
+    private LinkedList<ReportEntry> reportEntries;
 
     private ReportingNodeImpl node;
 
@@ -46,20 +47,19 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         loadReportEntries();
     }
 
-    public ArrayList<ReportEntry> getReportEntries()
+    public List<ReportEntry> getReportEntries()
     {
-        ArrayList<ReportEntry> allReportEntries = new ArrayList<ReportEntry>( this.systemReportEntries );
-        allReportEntries.addAll( this.customReportEntries );
+        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( this.reportEntries );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
         return allReportEntries;
     }
 
-    public ArrayList<ReportEntry> getReportEntries( String category )
+    public List<ReportEntry> getReportEntries( String category )
     {
-        ArrayList<ReportEntry> allReportEntries = getReportEntries();
-        ArrayList<ReportEntry> entries = new ArrayList<ReportEntry>();
+        List<ReportEntry> allReportEntries = getReportEntries();
+        LinkedList<ReportEntry> entries = new LinkedList<ReportEntry>();
 
         for ( ReportEntry entry: allReportEntries ) {
             if ( category == null || category.equals( entry.getCategory() ) )
@@ -68,20 +68,21 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return entries;
     }
     
-    public void setCustomReportEntries( ArrayList<ReportEntry> newEntries )
+    public void setReportEntries( List<ReportEntry> newEntries )
     {
-        this.customReportEntries = newEntries;
-
+        this.reportEntries = new LinkedList<ReportEntry>(newEntries);
+        updateSystemReportEntries( this.reportEntries, false );
+        
         try {
             String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "custom_report_entries_" + nodeID + ".js";
-            UvmContextFactory.context().settingsManager().save( settingsFileName, this.customReportEntries );
+            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
+            UvmContextFactory.context().settingsManager().save( settingsFileName, this.reportEntries );
         } catch ( Exception e ) {
             logger.warn( "Failed to save report entries.", e );
         }
     }
 
-    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
         String sql = entry.toSql( startDate, endDate, extraConditions );
 
@@ -97,7 +98,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return results;
     }
     
-    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
@@ -107,31 +108,31 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     {
         try {
             String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "custom_report_entries_" + nodeID + ".js";
+            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
 
             logger.info("Loading report entries from file... ");
-            this.customReportEntries = UvmContextFactory.context().settingsManager().load( ArrayList.class, settingsFileName );
+            this.reportEntries = UvmContextFactory.context().settingsManager().load( LinkedList.class, settingsFileName );
 
-            if ( this.customReportEntries == null ) {
-                this.customReportEntries = new ArrayList<ReportEntry>();
+            if ( this.reportEntries == null ) {
+                this.reportEntries = new LinkedList<ReportEntry>();
             }
 
-            this.systemReportEntries = loadSystemReportEntries();
+            updateSystemReportEntries( reportEntries, true );
 
         } catch (Exception e) {
             logger.warn( "Failed to load report entries", e );
         }
     }
 
-    private ArrayList<ReportEntry> loadSystemReportEntries()
+    private void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
-        ArrayList<ReportEntry> systemReportEntries = new ArrayList<ReportEntry>();
+        boolean updates = false;
         
         String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/reports/*.js' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
         if (result.getResult() != 0) {
             logger.warn("Failed to find report entries: \"" + cmd + "\" -> "  + result.getResult());
-            return systemReportEntries;
+            return;
         }
         try {
             boolean added = false;
@@ -141,10 +142,19 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                 logger.info("Reading file: " + line);
                 try {
                     ReportEntry newEntry = UvmContextFactory.context().settingsManager().load( ReportEntry.class, line );
-                    systemReportEntries.add( newEntry );
 
-                    //Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
-                    //logger.info("XXX DEBUG: " + newEntry.toSql(oneDayAgo, null));
+                    ReportEntry oldEntry = findReportEntry( existingEntries, newEntry.getUniqueId() );
+                    if ( oldEntry == null ) {
+                        logger.info( "Report Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
+                        existingEntries.add( newEntry );
+                        updates = true;
+                    } else {
+                        boolean changed = updateReportEntry( existingEntries, newEntry, oldEntry );
+                        if ( changed ) {
+                            updates = true;
+                            logger.info( "Report Entries Update: Updated \"" + newEntry.getTitle() + "\"");
+                        }
+                    }
                 } catch (Exception e) {
                     logger.warn( "Failed to read report entry from: " + line, e );
                 }
@@ -153,8 +163,48 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             logger.warn( "Failed to check for new entries.", e );
         }
 
-        return systemReportEntries;
+        if ( updates && saveIfChanged ) {
+            logger.warn("XXXXXX");
+            setReportEntries( existingEntries );
+        }
+        
+        return;
     }
 
+    private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
+    {
+        if ( entries == null || uniqueId == null ) {
+            logger.warn("Invalid arguments: " + uniqueId, new Exception());
+            return null;
+        }
+        
+        for ( ReportEntry entry : entries ) {
+            if (uniqueId.equals( entry.getUniqueId() ) )
+                return entry;
+        }
+        return null;
+    }
+
+    private boolean updateReportEntry( List<ReportEntry> entries, ReportEntry newEntry, ReportEntry oldEntry )
+    {
+        String newEntryStr = newEntry.toJSONString();
+        String oldEntryStr = oldEntry.toJSONString();
+
+        // no changed are needed if two are identical
+        if ( oldEntryStr.equals( newEntryStr ) )
+            return false;
+
+        // remove old entry
+        if ( ! entries.remove( oldEntry ) ) {
+            logger.warn("Failed to update report entry: " + newEntry.getUniqueId());
+            return false;
+        }
+
+        // copy "changeable" attributes from old settings, replace old entry with new
+        newEntry.setEnabled( oldEntry.getEnabled() );
+        entries.add( newEntry );
+
+        return true;
+    }
     
 }
