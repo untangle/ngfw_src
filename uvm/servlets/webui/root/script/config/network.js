@@ -441,7 +441,7 @@ Ext.define('Webui.config.network', {
             hasEdit: false,
             initialLoad: function() {}, //Don't load automatically
             dataFn: function(handler) {
-                var arpCommand = "arp -n | grep "+this.symbolicDev;
+                var arpCommand = "arp -n | grep "+this.symbolicDev+" | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt";
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var lines = Ext.isEmpty(result) ? []: result.split("\n");
@@ -495,10 +495,12 @@ Ext.define('Webui.config.network', {
             dataFn: function(handler) {
                 var dnsmasqCommand = "cat /var/lib/misc/dnsmasq.leases";
                 var connectionsCommand = "/sbin/iw dev "+this.systemDev+" station dump | grep 'Station\\|bytes\\|packets' |tr '\\t' ' ' ";
+                var arpCommand = "cat /tmp/arp.txt";
                 var addressMap = {};
 
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
+
                     var lines = Ext.isEmpty(result) ? []: result.split("\n");
                     var lparts;
                     for ( i = 0 ; i < lines.length ; i++ ) {
@@ -506,8 +508,20 @@ Ext.define('Webui.config.network', {
                             lparts = lines[i].split(/\s+/);
                             addressMap[lparts[1]] = lparts[2];
                         }
-
                     }
+                }, this), dnsmasqCommand);
+
+                Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var lines = Ext.isEmpty(result) ? []: result.split("\n");
+                    var lparts, connections = [];
+                    for (var i = 0 ; i < lines.length ; i++ ) {
+                        if ( !Ext.isEmpty(lines[i]) ) {
+                            lparts = lines[i].split(/\s+/);
+                            addressMap[lparts[2]] = lparts[0];
+                        }
+                    }
+
                     Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         var lines = Ext.isEmpty(result) ? []: result.split("\n");
@@ -529,7 +543,7 @@ Ext.define('Webui.config.network', {
                         }
                         handler({list: connections});
                     }, this), connectionsCommand);
-                }, this), dnsmasqCommand);
+                }, this), arpCommand);
             }, 
             fields: [{
                 name: "macAddress"
