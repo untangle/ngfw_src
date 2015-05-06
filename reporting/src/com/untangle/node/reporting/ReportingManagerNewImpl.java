@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SqlCondition;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {
@@ -80,14 +81,25 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
     }
 
-    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
+    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
-        String sql = entry.toSql( startDate, endDate );
+        String sql = entry.toSql( startDate, endDate, extraConditions );
 
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("SQL              : " + sql);
-        
-        return ReportingNodeImpl.eventReader.getEvents( sql, limit );
+
+        long t0 = System.currentTimeMillis();
+        ArrayList<JSONObject> results = ReportingNodeImpl.eventReader.getEvents( sql, limit );
+        long t1 = System.currentTimeMillis();
+
+        logger.info("Query Time      : " + String.format("%5d",(t1 - t0)) + " ms");
+
+        return results;
+    }
+    
+    public ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
+    {
+        return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
     
     @SuppressWarnings("unchecked")

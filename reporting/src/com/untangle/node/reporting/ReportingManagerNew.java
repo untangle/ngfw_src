@@ -8,6 +8,8 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import com.untangle.uvm.SqlCondition;
+
 /**
  * The API for interacting/viewing/editing reports
  */
@@ -20,4 +22,6 @@ public interface ReportingManagerNew
     void setCustomReportEntries( ArrayList<ReportEntry> newEntries );
 
     ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
+
+    ArrayList<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
 }

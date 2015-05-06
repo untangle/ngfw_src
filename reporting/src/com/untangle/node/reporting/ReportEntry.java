@@ -14,6 +14,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SqlCondition;
 
 /**
  * The settings for an individual report entry (graph)
@@ -54,7 +55,7 @@ public class ReportEntry implements Serializable, JSONString
     
     private boolean preCompileResults = false; /* if the results should be pre-compiled each night */
     private String table; /* table to query data from */
-    private ReportEntryCondition[] conditions;
+    private SqlCondition[] conditions;
     
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
@@ -101,8 +102,8 @@ public class ReportEntry implements Serializable, JSONString
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
 
-    public ReportEntryCondition[] getConditions() { return this.conditions; }
-    public void setConditions( ReportEntryCondition[] newValue ) { this.conditions = newValue; }
+    public SqlCondition[] getConditions() { return this.conditions; }
+    public void setConditions( SqlCondition[] newValue ) { this.conditions = newValue; }
     
     public String getPieGroupColumn() { return this.pieGroupColumn; }
     public void setPieGroupColumn( String newValue ) { this.pieGroupColumn = newValue; }
@@ -127,7 +128,7 @@ public class ReportEntry implements Serializable, JSONString
         return toSql( startDate, endDate, null );
     }
 
-    public String toSql( Date startDate, Date endDate, ReportEntryCondition[] extraConditions )
+    public String toSql( Date startDate, Date endDate, SqlCondition[] extraConditions )
     {
         if ( endDate == null )
             endDate = new Date(); // now
@@ -151,12 +152,12 @@ public class ReportEntry implements Serializable, JSONString
                 " WHERE " + dateCondition;
 
             if ( getConditions() != null ) {
-                for ( ReportEntryCondition condition : getConditions() ) {
+                for ( SqlCondition condition : getConditions() ) {
                     pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
             if ( extraConditions != null ) {
-                for ( ReportEntryCondition condition : extraConditions ) {
+                for ( SqlCondition condition : extraConditions ) {
                     pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
@@ -184,12 +185,12 @@ public class ReportEntry implements Serializable, JSONString
                 " WHERE " + dateCondition;
 
             if ( getConditions() != null ) {
-                for ( ReportEntryCondition condition : getConditions() ) {
+                for ( SqlCondition condition : getConditions() ) {
                     time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
             if ( extraConditions != null ) {
-                for ( ReportEntryCondition condition : extraConditions ) {
+                for ( SqlCondition condition : extraConditions ) {
                     time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
                 }
             }
@@ -230,7 +231,7 @@ public class ReportEntry implements Serializable, JSONString
     static {
         // try {
         //     ReportEntry entry;
-        //     ReportEntryCondition condition;
+        //     SqlCondition condition;
         //     Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
         //     Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
             
@@ -241,11 +242,11 @@ public class ReportEntry implements Serializable, JSONString
         //     entry.setTitle("Top Hosts (by violations)");
         //     entry.setDescription("The number of web violations by each host.");
         //     entry.setTable("http_events");
-        //     condition = new ReportEntryCondition();
+        //     condition = new SqlCondition();
         //     condition.setColumn("sitefilter_flagged");
         //     condition.setOperator("=");
         //     condition.setValue("true");
-        //     entry.setConditions(new ReportEntryCondition[] { condition });
+        //     entry.setConditions(new SqlCondition[] { condition });
         //     entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
         //     entry.setPieSumColumn("count(*)");
         //     entry.setPieGroupColumn("hostname");
@@ -294,11 +295,11 @@ public class ReportEntry implements Serializable, JSONString
         //     entry.setTitle("Web Usage [1.2.3.4]");
         //     entry.setDescription("The number of web requests by each host.");
         //     entry.setTable("http_events");
-        //     condition = new ReportEntryCondition();
+        //     condition = new SqlCondition();
         //     condition.setColumn("c_client_addr");
         //     condition.setOperator("=");
         //     condition.setValue("'1.2.3.4'");
-        //     entry.setConditions(new ReportEntryCondition[] { condition });
+        //     entry.setConditions(new SqlCondition[] { condition });
         //     entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
         //     entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
         //     entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
