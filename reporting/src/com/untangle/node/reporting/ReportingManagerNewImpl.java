@@ -21,8 +21,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 {
     private static final Logger logger = Logger.getLogger(ReportingManagerNewImpl.class);
 
-    private LinkedList<ReportEntry> reportEntries;
-
     private ReportingNodeImpl node;
 
     private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
@@ -43,13 +41,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     public ReportingManagerNewImpl( ReportingNodeImpl node )
     {
         this.node = node;
-
-        loadReportEntries();
     }
 
     public List<ReportEntry> getReportEntries()
     {
-        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( this.reportEntries );
+        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( node.getSettings().getReportEntries() );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
@@ -70,16 +66,12 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     public void setReportEntries( List<ReportEntry> newEntries )
     {
-        this.reportEntries = new LinkedList<ReportEntry>(newEntries);
-        updateSystemReportEntries( this.reportEntries, false );
-        
-        try {
-            String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
-            UvmContextFactory.context().settingsManager().save( settingsFileName, this.reportEntries );
-        } catch ( Exception e ) {
-            logger.warn( "Failed to save report entries.", e );
-        }
+        LinkedList<ReportEntry> newReportEntries = new LinkedList<ReportEntry>(newEntries);
+        updateSystemReportEntries( newReportEntries, false );
+
+        ReportingSettings settings = this.node.getSettings();
+        settings.setReportEntries( newReportEntries );
+        node.setSettings( settings );
     }
 
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
@@ -103,30 +95,11 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
     
-    @SuppressWarnings("unchecked")
-    private void loadReportEntries()
-    {
-        try {
-            String nodeID = node.getNodeSettings().getId().toString();
-            String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reporting/" + "report_entries_" + nodeID + ".js";
-
-            logger.info("Loading report entries from file... ");
-            this.reportEntries = UvmContextFactory.context().settingsManager().load( LinkedList.class, settingsFileName );
-
-            if ( this.reportEntries == null ) {
-                this.reportEntries = new LinkedList<ReportEntry>();
-            }
-
-            updateSystemReportEntries( reportEntries, true );
-
-        } catch (Exception e) {
-            logger.warn( "Failed to load report entries", e );
-        }
-    }
-
-    private void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
+    protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
+        if ( existingEntries == null )
+            existingEntries = new LinkedList<ReportEntry>();
         
         String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/reports/*.js' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
@@ -164,7 +137,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         }
 
         if ( updates && saveIfChanged ) {
-            logger.warn("XXXXXX");
             setReportEntries( existingEntries );
         }
         

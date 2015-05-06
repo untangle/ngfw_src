@@ -3,6 +3,7 @@
  */
 package com.untangle.node.reporting;
 
+import java.util.List;
 import java.util.LinkedList;
 import java.io.Serializable;
 
@@ -43,6 +44,8 @@ public class ReportingSettings implements Serializable, JSONString
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
+
+    private List<ReportEntry> reportEntries;
     
     public ReportingSettings() { }
 
@@ -84,6 +87,10 @@ public class ReportingSettings implements Serializable, JSONString
 
     public boolean isSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
+
+    public List<ReportEntry> getReportEntries() { return reportEntries; }
+    public void setReportEntries( List<ReportEntry> newValue ) { this.reportEntries = newValue; }
+    
 
     /**
      * Syslog destination hostname.

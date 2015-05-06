@@ -349,6 +349,11 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             settings.setAlertRules( defaultAlertRules() );
         }
 
+        /**
+         * Report updates
+         */
+        reportingManagerNew.updateSystemReportEntries( settings.getReportEntries(), true );
+        
         /* intialize schema (if necessary) */
         this.createSchemas();
 
