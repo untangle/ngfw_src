@@ -254,7 +254,7 @@ Ext.define('Ung.panel.Reports', {
                         x: 10,
                         y: 40
                     }],
-                    tbar: [ '->', {
+                    /*tbar: [ '->', {
                         xtype: 'segmentedbutton',
                         width: 200,
                         items: [{
@@ -272,7 +272,7 @@ Ext.define('Ung.panel.Reports', {
                                 chart.redraw(); 
                             }, this)
                         }
-                    }],
+                    }],*/
                     interactions: ['itemhighlight'],
                     axes: [{
                         type: 'numeric',
@@ -295,7 +295,7 @@ Ext.define('Ung.panel.Reports', {
                         }
                     }],
                     series: [{
-                        type: 'bar',
+                        type: 'bar3d',
                         axis: 'left',
                         title: axesFields,
                         xField: 'time_trunc',

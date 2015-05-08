@@ -30,17 +30,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.buildTabPanel(panels);
         this.callParent(arguments);
     },
-    getReportsMatchers: function () {
-        return [
-            {name:"SQL_CONDITION",displayName: this.i18n._("Sql condition"), type: "editor", editor: Ext.create('Ung.SqlConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false, formatValue: function(value) {
-                var result= "";
-                if(value) {
-                    result = value.field + " " + value.comparator + " " + value.value;
-                }
-                return result;
-            }}
-        ];
-    },
     getAlertRuleMatchers: function () {
         return [
             {name:"FIELD_CONDITION",displayName: this.i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, allowInvert: false, allowMultiple: true, allowBlank: false, formatValue: function(value) {
@@ -742,8 +731,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
               if(!nodeProperties.invisible || nodeProperties.displayName == 'Shield')
                   categoryList.push(nodeProperties.displayName);
             }
-          }
+        }
         categoryList.sort();
+        console.log(this.settings.reportEntries.list);
         this.gridReportEntries= Ext.create('Ung.grid.Panel',{
             name: 'Manage Reports',
             settingsCmp: this,
@@ -797,6 +787,60 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 dataIndex: 'displayOrder'
             }]
         });
+        this.gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
+            name: 'IPv4 Aliases',
+            height: 180,
+            width: '100%',
+            settingsCmp: this,
+            hasEdit: false,
+            hasImportExport: false,
+            dataIndex: 'conditions',
+            columnsDefaultSortable: false,
+            recordJavaClass: "com.untangle.uvm.node.SqlCondition",
+            emptyRow: {
+                "column": "",
+                "value": "",
+                "operator": ""
+            },
+            fields: ["column", "value", "operator"],
+            columns: [{
+                header: this.i18n._("Column"),
+                dataIndex: 'column',
+                width: 200,
+                editor: {
+                    xtype: 'textfield',
+                    emptyText: this.i18n._("[enter column]"),
+                    allowBlank: false
+                }
+            }, {
+                header: this.i18n._("Operator"),
+                dataIndex: 'operator',
+                width: 100,
+                editor: {
+                    xtype: 'textfield',
+                    emptyText: this.i18n._("[enter operator]"),
+                    allowBlank: false
+                }
+            }, {
+                header: this.i18n._("Value"),
+                dataIndex: 'value',
+                flex: 1,
+                width: 200,
+                editor : {
+                    xtype: 'textfield',
+                    emptyText: this.i18n._("[enter value]"),
+                    allowBlank: false
+                }
+            }],
+            setValue: function (val) {
+                var data = val || [];
+                this.reload({data:data});
+            },
+            getValue: function () {
+                return this.getList();
+            }
+        });
+        
         this.gridReportEntries.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             rowEditorLabelWidth: 150,
             inputLines: [{
@@ -864,17 +908,11 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 queryMode: 'local',
                 width: 400,
                 store: ["TEXT","PIE_GRAPH","TIME_GRAPH"]
-            }, /*{
+            }, {
                 xtype:'fieldset',
                 title: this.i18n._("If all of the following conditions are met:"),
-                items:[{
-                    xtype:'rulebuilder',
-                    settingsCmp: this,
-                    javaClass: "java.util.ArrayList",
-                    dataIndex: "conditions",
-                    matchers: this.getReportsMatchers()
-                }]
-            }, */{
+                items:[this.gridSqlConditionsEditor]
+            }, {
                 xtype:'textfield',
                 name: "pieGroupColumn",
                 dataIndex: "pieGroupColumn",
@@ -1140,6 +1178,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         this.getSettings().reportingUsers.list = this.gridReportingUsers.getList();
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
         this.getSettings().reportEntries.list = this.gridReportEntries.getList();
+        //console.log(this.getSettings().reportEntries.list);
         this.getSettings().alertRules.list = this.gridAlertRules.getList();
 
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();

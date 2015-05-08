@@ -144,7 +144,6 @@ Ext.define("Ung.SettingsWin", {
     tabs: null,
     dirtyFlag: false,
     hasApply: true,
-    hasReports: true,
     layout: 'fit',
     // build Tab panel from an array of tab items
     constructor: function(config) {
@@ -289,6 +288,7 @@ Ext.define("Ung.SettingsWin", {
 // Node Settings Window
 Ext.define("Ung.NodeWin", {
     extend: "Ung.SettingsWin",
+    hasReports: true,
     node: null,
     constructor: function(config) {
         this.id = "nodeWin_" + config.name + "_" + rpc.currentPolicy.policyId;
