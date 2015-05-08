@@ -160,7 +160,7 @@ class IdpsInterface:
         """
         global node
 
-        time.sleep(30)
+        time.sleep(35)
         flush_events()
         query = None
         for q in node.getEventQueries():
@@ -171,7 +171,6 @@ class IdpsInterface:
         logged = False
         blocked = False
         for event in events["list"]:
-            print event
             if event["msg"] == rule["msg"] and str(event["sig_id"]) == rule["sid"]:
                 return event
 
