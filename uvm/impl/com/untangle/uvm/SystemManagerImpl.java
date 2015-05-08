@@ -310,8 +310,9 @@ public class SystemManagerImpl implements SystemManager
 
     public void upgrade()
     {
-        UvmContextFactory.context().execManager().exec( UPGRADE_SCRIPT );
-        return; /* probably never returns because usually upgrade process kills this process */
+        /* launch upgrade and return */
+        UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT );
+        return;
     }
 
     public boolean upgradesAvailable( boolean forceUpdate )
