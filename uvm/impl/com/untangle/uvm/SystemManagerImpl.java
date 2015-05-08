@@ -310,9 +310,14 @@ public class SystemManagerImpl implements SystemManager
 
     public void upgrade()
     {
-        /* launch upgrade and return */
-        UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT );
-        return;
+        try {
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT );
+            reader.waitFor();
+        } catch (Exception e) {
+            logger.warn("Upgrade exception:",e);
+        }
+        /* probably will never return as the upgrade usually kills the untangle-vm if it is upgraded */
+        return; 
     }
 
     public boolean upgradesAvailable( boolean forceUpdate )
