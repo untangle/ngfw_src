@@ -583,11 +583,11 @@ Ext.define('Webui.config.network', {
                 header: this.i18n._("Tx Packets"),
                 dataIndex:'txpackets',
                 width: 150
-            }],
+            }]
         });
         
         this.winInterfaceStatus = Ext.create('Ung.EditWindow', {
-            helpSource: 'network_interface_connections',
+            helpSource: 'network_interface_status',
             breadcrumbs: [{
                 title: this.i18n._("Interface"),
                 action: Ext.bind(function() {
