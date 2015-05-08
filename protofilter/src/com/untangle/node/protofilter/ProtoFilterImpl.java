@@ -12,6 +12,9 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.NodeSettings;
@@ -21,8 +24,6 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 
 public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 {
@@ -55,17 +56,10 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         this.connector = UvmContextFactory.context().pipelineFoundry().create("protofilter", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "SELECT * FROM reports.sessions " + 
-                                               "WHERE policy_id = :policyId " +
-                                               "AND protofilter_protocol IS NOT NULL " +
-                                               "ORDER BY time_stamp DESC");
-
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                   "SELECT * FROM reports.sessions " + 
-                                                   "WHERE policy_id = :policyId " +
-                                                   "AND protofilter_blocked IS TRUE " +
-                                                   "ORDER BY time_stamp DESC");
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("protofilter_protocol","is","NOT NULL") });
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("protofilter_blocked","is","TRUE") });
     }
 
     // ProtoFilter methods ----------------------------------------------------

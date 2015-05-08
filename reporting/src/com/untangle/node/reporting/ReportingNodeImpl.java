@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -76,11 +77,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
 
-        this.interestingEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                                        "SELECT * FROM reports.alerts " + 
-                                                        "WHERE true " +
-                                                        "ORDER BY time_stamp DESC");
-        
+        this.interestingEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "alerts", new SqlCondition[]{});
     }
 
     public void setSettings( final ReportingSettings newSettings )
@@ -240,19 +237,19 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.eventWriter.getWriteDelaySec();
     }
     
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final int limit)
+    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
-        return ReportingNodeImpl.eventReader.getEvents( query, policyId, limit, null, null );
+        return ReportingNodeImpl.eventReader.getEvents( query, policyId, extraConditions, limit, null, null );
     }
     
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit)
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, null, null );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, extraConditions, limit, null, null );
     }
     
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final int limit, final Date startDate, final Date endDate)
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
     {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, limit, startDate, endDate );
+        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, extraConditions, limit, startDate, endDate );
     }
     
     public Connection getDbConnection()
@@ -645,7 +642,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 logger.warn("reporting node not found");
                 return;
             }
-            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, -1, startDate, endDate);
+            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, null, -1, startDate, endDate);
             toCsv( resultSetReader, resp, columnListStr, name );
         }
     }

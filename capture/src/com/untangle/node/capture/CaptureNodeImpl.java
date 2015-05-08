@@ -18,13 +18,17 @@ import java.io.File;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.Token;
-import com.untangle.node.http.ReplacementGenerator;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.Subscription;
@@ -34,12 +38,9 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.node.http.ReplacementGenerator;
 
 public class CaptureNodeImpl extends NodeBase implements CaptureNode
 {
@@ -108,64 +109,26 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.httpConnector = UvmContextFactory.context().pipelineFoundry().create("capture-http", this, null, new CaptureHttpHandler( this) , Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 30);
         this.connectors = new PipelineConnector[] { trafficConnector, httpsConnector, httpConnector };
         
-        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "ORDER BY time_stamp DESC");
-
-        this.userSuccessQuery = new EventLogQuery(I18nUtil.marktr("Login Success"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'LOGIN' " +
-                "ORDER BY time_stamp DESC");
-
-        this.userFailureQuery = new EventLogQuery(I18nUtil.marktr("Login Failure"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'FAILED' " +
-                "ORDER BY time_stamp DESC");
-
-        this.userTimeoutQuery = new EventLogQuery(I18nUtil.marktr("Session Timeout"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'TIMEOUT' " +
-                "ORDER BY time_stamp DESC");
-
-        this.userInactiveQuery = new EventLogQuery(I18nUtil.marktr("Idle Timeout"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'INACTIVE' " +
-                "ORDER BY time_stamp DESC");
-
-        this.userLogoutQuery = new EventLogQuery(I18nUtil.marktr("User Logout"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'USER_LOGOUT' " +
-                "ORDER BY time_stamp DESC");
-
-        this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),
-                "SELECT * FROM reports.capture_user_events " +
-                "WHERE policy_id = :policyId " +
-                "AND event_info = 'ADMIN_LOGOUT' " +
-                "ORDER BY time_stamp DESC");
-
-        this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),
-                "SELECT * FROM reports.sessions " +
-                "WHERE policy_id = :policyId " +
-                "AND capture_blocked IS TRUE " +
-                "ORDER BY time_stamp DESC");
-
-        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),
-                "SELECT * FROM reports.sessions " +
-                "WHERE policy_id = :policyId " +
-                "AND capture_blocked IS FALSE " +
-                "ORDER BY time_stamp DESC");
-
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                "SELECT * FROM reports.sessions " +
-                "WHERE policy_id = :policyId " +
-                "AND capture_blocked IS NOT NULL " +
-                "ORDER BY time_stamp DESC");
+        this.userEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),"capture_user_events",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId") });
+        this.userSuccessQuery = new EventLogQuery(I18nUtil.marktr("Login Success"),"capture_user_events",
+                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'LOGIN'") });
+        this.userFailureQuery = new EventLogQuery(I18nUtil.marktr("Login Failure"),"capture_user_events",
+                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'FAILED'") });
+        this.userTimeoutQuery = new EventLogQuery(I18nUtil.marktr("Session Timeout"),"capture_user_events",
+                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'TIMEOUT'") });
+        this.userInactiveQuery = new EventLogQuery(I18nUtil.marktr("Idle Timeout"),"capture_user_events",
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'INACTIVE'") });
+        this.userLogoutQuery = new EventLogQuery(I18nUtil.marktr("User Logout"),"capture_user_events",
+                                                 new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'USER_LOGOUT'") });
+        this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),"capture_user_events",
+                                                  new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'ADMIN_LOGOUT'") });
+        this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),"sessions",
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","TRUE") });
+        this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),"sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","FALSE") });
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),"sessions",
+                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","NOT NULL") });
     }
 
 // THIS IS FOR ECLIPSE - @formatter:on

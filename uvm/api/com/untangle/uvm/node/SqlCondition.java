@@ -1,7 +1,7 @@
 /**
  * $Id: SqlCondition.java,v 1.00 2015/02/27 19:23:29 dmorris Exp $
  */
-package com.untangle.uvm;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 
@@ -18,6 +18,15 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
+
+    public SqlCondition() {}
+    
+    public SqlCondition( String column, String operator, String value )
+    {
+        this.column = column;
+        this.operator = operator;
+        this.value = value;
+    }
     
     public String getColumn() { return this.column; }
     public void setColumn( String newValue ) { this.column = newValue; }
@@ -41,6 +50,7 @@ public class SqlCondition implements Serializable, JSONString
         case "between":
         case "like":
         case "in":
+        case "is":
             break;
         default:
             throw new RuntimeException("Unknown SQL condition operator: " + newValue);

@@ -8,7 +8,7 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
-import com.untangle.uvm.SqlCondition;
+import com.untangle.uvm.node.SqlCondition;
 
 /**
  * The API for interacting/viewing/editing reports

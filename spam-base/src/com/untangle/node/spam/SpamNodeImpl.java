@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.vnet.NodeBase;
@@ -94,30 +95,21 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         this.tarpitConnector = UvmContextFactory.context().pipelineFoundry().create("spam-smtp", this, null, this.tarpitHandler, Fitting.SMTP_STREAM, Fitting.SMTP_STREAM, Affinity.CLIENT, 11);
         this.connectors = new PipelineConnector[] { smtpConnector, tarpitConnector };
         
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
-                                               "SELECT * FROM reports.mail_addrs " +
-                                               " WHERE addr_kind IN ('T', 'C')" +
-                                               " AND " + vendorTag + "_action IS NOT NULL" +
-                                               " AND policy_id = :policyId" + 
-                                               " ORDER BY time_stamp DESC");
-        this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
-                                                "SELECT * FROM reports.mail_addrs " +
-                                                " WHERE " + vendorTag + "_is_spam IS TRUE" + 
-                                                " AND addr_kind IN ('T', 'C')" +
-                                                " AND policy_id = :policyId" + 
-                                                " ORDER BY time_stamp DESC");
-        this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
-                                                       "SELECT * FROM reports.mail_addrs " +
-                                                       " WHERE " + vendorTag + "_action = 'Q'" + 
-                                                       " AND addr_kind IN ('T', 'C')" +
-                                                       " AND policy_id = :policyId" + 
-                                                       " ORDER BY time_stamp DESC");
-        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"),
-                                                  "SELECT * FROM reports.spam_smtp_tarpit_events " +
-                                                  "WHERE vendor_name = '" + vendorTag + "' " +
-                                                  "AND policy_id = :policyId " +
-                                                  "ORDER BY time_stamp DESC");
-
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"), "mail_addrs",
+                                               new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                   new SqlCondition(vendorTag + "_action","is","NOT NULL"),
+                                                                   new SqlCondition("policy_id","=",":policyId") });
+        this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"), "mail_addrs",
+                                                new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                    new SqlCondition(vendorTag + "_is_spam","is","TRUE"),
+                                                                    new SqlCondition("policy_id","=",":policyId") });
+        this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"), "mail_addrs",
+                                                       new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                           new SqlCondition(vendorTag + "_action","=","'Q'"),
+                                                                           new SqlCondition("policy_id","=",":policyId") });
+        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"), "spam_smtp_tarpit_events",
+                                                  new SqlCondition[]{ new SqlCondition("vendor_name","=","'"+vendorTag+"'"),
+                                                                      new SqlCondition("policy_id","=",":policyId") });
         loadGreyList();
 
         synchronized( this ) {

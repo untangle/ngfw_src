@@ -363,7 +363,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'Blocked Web Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -384,7 +384,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'Flagged Web Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
@@ -403,7 +403,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Web Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 

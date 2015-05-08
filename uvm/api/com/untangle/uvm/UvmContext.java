@@ -18,6 +18,7 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -327,17 +328,17 @@ public interface UvmContext
     /**
      * Query events in the reports database
      */
-    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
+    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database
      */
-    Object getEventsResultSet( final String query, final Long policyId, final int limit );
+    Object getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database, within a given date range
      */
-    Object getEventsForDateRangeResultSet( final String query, final Long policyId, final int limit, final Date startDate, final Date endDate );
+    Object getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
     
     /**
      * Get URLs

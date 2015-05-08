@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.NodeMetric;
@@ -47,13 +48,8 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 1);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.scannedEventsQuery = new EventLogQuery(I18nUtil.marktr("Scanned Sessions"),
-                                                    "SELECT * FROM reports.sessions " + 
-                                                    "ORDER BY time_stamp DESC");
-        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Sessions"),
-                                                    "SELECT * FROM reports.sessions " + 
-                                                    "WHERE shield_blocked IS TRUE " +
-                                                    "ORDER BY time_stamp DESC");
+        this.scannedEventsQuery = new EventLogQuery(I18nUtil.marktr("Scanned Sessions"), "sessions", new SqlCondition[]{});
+        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Sessions"), "sessions", new SqlCondition[]{ new SqlCondition("shield_blocked","is","true") });
     }
 
     public void setSettings(final ShieldSettings newSettings)

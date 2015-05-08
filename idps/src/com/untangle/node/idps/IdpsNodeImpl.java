@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
@@ -91,14 +92,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "SELECT * FROM reports.idps_events " + 
-                                               "ORDER BY time_stamp DESC");
-
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                               "SELECT * FROM reports.idps_events " + 
-                                               "WHERE blocked IS TRUE " +
-                                               "ORDER BY time_stamp DESC");
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "idps_events", new SqlCondition[]{});
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "idps_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }

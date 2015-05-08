@@ -82,7 +82,7 @@ class UvmTests(unittest2.TestCase):
                     helpSource = match.group(1)
                     assert(helpSource)
 
-                    url = "http://www.untangle.com/docs/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=10.0.0&webui=true&lang=en"
+                    url = "http://www.untangle.com/docs/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=11.0.0&webui=true&lang=en"
                     print "Checking %s = %s " % (helpSource, url)
                     ret = urllib2.urlopen( url )
                     time.sleep(.1) # dont flood wiki

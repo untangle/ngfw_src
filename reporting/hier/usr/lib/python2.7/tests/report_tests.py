@@ -417,7 +417,7 @@ class ReportTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,5)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
@@ -480,7 +480,7 @@ class ReportTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,5)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)

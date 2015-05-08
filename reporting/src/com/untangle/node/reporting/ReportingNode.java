@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.node.SqlCondition;
 
 public interface ReportingNode extends Node, HostnameLookup
 {
@@ -29,17 +30,7 @@ public interface ReportingNode extends Node, HostnameLookup
     
     Connection getDbConnection();
 
-    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final int limit );
+    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
 
     String[] getColumnsForTable( String tableName );
-
-        
-    // /**
-    //  * WARNING
-    //  * You must call getEventsResultSetCommit ALWAYS after calling this function
-    //  * getEventsResultSetCommit will call commit() on the SQL transaction
-    //  * If you forget to call it, it will maintain an open transaction on that table
-    //  * which will stop other queries (and vacuuming) from taking place
-    //  */
-    // ResultSet getEventsResultSet( final String query, final Long policyId, final int limit );
 }

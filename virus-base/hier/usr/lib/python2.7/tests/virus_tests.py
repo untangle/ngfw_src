@@ -137,7 +137,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getFtpEventQueries():
             if q['name'] == 'Infected Ftp Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         found = global_functions.check_events( events.get('list'), 5, 
@@ -162,7 +162,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getFtpEventQueries():
             if q['name'] == 'Infected Ftp Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "s_server_addr", ftp_server_IP, 
@@ -181,7 +181,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getWebEventQueries():
             if q['name'] == 'Infected Web Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -198,7 +198,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getWebEventQueries():
             if q['name'] == 'Clean Web Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host", "test.untangle.com", 
@@ -215,7 +215,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getFtpEventQueries():
             if q['name'] == 'Infected Ftp Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "fedexvirus.zip",
@@ -231,7 +231,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getFtpEventQueries():
             if q['name'] == 'Clean Ftp Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "uri", "test.zip",
@@ -256,7 +256,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getMailEventQueries():
             if q['name'] == 'Infected Email Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com", 
@@ -285,7 +285,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getMailEventQueries():
             if q['name'] == 'Clean Email Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 
@@ -316,7 +316,7 @@ class VirusTests(unittest2.TestCase):
         for q in node.getMailEventQueries():
             if q['name'] == 'Clean Email Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                             "addr", "junk@test.untangle.com", 

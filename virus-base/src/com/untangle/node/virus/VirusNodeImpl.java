@@ -15,10 +15,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeMetric;
@@ -29,6 +29,7 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.node.http.HeaderToken;
 
 /**
@@ -146,54 +147,33 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
         String nodeName = getName();
 
-        this.httpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Web Events"),
-                                                        " SELECT * FROM reports.http_events " + 
-                                                        " WHERE " + nodeName + "_clean IS NOT NULL" + 
-                                                        " AND policy_id = :policyId" + 
-                                                        " ORDER BY time_stamp DESC");
-        this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
-                                                        " SELECT * FROM reports.http_events " + 
-                                                        " WHERE " + nodeName + "_clean IS FALSE" + 
-                                                        " AND policy_id = :policyId" + 
-                                                        " ORDER BY time_stamp DESC");
-        this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"),
-                                                     " SELECT * FROM reports.http_events " + 
-                                                     " WHERE " + nodeName + "_clean IS TRUE" + 
-                                                     " AND policy_id = :policyId" + 
-                                                     " ORDER BY time_stamp DESC");
-        this.mailScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Email Events"),
-                                                     " SELECT * FROM reports.mail_addrs " + 
-                                                        " WHERE addr_kind IN ('T', 'C')" +
-                                                        " AND " + nodeName + "_clean IS NOT NULL " + 
-                                                        " AND policy_id = :policyId" + 
-                                                        " ORDER BY time_stamp DESC");
-        this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
-                                                     " SELECT * FROM reports.mail_addrs " + 
-                                                        " WHERE addr_kind IN ('T', 'C')" +
-                                                        " AND " + nodeName + "_clean IS FALSE" + 
-                                                        " AND policy_id = :policyId" + 
-                                                        " ORDER BY time_stamp DESC");
-        this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
-                                                     " SELECT * FROM reports.mail_addrs " + 
-                                                     " WHERE addr_kind IN ('T', 'C')" +
-                                                     " AND " + nodeName + "_clean IS TRUE" + 
-                                                     " AND policy_id = :policyId" + 
-                                                     " ORDER BY time_stamp DESC");
-        this.ftpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Ftp Events"),
-                                                    " SELECT * FROM reports.ftp_events " + 
-                                                    " WHERE " + nodeName + "_clean IS NOT NULL" + 
-                                                    " AND policy_id = :policyId" + 
-                                                    " ORDER BY time_stamp DESC");
-        this.ftpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Ftp Events"),
-                                                    " SELECT * FROM reports.ftp_events " + 
-                                                    " WHERE " + nodeName + "_clean IS FALSE" + 
-                                                    " AND policy_id = :policyId" + 
-                                                    " ORDER BY time_stamp DESC");
-        this.ftpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Ftp Events"),
-                                                     " SELECT * FROM reports.ftp_events " + 
-                                                     " WHERE " + nodeName + "_clean IS TRUE" + 
-                                                     " AND policy_id = :policyId" + 
-                                                     " ORDER BY time_stamp DESC");
+        this.httpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Web Events"), "http_events",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","NOT NULL") });
+        this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"), "http_events",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","FALSE") });
+        this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"), "http_events",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_clean","is","TRUE") });
+        this.mailScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Email Events"),"mail_addrs",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                    new SqlCondition(nodeName+"_clean","is","NOT NULL") });
+        this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"), "mail_addrs",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                    new SqlCondition(nodeName+"_clean","is","FALSE") });
+        this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"), "mail_addrs",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                    new SqlCondition("addr_kind","in","('T', 'C')"),
+                                                                    new SqlCondition(nodeName+"_clean","is","TRUE") });
+        this.ftpScannedEventQuery = new EventLogQuery(I18nUtil.marktr("Scanned Ftp Events"), "ftp_events",
+                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                          new SqlCondition(nodeName+"_clean","is","NOT NULL") });
+        this.ftpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Ftp Events"), "ftp_events",
+                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                          new SqlCondition(nodeName+"_clean","is","FALSE") });
+        this.ftpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Ftp Events"), "ftp_events",
+                                                      new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"),
+                                                                          new SqlCondition(nodeName+"_clean","is","TRUE") });
     }
 
     // VirusNode methods -------------------------------------------------

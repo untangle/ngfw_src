@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeMetric;
@@ -97,23 +98,12 @@ public class FirewallImpl extends NodeBase implements Firewall
         this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 3);
         this.connectors = new PipelineConnector[] { connector };
 
-        this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                                "SELECT * FROM reports.sessions " + 
-                                                "WHERE policy_id = :policyId " +
-                                                "AND firewall_rule_index IS NOT NULL " +
-                                                "ORDER BY time_stamp DESC");   
-
-        this.flaggedEventsQuery = new EventLogQuery(I18nUtil.marktr("Flagged Events"),
-                                                    "SELECT * FROM reports.sessions " + 
-                                                    "WHERE policy_id = :policyId " +
-                                                    "AND firewall_flagged IS TRUE " +
-                                                    "ORDER BY time_stamp DESC");
-
-        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
-                                                    "SELECT * FROM reports.sessions " + 
-                                                    "WHERE policy_id = :policyId " +
-                                                    "AND firewall_blocked IS TRUE " +
-                                                    "ORDER BY time_stamp DESC");
+        this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("firewall_rule_index","is","NOT NULL") });
+        this.flaggedEventsQuery = new EventLogQuery(I18nUtil.marktr("Flagged Events"), "sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("firewall_flagged","is","true") });
+        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "sessions",
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("firewall_blocked","is","TRUE") });
     }
 
     public EventLogQuery[] getEventQueries()

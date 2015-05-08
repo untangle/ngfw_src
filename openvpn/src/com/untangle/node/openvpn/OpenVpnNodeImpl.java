@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -72,7 +73,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Connections"), "SELECT start_time as time_stamp,client_name,pool_address,max(end_time) as end_time,sum(rx_bytes) as rx_bytes,sum(tx_bytes) as tx_bytes,max(host(remote_address)) as remote_address FROM reports.openvpn_stats GROUP BY start_time,client_name,pool_address ORDER BY time_stamp DESC");
+        // FIXME
+        this.connectEventsQuery = null;
+        //this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Connections"), "SELECT start_time as time_stamp,client_name,pool_address,max(end_time) as end_time,sum(rx_bytes) as rx_bytes,sum(tx_bytes) as tx_bytes,max(host(remote_address)) as remote_address FROM reports.openvpn_stats GROUP BY start_time,client_name,pool_address ORDER BY time_stamp DESC");
     }
 
     @Override
@@ -267,7 +270,9 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     public EventLogQuery[] getStatusEventsQueries()
     {
-        return new EventLogQuery[] { this.connectEventsQuery };
+        return new EventLogQuery[] {  };
+        //FIXME
+        //return new EventLogQuery[] { this.connectEventsQuery };
     }
 
     public List<OpenVpnStatusEvent> getActiveClients()

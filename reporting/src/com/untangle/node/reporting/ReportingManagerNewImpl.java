@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SqlCondition;
+import com.untangle.uvm.node.SqlCondition;
 
 public class ReportingManagerNewImpl implements ReportingManagerNew
 {

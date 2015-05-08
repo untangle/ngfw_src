@@ -11,10 +11,9 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.node.http.HeaderToken;
-import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.GenericRule;
@@ -26,6 +25,8 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.node.http.HeaderToken;
 
 /**
  * The base implementation of the Web Filter.
@@ -70,26 +71,14 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         
         String nodeName = this.getName();
         
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"),
-                                                   "SELECT * from reports.http_events " +
-                                                   "WHERE " + 
-                                                   "policy_id = :policyId " +
-                                                   "ORDER BY time_stamp DESC");
-        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Events"),
-                                                   "SELECT * from reports.http_events " +
-                                                   "WHERE " + nodeName + "_flagged IS TRUE " +
-                                                   "AND policy_id = :policyId " +
-                                                   "ORDER BY time_stamp DESC");
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
-                                                   "SELECT * from reports.http_events " +
-                                                   "WHERE " + nodeName + "_blocked IS TRUE " +
-                                                   "AND policy_id = :policyId " +
-                                                   "ORDER BY time_stamp DESC");
-        this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Unblocked Web Events"),
-                                                   "SELECT * from reports.http_events " +
-                                                   "WHERE " + nodeName + "_category = 'unblocked' " +
-                                                   "AND policy_id = :policyId " +
-                                                   "ORDER BY time_stamp DESC");
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"), "http_events",
+                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId") });
+        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Events"), "http_events",
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_flagged","is","TRUE") });
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"), "http_events",
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_blocked","is","TRUE") });
+        this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Unblocked Web Events"), "http_events",
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition(nodeName+"_category","=","'unblocked'") });
 
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
         

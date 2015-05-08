@@ -16,6 +16,8 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.untangle.uvm.node.SqlCondition;
+
 /**
  * Utility the reads events from the database
  */
@@ -85,7 +87,7 @@ public class EventReaderImpl
 
     }
 
-    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final int limit, final Date startDate, final Date endDate )
+    public ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
         if ( policyId == null || policyId == -1 ) {
@@ -117,6 +119,11 @@ public class EventReaderImpl
                 queryStr += " and time_stamp <= '" + dateFormatter.format(endDate)   + "' ";
             if ( startDate != null )
                 queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
+            if (extraConditions != null) {
+                for ( SqlCondition condition : extraConditions ) {
+                    queryStr += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
+                }
+            }
             queryStr += queryPart2;
         }
         if (limit > 0)
@@ -127,9 +134,9 @@ public class EventReaderImpl
         return getEventsResultSet( queryStr, limit );
     }
 
-    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final int limit, final Date startDate, final Date endDate)
+    public ArrayList<JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
     {
-        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, limit, startDate, endDate);
+        ResultSetReader resultSetReader = getEventsResultSet( query, policyId, extraConditions, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
     }
 

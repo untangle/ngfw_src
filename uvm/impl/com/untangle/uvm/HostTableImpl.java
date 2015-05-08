@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.node.SqlCondition;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.PenaltyBoxEvent;
@@ -60,9 +61,9 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
 
-        this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "SELECT * FROM reports.penaltybox ORDER BY time_stamp DESC");
-        this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "SELECT * FROM reports.host_table_updates ORDER BY time_stamp DESC");
-        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "SELECT * FROM reports.quotas ORDER BY time_stamp DESC");
+        this.penaltyBoxEventQuery = new EventLogQuery(I18nUtil.marktr("PenaltyBox Events"), "penaltybox", new SqlCondition[]{});
+        this.hostTableEventQuery = new EventLogQuery(I18nUtil.marktr("Host Table Events"), "host_table_updates", new SqlCondition[]{}); 
+        this.quotaEventQuery = new EventLogQuery(I18nUtil.marktr("Quota Events"), "quotas", new SqlCondition[]{}); 
         initializeMacVendorTable();
         
         UvmContextFactory.context().newThread(this.cleaner).start();
