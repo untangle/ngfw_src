@@ -577,7 +577,7 @@ class IdpsTests(unittest2.TestCase):
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("host @4.2.2.1 www.companysecret.com > /dev/null")
+        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
 
         event = self.idps_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == False )
@@ -593,7 +593,7 @@ class IdpsTests(unittest2.TestCase):
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("host @4.2.2.1 www.companysecret.com > /dev/null")
+        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
 
         event = self.idps_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
