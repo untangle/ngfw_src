@@ -10,7 +10,6 @@ class SnortRules:
     """
     Process a set of snort rules such as downloaded rules.
     """
-    var_regex = re.compile(r'^\$(.+)')
     category_regex = re.compile(r'^# \-+ Begin (.+) Rules Category')
     file_name_category_regex =re.compile(r'(/|\-)([^/\-]+)\.rules$')
 
@@ -120,23 +119,7 @@ class SnortRules:
         """
         Add a new rule to the list and search for variables.
         """
-        self.rules[rule.options["sid"] + "_" + rule.options["gid"]] = rule
-        for prop, value in vars(rule).iteritems():
-            if isinstance( value, str ) == False:
-                continue
-            match_variable = re.search( SnortRules.var_regex, value )
-            if match_variable:
-                if self.variables.count( match_variable.group( 1 ) ) == 0:
-                    self.variables.append( match_variable.group( 1 ) )
-
-        for key in rule.options.keys():
-            value = rule.options[key]
-            if isinstance( value, str ) == False:
-                continue
-            match_variable = re.search( SnortRules.var_regex, value )
-            if match_variable:
-                if self.variables.count( match_variable.group( 1 ) ) == 0:
-                    self.variables.append( match_variable.group( 1 ) )
+        self.rules[rule.rule_id] = rule
                     
     def modify_rule(self, rule):
         """
@@ -240,6 +223,32 @@ class SnortRules:
                 #
                 self.add_rule( current_rules.get_rules()[rid] )
 
+                # Variable management
+                # Only interested in adding from current set.
+                # Clearly we don't want to modify values and deletion could
+                # be problematic if a custom rule is using it.
+                # 
+                for variable in current_rules.get_rules()[rid].get_variables():
+                    if settings.get_variable(variable) == None:
+                        if variable == "HOME_NET":
+                            ## Ignore HOME_NET
+                            continue
+
+                        definition = "default value"
+                        description = "default description"
+        
+                        for default_variable in conf.get_variables():
+                            if default_variable["key"] == variable:
+                                definition = default_variable["value"]
+                                description = default_variable["description"]
+                                break
+        
+                        settings.settings["variables"]["list"].append( { 
+                            "variable": variable,
+                            "definition": definition,
+                            "description": description
+                        } )
+
         if ( len(added_rule_rids) > 0 and len(added_rule_rids) != len(current_rules.get_rules()) ) or len(modified_rule_rids) > 0 or len(deleted_rule_rids) > 0:
             #
             # Only record updated rule identifiers
@@ -254,32 +263,6 @@ class SnortRules:
                 }
             })
 
-        # 
-        # Variable management
-        # Only interested in adding from current set.
-        # Clearly we don't want to modify values and deletion could
-        # be problematic if a custom rule is using it.
-        # 
-        for variable in current_rules.get_variables():
-            if settings.get_variable(variable) == None:
-                if variable == "HOME_NET":
-                    ## Ignore HOME_NET
-                    continue
-
-                definition = "default value"
-                description = "default description"
-        
-                for default_variable in conf.get_variables():
-                    if default_variable["key"] == variable:
-                        definition = default_variable["value"]
-                        description = default_variable["description"]
-                        break
-        
-                settings.settings["variables"]["list"].append( { 
-                    "variable": variable,
-                    "definition": definition,
-                    "description": description
-                } )
 
     def update_categories(self, defaults, sync_enabled = False):
         """

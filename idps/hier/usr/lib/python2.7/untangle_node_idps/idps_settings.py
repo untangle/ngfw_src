@@ -46,6 +46,35 @@ class IdpsSettings:
         self.rules = SnortRules(node_id)
         self.settings = {}
 
+    def json_load_decoder(self,obj):
+        if "rule" in obj:
+            # Internally we only use a ruleset structure and would otherwise
+            # keep the json structure in memory, unused.  This is a 
+            # huge waste of memory!  By intercepting we can create the
+            # ruleset immediately and incur a much smaller memory footprint by
+            # creating the ruleset and returning None.
+            # It's not 100% wonderful since we're retaining an in-memory 
+            # list of thousands of None references but there doesn't seem to be
+            # a way around that with this hook (we could free it but garbage collecting
+            # doesn't seem to happen fast enough to make a difference).  
+            # This is better than nothing and can save up to 40% of memory.
+            match_rule = re.search(SnortRule.text_regex, obj["rule"])
+            if match_rule:
+                if "path" in obj:
+                    path = obj["path"]
+                else:
+                    path = "rules"
+                rule = SnortRule(match_rule, obj["category"], path)
+                rule.set_action(obj["log"], obj["block"])
+                rule.set_msg(obj["msg"])
+                rule.set_sid(obj["sid"])
+                self.rules.add_rule(rule)
+            else:
+                print "error with rule:" + obj["rule"]
+            return None
+        else:
+            return obj
+
     def load(self, file_name=""):
         """
         Load settings
@@ -54,30 +83,8 @@ class IdpsSettings:
             file_name = self.file_name
             
         settings_file = open( file_name )
-        self.settings = json.load( settings_file )
+        self.settings = json.load( settings_file, object_hook=self.json_load_decoder )
         settings_file.close()
-
-        if "rules" in self.settings.keys():
-            ## Convert rules to snort rules object
-            for settings_rule in self.settings["rules"]["list"]:
-                match_rule = re.search( 
-                    SnortRule.text_regex, 
-                    settings_rule["rule"] 
-                    )
-                if match_rule:
-                    path = "rules"
-                    if "path" in settings_rule:
-                        path = settings_rule["path"]
-                    rule = SnortRule(match_rule, settings_rule["category"], path)
-                    rule.set_action( 
-                        settings_rule["log"], 
-                        settings_rule["block"] 
-                        )
-                    rule.set_msg(settings_rule["msg"])
-                    rule.set_sid(settings_rule["sid"])
-                    self.rules.add_rule(rule)
-                else:
-                    print "error with rule:" + settings_rule["text"]
         
     def exists(self):
         """

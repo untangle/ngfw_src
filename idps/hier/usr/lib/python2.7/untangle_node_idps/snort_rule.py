@@ -7,31 +7,27 @@ class SnortRule:
     """
     Process rule from the snort format.
     """
-    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
+    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+((tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
+    var_regex = re.compile(r'^\$(.+)')
 
-    def __init__(self, regex_match, category, path="rules"):
-        self.category = str(category)
-        self.path = str(path)
-        self.enabled = True
-        if len( regex_match.group(1) ) > 0 and regex_match.group(1)[0] == "#":
+    options_key_regexes = {}
+
+    def __init__(self, match, category, path="rules"):
+        self.category = category
+        self.path = path
+        if len(match.group(1)) > 0 and (match.group(1)[0] == "#"):
             self.enabled = False
-        self.action = regex_match.group(2).lower()
-        if regex_match.group(3) != "":
-            self.protocol = str(regex_match.group(4).lower())
-            self.lnet = str(regex_match.group(5))
-            self.lport = str(regex_match.group(6))
-            self.direction = str(regex_match.group(7))
-            self.rnet = str(regex_match.group(8))
-            self.rport = str(regex_match.group(9))
         else:
-            self.protocol = None
-            self.lnet = None
-            self.lport = None
-            self.direction = None
-            self.rnet = None
-            self.rport = None
+            self.enabled = True
+        self.action = match.group(2).lower()
+        if match.group(3) != "":
+            [self.protocol, self.lnet, self.lport, self.direction, self.rnet, self.rport,self.options_raw] = match.group(4,5,6,7,8,9,10)
+            self.protocol = self.protocol.lower()
+        else:
+            [self.protocol, self.lnet, self.lport, self.direction, self.rnet, self.rport] = [None,None,None,None,None,None]
+            self.options_raw = match.group(10)
         
-        self.options_raw = regex_match.group(10)
+        # Process raw options only for specified keypairs
         self.options = { 
             "sid": "-1",
             "gid": "1",
@@ -39,19 +35,12 @@ class SnortRule:
             "msg": ""
         }
         
-        self.content_modifiers = {}
-        for option in regex_match.group(10).split(';'):
-            option = option.strip()
-            if option == "":
-                continue
-            key = option
-            value = None
+        # !!!! may not be enough to look for variables!
+        for option in self.options_raw.split(';'):
             if option.find(':') > -1:
-                key, value = option.split( ':', 1 )
-                key = key.strip()
-                value = value.strip()
-
-            self.options[key] = str(value)
+                key, value = option.strip().split( ':', 1 )
+                if key in self.options:
+                    self.options[key] = value.strip()
 
         self.rule_id = self.options["sid"] + "_" + self.options["gid"] 
             
@@ -67,28 +56,33 @@ class SnortRule:
         """
         Set rule action based on log, block
         """
-        action = "alert"
-        enabled = True
         if log == True and block == True:
-            action = "drop"
-        if log == False and block == True:
-            action = "sdrop"
+            self.action = "drop"
+        elif log == False and block == True:
+            self.action = "sdrop"
+        else:
+            self.action = "alert"
 
         if log == False and block == False:
-            enabled = False 
-
-        self.action = action
-        self.enabled = enabled
+            self.enabled = False
+        else:
+            self.enabled = True
 
     def set_options(self, key, value):
         """
         Set options on key with value
         """
+        if not key in self.options:
+            return
+
+        find = key+":"+self.options[key]+";"
         self.options[key] = value
-        options_raw_match_re = re.compile( r'\s+' + key + ":([^;]+);")
-        match_rule = re.search( options_raw_match_re, self.options_raw )
-        if match_rule:
-            self.options_raw = options_raw_match_re.sub( " " + key + ":" + value + ";", self.options_raw )
+
+        new_options_raw = self.options_raw.replace(find, key + ":" + value + ";")
+        if self.options_raw != new_options_raw:
+            print self.options_raw
+            print new_options_raw
+            self.options_raw = new_options_raw
         
     def set_msg(self, msg):
         """
@@ -198,3 +192,30 @@ class SnortRule:
         else:
             rport = ""
         return enabled + self.action + " " + protocol + lnet + lport + direction + rnet + rport + "( " + self.options_raw + " )"
+
+    def get_variables(self):
+        variables = []
+        for prop, value in vars(self).iteritems():
+            if isinstance( value, str ) == False:
+                continue
+            match_variable = re.search( SnortRule.var_regex, value )
+            if match_variable:
+                if variables.count( match_variable.group( 1 ) ) == 0:
+                    variables.append( match_variable.group( 1 ) )
+
+        for option in self.options_raw.split(';'):
+            option = option.strip()
+            if option == "":
+                continue
+            key = option
+            value = None
+            if option.find(':') > -1:
+                key, value = option.split( ':', 1 )
+                key = key.strip()
+                value = value.strip()
+                match_variable = re.search( SnortRule.var_regex, value )
+                if match_variable:
+                    if variables.count( match_variable.group( 1 ) ) == 0:
+                        variables.append( match_variable.group( 1 ) )
+
+        return variables

@@ -75,7 +75,7 @@ def main(argv):
     settings.load()
 
     snort_conf = untangle_node_idps.SnortConf( _debug=_debug )
-
+   
     rules = settings.get_rules()
     rules.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
     rules.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )

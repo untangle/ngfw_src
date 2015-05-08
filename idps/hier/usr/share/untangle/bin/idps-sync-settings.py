@@ -149,6 +149,7 @@ def main(argv):
                 settings.get_rules().filter_group(settings.settings["activeGroups"], defaults_profile)
 
     settings.save( settings_file_name )
+    
     sys.exit()
 
 if __name__ == "__main__":
