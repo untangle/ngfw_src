@@ -46,8 +46,8 @@ public class CaptureRuleEvent extends LogEvent
     {
         String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             " SET " + 
-            " capture_rule_index = ?, " + 
-            " capture_blocked = ? " + 
+            " captive_portal_rule_index = ?, " + 
+            " captive_portal_blocked = ? " + 
             " WHERE session_id = ? ";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);

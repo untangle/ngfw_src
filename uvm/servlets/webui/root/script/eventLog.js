@@ -258,9 +258,9 @@ Ung.CustomEventLog = {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'bandwidth_priority'
+                name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_rule'
+                name: 'bandwidth_control_rule'
             }, {
                 name: 'username'
             }, {
@@ -284,34 +284,34 @@ Ung.CustomEventLog = {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'classd_application',
+                name: 'application_control_application',
                 type: 'string'
             }, {
-                name: 'classd_protochain',
+                name: 'application_control_protochain',
                 type: 'string'
             }, {
-                name: 'classd_flagged',
+                name: 'application_control_flagged',
                 type: 'boolean'
             }, {
-                name: 'classd_blocked',
+                name: 'application_control_blocked',
                 type: 'boolean'
             }, {
-                name: 'classd_confidence'
+                name: 'application_control_confidence'
             }, {
-                name: 'classd_detail'
+                name: 'application_control_detail'
             }, {
-                name: 'protofilter_blocked'
+                name: 'application_control_lite_blocked'
             }, {
-                name: 'protofilter_protocol',
+                name: 'application_control_lite_protocol',
                 type: 'string'
             }, {
-                name: 'classd_ruleid'
+                name: 'application_control_ruleid'
             }, {
-                name: 'https_status'
+                name: 'ssl_inspector_status'
             }, {
-                name: 'https_detail'
+                name: 'ssl_inspector_detail'
             }, {
-                name: 'https_ruleid'
+                name: 'ssl_inspector_ruleid'
             }, {
                 name: 'policy_id'
             }, {
@@ -329,9 +329,9 @@ Ung.CustomEventLog = {
                 name: 'ips_description',
                 type: 'string'
             }, {
-                name: "capture_rule_index"
+                name: "captive_portal_rule_index"
             }, {
-                name: "capture_blocked"
+                name: "captive_portal_blocked"
             }],
             columns: [{
                 hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -385,20 +385,20 @@ Ung.CustomEventLog = {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_ruleid') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_ruleid') < 0,
                 header: i18n._("Rule ID"),
                 width: 70,
                 sortable: true,
-                dataIndex: 'classd_ruleid',
+                dataIndex: 'application_control_ruleid',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('bandwidth_priority') < 0,
+                hidden: visibleColumnsParam.indexOf('bandwidth_control_priority') < 0,
                 header: i18n._("Priority"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'bandwidth_priority',
+                dataIndex: 'bandwidth_control_priority',
                 renderer: function(value) {
                     if (Ext.isEmpty(value)) {
                         return "";
@@ -416,101 +416,101 @@ Ung.CustomEventLog = {
                     }
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('bandwidth_rule') < 0,
+                hidden: visibleColumnsParam.indexOf('bandwidth_control_rule') < 0,
                 header: i18n._("Rule"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'bandwidth_rule',
+                dataIndex: 'bandwidth_control_rule',
                 renderer: function(value) {
                     return Ext.isEmpty(value) ? i18n._("none") : value;
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_application') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_application') < 0,
                 header: i18n._("Application"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'classd_application'
+                dataIndex: 'application_control_application'
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_protochain') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_protochain') < 0,
                 header: i18n._("ProtoChain"),
                 width: 180,
                 sortable: true,
-                dataIndex: 'classd_protochain'
+                dataIndex: 'application_control_protochain'
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_blocked') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_blocked') < 0,
                 header: i18n._("Blocked (Application Control)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'classd_blocked',
+                dataIndex: 'application_control_blocked',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_flagged') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_flagged') < 0,
                 header: i18n._("Flagged (Application Control)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'classd_flagged',
+                dataIndex: 'application_control_flagged',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_confidence') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_confidence') < 0,
                 header: i18n._("Confidence"),
                 width: Ung.Util.portFieldWidth,
                 sortable: true,
-                dataIndex: 'classd_confidence',
+                dataIndex: 'application_control_confidence',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('classd_detail') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_detail') < 0,
                 header: i18n._("Detail"),
                 width: 200,
                 sortable: true,
-                dataIndex: 'classd_detail'
+                dataIndex: 'application_control_detail'
             },{
-                hidden: visibleColumnsParam.indexOf('protofilter_protocol') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_lite_protocol') < 0,
                 header: i18n._("Protocol"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'protofilter_protocol'
+                dataIndex: 'application_control_lite_protocol'
             }, {
-                hidden: visibleColumnsParam.indexOf('protofilter_blocked') < 0,
+                hidden: visibleColumnsParam.indexOf('application_control_lite_blocked') < 0,
                 header: i18n._("Blocked (Application Control Lite)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'protofilter_blocked',
+                dataIndex: 'application_control_lite_blocked',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('https_ruleid') < 0,
+                hidden: visibleColumnsParam.indexOf('ssl_inspector_ruleid') < 0,
                 header: i18n._("Rule ID (HTTPS Inspector)"),
                 width: 70,
                 sortable: true,
-                dataIndex: 'https_ruleid',
+                dataIndex: 'ssl_inspector_ruleid',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('https_status') < 0,
+                hidden: visibleColumnsParam.indexOf('ssl_inspector_status') < 0,
                 header: i18n._("Status (HTTPS Inspector)"),
                 width: 100,
                 sortable: true,
-                dataIndex: 'https_status'
+                dataIndex: 'ssl_inspector_status'
             }, {
-                hidden: visibleColumnsParam.indexOf('https_detail') < 0,
+                hidden: visibleColumnsParam.indexOf('ssl_inspector_detail') < 0,
                 header: i18n._("Detail (HTTPS Inspector)"),
                 width: 250,
                 sortable: true,
-                dataIndex: 'https_detail'
+                dataIndex: 'ssl_inspector_detail'
             }, {
                 hidden: visibleColumnsParam.indexOf('policy_id') < 0,
                 header: i18n._('Policy Id'),
@@ -588,16 +588,16 @@ Ung.CustomEventLog = {
                 flex:1,
                 dataIndex: 'ips_description'
             }, {
-                hidden: visibleColumnsParam.indexOf('capture_rule_index') < 0,
+                hidden: visibleColumnsParam.indexOf('captive_portal_rule_index') < 0,
                 header: i18n._("Rule ID (Captive Portal)"),
                 width: 80,
-                dataIndex: 'capture_rule_index'
+                dataIndex: 'captive_portal_rule_index'
             }, {
-                hidden: visibleColumnsParam.indexOf('capture_blocked') < 0,
+                hidden: visibleColumnsParam.indexOf('captive_portal_blocked') < 0,
                 header: i18n._("Captured"),
                 width: 100,
                 sortable: true,
-                dataIndex: "capture_blocked",
+                dataIndex: "captive_portal_blocked",
                 filter: {
                     type: 'boolean',
                     yesText: 'true',

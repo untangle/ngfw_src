@@ -162,10 +162,10 @@ def drop_column( tablename, columnname ):
 
 def rename_column( tablename, oldname, newname ):
     if column_exists( tablename, newname ):
-        logger.debug("rename failed, column alread exists: %s.%s" % (tablename, newname))
+        #logger.debug("rename failed, column already exists: %s.%s" % (tablename, newname))
         return
     if not column_exists( tablename, oldname ):
-        logger.debug("rename failed, column missing: %s.%s" % (tablename, oldname))
+        #logger.debug("rename failed, column missing: %s.%s" % (tablename, oldname))
         return
     sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (SCHEMA, tablename, oldname, newname)
     logger.info(sql)

@@ -58,7 +58,6 @@ CREATE TABLE reports.http_events (
     c2s_content_length bigint,
     s2c_content_length bigint,
     s2c_content_type text,
-    adblocker_blocked boolean,
     adblocker_cookie_ident text,
     adblocker_action character,
     webfilter_reason character(1),
@@ -82,7 +81,7 @@ CREATE TABLE reports.http_events (
                                  "webfilter_category",
                                  "virusblocker_clean",
                                  "clam_clean",
-                                 "adblocker_blocked",
+                                 "adblocker_action",
                                  "host",
                                  "username",
                                  "hostname",
@@ -94,6 +93,7 @@ CREATE TABLE reports.http_events (
                                  "sitefilter_category"])
 
         sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
+        sql_helper.drop_column('http_events','adblocker_blocked') # 11.2 - drop unused column
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("http_events", cutoff)

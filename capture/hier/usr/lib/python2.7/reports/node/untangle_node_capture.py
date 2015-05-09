@@ -72,8 +72,8 @@ class Capture(Node):
                                   "count(CASE WHEN event_info = 'ADMIN_LOGOUT' THEN 1 ELSE NULL END)"))
 
         ft = reports.engine.get_fact_table('reports.session_totals')
-        ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN capture_blocked THEN 1 ELSE null END)"))
-        ft.dimensions.append(Column('capture_rule_index', 'integer'))
+        ft.measures.append(Column('capture_blocks', 'integer', "count(CASE WHEN captive_portal_blocked THEN 1 ELSE null END)"))
+        ft.dimensions.append(Column('captive_portal_rule_index', 'integer'))
 
     def create_tables(self):
         self.__make_capture_user_events_table()
@@ -361,7 +361,7 @@ class TopBlockedClients(Graph):
         query = """
 SELECT host(c_client_addr),count(c_client_addr)::int as failure
 FROM reports.sessions
-WHERE NOT c_client_addr IS NULL AND capture_blocked = TRUE AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
+WHERE NOT c_client_addr IS NULL AND captive_portal_blocked = TRUE AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 GROUP BY c_client_addr"""
 
         conn = sql_helper.get_connection()
@@ -443,8 +443,8 @@ class RuleDetail(DetailSection):
               ColumnDesc('c_client_port', _('Client Port')),
               ColumnDesc('c_server_address', _('Server Address')),
               ColumnDesc('c_server_port', _('Server Port')),
-              ColumnDesc('capture_rule_index', _('Rule Applied')),
-              ColumnDesc('capture_blocked', _('Blocked'))]
+              ColumnDesc('captive_portal_rule_index', _('Rule Applied')),
+              ColumnDesc('captive_portal_blocked', _('Blocked'))]
 
         return rv
     
@@ -458,7 +458,7 @@ class RuleDetail(DetailSection):
         sql = """
 SELECT * 
 FROM reports.sessions
-WHERE capture_blocked = TRUE OR capture_blocked = FALSE
+WHERE captive_portal_blocked = TRUE OR captive_portal_blocked = FALSE
 AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (DateFromMx(start_date),

@@ -144,25 +144,22 @@ CREATE TABLE reports.sessions (
         firewall_blocked boolean,
         firewall_flagged boolean,
         firewall_rule_index integer,
-        protofilter_protocol text,
-        protofilter_blocked boolean,
-        capture_blocked boolean,
-        capture_rule_index integer,
-        classd_application text,
-        classd_protochain text,
-        classd_blocked boolean,
-        classd_flagged boolean,
-        classd_confidence integer,
-        classd_ruleid integer,
-        classd_detail text,
-        ips_blocked boolean,
-        ips_ruleid integer,
-        ips_description text,
-        bandwidth_priority integer,
-        bandwidth_rule integer,
-        https_ruleid integer,
-        https_status text,
-        https_detail text)""", 
+        application_control_lite_protocol text,
+        application_control_lite_blocked boolean,
+        captive_portal_blocked boolean,
+        captive_portal_rule_index integer,
+        application_control_application text,
+        application_control_protochain text,
+        application_control_blocked boolean,
+        application_control_flagged boolean,
+        application_control_confidence integer,
+        application_control_ruleid integer,
+        application_control_detail text,
+        bandwidth_control_priority integer,
+        bandwidth_control_rule integer,
+        ssl_inspector_ruleid integer,
+        ssl_inspector_status text,
+        ssl_inspector_detail text)""", 
                                 ["session_id"],
                                 ["time_stamp",
                                  "hostname",
@@ -174,13 +171,33 @@ CREATE TABLE reports.sessions (
                                  "server_intf",
                                  "firewall_flagged",
                                  "firewall_blocked",
-                                 "classd_application",
-                                 "classd_protochain",
-                                 "classd_blocked",
-                                 "classd_flagged",
-                                 "bandwidth_priority"])
+                                 "application_control_application",
+                                 "application_control_protochain",
+                                 "application_control_blocked",
+                                 "application_control_flagged",
+                                 "bandwidth_control_priority"])
 
         sql_helper.drop_column('sessions','event_id') # 11.2 - drop unused column
+        sql_helper.drop_column('sessions','ips_blocked') # 11.2 - drop unused column
+        sql_helper.drop_column('sessions','ips_ruleid') # 11.2 - drop unused column
+        sql_helper.drop_column('sessions','ips_description') # 11.2 - drop unused column
+
+        sql_helper.rename_column('sessions','protofilter_protocol','application_control_lite_protocol') # 11.2
+        sql_helper.rename_column('sessions','protofilter_blocked','application_control_lite_blocked') # 11.2
+        sql_helper.rename_column('sessions','capture_blocked','captive_portal_blocked') # 11.2
+        sql_helper.rename_column('sessions','capture_rule_index','captive_portal_rule_index') # 11.2
+        sql_helper.rename_column('sessions','classd_application','application_control_application') # 11.2
+        sql_helper.rename_column('sessions','classd_protochain','application_control_protochain') # 11.2
+        sql_helper.rename_column('sessions','classd_blocked','application_control_blocked') # 11.2
+        sql_helper.rename_column('sessions','classd_flagged','application_control_flagged') # 11.2
+        sql_helper.rename_column('sessions','classd_confidence','application_control_confidence') # 11.2
+        sql_helper.rename_column('sessions','classd_ruleid','application_control_ruleid') # 11.2
+        sql_helper.rename_column('sessions','classd_detail','application_control_detail') # 11.2
+        sql_helper.rename_column('sessions','bandwidth_priority','bandwidth_control_priority') # 11.2
+        sql_helper.rename_column('sessions','bandwidth_rule','bandwidth_control_rule') # 11.2
+        sql_helper.rename_column('sessions','https_ruleid','ssl_inspector_ruleid') # 11.2
+        sql_helper.rename_column('sessions','https_status','ssl_inspector_status') # 11.2
+        sql_helper.rename_column('sessions','https_detail','ssl_inspector_detail') # 11.2
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):

@@ -124,11 +124,11 @@ public class CaptureNodeImpl extends NodeBase implements CaptureNode
         this.adminLogoutQuery = new EventLogQuery(I18nUtil.marktr("Admin Logout"),"capture_user_events",
                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("event_info","=","'ADMIN_LOGOUT'") });
         this.captureEventQuery = new EventLogQuery(I18nUtil.marktr("Capture Events"),"sessions",
-                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","TRUE") });
+                                                   new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","TRUE") });
         this.passEventQuery = new EventLogQuery(I18nUtil.marktr("Pass Events"),"sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","FALSE") });
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","FALSE") });
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),"sessions",
-                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("capture_blocked","is","NOT NULL") });
+                                               new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("captive_portal_blocked","is","NOT NULL") });
     }
 
 // THIS IS FOR ECLIPSE - @formatter:on

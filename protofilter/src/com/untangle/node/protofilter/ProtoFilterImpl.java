@@ -57,9 +57,9 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
         this.connectors = new PipelineConnector[] { connector };
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("protofilter_protocol","is","NOT NULL") });
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("application_control_lite_protocol","is","NOT NULL") });
         this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "sessions",
-                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("protofilter_blocked","is","TRUE") });
+                                                new SqlCondition[]{ new SqlCondition("policy_id","=",":policyId"), new SqlCondition("application_control_lite_blocked","is","TRUE") });
     }
 
     // ProtoFilter methods ----------------------------------------------------

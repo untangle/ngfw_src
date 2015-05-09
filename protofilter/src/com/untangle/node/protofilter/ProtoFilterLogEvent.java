@@ -47,8 +47,8 @@ public class ProtoFilterLogEvent extends LogEvent
     {
         String sql =
             "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
-            "SET protofilter_protocol = ?, " + 
-            "    protofilter_blocked = ? " +
+            "SET application_control_lite_protocol = ?, " + 
+            "    application_control_lite_blocked = ? " +
             "WHERE session_id = ? ";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );

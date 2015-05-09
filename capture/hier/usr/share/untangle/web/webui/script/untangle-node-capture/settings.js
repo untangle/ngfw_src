@@ -1057,7 +1057,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
     buildRuleEventLog: function() {
         this.gridRuleEventLog = Ung.CustomEventLog.buildSessionEventLog (this, 'RuleEventLog', this.i18n._('Rule Event Log'),
                 'captive_portal_rule_event_log',
-                ['time_stamp','c_client_addr','c_client_port','s_server_addr','s_server_port','capture_rule_index','capture_blocked'],
+                ['time_stamp','c_client_addr','c_client_port','s_server_addr','s_server_port','captive_portal_rule_index','captive_portal_blocked'],
                 this.getRpcNode().getRuleEventQueries);
     },
     beforeSave: function(isApply, handler) {

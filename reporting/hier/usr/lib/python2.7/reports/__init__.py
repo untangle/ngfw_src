@@ -315,8 +315,8 @@ class DetailSection(Section):
 
     def get_session_columns(self, host=None, user=None, email=None):
         columns = [ColumnDesc('time_stamp', _('Time'), 'Date'),
-                   ColumnDesc('bandwidth_priority', _('Priority'), 'Numeric'),
-                   ColumnDesc('bandwidth_rule', _('Rule')),
+                   ColumnDesc('bandwidth_control_priority', _('Priority'), 'Numeric'),
+                   ColumnDesc('bandwidth_control_rule', _('Rule')),
                    ColumnDesc('username', _('Username')),
                    ColumnDesc('c_client_addr', _('Client')),
                    ColumnDesc('c_client_port', _('Client port'), 'Numeric'),
@@ -324,18 +324,18 @@ class DetailSection(Section):
                    ColumnDesc('c_server_port', _('Server Port'), 'Numeric'),
                    ColumnDesc('s_server_addr', _('Server')),
                    ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
-                   ColumnDesc('classd_application', _('Application')),
-                   ColumnDesc('classd_protochain', _('ProtoChain')),
-                   ColumnDesc('classd_flagged', _('Flagged (Application Control)'), 'Boolean'),
-                   ColumnDesc('classd_blocked', _('Blocked (Application Control)'), 'Boolean'),
-                   ColumnDesc('classd_confidence', _('Confidence'), 'Numeric'),
-                   ColumnDesc('classd_detail', _('Detail')),
-                   ColumnDesc('protofilter_blocked', _('Blocked (Application Control Lite)'), 'Boolean'),
-                   ColumnDesc('protofilter_protocol', _('Protocol')),
-                   ColumnDesc('classd_ruleid', _('Rule ID')),
-                   ColumnDesc('https_status', _('Status (Https)')),
-                   ColumnDesc('https_detail', _('Detail (Https)')),
-                   ColumnDesc('https_ruleid', _('Rule ID (Https)'), 'Numeric'),
+                   ColumnDesc('application_control_application', _('Application')),
+                   ColumnDesc('application_control_protochain', _('ProtoChain')),
+                   ColumnDesc('application_control_flagged', _('Flagged (Application Control)'), 'Boolean'),
+                   ColumnDesc('application_control_blocked', _('Blocked (Application Control)'), 'Boolean'),
+                   ColumnDesc('application_control_confidence', _('Confidence'), 'Numeric'),
+                   ColumnDesc('application_control_detail', _('Detail')),
+                   ColumnDesc('application_control_lite_blocked', _('Blocked (Application Control Lite)'), 'Boolean'),
+                   ColumnDesc('application_control_lite_protocol', _('Protocol')),
+                   ColumnDesc('application_control_ruleid', _('Rule ID')),
+                   ColumnDesc('ssl_inspector_status', _('Status (Https)')),
+                   ColumnDesc('ssl_inspector_detail', _('Detail (Https)')),
+                   ColumnDesc('ssl_inspector_ruleid', _('Rule ID (Https)'), 'Numeric'),
                    ColumnDesc('policy_id', _('Policy Id')),
                    ColumnDesc('firewall_blocked', _('Blocked (Firewall)'), 'Boolean'),
                    ColumnDesc('firewall_flagged', _('Flagged (Firewall)'), 'Boolean'),
@@ -343,8 +343,8 @@ class DetailSection(Section):
                    ColumnDesc('ips_blocked', _('Blocked (IPS)'), 'Boolean'),
                    ColumnDesc('ips_ruleid', _('Rule Id (IPS)')),
                    ColumnDesc('ips_description', _('Rule Description (IPS)')),
-                   ColumnDesc('capture_rule_index', _('Rule ID (Captive Portal)')),
-                   ColumnDesc('capture_blocked', _('Captured'), 'Boolean')]
+                   ColumnDesc('captive_portal_rule_index', _('Rule ID (Captive Portal)')),
+                   ColumnDesc('captive_portal_blocked', _('Captured'), 'Boolean')]
         return columns
 
     def get_http_columns(self, host=None, user=None, email=None):

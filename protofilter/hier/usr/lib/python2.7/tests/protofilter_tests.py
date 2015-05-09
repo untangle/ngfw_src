@@ -89,8 +89,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
-                                            'protofilter_protocol', 'HTTP',
-                                            'protofilter_blocked', False )
+                                            'application_control_lite_protocol', 'HTTP',
+                                            'application_control_lite_blocked', False )
         assert( found )
 
     def test_030_testHttpPatternBlocked(self):
@@ -113,8 +113,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
-                                            'protofilter_protocol', 'HTTP',
-                                            'protofilter_blocked', True )
+                                            'application_control_lite_protocol', 'HTTP',
+                                            'application_control_lite_blocked', True )
         assert( found )
 
     def test_040_testFtpPatternBlock(self):
@@ -137,8 +137,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
-                                            'protofilter_protocol', 'FTP',
-                                            'protofilter_blocked', True )
+                                            'application_control_lite_protocol', 'FTP',
+                                            'application_control_lite_blocked', True )
         assert( found )
 
     def test_050_testDnsUdpPatternLog(self):
@@ -161,8 +161,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
-                                            'protofilter_protocol', 'DNS',
-                                            'protofilter_blocked', False )
+                                            'application_control_lite_protocol', 'DNS',
+                                            'application_control_lite_blocked', False )
         assert( found )
 
     def test_060_testDnsUdpPatternBlock(self):
@@ -185,8 +185,8 @@ class ProtofilterTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
-                                            'protofilter_protocol', 'DNS',
-                                            'protofilter_blocked', True )
+                                            'application_control_lite_protocol', 'DNS',
+                                            'application_control_lite_blocked', True )
         assert( found )
 
     @staticmethod

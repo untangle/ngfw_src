@@ -203,7 +203,7 @@ class CaptureTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', test_untangle_com_ip,
                                             'c_client_addr', remote_control.clientIP,
-                                            'capture_blocked', True )
+                                            'captive_portal_blocked', True )
         assert( found )
 
     def test_023_captureAnonymousLogin(self):
