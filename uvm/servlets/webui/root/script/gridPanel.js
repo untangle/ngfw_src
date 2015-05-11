@@ -856,7 +856,11 @@ Ext.define('Ung.RowEditorWindow', {
             component.setValue(record.get(component.dataIndex), record);
             component.resumeEvents();
             if(this.grid.hasReadOnly && (this.grid.changableFields || []).indexOf(component.dataIndex) == -1) {
-                component.setDisabled(record.get("readOnly") === true);
+                if(Ext.isFunction(component.setReadOnly)) {
+                    component.setReadOnly(record.get("readOnly") === true);
+                } else {
+                    component.setDisabled(record.get("readOnly") === true);
+                }
             }
             return;
         }

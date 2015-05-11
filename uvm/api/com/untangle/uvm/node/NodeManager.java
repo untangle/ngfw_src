@@ -141,10 +141,16 @@ public interface NodeManager
     Map<Long, NodeSettings> allNodeSettings();
 
     /**
-     * Get the nodeProperties for all nodes in one call.
+     * Get the nodeProperties for all installed nodes in one call.
      *
-     * @return a <code>Map</code> from node ID to NodeProperties for all nodes
+     * @return a <code>Map</code> from node ID to NodeProperties for all installed nodes
      */
     Map<Long, NodeProperties> allNodeProperties();
     
+    /**
+     * Get the nodeProperties for all nodes in one call.
+     *
+     * @return a <code>List</code> of NodeProperties for all nodes
+     */
+    List<NodeProperties> getAllNodeProperties();
 }

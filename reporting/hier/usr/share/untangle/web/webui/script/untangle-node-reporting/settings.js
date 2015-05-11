@@ -718,22 +718,24 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     },
     // Manage Reports Panel
     buildReportEntries: function() {
-        var categoryList=[];
-        var nodeProperties, allNodeProperties;
-        try {
-            allNodeProperties = rpc.nodeManager.allNodeProperties().map;
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        for (var key in allNodeProperties) {
-            if (allNodeProperties.hasOwnProperty(key)) {
-                nodeProperties = allNodeProperties[key];
-              if(!nodeProperties.invisible || nodeProperties.displayName == 'Shield')
-                  categoryList.push(nodeProperties.displayName);
+        var categoryStore = Ext.create('Ext.data.Store', {
+            sorters: "displayName",
+            fields: ["displayName"],
+            data: []
+        });
+        
+        rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var data=[];
+            var nodeProperties = result.list;
+            for (var i=0; i< nodeProperties.length; i++) {
+                if(!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {
+                    data.push(nodeProperties[i]);
+                }
             }
-        }
-        categoryList.sort();
-        console.log(this.settings.reportEntries.list);
+            categoryStore.loadData(data);
+        }, this));
+        
         this.gridReportEntries= Ext.create('Ung.grid.Panel',{
             name: 'Manage Reports',
             settingsCmp: this,
@@ -792,6 +794,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             height: 180,
             width: '100%',
             settingsCmp: this,
+            addAtTop: false,
             hasEdit: false,
             hasImportExport: false,
             dataIndex: 'conditions',
@@ -837,7 +840,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 this.reload({data:data});
             },
             getValue: function () {
-                return this.getList();
+                var val = this.getList();
+                return val.length == 0 ? null: val;
             }
         });
         
@@ -849,10 +853,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 dataIndex: "category",
                 allowBlank: false,
                 editable: false,
+                valueField: 'displayName',
+                displayField: 'displayName',
                 fieldLabel: this.i18n._('Category'),
                 queryMode: 'local',
                 width: 400,
-                store: categoryList
+                store: categoryStore
             }, {
                 xtype:'textfield',
                 name: "Title",
@@ -907,11 +913,14 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 fieldLabel: this.i18n._('Type'),
                 queryMode: 'local',
                 width: 400,
-                store: ["TEXT","PIE_GRAPH","TIME_GRAPH"]
-            }, {
-                xtype:'fieldset',
-                title: this.i18n._("If all of the following conditions are met:"),
-                items:[this.gridSqlConditionsEditor]
+                store: [["TEXT", this.i18n._("Text")],["PIE_GRAPH", this.i18n._("Pie Graph")],["TIME_GRAPH", this.i18n._("Time Graph")]],
+                listeners: {
+                    "select": {
+                        fn: Ext.bind(function(combo, records, eOpts) {
+                            this.gridReportEntries.rowEditor.syncComponents();
+                        }, this)
+                    }
+                }
             }, {
                 xtype:'textfield',
                 name: "pieGroupColumn",
@@ -934,11 +943,45 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 width: 400,
                 store: ["AUTO","SECOND","MINUTE", "HOUR", "DAY", "WEEK", "MONTH"]
             }, {
-                xtype:'textfield',
-                name: "timeDataColumns",
+                xtype: "container",
                 dataIndex: "timeDataColumns",
-                fieldLabel: this.i18n._("Time Data Columns"),
-                width: 500
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textareafield',
+                    name: "timeDataColumns",
+                    grow: true,
+                    labelWidth: 150,
+                    fieldLabel: this.i18n._("Time Data Columns"),
+                    width: 500
+                }, {
+                    xtype: 'label',
+                    html: this.i18n._("(enter one column per row)"),
+                    cls: 'boxlabel'
+                }],
+                setValue: function(value) {
+                    var timeDataColumns  = this.down('textfield[name="timeDataColumns"]');
+                    timeDataColumns.setValue((value||[]).join("\n"));
+                },
+                getValue: function() {
+                    var timeDataColumns = [];
+                    var val  = this.down('textfield[name="timeDataColumns"]').getValue();
+                    if(!Ext.isEmpty(val)) {
+                        var valArr = val.split("\n");
+                        var colVal;
+                        for(var i = 0; i< valArr.length; i++) {
+                            colVal = valArr[i].trim();
+                            if(!Ext.isEmpty(colVal)) {
+                                timeDataColumns.push(colVal);
+                            }
+                        }
+                    }
+                    
+                    return timeDataColumns.length==0 ? null : timeDataColumns;
+                },
+                setReadOnly: function(val) {
+                    this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
+                }
             }, {
                 xtype:'textfield',
                 name: "orderByColumn",
@@ -954,11 +997,19 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 queryMode: 'local',
                 width: 350,
                 store: [["", this.i18n._("None")], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
-            }, ],
+            }, {
+                xtype:'fieldset',
+                title: this.i18n._("Sql Conditions:"),
+                items:[this.gridSqlConditionsEditor]
+            } ],
             syncComponents: function () {
-//                var sendAlert=this.down('checkbox[dataIndex=alert]').getValue();
-//                this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendAlert);
-//                this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
+                var type=this.down('combo[dataIndex=type]').getValue();
+                
+                this.down('[dataIndex=pieGroupColumn]').setVisible(type=="PIE_GRAPH");
+                this.down('[dataIndex=pieSumColumn]').setVisible(type=="PIE_GRAPH");
+                
+                this.down('[dataIndex=timeDataInterval]').setVisible(type=="TIME_GRAPH");
+                this.down('[dataIndex=timeDataColumns]').setVisible(type=="TIME_GRAPH");
             }
         }));
     },    
