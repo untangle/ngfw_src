@@ -1227,6 +1227,34 @@ Ext.define('Webui.untangle-node-idps.settings', {
             handler.call(this, isApply);
         }, this));
     },
+    saveAction: function (isApply) {
+        if(!this.isDirty()) {
+            if(!isApply) {
+                this.closeWindow();
+            }
+            return;
+        }
+        if(!this.validate(isApply)) {
+            return;
+        }
+        // Override the default save message due to how long it takes for
+        // python managment scripts and snort to restart.  Revisit if we
+        // can figure out a way to make it within the ballpark of other
+        // configuration settings.
+        Ext.MessageBox.wait(i18n._("Saving and creating settings (this may take a few minutes)..."), i18n._("Please wait"));
+        // Give the browser time to "breath" to bring up save progress bar.
+        Ext.Function.defer(
+            function(){
+                if(Ext.isFunction(this.beforeSave)) {
+                    this.beforeSave(isApply, this.save);
+                } else {
+                    this.save.call(this, isApply);
+                }
+            },
+            100,
+            this
+        );
+    },
     save: function(isApply) {
         // Due to the number of Snort rules, it takes too long to send everything back.
         // Instead, we send all settings except rules and variables.  Rules and variables
