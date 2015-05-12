@@ -288,7 +288,7 @@ Ext.define('Webui.config.email', {
                     style: "margin-left: 50px;",
                     defaults: {
                         labelWidth: 230,
-                        labelAlign: 'right',
+                        labelAlign: 'right'
                     },
                     items: [{
                         xtype: 'textfield',

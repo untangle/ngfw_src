@@ -210,7 +210,7 @@ Ext.define('Ung.Reports', {
                     height:60,
                     style: 'font-family:sans-serif;font-weight:bold;font-size:37px;padding-left:15px;background-color:#F0F0F0;',
                     text: i18n._('Reports'),
-                    region: 'center',
+                    region: 'center'
                 }, {
                     xtype:'panel',
                     region: 'east',
@@ -848,7 +848,7 @@ Ext.define('Ung.ReportDetails', {
                 menuDisabled: true,
                 renderer: Ext.bind(function(value, medata, record) {
                     return '<a href="javascript:reports.getDrilldownTableOfContents(\''+ type + '\', \''+ value + '\')">' + Ext.String.htmlEncode(value) + '</a>';
-                },this),
+                },this)
             }],
             title:listTitle,
             height: 500,
@@ -1147,7 +1147,7 @@ Ext.define('Ung.ReportDetails', {
                         xtype: 'label',
                         text: this.i18n._('Key Statistics'),
                         style: 'font-weight: bold;padding-left:3px;',
-                        flex: 1,
+                        flex: 1
                     }, {
                         xtype:'button',
                         tooltip:this.i18n._('Export Excel'),

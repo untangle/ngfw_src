@@ -792,7 +792,7 @@ Ext.define('Webui.untangle-base-webfilter.settings', {
                         }
                     }
                 }]
-            }],
+            }]
         });
         return this.panelAdvanced;
     },

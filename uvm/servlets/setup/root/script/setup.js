@@ -100,7 +100,7 @@ Ext.define('Ung.setupWizard.Welcome', {
                     name: 'login',
                     value: 'admin',
                     labelWidth: 150,
-                    style: {marginTop: '10px'},
+                    style: {marginTop: '10px'}
                 }, {
                     xtype: 'textfield',
                     inputType: 'password',
@@ -158,7 +158,7 @@ Ext.define('Ung.setupWizard.ServerSettings', {
         Ext.apply(this, config);
         this.panel = Ext.create('Ext.container.Container', {
             defaults: {
-                margin: '20 0 0 20',
+                margin: '20 0 0 20'
             },
             items: [{
                 xtype: 'component',
@@ -281,8 +281,7 @@ Ext.define('Ung.setupWizard.ServerSettings', {
             }, this, [handler]);
             Ung.Setup.authenticate(password, afterFn);
         },this ), password, adminEmail);
-    },
-
+    }
 });
 
 // Setup Wizard - Step 2 (Remap Interfaces)

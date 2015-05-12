@@ -359,7 +359,7 @@ Ext.define("Ung.Node", {
             layout: 'hbox',
             style: {marginTop: '5px'},
             defaults: {
-                style: {marginLeft: '6px'},
+                style: {marginLeft: '6px'}
             },
             items: [{
                 xtype: "button",

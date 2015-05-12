@@ -446,7 +446,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                         },
                         items: [{
                             xtype: 'component',
-                            html: this.i18n._('These files can be used to configure your Remote Clients.'),
+                            html: this.i18n._('These files can be used to configure your Remote Clients.')
                         }, {
                             xtype: 'component',
                             name: 'downloadWindowsInstaller',
@@ -937,7 +937,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 title: this.i18n._('Server'),
                 flex: 0,
                 defaults: {
-                    labelWidth: 160,
+                    labelWidth: 160
                 },
                 items: [{
                     xtype: 'component',

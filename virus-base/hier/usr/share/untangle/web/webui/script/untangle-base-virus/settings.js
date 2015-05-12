@@ -77,7 +77,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
                 title: this.i18n._('About'),
                 html: this.aboutInfo,
                 hidden: (this.aboutInfo==null)
-            }],
+            }]
             
         });
     },
@@ -259,7 +259,7 @@ Ext.define('Webui.untangle-base-virus.settings', {
             helpSource: this.helpSourceName + '_email',
             title: this.i18n._('Email'),
             defaults: {
-                xtype: 'fieldset',
+                xtype: 'fieldset'
             },
             cls: 'ung-panel',
             autoScroll: true,

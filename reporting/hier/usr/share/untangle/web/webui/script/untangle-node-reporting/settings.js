@@ -724,6 +724,12 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             data: []
         });
         
+        var columnsStore = Ext.create('Ext.data.Store', {
+            sorters: "name",
+            fields: ["name"],
+            data: []
+        });
+        
         rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var data=[];
@@ -743,7 +749,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             addAtTop: false,
             title: this.i18n._("Manage Reports"),
             features: [{
-                ftype: 'grouping',
+                ftype: 'grouping'
             }],
             groupField: 'category',
             recordJavaClass: "com.untangle.node.reporting.ReportEntry",
@@ -752,7 +758,8 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 "enabled": true,
                 "readOnly": false,
                 "displayOrder": 500,
-                "preCompileResults": false
+                "preCompileResults": false,
+                "type": "PIE_GRAPH"
             },
             //dataFn: Ung.Main.getReportingManagerNew().getReportEntries,
             dataProperty: "reportEntries",
@@ -790,50 +797,74 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }]
         });
         this.gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
-            name: 'IPv4 Aliases',
+            name: 'Sql Conditions',
             height: 180,
             width: '100%',
             settingsCmp: this,
             addAtTop: false,
-            hasEdit: false,
             hasImportExport: false,
             dataIndex: 'conditions',
             columnsDefaultSortable: false,
             recordJavaClass: "com.untangle.uvm.node.SqlCondition",
             emptyRow: {
                 "column": "",
-                "value": "",
-                "operator": ""
+                "operator": "=",
+                "value": ""
+                
             },
             fields: ["column", "value", "operator"],
             columns: [{
                 header: this.i18n._("Column"),
                 dataIndex: 'column',
-                width: 200,
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: this.i18n._("[enter column]"),
-                    allowBlank: false
-                }
+                width: 200
             }, {
                 header: this.i18n._("Operator"),
                 dataIndex: 'operator',
-                width: 100,
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: this.i18n._("[enter operator]"),
-                    allowBlank: false
-                }
+                width: 100
             }, {
                 header: this.i18n._("Value"),
                 dataIndex: 'value',
                 flex: 1,
-                width: 200,
-                editor : {
-                    xtype: 'textfield',
-                    emptyText: this.i18n._("[enter value]"),
-                    allowBlank: false
-                }
+                width: 200
+            }],
+            rowEditorInputLines: [{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype: 'combo',
+                    emptyText: this.i18n._("[enter column]"),
+                    dataIndex: "column",
+                    fieldLabel: this.i18n._("Column"),
+                    typeAhead:true,
+                    allowBlank: false,
+                    valueField: "name",
+                    displayField: "name",
+                    queryMode: 'local',
+                    width: 300,
+                    store: columnsStore
+                },{
+                    xtype: 'label',
+                    html: this.i18n._("(Columns list is loaded for the entered Table')"),
+                    cls: 'boxlabel'
+                }]
+            }, {
+                xtype: 'combo',
+                emptyText: this.i18n._("[select operator]"),
+                dataIndex: "operator",
+                fieldLabel: this.i18n._("Operator"),
+                editable: false,
+                allowBlank: false,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
+            }, {
+                xtype: 'textfield',
+                dataIndex: "value",
+                fieldLabel: this.i18n._("Value"),
+                emptyText: this.i18n._("[no value]"),
+                width: '90%'
             }],
             setValue: function (val) {
                 var data = val || [];
@@ -856,6 +887,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 valueField: 'displayName',
                 displayField: 'displayName',
                 fieldLabel: this.i18n._('Category'),
+                emptyText: this.i18n._("[select category]"),
                 queryMode: 'local',
                 width: 400,
                 store: categoryStore
@@ -888,7 +920,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 minValue: 0,
                 maxValue: 100000,
                 allowBlank: false,
-                width: 400
+                width: 350
             }, {
                 xtype:'textfield',
                 name: "Table",
@@ -896,7 +928,15 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 allowBlank: false,
                 fieldLabel: this.i18n._("Table"),
                 emptyText: this.i18n._("[enter table]"),
-                width: 500
+                width: 500,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.gridReportEntries.rowEditor.getColumnsForTable(newValue);
+                        }, this),
+                        buffer: 600
+                    }
+                }
             }, {
                 xtype:'textfield',
                 name: "Units",
@@ -912,7 +952,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 editable: false,
                 fieldLabel: this.i18n._('Type'),
                 queryMode: 'local',
-                width: 400,
+                width: 350,
                 store: [["TEXT", this.i18n._("Text")],["PIE_GRAPH", this.i18n._("Pie Graph")],["TIME_GRAPH", this.i18n._("Time Graph")]],
                 listeners: {
                     "select": {
@@ -940,8 +980,17 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 editable: false,
                 fieldLabel: this.i18n._('Time Data Interval'),
                 queryMode: 'local',
-                width: 400,
-                store: ["AUTO","SECOND","MINUTE", "HOUR", "DAY", "WEEK", "MONTH"]
+                allowBlank: false,
+                width: 350,
+                store: [
+                    ["AUTO", this.i18n._("Auto")],
+                    ["SECOND", this.i18n._("Second")],
+                    ["MINUTE", this.i18n._("Minute")],
+                    ["HOUR", this.i18n._("Hour")],
+                    ["DAY", this.i18n._("Day")],
+                    ["WEEK", this.i18n._("Week")],
+                    ["MONTH", this.i18n._("Month")]
+                ]
             }, {
                 xtype: "container",
                 dataIndex: "timeDataColumns",
@@ -996,20 +1045,48 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 fieldLabel: this.i18n._('Order'),
                 queryMode: 'local',
                 width: 350,
-                store: [["", this.i18n._("None")], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
+                store: [[null, this.i18n._("None")], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
             }, {
                 xtype:'fieldset',
                 title: this.i18n._("Sql Conditions:"),
                 items:[this.gridSqlConditionsEditor]
             } ],
+            getColumnsForTable: Ext.bind(function(table) {
+                if(table != null && table.length > 2) {
+                    this.getRpcNode().getColumnsForTable(Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        var columns = [];
+                        for (var i=0; i< result.length; i++) {
+                            columns.push({ name: result[i]});
+                        }
+                        columnsStore.loadData(columns);
+                    }, this), table);
+                }
+            }, this),
+            populate: function(record, addMode) {
+                this.getColumnsForTable(record.get("table"));
+                Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
+            },
             syncComponents: function () {
                 var type=this.down('combo[dataIndex=type]').getValue();
+                var cmps = {
+                    pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
+                    pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
+                    timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
+                    timeDataColumns: this.down('[dataIndex=timeDataColumns]')
+                };
                 
-                this.down('[dataIndex=pieGroupColumn]').setVisible(type=="PIE_GRAPH");
-                this.down('[dataIndex=pieSumColumn]').setVisible(type=="PIE_GRAPH");
+                cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
+                cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
+
+                cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
+                cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
                 
-                this.down('[dataIndex=timeDataInterval]').setVisible(type=="TIME_GRAPH");
-                this.down('[dataIndex=timeDataColumns]').setVisible(type=="TIME_GRAPH");
+                cmps.timeDataInterval.setVisible(type=="TIME_GRAPH");
+                cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH");
+                
+                cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
+                cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
             }
         }));
     },    

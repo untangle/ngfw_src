@@ -188,7 +188,7 @@ Ext.define('Webui.config.network', {
                     if(deviceStatus) {
                         if(!refresh) {
                             currentRow.set({
-                                "deviceName": deviceStatus.deviceName,
+                                "deviceName": deviceStatus.deviceName
                             });
                         }
                         currentRow.set({
@@ -427,7 +427,7 @@ Ext.define('Webui.config.network', {
                 dataIndex:'txdrop',
                 width: 110,
                 flex: 1
-            }],
+            }]
         });
 
         this.gridArpLists = Ext.create( 'Ung.grid.Panel', {
@@ -631,7 +631,7 @@ Ext.define('Webui.config.network', {
                 layout: { type: 'vbox', align: 'stretch' },
                 border: false,
                 items: [this.gridIfconfigLists, this.gridArpLists, this.gridWirelessLists]
-            }],
+            }]
         });
         
         this.subCmps.push(this.winInterfaceStatus);
@@ -5676,7 +5676,7 @@ Ext.define("Webui.config.network.NetworkTest", {
                 xtype: "component",
                 flex: 0,
                 html: this.testDescription,
-                margin: '10 10 10 10',
+                margin: '10 10 10 10'
             },{
                 name: 'testpanel',
                 xtype: "panel",
