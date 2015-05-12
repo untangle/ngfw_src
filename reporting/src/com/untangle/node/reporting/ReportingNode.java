@@ -33,4 +33,6 @@ public interface ReportingNode extends Node, HostnameLookup
     ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
 
     String[] getColumnsForTable( String tableName );
+
+    String[] getTables();
 }
