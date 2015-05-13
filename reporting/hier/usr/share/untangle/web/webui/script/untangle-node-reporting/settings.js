@@ -724,12 +724,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             data: []
         });
         
-        var columnsStore = Ext.create('Ext.data.Store', {
-            sorters: "name",
-            fields: ["name"],
-            data: []
-        });
-        
         rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var data=[];
@@ -741,7 +735,41 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             }
             categoryStore.loadData(data);
         }, this));
+
+        var tablesStore = Ext.create('Ext.data.Store', {
+            sorters: "name",
+            fields: ["name"],
+            data: []
+        });
+
+        this.getRpcNode().getTables(Ext.bind(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            var tables = [];
+            for (var i=0; i< result.length; i++) {
+                tables.push({ name: result[i]});
+            }
+            tablesStore.loadData(tables);
+        }, this));
         
+        var columnsStore = Ext.create('Ext.data.Store', {
+            sorters: "name",
+            fields: ["name"],
+            data: []
+        });
+
+        var getColumnsForTable = Ext.bind(function(table) {
+            if(table != null && table.length > 2) {
+                this.getRpcNode().getColumnsForTable(Ext.bind(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    var columns = [];
+                    for (var i=0; i< result.length; i++) {
+                        columns.push({ name: result[i]});
+                    }
+                    columnsStore.loadData(columns);
+                }, this), table);
+            }
+        }, this);
+
         this.gridReportEntries= Ext.create('Ung.grid.Panel',{
             name: 'Manage Reports',
             settingsCmp: this,
@@ -761,7 +789,6 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 "preCompileResults": false,
                 "type": "PIE_GRAPH"
             },
-            //dataFn: Ung.Main.getReportingManagerNew().getReportEntries,
             dataProperty: "reportEntries",
             sortField: 'displayOrder',
             columnsDefaultSortable: false,
@@ -841,9 +868,9 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     valueField: "name",
                     displayField: "name",
                     queryMode: 'local',
-                    width: 300,
+                    width: 350,
                     store: columnsStore
-                },{
+                }, {
                     xtype: 'label',
                     html: this.i18n._("(Columns list is loaded for the entered Table')"),
                     cls: 'boxlabel'
@@ -889,7 +916,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 fieldLabel: this.i18n._('Category'),
                 emptyText: this.i18n._("[select category]"),
                 queryMode: 'local',
-                width: 400,
+                width: 500,
                 store: categoryStore
             }, {
                 xtype:'textfield',
@@ -898,45 +925,36 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 allowBlank: false,
                 fieldLabel: this.i18n._("Title"),
                 emptyText: this.i18n._("[enter title]"),
-                width: 500
-            }, {
-                xtype:'checkbox',
-                name: "Enabled",
-                dataIndex: "enabled",
-                fieldLabel: this.i18n._("Enabled")
+                width: '100%'
             }, {
                 xtype:'textfield',
                 name: "Description",
                 dataIndex: "description",
                 fieldLabel: this.i18n._("Description"),
                 emptyText: this.i18n._("[no description]"),
-                width: 500
+                width: '100%'
             }, {
-                xtype: 'numberfield',
-                name: 'Display Order',
-                fieldLabel: this.i18n._('Display Order'),
-                dataIndex: "displayOrder",
-                allowDecimals: false,
-                minValue: 0,
-                maxValue: 100000,
-                allowBlank: false,
-                width: 350
-            }, {
-                xtype:'textfield',
-                name: "Table",
-                dataIndex: "table",
-                allowBlank: false,
-                fieldLabel: this.i18n._("Table"),
-                emptyText: this.i18n._("[enter table]"),
-                width: 500,
-                listeners: {
-                    "change": {
-                        fn: Ext.bind(function(elem, newValue) {
-                            this.gridReportEntries.rowEditor.getColumnsForTable(newValue);
-                        }, this),
-                        buffer: 600
-                    }
-                }
+                xtype: 'container',
+                layout: 'column',
+                margin: '5 0 5 0',
+                items: [{
+                    xtype:'checkbox',
+                    name: "Enabled",
+                    dataIndex: "enabled",
+                    fieldLabel: this.i18n._("Enabled"),
+                    labelWidth: 150
+                }, {
+                    xtype: 'numberfield',
+                    name: 'Display Order',
+                    fieldLabel: this.i18n._('Display Order'),
+                    dataIndex: "displayOrder",
+                    allowDecimals: false,
+                    minValue: 0,
+                    maxValue: 100000,
+                    allowBlank: false,
+                    width: 282,
+                    style: { marginLeft: '50px'}
+                }]
             }, {
                 xtype:'textfield',
                 name: "Units",
@@ -946,7 +964,28 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 width: 500
             }, {
                 xtype: 'combo',
+                name: "Table",
+                dataIndex: "table",
+                allowBlank: false,
+                fieldLabel: this.i18n._("Table"),
+                emptyText: this.i18n._("[enter table]"),
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                width: 500,
+                store: tablesStore,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            getColumnsForTable(newValue);
+                        }, this),
+                        buffer: 600
+                    }
+                }
+            }, {
+                xtype: 'combo',
                 name: 'Type',
+                margin: '10 0 10 0',
                 dataIndex: "type",
                 allowBlank: false,
                 editable: false,
@@ -1032,39 +1071,34 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
                 }
             }, {
-                xtype:'textfield',
-                name: "orderByColumn",
-                dataIndex: "orderByColumn",
-                fieldLabel: this.i18n._("Order By Column"),
-                width: 500
-            },{
-                xtype: 'combo',
-                name: 'orderDesc',
-                dataIndex: "orderDesc",
-                editable: false,
-                fieldLabel: this.i18n._('Order'),
-                queryMode: 'local',
-                width: 350,
-                store: [[null, this.i18n._("None")], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
+                xtype: 'container',
+                layout: 'column',
+                margin: '10 0 10 0',
+                items: [{
+                    xtype:'textfield',
+                    name: "orderByColumn",
+                    dataIndex: "orderByColumn",
+                    fieldLabel: this.i18n._("Order By Column"),
+                    labelWidth: 150,
+                    width: 350
+                },{
+                    xtype: 'combo',
+                    name: 'orderDesc',
+                    dataIndex: "orderDesc",
+                    editable: false,
+                    fieldLabel: this.i18n._('Order Direction'),
+                    queryMode: 'local',
+                    width: 300,
+                    style: { marginLeft: '10px'},
+                    store: [[null, ""], [false, this.i18n._("Ascending")], [true, this.i18n._("Descending")]]
+                }]
             }, {
                 xtype:'fieldset',
                 title: this.i18n._("Sql Conditions:"),
                 items:[this.gridSqlConditionsEditor]
             } ],
-            getColumnsForTable: Ext.bind(function(table) {
-                if(table != null && table.length > 2) {
-                    this.getRpcNode().getColumnsForTable(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        var columns = [];
-                        for (var i=0; i< result.length; i++) {
-                            columns.push({ name: result[i]});
-                        }
-                        columnsStore.loadData(columns);
-                    }, this), table);
-                }
-            }, this),
             populate: function(record, addMode) {
-                this.getColumnsForTable(record.get("table"));
+                getColumnsForTable(record.get("table"));
                 Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
             },
             syncComponents: function () {
