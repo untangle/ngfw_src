@@ -234,7 +234,7 @@ class OpenVpnTests(unittest2.TestCase):
         flushEvents()
         query = None;
         for q in node.getStatusEventsQueries():
-            if q['name'] == 'Connections': query = q;
+            if q['name'] == 'Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
         assert(events != None)

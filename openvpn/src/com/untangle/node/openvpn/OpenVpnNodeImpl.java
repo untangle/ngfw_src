@@ -73,7 +73,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
         this.connectors = new PipelineConnector[] { connector };
         
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("OpenVPN Events"), "openvpn_events", new SqlCondition[]{});
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("Events"), "openvpn_events", new SqlCondition[]{});
     }
 
     @Override
