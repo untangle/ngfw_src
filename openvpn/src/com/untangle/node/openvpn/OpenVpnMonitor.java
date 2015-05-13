@@ -39,7 +39,7 @@ class OpenVpnMonitor implements Runnable
     private static final long   SLEEP_TIME_MSEC = 5 * 1000;
 
     /* Log every 5 minutes */
-    private static final long   LOG_TIME_MSEC = 5 * 60 * 1000;
+    private static final long   KILL_UNDEF_TIME_MSEC = 5 * 60 * 1000;
 
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
@@ -63,8 +63,8 @@ class OpenVpnMonitor implements Runnable
 
     protected static final Logger logger = Logger.getLogger( OpenVpnMonitor.class );
 
-    private Map<Key,Stats> statusMap    = new ConcurrentHashMap<Key,Stats>();
-    private Map<String,Stats> activeMap = new ConcurrentHashMap<String,Stats>();
+    /* Maps the active client names to their current state and stats */
+    private Map<String,ClientState> activeMap = null;
 
     private final OpenVpnNodeImpl node;
 
@@ -84,56 +84,48 @@ class OpenVpnMonitor implements Runnable
 
     public void run()
     {
-        logger.debug( "Starting" );
-
-        /* Flush both of these maps */
-        statusMap = new ConcurrentHashMap<Key,Stats>();
-        activeMap = new ConcurrentHashMap<String,Stats>();
-
-        Date nextUpdate = new Date(( new Date()).getTime() + LOG_TIME_MSEC );
-
         if ( !isAlive ) {
             logger.error( "died before starting" );
             return;
         }
 
-        Date now = new Date();
+        logger.debug( "Starting" );
+        activeMap = new ConcurrentHashMap<String,ClientState>();
+
+        long nextKillUndefTime = System.currentTimeMillis() + KILL_UNDEF_TIME_MSEC;
+        long now = System.currentTimeMillis();
 
         while ( true ) {
+            if ( !isAlive )
+                break;
             try {
                 Thread.sleep( SLEEP_TIME_MSEC );
             } catch ( InterruptedException e ) {
                 logger.info( "openvpn monitor was interrupted" );
             }
-
-            /* Check if the node is still running */
             if ( !isAlive )
                 break;
-
-            /* Only log when enabled */
-            if ( !isEnabled ) {
-                flushLogEvents();
-                continue;
-            }
-
-            /* Update the current time */
-            now.setTime( System.currentTimeMillis() );
 
             // Grab lock, such that a concurrent read of the "activeMap"
             // doesn't happen during an update
             synchronized(this) {
                 try {
                     /* Cleanup UNDEF sessions every time you are going to update the stats */
-                    boolean killUndef = now.after( nextUpdate );
-                    updateServerStatus( killUndef );
+                    now = System.currentTimeMillis();
+
+                    if ( now > nextKillUndefTime )
+                        updateServerStatus( true );
+                    else
+                        updateServerStatus( false );
+                        
                 } catch (java.net.ConnectException e) {
                     logger.debug( "Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
                 } catch ( Exception e ) {
                     logger.info( "Error updating status", e );
                 }
 
-                if ( now.after( nextUpdate )) {
-                    nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
+                if ( now > nextKillUndefTime ) {
+                    nextKillUndefTime = System.currentTimeMillis() + KILL_UNDEF_TIME_MSEC;
                 }
             }
 
@@ -142,13 +134,11 @@ class OpenVpnMonitor implements Runnable
              */
             checkRemoteServerProcesses();
             checkServerProcess();
-                
-            /* Check if the node is still running */
-            if ( !isAlive )
-                break;
         }
 
-        /* Flush out all of the log events that are remaining */
+        /* Flush out DISCONNECTS for all connected clients */
+        for(ClientState stats : activeMap.values()) 
+            stats.isActive = false;
         flushLogEvents();
 
         logger.debug( "Finished" );
@@ -160,27 +150,28 @@ class OpenVpnMonitor implements Runnable
      */
     public synchronized List<OpenVpnStatusEvent> getOpenConnectionsAsEvents()
     {
-        Date now = new Date();
         List<OpenVpnStatusEvent> list = new ArrayList<OpenVpnStatusEvent>();
-        for(Stats stats : activeMap.values()) {
-            if(stats.isActive) {
-                OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
-                                                                         stats.key.address,
-                                                                         stats.key.port,
-                                                                         stats.key.poolAddress,
-                                                                         stats.key.name,
-                                                                         stats.bytesRxTotal,
-                                                                         stats.bytesTxTotal,
-                                                                         stats.bytesRxDelta,
-                                                                         stats.bytesTxDelta);
-                statusEvent.setEnd(null);
-                list.add(statusEvent);
+
+        synchronized( activeMap ) {
+            for(ClientState stats : activeMap.values()) {
+                if(stats.isActive) {
+                    OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.start.getTime()),
+                                                                             stats.address,
+                                                                             stats.port,
+                                                                             stats.poolAddress,
+                                                                             stats.name,
+                                                                             stats.bytesRxTotal,
+                                                                             stats.bytesTxTotal,
+                                                                             stats.bytesRxDelta,
+                                                                             stats.bytesTxDelta);
+                    statusEvent.setEnd(null);
+                    list.add(statusEvent);
+                }
             }
         }
 
         return list;
     }
-
 
     public synchronized void start()
     {
@@ -256,7 +247,7 @@ class OpenVpnMonitor implements Runnable
             writeCommand( out, STATUS_CMD );
 
             /* Set all of the stats to not updated */
-            for ( Stats stats : statusMap.values() ) stats.updated = false;
+            for ( ClientState stats : activeMap.values() ) stats.updated = false;
 
             /* Preload, so it is is safe to send commands while processeing */
             List<String> clientStatus = new LinkedList<String>();
@@ -270,7 +261,7 @@ class OpenVpnMonitor implements Runnable
             for ( String line : clientStatus ) processLine( line );
 
             /* Log disconnects and connects */
-            logEvents();
+            flushLogEvents();
 
             /* Check for any dead connections */
             killDeadConnections( out, in );
@@ -287,89 +278,51 @@ class OpenVpnMonitor implements Runnable
     {
         Timestamp now = new Timestamp((new Date()).getTime());
 
-        for ( Stats stats : activeMap.values() ) {
-            OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
-                                                                     stats.key.address,
-                                                                     stats.key.port,
-                                                                     stats.key.poolAddress,
-                                                                     stats.key.name,
+        for ( ClientState stats : activeMap.values() ) {
+            OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.start.getTime()),
+                                                                     stats.address,
+                                                                     stats.port,
+                                                                     stats.poolAddress,
+                                                                     stats.name,
                                                                      stats.bytesRxTotal,
                                                                      stats.bytesTxTotal,
                                                                      stats.bytesRxDelta,
                                                                      stats.bytesTxDelta);
             statusEvent.setEnd( now );
 
-            if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
-            node.logEvent( statusEvent );
-        }
-
-        activeMap.clear();
-    }
-
-    private void logEvents()
-    {
-        Timestamp now = new Timestamp((new Date()).getTime());
-
-        for ( Stats stats : statusMap.values()) {
-            OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
-                                                                     stats.key.address,
-                                                                     stats.key.port,
-                                                                     stats.key.poolAddress,
-                                                                     stats.key.name,
-                                                                     stats.bytesRxTotal,
-                                                                     stats.bytesTxTotal,
-                                                                     stats.bytesRxDelta,
-                                                                     stats.bytesTxDelta);
-            statusEvent.setEnd( now );
-            
-            if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
+            if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.name );
             node.logEvent( statusEvent );
         }
     }
 
     private void killDeadConnections( BufferedWriter out, BufferedReader in ) throws IOException
     {
-        for ( Iterator<Stats> iter = statusMap.values().iterator() ; iter.hasNext() ; ) {
-            Stats stats = iter.next();
+        for ( Iterator<ClientState> iter = activeMap.values().iterator() ; iter.hasNext() ; ) {
+            ClientState stats = iter.next();
 
             if ( stats.isActive && stats.updated ) continue;
 
             /* Remove any nodes that are not active */
             iter.remove();
 
-            /* Remove the active entries from the active map */
-            if ( stats.isActive ) activeMap.remove( stats.key.name );
-
             /* If this client was in the current list of clients, then kill it */
             if ( stats.updated ) {
-                String command = KILL_CMD + " " + stats.key.address.getHostAddress() + ":" + stats.key.port;
+                String command = KILL_CMD + " " + stats.address.getHostAddress() + ":" + stats.port;
                 writeCommandAndFlush( out, in, command );
             }
 
             /* log event */
-            OpenVpnEvent connectEvent = new OpenVpnEvent( stats.key.address, stats.key.poolAddress, stats.key.name, OpenVpnEvent.EventType.DISCONNECT );
+            logger.info( "OpenVPN client disconnected: " + stats.name );
+            OpenVpnEvent connectEvent = new OpenVpnEvent( stats.address, stats.poolAddress, stats.name, OpenVpnEvent.EventType.DISCONNECT );
             node.logEvent( connectEvent );
 
             /* set the openvpn username of the host back to null */
-            if ( stats.key != null ) {
-                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.key.poolAddress, false );
+            if ( stats.name != null ) {
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.poolAddress, false );
                 if ( entry != null ) {
                     entry.setUsernameOpenvpn( null );
                 }
             }
-        }
-
-        for ( Iterator<Stats> iter = activeMap.values().iterator() ; iter.hasNext() ; ) {
-            Stats stats = iter.next();
-
-            if ( stats.isActive ) continue;
-
-            logger.warn( "Inactive node in the active map[" + stats.key + "]" );
-
-            /* Remove any nodes that are not active */
-            iter.remove();
-
-            statusMap.remove( stats.key );
         }
     }
 
@@ -431,8 +384,14 @@ class OpenVpnMonitor implements Runnable
             entry.setUsernameOpenvpn( name );
         }
         
-        Key key = new Key( name, address, port, poolAddress, start );
-        Stats stats = statusMap.get( key );
+        ClientState stats = activeMap.get( name );
+
+        if ( stats != null ) {
+            if ( logger.isDebugEnabled()) logger.debug( "OpenVPN client status updated: " + stats.name );
+            stats.update( bytesRx, bytesTx );
+
+            return;
+        }
 
         if ( stats == null ) {
             node.incrementConnectCount();
@@ -440,49 +399,14 @@ class OpenVpnMonitor implements Runnable
             OpenVpnEvent connectEvent = new OpenVpnEvent( address, poolAddress, name, OpenVpnEvent.EventType.CONNECT );
             node.logEvent( connectEvent );
             
-            stats  = activeMap.get( name );
-            if ( stats == null ) {
-                if ( logger.isDebugEnabled()) logger.debug( "New vpn client session: inserting key " + key );
-                stats = new Stats( key, bytesRx, bytesTx );
-                stats.isActive = true;
-                stats.updated = true;
-                activeMap.put( name, stats );
-                statusMap.put( key, stats );
-            } else {
-                /* This is a new session */
-                if ( stats.key.start.after( start )) {
-                    if ( logger.isDebugEnabled()) {
-                        logger.debug( "newer vpn client [" + stats.key + "] session: not using key " + key );
-                    }
-                    /* Create a disable stats */
-                    stats = new Stats( key, bytesRx, bytesTx );
-                    stats.isActive = false;
-                    stats.updated = true;
-                    statusMap.put( key, stats );
-                } else {
-                    if ( logger.isDebugEnabled()) {
-                        logger.debug( "older vpn client [" + stats.key + "] session: inserting key " + key );
-                    }
-                    /* This is an older session */
+            stats = new ClientState( name, address, port, poolAddress, start, bytesRx, bytesTx );
+            stats.isActive = true;
+            stats.updated = true;
 
-                    /* Disable the current stats */
-                    stats.isActive = false;
-                    stats.updated  = true;
-
-                    /* Create new stats and replace them in the map */
-                    stats = new Stats( key, bytesRx, bytesTx );
-                    stats.isActive = true;
-                    stats.updated = true;
-
-                    /* Replace the status map */
-                    statusMap.put( key, stats );
-                    activeMap.put( name, stats );
-                }
-            }
-        } else {
-            if ( logger.isDebugEnabled()) logger.debug( "current vpn client [" + stats.key + "] updating." );
-            stats.update( bytesRx, bytesTx );
+            logger.info( "OpenVPN client connected: " + stats.name );
+            activeMap.put( name, stats );
         }
+
     }
 
     private void writeCommand( BufferedWriter out, String command ) throws IOException
@@ -583,95 +507,34 @@ class OpenVpnMonitor implements Runnable
 
 }
 
-class Key
+class ClientState
 {
-    final String name;
-    final InetAddress address;
-    final InetAddress poolAddress;
-    final int port;
-    final Date start;
-    final int hashCode;
+    String name; /* The client name */
+    InetAddress address; /* The remove client address */
+    InetAddress poolAddress; /* The pool address given to the client */
+    int port; /* The remote client port */
+    Date start; /* The date the client connected */
+    long bytesRxDelta; /* Total bytes received since the last event */
+    long bytesRxTotal; /* Total bytes received */
+    long bytesTxDelta; /* Total bytes transferred since the last event  */
+    long bytesTxTotal; /* Total bytes transferred */
+    Date lastUpdate; /* date of last update */
+    boolean updated; /* stores whether this client state was updated/seen when last communicating with openvpn */ 
+    boolean isActive; /* stores if this client is active/connected */
 
-    protected Key( String name, InetAddress address, int port, InetAddress poolAddress, Date start )
+    protected ClientState( String name, InetAddress address, int port, InetAddress poolAddress, Date start, long bytesRx, long bytesTx )
     {
-        this.name     = name;
-        this.address  = address;
-        this.poolAddress  = poolAddress;
-        this.port     = port;
-        this.start    = start;
-        this.hashCode = calculateHashCode();
-    }
-
-    public String toString()
-    {
-        return this.name + "@" + address.getHostAddress() + ":" + port;
-    }
-
-    public boolean equals( Object o )
-    {
-        if ( !(o instanceof Key )) return false;
-
-        Key k = (Key)o;
-
-        if (( k.port == this.port ) &&
-            k.start.equals( this.start ) &&
-            k.address.equals( this.address ) &&
-            k.name.equals( this.name )) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public int hashCode()
-    {
-        return hashCode;
-    }
-
-    private int calculateHashCode()
-    {
-        int result = 17;
-        result = ( 37 * result ) + this.port;
-        result = ( 37 * result ) + this.name.hashCode();
-        result = ( 37 * result ) + this.start.hashCode();
-        result = ( 37 * result ) + this.address.hashCode();
-
-        return result;
-    }
-
-}
-
-class Stats
-{
-    final Key key;
-
-    /* Total bytes received since the last event */
-    long bytesRxDelta;
-
-    /* Total bytes received */
-    long bytesRxTotal;
-
-    /* Total bytes transferred since the last event  */
-    long bytesTxDelta;
-
-    /* Total bytes transferred */
-    long bytesTxTotal;
-
-    Date lastUpdate;
-
-    boolean updated;
-
-    boolean isActive;
-
-    protected Stats( Key key, long bytesRx, long bytesTx )
-    {
-        this.key          = key;
-        this.bytesRxTotal = bytesRx;
+        this.name          = name;
+        this.address       = address;
+        this.port          = port;
+        this.poolAddress   = poolAddress;
+        this.start         = start;
+        this.bytesRxTotal  = bytesRx;
         this.bytesRxDelta  = bytesRx;
-        this.bytesTxTotal = bytesTx;
+        this.bytesTxTotal  = bytesTx;
         this.bytesTxDelta  = bytesTx;
-        this.lastUpdate   = new Date();
-        this.isActive     = true;
+        this.lastUpdate    = new Date();
+        this.isActive      = true;
     }
 
     void update( long newBytesRxTotal, long newBytesTxTotal )
