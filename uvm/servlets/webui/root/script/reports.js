@@ -2,6 +2,8 @@ Ext.define('Ung.panel.Reports', {
     extend: 'Ext.panel.Panel',
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
+    extraConditions: null,
+    reportEntry: null,
     beforeDestroy: function() {
         Ext.destroy(this.subCmps);
         this.callParent(arguments);
@@ -29,8 +31,14 @@ Ext.define('Ung.panel.Reports', {
             title: i18n._('End date and time'),
             dateTimeEmptyText: i18n._('end date and time')
         });
+        
+        this.extraConditionsWindow = Ext.create('Ung.window.ExtraConditions', {
+            panelReports: this
+        });
+        
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
+        this.subCmps.push(this.extraConditionsWindow);
         
         var reportEntriesStore = Ext.create('Ext.data.Store', {
             fields: ["title"],
@@ -104,6 +112,20 @@ Ext.define('Ung.panel.Reports', {
                     }, this)
                 }, {
                     xtype: 'button',
+                    name: "extraConditions",
+                    text: i18n._('Add Conditions'),
+                    initialLabel:  i18n._('Add Conditions'),
+                    width: 132,
+                    tooltip: i18n._('Add extra SQL conditions to report'),
+                    handler: Ext.bind(function(button) {
+                        if(!this.reportEntry) {
+                            return;
+                        }
+                        this.extraConditionsWindow.getColumnsForTable(this.reportEntry.table);
+                        this.extraConditionsWindow.show();
+                    }, this)
+                }, {
+                    xtype: 'button',
                     text: i18n._('Refresh'),
                     name: "refresh",
                     tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
@@ -134,6 +156,9 @@ Ext.define('Ung.panel.Reports', {
         this.chartContainer = this.down("container[name=chartContainer]");
     },
     loadReport: function(reportEntry) {
+        if(this.extraConditions) {
+            this.extraConditionsWindow.clearConditions();
+        }
         this.reportEntry = reportEntry;
         this.chartContainer.removeAll();
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
@@ -254,25 +279,6 @@ Ext.define('Ung.panel.Reports', {
                         x: 10,
                         y: 40
                     }],
-                    /*tbar: [ '->', {
-                        xtype: 'segmentedbutton',
-                        width: 200,
-                        items: [{
-                            text: 'Stack'
-                        }, {
-                            text: 'Group',
-                            pressed: true
-                        }],
-                        listeners: {
-                            toggle: Ext.bind(function(segmentedButton, button, pressed) {
-                                var chart = this.chartContainer.down("[name=chart]"),
-                                series = chart.getSeries()[0],
-                                value = segmentedButton.getValue();
-                                series.setStacked(value === 0);
-                                chart.redraw(); 
-                            }, this)
-                        }
-                    }],*/
                     interactions: ['itemhighlight'],
                     axes: [{
                         type: 'numeric',
@@ -317,7 +323,7 @@ Ext.define('Ung.panel.Reports', {
                 };
             }
             this.chartContainer.add(chart); 
-        }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, -1);
+        }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
     },
     refreshHandler: function (forceFlush) {
         if(!this.reportEntry) {
@@ -332,7 +338,7 @@ Ext.define('Ung.panel.Reports', {
                     return;
                 }
                 this.chartContainer.down("[name=chart]").getStore().loadData(result.list);
-            }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, -1);
+            }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
             
         }, this));
     },
@@ -350,7 +356,7 @@ Ext.define('Ung.panel.Reports', {
                 if(this!=null && this.rendered && this.autoRefreshEnabled) {
                     Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
                 }
-            }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, -1);
+            }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
             
         }, this));
     },
