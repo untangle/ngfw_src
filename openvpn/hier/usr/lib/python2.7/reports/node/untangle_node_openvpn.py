@@ -48,6 +48,7 @@ class OpenVpn(Node):
 
     def create_tables(self):
         self.__create_openvpn_stats( )
+        self.__create_openvpn_events_table( )
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -87,6 +88,17 @@ CREATE TABLE reports.openvpn_stats (
     client_name text,
     event_id bigserial
 )""",["event_id"],["time_stamp"])
+
+    @sql_helper.print_timing
+    def __create_openvpn_events_table( self ):
+        sql_helper.create_table("""\
+CREATE TABLE reports.openvpn_events (
+    time_stamp timestamp without time zone,
+    remote_address inet,
+    pool_address inet,
+    client_name text,
+    type text
+)""",[],["time_stamp"])
 
 class OpenvpnHighlight(Highlight):
     def __init__(self, name):

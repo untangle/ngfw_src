@@ -201,8 +201,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'end_time',
-                sortType: 'asTimestamp'
+                name: 'type'
             }, {
                 name: 'client_name'
             }, {
@@ -211,19 +210,9 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
             }, {
                 name: 'pool_address',
                 sortType: 'asIp'
-            }, {
-                name: 'tx_bytes',
-                convert: function(val) {
-                    return parseFloat(val) / 1024;
-                }
-            }, {
-                name: 'rx_bytes',
-                convert: function(val) {
-                    return parseFloat(val) / 1024;
-                }
             }],
             columns: [{
-                header: this.i18n._("Start Time"),
+                header: this.i18n._("Timestamp"),
                 width: Ung.Util.timestampFieldWidth,
                 sortable: true,
                 dataIndex: 'time_stamp',
@@ -232,14 +221,9 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 }, this ),
                 filter: null
             }, {
-                header: this.i18n._("End Time"),
-                width: Ung.Util.timestampFieldWidth,
+                header: this.i18n._("Type"),
                 sortable: true,
-                dataIndex: 'end_time',
-                renderer: Ext.bind(function(value) {
-                    return i18n.timestampFormat(value);
-                }, this ),
-                filter: null
+                dataIndex: 'type'
             }, {
                 header: this.i18n._("Client Name"),
                 sortable: true,
@@ -252,28 +236,6 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                 header: this.i18n._("Pool Address"),
                 sortable: true,
                 dataIndex: 'pool_address'
-            }, {
-                header: this.i18n._("KB Sent"),
-                width: 80,
-                sortable: true,
-                dataIndex: 'tx_bytes',
-                renderer: Ext.bind(function( value ) {
-                    return Math.round(( value + 0.0 ) * 10 ) / 10;
-                }, this ),
-                filter: {
-                    type: 'numeric'
-                }
-            }, {
-                header: this.i18n._("KB Received"),
-                width: 80,
-                sortable: true,
-                dataIndex: 'rx_bytes',
-                renderer: Ext.bind(function( value ) {
-                    return Math.round(( value + 0.0 ) * 10 ) / 10;
-                }, this ),
-                filter: {
-                    type: 'numeric'
-                }
             }]
         });
     },

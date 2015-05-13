@@ -48,7 +48,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     private final EventHandler handler;
     
-    private EventLogQuery connectEventsQuery;
+    private EventLogQuery allEventQuery;
 
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
@@ -73,9 +73,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 32 - 2);
         this.connectors = new PipelineConnector[] { connector };
         
-        // FIXME
-        this.connectEventsQuery = null;
-        //this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Connections"), "SELECT start_time as time_stamp,client_name,pool_address,max(end_time) as end_time,sum(rx_bytes) as rx_bytes,sum(tx_bytes) as tx_bytes,max(host(remote_address)) as remote_address FROM reports.openvpn_stats GROUP BY start_time,client_name,pool_address ORDER BY time_stamp DESC");
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("OpenVPN Events"), "openvpn_events", new SqlCondition[]{});
     }
 
     @Override
@@ -270,9 +268,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
 
     public EventLogQuery[] getStatusEventsQueries()
     {
-        return new EventLogQuery[] {  };
-        //FIXME
-        //return new EventLogQuery[] { this.connectEventsQuery };
+        return new EventLogQuery[] { this.allEventQuery };
     }
 
     public List<OpenVpnStatusEvent> getActiveClients()

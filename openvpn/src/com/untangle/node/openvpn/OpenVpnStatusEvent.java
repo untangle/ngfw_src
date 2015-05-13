@@ -38,6 +38,19 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
         this.port        = port;
     }
 
+    public OpenVpnStatusEvent( Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName, long bytesRxTotal, long bytesTxTotal, long bytesRxDelta, long bytesTxDelta )
+    {
+        this.start       = start;
+        this.address     = address;
+        this.poolAddress = poolAddress;
+        this.clientName  = clientName;
+        this.port        = port;
+        this.bytesRxTotal = bytesRxTotal;
+        this.bytesTxTotal = bytesTxTotal;
+        this.bytesRxDelta = bytesRxDelta;
+        this.bytesTxDelta = bytesTxDelta;
+    }
+    
     public OpenVpnStatusEvent( OpenVpnStatusEvent oldEvent )
     {
         this.address = oldEvent.address;

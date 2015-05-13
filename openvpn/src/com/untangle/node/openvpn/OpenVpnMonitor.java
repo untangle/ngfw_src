@@ -161,16 +161,24 @@ class OpenVpnMonitor implements Runnable
     public synchronized List<OpenVpnStatusEvent> getOpenConnectionsAsEvents()
     {
         Date now = new Date();
-        List<OpenVpnStatusEvent> ret = new ArrayList<OpenVpnStatusEvent>();
+        List<OpenVpnStatusEvent> list = new ArrayList<OpenVpnStatusEvent>();
         for(Stats stats : activeMap.values()) {
             if(stats.isActive) {
-                OpenVpnStatusEvent copy = stats.getCurrentStatusEventCopy(now);
-                copy.setEnd(null);
-                ret.add(copy);
+                OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
+                                                                         stats.key.address,
+                                                                         stats.key.port,
+                                                                         stats.key.poolAddress,
+                                                                         stats.key.name,
+                                                                         stats.bytesRxTotal,
+                                                                         stats.bytesTxTotal,
+                                                                         stats.bytesRxDelta,
+                                                                         stats.bytesTxDelta);
+                statusEvent.setEnd(null);
+                list.add(statusEvent);
             }
         }
 
-        return ret;
+        return list;
     }
 
 
@@ -248,7 +256,7 @@ class OpenVpnMonitor implements Runnable
             writeCommand( out, STATUS_CMD );
 
             /* Set all of the stats to not updated */
-            for ( Stats stats : statusMap.values()) stats.updated = false;
+            for ( Stats stats : statusMap.values() ) stats.updated = false;
 
             /* Preload, so it is is safe to send commands while processeing */
             List<String> clientStatus = new LinkedList<String>();
@@ -280,8 +288,19 @@ class OpenVpnMonitor implements Runnable
         Timestamp now = new Timestamp((new Date()).getTime());
 
         for ( Stats stats : activeMap.values() ) {
-            stats.fillEvent( now );
-            node.logEvent( stats.statusEvent );
+            OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
+                                                                     stats.key.address,
+                                                                     stats.key.port,
+                                                                     stats.key.poolAddress,
+                                                                     stats.key.name,
+                                                                     stats.bytesRxTotal,
+                                                                     stats.bytesTxTotal,
+                                                                     stats.bytesRxDelta,
+                                                                     stats.bytesTxDelta);
+            statusEvent.setEnd( now );
+
+            if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
+            node.logEvent( statusEvent );
         }
 
         activeMap.clear();
@@ -292,9 +311,19 @@ class OpenVpnMonitor implements Runnable
         Timestamp now = new Timestamp((new Date()).getTime());
 
         for ( Stats stats : statusMap.values()) {
-            stats.fillEvent( now );
+            OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent( new Timestamp(stats.key.start.getTime()),
+                                                                     stats.key.address,
+                                                                     stats.key.port,
+                                                                     stats.key.poolAddress,
+                                                                     stats.key.name,
+                                                                     stats.bytesRxTotal,
+                                                                     stats.bytesTxTotal,
+                                                                     stats.bytesRxDelta,
+                                                                     stats.bytesTxDelta);
+            statusEvent.setEnd( now );
+            
             if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.key );
-            node.logEvent( stats.statusEvent );
+            node.logEvent( statusEvent );
         }
     }
 
@@ -316,6 +345,18 @@ class OpenVpnMonitor implements Runnable
                 String command = KILL_CMD + " " + stats.key.address.getHostAddress() + ":" + stats.key.port;
                 writeCommandAndFlush( out, in, command );
             }
+
+            /* log event */
+            OpenVpnEvent connectEvent = new OpenVpnEvent( stats.key.address, stats.key.poolAddress, stats.key.name, OpenVpnEvent.EventType.DISCONNECT );
+            node.logEvent( connectEvent );
+
+            /* set the openvpn username of the host back to null */
+            if ( stats.key != null ) {
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.key.poolAddress, false );
+                if ( entry != null ) {
+                    entry.setUsernameOpenvpn( null );
+                }
+            }
         }
 
         for ( Iterator<Stats> iter = activeMap.values().iterator() ; iter.hasNext() ; ) {
@@ -329,15 +370,6 @@ class OpenVpnMonitor implements Runnable
             iter.remove();
 
             statusMap.remove( stats.key );
-
-            /* set the openvpn username of the host back to null */
-            if ( stats.key != null ) {
-                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.key.poolAddress, false );
-                if ( entry != null ) {
-                    entry.setUsernameOpenvpn( null );
-                }
-            }
-            
         }
     }
 
@@ -405,6 +437,9 @@ class OpenVpnMonitor implements Runnable
         if ( stats == null ) {
             node.incrementConnectCount();
 
+            OpenVpnEvent connectEvent = new OpenVpnEvent( address, poolAddress, name, OpenVpnEvent.EventType.CONNECT );
+            node.logEvent( connectEvent );
+            
             stats  = activeMap.get( name );
             if ( stats == null ) {
                 if ( logger.isDebugEnabled()) logger.debug( "New vpn client session: inserting key " + key );
@@ -610,8 +645,6 @@ class Stats
 {
     final Key key;
 
-    final OpenVpnStatusEvent statusEvent;
-
     /* Total bytes received since the last event */
     long bytesRxDelta;
 
@@ -639,27 +672,6 @@ class Stats
         this.bytesTxDelta  = bytesTx;
         this.lastUpdate   = new Date();
         this.isActive     = true;
-        this.statusEvent = new OpenVpnStatusEvent( new Timestamp(key.start.getTime()), this.key.address, this.key.port, this.key.poolAddress, this.key.name );
-    }
-
-    void fillEvent( Timestamp now )
-    {
-        this.fillEvent( this.statusEvent, now );
-    }
-
-    void fillEvent( OpenVpnStatusEvent event, Timestamp now )
-    {
-        event.setEnd( now );
-        event.setTimeStamp( now );
-        event.setBytesTxTotal( this.bytesTxTotal );
-        event.setBytesRxTotal( this.bytesRxTotal );
-        event.setBytesTxDelta( this.bytesTxDelta );
-        event.setBytesRxDelta( this.bytesRxDelta );
-    }
-    
-    OpenVpnStatusEvent getCurrentStatusEventCopy(Date now)
-    {
-        return new OpenVpnStatusEvent( this.statusEvent );
     }
 
     void update( long newBytesRxTotal, long newBytesTxTotal )
