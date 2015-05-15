@@ -5,6 +5,7 @@ package com.untangle.node.reporting;
 
 import java.util.List;
 import java.util.Date;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 
@@ -24,4 +25,26 @@ public interface ReportingManagerNew
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit );
 
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
+
+    /**
+     * Query events in the reports database
+     */
+    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    
+    /**
+     * Query events in the reports database
+     */
+    Object getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    
+    /**
+     * Query events in the reports database, within a given date range
+     */
+    Object getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
+
+    String[] getTables();
+
+    String getColumnType( String tableName, String columnName );
+
+    String[] getColumnsForTable( String tableName );
+    
 }

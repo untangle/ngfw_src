@@ -3,9 +3,12 @@
  */
 package com.untangle.node.reporting;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Date;
+import java.util.Arrays;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -127,12 +130,12 @@ public class ReportEntry implements Serializable, JSONString
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
     
-    public String toSql( Date startDate, Date endDate )
+    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
-        return toSql( startDate, endDate, null );
+        return toSql( conn, startDate, endDate, null );
     }
 
-    public String toSql( Date startDate, Date endDate, SqlCondition[] extraConditions )
+    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
     {
         if ( endDate == null )
             endDate = new Date(); // now
@@ -141,6 +144,12 @@ public class ReportEntry implements Serializable, JSONString
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
         }
 
+        LinkedList<SqlCondition> allConditions = new LinkedList<SqlCondition>();
+        if ( getConditions() != null )
+            allConditions.addAll( Arrays.asList(getConditions()) );
+        if ( extraConditions != null )
+            allConditions.addAll( Arrays.asList(extraConditions) );
+        
         String dateCondition =
             " time_stamp > '" + dateFormatter.format(startDate) + "' " + " and " +
             " time_stamp < '" + dateFormatter.format(endDate) + "' ";
@@ -155,20 +164,11 @@ public class ReportEntry implements Serializable, JSONString
                 " reports." + getTable() +
                 " WHERE " + dateCondition;
 
-            if ( getConditions() != null ) {
-                for ( SqlCondition condition : getConditions() ) {
-                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
-                }
-            }
-            if ( extraConditions != null ) {
-                for ( SqlCondition condition : extraConditions ) {
-                    pie_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
-                }
-            }
+            pie_query += conditionsToString( allConditions );
 
             pie_query += " GROUP BY " + getPieGroupColumn() + 
                 ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
-            return pie_query;
+            return sqlToStatement( conn, pie_query, allConditions );
 
         case TIME_GRAPH:
             String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
@@ -188,16 +188,7 @@ public class ReportEntry implements Serializable, JSONString
                 " reports." + getTable() +
                 " WHERE " + dateCondition;
 
-            if ( getConditions() != null ) {
-                for ( SqlCondition condition : getConditions() ) {
-                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
-                }
-            }
-            if ( extraConditions != null ) {
-                for ( SqlCondition condition : extraConditions ) {
-                    time_query += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
-                }
-            }
+            time_query += conditionsToString( allConditions );
                 
             time_query += " GROUP BY time_trunc ";
 
@@ -207,13 +198,14 @@ public class ReportEntry implements Serializable, JSONString
                 " ( " + time_query + " ) as t2 " +
                 " USING (time_trunc) " +
                 " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
-            return final_query;
+            return sqlToStatement( conn, final_query, allConditions );
             
         case TEXT:
-            return "FIXME";
+            /* FIXME */
+            throw new RuntimeException("IMPLEMENT ME");
         }
 
-        return "FIXME";
+        throw new RuntimeException("Unknown Graph type: " + this.type);
     }
     
     private TimeDataInterval calculateTimeDataInterval( Date startDate, Date endDate )
@@ -232,90 +224,118 @@ public class ReportEntry implements Serializable, JSONString
             return TimeDataInterval.MINUTE;
     }
    
-    static {
-        // try {
-        //     ReportEntry entry;
-        //     SqlCondition condition;
-        //     Date oneDayAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L));
-        //     Date oneMonthAgo = new Date((new Date()).getTime() - (1000L * 60L * 60L * 24L * 30L));
-            
-        //     entry = new ReportEntry();
-        //     entry.setEnabled( true );
-        //     entry.setReadOnly( true );
-        //     entry.setCategory("Web Filter");
-        //     entry.setTitle("Top Hosts (by violations)");
-        //     entry.setDescription("The number of web violations by each host.");
-        //     entry.setTable("http_events");
-        //     condition = new SqlCondition();
-        //     condition.setColumn("sitefilter_flagged");
-        //     condition.setOperator("=");
-        //     condition.setValue("true");
-        //     entry.setConditions(new SqlCondition[] { condition });
-        //     entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
-        //     entry.setPieSumColumn("count(*)");
-        //     entry.setPieGroupColumn("hostname");
-        //     entry.setOrderByColumn("value");
-        //     entry.setOrderDesc(Boolean.TRUE);
+    /**
+     * takes a sql string and substitutes the condition arguments into and returns a prepared statement
+     */
+    private PreparedStatement sqlToStatement( Connection conn, String sql, LinkedList<SqlCondition> conditions )
+    {
+        Connection dbConnection = null;
+        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
 
-        //     logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-flagged.js", entry, false );
-
-        //     entry = new ReportEntry();
-        //     entry.setEnabled( true );
-        //     entry.setReadOnly( true );
-        //     entry.setCategory("Web Filter");
-        //     entry.setTitle("Top Hosts (by requests)");
-        //     entry.setDescription("The number of web requests by each host.");
-        //     entry.setTable("http_events");
-        //     entry.setType(ReportEntry.ReportEntryType.PIE_GRAPH);
-        //     entry.setPieSumColumn("count(*)");
-        //     entry.setPieGroupColumn("hostname");
-        //     entry.setOrderByColumn("value");
-        //     entry.setOrderDesc(Boolean.TRUE);
-
-        //     logger.warn("SQL: " + entry.toSql( oneDayAgo, null, null ));
-        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "top-hostname-by-request.js", entry, false );
-            
-        //     entry = new ReportEntry();
-        //     entry.setEnabled( true );
-        //     entry.setReadOnly( true );
-        //     entry.setCategory("Web Filter");
-        //     entry.setTitle("Web Usage");
-        //     entry.setDescription("The number of web requests by each host.");
-        //     entry.setTable("http_events");
-        //     entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
-        //     entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
-        //     entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
-        //     //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
-        //     entry.setOrderDesc(Boolean.FALSE);
-
-        //     logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage.js", entry, false );
-
-        //     entry = new ReportEntry();
-        //     entry.setEnabled( false );
-        //     entry.setReadOnly( false );
-        //     entry.setCategory("Web Filter");
-        //     entry.setTitle("Web Usage [1.2.3.4]");
-        //     entry.setDescription("The number of web requests by each host.");
-        //     entry.setTable("http_events");
-        //     condition = new SqlCondition();
-        //     condition.setColumn("c_client_addr");
-        //     condition.setOperator("=");
-        //     condition.setValue("'1.2.3.4'");
-        //     entry.setConditions(new SqlCondition[] { condition });
-        //     entry.setType(ReportEntry.ReportEntryType.TIME_GRAPH);
-        //     entry.setTimeDataInterval(ReportEntry.TimeDataInterval.AUTO);
-        //     entry.setTimeDataColumns(new String[]{"count(*) as scanned", "sum(sitefilter_flagged::int) as flagged", "sum(sitefilter_blocked::int) as blocked"});
-        //     //entry.setTimeDataColumns(new String[]{"coalesce(count(*),0) as scanned", "coalesce(sum(sitefilter_flagged::int),0) as flagged", "coalesce(sum(sitefilter_blocked::int),0) as blocked"});
-        //     entry.setOrderDesc(Boolean.FALSE);
-
-        //     logger.warn("SQL: " + entry.toSql( oneMonthAgo, null, null ));
-        //     UvmContextFactory.context().settingsManager().save( "/tmp/" + "web-usage-host-example.js", entry, false );
-             
-        // } catch (Exception e) {
-        //     logger.warn("Exception.",e);
-        // }
+        if ( node == null ) {
+            logger.warn("node not found.");
+            return null;
+        }
         
+        try {
+            dbConnection = node.getDbConnection();
+            dbConnection.setAutoCommit(false);
+        } catch (Exception e) {
+            logger.warn("Unable to create connection to DB",e);
+        }
+        if ( dbConnection == null) {
+            logger.warn("Unable to connect to DB.");
+            throw new RuntimeException("Unable to connect to DB.");
+        }
+
+        try {
+            java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
+            statement.setFetchDirection( java.sql.ResultSet.FETCH_FORWARD );
+
+            if ( conditions != null ) {
+                int i = 0;
+                for ( SqlCondition condition : conditions ) {
+                    i++;
+                    String columnType = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
+                    String value = condition.getValue();
+
+                    if ( value == null ) {
+                        logger.warn("Ignoring bad condition: Invalid value: " + value );
+                        throw new RuntimeException( "Invalid value: " + value );
+                    }
+                    if ( columnType == null ) {
+                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                        continue;
+                    }
+                    
+                    switch (columnType) {
+                    case "int8":
+                    case "bigint":
+                    case "int4":
+                    case "int":
+                    case "integer":
+                    case "int2":
+                    case "smallint":
+                        try {
+                            statement.setLong(i, Long.valueOf( value ));
+                        } catch (Exception e) {
+                            throw new RuntimeException( "Invalid number: " + value );
+                        }
+                    break;
+                    
+                    case "inet":
+                        statement.setObject(i, value, java.sql.Types.OTHER);
+                        break;
+                    
+                    case "bool":
+                        if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
+                            statement.setBoolean(i, true);
+                        else
+                            statement.setBoolean(i, false);
+                        break;
+
+                    case "bpchar":
+                    case "character":
+                    case "varchar":
+                    case "text":
+                        statement.setString(i, condition.getValue());
+                        break;
+                    default:
+                        logger.warn("Unknown column type: " + columnType);
+                        continue;
+                    }
+                }
+            }
+
+            return statement;
+        } catch ( Exception e) {
+            logger.warn("SQL Exception:", e);
+            throw new RuntimeException("SqlException",e);
+        }
+
     }
+
+    private String conditionsToString( LinkedList<SqlCondition> conditions )
+    {
+        String str = "";
+
+        if ( conditions == null )
+            return str;
+
+        for ( SqlCondition condition : conditions ) {
+            ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+            String type = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
+
+            if ( type == null ) {
+                logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                continue;
+            }
+            
+            String columnType = 
+            str += " and " + condition.getColumn() + " " + condition.getOperator() + " ? ";
+        }
+
+        return str;
+    }
+
 }

@@ -6,7 +6,7 @@ package com.untangle.node.reporting;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +20,13 @@ import com.untangle.uvm.node.SqlCondition;
 
 /**
  * Utility the reads events from the database
+ *
+ * WARNING
+ * You must call closeConnection on the ResultSetReader ALWAYS after calling these functions
+ * closeConnection will call commit() on the SQL transaction
+ * If you forget to call it, it will maintain an open transaction on that table
+ * which will stop other queries (and vacuuming) from taking place
+ *
  */
 public class EventReaderImpl
 {
@@ -37,16 +44,38 @@ public class EventReaderImpl
         this.columnTypeMap.put("inet",String.class);
     }
 
-    /**
-     * WARNING
-     * You must call closeConnection on the ResultSetReader ALWAYS after calling this function
-     * closeConnection will call commit() on the SQL transaction
-     * If you forget to call it, it will maintain an open transaction on that table
-     * which will stop other queries (and vacuuming) from taking place
-     * @param endDate 
-     * @param startDate 
-     */
-    public ResultSetReader getEventsResultSet( final String sql, final int limit )
+    public ResultSetReader getEventsResultSet( final Connection dbConnection, final PreparedStatement statement, final int limit )
+    {
+        if ( dbConnection == null) {
+            logger.warn("Invalid parameter.");
+            throw new RuntimeException("Invalid parameter.");
+        }
+        
+        try {
+            logger.debug("getEventsResultSet( statement: " + statement + " )");
+
+            statement.setFetchDirection( ResultSet.FETCH_FORWARD );
+            
+            /* If this is an unlimited query - set a fetch size so we don't load all into memory */
+            if (limit < 0 || limit > 100000)
+                statement.setFetchSize(2000);
+            
+            if (statement == null) {
+                logger.warn("Unable to create Statement");
+                throw new RuntimeException("Unable to create Statement");
+            }
+
+            ResultSet resultSet = statement.executeQuery();
+            return new ResultSetReader( resultSet, dbConnection );
+
+        } catch ( Exception e ) {
+            logger.warn("Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database. query: " + statement, e );
+        } 
+    }
+    
+
+    public ResultSetReader getEventsResultSet( final PreparedStatement statement, final int limit )
     {
         Connection dbConnection = null;
 
@@ -63,30 +92,49 @@ public class EventReaderImpl
         }
         
         try {
-            logger.debug("getEventsResultSet( sql: " + sql + " )");
-            
-            Statement statement = dbConnection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD );
-
-            /* If this is an unlimited query - set a fetch size so we don't load all into memory */
-            if (limit < 0 || limit > 100000)
-                statement.setFetchSize(2000);
-            
-            if (statement == null) {
-                logger.warn("Unable to create Statement");
-                throw new RuntimeException("Unable to create Statement");
-            }
-            
-            ResultSet resultSet = statement.executeQuery( sql );
-            return new ResultSetReader( resultSet, dbConnection );
+            return getEventsResultSet( dbConnection, statement, limit );
             
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
-            logger.warn("Failed to query database", e );
-            throw new RuntimeException( "Failed to query database.", e );
+            logger.warn("Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database. query: " + statement, e );
         } 
-
+    }
+    
+    public ResultSetReader getEventsResultSet( final PreparedStatement statement, final SqlCondition[] extraConditions, final int limit )
+    {
+        return getEventsResultSet( statement, null, limit );
     }
 
+    public ResultSetReader getEventsResultSet( final String sql, final int limit )
+    {
+        Connection dbConnection = null;
+
+        try {
+            dbConnection = this.node.getDbConnection();
+        } catch (Exception e) {
+            logger.warn("Unable to create connection to DB",e);
+        }
+
+        if ( dbConnection == null) {
+            logger.warn("Unable to connect to DB.");
+            throw new RuntimeException("Unable to connect to DB.");
+        }
+        
+        try {
+            logger.debug("getEventsResultSet( sql: " + sql + " )");
+            
+            java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
+            statement.setFetchDirection( ResultSet.FETCH_FORWARD );
+            
+            return getEventsResultSet( statement, limit );
+        } catch ( Exception e ) {
+            try {dbConnection.close();} catch( Exception exc) {}
+            logger.warn("Failed to query database. query: " + sql, e );
+            throw new RuntimeException( "Failed to query database. query: " + sql, e );
+        } 
+    }
+    
     public ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
@@ -121,7 +169,7 @@ public class EventReaderImpl
                 queryStr += " and time_stamp >= '" + dateFormatter.format(startDate) + "' ";
             if (extraConditions != null) {
                 for ( SqlCondition condition : extraConditions ) {
-                    queryStr += " and " + condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + "";
+                    queryStr += " and " + condition.getColumn() + " " + condition.getOperator() + " ? ";
                 }
             }
             queryStr += queryPart2;
@@ -143,6 +191,12 @@ public class EventReaderImpl
     public ArrayList<JSONObject> getEvents( final String sql, final int limit )
     {
         ResultSetReader resultSetReader = getEventsResultSet( sql, -1 );
+        return resultSetReader.getAllEvents();
+    }
+
+    public ArrayList<JSONObject> getEvents( final PreparedStatement statement, final int limit )
+    {
+        ResultSetReader resultSetReader = getEventsResultSet( statement, -1 );
         return resultSetReader.getAllEvents();
     }
     

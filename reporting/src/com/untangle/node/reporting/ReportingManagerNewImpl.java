@@ -3,12 +3,19 @@
  */
 package com.untangle.node.reporting;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.PreparedStatement;
+import java.sql.DatabaseMetaData;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -23,6 +30,18 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     private ReportingNodeImpl node;
 
+    /**
+     * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
+     * which is slow
+     */
+    private static HashMap<String,ResultSet> cacheColumnsResults = new HashMap<String,ResultSet>();
+
+    /**
+     * This stores the tables metadata lookup results so we don't have to frequently lookup metadata
+     * which is slow
+     */
+    private static ResultSet cacheTablesResults = null;
+    
     private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
     {
         public int compare( ReportEntry entry1, ReportEntry entry2 ) 
@@ -76,7 +95,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
-        String sql = entry.toSql( startDate, endDate, extraConditions );
+        PreparedStatement sql = entry.toSql( node.getDbConnection() /* XXX */, startDate, endDate, extraConditions );
 
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("SQL              : " + sql);
@@ -95,6 +114,98 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
     
+    public String[] getColumnsForTable( String tableName )
+    {
+        ArrayList<String> columnNames = new ArrayList<String>();        
+        try {
+            ResultSet rs = getColumnMetaData( tableName );
+
+            while(rs.next()){
+                String columnName = rs.getString(4);
+                //String columnType = rs.getString(6);
+                columnNames.add( columnName );
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve column names", e);
+            return null;
+        }
+
+        String[] array = new String[columnNames.size()];
+        array = columnNames.toArray(array);
+        return array;
+    }
+
+    public String getColumnType( String tableName, String columnName )
+    {
+        try {
+
+            ResultSet rs = getColumnMetaData( tableName );
+            while(rs.next()){
+                String name = rs.getString(4);
+                if ( columnName.equals( name ) ) {
+                    return rs.getString(6);
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve column type", e);
+            return null;
+        }
+
+        logger.warn("Failed to find column \"" + columnName + "\" in \"" + tableName + "\"");
+        return null;
+    }
+    
+    public String[] getTables()
+    {
+        ArrayList<String> tableNames = new ArrayList<String>();        
+        try {
+            ResultSet rs = cacheTablesResults;
+            if ( rs == null ) {
+                cacheTablesResults = node.getDbConnection().getMetaData().getTables( null, "reports", null, null );
+                rs = cacheTablesResults;
+            } else {
+                rs.first();
+            }
+
+            while(rs.next()){
+                try {
+                    String tableName = rs.getString(3);
+                    String type = rs.getString(4);
+
+                    // only include tables without a "0" in them
+                    // the 0 excludes all partitions because they have the date in them
+                    if ("TABLE".equals(type) && !tableName.contains("0")) {
+                        tableNames.add( tableName );
+                    }
+                } catch (Exception e) {
+                    logger.warn("Exception fetching table names",e);
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve column names", e);
+            return null;
+        }
+
+        String[] array = new String[tableNames.size()];
+        array = tableNames.toArray(array);
+        return array;
+    }
+
+    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    {
+        return this.node.getEvents(query, policyId, extraConditions, limit);
+    }
+
+    public Object getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    {
+        return getEventsForDateRangeResultSet(query, policyId, extraConditions, limit, null, null);
+    }
+
+    public Object getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
+    {
+        return this.node.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
+    }
+
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
@@ -108,6 +219,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             return;
         }
         try {
+            List<String> seenUniqueIds = new LinkedList<String>();
             boolean added = false;
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
@@ -116,6 +228,16 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                 try {
                     ReportEntry newEntry = UvmContextFactory.context().settingsManager().load( ReportEntry.class, line );
 
+                    /* do some error checking around unique ID */
+                    if ( newEntry.getUniqueId() == null ) {
+                        logger.error("System Report Entry missing uniqueId: " + line);
+                    }
+                    if ( seenUniqueIds.contains( newEntry.getUniqueId() ) ) {
+                        logger.error("System Report Entry duplicate uniqueId: " + line);
+                    } else {
+                        seenUniqueIds.add( newEntry.getUniqueId() );
+                    }
+                    
                     ReportEntry oldEntry = findReportEntry( existingEntries, newEntry.getUniqueId() );
                     if ( oldEntry == null ) {
                         logger.info( "Report Entries Update: Adding  \"" + newEntry.getTitle() + "\"");
@@ -177,6 +299,24 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         entries.add( newEntry );
 
         return true;
+    }
+
+    private ResultSet getColumnMetaData( String tableName )
+    {
+        try {
+            ResultSet rs = cacheColumnsResults.get( tableName );
+            if ( rs != null ) {
+                rs.first();
+                return rs;
+            }
+
+            rs = node.getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
+            cacheColumnsResults.put( tableName, rs );
+            return rs;
+        } catch ( Exception e ) {
+            logger.warn("Failed to fetch column meta data", e);
+            return null;
+        }
     }
     
 }

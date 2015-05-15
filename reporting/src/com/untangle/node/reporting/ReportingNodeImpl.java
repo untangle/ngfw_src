@@ -281,59 +281,16 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.reportingManagerNew;
     }
     
+    /* DEPRECATED - remove me - use ReportingManagerNew */
     public String[] getColumnsForTable( String tableName )
     {
-        ResultSet rs = null;
-
-        ArrayList<String> columnNames = new ArrayList<String>();        
-        try {
-            rs = getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
-
-            while(rs.next()){
-                String columnName = rs.getString(4);
-                //int    columnType = rs.getInt(5);
-                columnNames.add( columnName );
-            }
-        } catch ( Exception e ) {
-            logger.warn("Failed to retrieve column names", e);
-            return null;
-        }
-
-        String[] array = new String[columnNames.size()];
-        array = columnNames.toArray(array);
-        return array;
+        return reportingManagerNew.getColumnsForTable( tableName );
     }
 
+    /* DEPRECATED - remove me - use ReportingManagerNew */
     public String[] getTables()
     {
-        ResultSet rs = null;
-
-        ArrayList<String> tableNames = new ArrayList<String>();        
-        try {
-            rs = getDbConnection().getMetaData().getTables( null, "reports", null, null );
-
-            while(rs.next()){
-                try {
-                    String tableName = rs.getString(3);
-                    String type = rs.getString(4);
-                    
-                    // only include tables without a "0" in them
-                    // the 0 excludes all partitions because they have the date in them
-                    if ("TABLE".equals(type) && !tableName.contains("0")) {
-                        tableNames.add( tableName );
-                    }
-                } catch (Exception e) {
-                    logger.warn("Exception fetching table names",e);
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn("Failed to retrieve column names", e);
-            return null;
-        }
-
-        String[] array = new String[tableNames.size()];
-        array = tableNames.toArray(array);
-        return array;
+        return reportingManagerNew.getTables();
     }
 
     @Override
