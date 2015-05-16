@@ -65,6 +65,9 @@ public class ReportEntry implements Serializable, JSONString
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
 
+    private String textString; /* The string representation of the text */
+    private String[] textColumns; /* The data to graph by time */
+    
     private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
     private String[] timeDataColumns; /* The data to graph by time */
     
@@ -119,6 +122,12 @@ public class ReportEntry implements Serializable, JSONString
     public String getPieSumColumn() { return this.pieSumColumn; }
     public void setPieSumColumn( String newValue ) { this.pieSumColumn = newValue; }
 
+    public String getTextString() { return this.textString; }
+    public void setTextString( String newValue ) { this.textString = newValue; }
+
+    public String[] getTextColumns() { return this.textColumns; }
+    public void setTextColumns( String[] newValue ) { this.textColumns = newValue; }
+    
     public String getOrderByColumn() { return this.orderByColumn; }
     public void setOrderByColumn( String newValue ) { this.orderByColumn = newValue; }
 
@@ -159,17 +168,17 @@ public class ReportEntry implements Serializable, JSONString
 
         case PIE_GRAPH:
 
-            String pie_query = "SELECT " +
+            String pieQuery = "SELECT " +
                 getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
                 " FROM " +
                 " reports." + getTable() +
                 " WHERE " + dateCondition;
 
-            pie_query += conditionsToString( allConditions );
+            pieQuery += conditionsToString( allConditions );
 
-            pie_query += " GROUP BY " + getPieGroupColumn() + 
+            pieQuery += " GROUP BY " + getPieGroupColumn() + 
                 ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
-            return sqlToStatement( conn, pie_query, allConditions );
+            return sqlToStatement( conn, pieQuery, allConditions );
 
         case TIME_GRAPH:
             String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
@@ -179,31 +188,47 @@ public class ReportEntry implements Serializable, JSONString
                 " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
-            String time_query = "SELECT " +
+            String timeQuery = "SELECT " +
                 " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
 
             for ( String s : getTimeDataColumns() )
-                time_query += ", " + s;
+                timeQuery += ", " + s;
 
-            time_query += " FROM " +
+            timeQuery += " FROM " +
                 " reports." + getTable() +
                 " WHERE " + dateCondition;
 
-            time_query += conditionsToString( allConditions );
+            timeQuery += conditionsToString( allConditions );
                 
-            time_query += " GROUP BY time_trunc ";
+            timeQuery += " GROUP BY time_trunc ";
 
             String final_query = "SELECT * FROM " +
                 " ( " + generate_series + " ) as t1 " +
                 "LEFT JOIN " +
-                " ( " + time_query + " ) as t2 " +
+                " ( " + timeQuery + " ) as t2 " +
                 " USING (time_trunc) " +
                 " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
             return sqlToStatement( conn, final_query, allConditions );
             
         case TEXT:
-            /* FIXME */
-            throw new RuntimeException("IMPLEMENT ME");
+            String textQuery = "SELECT ";
+
+            boolean first = true;
+            for ( String s : getTextColumns() ) {
+                if ( !first )
+                    textQuery += ", ";
+                else
+                    first = false;
+                textQuery += s;
+            }
+
+            textQuery += " FROM " +
+                " reports." + getTable() +
+                " WHERE " + dateCondition;
+            
+            textQuery += conditionsToString( allConditions );
+
+            return sqlToStatement( conn, textQuery, allConditions );
         }
 
         throw new RuntimeException("Unknown Graph type: " + this.type);
