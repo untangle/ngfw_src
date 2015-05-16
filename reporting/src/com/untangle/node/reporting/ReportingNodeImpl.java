@@ -55,7 +55,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
     protected static ReportingManagerImpl    reportingManager = null;
-    protected static ReportingManagerNewImpl reportingManagerNew = null;
 
     private EventLogQuery interestingEventsQuery;
     
@@ -71,8 +70,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             eventReader = new EventReaderImpl( this );
         if (reportingManager == null)
             reportingManager = new ReportingManagerImpl( this );
-        if (reportingManagerNew == null)
-            reportingManagerNew = new ReportingManagerNewImpl( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
@@ -278,19 +275,19 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
 
     public ReportingManagerNew getReportingManagerNew()
     {
-        return ReportingNodeImpl.reportingManagerNew;
+        return ReportingManagerNewImpl.getInstance();
     }
     
     /* DEPRECATED - remove me - use ReportingManagerNew */
     public String[] getColumnsForTable( String tableName )
     {
-        return reportingManagerNew.getColumnsForTable( tableName );
+        return ReportingManagerNewImpl.getInstance().getColumnsForTable( tableName );
     }
 
     /* DEPRECATED - remove me - use ReportingManagerNew */
     public String[] getTables()
     {
-        return reportingManagerNew.getTables();
+        return ReportingManagerNewImpl.getInstance().getTables();
     }
 
     @Override
@@ -338,7 +335,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         /**
          * Report updates
          */
-        reportingManagerNew.updateSystemReportEntries( settings.getReportEntries(), true );
+        ReportingManagerNewImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
         /* intialize schema (if necessary) */
         this.createSchemas();

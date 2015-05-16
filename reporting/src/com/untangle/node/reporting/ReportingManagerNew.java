@@ -41,10 +41,18 @@ public interface ReportingManagerNew
      */
     Object getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 
+    /**
+     * Get a list of all tables in the database
+     */
     String[] getTables();
 
+    /**
+     * Get the type of a certain column in a certain table
+     */
     String getColumnType( String tableName, String columnName );
 
+    /**
+     * Get a list of all columns for a certain table
+     */
     String[] getColumnsForTable( String tableName );
-    
 }

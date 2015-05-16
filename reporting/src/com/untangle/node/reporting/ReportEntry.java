@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -317,17 +318,19 @@ public class ReportEntry implements Serializable, JSONString
 
     private String conditionsToString( LinkedList<SqlCondition> conditions )
     {
+        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         String str = "";
 
         if ( conditions == null )
             return str;
 
-        for ( SqlCondition condition : conditions ) {
-            ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        for ( Iterator<SqlCondition> itr = conditions.iterator() ; itr.hasNext() ; ) {
+            SqlCondition condition = itr.next();
             String type = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
 
             if ( type == null ) {
                 logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + getTable() );
+                itr.remove();
                 continue;
             }
             

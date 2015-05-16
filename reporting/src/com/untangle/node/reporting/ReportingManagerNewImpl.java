@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -28,8 +29,8 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 {
     private static final Logger logger = Logger.getLogger(ReportingManagerNewImpl.class);
 
-    private ReportingNodeImpl node;
-
+    private static ReportingManagerNewImpl instance = null;
+    
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
      * which is slow
@@ -42,28 +43,26 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
      */
     private static ResultSet cacheTablesResults = null;
     
-    private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
+    private ReportingManagerNewImpl() {}
+
+    public static ReportingManagerNewImpl getInstance()
     {
-        public int compare( ReportEntry entry1, ReportEntry entry2 ) 
-        {
-            int num = entry1.getDisplayOrder() - entry2.getDisplayOrder();
-            if ( num != 0 )
-                return num;
-            else {
-                if (entry1.getTitle() == null || entry2.getTitle() == null )
-                    return 0;
-                return entry1.getTitle().compareTo( entry2.getTitle() );
+        synchronized ( ReportingManagerNewImpl.class ) {
+            if ( instance == null ) {
+                instance = new ReportingManagerNewImpl();
             }
         }
-    }    
 
-    public ReportingManagerNewImpl( ReportingNodeImpl node )
-    {
-        this.node = node;
+        return instance;
     }
 
     public List<ReportEntry> getReportEntries()
     {
+        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if ( node == null ) {
+            throw new RuntimeException("Reporting node not found");
+        }
+        
         LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( node.getSettings().getReportEntries() );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
@@ -85,17 +84,22 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     public void setReportEntries( List<ReportEntry> newEntries )
     {
+        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if ( node == null ) {
+            throw new RuntimeException("Reporting node not found");
+        }
+
         LinkedList<ReportEntry> newReportEntries = new LinkedList<ReportEntry>(newEntries);
         updateSystemReportEntries( newReportEntries, false );
 
-        ReportingSettings settings = this.node.getSettings();
+        ReportingSettings settings = node.getSettings();
         settings.setReportEntries( newReportEntries );
         node.setSettings( settings );
     }
 
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
-        PreparedStatement sql = entry.toSql( node.getDbConnection() /* XXX */, startDate, endDate, extraConditions );
+        PreparedStatement sql = entry.toSql( getDbConnection(), startDate, endDate, extraConditions );
 
         logger.info("Getting Data for : " + entry.getTitle());
         logger.info("SQL              : " + sql);
@@ -161,7 +165,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
-                cacheTablesResults = node.getDbConnection().getMetaData().getTables( null, "reports", null, null );
+                cacheTablesResults = getDbConnection().getMetaData().getTables( null, "reports", null, null );
                 rs = cacheTablesResults;
             } else {
                 rs.first();
@@ -193,7 +197,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
-        return this.node.getEvents(query, policyId, extraConditions, limit);
+        return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
     }
 
     public Object getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
@@ -203,7 +207,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     public Object getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
     {
-        return this.node.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
+        return ReportingNodeImpl.eventReader.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
@@ -310,7 +314,7 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
                 return rs;
             }
 
-            rs = node.getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
+            rs = getDbConnection().getMetaData().getColumns( null, "reports", tableName, null );
             cacheColumnsResults.put( tableName, rs );
             return rs;
         } catch ( Exception e ) {
@@ -318,5 +322,49 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
             return null;
         }
     }
+
+    private Connection getDbConnection()
+    {
+        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+        if ( node == null ) {
+            throw new RuntimeException("Reporting node not found");
+        }
+        ReportingSettings settings = node.getSettings();
+        if ( settings == null ) {
+            throw new RuntimeException("Reporting settings not found");
+        }
+        
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+            Properties props = new Properties();
+            props.setProperty( "user", settings.getDbUser() );
+            props.setProperty( "password", settings.getDbPassword() );
+            props.setProperty( "charset", "unicode" );
+            //props.setProperty( "logUnclosedConnections", "true" );
+
+            return DriverManager.getConnection(url,props);
+        }
+        catch (Exception e) {
+            logger.warn("Failed to connect to DB", e);
+            return null;
+        }
+    }
+
+    private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
+    {
+        public int compare( ReportEntry entry1, ReportEntry entry2 ) 
+        {
+            int num = entry1.getDisplayOrder() - entry2.getDisplayOrder();
+            if ( num != 0 )
+                return num;
+            else {
+                if (entry1.getTitle() == null || entry2.getTitle() == null )
+                    return 0;
+                return entry1.getTitle().compareTo( entry2.getTitle() );
+            }
+        }
+    }    
+
     
 }
