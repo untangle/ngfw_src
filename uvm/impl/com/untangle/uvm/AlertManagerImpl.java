@@ -702,7 +702,6 @@ public class AlertManagerImpl implements AlertManager
             alertText += " (";
             alertText += String.format("%.1f",avgTime) + " ms";
             alertText += "). ";
-            alertText += i18nUtil.tr("Data retention time may be too high. Check Reports settings.");
 
             alertList.add(alertText);
         }
@@ -727,7 +726,6 @@ public class AlertManagerImpl implements AlertManager
             alertText += " (";
             alertText += String.format("%.1f",(((float)delay)/60.0)) + " minute delay";
             alertText += "). ";
-            alertText += i18nUtil.tr("Data retention time may be too high. Check Reports settings.");
 
             alertList.add(alertText);
         }
