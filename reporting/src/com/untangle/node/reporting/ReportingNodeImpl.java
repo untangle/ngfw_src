@@ -70,7 +70,8 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
             eventReader = new EventReaderImpl( this );
         if (reportingManager == null)
             reportingManager = new ReportingManagerImpl( this );
-
+        ReportingManagerNewImpl.getInstance().setReportingNode( this );
+        
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ReportsEventLogExportDownloadHandler() );
 

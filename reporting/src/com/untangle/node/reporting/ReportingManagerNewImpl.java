@@ -30,6 +30,8 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     private static final Logger logger = Logger.getLogger(ReportingManagerNewImpl.class);
 
     private static ReportingManagerNewImpl instance = null;
+
+    private static ReportingNodeImpl node = null;
     
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
@@ -56,9 +58,13 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return instance;
     }
 
+    public void setReportingNode( ReportingNodeImpl node )
+    {
+        ReportingManagerNewImpl.node = node;
+    }
+    
     public List<ReportEntry> getReportEntries()
     {
-        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         if ( node == null ) {
             throw new RuntimeException("Reporting node not found");
         }
@@ -84,7 +90,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
     
     public void setReportEntries( List<ReportEntry> newEntries )
     {
-        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         if ( node == null ) {
             throw new RuntimeException("Reporting node not found");
         }
@@ -325,7 +330,6 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
 
     private Connection getDbConnection()
     {
-        ReportingNodeImpl node = (ReportingNodeImpl) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
         if ( node == null ) {
             throw new RuntimeException("Reporting node not found");
         }
