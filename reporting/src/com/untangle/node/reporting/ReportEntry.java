@@ -70,6 +70,7 @@ public class ReportEntry implements Serializable, JSONString
     
     private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
     private String[] timeDataColumns; /* The data to graph by time */
+    private String[] timeColors; /* The colors of the columns */
     
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
@@ -139,6 +140,9 @@ public class ReportEntry implements Serializable, JSONString
 
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
+
+    public String[] getTimeColors() { return this.timeColors; }
+    public void setTimeColors( String[] newValue ) { this.timeColors = newValue; }
     
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {

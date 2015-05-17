@@ -279,6 +279,25 @@ Ext.define('Ung.panel.Reports', {
                         x: 10,
                         y: 40
                     }],
+                    // tbar: [ '->', {
+                    //     xtype: 'segmentedbutton',
+                    //     width: 200,
+                    //     items: [{
+                    //         text: 'Stack'
+                    //     }, {
+                    //         text: 'Group',
+                    //         pressed: true
+                    //     }],
+                    //     listeners: {
+                    //         toggle: Ext.bind(function(segmentedButton, button, pressed) {
+                    //             var chart = this.chartContainer.down("[name=chart]"),
+                    //             series = chart.getSeries()[0],
+                    //             value = segmentedButton.getValue();
+                    //             series.setStacked(value === 0);
+                    //             chart.redraw(); 
+                    //         }, this)
+                    //     }
+                    // }],
                     interactions: ['itemhighlight'],
                     axes: [{
                         type: 'numeric',
@@ -321,6 +340,10 @@ Ext.define('Ung.panel.Reports', {
                         }
                     }]
                 };
+
+                if ( reportEntry.timeColors != null ) {
+                    chart.colors = reportEntry.timeColors;
+                }
             }
             this.chartContainer.add(chart); 
         }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
