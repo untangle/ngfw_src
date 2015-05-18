@@ -515,8 +515,12 @@ Ext.define("Ung.panel.ExtraConditions", {
             iconCls: 'save-icon',
             handler: function() {
                 this.setConditions();
-                this.parentPanel.down("button[name=refresh]").getEl().dom.click();
                 this.collapse();
+                var refreshButton = this.parentPanel.down("button[name=refresh]");
+                if(!refreshButton.isDisabled()) {
+                    this.parentPanel.refreshHandler(true);
+                }
+                
             },
             scope: this
         }, {
@@ -525,8 +529,11 @@ Ext.define("Ung.panel.ExtraConditions", {
             iconCls: 'cancel-icon',
             handler: function() {
                 this.clearConditions();
-                this.parentPanel.down("button[name=refresh]").getEl().dom.click();
                 this.collapse();
+                var refreshButton = this.parentPanel.down("button[name=refresh]");
+                if(!refreshButton.isDisabled()) {
+                    this.parentPanel.refreshHandler(true);
+                }
             },
             scope: this
         }];

@@ -83,10 +83,10 @@ Ext.define("Ung.grid.EventLog", {
             var selLimit = this.getSelectedLimit();
             if ( selQuery != null && selPolicy != null && selLimit != null ) {
                 if (!this.hasTimestampFilter) {
-                    rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
+                    Ung.Main.getReportingManagerNew().getEventsResultSet(Ext.bind(this.autoRefreshCallback, this),
                                                               selQuery, selPolicy, null, selLimit);
                 } else {
-                    rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this),
+                    Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(this.autoRefreshCallback, this),
                                                                           selQuery, selPolicy, null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
                 }
             }
@@ -202,10 +202,10 @@ Ext.define("Ung.grid.EventLog", {
         var selLimit = this.getSelectedLimit();
         if ( selQuery != null && selPolicy != null && selLimit != null ) {
             if (!this.hasTimestampFilter) {
-                rpc.jsonrpc.UvmContext.getEventsResultSet(Ext.bind(this.refreshCallback, this),
+                Ung.Main.getReportingManagerNew().getEventsResultSet(Ext.bind(this.refreshCallback, this),
                                                           selQuery, selPolicy, null, selLimit);
             } else {
-                rpc.jsonrpc.UvmContext.getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this),
+                Ung.Main.getReportingManagerNew().getEventsForDateRangeResultSet(Ext.bind(this.refreshCallback, this),
                                                                       selQuery, selPolicy, null, selLimit, this.startDateWindow.date, this.endDateWindow.date);
             }
         } else {
