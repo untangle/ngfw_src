@@ -341,7 +341,11 @@ Ext.define('Ung.panel.Reports', {
                 if(!this.chartContainer || !this.chartContainer.isVisible()) {
                     return;
                 }
-                this.chartContainer.down("[name=chart]").getStore().loadData(result.list);
+                var chart = this.chartContainer.down("[name=chart]");
+                if(chart) {
+                    chart.getStore().loadData(result.list);
+                }
+                
             }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
             
         }, this));
@@ -356,7 +360,10 @@ Ext.define('Ung.panel.Reports', {
                 if(!this.chartContainer || !this.chartContainer.isVisible()) {
                     return;
                 }
-                this.chartContainer.down("[name=chart]").getStore().loadData(result.list);
+                var chart = this.chartContainer.down("[name=chart]");
+                if(chart) {
+                    chart.getStore().loadData(result.list);
+                }
                 if(this!=null && this.rendered && this.autoRefreshEnabled) {
                     Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
                 }
