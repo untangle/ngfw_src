@@ -45,7 +45,7 @@ public class ReportingSettings implements Serializable, JSONString
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
 
-    private List<ReportEntry> reportEntries;
+    private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
     
     public ReportingSettings() { }
 
@@ -88,8 +88,8 @@ public class ReportingSettings implements Serializable, JSONString
     public boolean isSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
 
-    public List<ReportEntry> getReportEntries() { return reportEntries; }
-    public void setReportEntries( List<ReportEntry> newValue ) { this.reportEntries = newValue; }
+    public LinkedList<ReportEntry> getReportEntries() { return reportEntries; }
+    public void setReportEntries( LinkedList<ReportEntry> newValue ) { this.reportEntries = newValue; }
     
 
     /**

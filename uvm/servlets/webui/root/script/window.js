@@ -145,6 +145,7 @@ Ext.define("Ung.SettingsWin", {
     dirtyFlag: false,
     hasApply: true,
     layout: 'fit',
+    parentPanel: null,
     // build Tab panel from an array of tab items
     constructor: function(config) {
         config.rpc = {};
@@ -160,10 +161,10 @@ Ext.define("Ung.SettingsWin", {
     buildTabPanel: function(itemsArray) {
         Ext.get("racks").hide();
         if(this.hasReports) {
-            this.panelReports =  Ext.create('Ung.panel.Reports',{
+            this.parentPanel =  Ext.create('Ung.panel.Reports',{
                 category: this.displayName
             });
-            itemsArray.push(this.panelReports);
+            itemsArray.push(this.parentPanel);
         }
         
         this.tabs = Ext.create('Ext.tab.Panel',{
@@ -705,164 +706,5 @@ Ext.define("Ung.window.SelectDateTime", {
         if(this.buttonObj) {
             this.buttonObj.setText(buttonLabel!=null?buttonLabel:this.buttonObj.initialLabel);
         }
-    }
-});
-
-Ext.define("Ung.window.ExtraConditions", {
-    extend: "Ext.window.Window",
-    title: i18n._('Extra Conditions'),
-    modal: true,
-    closeAction: 'hide',
-    count: 5,
-    getColumnsForTable: function(table) {
-        if(table != null && table.length > 2) {
-            Ung.Main.getNodeReporting().getColumnsForTable(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var columns = [];
-                for (var i=0; i< result.length; i++) {
-                    columns.push({ name: result[i]});
-                }
-                this.columnsStore.loadData(columns);
-            }, this), table);
-        }
-    },
-    initComponent: function() {
-        this.columnsStore = Ext.create('Ext.data.Store', {
-            sorters: "name",
-            fields: ["name"],
-            data: []
-        });
-
-        var items = [{
-            title: i18n._("Column"),
-            padding: 0,
-            width: 256
-        }, {
-            title: i18n._("Operator"),
-            padding: 0,
-            width: 106
-        }, {
-            title: i18n._("Value"),
-            padding: 0,
-            width: 406
-        }, {
-            title: "&nbsp;",
-            width: 100
-        }];
-        for(var i=0; i<this.count; i++) {
-            items.push.apply(items, [{
-                xtype: 'combo',
-                width: 250,
-                margin: 3,
-                emptyText: i18n._("[enter column]"),
-                dataIndex: "column",
-                name: "column"+i,
-                typeAhead: true,
-                valueField: "name",
-                displayField: "name",
-                queryMode: 'local',
-                store: this.columnsStore,
-                value: "",
-                listeners: {
-                    change: {
-                        fn: function(combo, newValue, oldValue, opts) {
-                            var isEmpty = Ext.isEmpty(newValue);
-                            combo.next("[dataIndex=operator]").setDisabled(isEmpty);
-                            combo.next("[dataIndex=value]").setDisabled(isEmpty);
-                            combo.next("[dataIndex=clear]").setDisabled(isEmpty);
-                        },
-                        scope: this
-                    }
-                }
-            }, {
-                xtype: 'combo',
-                width: 100,
-                margin: 3,
-                dataIndex: "operator",
-                name: "operator"+i,
-                editable: false,
-                valueField: "name",
-                displayField: "name",
-                queryMode: 'local',
-                value: "=",
-                disabled: true,
-                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
-            }, {
-                xtype: 'textfield',
-                dataIndex: "value",
-                name: "value"+i,
-                width: 400,
-                margin: 3,
-                disabled: true,
-                emptyText: i18n._("[no value]")
-            }, {
-                xtype: 'button',
-                dataIndex: "clear",
-                margin: 3,
-                name: "clear"+i,
-                text: i18n._("Clear"),
-                disabled: true,
-                handler: function() {
-                    this.prev("[dataIndex=column]").setValue("");
-                    this.prev("[dataIndex=operator]").setValue("=");
-                    this.prev("[dataIndex=value]").setValue("");
-                }
-            }]);
-        }
-        this.items = {
-            xtype: "panel",
-            layout: {
-                type: 'table',
-                columns: 4
-            },
-            items: items
-        };
-        
-        this.buttons = [{
-            text: i18n._("Done"),
-            handler: function() {
-                this.setConditions();
-                this.hide();
-            },
-            scope: this
-        }, '->', {
-            name: 'Clear',
-            text: i18n._("Clear All"),
-            handler: function() {
-                this.clearConditions();
-                this.hide();
-            },
-            scope: this
-        }];
-        this.callParent(arguments);
-    },
-    clearConditions: function() {
-        for(var i=0; i<this.count; i++) {
-            this.down("[name=column"+i+"]").setValue("");
-            this.down("[name=operator"+i+"]").setValue("=");
-            this.down("[name=value"+i+"]").setValue("");
-        }
-        this.setConditions();
-    },
-    setConditions: function() {
-        var conditions = [], column;
-        for(var i=0; i<this.count; i++) {
-            column = this.down("[name=column"+i+"]").getValue();
-            if(!Ext.isEmpty(column)) {
-                conditions.push({
-                    "javaClass": "com.untangle.uvm.node.SqlCondition",
-                    "column": column,
-                    "operator": this.down("[name=operator"+i+"]").getValue(),
-                    "value": this.down("[name=value"+i+"]").getValue()
-                });
-            }
-        }
-        if(!this.buttonObj){
-            this.buttonObj = this.panelReports.down("button[name=extraConditions]");
-        }
-            
-        this.panelReports.extraConditions = (conditions.length>0)?conditions:null;
-        this.buttonObj.setText((conditions.length>0)?Ext.String.format( i18n._("{0} Conditions"), conditions.length):this.buttonObj.initialLabel);
-        
     }
 });

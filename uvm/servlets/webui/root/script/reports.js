@@ -32,13 +32,8 @@ Ext.define('Ung.panel.Reports', {
             dateTimeEmptyText: i18n._('end date and time')
         });
         
-        this.extraConditionsWindow = Ext.create('Ung.window.ExtraConditions', {
-            panelReports: this
-        });
-        
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
-        this.subCmps.push(this.extraConditionsWindow);
         
         var reportEntriesStore = Ext.create('Ext.data.Store', {
             fields: ["title"],
@@ -81,84 +76,89 @@ Ext.define('Ung.panel.Reports', {
         
         }, {
             region: 'center',
-            name:'chartContainer',
-            layout: 'fit',
-            html: "",
-            dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'bottom',
-                items: [{
-                    xtype: 'button',
-                    text: i18n._('From'),
-                    initialLabel:  i18n._('From'),
-                    width: 132,
-                    tooltip: i18n._('Select Start date and time'),
-                    handler: Ext.bind(function(button) {
-                        this.startDateWindow.buttonObj=button;
-                        this.startDateWindow.show();
-                    }, this)
-                },{
-                    xtype: 'tbtext',
-                    text: '-'
-                }, {
-                    xtype: 'button',
-                    text: i18n._('To'),
-                    initialLabel:  i18n._('To'),
-                    width: 132,
-                    tooltip: i18n._('Select End date and time'),
-                    handler: Ext.bind(function(button) {
-                        this.endDateWindow.buttonObj=button;
-                        this.endDateWindow.show();
-                    }, this)
-                }, {
-                    xtype: 'button',
-                    name: "extraConditions",
-                    text: i18n._('Add Conditions'),
-                    initialLabel:  i18n._('Add Conditions'),
-                    width: 132,
-                    tooltip: i18n._('Add extra SQL conditions to report'),
-                    handler: Ext.bind(function(button) {
-                        if(!this.reportEntry) {
-                            return;
-                        }
-                        this.extraConditionsWindow.getColumnsForTable(this.reportEntry.table);
-                        this.extraConditionsWindow.show();
-                    }, this)
-                }, {
-                    xtype: 'button',
-                    text: i18n._('Refresh'),
-                    name: "refresh",
-                    tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
-                    iconCls: 'icon-refresh',
-                    handler:function () {
-                        this.refreshHandler(true);
-                    },
-                    scope: this
-                }, {
-                    xtype: 'button',
-                    name: 'auto_refresh',
-                    text: i18n._('Auto Refresh'),
-                    enableToggle: true,
-                    pressed: false,
-                    tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'),this.autoRefreshInterval),
-                    iconCls: 'icon-autorefresh',
-                    handler: Ext.bind(function(button) {
-                        if(button.pressed) {
-                            this.startAutoRefresh();
-                        } else {
-                            this.stopAutoRefresh();
-                        }
-                    }, this)
-                }]
-            }] 
+            layout: {type: 'border'},
+            items: [{
+                region: 'center',
+                xtype: "panel",
+                name:'chartContainer',
+                layout: 'fit',
+                html: "",
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [{
+                        xtype: 'button',
+                        text: i18n._('From'),
+                        initialLabel:  i18n._('From'),
+                        width: 132,
+                        tooltip: i18n._('Select Start date and time'),
+                        handler: Ext.bind(function(button) {
+                            this.startDateWindow.buttonObj=button;
+                            this.startDateWindow.show();
+                        }, this)
+                    },{
+                        xtype: 'tbtext',
+                        text: '-'
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('To'),
+                        initialLabel:  i18n._('To'),
+                        width: 132,
+                        tooltip: i18n._('Select End date and time'),
+                        handler: Ext.bind(function(button) {
+                            this.endDateWindow.buttonObj=button;
+                            this.endDateWindow.show();
+                        }, this)
+                    }, {
+                        xtype: 'button',
+                        name: "extraConditions",
+                        text: i18n._('Add Conditions'),
+                        initialLabel:  i18n._('Add Conditions'),
+                        width: 132,
+                        tooltip: i18n._('Add extra SQL conditions to report'),
+                        handler: Ext.bind(function(button) {
+                            if(!this.reportEntry) {
+                                return;
+                            }
+                            this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
+                            this.extraConditionsPanel.expand();
+                        }, this)
+                    }, {
+                        xtype: 'button',
+                        text: i18n._('Refresh'),
+                        name: "refresh",
+                        tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
+                        iconCls: 'icon-refresh',
+                        handler:function () {
+                            this.refreshHandler(true);
+                        },
+                        scope: this
+                    }, {
+                        xtype: 'button',
+                        name: 'auto_refresh',
+                        text: i18n._('Auto Refresh'),
+                        enableToggle: true,
+                        pressed: false,
+                        tooltip: Ext.String.format(i18n._('Auto Refresh every {0} seconds'),this.autoRefreshInterval),
+                        iconCls: 'icon-autorefresh',
+                        handler: Ext.bind(function(button) {
+                            if(button.pressed) {
+                                this.startAutoRefresh();
+                            } else {
+                                this.stopAutoRefresh();
+                            }
+                        }, this)
+                    }]
+                }] 
+            }, this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
+                region: 'south',
+                parentPanel: this
+            })]
         }];
         this.callParent(arguments);
-        this.chartContainer = this.down("container[name=chartContainer]");
+        this.chartContainer = this.down("panel[name=chartContainer]");
     },
     loadReport: function(reportEntry) {
-        if(this.extraConditions) {
-            this.extraConditionsWindow.clearConditions();
-        }
         this.reportEntry = reportEntry;
         this.chartContainer.removeAll();
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
@@ -279,25 +279,6 @@ Ext.define('Ung.panel.Reports', {
                         x: 10,
                         y: 40
                     }],
-                    // tbar: [ '->', {
-                    //     xtype: 'segmentedbutton',
-                    //     width: 200,
-                    //     items: [{
-                    //         text: 'Stack'
-                    //     }, {
-                    //         text: 'Group',
-                    //         pressed: true
-                    //     }],
-                    //     listeners: {
-                    //         toggle: Ext.bind(function(segmentedButton, button, pressed) {
-                    //             var chart = this.chartContainer.down("[name=chart]"),
-                    //             series = chart.getSeries()[0],
-                    //             value = segmentedButton.getValue();
-                    //             series.setStacked(value === 0);
-                    //             chart.redraw(); 
-                    //         }, this)
-                    //     }
-                    // }],
                     interactions: ['itemhighlight'],
                     axes: [{
                         type: 'numeric',
@@ -420,5 +401,163 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
         }
+    }
+});
+
+Ext.define("Ung.panel.ExtraConditions", {
+    extend: "Ext.panel.Panel",
+    title: i18n._('Extra Conditions'),
+    collapsible: true,
+    collapsed: true,
+    split: true,
+    autoScroll: true,
+    count: 5,
+    layout: { type: 'table', columns: 4 },
+    getColumnsForTable: function(table) {
+        if(table != null && table.length > 2) {
+            Ung.Main.getNodeReporting().getColumnsForTable(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                var columns = [];
+                for (var i=0; i< result.length; i++) {
+                    columns.push({ name: result[i]});
+                }
+                this.columnsStore.loadData(columns);
+            }, this), table);
+        }
+    },
+    initComponent: function() {
+        this.columnsStore = Ext.create('Ext.data.Store', {
+            sorters: "name",
+            fields: ["name"],
+            data: []
+        });
+
+        var items = [{
+            title: i18n._("Column"),
+            padding: 0,
+            width: 256
+        }, {
+            title: i18n._("Operator"),
+            padding: 0,
+            width: 106
+        }, {
+            title: i18n._("Value"),
+            padding: 0,
+            width: 406
+        }, {
+            title: "&nbsp;",
+            width: 100
+        }];
+        for(var i=0; i<this.count; i++) {
+            items.push.apply(items, [{
+                xtype: 'combo',
+                width: 250,
+                margin: 3,
+                emptyText: i18n._("[enter column]"),
+                dataIndex: "column",
+                name: "column"+i,
+                typeAhead: true,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                store: this.columnsStore,
+                value: "",
+                listeners: {
+                    change: {
+                        fn: function(combo, newValue, oldValue, opts) {
+                            var isEmpty = Ext.isEmpty(newValue);
+                            combo.next("[dataIndex=operator]").setDisabled(isEmpty);
+                            combo.next("[dataIndex=value]").setDisabled(isEmpty);
+                            combo.next("[dataIndex=clear]").setDisabled(isEmpty);
+                        },
+                        scope: this
+                    }
+                }
+            }, {
+                xtype: 'combo',
+                width: 100,
+                margin: 3,
+                dataIndex: "operator",
+                name: "operator"+i,
+                editable: false,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                value: "=",
+                disabled: true,
+                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
+            }, {
+                xtype: 'textfield',
+                dataIndex: "value",
+                name: "value"+i,
+                width: 400,
+                margin: 3,
+                disabled: true,
+                emptyText: i18n._("[no value]")
+            }, {
+                xtype: 'button',
+                dataIndex: "clear",
+                margin: 3,
+                name: "clear"+i,
+                text: i18n._("Clear"),
+                disabled: true,
+                handler: function() {
+                    this.prev("[dataIndex=column]").setValue("");
+                    this.prev("[dataIndex=operator]").setValue("=");
+                    this.prev("[dataIndex=value]").setValue("");
+                }
+            }]);
+        }
+        this.items = items;
+        
+        this.bbar = ['->',{
+            text: i18n._("Done"),
+            iconCls: 'save-icon',
+            handler: function() {
+                this.setConditions();
+                this.parentPanel.down("button[name=refresh]").getEl().dom.click();
+                this.collapse();
+            },
+            scope: this
+        }, {
+            name: 'Clear',
+            text: i18n._("Clear All"),
+            iconCls: 'cancel-icon',
+            handler: function() {
+                this.clearConditions();
+                this.parentPanel.down("button[name=refresh]").getEl().dom.click();
+                this.collapse();
+            },
+            scope: this
+        }];
+        this.callParent(arguments);
+    },
+    clearConditions: function() {
+        for(var i=0; i<this.count; i++) {
+            this.down("[name=column"+i+"]").setValue("");
+            this.down("[name=operator"+i+"]").setValue("=");
+            this.down("[name=value"+i+"]").setValue("");
+        }
+        this.setConditions();
+    },
+    setConditions: function() {
+        var conditions = [], column;
+        for(var i=0; i<this.count; i++) {
+            column = this.down("[name=column"+i+"]").getValue();
+            if(!Ext.isEmpty(column)) {
+                conditions.push({
+                    "javaClass": "com.untangle.uvm.node.SqlCondition",
+                    "column": column,
+                    "operator": this.down("[name=operator"+i+"]").getValue(),
+                    "value": this.down("[name=value"+i+"]").getValue()
+                });
+            }
+        }
+        if(!this.buttonObj){
+            this.buttonObj = this.parentPanel.down("button[name=extraConditions]");
+        }
+            
+        this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
+        this.buttonObj.setText((conditions.length>0)?Ext.String.format( i18n._("{0} Condition(s)"), conditions.length):this.buttonObj.initialLabel);
     }
 });
