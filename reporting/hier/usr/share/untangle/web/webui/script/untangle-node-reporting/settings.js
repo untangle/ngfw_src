@@ -742,7 +742,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             data: []
         });
 
-        this.getRpcNode().getTables(Ext.bind(function(result, exception) {
+        Ung.Main.getReportingManagerNew().getTables(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
             var tables = [];
             for (var i=0; i< result.length; i++) {
@@ -759,7 +759,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
 
         var getColumnsForTable = Ext.bind(function(table) {
             if(table != null && table.length > 2) {
-                this.getRpcNode().getColumnsForTable(Ext.bind(function(result, exception) {
+                Ung.Main.getReportingManagerNew().getColumnsForTable(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     var columns = [];
                     for (var i=0; i< result.length; i++) {

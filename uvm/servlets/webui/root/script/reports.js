@@ -415,7 +415,7 @@ Ext.define("Ung.panel.ExtraConditions", {
     layout: { type: 'table', columns: 4 },
     getColumnsForTable: function(table) {
         if(table != null && table.length > 2) {
-            Ung.Main.getNodeReporting().getColumnsForTable(Ext.bind(function(result, exception) {
+            Ung.Main.getReportingManagerNew().getColumnsForTable(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var columns = [];
                 for (var i=0; i< result.length; i++) {
