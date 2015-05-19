@@ -233,6 +233,10 @@ Ext.define('Ung.panel.Reports', {
                         }
                     }]
                 };
+
+                if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
+                    chart.colors = reportEntry.colors;
+                }
             } else if(reportEntry.type == 'TIME_GRAPH') {
                 var axesFields = [],column;
                 var zeroFn = function(val) {
@@ -322,8 +326,8 @@ Ext.define('Ung.panel.Reports', {
                     }]
                 };
 
-                if ( reportEntry.timeColors != null ) {
-                    chart.colors = reportEntry.timeColors;
+                if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
+                    chart.colors = reportEntry.colors;
                 }
             }
             this.chartContainer.add(chart); 
