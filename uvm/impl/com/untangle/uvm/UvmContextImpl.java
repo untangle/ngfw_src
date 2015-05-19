@@ -593,26 +593,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return UvmContextImpl.uid;
     }
 
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return this.reportingNode.getEvents(query, policyId, extraConditions, limit);
-    }
-
-    public Object getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return getEventsForDateRangeResultSet(query, policyId, extraConditions, limit, null, null);
-    }
-
-    public Object getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
-    {
-        if (this.reportingNode == null)
-            getReportingNode();
-        if (this.reportingNode == null)
-            return null;
-
-        return this.reportingNode.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
-    }
-
     /**
      * This call returns one big JSONObject with references to all the important
      * information This is used to avoid lots of separate synchornous calls via

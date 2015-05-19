@@ -236,7 +236,7 @@ class OpenVpnTests(unittest2.TestCase):
         for q in node.getStatusEventsQueries():
             if q['name'] == 'Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'remote_address', vpnClientVpnIP,

@@ -326,24 +326,6 @@ public interface UvmContext
     void waitForStartup();
 
     /**
-     * Query events in the reports database
-     */
-    /* DEPRECATED - remove me - use ReportingManagerNew */
-    ArrayList<org.json.JSONObject> getEvents( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
-    
-    /**
-     * Query events in the reports database
-     */
-    /* DEPRECATED - remove me - use ReportingManagerNew */
-    Object getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
-    
-    /**
-     * Query events in the reports database, within a given date range
-     */
-    /* DEPRECATED - remove me - use ReportingManagerNew */
-    Object getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
-    
-    /**
      * Get URLs
      */
     String getStoreUrl();

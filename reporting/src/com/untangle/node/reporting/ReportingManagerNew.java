@@ -34,12 +34,12 @@ public interface ReportingManagerNew
     /**
      * Query events in the reports database
      */
-    Object getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
+    ResultSetReader getEventsResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit );
     
     /**
      * Query events in the reports database, within a given date range
      */
-    Object getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
+    ResultSetReader getEventsForDateRangeResultSet( final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate );
 
     /**
      * Get a list of all tables in the database

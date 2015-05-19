@@ -15,10 +15,6 @@ public interface Reporting
 
     void forceFlush();
 
-    ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit);
-
-    Object getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate);
-    
     void createSchemas();
 
     double getAvgWriteTimePerEvent();

@@ -235,21 +235,6 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
         return ReportingNodeImpl.eventWriter.getWriteDelaySec();
     }
     
-    public ArrayList<org.json.JSONObject> getEvents(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return ReportingNodeImpl.eventReader.getEvents( query, policyId, extraConditions, limit, null, null );
-    }
-    
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
-    {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, extraConditions, limit, null, null );
-    }
-    
-    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
-    {
-        return ReportingNodeImpl.eventReader.getEventsResultSet( query, policyId, extraConditions, limit, startDate, endDate );
-    }
-    
     public Connection getDbConnection()
     {
         try {
@@ -629,7 +614,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, Report
                 logger.warn("reporting node not found");
                 return;
             }
-            ResultSetReader resultSetReader = reporting.getEventsResultSet( query, policyId, null, -1, startDate, endDate);
+            ResultSetReader resultSetReader = ReportingManagerNewImpl.getInstance().getEventsForDateRangeResultSet( query, policyId, null, -1, startDate, endDate);
             toCsv( resultSetReader, resp, columnListStr, name );
         }
     }

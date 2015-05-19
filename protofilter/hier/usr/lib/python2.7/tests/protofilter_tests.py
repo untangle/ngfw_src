@@ -85,7 +85,7 @@ class ProtofilterTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -109,7 +109,7 @@ class ProtofilterTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -133,7 +133,7 @@ class ProtofilterTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -157,7 +157,7 @@ class ProtofilterTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -181,7 +181,7 @@ class ProtofilterTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,

@@ -118,7 +118,7 @@ class SpamTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'Quarantined Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert( events != None )
         # Verify Quarantined events occurred..
         assert(events['list'][0]['c_server_addr'] == test_untangle_IP)

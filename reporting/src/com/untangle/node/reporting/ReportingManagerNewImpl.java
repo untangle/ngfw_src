@@ -205,12 +205,12 @@ public class ReportingManagerNewImpl implements ReportingManagerNew
         return ReportingNodeImpl.eventReader.getEvents(query, policyId, extraConditions, limit, null, null);
     }
 
-    public Object getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
+    public ResultSetReader getEventsResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit)
     {
         return getEventsForDateRangeResultSet(query, policyId, extraConditions, limit, null, null);
     }
 
-    public Object getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
+    public ResultSetReader getEventsForDateRangeResultSet(final String query, final Long policyId, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate)
     {
         return ReportingNodeImpl.eventReader.getEventsResultSet(query, policyId, extraConditions, limit, startDate, endDate);
     }

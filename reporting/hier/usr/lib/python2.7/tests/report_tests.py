@@ -24,6 +24,7 @@ nodeFirewall = None
 nodeFaild = None
 nodeWeb = None
 orig_settings = None
+orig_netsettings = None
 canRelay = False
 # special box with testshell in the sudoer group  - used to connect to as client
 listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.32','16','untangletest.com')]
@@ -243,10 +244,12 @@ class ReportTests(unittest2.TestCase):
             else:
                 nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
 
-        reportSettings = node.getSettings()
-        orig_settings = copy.deepcopy(reportSettings)
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        orig_netsettings = copy.deepcopy(netsettings)
+        if orig_settings == None:
+            reportSettings = node.getSettings()
+            orig_settings = copy.deepcopy(reportSettings)
+        if orig_netsettings == None:
+            netsettings = uvmContext.networkManager().getNetworkSettings()
+            orig_netsettings = copy.deepcopy(netsettings)
 
         # Skip checking relaying is possible if we have determined it as true on previous test.
         if canRelay == False:
@@ -417,7 +420,7 @@ class ReportTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,5)
+        events = global_functions.get_events(query['query'],defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'Host is doing large download')
         assert(found)
@@ -480,7 +483,7 @@ class ReportTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Events': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,5)
+        events = global_functions.get_events(query['query'],defaultRackId,None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 'description', 'WAN is offline')
         assert(found)

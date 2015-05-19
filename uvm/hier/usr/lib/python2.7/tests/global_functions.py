@@ -9,6 +9,8 @@ import remote_control
 import system_properties
 import ipaddr
 
+from uvm import Uvm
+
 officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
@@ -75,17 +77,28 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     return udp_speed
 
 def getDownloadSpeed():
-    # Download file and record the average speed in which the file was download
-    result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
-    match = re.search(r'([0-9.]+) [KM]B\/s', result)
-    bandwidth_speed =  match.group(1)
-    # cast string to float for comparsion.
-    bandwidth_speed = float(bandwidth_speed)
-    # adjust value if MB or KB
-    if "MB/s" in result:
-        bandwidth_speed *= 1000
-    # print "bandwidth_speed <%s>" % bandwidth_speed
-    return bandwidth_speed
+    try:
+        # Download file and record the average speed in which the file was download
+        result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
+        match = re.search(r'([0-9.]+) [KM]B\/s', result)
+        bandwidth_speed =  match.group(1)
+        # cast string to float for comparsion.
+        bandwidth_speed = float(bandwidth_speed)
+        # adjust value if MB or KB
+        if "MB/s" in result:
+            bandwidth_speed *= 1000
+        # print "bandwidth_speed <%s>" % bandwidth_speed
+        return bandwidth_speed
+    except Exception,e:
+        return None
+
+def get_events( query, rackId, conditions, limit):
+    reporting = Uvm().getUvmContext().nodeManager().node("untangle-node-reporting")
+    if reporting == None:
+        print "WARNING: reporting node not found"
+        return None
+    reportingManager = reporting.getReportingManagerNew()
+    return reportingManager.getEvents( query, rackId, conditions, limit)
 
 def check_events( events, num_events, *args, **kwargs):
     if events == None:

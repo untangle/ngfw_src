@@ -166,7 +166,7 @@ class IdpsInterface:
         for q in node.getEventQueries():
             if q['name'] == 'All Events': 
                 query = q
-        events = uvmContext.getEvents(query['query'], default_rack_id, None, 1)
+        events = global_functions.get_events(query['query'], default_rack_id, None, 1)
 
         logged = False
         blocked = False

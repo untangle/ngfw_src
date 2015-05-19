@@ -139,7 +139,7 @@ class PhishTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -167,7 +167,7 @@ class PhishTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
@@ -195,7 +195,7 @@ class PhishTests(unittest2.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Phish Events': query = q                
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRackId,None,1)
+        events = global_functions.get_events(query['query'],defaultRackId,None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_server_addr', ip_address_testuntangle,
