@@ -3900,6 +3900,18 @@ Ext.define('Webui.config.network', {
                         }, this)
                     }
                 }
+            },{
+                xtype: "checkbox",
+                fieldLabel: this.i18n._("Block new sessions during network configuration"),
+                labelWidth: 190,
+                checked: this.settings.blockDuringRestarts,
+                listeners: {
+                    "change": {
+                        fn: Ext.bind(function(elem, newValue) {
+                            this.settings.blockDuringRestarts = newValue;
+                        }, this)
+                    }
+                }
             }]
         });
     },
