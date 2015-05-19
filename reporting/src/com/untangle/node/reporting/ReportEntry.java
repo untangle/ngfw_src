@@ -88,6 +88,24 @@ public class ReportEntry implements Serializable, JSONString
         return jO.toString();
     }
 
+    public ReportEntryType getType() { return this.type; }
+    public void setType( ReportEntryType newValue )
+    {
+        this.type = newValue;
+
+        // initialize sane defaults
+        switch ( this.type ) {
+        case PIE_GRAPH:
+            if ( pieNumSlices == null )
+                setPieNumSlices( 10 );
+            break;
+        case TIME_GRAPH:
+            if ( timeStyle == null )
+                setTimeStyle( TimeStyle.BAR );
+            break;
+        }
+    }
+
     public String getUniqueId() { return uniqueId; }
     public void setUniqueId( String newValue ) { this.uniqueId = newValue; }
 
@@ -97,9 +115,6 @@ public class ReportEntry implements Serializable, JSONString
     public Boolean getReadOnly() { return this.readOnly; }
     public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
     
-    public ReportEntryType getType() { return this.type; }
-    public void setType( ReportEntryType newValue ) { this.type = newValue; }
-
     public String getCategory() { return this.category; }
     public void setCategory( String newValue ) { this.category = newValue; }
 
@@ -153,7 +168,6 @@ public class ReportEntry implements Serializable, JSONString
     
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
-
     
     public String[] getColors() { return this.colors; }
     public void setColors( String[] newValue ) { this.colors = newValue; }
