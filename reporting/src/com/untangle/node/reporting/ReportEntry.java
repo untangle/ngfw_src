@@ -70,7 +70,7 @@ public class ReportEntry implements Serializable, JSONString
     
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
-    private int pieNumSlices; /* the default number of pie slices shown (the excess will be groupde into "others") */
+    private Integer pieNumSlices; /* the default number of pie slices shown (the excess will be groupde into "others") */
 
     private String textString; /* The string representation of the text */
     private String[] textColumns; /* The data to graph by time */
@@ -130,8 +130,8 @@ public class ReportEntry implements Serializable, JSONString
     public String getPieSumColumn() { return this.pieSumColumn; }
     public void setPieSumColumn( String newValue ) { this.pieSumColumn = newValue; }
 
-    public int getPieNumSlices() { return this.pieNumSlices; }
-    public void setPieNumSlices( int newValue ) { this.pieNumSlices = newValue; }
+    public Integer getPieNumSlices() { return this.pieNumSlices; }
+    public void setPieNumSlices( Integer newValue ) { this.pieNumSlices = newValue; }
     
     public String getTextString() { return this.textString; }
     public void setTextString( String newValue ) { this.textString = newValue; }
