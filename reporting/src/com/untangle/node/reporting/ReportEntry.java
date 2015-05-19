@@ -45,10 +45,15 @@ public class ReportEntry implements Serializable, JSONString
             AUTO
             };
 
+    public static enum TimeStyle {
+        BAR,
+            LINE,
+            };
+    
     private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
-
+    
     private ReportEntryType type;
 
     private String title; /* title of the entry/graph */
@@ -65,11 +70,13 @@ public class ReportEntry implements Serializable, JSONString
     
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
+    private int pieNumSlices; /* the default number of pie slices shown (the excess will be groupde into "others") */
 
     private String textString; /* The string representation of the text */
     private String[] textColumns; /* The data to graph by time */
     
     private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
+    private TimeStyle timeStyle; /* The time chart type (line/bar/etc) */
     private String[] timeDataColumns; /* The data to graph by time */
     
     private String orderByColumn = null; /* The column to order by */
@@ -123,6 +130,9 @@ public class ReportEntry implements Serializable, JSONString
     public String getPieSumColumn() { return this.pieSumColumn; }
     public void setPieSumColumn( String newValue ) { this.pieSumColumn = newValue; }
 
+    public int getPieNumSlices() { return this.pieNumSlices; }
+    public void setPieNumSlices( int newValue ) { this.pieNumSlices = newValue; }
+    
     public String getTextString() { return this.textString; }
     public void setTextString( String newValue ) { this.textString = newValue; }
 
@@ -138,9 +148,13 @@ public class ReportEntry implements Serializable, JSONString
     public TimeDataInterval getTimeDataInterval() { return this.timeDataInterval; }
     public void setTimeDataInterval( TimeDataInterval newValue ) { this.timeDataInterval = newValue; }
 
+    public TimeStyle getTimeStyle() { return this.timeStyle; }
+    public void setTimeStyle( TimeStyle newValue ) { this.timeStyle = newValue; }
+    
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
 
+    
     public String[] getColors() { return this.colors; }
     public void setColors( String[] newValue ) { this.colors = newValue; }
     
