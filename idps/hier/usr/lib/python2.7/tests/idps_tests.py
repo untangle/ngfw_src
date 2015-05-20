@@ -13,6 +13,7 @@ from StringIO import StringIO
 from jsonrpc import JSONRPCException
 from uvm import Uvm
 import remote_control
+import global_functions
 import test_registry
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )

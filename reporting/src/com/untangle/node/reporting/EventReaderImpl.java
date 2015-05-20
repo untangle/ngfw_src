@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -30,6 +31,8 @@ import com.untangle.uvm.node.SqlCondition;
  */
 public class EventReaderImpl
 {
+    private int MAX_SIMULTANEOUS_QUERIES = 2;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final DateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm");
@@ -37,6 +40,8 @@ public class EventReaderImpl
     private ReportingNodeImpl node;
 
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
+
+    private Semaphore querySemaphore = new Semaphore(MAX_SIMULTANEOUS_QUERIES);
     
     public EventReaderImpl( ReportingNodeImpl node )
     {
@@ -65,8 +70,21 @@ public class EventReaderImpl
                 throw new RuntimeException("Unable to create Statement");
             }
 
-            ResultSet resultSet = statement.executeQuery();
-            return new ResultSetReader( resultSet, dbConnection );
+
+            try {
+                if ( ! this.querySemaphore.tryAcquire(60L, java.util.concurrent.TimeUnit.SECONDS) ) {
+                    logger.error("Unable to acquire query lock", new Exception());
+                    throw new RuntimeException("Unable to acquire query lock");
+                }
+            
+                ResultSet resultSet = statement.executeQuery();
+                return new ResultSetReader( resultSet, dbConnection );
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted",e);
+                throw e;
+            } finally {
+                this.querySemaphore.release();
+            }
 
         } catch ( Exception e ) {
             logger.warn("Failed to query database. query: " + statement, e );
