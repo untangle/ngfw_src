@@ -74,6 +74,10 @@ class WebFilterBaseTests(unittest2.TestCase):
     def shortNodeName():
         return "webfilter"
 
+    @staticmethod
+    def eventNodeName():
+        return "web_filter_lite"
+
     def setUp(self):
         global node
         if node == None:
@@ -368,8 +372,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.shortNodeName() + '_blocked', True, 
-                                            self.shortNodeName() + '_flagged', True )
+                                            self.eventNodeName() + '_blocked', True, 
+                                            self.eventNodeName() + '_flagged', True )
         assert( found )
 
     def test_101_eventlog_flaggedUrl(self):
@@ -389,8 +393,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.shortNodeName() + '_blocked', False, 
-                                            self.shortNodeName() + '_flagged', True )
+                                            self.eventNodeName() + '_blocked', False, 
+                                            self.eventNodeName() + '_flagged', True )
         assert( found )
 
     def test_102_eventlog_allUrls(self):
@@ -408,8 +412,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, 
                                             "host","test.untangle.com", 
                                             "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.shortNodeName() + '_blocked', False, 
-                                            self.shortNodeName() + '_flagged', False )
+                                            self.eventNodeName() + '_blocked', False, 
+                                            self.eventNodeName() + '_flagged', False )
         assert( found )
 
     # verify that a block page is shown but unblock button option is available.

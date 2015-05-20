@@ -40,7 +40,7 @@ public class WebFilterImpl extends WebFilterBase
     @Override
     public String getName()
     {
-        return "webfilter";
+        return "web_filter_lite";
     }
 
     @Override

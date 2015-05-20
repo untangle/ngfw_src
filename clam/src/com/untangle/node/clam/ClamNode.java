@@ -21,7 +21,7 @@ public class ClamNode extends VirusNodeImpl
 
     public String getName()
     {
-        return "clam";
+        return "virus_blocker_lite";
     }
 
     @Override

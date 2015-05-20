@@ -19,6 +19,14 @@ class WebFilterTests(WebFilterBaseTests):
         return "untangle-node-webfilter"
 
     @staticmethod
+    def shortNodeName():
+        return "webfilter"
+
+    @staticmethod
+    def eventNodeName():
+        return "web_filter_lite"
+
+    @staticmethod
     def vendorName():
         return "untangle"
 

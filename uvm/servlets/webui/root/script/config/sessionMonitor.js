@@ -54,14 +54,14 @@ Ext.define('Webui.config.sessionMonitor', {
                         "preNatServer": "184.27.239."+((t+3)%10),
                         "attachments": {
                             "map": {
-                                "sitefilter-best-category-name": "Social Networking",
+                                "web_filter-best-category-name": "Social Networking",
                                 "protofilter-matched": (ii%3==0),
-                                "sitefilter-best-category-description": "Social Networking",
-                                "sitefilter-best-category-blocked": false,
-                                "sitefilter-flagged": false,
+                                "web_filter-best-category-description": "Social Networking",
+                                "web_filter-best-category-blocked": false,
+                                "web_filter-flagged": false,
                                 "platform-hostname": "acct07-wxp"+t,
-                                "sitefilter-best-category-flagged": (ii%2==1),
-                                "sitefilter-best-category-id": null,
+                                "web_filter-best-category-flagged": (ii%2==1),
+                                "web_filter-best-category-id": null,
                                 "http-uri": "/t.gif",
                                 "platform-username": "rbooroojian"+t,
                                 "http-hostname": "p.twitter.com"+(t%500)
@@ -338,7 +338,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category Name") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-best-category-name",
+            dataIndex: "web_filter-best-category-name",
             width: 100,
             filter: {
                 type: 'string'
@@ -346,7 +346,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category Description") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-best-category-description",
+            dataIndex: "web_filter-best-category-description",
             width: 100,
             filter: {
                 type: 'string'
@@ -354,7 +354,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category Flagged") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-best-category-flagged",
+            dataIndex: "web_filter-best-category-flagged",
             width: 50,
             filter: {
                 type: 'boolean',
@@ -364,7 +364,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Category Blocked") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-best-category-blocked",
+            dataIndex: "web_filter-best-category-blocked",
             width: 50,
             filter: {
                 type: 'boolean',
@@ -374,7 +374,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Content Type") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-content-type",
+            dataIndex: "web_filter-content-type",
             width: 50,
             filter: {
                 type: 'string'
@@ -382,7 +382,7 @@ Ext.define('Webui.config.sessionMonitor', {
         },{
             hidden: true,
             header: this.i18n._("Flagged") +  this.i18n._(" (Web Filter)"),
-            dataIndex: "sitefilter-flagged",
+            dataIndex: "web_filter-flagged",
             width: 50,
             filter: {
                 type: 'boolean',
@@ -587,17 +587,17 @@ Ext.define('Webui.config.sessionMonitor', {
             },{
                 name: "http-uri"
             },{
-                name: "sitefilter-best-category-name"
+                name: "web_filter-best-category-name"
             },{
-                name: "sitefilter-best-category-description"
+                name: "web_filter-best-category-description"
             },{
-                name: "sitefilter-best-category-flagged",
+                name: "web_filter-best-category-flagged",
                 type: 'string'
             },{
-                name: "sitefilter-best-category-blocked",
+                name: "web_filter-best-category-blocked",
                 type: 'string'
             },{
-                name: "sitefilter-flagged",
+                name: "web_filter-flagged",
                 type: 'string'
             },{
                 name: "classd-application"

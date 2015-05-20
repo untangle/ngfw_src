@@ -21,7 +21,7 @@ class ClamTests(VirusTests):
 
     @staticmethod
     def shortName():
-        return "clam"
+        return "virus_blocker_lite"
 
     # verify daemon is running
     def test_009_clamdIsRunning(self):

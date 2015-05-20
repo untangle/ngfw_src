@@ -58,42 +58,57 @@ CREATE TABLE reports.http_events (
     c2s_content_length bigint,
     s2c_content_length bigint,
     s2c_content_type text,
-    adblocker_cookie_ident text,
-    adblocker_action character,
-    webfilter_reason character(1),
-    webfilter_category text,
-    webfilter_blocked boolean,
-    webfilter_flagged boolean,
-    sitefilter_reason character(1),
-    sitefilter_category text,
-    sitefilter_blocked boolean,
-    sitefilter_flagged boolean,
-    clam_clean boolean,
-    clam_name text,
-    virusblocker_clean boolean,
-    virusblocker_name text)""",
+    ad_blocker_cookie_ident text,
+    ad_blocker_action character,
+    web_filter_lite_reason character(1),
+    web_filter_lite_category text,
+    web_filter_lite_blocked boolean,
+    web_filter_lite_flagged boolean,
+    web_filter_reason character(1),
+    web_filter_category text,
+    web_filter_blocked boolean,
+    web_filter_flagged boolean,
+    virus_blocker_lite_clean boolean,
+    virus_blocker_lite_name text,
+    virus_blocker_clean boolean,
+    virus_blocker_name text)""",
                                 ["request_id"],
                                 ["session_id",
                                  "policy_id",
                                  "time_stamp",
-                                 "webfilter_blocked",
-                                 "webfilter_flagged",
-                                 "webfilter_category",
-                                 "virusblocker_clean",
-                                 "clam_clean",
-                                 "adblocker_action",
+                                 "web_filter_blocked",
+                                 "web_filter_flagged",
+                                 "web_filter_category",
+                                 "web_filter_lite_blocked",
+                                 "web_filter_lite_flagged",
+                                 "web_filter_lite_category",
+                                 "virus_blocker_clean",
+                                 "virus_blocker_lite_clean",
+                                 "ad_blocker_action",
                                  "host",
                                  "username",
                                  "hostname",
                                  "c_client_addr",
                                  "client_intf",
-                                 "server_intf",
-                                 "sitefilter_blocked",
-                                 "sitefilter_flagged",
-                                 "sitefilter_category"])
+                                 "server_intf"])
 
         sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
         sql_helper.drop_column('http_events','adblocker_blocked') # 11.2 - drop unused column
+
+        sql_helper.rename_column('http_events','adblocker_cookie_ident','ad_blocker_cookie_ident') # 11.2
+        sql_helper.rename_column('http_events','adblocker_action','ad_blocker_action') # 11.2
+        sql_helper.rename_column('http_events','webfilter_reason','web_filter_lite_reason') # 11.2
+        sql_helper.rename_column('http_events','webfilter_category','web_filter_lite_category') # 11.2
+        sql_helper.rename_column('http_events','webfilter_blocked','web_filter_lite_blocked') # 11.2
+        sql_helper.rename_column('http_events','webfilter_flagged','web_filter_lite_flagged') # 11.2
+        sql_helper.rename_column('http_events','sitefilter_reason','web_filter_reason') # 11.2
+        sql_helper.rename_column('http_events','sitefilter_category','web_filter_category') # 11.2
+        sql_helper.rename_column('http_events','sitefilter_blocked','web_filter_blocked') # 11.2
+        sql_helper.rename_column('http_events','sitefilter_flagged','web_filter_flagged') # 11.2
+        sql_helper.rename_column('http_events','clam_clean','virus_blocker_lite_clean') # 11.2
+        sql_helper.rename_column('http_events','clam_name','virus_blocker_lite_name') # 11.2
+        sql_helper.rename_column('http_events','virusblocker_clean','virus_blocker_clean') # 11.2
+        sql_helper.rename_column('http_events','virusblocker_name','virus_blocker_name') # 11.2
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("http_events", cutoff)

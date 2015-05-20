@@ -48,12 +48,17 @@ CREATE TABLE reports.ftp_events (
     request_id bigint,
     method character(1),
     uri text,
-    clam_clean boolean,
-    clam_name text,
-    virusblocker_clean boolean,
-    virusblocker_name text)""",
+    virus_blocker_lite_clean boolean,
+    virus_blocker_lite_name text,
+    virus_blocker_clean boolean,
+    virus_blocker_name text)""",
                                 ["request_id","event_id"],
                                 ["policy_id","session_id","time_stamp"])
+
+        sql_helper.rename_column('ftp_events','clam_clean','virus_blocker_lite_clean') # 11.2
+        sql_helper.rename_column('ftp_events','clam_name','virus_blocker_lite_name') # 11.2
+        sql_helper.rename_column('ftp_events','virusblocker_clean','virus_blocker_clean') # 11.2
+        sql_helper.rename_column('ftp_events','virusblocker_name','virus_blocker_name') # 11.2
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("ftp_events", cutoff)

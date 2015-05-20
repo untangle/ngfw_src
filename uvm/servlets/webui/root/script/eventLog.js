@@ -618,22 +618,22 @@ Ung.CustomEventLog = {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'webfilter_blocked',
+                name: 'web_filter_lite_blocked',
                 type: 'boolean'
             }, {
-                name: 'sitefilter_blocked',
+                name: 'web_filter_blocked',
                 type: 'boolean'
             }, {
-                name: 'webfilter_flagged',
+                name: 'web_filter_lite_flagged',
                 type: 'boolean'
             }, {
-                name: 'sitefilter_flagged',
+                name: 'web_filter_flagged',
                 type: 'boolean'
             }, {
-                name: 'webfilter_category',
+                name: 'web_filter_lite_category',
                 type: 'string'
             }, {
-                name: 'sitefilter_category',
+                name: 'web_filter_category',
                 type: 'string'
             }, {
                 name: 'c_client_addr',
@@ -653,25 +653,25 @@ Ung.CustomEventLog = {
             }, {
                 name: 'uri'
             }, {
-                name: 'webfilter_reason',
+                name: 'web_filter_lite_reason',
                 type: 'string',
                 convert: Ung.CustomEventLog.httpEventConvertReason
             }, {
-                name: 'sitefilter_reason',
+                name: 'web_filter_reason',
                 type: 'string',
                 convert: Ung.CustomEventLog.httpEventConvertReason
             }, {
-                name: 'adblocker_action',
+                name: 'ad_blocker_action',
                 type: 'string',
                 convert: function(value) {
                     return (value == 'B')?i18n._("block") : i18n._("pass");
                 }
             }, {
-                name: 'adblocker_cookie_ident'
+                name: 'ad_blocker_cookie_ident'
             }, {
-                name: 'virusblocker_name'
+                name: 'virus_blocker_name'
             }, {
-                name: 'clam_name'
+                name: 'virus_blocker_lite_name'
             }],
             columns: [{
                 hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -714,72 +714,72 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'uri'
             }, {
-                hidden: visibleColumnsParam.indexOf('webfilter_blocked') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_lite_blocked') < 0,
                 header: i18n._("Blocked (Webfilter Lite)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'webfilter_blocked',
+                dataIndex: 'web_filter_lite_blocked',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('webfilter_flagged') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_lite_flagged') < 0,
                 header: i18n._("Flagged (Webfilter Lite)"),
                 width: Ung.Util.booleanFieldWidth,
-                dataIndex: 'webfilter_flagged',
+                dataIndex: 'web_filter_lite_flagged',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('webfilter_reason') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_lite_reason') < 0,
                 header: i18n._("Reason For Action (Webfilter Lite)"),
                 width: 150,
                 sortable: true,
-                dataIndex: 'webfilter_reason'
+                dataIndex: 'web_filter_lite_reason'
             }, {
-                hidden: visibleColumnsParam.indexOf('webfilter_category') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_lite_category') < 0,
                 header: i18n._("Category (Webfilter Lite)"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'webfilter_category'
+                dataIndex: 'web_filter_lite_category'
             }, {
-                hidden: visibleColumnsParam.indexOf('sitefilter_blocked') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_blocked') < 0,
                 header: i18n._("Blocked  (Webfilter)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'sitefilter_blocked',
+                dataIndex: 'web_filter_blocked',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('sitefilter_flagged') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_flagged') < 0,
                 header: i18n._("Flagged (Webfilter)"),
                 width: Ung.Util.booleanFieldWidth,
                 sortable: true,
-                dataIndex: 'sitefilter_flagged',
+                dataIndex: 'web_filter_flagged',
                 filter: {
                     type: 'boolean',
                     yesText: 'true',
                     noText: 'false'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('sitefilter_reason') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_reason') < 0,
                 header: i18n._("Reason For Action (Webfilter)"),
                 width: 150,
                 sortable: true,
-                dataIndex: 'sitefilter_reason'
+                dataIndex: 'web_filter_reason'
             }, {
-                hidden: visibleColumnsParam.indexOf('sitefilter_category') < 0,
+                hidden: visibleColumnsParam.indexOf('web_filter_category') < 0,
                 header: i18n._("Category (Webfilter)"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'sitefilter_category'
+                dataIndex: 'web_filter_category'
             }, {
                 hidden: visibleColumnsParam.indexOf('c_server_addr') < 0,
                 header: i18n._("Server"),
@@ -796,29 +796,29 @@ Ung.CustomEventLog = {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('adblocker_action') < 0,
+                hidden: visibleColumnsParam.indexOf('ad_blocker_action') < 0,
                 header: i18n._("Action (Ad Blocker)"),
                 width: 120,
                 sortable: true,
-                dataIndex: 'adblocker_action'
+                dataIndex: 'ad_blocker_action'
             }, {
-                hidden: visibleColumnsParam.indexOf('adblocker_cookie_ident') < 0,
+                hidden: visibleColumnsParam.indexOf('ad_blocker_cookie_ident') < 0,
                 header: i18n._("Cookie"),
                 width: 100,
                 sortable: true,
-                dataIndex: 'adblocker_cookie_ident'
+                dataIndex: 'ad_blocker_cookie_ident'
             }, {
-                hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virus_blocker_lite_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker Lite)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'clam_name'
+                dataIndex: 'virus_blocker_lite_name'
             }, {
-                hidden: visibleColumnsParam.indexOf('virusblocker_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virus_blocker_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'virusblocker_name'
+                dataIndex: 'virus_blocker_name'
             }]
         });
         return grid;
@@ -943,9 +943,9 @@ Ung.CustomEventLog = {
                 name: 's_server_addr',
                 sortType: 'asIp'
             }, {
-                name: 'virusblocker_name'
+                name: 'virus_blocker_name'
             }, {
-                name: 'clam_name'
+                name: 'virus_blocker_lite_name'
             }, {
                 name: 'subject',
                 type: 'string'
@@ -958,29 +958,29 @@ Ung.CustomEventLog = {
             }, {
                 name: 'vendor'
             }, {
-                name:  'spamassassin_action',
+                name:  'spam_blocker_lite_action',
                 type: 'string',
                 convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
-                name: 'spamassassin_score'
+                name: 'spam_blocker_lite_score'
             }, {
-                name: 'spamassassin_tests_string'
+                name: 'spam_blocker_lite_tests_string'
             }, {
-                name:  'spamblocker_action',
+                name:  'spam_blocker_action',
                 type: 'string',
                 convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
-                name: 'spamblocker_score'
+                name: 'spam_blocker_score'
             }, {
-                name: 'spamblocker_tests_string'
+                name: 'spam_blocker_tests_string'
             }, {
-                name:  'phish_action',
+                name:  'phish_blocker_action',
                 type: 'string',
                 convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
-                name: 'phish_score'
+                name: 'phish_blocker_score'
             }, {
-                name: 'phish_tests_string'
+                name: 'phish_blocker_tests_string'
             }],
             columns: [{
                 hidden: visibleColumnsParam.indexOf('time_stamp') < 0,
@@ -1016,17 +1016,17 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 's_server_addr'
             }, {
-                hidden: visibleColumnsParam.indexOf('clam_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virus_blocker_lite_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker Lite)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'clam_name'
+                dataIndex: 'virus_blocker_lite_name'
             }, {
-                hidden: visibleColumnsParam.indexOf('virusblocker_name') < 0,
+                hidden: visibleColumnsParam.indexOf('virus_blocker_name') < 0,
                 header: i18n._("Virus Name (Virus Blocker)"),
                 width: 140,
                 sortable: true,
-                dataIndex: 'virusblocker_name'
+                dataIndex: 'virus_blocker_name'
             }, {
                 hidden: visibleColumnsParam.indexOf('addr') < 0,
                 header: i18n._("Receiver"),
@@ -1047,59 +1047,59 @@ Ung.CustomEventLog = {
                 sortable: true,
                 dataIndex: 'subject'
             }, {
-                hidden: visibleColumnsParam.indexOf('spamassassin_action') < 0,
+                hidden: visibleColumnsParam.indexOf('spam_blocker_lite_action') < 0,
                 header: i18n._("Action (Spam Blocker Lite)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'spamassassin_action'
+                dataIndex: 'spam_blocker_lite_action'
             }, {
-                hidden: visibleColumnsParam.indexOf('spamassassin_score') < 0,
+                hidden: visibleColumnsParam.indexOf('spam_blocker_lite_score') < 0,
                 header: i18n._("Spam Score (Spam Blocker Lite)"),
                 width: 70,
                 sortable: true,
-                dataIndex: 'spamassassin_score',
+                dataIndex: 'spam_blocker_lite_score',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('spamassassin_tests_string') < 0,
+                hidden: visibleColumnsParam.indexOf('spam_blocker_lite_tests_string') < 0,
                 header: i18n._("Detail (Spam Blocker Lite)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'spamassassin_tests_string'
+                dataIndex: 'spam_blocker_lite_tests_string'
             }, {
-                hidden: visibleColumnsParam.indexOf('spamblocker_action') < 0,
+                hidden: visibleColumnsParam.indexOf('spam_blocker_action') < 0,
                 header: i18n._("Action (Spam Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'spamblocker_action'
+                dataIndex: 'spam_blocker_action'
             }, {
-                hidden: visibleColumnsParam.indexOf('spamblocker_score') < 0,
+                hidden: visibleColumnsParam.indexOf('spam_blocker_score') < 0,
                 header: i18n._("Spam Score (Spam Blocker)"),
                 width: 70,
                 sortable: true,
-                dataIndex: 'spamblocker_score',
+                dataIndex: 'spam_blocker_score',
                 filter: {
                     type: 'numeric'
                 }
             }, {
-                hidden: visibleColumnsParam.indexOf('spamblocker_tests_string') < 0,
+                hidden: visibleColumnsParam.indexOf('') < 0,
                 header: i18n._("Detail (Spam Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'spamblocker_tests_string'
+                dataIndex: ''
             }, {
-                hidden: visibleColumnsParam.indexOf('phish_action') < 0,
+                hidden: visibleColumnsParam.indexOf('phish_blocker_action') < 0,
                 header: i18n._("Action (Phish Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'phish_action'
+                dataIndex: 'phish_blocker_action'
             }, {
-                hidden: visibleColumnsParam.indexOf('phish_tests_string') < 0,
+                hidden: visibleColumnsParam.indexOf('phish_blocker_tests_string') < 0,
                 header: i18n._("Detail (Phish Blocker)"),
                 width: 125,
                 sortable: true,
-                dataIndex: 'phish_tests_string'
+                dataIndex: 'phish_blocker_tests_string'
             }]
         });
         return grid;

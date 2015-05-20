@@ -146,7 +146,7 @@ class PhishTests(unittest2.TestCase):
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
                                             'c_client_addr', remote_control.clientIP,
-                                            'phish_action', 'Q')
+                                            'phish_blocker_action', 'Q')
         assert( found )
             
     def test_030_smtpMarkPhishTest(self):
@@ -174,7 +174,7 @@ class PhishTests(unittest2.TestCase):
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
                                             'c_client_addr', remote_control.clientIP,
-                                            'phish_action', 'M')
+                                            'phish_blocker_action', 'M')
         assert( found )
 
     def test_040_smtpDropPhishTest(self):
@@ -202,7 +202,7 @@ class PhishTests(unittest2.TestCase):
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
                                             'c_client_addr', remote_control.clientIP,
-                                            'phish_action', 'D')
+                                            'phish_blocker_action', 'D')
         assert( found )
 
     def test_050_checkTLSBypass(self):

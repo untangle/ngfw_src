@@ -53,10 +53,10 @@ public class WebFilterEvent extends LogEvent
         String sql =
             "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
-            getNodeName().toLowerCase() + "_blocked  = ?, " + 
-            getNodeName().toLowerCase() + "_flagged  = ?, " +
-            getNodeName().toLowerCase() + "_reason   = ?, " +
-            getNodeName().toLowerCase() + "_category = ? " +
+            fixupNodeName() + "_blocked  = ?, " + 
+            fixupNodeName() + "_flagged  = ?, " +
+            fixupNodeName() + "_reason   = ?, " +
+            fixupNodeName() + "_category = ? " +
             "WHERE " +
             "request_id = ? ";
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
@@ -90,4 +90,13 @@ public class WebFilterEvent extends LogEvent
         return summary;
     }
 
+    private String fixupNodeName()
+    {
+        String node = getNodeName().toLowerCase();
+        if ("webfilter".equals(node))
+            return "web_filter_lite";
+        if ("sitefilter".equals(node))
+            return "web_filter";
+        return node;
+    }
 }

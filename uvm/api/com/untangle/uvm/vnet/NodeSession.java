@@ -137,22 +137,22 @@ public interface NodeSession extends SessionTuple
     
     public final String KEY_FTP_FILE_NAME = "ftp-file-name";  /* String */
     
-    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "sitefilter-best-category-id"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "sitefilter-best-category-name"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "sitefilter-best-category-description"; /* String */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "sitefilter-best-category-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "sitefilter-best-category-blocked"; /* String */
-    public final String KEY_SITEFILTER_FLAGGED = "sitefilter-flagged"; /* Boolean */
-    public final String KEY_SITEFILTER_CATEGORIES = "sitefilter-categories"; /* List<String> */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "web_filter-best-category-id"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "web_filter-best-category-name"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "web_filter-best-category-description"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "web_filter-best-category-flagged"; /* Boolean */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "web_filter-best-category-blocked"; /* String */
+    public final String KEY_SITEFILTER_FLAGGED = "web_filter-flagged"; /* Boolean */
+    public final String KEY_SITEFILTER_CATEGORIES = "web_filter-categories"; /* List<String> */
 
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "webfilter-best-category-id"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "webfilter-best-category-name"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "webfilter-best-category-description"; /* String */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "webfilter-best-category-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "webfilter-best-category-blocked"; /* String */
-    //public final String KEY_WEBFILTER_FLAGGED = "webfilter-flagged"; /* Boolean */
-    //public final String KEY_WEBFILTER_FLAGGED = "webfilter-content-type"; /* String */
-    //public final String KEY_WEBFILTER_CATEGORIES = "webfilter-categories"; /* List<String> */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "web_filter_lite-best-category-id"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "web_filter_lite-best-category-name"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "web_filter_lite-best-category-description"; /* String */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "web_filter_lite-best-category-flagged"; /* Boolean */
+    //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "web_filter_lite-best-category-blocked"; /* String */
+    //public final String KEY_WEBFILTER_FLAGGED = "web_filter_lite-flagged"; /* Boolean */
+    //public final String KEY_WEBFILTER_FLAGGED = "web_filter_lite-content-type"; /* String */
+    //public final String KEY_WEBFILTER_CATEGORIES = "web_filter_lite-categories"; /* List<String> */
 
     public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
     public final String KEY_CLASSD_CATEGORY = "classd-category"; /* String */

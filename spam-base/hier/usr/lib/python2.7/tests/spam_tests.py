@@ -125,10 +125,10 @@ class SpamTests(unittest2.TestCase):
         assert(events['list'][0]['s_server_port'] == 25)
         assert(events['list'][0]['addr'] == 'qa@example.com')
         assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
-        if (not 'spamblocker_score' in events['list'][0]):
-            assert(events['list'][0]['spamassassin_score'] >= 3.0)
+        if (not 'spam_blocker_score' in events['list'][0]):
+            assert(events['list'][0]['spam_blocker_lite_score'] >= 3.0)
         else:
-            assert(events['list'][0]['spamblocker_score'] >= 3.0)
+            assert(events['list'][0]['spam_blocker_score'] >= 3.0)
         assert(events['list'][0]['c_client_addr'] == remote_control.clientIP)
 
     def test_030_adminQuarantine(self):

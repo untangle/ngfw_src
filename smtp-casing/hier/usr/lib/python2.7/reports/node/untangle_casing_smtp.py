@@ -70,22 +70,22 @@ CREATE TABLE reports.mail_addrs (
     hostname text,
     event_id bigserial,
     sender text,
-    clam_clean boolean,
-    clam_name text,
-    spamassassin_score real,
-    spamassassin_is_spam boolean,
-    spamassassin_action character,
-    spamassassin_tests_string text,
-    spamblocker_score real,
-    spamblocker_is_spam boolean,
-    spamblocker_action character,
-    spamblocker_tests_string text,
-    phish_score real,
-    phish_is_spam boolean,
-    phish_tests_string text,
-    phish_action character,
-    virusblocker_clean boolean,
-    virusblocker_name text)""", ["event_id"],["policy_id","time_stamp","addr_kind","msg_id"])
+    virus_blocker_lite_clean boolean,
+    virus_blocker_lite_name text,
+    virus_blocker_clean boolean,
+    virus_blocker_name text,
+    spam_blocker_lite_score real,
+    spam_blocker_lite_is_spam boolean,
+    spam_blocker_lite_action character,
+    spam_blocker_lite_tests_string text,
+    spam_blocker_score real,
+    spam_blocker_is_spam boolean,
+    spam_blocker_action character,
+    spam_blocker_tests_string text,
+    phish_blocker_score real,
+    phish_blocker_is_spam boolean,
+    phish_blocker_tests_string text,
+    phish_blocker_action character)""", ["event_id"],["policy_id","time_stamp","addr_kind","msg_id"])
 
         # remove obsolete columns (11.1)
         sql_helper.drop_column( 'mail_addrs', 'addr_pos' )
@@ -93,6 +93,25 @@ CREATE TABLE reports.mail_addrs (
         # remove obsolete columns (11.2)
         sql_helper.drop_column( 'mail_addrs', 'msg_attachments' )
         sql_helper.drop_column( 'mail_addrs', 'msg_bytes' )
+
+        # rename columns (11.2)
+        sql_helper.rename_column('mail_addrs','spamassassin_score','spam_blocker_lite_score')
+        sql_helper.rename_column('mail_addrs','spamassassin_is_spam','spam_blocker_lite_is_spam')
+        sql_helper.rename_column('mail_addrs','spamassassin_action','spam_blocker_lite_action')
+        sql_helper.rename_column('mail_addrs','spamassassin_tests_string','spam_blocker_lite_tests_string')
+        sql_helper.rename_column('mail_addrs','spamblocker_score','spam_blocker_score')
+        sql_helper.rename_column('mail_addrs','spamblocker_is_spam','spam_blocker_is_spam')
+        sql_helper.rename_column('mail_addrs','spamblocker_action','spam_blocker_action')
+        sql_helper.rename_column('mail_addrs','spamblocker_tests_string',' spam_blocker_tests_string ')
+        sql_helper.rename_column('mail_addrs','phish_score','phish_blocker_score')
+        sql_helper.rename_column('mail_addrs','phish_is_spam','phish_blocker_is_spam')
+        sql_helper.rename_column('mail_addrs','phish_tests_string','phish_blocker_tests_string')
+        sql_helper.rename_column('mail_addrs','phish_action','phish_blocker_action')
+        sql_helper.rename_column('mail_addrs','virusblocker_clean','virus_blocker_clean')
+        sql_helper.rename_column('mail_addrs','virusblocker_name','virus_blocker_name')
+        sql_helper.rename_column('mail_addrs','clam_clean','virus_blocker_lite_clean')
+        sql_helper.rename_column('mail_addrs','clam_name','virus_blocker_lite_name')
+
 
     @sql_helper.print_timing
     def __create_mail_msgs(self):
@@ -114,26 +133,44 @@ CREATE TABLE reports.mail_msgs (
     event_id bigserial,
     sender text,
     receiver text,
-    clam_clean boolean,
-    clam_name text,
-    spamassassin_score real,
-    spamassassin_is_spam boolean,
-    spamassassin_tests_string text,
-    spamassassin_action character,
-    spamblocker_score real,
-    spamblocker_is_spam boolean,
-    spamblocker_tests_string text,
-    spamblocker_action character,
-    phish_score real,
-    phish_is_spam boolean,
-    phish_tests_string text,
-    phish_action character,
-    virusblocker_clean boolean,
-    virusblocker_name text)""", 
+    virus_blocker_lite_clean boolean,
+    virus_blocker_lite_name text,
+    virus_blocker_clean boolean,
+    virus_blocker_name text,
+    spam_blocker_lite_score real,
+    spam_blocker_lite_is_spam boolean,
+    spam_blocker_lite_tests_string text,
+    spam_blocker_lite_action character,
+    spam_blocker_score real,
+    spam_blocker_is_spam boolean,
+    spam_blocker_tests_string text,
+    spam_blocker_action character,
+    phish_blocker_score real,
+    phish_blocker_is_spam boolean,
+    phish_blocker_tests_string text,
+    phish_blocker_action character)""", 
                                 ["msg_id"], ["policy_id","time_stamp"])
 
         # remove obsolete columns (11.2)
         sql_helper.drop_column( 'mail_msgs', 'msg_attachments' )
         sql_helper.drop_column( 'mail_msgs', 'msg_bytes' )
+
+        # rename columns (11.2)
+        sql_helper.rename_column('mail_msgs','spamassassin_score','spam_blocker_lite_score')
+        sql_helper.rename_column('mail_msgs','spamassassin_is_spam','spam_blocker_lite_is_spam')
+        sql_helper.rename_column('mail_msgs','spamassassin_action','spam_blocker_lite_action')
+        sql_helper.rename_column('mail_msgs','spamassassin_tests_string','spam_blocker_lite_tests_string')
+        sql_helper.rename_column('mail_msgs','spamblocker_score','spam_blocker_score')
+        sql_helper.rename_column('mail_msgs','spamblocker_is_spam','spam_blocker_is_spam')
+        sql_helper.rename_column('mail_msgs','spamblocker_action','spam_blocker_action')
+        sql_helper.rename_column('mail_msgs','spamblocker_tests_string',' spam_blocker_tests_string ')
+        sql_helper.rename_column('mail_msgs','phish_score','phish_blocker_score')
+        sql_helper.rename_column('mail_msgs','phish_is_spam','phish_blocker_is_spam')
+        sql_helper.rename_column('mail_msgs','phish_tests_string','phish_blocker_tests_string')
+        sql_helper.rename_column('mail_msgs','phish_action','phish_blocker_action')
+        sql_helper.rename_column('mail_msgs','virusblocker_clean','virus_blocker_clean')
+        sql_helper.rename_column('mail_msgs','virusblocker_name','virus_blocker_name')
+        sql_helper.rename_column('mail_msgs','clam_clean','virus_blocker_lite_clean')
+        sql_helper.rename_column('mail_msgs','clam_name','virus_blocker_lite_name')
 
 reports.engine.register_node(SmtpCasing())

@@ -29,7 +29,7 @@ public class ClamScanner implements VirusScanner
 
     public String getVendorName()
     {
-        return "clam";
+        return "virus_blocker_lite";
     }
 
     public VirusScannerResult scanFile(File scanfile)
