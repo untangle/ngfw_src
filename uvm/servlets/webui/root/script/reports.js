@@ -60,6 +60,7 @@ Ext.define('Ung.panel.Reports', {
             reportEntriesStore.loadData(this.reportEntries);
         }, this), this.category);
         
+        
         this.items = [{
             region: 'west',
             title: i18n._("Select Report"),
@@ -89,6 +90,28 @@ Ext.define('Ung.panel.Reports', {
                 }, this)
             }
         
+        }, {
+            region: 'east',
+            title: i18n._("Current Data"),
+            width: 330,
+            split: true,
+            collapsible: true,
+            collapsed: false,
+            floatable: false,
+            name: 'reportDataGrid',
+            xtype: 'grid',
+            store:  Ext.create('Ext.data.Store', {
+                fields: [],
+                data: []
+            }),
+            columns: [{
+                flex: 1
+            }],
+            listeners: {
+                rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
+                    //TODO: add extra condition
+                }, this)
+            }
         }, {
             region: 'center',
             layout: {type: 'border'},
@@ -176,6 +199,7 @@ Ext.define('Ung.panel.Reports', {
         }];
         this.callParent(arguments);
         this.chartContainer = this.down("panel[name=chartContainer]");
+        this.reportDataGrid = this.down("grid[name=reportDataGrid]");
     },
     loadReportData: function(data) {
         var i, column;
@@ -187,15 +211,17 @@ Ext.define('Ung.panel.Reports', {
             return;
         }
         if(this.reportEntry.type == 'TEXT') {
-            var infos=[];
+            var infos=[], reportData=[];
             if(data.length>0 && this.reportEntry.textColumns!=null) {
                 var textColumns=[];
                 for(i=0; i<this.reportEntry.textColumns.length; i++) {
                     column = this.reportEntry.textColumns[i].split(" ").splice(-1)[0];
                     infos.push(data[0][column]);
+                    reportData.push({data: column, value: data[0][column]});
                 }
             }
             chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.reportEntry.textString)].concat(infos)));
+            this.reportDataGrid.getStore().loadData(reportData);
         } else if(this.reportEntry.type == 'PIE_GRAPH') {
             var topData = data;
             if(this.reportEntry.pieNumSlices && data.length>this.reportEntry.pieNumSlices) {
@@ -210,10 +236,12 @@ Ext.define('Ung.panel.Reports', {
                     }
                 }
                 topData.push(others);
-                chart.getStore().loadData(topData);
             }
+            chart.getStore().loadData(topData);
+            this.reportDataGrid.getStore().loadData(data);
         } else if(this.reportEntry.type == 'TIME_GRAPH') {
             chart.getStore().loadData(data);
+            this.reportDataGrid.getStore().loadData(data);
         }
     },
     loadReport: function(reportEntry) {
@@ -231,7 +259,8 @@ Ext.define('Ung.panel.Reports', {
             }
             
             var data = result.list;
-            var chart, dataStore;
+            var chart, dataStore, reportData=[];
+            this.reportDataGrid.getStore().loadData([]);
             if(reportEntry.type == 'TEXT') {
                 var infos=[];
                 if(data.length>0 && reportEntry.textColumns!=null) {
@@ -239,6 +268,7 @@ Ext.define('Ung.panel.Reports', {
                     for(i=0; i<reportEntry.textColumns.length; i++) {
                         column = reportEntry.textColumns[i].split(" ").splice(-1)[0];
                         infos.push(data[0][column]);
+                        reportData.push({data: column, value: data[0][column]});
                     }
                 }
                 chart = {
@@ -248,6 +278,18 @@ Ext.define('Ung.panel.Reports', {
                     //TODO: get data in the right format now is an array with a single element {scanned: x, flagged: y, blocked: z} or make the sting use the properties instead of {0}, {1}, {2}
                     html: Ext.String.format.apply(Ext.String.format, [i18n._(reportEntry.textString)].concat(infos))
                 };
+                this.reportDataGrid.setColumns([{
+                    dataIndex: 'data',
+                    header: i18n._("data"),
+                    width: 100,
+                    flex: 1
+                },{
+                    dataIndex: 'value',
+                    header: i18n._("value"),
+                    width: 100
+                }]);
+                this.reportDataGrid.getStore().loadData(reportData);
+                
             } else if(reportEntry.type == 'PIE_GRAPH') {
                 var topData = data;
                 if(reportEntry.pieNumSlices && data.length>reportEntry.pieNumSlices) {
@@ -264,6 +306,18 @@ Ext.define('Ung.panel.Reports', {
                     }
                     topData.push(others);
                 }
+                this.reportDataGrid.setColumns([{
+                    dataIndex: reportEntry.pieGroupColumn,
+                    header: reportEntry.pieGroupColumn,
+                    width: 100,
+                    flex: 1
+                },{
+                    dataIndex: 'value',
+                    header: i18n._("value"),
+                    width: 100
+                }]);
+                this.reportDataGrid.getStore().loadData(data);
+
                 var descriptionFn = function(val, record) {
                     var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("none") : record.get(reportEntry.pieGroupColumn);
                     var value = (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(reportEntry.units);
@@ -340,16 +394,29 @@ Ext.define('Ung.panel.Reports', {
                     return (val==null || val.time==null)?0:i18n.timestampFormat(val);
                 };
                 var storeFields =[{name: 'time_trunc', convert: timeFn}];
+                var reportDataColumns = [{
+                    dataIndex: 'time_trunc',
+                    header: 'time_trunc',
+                    width: 130,
+                    flex: reportEntry.timeDataColumns.length>2? 0:1
+                }];
                 for(i=0; i<reportEntry.timeDataColumns.length; i++) {
                     column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
                     axesFields.push(column);
                     storeFields.push({name: column, convert: zeroFn});
+                    reportDataColumns.push({
+                        dataIndex: column,
+                        header: column,
+                        width: reportEntry.timeDataColumns.length>2? 60:90
+                    });
                 }
+                
                 dataStore = Ext.create('Ext.data.JsonStore', {
                     fields: storeFields,
                     data: data
                 });
-                
+                this.reportDataGrid.setColumns(reportDataColumns);
+                this.reportDataGrid.getStore().loadData(data);
                 chart = {
                     xtype: 'cartesian',
                     name: "chart",
@@ -508,6 +575,7 @@ Ext.define("Ung.panel.ExtraConditions", {
     title: i18n._('Extra conditions: None'),
     collapsible: true,
     collapsed: true,
+    floatable: false,
     split: true,
     autoScroll: true,
     count: 3,
