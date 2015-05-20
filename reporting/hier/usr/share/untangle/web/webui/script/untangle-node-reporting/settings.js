@@ -774,6 +774,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             name: 'Manage Reports',
             settingsCmp: this,
             hasReadOnly: true,
+            changableFields: ['enabled'],
             addAtTop: false,
             title: this.i18n._("Manage Reports"),
             features: [{
@@ -1001,6 +1002,53 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     }
                 }
             }, {
+                xtype: "container",
+                dataIndex: "textColumns",
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textareafield',
+                    name: "textColumns",
+                    grow: true,
+                    labelWidth: 150,
+                    fieldLabel: this.i18n._("Text Columns"),
+                    width: 500
+                }, {
+                    xtype: 'label',
+                    html: this.i18n._("(enter one column per row)"),
+                    cls: 'boxlabel'
+                }],
+                setValue: function(value) {
+                    var textColumns  = this.down('textfield[name="textColumns"]');
+                    textColumns.setValue((value||[]).join("\n"));
+                },
+                getValue: function() {
+                    var textColumns = [];
+                    var val  = this.down('textfield[name="textColumns"]').getValue();
+                    if(!Ext.isEmpty(val)) {
+                        var valArr = val.split("\n");
+                        var colVal;
+                        for(var i = 0; i< valArr.length; i++) {
+                            colVal = valArr[i].trim();
+                            if(!Ext.isEmpty(colVal)) {
+                                textColumns.push(colVal);
+                            }
+                        }
+                    }
+                    
+                    return textColumns.length==0 ? null : textColumns;
+                },
+                setReadOnly: function(val) {
+                    this.down('textfield[name="textColumns"]').setReadOnly(val);
+                }
+            }, {
+                xtype:'textfield',
+                name: "textString",
+                dataIndex: "textString",
+                alowBlank: false,
+                fieldLabel: this.i18n._("Text String"),
+                width: '100%'
+            }, {
                 xtype:'textfield',
                 name: "pieGroupColumn",
                 dataIndex: "pieGroupColumn",
@@ -1012,6 +1060,29 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 dataIndex: "pieSumColumn",
                 fieldLabel: this.i18n._("Pie Sum Column"),
                 width: 500
+            }, {
+                xtype: 'numberfield',
+                name: 'pieNumSlices',
+                fieldLabel: this.i18n._('Pie Slices Number'),
+                dataIndex: "pieNumSlices",
+                allowDecimals: false,
+                minValue: 0,
+                maxValue: 1000,
+                allowBlank: false,
+                width: 350
+            }, {
+                xtype: 'combo',
+                name: 'timeStyle',
+                dataIndex: "timeStyle",
+                editable: false,
+                fieldLabel: this.i18n._('Time Chart Style'),
+                queryMode: 'local',
+                allowBlank: false,
+                width: 350,
+                store: [
+                        ["BAR", this.i18n._("Bar")],
+                        ["LINE", this.i18n._("Line")]
+                    ]
             }, {
                 xtype: 'combo',
                 name: 'timeDataInterval',
@@ -1071,6 +1142,46 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                     this.down('textfield[name="timeDataColumns"]').setReadOnly(val);
                 }
             }, {
+                xtype: "container",
+                dataIndex: "colors",
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textareafield',
+                    name: "colors",
+                    grow: true,
+                    labelWidth: 150,
+                    fieldLabel: this.i18n._("Colors"),
+                    width: 500
+                }, {
+                    xtype: 'label',
+                    html: this.i18n._("(enter one color per row)"),
+                    cls: 'boxlabel'
+                }],
+                setValue: function(value) {
+                    var timeDataColumns  = this.down('textfield[name="colors"]');
+                    timeDataColumns.setValue((value||[]).join("\n"));
+                },
+                getValue: function() {
+                    var colors = [];
+                    var val  = this.down('textfield[name="colors"]').getValue();
+                    if(!Ext.isEmpty(val)) {
+                        var valArr = val.split("\n");
+                        var colVal;
+                        for(var i = 0; i< valArr.length; i++) {
+                            colVal = valArr[i].trim();
+                            if(!Ext.isEmpty(colVal)) {
+                                colors.push(colVal);
+                            }
+                        }
+                    }
+                    
+                    return colors.length==0 ? null : colors;
+                },
+                setReadOnly: function(val) {
+                    this.down('textfield[name="colors"]').setReadOnly(val);
+                }
+            }, {
                 xtype: 'container',
                 layout: 'column',
                 margin: '10 0 10 0',
@@ -1104,23 +1215,43 @@ Ext.define('Webui.untangle-node-reporting.settings', {
             syncComponents: function () {
                 var type=this.down('combo[dataIndex=type]').getValue();
                 var cmps = {
+                    textColumns: this.down('[dataIndex=textColumns]'),
+                    textString: this.down('[dataIndex=textString]'),
                     pieGroupColumn: this.down('[dataIndex=pieGroupColumn]'),
                     pieSumColumn: this.down('[dataIndex=pieSumColumn]'),
+                    pieNumSlices: this.down('[dataIndex=pieNumSlices]'),
+                    timeStyle: this.down('[dataIndex=timeStyle]'),
                     timeDataInterval: this.down('[dataIndex=timeDataInterval]'),
-                    timeDataColumns: this.down('[dataIndex=timeDataColumns]')
+                    timeDataColumns: this.down('[dataIndex=timeDataColumns]'),
+                    colors: this.down('[dataIndex=colors]')
                 };
                 
+                cmps.textColumns.setVisible(type=="TEXT");
+                cmps.textColumns.setDisabled(type!="TEXT");
+
+                cmps.textString.setVisible(type=="TEXT");
+                cmps.textString.setDisabled(type!="TEXT");
+
                 cmps.pieGroupColumn.setVisible(type=="PIE_GRAPH");
                 cmps.pieGroupColumn.setDisabled(type!="PIE_GRAPH");
 
                 cmps.pieSumColumn.setVisible(type=="PIE_GRAPH");
                 cmps.pieSumColumn.setDisabled(type!="PIE_GRAPH");
                 
+                cmps.pieNumSlices.setVisible(type=="PIE_GRAPH");
+                cmps.pieNumSlices.setDisabled(type!="PIE_GRAPH");
+
+                cmps.timeStyle.setVisible(type=="TIME_GRAPH");
+                cmps.timeStyle.setDisabled(type!="TIME_GRAPH");
+
                 cmps.timeDataInterval.setVisible(type=="TIME_GRAPH");
                 cmps.timeDataInterval.setDisabled(type!="TIME_GRAPH");
                 
                 cmps.timeDataColumns.setVisible(type=="TIME_GRAPH");
                 cmps.timeDataColumns.setDisabled(type!="TIME_GRAPH");
+                
+                cmps.colors.setVisible(type!="TEXT");
+                cmps.colors.setDisabled(type=="TEXT");
             }
         }));
     },    

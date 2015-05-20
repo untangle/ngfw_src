@@ -42,7 +42,21 @@ Ext.define('Ung.panel.Reports', {
         
         Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            this.reportEntries = result.list;
+            this.reportEntries = [];
+            this.initialReportEntryIndex = null;
+            var reportEntry;
+            for(var i=0; i<result.list.length; i++) {
+                reportEntry = result.list[i];
+                if(reportEntry.enabled) {
+                    this.reportEntries.push(reportEntry);
+                    if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
+                        this.initialReportEntryIndex = i;
+                    }
+                }
+            }
+            if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
+                this.initialReportEntryIndex = 0;
+            }
             reportEntriesStore.loadData(this.reportEntries);
         }, this), this.category);
         
@@ -54,6 +68,7 @@ Ext.define('Ung.panel.Reports', {
             collapsible: true,
             collapsed: false,
             floatable: false,
+            name: 'reportEntriesGrid',
             xtype: 'grid',
             hideHeaders: true,
             store:  reportEntriesStore,
@@ -88,8 +103,8 @@ Ext.define('Ung.panel.Reports', {
                     dock: 'bottom',
                     items: [{
                         xtype: 'button',
-                        text: i18n._('From'),
-                        initialLabel:  i18n._('From'),
+                        text: i18n._('One day ago'),
+                        initialLabel:  i18n._('One day ago'),
                         width: 132,
                         tooltip: i18n._('Select Start date and time'),
                         handler: Ext.bind(function(button) {
@@ -101,8 +116,8 @@ Ext.define('Ung.panel.Reports', {
                         text: '-'
                     }, {
                         xtype: 'button',
-                        text: i18n._('To'),
-                        initialLabel:  i18n._('To'),
+                        text: i18n._('Present'),
+                        initialLabel:  i18n._('Present'),
                         width: 132,
                         tooltip: i18n._('Select End date and time'),
                         handler: Ext.bind(function(button) {
@@ -112,16 +127,11 @@ Ext.define('Ung.panel.Reports', {
                     }, {
                         xtype: 'button',
                         name: "extraConditions",
-                        text: i18n._('Add Conditions'),
-                        initialLabel:  i18n._('Add Conditions'),
+                        text: i18n._('Toggle Conditions'),
                         width: 132,
                         tooltip: i18n._('Add extra SQL conditions to report'),
                         handler: Ext.bind(function(button) {
-                            if(!this.reportEntry) {
-                                return;
-                            }
-                            this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
-                            this.extraConditionsPanel.expand();
+                            this.extraConditionsPanel.toggleCollapse();
                         }, this)
                     }, {
                         xtype: 'button',
@@ -152,24 +162,108 @@ Ext.define('Ung.panel.Reports', {
                 }] 
             }, this.extraConditionsPanel = Ext.create("Ung.panel.ExtraConditions", {
                 region: 'south',
-                parentPanel: this
+                parentPanel: this,
+                listeners: {
+                    "expand": {
+                        fn: Ext.bind(function() {
+                            if(this.reportEntry) {
+                                this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
+                            }
+                        }, this)
+                    }
+                }
             })]
         }];
         this.callParent(arguments);
         this.chartContainer = this.down("panel[name=chartContainer]");
     },
+    loadReportData: function(data) {
+        var i, column;
+        if(!this.reportEntry || !this.chartContainer || !this.chartContainer.isVisible()) {
+            return;
+        }
+        var chart = this.chartContainer.down("[name=chart]");
+        if(!chart) {
+            return;
+        }
+        if(this.reportEntry.type == 'TEXT') {
+            var infos=[];
+            if(data.length>0 && this.reportEntry.textColumns!=null) {
+                var textColumns=[];
+                for(i=0; i<this.reportEntry.textColumns.length; i++) {
+                    column = this.reportEntry.textColumns[i].split(" ").splice(-1)[0];
+                    infos.push(data[0][column]);
+                }
+            }
+            chart.update(Ext.String.format.apply(Ext.String.format, [i18n._(this.reportEntry.textString)].concat(infos)));
+        } else if(this.reportEntry.type == 'PIE_GRAPH') {
+            var topData = data;
+            if(this.reportEntry.pieNumSlices && data.length>this.reportEntry.pieNumSlices) {
+                topData = [];
+                var others = {value:0};
+                others[this.reportEntry.pieGroupColumn] = i18n._("Others");
+                for(i=0; i<data.length; i++) {
+                    if(i < this.reportEntry.pieNumSlices) {
+                        topData.push(data[i]);
+                    } else {
+                        others.value+=data[i].value;
+                    }
+                }
+                topData.push(others);
+                chart.getStore().loadData(topData);
+            }
+        } else if(this.reportEntry.type == 'TIME_GRAPH') {
+            chart.getStore().loadData(data);
+        }
+    },
     loadReport: function(reportEntry) {
         this.reportEntry = reportEntry;
+        if(this.autoRefreshEnabled) {
+            this.stopAutoRefresh(true);
+        }
         this.chartContainer.removeAll();
+        this.setLoading(i18n._('Loading report... '));
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
+            var i, column;
             if(Ung.Util.handleException(exception)) return;
             if(!this.chartContainer || !this.chartContainer.isVisible()) {
                 return;
             }
             
             var data = result.list;
-            var chart = {xtype: 'component', html: ""}, dataStore;
-            if(reportEntry.type == 'PIE_GRAPH') {
+            var chart, dataStore;
+            if(reportEntry.type == 'TEXT') {
+                var infos=[];
+                if(data.length>0 && reportEntry.textColumns!=null) {
+                    var textColumns=[];
+                    for(i=0; i<reportEntry.textColumns.length; i++) {
+                        column = reportEntry.textColumns[i].split(" ").splice(-1)[0];
+                        infos.push(data[0][column]);
+                    }
+                }
+                chart = {
+                    xtype: 'component',
+                    name: "chart",
+                    margin: 15,
+                    //TODO: get data in the right format now is an array with a single element {scanned: x, flagged: y, blocked: z} or make the sting use the properties instead of {0}, {1}, {2}
+                    html: Ext.String.format.apply(Ext.String.format, [i18n._(reportEntry.textString)].concat(infos))
+                };
+            } else if(reportEntry.type == 'PIE_GRAPH') {
+                var topData = data;
+                if(reportEntry.pieNumSlices && data.length>reportEntry.pieNumSlices) {
+                    topData = [];
+                    var others = {value:0};
+                    others[reportEntry.pieGroupColumn] = i18n._("Others");
+                    for(i=0; i<data.length; i++) {
+                        if(i < reportEntry.pieNumSlices) {
+                            topData.push(data[i]);
+                        } else {
+                            others.value+=data[i].value;
+                        }
+                        
+                    }
+                    topData.push(others);
+                }
                 var descriptionFn = function(val, record) {
                     var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("none") : record.get(reportEntry.pieGroupColumn);
                     var value = (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(reportEntry.units);
@@ -177,7 +271,7 @@ Ext.define('Ung.panel.Reports', {
                 };
                 dataStore = Ext.create('Ext.data.JsonStore', {
                     fields: [{name: "description", convert: descriptionFn }, {name:'value'} ],
-                    data: data
+                    data: topData
                 }); 
 
                 chart = {
@@ -238,7 +332,7 @@ Ext.define('Ung.panel.Reports', {
                     chart.colors = reportEntry.colors;
                 }
             } else if(reportEntry.type == 'TIME_GRAPH') {
-                var axesFields = [],column;
+                var axesFields = [];
                 var zeroFn = function(val) {
                     return (val==null)?0:val;
                 };
@@ -246,7 +340,7 @@ Ext.define('Ung.panel.Reports', {
                     return (val==null || val.time==null)?0:i18n.timestampFormat(val);
                 };
                 var storeFields =[{name: 'time_trunc', convert: timeFn}];
-                for(var i=0; i<reportEntry.timeDataColumns.length; i++) {
+                for(i=0; i<reportEntry.timeDataColumns.length; i++) {
                     column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
                     axesFields.push(column);
                     storeFields.push({name: column, convert: zeroFn});
@@ -285,7 +379,7 @@ Ext.define('Ung.panel.Reports', {
                     }],
                     interactions: ['itemhighlight'],
                     axes: [{
-                        type: 'numeric',
+                        type: 'numeric3d',
                         fields: axesFields,
                         position: 'left',
                         grid: true,
@@ -294,7 +388,7 @@ Ext.define('Ung.panel.Reports', {
                             return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
                         }
                     }, {
-                        type: 'category',
+                        type: 'category3d',
                         fields: 'time_trunc',
                         position: 'bottom',
                         grid: true,
@@ -312,7 +406,8 @@ Ext.define('Ung.panel.Reports', {
                         yField: axesFields,
                         stacked: false,
                         style: {
-                            opacity: 0.90
+                            opacity: 0.90,
+                            inGroupGapWidth: 1
                         },
                         highlight: true,
                         tooltip: {
@@ -331,7 +426,12 @@ Ext.define('Ung.panel.Reports', {
                 }
             }
             this.chartContainer.add(chart); 
+            this.setLoading(false);
         }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
+        if(!this.extraConditionsPanel.getCollapsed()) {
+            this.extraConditionsPanel.getColumnsForTable(this.reportEntry.table);
+        }
+            
     },
     refreshHandler: function (forceFlush) {
         if(!this.reportEntry) {
@@ -342,14 +442,7 @@ Ext.define('Ung.panel.Reports', {
             Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
                 this.setLoading(false);
                 if(Ung.Util.handleException(exception)) return;
-                if(!this.chartContainer || !this.chartContainer.isVisible()) {
-                    return;
-                }
-                var chart = this.chartContainer.down("[name=chart]");
-                if(chart) {
-                    chart.getStore().loadData(result.list);
-                }
-                
+                this.loadReportData(result.list);
             }, this), this.reportEntry, this.startDateWindow.date, this.endDateWindow.date, this.extraConditions, -1);
             
         }, this));
@@ -361,13 +454,7 @@ Ext.define('Ung.panel.Reports', {
         Ung.Main.getNodeReporting().flushEvents(Ext.bind(function(result, exception) {
             Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                if(!this.chartContainer || !this.chartContainer.isVisible()) {
-                    return;
-                }
-                var chart = this.chartContainer.down("[name=chart]");
-                if(chart) {
-                    chart.getStore().loadData(result.list);
-                }
+                this.loadReportData(result.list);
                 if(this!=null && this.rendered && this.autoRefreshEnabled) {
                     Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval*1000, this);
                 }
@@ -401,7 +488,8 @@ Ext.define('Ung.panel.Reports', {
         "activate": {
             fn: function() {
                 if(!this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
-                    this.loadReport(this.reportEntries[0]);
+                    this.down("grid[name=reportEntriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
+                    this.loadReport(this.reportEntries[this.initialReportEntryIndex]);
                 }
             }
         },
@@ -417,12 +505,12 @@ Ext.define('Ung.panel.Reports', {
 
 Ext.define("Ung.panel.ExtraConditions", {
     extend: "Ext.panel.Panel",
-    title: i18n._('Extra Conditions'),
+    title: i18n._('Extra conditions: None'),
     collapsible: true,
     collapsed: true,
     split: true,
     autoScroll: true,
-    count: 5,
+    count: 3,
     layout: { type: 'table', columns: 4 },
     getColumnsForTable: function(table) {
         if(table != null && table.length > 2) {
@@ -460,122 +548,138 @@ Ext.define("Ung.panel.ExtraConditions", {
             width: 100
         }];
         for(var i=0; i<this.count; i++) {
-            items.push.apply(items, [{
-                xtype: 'combo',
-                width: 250,
-                margin: 3,
-                emptyText: i18n._("[enter column]"),
-                dataIndex: "column",
-                name: "column"+i,
-                typeAhead: true,
-                valueField: "name",
-                displayField: "name",
-                queryMode: 'local',
-                store: this.columnsStore,
-                value: "",
-                listeners: {
-                    change: {
-                        fn: function(combo, newValue, oldValue, opts) {
-                            var isEmpty = Ext.isEmpty(newValue);
-                            combo.next("[dataIndex=operator]").setDisabled(isEmpty);
-                            combo.next("[dataIndex=value]").setDisabled(isEmpty);
-                            combo.next("[dataIndex=clear]").setDisabled(isEmpty);
-                        },
-                        scope: this
-                    }
-                }
-            }, {
-                xtype: 'combo',
-                width: 100,
-                margin: 3,
-                dataIndex: "operator",
-                name: "operator"+i,
-                editable: false,
-                valueField: "name",
-                displayField: "name",
-                queryMode: 'local',
-                value: "=",
-                disabled: true,
-                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
-            }, {
-                xtype: 'textfield',
-                dataIndex: "value",
-                name: "value"+i,
-                width: 400,
-                margin: 3,
-                disabled: true,
-                emptyText: i18n._("[no value]")
-            }, {
-                xtype: 'button',
-                dataIndex: "clear",
-                margin: 3,
-                name: "clear"+i,
-                text: i18n._("Clear"),
-                disabled: true,
-                handler: function() {
-                    this.prev("[dataIndex=column]").setValue("");
-                    this.prev("[dataIndex=operator]").setValue("=");
-                    this.prev("[dataIndex=value]").setValue("");
-                }
-            }]);
+            items.push.apply(items, this.generateRow(i));
         }
         this.items = items;
         
-        this.bbar = ['->',{
-            text: i18n._("Done"),
-            iconCls: 'save-icon',
+        this.tbar = [{
+            text: i18n._("Add Condition"),
+            tooltip: i18n._('Add New Condition'),
+            iconCls: 'icon-add-row',
             handler: function() {
-                this.setConditions();
-                this.collapse();
-                var refreshButton = this.parentPanel.down("button[name=refresh]");
-                if(!refreshButton.isDisabled()) {
-                    this.parentPanel.refreshHandler(true);
-                }
-                
+                this.addRow();
             },
             scope: this
-        }, {
-            name: 'Clear',
+        }, '->', {
             text: i18n._("Clear All"),
+            tooltip: i18n._('Clear All Conditions'),
             iconCls: 'cancel-icon',
             handler: function() {
                 this.clearConditions();
-                this.collapse();
-                var refreshButton = this.parentPanel.down("button[name=refresh]");
-                if(!refreshButton.isDisabled()) {
-                    this.parentPanel.refreshHandler(true);
-                }
             },
             scope: this
         }];
         this.callParent(arguments);
     },
+    generateRow: function(i) {
+        return [{
+            xtype: 'combo',
+            width: 250,
+            margin: 3,
+            emptyText: i18n._("[enter column]"),
+            dataIndex: "column",
+            name: "column"+i,
+            typeAhead: true,
+            valueField: "name",
+            displayField: "name",
+            queryMode: 'local',
+            store: this.columnsStore,
+            value: "",
+            listeners: {
+                change: {
+                    fn: function(combo, newValue, oldValue, opts) {
+                        this.setConditions();
+                    },
+                    scope: this
+                }
+            }
+        }, {
+            xtype: 'combo',
+            width: 100,
+            margin: 3,
+            dataIndex: "operator",
+            name: "operator"+i,
+            editable: false,
+            valueField: "name",
+            displayField: "name",
+            queryMode: 'local',
+            value: "=",
+            disabled: true,
+            store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"],
+            listeners: {
+                change: {
+                    fn: function(combo, newValue, oldValue, opts) {
+                        this.setConditions();
+                    },
+                    scope: this
+                }
+            }
+        }, {
+            xtype: 'textfield',
+            dataIndex: "value",
+            name: "value"+i,
+            width: 400,
+            margin: 3,
+            disabled: true,
+            emptyText: i18n._("[no value]"),
+            listeners: {
+                change: {
+                    fn: function() {
+                        this.setConditions();
+                    },
+                    scope: this,
+                    buffer: 500
+                }
+            }
+        }, {
+            xtype: 'button',
+            dataIndex: "clear",
+            margin: 3,
+            name: "clear"+i,
+            text: i18n._("Clear"),
+            disabled: true,
+            handler: Ext.bind(function(button) {
+                button.prev("[dataIndex=column]").setRawValue("");
+                button.prev("[dataIndex=operator]").setRawValue("=");
+                button.prev("[dataIndex=value]").setRawValue("");
+                this.setConditions();
+            }, this)
+        }];
+    },
+    addRow: function() {
+      this.add(this.generateRow(this.count));
+      this.count++;
+    },
     clearConditions: function() {
         for(var i=0; i<this.count; i++) {
-            this.down("[name=column"+i+"]").setValue("");
-            this.down("[name=operator"+i+"]").setValue("=");
-            this.down("[name=value"+i+"]").setValue("");
+            this.down("[name=column"+i+"]").setRawValue("");
+            this.down("[name=operator"+i+"]").setRawValue("=");
+            this.down("[name=value"+i+"]").setRawValue("");
         }
         this.setConditions();
     },
     setConditions: function() {
-        var conditions = [], column;
+        var conditions = [], columnValue, operator, value, clearBtn, isEmptyColumn;
         for(var i=0; i<this.count; i++) {
-            column = this.down("[name=column"+i+"]").getValue();
-            if(!Ext.isEmpty(column)) {
+            columnValue = this.down("combo[name=column"+i+"]").getValue();
+            operator = this.down("combo[name=operator"+i+"]");
+            value = this.down("textfield[name=value"+i+"]");
+            clearBtn = this.down("button[name=clear"+i+"]");
+            isEmptyColumn = Ext.isEmpty(columnValue);
+            if(!isEmptyColumn) {
                 conditions.push({
                     "javaClass": "com.untangle.uvm.node.SqlCondition",
-                    "column": column,
-                    "operator": this.down("[name=operator"+i+"]").getValue(),
-                    "value": this.down("[name=value"+i+"]").getValue()
+                    "column": columnValue,
+                    "operator": operator.getValue(),
+                    "value": value.getValue()
                 });
             }
-        }
-        if(!this.buttonObj){
-            this.buttonObj = this.parentPanel.down("button[name=extraConditions]");
-        }
+            operator.setDisabled(isEmptyColumn);
+            value.setDisabled(isEmptyColumn);
+            clearBtn.setDisabled(isEmptyColumn);
             
+        }
         this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
-        this.buttonObj.setText((conditions.length>0)?Ext.String.format( i18n._("{0} Condition(s)"), conditions.length):this.buttonObj.initialLabel);
+        this.setTitle((conditions.length>0)?Ext.String.format( i18n._("Extra conditions: {0}"), conditions.length):i18n._("Extra conditions: None"));
     }
 });
