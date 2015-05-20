@@ -108,9 +108,8 @@ class CBuilder
 
   def makeArchive(source, destination)
     info "[archive ] #{source} => #{destination}"
-
-    fileList = FileList[ "#{source}/*.o" ]
-
+    fileList = FileList[ "#{source[0]}/*.o" ]
+    
     raise "#{@env.archive} failed" unless Kernel.system( @env.archive, "-cr", destination, *fileList )
     raise "#{@env.ranlib} failed"  unless Kernel.system( @env.ranlib, destination )
   end
