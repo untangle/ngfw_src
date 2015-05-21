@@ -235,18 +235,18 @@ dict['adconnector_login_events'].update({
 dict['idps_events'] = copy.deepcopy(generic)
 dict['idps_events'].update({
     'table_description' : 'This table stores Intrusion Prevention events. There is one row for each detection.',
-    'sig_id' : 'This ID of the signature',
-    'gen_id' : '??',
-    'class_id' : '??',
+    'sig_id' : 'This ID of the rule',
+    'gen_id' : 'The grouping ID for the rule, The gen_id + sig_id specify the rule\'s unique identifier',
+    'class_id' : 'The numeric ID for the classtype',
     'source_addr' : 'The source IP address of the packet',
     'source_port' : 'The source port of the packet (if applicable)',
     'dest_addr' : 'The destination IP address of the packet',
     'dest_port' : 'The destination port of the packet (if applicable)',
     'protocol' : 'The protocol of the packet',
     'blocked' : 'If the packet was blocked/dropped',
-    'category' : '??',
-    'classtype' : '??',
-    'msg' : '??',
+    'category' : 'The application specific grouping',
+    'classtype' : 'The generalized threat rule grouping (unrelated to gen_id)',
+    'msg' : 'The "title" or "description" of the rule',
 })
 
 dict['alerts'] = copy.deepcopy(generic)
