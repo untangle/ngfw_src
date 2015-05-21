@@ -306,17 +306,6 @@ Ext.define('Ung.panel.Reports', {
                     }
                     topData.push(others);
                 }
-                this.reportDataGrid.setColumns([{
-                    dataIndex: reportEntry.pieGroupColumn,
-                    header: reportEntry.pieGroupColumn,
-                    width: 100,
-                    flex: 1
-                },{
-                    dataIndex: 'value',
-                    header: i18n._("value"),
-                    width: 100
-                }]);
-                this.reportDataGrid.getStore().loadData(data);
 
                 var descriptionFn = function(val, record) {
                     var title = (record.get(reportEntry.pieGroupColumn)==null)?i18n._("none") : record.get(reportEntry.pieGroupColumn);
@@ -385,8 +374,19 @@ Ext.define('Ung.panel.Reports', {
                 if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
                     chart.colors = reportEntry.colors;
                 }
+                this.reportDataGrid.setColumns([{
+                    dataIndex: reportEntry.pieGroupColumn,
+                    header: reportEntry.pieGroupColumn,
+                    width: 100,
+                    flex: 1
+                },{
+                    dataIndex: 'value',
+                    header: i18n._("value"),
+                    width: 100
+                }]);
+                this.reportDataGrid.getStore().loadData(data);
             } else if(reportEntry.type == 'TIME_GRAPH') {
-                var axesFields = [];
+                var axesFields = [], series=[];
                 var zeroFn = function(val) {
                     return (val==null)?0:val;
                 };
@@ -400,97 +400,191 @@ Ext.define('Ung.panel.Reports', {
                     width: 130,
                     flex: reportEntry.timeDataColumns.length>2? 0:1
                 }];
-                for(i=0; i<reportEntry.timeDataColumns.length; i++) {
-                    column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
-                    axesFields.push(column);
-                    storeFields.push({name: column, convert: zeroFn});
-                    reportDataColumns.push({
-                        dataIndex: column,
-                        header: column,
-                        width: reportEntry.timeDataColumns.length>2? 60:90
+                if(reportEntry.timeStyle == 'BAR') {
+                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
+                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
+                        axesFields.push(column);
+                        storeFields.push({name: column, convert: zeroFn});
+                        reportDataColumns.push({
+                            dataIndex: column,
+                            header: column,
+                            width: reportEntry.timeDataColumns.length>2? 60:90
+                        });
+                    }
+                    
+                    dataStore = Ext.create('Ext.data.JsonStore', {
+                        fields: storeFields,
+                        data: data
                     });
-                }
-                
-                dataStore = Ext.create('Ext.data.JsonStore', {
-                    fields: storeFields,
-                    data: data
-                });
-                this.reportDataGrid.setColumns(reportDataColumns);
-                this.reportDataGrid.getStore().loadData(data);
-                chart = {
-                    xtype: 'cartesian',
-                    name: "chart",
-                    store: dataStore,
-                    theme: 'default-gradients',
-                    border: false,
-                    width: '100%',
-                    height: '100%',
-                    insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
-                    legend: {
-                        docked: 'right'
-                    },
-                    sprites: [{
-                        type: 'text',
-                        text: reportEntry.title,
-                        fontSize: 18,
-                        width: 100,
-                        height: 30,
-                        x: 10, // the sprite x position
-                        y: 22  // the sprite y position
-                    }, {
-                        type: 'text',
-                        text: reportEntry.description,
-                        fontSize: 12,
-                        x: 10,
-                        y: 40
-                    }],
-                    interactions: ['itemhighlight'],
-                    axes: [{
-                        type: 'numeric3d',
-                        fields: axesFields,
-                        position: 'left',
-                        grid: true,
-                        minimum: 0,
-                        renderer: function (v) {
-                            return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
-                        }
-                    }, {
-                        type: 'category3d',
-                        fields: 'time_trunc',
-                        position: 'bottom',
-                        grid: true,
-                        label: {
-                            rotate: {
-                                degrees: -45
-                            }
-                        }
-                    }],
-                    series: [{
-                        type: 'bar3d',
-                        axis: 'left',
-                        title: axesFields,
-                        xField: 'time_trunc',
-                        yField: axesFields,
-                        stacked: false,
-                        style: {
-                            opacity: 0.90,
-                            inGroupGapWidth: 1
+                    chart = {
+                        xtype: 'cartesian',
+                        name: "chart",
+                        store: dataStore,
+                        theme: 'default-gradients',
+                        border: false,
+                        width: '100%',
+                        height: '100%',
+                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
+                        legend: {
+                            docked: 'right'
                         },
-                        highlight: true,
-                        tooltip: {
-                            trackMouse: true,
-                            style: 'background: #fff',
-                            renderer: function(storeItem, item) {
-                                var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units));
+                        sprites: [{
+                            type: 'text',
+                            text: reportEntry.title,
+                            fontSize: 18,
+                            width: 100,
+                            height: 30,
+                            x: 10, // the sprite x position
+                            y: 22  // the sprite y position
+                        }, {
+                            type: 'text',
+                            text: reportEntry.description,
+                            fontSize: 12,
+                            x: 10,
+                            y: 40
+                        }],
+                        interactions: ['itemhighlight'],
+                        axes: [{
+                            type: 'numeric3d',
+                            fields: axesFields,
+                            position: 'left',
+                            grid: true,
+                            minimum: 0,
+                            renderer: function (v) {
+                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
                             }
-                        }
-                    }]
-                };
+                        }, {
+                            type: 'category3d',
+                            fields: 'time_trunc',
+                            position: 'bottom',
+                            grid: true,
+                            label: {
+                                rotate: {
+                                    degrees: -45
+                                }
+                            }
+                        }],
+                        series: [{
+                            type: 'bar3d',
+                            axis: 'left',
+                            title: axesFields,
+                            xField: 'time_trunc',
+                            yField: axesFields,
+                            stacked: false,
+                            style: {
+                                opacity: 0.90,
+                                inGroupGapWidth: 1
+                            },
+                            highlight: true,
+                            tooltip: {
+                                trackMouse: true,
+                                style: 'background: #fff',
+                                renderer: function(storeItem, item) {
+                                    var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units));
+                                }
+                            }
+                        }]
+                    };                    
+                } else if (reportEntry.timeStyle == 'LINE') {
+                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
+                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
+                        axesFields.push(column);
+                        storeFields.push({name: column, convert: zeroFn});
+                        reportDataColumns.push({
+                            dataIndex: column,
+                            header: column,
+                            width: reportEntry.timeDataColumns.length>2? 60:90
+                        });
+                        series.push({
+                            type: 'line',
+                            axis: 'left',
+                            title: column,
+                            xField: 'time_trunc',
+                            yField: column,
+                            marker: {
+                                type: 'square',
+                                fx: {
+                                    duration: 200,
+                                    easing: 'backOut'
+                                }
+                            },
+                            highlightCfg: {
+                                scaling: 2
+                            },
+                            tooltip: {
+                                trackMouse: true,
+                                style: 'background: #fff',
+                                renderer: function(storeItem, item) {
+                                    var title = item.series.getTitle();
+                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units));
+                                }
+                            }
+                        });
+                    }
+                    
+                    dataStore = Ext.create('Ext.data.JsonStore', {
+                        fields: storeFields,
+                        data: data
+                    });
+                    chart = {
+                        xtype: 'cartesian',
+                        name: "chart",
+                        store: dataStore,
+                        theme: 'default-gradients',
+                        border: false,
+                        width: '100%',
+                        height: '100%',
+                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
+                        legend: {
+                            docked: 'right'
+                        },
+                        sprites: [{
+                            type: 'text',
+                            text: reportEntry.title,
+                            fontSize: 18,
+                            width: 100,
+                            height: 30,
+                            x: 10, // the sprite x position
+                            y: 22  // the sprite y position
+                        }, {
+                            type: 'text',
+                            text: reportEntry.description,
+                            fontSize: 12,
+                            x: 10,
+                            y: 40
+                        }],
+                        interactions: ['itemhighlight'],
+                        axes: [{
+                            type: 'numeric',
+                            fields: axesFields,
+                            position: 'left',
+                            grid: true,
+                            minimum: 0,
+                            renderer: function (v) {
+                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
+                            }
+                        }, {
+                            type: 'category',
+                            fields: 'time_trunc',
+                            position: 'bottom',
+                            grid: true,
+                            label: {
+                                rotate: {
+                                    degrees: -45
+                                }
+                            }
+                        }],
+                        series: series
+                    };
+                }
+
 
                 if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
                     chart.colors = reportEntry.colors;
                 }
+                this.reportDataGrid.setColumns(reportDataColumns);
+                this.reportDataGrid.getStore().loadData(data);
             }
             this.chartContainer.add(chart); 
             this.setLoading(false);
