@@ -28,7 +28,7 @@ public class IdpsLogEvent extends LogEvent
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.idps_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO reports.intrusion_prevention_events" + getPartitionTablePostfix() + " " +
             "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";

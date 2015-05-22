@@ -61,7 +61,7 @@ class SpamBaseNode(Node):
         ft.measures.append(column)
 
     def create_tables(self):
-        self.__create_spam_smtp_tarpit_events(  )
+        self.__create_smtp_tarpit_events(  )
 
     def get_toc_membership(self):
         return [TOP_LEVEL, EMAIL_DRILLDOWN]
@@ -97,12 +97,15 @@ class SpamBaseNode(Node):
         return Report(self, sections)
 
     def reports_cleanup(self, cutoff):
-        sql_helper.clean_table('spam_smtp_tarpit_events', cutoff)
+        sql_helper.clean_table('smtp_tarpit_events', cutoff)
 
     @sql_helper.print_timing
-    def __create_spam_smtp_tarpit_events(self):
+    def __create_smtp_tarpit_events(self):
+        # rename old name if exists
+        sql_helper.rename_table("spam_smtp_tarpit_events","smtp_tarpit_events") #11.2
+
         sql_helper.create_table("""\
-CREATE TABLE reports.spam_smtp_tarpit_events (
+CREATE TABLE reports.smtp_tarpit_events (
     time_stamp timestamp without time zone,
     ipaddr inet,
     hostname text,

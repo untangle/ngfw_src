@@ -69,8 +69,8 @@ dict['ipsec_user_events'].update({
     'elapsed_time' : 'The total time the client was connected',
 })
 
-dict['spam_smtp_tarpit_events'] = copy.deepcopy(generic)
-dict['spam_smtp_tarpit_events'].update({
+dict['smtp_tarpit_events'] = copy.deepcopy(generic)
+dict['smtp_tarpit_events'].update({
     'table_description' : 'This table stores SMTP tarpit events.',
     'ipaddr' : 'The client IP address',
     'vendor_name' : 'The \"vendor name\" of the app that logged the event',
@@ -104,8 +104,8 @@ dict['webcache_stats'].update({
     'miss_bytes' : 'The number of bytes not saved from cache misses',
 })
 
-dict['boxbackup_events'] = copy.deepcopy(generic)
-dict['boxbackup_events'].update({
+dict['configuration_backup_events'] = copy.deepcopy(generic)
+dict['configuration_backup_events'].update({
     'table_description' : 'This table stores configuration backup events to the untangle cloud',
     'success' : 'The result of the backup (true if the backup succeeded, false otherwise)',
     'description' : 'Text detail of the event',
@@ -205,8 +205,8 @@ dict['http_query_events'].update({
     'host' : 'The HTTP host',
 })
 
-dict['faild_action_events'] = copy.deepcopy(generic)
-dict['faild_action_events'].update({
+dict['wan_failover_action_events'] = copy.deepcopy(generic)
+dict['wan_failover_action_events'].update({
     'table_description' : 'This table stores WAN Failover events. There is one row for each WAN status change.',
     'interface_id' : 'This interface ID',
     'action' : 'This action (CONNECTED/DISCONNECTED)',
@@ -214,8 +214,8 @@ dict['faild_action_events'].update({
     'name' : 'This name of the interface',
 })
 
-dict['faild_test_events'] = copy.deepcopy(generic)
-dict['faild_test_events'].update({
+dict['wan_failover_test_events'] = copy.deepcopy(generic)
+dict['wan_failover_test_events'].update({
     'table_description' : 'This table stores WAN Failover test events. There is one row for each WAN Failover test performed.',
     'interface_id' : 'This interface ID',
     'name' : 'This name of the interface',
@@ -223,8 +223,8 @@ dict['faild_test_events'].update({
     'success' : 'The result of the test (true if the test succeeded, false otherwise)',
 })
 
-dict['adconnector_login_events'] = copy.deepcopy(generic)
-dict['adconnector_login_events'].update({
+dict['directory_connector_login_events'] = copy.deepcopy(generic)
+dict['directory_connector_login_events'].update({
     'table_description' : 'This table stores Directory Connector username events. There is one row for each status update of an IP/username.',
     'login_name' : 'The login name',
     'domain' : 'The AD domain',
@@ -232,8 +232,8 @@ dict['adconnector_login_events'].update({
     'client_addr' : 'The client IP address',
 })
 
-dict['idps_events'] = copy.deepcopy(generic)
-dict['idps_events'].update({
+dict['intrusion_prevention_events'] = copy.deepcopy(generic)
+dict['intrusion_prevention_events'].update({
     'table_description' : 'This table stores Intrusion Prevention events. There is one row for each detection.',
     'sig_id' : 'This ID of the rule',
     'gen_id' : 'The grouping ID for the rule, The gen_id + sig_id specify the rule\'s unique identifier',
@@ -309,8 +309,8 @@ dict['sessions'].update({
     'bandwidth_control_priority' : 'The priority given to this session',
     'bandwidth_control_rule' : 'The matching rule in Bandwidth Control rule (if any)',
     'ssl_inspector_ruleid' : 'The matching rule in HTTPS Inspector rule (if any)',
-    'ssl_inspector_status' : '??',
-    'ssl_inspector_detail' : '??',
+    'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED/IGNORED/BLOCKED/UNTRUSTED/ABANDONED)',
+    'ssl_inspector_detail' : 'Additional text detail about the SSL connection (SNI, IP Address)',
 })
 
 dict['admin_logins'] = copy.deepcopy(generic)

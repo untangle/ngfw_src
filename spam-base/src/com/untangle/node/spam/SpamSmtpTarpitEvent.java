@@ -63,7 +63,7 @@ public class SpamSmtpTarpitEvent extends LogEvent
     @Override
     public java.sql.PreparedStatement getDirectEventSql( java.sql.Connection conn ) throws Exception
     {
-        String sql = "INSERT INTO reports.spam_smtp_tarpit_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO reports.smtp_tarpit_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, ipaddr, hostname, vendor_name, policy_id) " +
             "values " +
             "( ?, ?, ?, ?, ? ) ";

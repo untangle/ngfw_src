@@ -48,15 +48,18 @@ class Idps(Node):
         pass
 
     def create_tables(self):
-        self.__create_idps_events()
+        self.__create_intrusion_prevention_events()
         
     @sql_helper.print_timing
-    def __create_idps_events(self):
+    def __create_intrusion_prevention_events(self):
         """
         Generate table and indices
         """
+        # rename old name if exists
+        sql_helper.rename_table("idps_events","intrusion_prevention_events") #11.2
+
         sql_helper.create_table("""\
-CREATE TABLE reports.idps_events (
+CREATE TABLE reports.intrusion_prevention_events (
         time_stamp timestamp NOT NULL,
         sig_id int8,
         gen_id int8,
@@ -70,7 +73,7 @@ CREATE TABLE reports.idps_events (
         category text,
         classtype text,
         msg text)""", [], ["time_stamp"])
-        
+
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
@@ -128,7 +131,7 @@ class IdpsHighlight(Highlight):
         query = """
 SELECT count(*)::int AS attacks,
        count(case when blocked = true then 1 end)::int AS blocks
- FROM reports.idps_events
+ FROM reports.intrusion_prevention_events
 WHERE time_stamp >= %s::timestamp without time zone 
   AND time_stamp < %s::timestamp without time zone"""
 
@@ -178,7 +181,7 @@ class TopTenRulesByHits(Graph):
 
         query = """\
 SELECT msg, count(*) as hits_sum
-  FROM reports.idps_events
+  FROM reports.intrusion_prevention_events
  WHERE time_stamp >= %s::timestamp without time zone 
    AND time_stamp < %s::timestamp without time zone
    AND msg != ''"""
@@ -247,7 +250,7 @@ class TopTenCategoriesByHits(Graph):
 
         query = """\
 SELECT category, count(*) as hits_sum
-  FROM reports.idps_events
+  FROM reports.intrusion_prevention_events
  WHERE time_stamp >= %s::timestamp without time zone 
    AND time_stamp < %s::timestamp without time zone
    AND msg != ''"""
@@ -316,7 +319,7 @@ class TopTenClasstypesByHits(Graph):
 
         query = """\
 SELECT classtype, count(*) as hits_sum
-  FROM reports.idps_events
+  FROM reports.intrusion_prevention_events
  WHERE time_stamp >= %s::timestamp without time zone 
    AND time_stamp < %s::timestamp without time zone
    AND msg != ''"""
@@ -402,7 +405,7 @@ class DailyLogUsage(Graph):
 
             query, params = sql_helper.get_averaged_query(
                 ["COUNT(*)"],
-                "reports.idps_events",
+                "reports.intrusion_prevention_events",
                 start_date,
                 end_date,
                 extra_where = extra_where,
@@ -498,7 +501,7 @@ class DailyBlockUsage(Graph):
 
             query, params = sql_helper.get_averaged_query(
                 ["count(case when blocked = true then 1 end)"], 
-                "reports.idps_events",
+                "reports.intrusion_prevention_events",
                 start_date,
                 end_date,
                 extra_where = extra_where,
@@ -615,7 +618,7 @@ class IdpsDetail(DetailSection):
 
         sql = ("""\
 SELECT * 
-  FROM reports.idps_events
+  FROM reports.intrusion_prevention_events
  WHERE time_stamp >= %s::timestamp without time zone 
    AND time_stamp < %s::timestamp without time zone
    AND NOT msg ISNULL

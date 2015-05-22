@@ -171,6 +171,15 @@ def rename_column( tablename, oldname, newname ):
     logger.info(sql)
     run_sql(sql)
 
+def rename_table( oldname, newname ):
+    if table_exists( newname ):
+        return
+    if not table_exists( oldname ):
+        return
+    sql = "ALTER TABLE %s.%s RENAME TO %s" % (SCHEMA, oldname, newname)
+    logger.info(sql)
+    run_sql(sql)
+
 def convert_column( tablename, columnname, oldtype, newtype ):
     column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (SCHEMA, tablename, columnname, oldtype))
     if not column_type_exists:

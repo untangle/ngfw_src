@@ -92,8 +92,8 @@ public class IdpsNodeImpl extends NodeBase implements IdpsNode
         
         this.idpsEventMonitor   = new IdpsEventMonitor( this );
 
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "idps_events", new SqlCondition[]{});
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "idps_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"), "intrusion_prevention_events", new SqlCondition[]{});
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"), "intrusion_prevention_events", new SqlCondition[]{ new SqlCondition("blocked","is","true") });
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IdpsSettingsDownloadHandler() );
     }

@@ -107,7 +107,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
                                                        new SqlCondition[]{ new SqlCondition("addr_kind","in","('T', 'C')"),
                                                                            new SqlCondition(vendorTag + "_action","=","'Q'"),
                                                                            new SqlCondition("policy_id","=",":policyId") });
-        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"), "spam_smtp_tarpit_events",
+        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"), "smtp_tarpit_events",
                                                   new SqlCondition[]{ new SqlCondition("vendor_name","=","'"+vendorTag+"'"),
                                                                       new SqlCondition("policy_id","=",":policyId") });
         loadGreyList();
