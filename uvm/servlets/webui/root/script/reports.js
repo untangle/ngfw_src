@@ -96,7 +96,7 @@ Ext.define('Ung.panel.Reports', {
             width: 330,
             split: true,
             collapsible: true,
-            collapsed: false,
+            collapsed: Ung.Main.viewport.getWidth()<1600,
             floatable: false,
             name: 'reportDataGrid',
             xtype: 'grid',
@@ -111,7 +111,15 @@ Ext.define('Ung.panel.Reports', {
                 rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
                     //TODO: add extra condition
                 }, this)
-            }
+            },
+            tbar: ['->',{
+                xtype: 'button',
+                text: i18n._('Export'),
+                name: "Export",
+                tooltip: i18n._('Export Data to File'),
+                iconCls: 'icon-export',
+                handler: Ext.bind(this.exportHandler, this)
+            }]
         }, {
             region: 'center',
             layout: {type: 'border'},
@@ -321,7 +329,7 @@ Ext.define('Ung.panel.Reports', {
                     xtype: 'polar',
                     name: "chart",
                     store: dataStore,
-                    theme: 'default-gradients',
+                    theme: 'green-gradients',
                     border: false,
                     width: '100%',
                     height: '100%',
@@ -408,7 +416,7 @@ Ext.define('Ung.panel.Reports', {
                         reportDataColumns.push({
                             dataIndex: column,
                             header: column,
-                            width: reportEntry.timeDataColumns.length>2? 60:90
+                            width: reportEntry.timeDataColumns.length>2 ? 60 : 90
                         });
                     }
                     
@@ -420,14 +428,22 @@ Ext.define('Ung.panel.Reports', {
                         xtype: 'cartesian',
                         name: "chart",
                         store: dataStore,
-                        theme: 'default-gradients',
+                        theme: 'green-gradients',
                         border: false,
                         width: '100%',
                         height: '100%',
                         insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
                         legend: {
-                            docked: 'right'
+                            docked: 'bottom'
                         },
+                        tbar: ['->', {
+                            xtype: 'button',
+                            text: i18n._("Switch to Line Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'LINE';
+                                this.loadReport(this.reportEntry);
+                            }, this)
+                        }],
                         sprites: [{
                             type: 'text',
                             text: reportEntry.title,
@@ -502,15 +518,19 @@ Ext.define('Ung.panel.Reports', {
                             title: column,
                             xField: 'time_trunc',
                             yField: column,
-                            marker: {
-                                type: 'square',
-                                fx: {
-                                    duration: 200,
-                                    easing: 'backOut'
-                                }
+                            smooth: true,
+                            style: {
+                                opacity: 0.90,
+                                lineWidth: 3
                             },
-                            highlightCfg: {
-                                scaling: 2
+                            marker: {
+                                radius: 2
+                            },
+                            highlight: {
+                                fillStyle: '#000',
+                                radius: 4,
+                                lineWidth: 1,
+                                strokeStyle: '#fff'
                             },
                             tooltip: {
                                 trackMouse: true,
@@ -531,14 +551,22 @@ Ext.define('Ung.panel.Reports', {
                         xtype: 'cartesian',
                         name: "chart",
                         store: dataStore,
-                        theme: 'default-gradients',
+                        theme: 'green-gradients',
                         border: false,
                         width: '100%',
                         height: '100%',
                         insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
                         legend: {
-                            docked: 'right'
+                            docked: 'bottom'
                         },
+                        tbar: ['->', {
+                            xtype: 'button',
+                            text: i18n._("Switch to Bar Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'BAR';
+                                this.loadReport(this.reportEntry);
+                            }, this)
+                        }],
                         sprites: [{
                             type: 'text',
                             text: reportEntry.title,
@@ -641,6 +669,9 @@ Ext.define('Ung.panel.Reports', {
             this.down('button[name=auto_refresh]').toggle(false);
         }
         this.down('button[name=refresh]').enable();
+    },
+    exportHandler: function() {
+        //TODO: implement export
     },
     isDirty: function() {
         return false;
