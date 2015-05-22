@@ -85,7 +85,21 @@ CREATE TABLE reports.mail_addrs (
     phish_blocker_score real,
     phish_blocker_is_spam boolean,
     phish_blocker_tests_string text,
-    phish_blocker_action character)""", ["event_id"],["policy_id","time_stamp","addr_kind","msg_id"])
+    phish_blocker_action character)""", ["event_id"],
+                                ["policy_id",
+                                 "time_stamp",
+                                 "session_id",
+                                 "hostname",
+                                 "username",
+                                 "c_client_addr",
+                                 "s_server_addr",
+                                 "addr",
+                                 "addr_kind",
+                                 "virus_blocker_lite_clean",
+                                 "virus_blocker_clean",
+                                 "spam_blocker_lite_is_spam",
+                                 "spam_blocker_is_spam",
+                                 "phish_blocker_is_spam"])
 
         # remove obsolete columns (11.1)
         sql_helper.drop_column( 'mail_addrs', 'addr_pos' )

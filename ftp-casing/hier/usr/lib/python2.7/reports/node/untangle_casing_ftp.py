@@ -53,7 +53,15 @@ CREATE TABLE reports.ftp_events (
     virus_blocker_clean boolean,
     virus_blocker_name text)""",
                                 ["request_id","event_id"],
-                                ["policy_id","session_id","time_stamp"])
+                                ["policy_id",
+                                 "session_id",
+                                 "time_stamp",
+                                 "hostname",
+                                 "username",
+                                 "c_client_addr",
+                                 "s_server_addr",
+                                 "virus_blocker_clean",
+                                 "virus_blocker_lite_clean"])
 
         sql_helper.rename_column('ftp_events','clam_clean','virus_blocker_lite_clean') # 11.2
         sql_helper.rename_column('ftp_events','clam_name','virus_blocker_lite_name') # 11.2
