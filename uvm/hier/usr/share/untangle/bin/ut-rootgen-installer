@@ -1,0 +1,67 @@
+#!/bin/dash
+
+#
+# Generate Windows installer for root certificate.
+#
+INSTALLER_PATH=/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
+INSTALLER_FILE_NAME=UntangleRootCAInstaller.exe
+
+UT_ROOT_PATH=/usr/share/untangle/settings/untangle-certificates
+UT_ROOT_CERTIFICATE=${UT_ROOT_PATH}/untangle.crt
+UT_ROOT_INSTALLER=${UT_ROOT_PATH}/${INSTALLER_FILE_NAME}
+
+if [ ! -f ${UT_ROOT_CERTIFICATE} ]; then
+	echo "Cannot find root certificate: ${UT_ROOT_CERTIFICATE}" 
+	exit 1
+fi
+
+cd ${INSTALLER_PATH}
+
+# walk templates directory, copy into settings
+for f in untangle-firefox-*; do
+	if [ "$f" = "untangle-firefox-certificate.cfg" ] ; then
+		#
+		# Modify Firefox configuration to include certificate as a single line variable
+		#
+		FIREFOX_CERTIFICATE_FILE_NAME=untangle-firefox-certificate.cfg
+		CERTIFICATE=$(cat ${UT_ROOT_CERTIFICATE} \
+			| grep -v "BEGIN CERTIFICATE\|END CERTIFICATE" \
+			| tr -d '\n' \
+			| sed 's/\//\\\//g')
+
+		#
+		# If zero-length string, don't bother generating installer
+		#
+		if [ ${#CERTIFICATE} -eq 0 ]; then
+			echo "Could not calculate Firefox certificate string"
+			cd -
+			exit
+		fi
+
+		sed -i "s/cert.*=.*\".*\";/cert=\"${CERTIFICATE}\"\;/" ${INSTALLER_PATH}/${FIREFOX_CERTIFICATE_FILE_NAME}
+
+		if [ $(grep -c ${CERTIFICATE} ${INSTALLER_PATH}/${FIREFOX_CERTIFICATE_FILE_NAME}) -eq 0 ] ; then
+			echo "Could not update Firefox configuration"
+			cd -
+			exit
+		fi
+	fi
+
+	#
+	# Format files to Windows text file format (CRLF)
+	#
+	sed 's/\r*$'"/`echo \\\r`/" $f > $f.converted
+	cp -f $f.converted $f
+	rm -f $f.converted
+done
+
+makensis installer.nsi > /dev/null
+
+if [ $? -eq 0 ] ; then
+	if [ -f ${UT_ROOT_INSTALLER} ] ; then
+		rm -f ${UT_ROOT_INSTALLER}
+	fi
+	cp -a ${INSTALLER_FILE_NAME} ${UT_ROOT_PATH}
+fi
+
+cd -

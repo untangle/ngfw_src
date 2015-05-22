@@ -77,4 +77,3 @@ $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_
 
 # only root should have access to the key
 chmod 600 $UT_ROOT_PATH/untangle.key
-

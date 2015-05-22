@@ -33,6 +33,7 @@ public class CertificateManagerImpl implements CertificateManager
 {
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
+    private static final String ROOT_CA_INSTALLER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen-installer";
 
     private static final String ROOT_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.crt";
     private static final String ROOT_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.key";
@@ -42,6 +43,7 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
     private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
     private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
+    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/UntangleRootCAInstaller.exe";
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     File rootCertFile = new File(ROOT_CERT_FILE);
@@ -52,6 +54,7 @@ public class CertificateManagerImpl implements CertificateManager
     File localKeyFile = new File(LOCAL_KEY_FILE);
     File localPemFile = new File(LOCAL_PEM_FILE);
     File apachePemFile = new File(APACHE_PEM_FILE);
+    File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
 
     private static final String MARKER_CERT_HEAD = "-----BEGIN CERTIFICATE-----";
     private static final String MARKER_CERT_TAIL = "-----END CERTIFICATE-----";
@@ -77,6 +80,7 @@ public class CertificateManagerImpl implements CertificateManager
     {
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateInstallerDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
 
         // in the development environment check to load files from the backup
@@ -97,6 +101,7 @@ public class CertificateManagerImpl implements CertificateManager
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
+            UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
 
             // in the development enviroment save these to a global location
             // so they will survive a rake clean
@@ -104,6 +109,10 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
             }
+        }
+        // Root CA exists but installer wasn't created (upgrade check)
+        if((rootCertFile.exists() == true) && (rootCertInstallerFile.exists() == false)){
+            UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
         }
 
         // we should have a root CA at this point so we check the local apache
@@ -132,6 +141,7 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
             }
         }
+
     }
 
     // called by the UI to upload a signed server certificate
@@ -241,6 +251,38 @@ public class CertificateManagerImpl implements CertificateManager
 
                 OutputStream webStream = resp.getOutputStream();
                 webStream.write(certData);
+            }
+
+            catch (Exception exn) {
+                logger.warn("Exception during certificate download", exn);
+            }
+        }
+    }
+
+    // called by the UI to download the root CA certificate file
+    private class RootCertificateInstallerDownloadHandler implements DownloadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "root_certificate_installer_download";
+        }
+
+        @Override
+        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
+        {
+            try {
+                FileInputStream certInstallerStream = new FileInputStream(rootCertInstallerFile);
+                byte[] certInstallerData = new byte[(int) rootCertInstallerFile.length()];
+                certInstallerStream.read(certInstallerData);
+                certInstallerStream.close();
+
+                // set the headers.
+                resp.setContentType("application/x-download");
+                resp.setHeader("Content-Disposition", "attachment; filename=UntangleRootCAInstaller.exe");
+
+                OutputStream webStream = resp.getOutputStream();
+                webStream.write(certInstallerData);
             }
 
             catch (Exception exn) {
@@ -383,6 +425,7 @@ public class CertificateManagerImpl implements CertificateManager
         argList[0] = certSubject;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
+        UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + argString);
 
         // in the development enviroment save these to a global location
         // so they will survive a rake clean
