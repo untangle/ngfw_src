@@ -86,7 +86,7 @@ Ext.define('Ung.panel.Reports', {
             }],
             listeners: {
                 rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                    this.loadReport(record.getData());
+                    this.loadReport(Ext.clone(record.getData()));
                 }, this)
             }
         
@@ -443,6 +443,14 @@ Ext.define('Ung.panel.Reports', {
                                 this.reportEntry.timeStyle = 'LINE';
                                 this.loadReport(this.reportEntry);
                             }, this)
+                        }, {
+                            xtype: 'button',
+                            hidden: reportEntry.timeDataColumns.length <= 1,
+                            text: i18n._("Switch to Overlapped Bar Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'BAR_OVERLAP';
+                                this.loadReport(this.reportEntry);
+                            }, this)
                         }],
                         sprites: [{
                             type: 'text',
@@ -502,6 +510,108 @@ Ext.define('Ung.panel.Reports', {
                             }
                         }]
                     };                    
+                } else if (reportEntry.timeStyle == 'BAR_OVERLAP') {
+                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
+                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
+                        axesFields.push(column);
+                        storeFields.push({name: column, convert: zeroFn});
+                        reportDataColumns.push({
+                            dataIndex: column,
+                            header: column,
+                            width: reportEntry.timeDataColumns.length>2? 60:90
+                        });
+                        console.log(column);
+                        series.push({
+                            type: 'bar3d',
+                            axis: 'left',
+                            title: column,
+                            xField: 'time_trunc',
+                            yField: column,
+                            smooth: true,
+                            style: {
+                                opacity: 0.70,
+                                lineWidth: (i+1)*5
+                            },
+                            tooltip: {
+                                trackMouse: true,
+                                style: 'background: #fff',
+                                renderer: function(storeItem, item) {
+                                    var title = item.series.getTitle();
+                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units));
+                                }
+                            }
+                        });
+                    }
+                    
+                    dataStore = Ext.create('Ext.data.JsonStore', {
+                        fields: storeFields,
+                        data: data
+                    });
+                    chart = {
+                        xtype: 'cartesian',
+                        name: "chart",
+                        store: dataStore,
+                        theme: 'green-gradients',
+                        border: false,
+                        width: '100%',
+                        height: '100%',
+                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
+                        legend: {
+                            docked: 'bottom'
+                        },
+                        tbar: ['->', {
+                            xtype: 'button',
+                            text: i18n._("Switch to Bar Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'BAR';
+                                this.loadReport(this.reportEntry);
+                            }, this)
+                        }, {
+                            xtype: 'button',
+                            text: i18n._("Switch to Line Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'LINE';
+                                this.loadReport(this.reportEntry);
+                            }, this)
+                        }],
+                        sprites: [{
+                            type: 'text',
+                            text: reportEntry.title,
+                            fontSize: 18,
+                            width: 100,
+                            height: 30,
+                            x: 10, // the sprite x position
+                            y: 22  // the sprite y position
+                        }, {
+                            type: 'text',
+                            text: reportEntry.description,
+                            fontSize: 12,
+                            x: 10,
+                            y: 40
+                        }],
+                        interactions: ['itemhighlight'],
+                        axes: [{
+                            type: 'numeric3d',
+                            fields: axesFields,
+                            position: 'left',
+                            grid: true,
+                            minimum: 0,
+                            renderer: function (v) {
+                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
+                            }
+                        }, {
+                            type: 'category3d',
+                            fields: 'time_trunc',
+                            position: 'bottom',
+                            grid: true,
+                            label: {
+                                rotate: {
+                                    degrees: -45
+                                }
+                            }
+                        }],
+                        series: series
+                    };
                 } else if (reportEntry.timeStyle == 'LINE') {
                     for(i=0; i<reportEntry.timeDataColumns.length; i++) {
                         column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
@@ -564,6 +674,14 @@ Ext.define('Ung.panel.Reports', {
                             text: i18n._("Switch to Bar Chart"),
                             handler: Ext.bind(function() {
                                 this.reportEntry.timeStyle = 'BAR';
+                                this.loadReport(this.reportEntry);
+                            }, this)
+                        }, {
+                            xtype: 'button',
+                            hidden: reportEntry.timeDataColumns.length <= 1,
+                            text: i18n._("Switch to Overlapped Bar Chart"),
+                            handler: Ext.bind(function() {
+                                this.reportEntry.timeStyle = 'BAR_OVERLAP';
                                 this.loadReport(this.reportEntry);
                             }, this)
                         }],
@@ -681,7 +799,7 @@ Ext.define('Ung.panel.Reports', {
             fn: function() {
                 if(!this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
                     this.down("grid[name=reportEntriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
-                    this.loadReport(this.reportEntries[this.initialReportEntryIndex]);
+                    this.loadReport(Ext.clone(this.reportEntries[this.initialReportEntryIndex]));
                 }
             }
         },

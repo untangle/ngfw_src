@@ -31,24 +31,25 @@ public class ReportEntry implements Serializable, JSONString
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
-            PIE_GRAPH, /* A top X pie chart graph */
-            TIME_GRAPH /* A graph with time (minutes) on the x-axis */
-            };
+        PIE_GRAPH, /* A top X pie chart graph */
+        TIME_GRAPH /* A graph with time (minutes) on the x-axis */
+    };
 
     public static enum TimeDataInterval {
         SECOND,
-            MINUTE,
-            HOUR,
-            DAY,
-            WEEK,
-            MONTH,
-            AUTO
-            };
+        MINUTE,
+        HOUR,
+        DAY,
+        WEEK,
+        MONTH,
+        AUTO
+    };
 
     public static enum TimeStyle {
         BAR,
-            LINE,
-            };
+        BAR_OVERLAP,
+        LINE
+    };
     
     private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
