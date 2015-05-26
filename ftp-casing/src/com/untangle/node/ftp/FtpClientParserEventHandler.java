@@ -9,13 +9,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -34,6 +37,15 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
     {
     }
 
+    @Override
+    public void handleTCPNewSessionRequest( TCPNewSessionRequest request )
+    {
+        Fitting fitting = request.pipelineConnector().getInputFitting();
+        if ( fitting == Fitting.FTP_DATA_STREAM ) {
+            request.globalAttach( NodeSession.KEY_FTP_DATA_SESSION, Boolean.TRUE );
+        }
+    }
+    
     @Override
     public void handleTCPNewSession( NodeTCPSession session )
     {

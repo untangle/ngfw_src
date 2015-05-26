@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
-class EventHandler extends AbstractEventHandler
+public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
@@ -54,6 +54,11 @@ class EventHandler extends AbstractEventHandler
         int ruleIndex     = 0;
         FirewallRule matchedRule = null;
 
+        if ( Boolean.TRUE == request.globalAttachment( NodeSession.KEY_FTP_DATA_SESSION) ) {
+            logger.info("Passing FTP related session: " + request);
+            return;
+        }
+        
         /**
          * Find the matching rule compute block/log verdicts
          */

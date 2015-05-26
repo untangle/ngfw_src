@@ -263,4 +263,11 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     {
         return this.sessionGlobalState().attachment(key);
     }
+
+    public String toString()
+    {
+        return "NewSessionRequest: " + getProtocol() + "|" +
+            getOrigClientAddr().getHostAddress() + ":" + getOrigClientPort() + " -> " +
+            getNewServerAddr().getHostAddress() + ":" + getNewServerPort();
+    }
 }

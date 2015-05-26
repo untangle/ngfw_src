@@ -136,6 +136,7 @@ public interface NodeSession extends SessionTuple
     public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
     
     public final String KEY_FTP_FILE_NAME = "ftp-file-name";  /* String */
+    public final String KEY_FTP_DATA_SESSION = "ftp-data-session";  /* String */
     
     public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "web_filter-best-category-id"; /* String */
     public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "web_filter-best-category-name"; /* String */

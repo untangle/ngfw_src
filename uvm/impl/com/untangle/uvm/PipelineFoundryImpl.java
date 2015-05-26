@@ -102,7 +102,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if ( fittingHints.containsKey( socketAddress )) {
             Fitting hint = fittingHints.remove( socketAddress );
             if ( hint != null )
-                fittings.add( hint );
+                fittings.add( 0, hint );
         }
 
         /**
