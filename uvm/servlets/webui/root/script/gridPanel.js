@@ -422,8 +422,8 @@ Ext.define('Ung.grid.Panel', {
             this.inlineEditor.completeEdit();
         }
     },
-    addHandler: function() {
-        var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(this.emptyRow)));
+    addHandler: function(rowData) {
+        var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(rowData || this.emptyRow || {})));
         record.set("internalId", this.genAddedId());
         this.stopEditing();
         if (this.rowEditor) {
@@ -834,6 +834,7 @@ Ext.define('Ung.RowEditorWindow', {
         this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
+        console.log("this.initialRecordData", Ext.decode(this.initialRecordData));
         this.populateRecursive(this.items, record, 0);
         if(Ext.isFunction(this.syncComponents)) {
             this.syncComponents();

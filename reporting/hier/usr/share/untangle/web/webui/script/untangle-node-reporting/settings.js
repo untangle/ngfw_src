@@ -8,6 +8,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
     panelDatabase: null,
     gridReportingUsers: null,
     gridHostnameMap: null,
+    gridReportEntries: null,
     gridAlertEventLog: null,
     initComponent: function(container, position) {
         this.buildPasswordValidator();
@@ -1207,7 +1208,25 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 xtype:'fieldset',
                 title: this.i18n._("Sql Conditions:"),
                 items:[this.gridSqlConditionsEditor]
-            } ],
+            }, {
+                xtype: 'button',
+                margin: 10,
+                text: this.i18n._('Copy Report'),
+                iconCls: 'action-icon',
+                handler: Ext.bind(function() {
+                    var rowEditor = this.gridReportEntries.rowEditor;
+                    var data = Ext.clone(this.gridReportEntries.emptyRow);
+                    rowEditor.updateActionRecursive(rowEditor.items, data, 0);
+                    Ext.apply(data, {
+                        title: Ext.String.format("Copy of {0}", data.title)
+                    });
+                    rowEditor.closeWindow();
+                    this.gridReportEntries.addHandler(data);
+                    Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
+                    console.log(data);
+                    
+                }, this)
+            }],
             populate: function(record, addMode) {
                 getColumnsForTable(record.get("table"));
                 Ung.RowEditorWindow.prototype.populate.apply(this, arguments);
