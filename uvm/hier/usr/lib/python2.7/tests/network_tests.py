@@ -418,15 +418,15 @@ class NetworkTests(unittest2.TestCase):
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
     
     def setUp(self):
-        global orig_netsettings
+        global orig_netsettings, internal_ftp_available
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        for ftp_server_pair in ftp_server_internal_list:
-            if wan_IP in ftp_server_pair and remote_control.clientIP in ftp_server_pair:
-                internal_ftp_available = True
-                break
+            wan_IP = uvmContext.networkManager().getFirstWanAddress()
+            for ftp_server_pair in ftp_server_internal_list:
+                if wan_IP in ftp_server_pair and remote_control.clientIP in ftp_server_pair:
+                    internal_ftp_available = True
+                    break
 
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
@@ -626,25 +626,25 @@ class NetworkTests(unittest2.TestCase):
     def test_065_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
         remote_control.runCommand("rm -f /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file")
-        # passive
-        result = remote_control.runCommand("wget --timeout=30 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        assert (result == 0)
-        # active
-        result = remote_control.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        assert (result == 0)
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
 
     # Test FTP in active and passive modes with bypass
     def test_066_bypassFtpModes(self):
         nukeFirstLevelRule('bypassRules')
         appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
-        # --no-passive-ftp
         remote_control.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
-        # passive
-        result = remote_control.runCommand("wget --timeout=30 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        assert (result == 0)
-        # active
-        result = remote_control.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        assert (result == 0)
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
+
         nukeFirstLevelRule('bypassRules')
         
     def test_067_ftpIncomingModes(self):
@@ -655,12 +655,13 @@ class NetworkTests(unittest2.TestCase):
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
         remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        # passive
-        result = remote_control.runCommand("wget --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        assert (result == 0)
-        # active
-        result = remote_control.runCommand("wget --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        assert (result == 0)
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
+
         nukeFirstLevelRule('portForwardRules')
 
     def test_068_bypassFtpIncomingModes(self):
@@ -668,16 +669,17 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("remote client does not have ftp server")
         nukeFirstLevelRule('bypassRules')
         nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",ftp_client_external),'bypassRules')
+        appendFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
         appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
         remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        # passive
-        result = remote_control.runCommand("wget --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        assert (result == 0)
-        # active
-        result = remote_control.runCommand("wget --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        assert (result == 0)
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_068a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_068b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
+
         nukeFirstLevelRule('portForwardRules')
         nukeFirstLevelRule('bypassRules')
         
