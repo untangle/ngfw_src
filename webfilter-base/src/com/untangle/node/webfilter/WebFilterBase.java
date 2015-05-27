@@ -253,6 +253,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     public abstract String getNodeTitle();
 
     public abstract String getName();
+    public abstract String getOldName();
 
     public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken header )
     {
@@ -304,7 +305,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         WebFilterSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js";
         
         try {
             readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
@@ -430,7 +431,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

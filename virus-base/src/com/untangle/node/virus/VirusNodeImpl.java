@@ -263,6 +263,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     abstract protected int getStrength();
 
     abstract public String getName();
+    abstract public String getOldName();
 
     // Node methods ------------------------------------------------------
 
@@ -362,7 +363,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         VirusSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js";
         
         try {
             readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
@@ -504,7 +505,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getOldName() + "/" + "settings_" + nodeID + ".js";
         try {
             settingsManager.save( settingsFileName, newSettings );
         } catch (SettingsManager.SettingsException e) {

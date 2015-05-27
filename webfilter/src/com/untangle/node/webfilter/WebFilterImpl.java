@@ -44,6 +44,12 @@ public class WebFilterImpl extends WebFilterBase
     }
 
     @Override
+    public String getOldName()
+    {
+        return "webfilter";
+    }
+    
+    @Override
     public void initializeSettings(WebFilterSettings settings)
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();

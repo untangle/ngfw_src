@@ -24,6 +24,11 @@ public class ClamNode extends VirusNodeImpl
         return "virus_blocker_lite";
     }
 
+    public String getOldName()
+    {
+        return "clam";
+    }
+    
     @Override
     protected void preStart()
     {
