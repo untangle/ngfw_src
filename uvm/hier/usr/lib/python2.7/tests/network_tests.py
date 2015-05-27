@@ -21,6 +21,8 @@ import global_functions
 iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
 ftp_file_name = "test.zip"
+ftp_client_external = "10.111.56.32"
+ftp_server_internal_list = ['192.168.10.31',]
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
@@ -637,7 +639,41 @@ class NetworkTests(unittest2.TestCase):
         result = remote_control.runCommand("wget --timeout=30 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
         assert (result == 0)
         nukeFirstLevelRule('bypassRules')
+        
+    def test_067_ftpIncomingModes(self):
+        if remote_control.clientIP not in ftp_server_internal_list:
+            raise unittest2.SkipTest("remote client does not have ftp server")
+        nukeFirstLevelRule('bypassRules')
+        nukeFirstLevelRule('portForwardRules')
+        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
+        remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        # passive
+        result = remote_control.runCommand("wget --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        assert (result == 0)
+        # active
+        result = remote_control.runCommand("wget --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        assert (result == 0)
+        nukeFirstLevelRule('portForwardRules')
 
+    def test_068_bypassFtpIncomingModes(self):
+        if remote_control.clientIP not in ftp_server_internal_list:
+            raise unittest2.SkipTest("remote client does not have ftp server")
+        nukeFirstLevelRule('bypassRules')
+        nukeFirstLevelRule('portForwardRules')
+        appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",ftp_client_external),'bypassRules')
+        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
+        remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        # passive
+        result = remote_control.runCommand("wget --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        assert (result == 0)
+        # active
+        result = remote_control.runCommand("wget --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        assert (result == 0)
+        nukeFirstLevelRule('portForwardRules')
+        nukeFirstLevelRule('bypassRules')
+        
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_070_routes(self):        
         nukeFirstLevelRule('staticRoutes')
