@@ -22,12 +22,13 @@ iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
 ftp_file_name = "test.zip"
 ftp_client_external = "10.111.56.32"
-ftp_server_internal_list = ['192.168.10.31',]
+ftp_server_internal_list = [('10.111.56.49','192.168.10.31'),]  # Dual wan ATS
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+internal_ftp_available = False
 
 def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
     return {
@@ -421,6 +422,12 @@ class NetworkTests(unittest2.TestCase):
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        for ftp_server_pair in ftp_server_internal_list:
+            if wan_IP in ftp_server_pair and remote_control.clientIP in ftp_server_pair:
+                internal_ftp_available = True
+                break
+
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
         assert (result == 0)
@@ -641,7 +648,7 @@ class NetworkTests(unittest2.TestCase):
         nukeFirstLevelRule('bypassRules')
         
     def test_067_ftpIncomingModes(self):
-        if remote_control.clientIP not in ftp_server_internal_list:
+        if not internal_ftp_available:
             raise unittest2.SkipTest("remote client does not have ftp server")
         nukeFirstLevelRule('bypassRules')
         nukeFirstLevelRule('portForwardRules')
@@ -657,7 +664,7 @@ class NetworkTests(unittest2.TestCase):
         nukeFirstLevelRule('portForwardRules')
 
     def test_068_bypassFtpIncomingModes(self):
-        if remote_control.clientIP not in ftp_server_internal_list:
+        if not internal_ftp_available:
             raise unittest2.SkipTest("remote client does not have ftp server")
         nukeFirstLevelRule('bypassRules')
         nukeFirstLevelRule('portForwardRules')
