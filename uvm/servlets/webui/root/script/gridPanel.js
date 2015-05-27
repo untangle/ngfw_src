@@ -834,7 +834,6 @@ Ext.define('Ung.RowEditorWindow', {
         this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
-        console.log("this.initialRecordData", Ext.decode(this.initialRecordData));
         this.populateRecursive(this.items, record, 0);
         if(Ext.isFunction(this.syncComponents)) {
             this.syncComponents();

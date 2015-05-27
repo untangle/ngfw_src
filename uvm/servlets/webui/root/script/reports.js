@@ -1,5 +1,6 @@
 Ext.define('Ung.panel.Reports', {
     extend: 'Ext.panel.Panel',
+    name: 'panelReports',
     autoRefreshInterval: 20, //In Seconds
     layout: { type: 'border'},
     extraConditions: null,
@@ -10,18 +11,20 @@ Ext.define('Ung.panel.Reports', {
     },
     initComponent: function() {
         this.subCmps = [];
-        if(!this.title) {
-            this.title = i18n._('Reports');
-        }
-        if (!Ung.Main.isReportsAppInstalled()) {
-            this.items = [{
-                region: 'center',
-                xtype: 'panel',
-                bodyPadding: 10,
-                html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
-            }];
-            this.callParent(arguments);
-            return;
+        if(this.category) {
+            if(!this.title) {
+                this.title = i18n._('Reports');
+            }
+            if (!Ung.Main.isReportsAppInstalled()) {
+                this.items = [{
+                    region: 'center',
+                    xtype: 'panel',
+                    bodyPadding: 10,
+                    html: i18n._("Reports application is required for this feature. Please install and enable the Reports application.")
+                }];
+                this.callParent(arguments);
+                return;
+            }
         }
         this.startDateWindow = Ext.create('Ung.window.SelectDateTime', {
             title: i18n._('Start date and time'),
@@ -35,62 +38,7 @@ Ext.define('Ung.panel.Reports', {
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
         
-        var reportEntriesStore = Ext.create('Ext.data.Store', {
-            fields: ["title"],
-            data: []
-        });
-        
-        Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            this.reportEntries = [];
-            this.initialReportEntryIndex = null;
-            var reportEntry;
-            for(var i=0; i<result.list.length; i++) {
-                reportEntry = result.list[i];
-                if(reportEntry.enabled) {
-                    this.reportEntries.push(reportEntry);
-                    if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
-                        this.initialReportEntryIndex = i;
-                    }
-                }
-            }
-            if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
-                this.initialReportEntryIndex = 0;
-            }
-            reportEntriesStore.loadData(this.reportEntries);
-        }, this), this.category);
-        
-        
         this.items = [{
-            region: 'west',
-            title: i18n._("Select Report"),
-            width: 250,
-            split: true,
-            collapsible: true,
-            collapsed: false,
-            floatable: false,
-            name: 'reportEntriesGrid',
-            xtype: 'grid',
-            hideHeaders: true,
-            store:  reportEntriesStore,
-            columns: [{
-                dataIndex: 'title',
-                flex: 1,
-                renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
-                    var description = record.get("description");
-                    if(description) {
-                        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description ) + '"';
-                    }
-                    return value;
-                }
-            }],
-            listeners: {
-                rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                    this.loadReport(Ext.clone(record.getData()));
-                }, this)
-            }
-        
-        }, {
             region: 'east',
             title: i18n._("Current Data"),
             width: 330,
@@ -205,6 +153,64 @@ Ext.define('Ung.panel.Reports', {
                 }
             })]
         }];
+        
+        if(this.category) {
+            this.items.push({
+                region: 'west',
+                title: i18n._("Select Report"),
+                width: 250,
+                split: true,
+                collapsible: true,
+                collapsed: false,
+                floatable: false,
+                name: 'reportEntriesGrid',
+                xtype: 'grid',
+                hideHeaders: true,
+                store:  reportEntriesStore,
+                columns: [{
+                    dataIndex: 'title',
+                    flex: 1,
+                    renderer: function( value, metaData, record, rowIdx, colIdx, store ) {
+                        var description = record.get("description");
+                        if(description) {
+                            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( description ) + '"';
+                        }
+                        return value;
+                    }
+                }],
+                listeners: {
+                    rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
+                        this.loadReport(Ext.clone(record.getData()));
+                    }, this)
+                }
+            
+            });
+            var reportEntriesStore = Ext.create('Ext.data.Store', {
+                fields: ["title"],
+                data: []
+            });
+            
+            Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.reportEntries = [];
+                this.initialReportEntryIndex = null;
+                var reportEntry;
+                for(var i=0; i<result.list.length; i++) {
+                    reportEntry = result.list[i];
+                    if(reportEntry.enabled) {
+                        this.reportEntries.push(reportEntry);
+                        if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
+                            this.initialReportEntryIndex = i;
+                        }
+                    }
+                }
+                if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
+                    this.initialReportEntryIndex = 0;
+                }
+                reportEntriesStore.loadData(this.reportEntries);
+            }, this), this.category);
+        }
+        
         this.callParent(arguments);
         this.chartContainer = this.down("panel[name=chartContainer]");
         this.reportDataGrid = this.down("grid[name=reportDataGrid]");
@@ -797,7 +803,7 @@ Ext.define('Ung.panel.Reports', {
     listeners: {
         "activate": {
             fn: function() {
-                if(!this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
+                if(this.category && !this.reportEntry && this.reportEntries !=null && this.reportEntries.length > 0) {
                     this.down("grid[name=reportEntriesGrid]").getSelectionModel().select(this.initialReportEntryIndex);
                     this.loadReport(Ext.clone(this.reportEntries[this.initialReportEntryIndex]));
                 }

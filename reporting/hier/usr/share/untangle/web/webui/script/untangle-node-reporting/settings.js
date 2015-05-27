@@ -823,6 +823,17 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 header: this.i18n._("Display Order"),
                 width: 90,
                 dataIndex: 'displayOrder'
+            }, {
+                header: this.i18n._("View"),
+                xtype: 'actioncolumn',
+                width: 70,
+                items: [{
+                    iconCls: 'icon-play-row',
+                    tooltip: this.i18n._('View Report'),
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        this.viewReport(Ext.clone(record.getData()));
+                    }, this)
+                }]
             }]
         });
         this.gridSqlConditionsEditor = Ext.create('Ung.grid.Panel',{
@@ -1208,24 +1219,43 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 xtype:'fieldset',
                 title: this.i18n._("Sql Conditions:"),
                 items:[this.gridSqlConditionsEditor]
-            }, {
-                xtype: 'button',
-                margin: 10,
-                text: this.i18n._('Copy Report'),
-                iconCls: 'action-icon',
-                handler: Ext.bind(function() {
-                    var rowEditor = this.gridReportEntries.rowEditor;
-                    var data = Ext.clone(this.gridReportEntries.emptyRow);
-                    rowEditor.updateActionRecursive(rowEditor.items, data, 0);
-                    Ext.apply(data, {
-                        title: Ext.String.format("Copy of {0}", data.title)
-                    });
-                    rowEditor.closeWindow();
-                    this.gridReportEntries.addHandler(data);
-                    Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
-                    console.log(data);
-                    
-                }, this)
+            },{
+                xtype: 'container',
+                layout: 'column',
+                //margin: '10 0 10 0',
+                items: [{
+                    xtype: 'button',
+                    margin: 10,
+                    text: this.i18n._('View Report'),
+                    iconCls: 'icon-play',
+                    handler: Ext.bind(function() {
+                        var rowEditor = this.gridReportEntries.rowEditor;
+                        if (rowEditor.validate()!==true) {
+                            return;
+                        }
+                        if (rowEditor.record !== null) {
+                            var data = Ext.clone(rowEditor.record.getData());
+                            rowEditor.updateActionRecursive(rowEditor.items, data, 0);
+                            this.viewReport(data);
+                        }
+                    }, this)
+                }, {
+                    xtype: 'button',
+                    margin: 10,
+                    text: this.i18n._('Copy Report'),
+                    iconCls: 'action-icon',
+                    handler: Ext.bind(function() {
+                        var rowEditor = this.gridReportEntries.rowEditor;
+                        var data = Ext.clone(this.gridReportEntries.emptyRow);
+                        rowEditor.updateActionRecursive(rowEditor.items, data, 0);
+                        Ext.apply(data, {
+                            title: Ext.String.format("Copy of {0}", data.title)
+                        });
+                        rowEditor.closeWindow();
+                        this.gridReportEntries.addHandler(data);
+                        Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
+                    }, this)
+                }]
             }],
             populate: function(record, addMode) {
                 getColumnsForTable(record.get("table"));
@@ -1273,7 +1303,39 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 cmps.colors.setDisabled(type=="TEXT");
             }
         }));
-    },    
+    },
+    viewReport: function(reportEntry) {
+        if(!this.winViewReport) {
+            this.winViewReport = Ext.create('Ung.Window', {
+                title: this.i18n._('View Report'),
+                bbar: ['->', {
+                    name: "Cancel",
+                    iconCls: 'cancel-icon',
+                    text: this.i18n._('Cancel'),
+                    handler: function() {
+                        this.up('window').cancelAction();
+                    }
+                }," "],
+                items: Ext.create('Ung.panel.Reports',{
+                    width: 1000,
+                    height: 600
+                }),
+                listeners: {
+                    "hide": {
+                        fn: function() {
+                            var panelReports = this.down('panel[name=panelReports]');
+                            if(panelReports.autoRefreshEnabled) {
+                                panelReports.stopAutoRefresh(true);
+                            }
+                        }
+                    }
+                }
+            });
+            this.subCmps.push(this.winViewReport);
+        }
+        this.winViewReport.show();
+        this.winViewReport.down('panel[name=panelReports]').loadReport(reportEntry);
+    },
     // AlertRules Panel
     buildAlertRules: function() {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{

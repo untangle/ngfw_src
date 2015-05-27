@@ -130,7 +130,7 @@ Ext.define('Webui.untangle-node-capture.settings', {
                 xtype: 'actioncolumn',
                 width: 80,
                 iconCls: 'icon-delete-row',
-                tooltip: 'Click to logout',
+                tooltip: this.i18n._("Click to logout"),
                 handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                     this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
@@ -254,12 +254,12 @@ Ext.define('Webui.untangle-node-capture.settings', {
         this.gridPassedClients = this.buildGridPassedList( "gridPassedClients",
             this.i18n._( "Pass Listed Client Addresses"),
             "passedClients",
-            "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
+            this.i18n._("Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal."));
 
         this.gridPassedServers = this.buildGridPassedList( "gridPassedServers",
             this.i18n._( "Pass Listed Server Addresses"),
             "passedServers",
-            "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
+            this.i18n._("Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication."));
 
         this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
             name: "panelPassedHosts",
