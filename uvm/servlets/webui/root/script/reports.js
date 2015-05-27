@@ -55,12 +55,7 @@ Ext.define('Ung.panel.Reports', {
             columns: [{
                 flex: 1
             }],
-            listeners: {
-                rowclick: Ext.bind(function( grid, record, tr, rowIndex, e, eOpts ) {
-                    //TODO: add extra condition
-                }, this)
-            },
-            tbar: ['->',{
+            tbar: ['->', {
                 xtype: 'button',
                 text: i18n._('Export'),
                 name: "Export",
@@ -155,6 +150,30 @@ Ext.define('Ung.panel.Reports', {
         }];
         
         if(this.category) {
+            var reportEntriesStore = Ext.create('Ext.data.Store', {
+                fields: ["title"],
+                data: []
+            });
+            
+            Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.reportEntries = [];
+                this.initialReportEntryIndex = null;
+                var reportEntry;
+                for(var i=0; i<result.list.length; i++) {
+                    reportEntry = result.list[i];
+                    if(reportEntry.enabled) {
+                        this.reportEntries.push(reportEntry);
+                        if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
+                            this.initialReportEntryIndex = i;
+                        }
+                    }
+                }
+                if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
+                    this.initialReportEntryIndex = 0;
+                }
+                reportEntriesStore.loadData(this.reportEntries);
+            }, this), this.category);
             this.items.push({
                 region: 'west',
                 title: i18n._("Select Report"),
@@ -185,30 +204,6 @@ Ext.define('Ung.panel.Reports', {
                 }
             
             });
-            var reportEntriesStore = Ext.create('Ext.data.Store', {
-                fields: ["title"],
-                data: []
-            });
-            
-            Ung.Main.getReportingManagerNew().getReportEntries(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.reportEntries = [];
-                this.initialReportEntryIndex = null;
-                var reportEntry;
-                for(var i=0; i<result.list.length; i++) {
-                    reportEntry = result.list[i];
-                    if(reportEntry.enabled) {
-                        this.reportEntries.push(reportEntry);
-                        if(this.initialReportEntryIndex==null && reportEntry.type!="TEXT") {
-                            this.initialReportEntryIndex = i;
-                        }
-                    }
-                }
-                if(this.initialReportEntryIndex == null && this.reportEntries.length>0) {
-                    this.initialReportEntryIndex = 0;
-                }
-                reportEntriesStore.loadData(this.reportEntries);
-            }, this), this.category);
         }
         
         this.callParent(arguments);
@@ -289,7 +284,6 @@ Ext.define('Ung.panel.Reports', {
                     xtype: 'component',
                     name: "chart",
                     margin: 15,
-                    //TODO: get data in the right format now is an array with a single element {scanned: x, flagged: y, blocked: z} or make the sting use the properties instead of {0}, {1}, {2}
                     html: Ext.String.format.apply(Ext.String.format, [i18n._(reportEntry.textString)].concat(infos))
                 };
                 this.reportDataGrid.setColumns([{
@@ -397,6 +391,24 @@ Ext.define('Ung.panel.Reports', {
                     dataIndex: 'value',
                     header: i18n._("value"),
                     width: 100
+                },{
+                    xtype: 'actioncolumn',
+                    menuDisabled: true,
+                    width: 20,
+                    items: [{
+                        iconCls: 'icon-filter-row',
+                        tooltip: i18n._('Add Condition'),
+                        handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                            this.extraConditionsPanel.expand();
+                            var data = {
+                                column: reportEntry.pieGroupColumn,
+                                operator: "=",
+                                value: record.get(reportEntry.pieGroupColumn)
+                            };
+                            this.extraConditionsPanel.addRow(data);
+                            this.extraConditionsPanel.setConditions();
+                        }, this)
+                    }]
                 }]);
                 this.reportDataGrid.getStore().loadData(data);
             } else if(reportEntry.type == 'TIME_GRAPH') {
@@ -888,7 +900,10 @@ Ext.define("Ung.panel.ExtraConditions", {
         }];
         this.callParent(arguments);
     },
-    generateRow: function(i) {
+    generateRow: function(i, data) {
+        if(!data) {
+            data = {column: "", operator:"=", value: ""};
+        }
         return [{
             xtype: 'combo',
             width: 250,
@@ -901,7 +916,7 @@ Ext.define("Ung.panel.ExtraConditions", {
             displayField: "name",
             queryMode: 'local',
             store: this.columnsStore,
-            value: "",
+            value: data.column,
             listeners: {
                 change: {
                     fn: function(combo, newValue, oldValue, opts) {
@@ -920,8 +935,8 @@ Ext.define("Ung.panel.ExtraConditions", {
             valueField: "name",
             displayField: "name",
             queryMode: 'local',
-            value: "=",
-            disabled: true,
+            value: data.operator,
+            disabled: Ext.isEmpty(data.column),
             store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"],
             listeners: {
                 change: {
@@ -937,8 +952,9 @@ Ext.define("Ung.panel.ExtraConditions", {
             name: "value"+i,
             width: 400,
             margin: 3,
-            disabled: true,
+            disabled: Ext.isEmpty(data.column),
             emptyText: i18n._("[no value]"),
+            value: data.value,
             listeners: {
                 change: {
                     fn: function() {
@@ -963,8 +979,8 @@ Ext.define("Ung.panel.ExtraConditions", {
             }, this)
         }];
     },
-    addRow: function() {
-      this.add(this.generateRow(this.count));
+    addRow: function(data) {
+      this.add(this.generateRow(this.count, data));
       this.count++;
     },
     clearConditions: function() {
