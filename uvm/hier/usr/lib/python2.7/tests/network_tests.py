@@ -62,7 +62,34 @@ def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2
         "ruleId": 1
     } 
 
-def createBypassMatcherRule( matcherType, value):
+def createFilterRule( matcherType1, value1, matcherType2, value2, blocked ):
+    return {
+        "bypass": True, 
+        "description": "test rule " + str(matcherType1) + " " + str(value1) + " " + str(matcherType2) + " " + str(value2), 
+        "enabled": True, 
+        "blocked": blocked,
+        "javaClass": "com.untangle.uvm.network.FilterRule", 
+        "matchers": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher", 
+                    "matcherType": str(matcherType1), 
+                    "value": str(value1)
+                },
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.uvm.network.FilterRuleMatcher", 
+                    "matcherType": str(matcherType2), 
+                    "value": str(value2)
+                }
+            ]
+        }, 
+        "ruleId": 1
+    } 
+
+def createBypassMatcherRule( matcherType, value ):
     return {
         "bypass": True, 
         "description": "test bypass " + str(matcherType) + " " + str(value), 
@@ -115,7 +142,7 @@ def createQoSMatcherRule( matcherType, value, priority):
         "ruleId": 3
     } 
 
-def createSingleMatcherRule( matcherType, value, blocked=True, flagged=True ):
+def createSingleMatcherFirewallRule( matcherType, value, blocked=True, flagged=True ):
     return {
         "javaClass": "com.untangle.node.firewall.FirewallRule", 
         "id": 1, 
@@ -368,11 +395,6 @@ def setDynDNS():
     netsettings['dynamicDnsServiceUsername'] = "testuntangle"
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-def nukeDynDNS():
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings['dynamicDnsServiceEnabled'] = False
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-   
 def verifySnmpWalk():
     snmpwalkResult = remote_control.runCommand("test -x /usr/bin/snmpwalk")  
     if snmpwalkResult:
@@ -615,7 +637,7 @@ class NetworkTests(unittest2.TestCase):
         # verify port 80 is open
         result1 = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
         # Block port 80 and verify it's closed
-        appendFWRule(nodeFW, createSingleMatcherRule("DST_PORT","80"))
+        appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","80"))
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         # bypass the client and verify the client can bypass the firewall
         appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
@@ -626,8 +648,8 @@ class NetworkTests(unittest2.TestCase):
         assert (result2 != 0)
         assert (result3 == 0)
 
-    # Test FTP in active and passive modes
-    def test_065_ftpModes(self):
+    # Test FTP (outbound) in active and passive modes
+    def test_070_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
 
         passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
@@ -636,8 +658,30 @@ class NetworkTests(unittest2.TestCase):
         assert (passiveResult == 0)
         assert (activeResult == 0)
 
-    # Test FTP in active and passive modes with bypass
-    def test_066_ftpModesBypassed(self):
+    # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
+    def test_071_ftpModesFirewalled(self):
+        nodeFW = None
+        if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
+            print "ERROR: Node %s already installed" % self.nodeNameFW()
+            raise Exception('node %s already instantiated' % self.nodeNameFW())
+        nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
+
+        nukeFirstLevelRule('bypassRules')
+
+        appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","21", blocked=False))
+        appendFWRule(nodeFW, createSingleMatcherFirewallRule("PROTOCOL","TCP", blocked=True))
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
+
+        uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+    # Test FTP (outbound) in active and passive modes with bypass
+    def test_072_ftpModesBypassed(self):
         setFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
 
         passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
@@ -647,8 +691,24 @@ class NetworkTests(unittest2.TestCase):
         assert (activeResult == 0)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        
-    def test_067_ftpIncomingModes(self):
+
+    # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
+    def test_073_ftpModesBypassedFiltered(self):
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['bypassRules']['list'] = [ createBypassMatcherRule("DST_PORT","21") ]
+        netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
+        assert (passiveResult == 0)
+        assert (activeResult == 0)
+
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+    # Test FTP (inbound) in active and passive modes (untangle-vm should add port forwards for RELATED session)
+    def test_074_ftpModesIncoming(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
 
@@ -664,7 +724,8 @@ class NetworkTests(unittest2.TestCase):
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-    def test_068_ftpIncomingModesBypassed(self):
+    # Test FTP (inbound) in active and passive modes with bypass (nf_nat_ftp should add port forwards for RELATED session, nat filters should allow RELATED)
+    def test_075_ftpModesIncomingBypassed(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -681,9 +742,9 @@ class NetworkTests(unittest2.TestCase):
         assert (activeResult == 0)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        
+
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
-    def test_070_routes(self):        
+    def test_080_routes(self):        
         setFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
         for i in range(0, 10):
             wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
@@ -699,7 +760,7 @@ class NetworkTests(unittest2.TestCase):
         assert (testResult != 0)
 
     # Test static DNS entry
-    def test_080_DNS(self):        
+    def test_090_DNS(self):        
         # Test static entries in Config -> Networking -> Advanced -> DNS
         nukeDNSRules()
         result = remote_control.runCommand("host test.untangle.com", stdout=True)
@@ -735,7 +796,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     # Test dynamic hostname
-    def test_090_DynamicDns(self):
+    def test_100_DynamicDns(self):
         raise unittest2.SkipTest('FIXME there are no asserts in this test')
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
@@ -747,11 +808,11 @@ class NetworkTests(unittest2.TestCase):
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         dynIP = (match.group()).replace('address ','')
         print "IP address of outsideIP <%s> dynIP <%s> " % (outsideIP,dynIP)
-        nukeDynDNS()
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # assert(outsideIP == dynIP)
 
     # Test VRRP is active
-    def test_100_VRRP(self):
+    def test_110_VRRP(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -824,7 +885,7 @@ class NetworkTests(unittest2.TestCase):
         assert (onlineResults == 0)
         
     # Test MTU settings
-    def test_110_MTU(self):
+    def test_120_MTU(self):
         mtuSetValue = '1460'
         targetDevice = 'eth0'
         mtuAutoValue = None
@@ -869,7 +930,7 @@ class NetworkTests(unittest2.TestCase):
         assert (mtu2Value == mtuAutoValue)
         
     # SNMP, v1/v2enabled, v3 disabled
-    def test_120_SNMP_Enabled_V1V2Only(self):
+    def test_130_SNMP_Enabled_V1V2Only(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -888,7 +949,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 1 )
 
-    def test_121_SNMP_Enabled_V3ShaDesNoPrivacyPassphrase(self):
+    def test_131_SNMP_Enabled_V3ShaDesNoPrivacyPassphrase(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -906,7 +967,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_122_SNMP_Enabled_V3Md5DesNoPrivacyPassphrase(self):
+    def test_132_SNMP_Enabled_V3Md5DesNoPrivacyPassphrase(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -924,7 +985,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_123_SNMP_Enabled_V3ShaDes(self):
+    def test_133_SNMP_Enabled_V3ShaDes(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -942,7 +1003,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_124_SNMP_Enabled_V3ShaAes(self):
+    def test_134_SNMP_Enabled_V3ShaAes(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -960,7 +1021,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_125_SNMP_Enabled_V3Md5Des(self):
+    def test_135_SNMP_Enabled_V3Md5Des(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -978,7 +1039,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_126_SNMP_Enabled_V3Md5Aes(self):
+    def test_136_SNMP_Enabled_V3Md5Aes(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -996,7 +1057,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
-    def test_127_SNMP_Enabled_V3Required(self):
+    def test_137_SNMP_Enabled_V3Required(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -1014,7 +1075,7 @@ class NetworkTests(unittest2.TestCase):
         assert( v2cResult == 1 )
         assert( v3Result == 0 )
 
-    def test_128_SNMP_Disabled(self):
+    def test_138_SNMP_Disabled(self):
         verifySnmpWalk()
         origsystemSettings = uvmContext.systemManager().getSettings()
         systemSettings = uvmContext.systemManager().getSettings()
@@ -1025,7 +1086,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 1)
 
-    def test_130_sessionview(self):
+    def test_140_sessionview(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         loopLimit = 5
@@ -1047,7 +1108,7 @@ class NetworkTests(unittest2.TestCase):
         remote_control.runCommand("pkill netcat")
         assert(foundTestSession)
         
-    def test_140_hostview(self):
+    def test_141_hostview(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
