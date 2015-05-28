@@ -289,7 +289,10 @@ class RouterFtpHandler extends FtpEventHandler
                 logger.debug( "Mangling PASV reply to address: " + newAddr );
             }
             
-            SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), origAddr.getAddress(), origAddr.getPort() );
+            // SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), origAddr.getAddress(), origAddr.getPort() );
+            // We use sessionData.modifiedServerAddr() instead of origAddr.getAddress() because some servers try to be smart and do the NAT fix-up for us.
+            // This avoids that.
+            SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), sessionData.modifiedServerAddr(), origAddr.getPort() );
             sessionManager.registerSessionRedirect( sessionData, redirect );
             
             /* Modify the reply to the client */
