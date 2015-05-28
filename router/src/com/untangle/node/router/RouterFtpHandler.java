@@ -280,26 +280,26 @@ class RouterFtpHandler extends FtpEventHandler
         }
 
         if ( sessionData.isServerRedirect()) {
-            /* Modify the response, this must contain the original address the client thinks it
-             * is connecting to. */
-            int port = getNextPort( );
-            InetSocketAddress newAddr = new InetSocketAddress( sessionData.originalServerAddr(), port );
+            if ( ! sessionData.modifiedServerAddr().equals( origAddr.getAddress() ) ) {
+                logger.warn("PASV Reply used an IP (" + origAddr.getAddress().getHostAddress() + ") different than expected (" + sessionData.modifiedServerAddr().getHostAddress() + ").");
+                logger.warn("Assuming that some NAT fix-up has already been occurred and skipping NAT logic");
+            } else {
+                /* Modify the response, this must contain the original address the client thinks it
+                 * is connecting to. */
+                int port = getNextPort( );
+                InetSocketAddress newAddr = new InetSocketAddress( sessionData.originalServerAddr(), port );
 
-            if (logger.isDebugEnabled()) {
-                logger.debug( "Mangling PASV reply to address: " + newAddr );
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "Mangling PASV reply to address: " + newAddr );
+                }
+            
+                SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), origAddr.getAddress(), origAddr.getPort() );
+                sessionManager.registerSessionRedirect( sessionData, redirect );
+
+                /* Modify the reply to the client */
+                reply = FtpReply.pasvReply( newAddr );
             }
-            
-            // SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), origAddr.getAddress(), origAddr.getPort() );
-            // We use sessionData.modifiedServerAddr() instead of origAddr.getAddress() because some servers try to be smart and do the NAT fix-up for us.
-            // This avoids that.
-            SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), sessionData.modifiedServerAddr(), origAddr.getPort() );
-            sessionManager.registerSessionRedirect( sessionData, redirect );
-            
-            /* Modify the reply to the client */
-            reply = FtpReply.pasvReply( newAddr );
-        } else {
-            /* nothing to do */
-        }
+        } 
 
         /**
          * Reply doesn't have to be modified, but the redirect.
