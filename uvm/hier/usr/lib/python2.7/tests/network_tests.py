@@ -242,6 +242,11 @@ def setHttpHttpsPorts(httpPort, httpsPort):
     netsettings['httpsPort'] = httpsPort
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
+def setFirstLevelRule(newRule,ruleGroup):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings[ruleGroup]['list'].append(newRule)
+    uvmContext.networkManager().setNetworkSettings(netsettings)
+
 def appendFirstLevelRule(newRule,ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'].append(newRule)
@@ -466,29 +471,25 @@ class NetworkTests(unittest2.TestCase):
 
     # test basic port forward (tcp port 80)
     def test_020_portForward80(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test basic port forward (tcp port 443)
     def test_021_portForward443(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward (changing the port 80 -> 81)
     def test_022_portForwardNewPort(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","81","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","81","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4:81/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward using DST_LOCAL condition
     def test_023_portForwardDstLocal(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s:81/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         assert(result == 0)
 
@@ -496,8 +497,7 @@ class NetworkTests(unittest2.TestCase):
     def test_024_portForwardPort80LocalHttpPort(self):
         orig_ports = getHttpHttpsPorts()
         setHttpHttpsPorts( 8080, 4343 )
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
@@ -506,16 +506,14 @@ class NetworkTests(unittest2.TestCase):
     def test_025_portForwardPort443LocalHttpsPort(self):
         orig_ports = getHttpHttpsPorts()
         setHttpHttpsPorts( 8080, 4343 )
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
         setHttpHttpsPorts( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
     # test hairpin port forward (back to original client)
     def test_026_portForwardHairPin(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
         remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
         result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
         print "result: %s" % str(result) 
@@ -523,8 +521,7 @@ class NetworkTests(unittest2.TestCase):
 
     # test port forward to multiple ports (tcp port 80,443)
     def test_027_portForwardMultiport(self):
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80,443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,None),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","80,443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,None),'portForwardRules')
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
@@ -545,7 +542,7 @@ class NetworkTests(unittest2.TestCase):
         remote_control.runCommand("nohup netcat -l -p 11245 >/dev/null 2>&1",stdout=False,nowait=True)
 
         # port forward 11245 to client box
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"),'portForwardRules')
 
         # try connecting to netcat on client from "outside" box
         result = remote_control.runCommand("echo test | netcat -q0 " + wan_IP + " 11245", host=iperfServer)
@@ -560,9 +557,9 @@ class NetworkTests(unittest2.TestCase):
             raise unittest2.SkipTest("Not on office network, skipping")
         if not global_functions.verifyIperf(wan_IP):
             raise unittest2.SkipTest("Iperf server not reachable")
-        nukeFirstLevelRule('portForwardRules')
+
         # port forward UDP 5000 to client box
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","5000","DST_LOCAL","true","PROTOCOL","UDP",remote_control.clientIP,"5000"),'portForwardRules')
 
         # start netcat on client
         remote_control.runCommand("rm -f /tmp/netcat.udp.recv.txt")
@@ -576,7 +573,7 @@ class NetworkTests(unittest2.TestCase):
         # UDP_speed = global_functions.getUDPSpeed( receiverIP=remote_control.clientIP, senderIP=global_functions.iperfServer, targetIP=wan_IP )
         # assert (UDP_speed >  0.0)
 
-        nukeFirstLevelRule('portForwardRules')
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert ( result == 0 )
 
     # test a NAT rules
@@ -602,9 +599,10 @@ class NetworkTests(unittest2.TestCase):
             appendFirstLevelRule(createNATRule("test out " + wanIP, "DST_PORT","80",wanIP),'natRules')
             # Determine current outgoing IP
             result = remote_control.runCommand("wget -4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
-            nukeFirstLevelRule('natRules')
             # print "result " + result + " wanIP " + myWANs[wanIP]
             assert (result == myWANs[wanIP])
+
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
@@ -631,70 +629,62 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP in active and passive modes
     def test_065_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
-        remote_control.runCommand("rm -f /tmp/network_065a_ftp_file /tmp/network_065b_ftp_file")
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_065a_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_065b_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
         print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
         assert (passiveResult == 0)
         assert (activeResult == 0)
 
     # Test FTP in active and passive modes with bypass
-    def test_066_bypassFtpModes(self):
-        nukeFirstLevelRule('bypassRules')
-        appendFirstLevelRule(createBypassMatcherRule("SRC_ADDR",remote_control.clientIP),'bypassRules')
-        remote_control.runCommand("rm -f /tmp/network_066a_ftp_file /tmp/network_066b_ftp_file")
+    def test_066_ftpModesBypassed(self):
+        setFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_066_ftp_file ftp://" + ftp_server + "/" + ftp_file_name)
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
         print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
         assert (passiveResult == 0)
         assert (activeResult == 0)
 
-        nukeFirstLevelRule('bypassRules')
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     def test_067_ftpIncomingModes(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
-        nukeFirstLevelRule('bypassRules')
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
-        remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
+
+        setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
+
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_067a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_067b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
         print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
         assert (passiveResult == 0)
         assert (activeResult == 0)
 
-        nukeFirstLevelRule('portForwardRules')
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-    def test_068_bypassFtpIncomingModes(self):
+    def test_068_ftpIncomingModesBypassed(self):
         if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
-        nukeFirstLevelRule('bypassRules')
-        nukeFirstLevelRule('portForwardRules')
-        appendFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
-        appendFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
-        remote_control.runCommand("rm -f /tmp/network_067a_ftp_file /tmp/network_067b_ftp_file")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['bypassRules']['list'] = [ createBypassMatcherRule("DST_PORT","21") ]
+        netsettings['portForwardRules']['list'] = [ createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"") ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /tmp/network_068a_ftp_file ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /tmp/network_068b_ftp_file ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
         print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
         assert (passiveResult == 0)
         assert (activeResult == 0)
 
-        nukeFirstLevelRule('portForwardRules')
-        nukeFirstLevelRule('bypassRules')
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_070_routes(self):        
-        nukeFirstLevelRule('staticRoutes')
-        remote_control.runCommand("rm -f /tmp/network_test_070a.log")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        appendFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
+        setFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
         for i in range(0, 10):
             wwwResult = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://www.untangle.com")
             if (wwwResult == 0):
@@ -746,6 +736,9 @@ class NetworkTests(unittest2.TestCase):
         
     # Test dynamic hostname
     def test_090_DynamicDns(self):
+        raise unittest2.SkipTest('FIXME there are no asserts in this test')
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         # Set DynDNS info
         setDynDNS()
         time.sleep(60) # wait a max of 1 minute for dyndns to update.
