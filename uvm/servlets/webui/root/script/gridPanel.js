@@ -422,8 +422,8 @@ Ext.define('Ung.grid.Panel', {
             this.inlineEditor.completeEdit();
         }
     },
-    addHandler: function(rowData) {
-        var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(rowData || this.emptyRow || {})));
+    addHandler: function(button, e, rowData) {
+        var record = Ext.create(Ext.getClassName(this.getStore().getProxy().getModel()), Ext.decode(Ext.encode(rowData || this.emptyRow)));
         record.set("internalId", this.genAddedId());
         this.stopEditing();
         if (this.rowEditor) {

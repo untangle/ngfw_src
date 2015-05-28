@@ -947,7 +947,7 @@ Ext.define("Ung.Main", {
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
             id:'rack-select',
-            menu: new Ext.menu.Menu({
+            menu: Ext.create('Ext.menu.Menu', {
                 hideDelay: 0,
                 items: items
             })

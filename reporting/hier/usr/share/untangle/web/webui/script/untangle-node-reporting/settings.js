@@ -1252,7 +1252,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                             title: Ext.String.format("Copy of {0}", data.title)
                         });
                         rowEditor.closeWindow();
-                        this.gridReportEntries.addHandler(data);
+                        this.gridReportEntries.addHandler(null, null, data);
                         Ext.MessageBox.alert(this.i18n._("Copy Report"), Ext.String.format(this.i18n._("You are now editing the copied report: '{0}'"), data.title));
                     }, this)
                 }]
