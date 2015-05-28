@@ -662,6 +662,7 @@ Ext.define("Ung.Node", {
             if( this.metrics.list.length > 0 ) {
                 this.faceplateMetrics = Ext.create('Ung.FaceplateMetric', {
                     nodeName: this.name,
+                    displayName: this.displayName,
                     parentId: this.getId(),
                     parentNodeId: this.nodeId,
                     metrics: this.metrics
@@ -1107,7 +1108,6 @@ Ext.define("Ung.FaceplateMetric", {
     chart: null,
     chartData: null,
     chartDataLength: 20,
-    chartTip: null,
     afterRender: function() {
             this.callParent(arguments);
         var out = [];
@@ -1123,16 +1123,13 @@ Ext.define("Ung.FaceplateMetric", {
         this.buildChart();
     },
     beforeDestroy: function() {
-        if(this.chartTip != null) {
-            Ext.destroy(this.chartTip);
-        }
         if(this.chart != null ) {
             Ext.destroy(this.chart);
         }
         this.callParent(arguments);
     },
     buildChart: function() {
-        var i;
+        var me = this, i;
         for(i=0; i<this.metrics.list.length; i++) {
             if(this.metrics.list[i].name=="live-sessions") {
                 this.hasChart = true;
@@ -1156,12 +1153,19 @@ Ext.define("Ung.FaceplateMetric", {
         for(i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
         }
-        this.chart = Ext.create('Ext.chart.CartesianChart', {
+        this.chart = Ext.create({
+            xtype: 'cartesian',
+            border: false,
+            background: {
+                type: 'image',
+                src: "/skins/"+rpc.skinSettings.skinName+"/images/admin/background_activity_blinger_border.png"
+            },
+            insetPadding: {top: 9, left: 5, right: 3, bottom: 7},
             renderTo: chartContainerEl,
             width: chartContainerEl.getWidth(),
             height: chartContainerEl.getHeight(),
             animation: false,
-            theme: 'green',
+            theme: 'green-gradients',
             store: Ext.create('Ext.data.JsonStore', {
                 fields: ['time', 'sessions'],
                 data: this.chartData
@@ -1177,30 +1181,29 @@ Ext.define("Ung.FaceplateMetric", {
             series: [{
                 type: 'line',
                 axis: 'left',
-                smooth: true,
                 showMarkers: false,
                 fill: true,
                 xField: 'time',
-                yField: 'sessions'
+                yField: 'sessions',
+                style: {
+                    lineWidth: 2
+                },
+                tooltip: {
+                    trackMouse: true,
+                    style: 'background: #fff',
+                    dismissDelay: 2000,
+                    renderer: function(record, item) {
+                        this.setHtml(Ext.String.format(i18n._("Session History: {0}"), record.get('sessions'))+'<br/>' +
+                            Ext.String.format(i18n._("Current Sessions: {0}"), me.currentSessions)+'<br/>' +
+                            Ext.String.format(i18n._("Click chart to open Sesion Viewer for {0}"), me.displayName));
+                    }
+                }
             }]
         });
         
-        this.chart.on("click", function(e) { 
-            // TODO: extjs5 make the click work on extjs 5
+        chartContainerEl.on("click", function(e) { 
             Ung.Main.showNodeSessions( this.parentNodeId ); 
         }, this);
-        var chartTipArr=[
-            '<div class="title">'+i18n._("Session History. Current Sessions:")+' <span name="current_sessions">0</span></div>'
-        ];
-        this.chartTip=Ext.create('Ext.tip.ToolTip',{
-            target: chartContainerEl,
-            dismissDelay: 0,
-            hideDelay: 400,
-            width: 330,
-            cls: 'extended-stats',
-            renderTo: Ext.getBody(),
-            html: chartTipArr.join('')
-        });
     },
     buildActiveMetrics: function () {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -1282,9 +1285,9 @@ Ext.define("Ung.FaceplateMetric", {
                 modal: true,
                 title: i18n._("Set up to four"),
                 bodyStyle: "padding: 5px 5px 5px 15px;",
-                defaults: {},
                 items: configItems,
                 autoScroll: true,
+                layout: 'auto',
                 draggable: true,
                 resizable: true,
                 buttons: [{
@@ -1301,14 +1304,17 @@ Ext.define("Ung.FaceplateMetric", {
                         this.configWin.hide();
                     }, this)
                 }],
-                onShow: function() {
-                    Ung.Window.superclass.onShow.call(this);
-                    this.setSize({width:260,height:280});
-                    this.alignTo(this.metricsCmp.getEl(),"tr-br");
-                    var pos=this.getPosition();
-                    var sub=pos[1] + 280 - Ung.Main.viewport.getSize().height;
-                    if(sub > 0) {
-                        this.setPosition( pos[0],pos[1]-sub);
+                listeners: {
+                    show: {
+                        fn: function() {
+                            this.setSize({width:260,height:280});
+                            this.alignTo(this.metricsCmp.getEl(),"tr-br");
+                            var pos=this.getPosition();
+                            var sub=pos[1] + 280 - Ung.Main.viewport.getSize().height;
+                            if(sub > 0) {
+                                this.setPosition( pos[0],pos[1]-sub);
+                            }
+                        }
                     }
                 }
             });
@@ -1353,14 +1359,12 @@ Ext.define("Ung.FaceplateMetric", {
                 this.chartData[i].sessions=this.chartData[i+1].sessions;
                 reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
             }
-            var currentSessions = this.getCurrentSessions(nodeCmp.metrics);
-            reloadChart = (reloadChart || (currentSessions!=0));
-            this.chartData[this.chartData.length-1].sessions=currentSessions;
+            this.currentSessions = this.getCurrentSessions(nodeCmp.metrics);
+            reloadChart = (reloadChart || (this.currentSessions!=0));
+            this.chartData[this.chartData.length-1].sessions=this.currentSessions;
+
             if(reloadChart) {
                 this.chart.store.loadData(this.chartData);
-                if(this.chartTip.rendered) {
-                    this.chartTip.getEl().down("span[name=current_sessions]").dom.innerHTML=currentSessions;
-                }
             }
         }
     },
