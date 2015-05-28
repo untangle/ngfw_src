@@ -20,15 +20,14 @@ import global_functions
 
 iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
-ftp_file_name = "test.zip"
+ftp_file_name = "/"
 ftp_client_external = "10.111.56.32"
-ftp_server_internal_list = [('10.111.56.49','192.168.10.31'),]  # Dual wan ATS
 
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 orig_netsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
-internal_ftp_available = False
+run_ftp_inbound_tests = None
 
 def createPortForwardTripleCondition( matcherType1, value1, matcherType2, value2, matcherType3, value3, destinationIP, destinationPort):
     return {
@@ -418,15 +417,22 @@ class NetworkTests(unittest2.TestCase):
     # @unittest2.skipIf('-z' in sys.argv, 'Skipping a time consuming test')
     
     def setUp(self):
-        global orig_netsettings, internal_ftp_available
+        global orig_netsettings, run_ftp_inbound_tests
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
-            wan_IP = uvmContext.networkManager().getFirstWanAddress()
-            for ftp_server_pair in ftp_server_internal_list:
-                if wan_IP in ftp_server_pair and remote_control.clientIP in ftp_server_pair:
-                    internal_ftp_available = True
-                    break
+        if run_ftp_inbound_tests == None:
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect( ( remote_control.clientIP, 21 ))
+                s.close()
+                pingResult = subprocess.call(["ping","-c","1",ftp_client_external],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                if pingResult == 0:
+                    run_ftp_inbound_tests = True
+                else:
+                    run_ftp_inbound_tests = False
+            except:
+                run_ftp_inbound_tests = False
 
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
@@ -648,7 +654,7 @@ class NetworkTests(unittest2.TestCase):
         nukeFirstLevelRule('bypassRules')
         
     def test_067_ftpIncomingModes(self):
-        if not internal_ftp_available:
+        if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
         nukeFirstLevelRule('bypassRules')
         nukeFirstLevelRule('portForwardRules')
@@ -665,7 +671,7 @@ class NetworkTests(unittest2.TestCase):
         nukeFirstLevelRule('portForwardRules')
 
     def test_068_bypassFtpIncomingModes(self):
-        if not internal_ftp_available:
+        if not run_ftp_inbound_tests:
             raise unittest2.SkipTest("remote client does not have ftp server")
         nukeFirstLevelRule('bypassRules')
         nukeFirstLevelRule('portForwardRules')
