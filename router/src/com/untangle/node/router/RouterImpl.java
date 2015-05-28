@@ -32,7 +32,7 @@ public class RouterImpl extends NodeBase implements Router
         super( nodeSettings, nodeProperties );
 
         this.handler          = new RouterEventHandler(this);
-        this.sessionManager   = new RouterSessionManager(this);
+        this.sessionManager   = new RouterSessionManager();
         this.dhcpMonitor      = new DhcpMonitor( this );
 
         /**

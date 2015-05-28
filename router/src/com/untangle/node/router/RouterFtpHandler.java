@@ -78,7 +78,6 @@ class RouterFtpHandler extends FtpEventHandler
         /* Ignore the previous port command */
         sessionData.receivedPortCommand        = false;
         sessionData.portCommandSessionRedirect = null;
-        sessionData.portCommandKey             = null;
 
         if ( function == FtpFunction.PASV ) {
             pasvCommand( session, command );
@@ -120,10 +119,9 @@ class RouterFtpHandler extends FtpEventHandler
 
         if ( sessionData.receivedPortCommand &&
              replyCode == 200 &&
-             sessionData.portCommandKey != null &&
              sessionData.portCommandSessionRedirect != null ) {
             /* Now enable the session redirect */
-            sessionManager.registerSessionRedirect( sessionData, sessionData.portCommandKey, sessionData.portCommandSessionRedirect );
+            sessionManager.registerSessionRedirect( sessionData, sessionData.portCommandSessionRedirect );
         } else {
             switch ( replyCode ) {
             case FtpReply.PASV:
@@ -140,7 +138,6 @@ class RouterFtpHandler extends FtpEventHandler
 
         sessionData.receivedPortCommand = false;
         sessionData.portCommandSessionRedirect = null;
-        sessionData.portCommandKey             = null;
 
         if (logger.isDebugEnabled()) {
             logger.debug( "Passing reply: " + reply );
@@ -210,20 +207,13 @@ class RouterFtpHandler extends FtpEventHandler
          */
         sessionData.receivedPortCommand        = true;
         sessionData.portCommandSessionRedirect = null;
-        sessionData.portCommandKey             = null;
 
         if ( sessionData.isClientRedirect()) {
             int port = getNextPort( );
-            /* 1. Tell the event handler to redirect the session from the server. *
-             * 2. Mangle the command.                                             */
-            sessionData.portCommandKey = new SessionRedirectKey( Protocol.TCP, sessionData.modifiedClientAddr(), port );
 
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
-            sessionData.portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
-                                                                          sessionData.originalClientAddr(), addr.getPort(),
-                                                                          port, sessionData.modifiedClientAddr(),
-                                                                          sessionData.portCommandKey );
+            sessionData.portCommandSessionRedirect = new SessionRedirect(sessionData.modifiedClientAddr(), port, sessionData.originalClientAddr(), addr.getPort() );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );
             if (logger.isDebugEnabled()) {
@@ -267,7 +257,7 @@ class RouterFtpHandler extends FtpEventHandler
 
     private void pasvReply( NodeTCPSession session, FtpReply reply )
     {
-        InetSocketAddress addr;
+        InetSocketAddress origAddr;
 
         RouterSessionData sessionData = getSessionData( session );
         if ( sessionData == null ) {
@@ -277,39 +267,33 @@ class RouterFtpHandler extends FtpEventHandler
         }
 
         try {
-            addr = reply.getSocketAddress();
+            origAddr = reply.getSocketAddress();
         } catch ( Exception e ) {
             throw new RuntimeException( "Error getting socket address", e );
         }
 
-        if ( null == addr ) {
+        if ( origAddr == null ) {
             throw new RuntimeException( "Error getting socket address" );
         }
-
-        /* Verify that the server is going to the same place */
-        if (addr.getAddress() == null ) {
+        if ( origAddr.getAddress() == null ) {
             throw new RuntimeException( "wildcard address" );
         }
 
         if ( sessionData.isServerRedirect()) {
             /* Modify the response, this must contain the original address the client thinks it
              * is connecting to. */
-            addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
+            int port = getNextPort( );
+            InetSocketAddress newAddr = new InetSocketAddress( sessionData.originalServerAddr(), port );
 
             if (logger.isDebugEnabled()) {
-                logger.debug( "Mangling PASV reply to address: " + addr );
+                logger.debug( "Mangling PASV reply to address: " + newAddr );
             }
-
-            SessionRedirectKey key = new SessionRedirectKey( Protocol.TCP, sessionData.originalServerAddr(), addr.getPort() );
-            SessionRedirect redirect = new SessionRedirect( sessionData.originalClientAddr(), 0,
-                                                            reply.getSocketAddress().getAddress(), reply.getSocketAddress().getPort(),
-                                                            addr.getPort(), sessionData.originalServerAddr(),
-                                                            key );
-            sessionManager.registerSessionRedirect( sessionData, key, redirect );
             
+            SessionRedirect redirect = new SessionRedirect( newAddr.getAddress(), newAddr.getPort(), origAddr.getAddress(), origAddr.getPort() );
+            sessionManager.registerSessionRedirect( sessionData, redirect );
             
             /* Modify the reply to the client */
-            reply = FtpReply.pasvReply( addr );
+            reply = FtpReply.pasvReply( newAddr );
         } else {
             /* nothing to do */
         }

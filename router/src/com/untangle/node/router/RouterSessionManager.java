@@ -24,11 +24,9 @@ class RouterSessionManager
     Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private RouterImpl node;
 
-    public RouterSessionManager( RouterImpl node )
+    public RouterSessionManager( )
     {
-        this.node = node;
     }
 
     void registerSession( IPNewSessionRequest request )
@@ -99,7 +97,7 @@ class RouterSessionManager
             }
 
             /* Cleanup the redirect */
-            sessionRedirect.cleanup( node );
+            sessionRedirect.cleanup( );
         }
     }
 
@@ -111,17 +109,17 @@ class RouterSessionManager
     /**
      * Request to redirect a session.
      */
-    void registerSessionRedirect( RouterSessionData data, SessionRedirectKey key, SessionRedirect redirect )
+    void registerSessionRedirect( RouterSessionData data, SessionRedirect redirect )
     {
         /* Add the redirect to the list monitored by this session */
         data.addRedirect( redirect );
 
         if ( logger.isDebugEnabled()) {
-            logger.debug( "Registering[" + key + "],[" + redirect + "]" );
+            logger.debug( "Registering[" + redirect.key + "],[" + redirect + "]" );
         }
 
         /* Add the redict to the map of redirects */
-        redirectMap.put( key, redirect );
+        redirectMap.put( redirect.key, redirect );
     }
 
     /**
@@ -144,7 +142,7 @@ class RouterSessionManager
         }
 
         /* Remove the redirect rule once it is matched */
-        redirect.cleanup(node);
+        redirect.cleanup();
 
         return true;
     }
@@ -222,70 +220,64 @@ class SessionRedirectKey
 
 class SessionRedirect
 {
-    /* For each item, the item is null or zero if it is unused */
-    final InetAddress clientAddr;
-    final int         clientPort;
+    private static final Logger logger = Logger.getLogger( SessionRedirect.class );
 
-    final InetAddress serverAddr;
-    final int         serverPort;
+    final InetAddress newServerAddr;
+    final int         newServerPort;
+    final InetAddress origServerAddr;
+    final int         origServerPort;
 
-    // True once this redirect has been used.
-    boolean           isExpired = false;
-
-    // Set to a non-zero value to reserve a port
-    int               reservedPort;
-    private final Logger logger = Logger.getLogger( this.getClass());
     final SessionRedirectKey key;
 
-    SessionRedirect( InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort, int reservedPort, InetAddress myAddr, SessionRedirectKey key )
+    private boolean removed = false;
+
+    private String redirectRuleFilter;
+    private String redirectRuleIp;
+    private int redirectRulePort;
+    
+    protected SessionRedirect( InetAddress origServerAddr, int origServerPort, InetAddress newServerAddr, int newServerPort )
     {
-        createRedirectRule(clientAddr, clientPort, serverAddr, serverPort, reservedPort, myAddr);
-        this.clientAddr   = clientAddr;
-        this.clientPort   = clientPort;
-        this.serverAddr   = serverAddr;
-        this.serverPort   = serverPort;
-        this.reservedPort = reservedPort;
-        this.key          = key;
+        createRedirectRule( origServerAddr, origServerPort, newServerAddr, newServerPort );
+        this.origServerAddr   = origServerAddr;
+        this.origServerPort   = origServerPort;
+        this.newServerAddr   = newServerAddr;
+        this.newServerPort   = newServerPort;
+        this.key = new SessionRedirectKey( Protocol.TCP, origServerAddr, origServerPort );
     }
 
     public String toString()
     {
-        return "SessionRedirect| " + clientAddr + ":" + clientPort + "/" + serverAddr + ":" + serverPort;
+        return "SessionRedirect| " + origServerAddr + ":" + origServerAddr + " -> " + newServerAddr + ":" + newServerPort;
     }
 
-    synchronized void cleanup( RouterImpl node )
+    synchronized void cleanup()
     {
-        if ( reservedPort > 0 ) {
+        if ( removed == false ) {
             removeRedirectRule();
         }
 
-        reservedPort = 0;
+        removed = true;
     }
     
-    private String redirectRuleFilter;
-    private String redirectRuleIp;
-    private int redirectRulePort;
-
-    private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort, int reservedPort, InetAddress myAddr )
+    private synchronized void createRedirectRule( InetAddress origServerAddr, int origServerPort, InetAddress newServerAddr, int newServerPort )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug("clientAddr:"+clientAddr);
-            logger.debug("clientPort:"+clientPort);
-            logger.debug("serverAddr:"+serverAddr);
-            logger.debug("serverPort:"+serverPort);
-            logger.debug("reservedPort:"+reservedPort);
+            logger.debug("newServerAddr:"+newServerAddr);
+            logger.debug("newServerPort:"+newServerPort);
+            logger.debug("origServerAddr:"+origServerAddr);
+            logger.debug("origServerPort:"+origServerPort);
         }
         redirectRuleFilter =
             "-p tcp "
-            + " -d " + myAddr.getHostAddress()
-            + " --dport "+ reservedPort ;
-        redirectRuleIp = serverAddr.getHostAddress();
-        redirectRulePort = serverPort;
+            + " -d " + origServerAddr.getHostAddress()
+            + " --dport "+ origServerPort ;
+        redirectRuleIp = newServerAddr.getHostAddress();
+        redirectRulePort = newServerPort;
         if (logger.isDebugEnabled()) {
             logger.debug("CREATE redirect rule");
             logger.debug("rule filter: "+redirectRuleFilter);
-            logger.debug("rule clientIp: "+redirectRuleIp);
-            logger.debug("rule clientPort: "+redirectRulePort);
+            logger.debug("rule newServerAddr: "+redirectRuleIp);
+            logger.debug("rule newServerPort: "+redirectRulePort);
         }
 
         String cmd = "iptables -t nat -I port-forward-rules " + redirectRuleFilter + " -m comment --comment \"FTP redirect\"  -j DNAT --to-destination " + redirectRuleIp + ":" + redirectRulePort;
