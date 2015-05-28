@@ -221,9 +221,9 @@ class RouterFtpHandler extends FtpEventHandler
             /* Queue the message for when the port command reply comes back, and make sure to free
              * the necessary port */
             sessionData.portCommandSessionRedirect = new SessionRedirect( sessionData.originalServerAddr(), 0,
-                                                              sessionData.originalClientAddr(), addr.getPort(),
-                                                              port, sessionData.modifiedClientAddr(),
-                                                              sessionData.portCommandKey );
+                                                                          sessionData.originalClientAddr(), addr.getPort(),
+                                                                          port, sessionData.modifiedClientAddr(),
+                                                                          sessionData.portCommandKey );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );
             if (logger.isDebugEnabled()) {
@@ -300,6 +300,14 @@ class RouterFtpHandler extends FtpEventHandler
                 logger.debug( "Mangling PASV reply to address: " + addr );
             }
 
+            SessionRedirectKey key = new SessionRedirectKey( Protocol.TCP, sessionData.originalServerAddr(), addr.getPort() );
+            SessionRedirect redirect = new SessionRedirect( sessionData.originalClientAddr(), 0,
+                                                            reply.getSocketAddress().getAddress(), reply.getSocketAddress().getPort(),
+                                                            addr.getPort(), sessionData.originalServerAddr(),
+                                                            key );
+            sessionManager.registerSessionRedirect( sessionData, key, redirect );
+            
+            
             /* Modify the reply to the client */
             reply = FtpReply.pasvReply( addr );
         } else {
