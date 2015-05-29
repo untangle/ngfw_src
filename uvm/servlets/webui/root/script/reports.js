@@ -34,7 +34,8 @@ Ext.define('Ung.panel.Reports', {
             title: i18n._('End date and time'),
             dateTimeEmptyText: i18n._('end date and time')
         });
-        
+        this.pieLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this slice');
+        this.cartesianLegendHint="<br/>"+i18n._('Hint: Click this label on the legend to hide this series');
         this.subCmps.push(this.startDateWindow);
         this.subCmps.push(this.endDateWindow);
         
@@ -102,7 +103,6 @@ Ext.define('Ung.panel.Reports', {
                         xtype: 'button',
                         name: "extraConditions",
                         text: i18n._('Toggle Conditions'),
-                        width: 132,
                         tooltip: i18n._('Add extra SQL conditions to report'),
                         handler: Ext.bind(function(button) {
                             this.extraConditionsPanel.toggleCollapse();
@@ -254,6 +254,7 @@ Ext.define('Ung.panel.Reports', {
         }
     },
     loadReport: function(reportEntry) {
+        var me = this;
         this.reportEntry = reportEntry;
         if(this.autoRefreshEnabled) {
             this.stopAutoRefresh(true);
@@ -268,7 +269,7 @@ Ext.define('Ung.panel.Reports', {
             }
             
             var data = result.list;
-            var chart, dataStore, reportData=[];
+            var chart, reportData=[];
             this.reportDataGrid.getStore().loadData([]);
             if(reportEntry.type == 'TEXT') {
                 var infos=[];
@@ -310,7 +311,6 @@ Ext.define('Ung.panel.Reports', {
                         } else {
                             others.value+=data[i].value;
                         }
-                        
                     }
                     topData.push(others);
                 }
@@ -320,20 +320,19 @@ Ext.define('Ung.panel.Reports', {
                     var value = (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(record.get("value")) : record.get("value") + " " + i18n._(reportEntry.units);
                     return title + ": " + value;
                 };
-                dataStore = Ext.create('Ext.data.JsonStore', {
-                    fields: [{name: "description", convert: descriptionFn }, {name:'value'} ],
-                    data: topData
-                }); 
 
                 chart = {
                     xtype: 'polar',
                     name: "chart",
-                    store: dataStore,
+                    store: Ext.create('Ext.data.JsonStore', {
+                        fields: [{name: "description", convert: descriptionFn }, {name:'value'} ],
+                        data: topData
+                    }),
                     theme: 'green-gradients',
                     border: false,
                     width: '100%',
                     height: '100%',
-                    insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
+                    insetPadding: {top: 40, left: 40, right: 10, bottom: 10},
                     innerPadding: 20,
                     legend: {
                         docked: 'right'
@@ -360,9 +359,8 @@ Ext.define('Ung.panel.Reports', {
                         label: {
                             field: "description",
                             calloutLine: {
-                                length: 60,
+                                length: 10,
                                 width: 3
-                                // specifying 'color' is also possible here
                             }
                         },
                         highlight: true,
@@ -373,7 +371,7 @@ Ext.define('Ung.panel.Reports', {
                             dismissDelay: 0,
                             hideDelay: 0,
                             renderer: function(storeItem, item) {
-                                this.setHtml(storeItem.get("description"));
+                                this.setHtml(storeItem.get("description")+me.pieLegendHint);
                             }
                         }
                     }]
@@ -405,14 +403,14 @@ Ext.define('Ung.panel.Reports', {
                                 operator: "=",
                                 value: record.get(reportEntry.pieGroupColumn)
                             };
-                            this.extraConditionsPanel.addRow(data);
-                            this.extraConditionsPanel.setConditions();
+                            this.extraConditionsPanel.fillCondition(data);
                         }, this)
                     }]
                 }]);
                 this.reportDataGrid.getStore().loadData(data);
             } else if(reportEntry.type == 'TIME_GRAPH') {
                 var axesFields = [], series=[];
+                var legendHint = (reportEntry.timeDataColumns.length > 1) ? this.cartesianLegendHint : "";
                 var zeroFn = function(val) {
                     return (val==null)?0:val;
                 };
@@ -426,126 +424,129 @@ Ext.define('Ung.panel.Reports', {
                     width: 130,
                     flex: reportEntry.timeDataColumns.length>2? 0:1
                 }];
-                if(reportEntry.timeStyle == 'BAR') {
-                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
-                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
-                        axesFields.push(column);
-                        storeFields.push({name: column, convert: zeroFn});
-                        reportDataColumns.push({
-                            dataIndex: column,
-                            header: column,
-                            width: reportEntry.timeDataColumns.length>2 ? 60 : 90
-                        });
-                    }
-                    
-                    dataStore = Ext.create('Ext.data.JsonStore', {
+                for(i=0; i<reportEntry.timeDataColumns.length; i++) {
+                    column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
+                    axesFields.push(column);
+                    storeFields.push({name: column, convert: zeroFn});
+                    reportDataColumns.push({
+                        dataIndex: column,
+                        header: column,
+                        width: reportEntry.timeDataColumns.length>2 ? 60 : 90
+                    });
+                }
+                
+                chart = {
+                    xtype: 'cartesian',
+                    name: "chart",
+                    store: Ext.create('Ext.data.JsonStore', {
                         fields: storeFields,
                         data: data
-                    });
-                    chart = {
-                        xtype: 'cartesian',
-                        name: "chart",
-                        store: dataStore,
-                        theme: 'green-gradients',
-                        border: false,
-                        width: '100%',
-                        height: '100%',
-                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
-                        legend: {
-                            docked: 'bottom'
+                    }),
+                    theme: 'green-gradients',
+                    border: false,
+                    width: '100%',
+                    height: '100%',
+                    insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
+                    legend: {
+                        docked: 'bottom'
+                    },
+                    tbar: ['->', {
+                        xtype: 'button',
+                        hidden: this.reportEntry.timeStyle == 'LINE',
+                        text: i18n._("Switch to Line Chart"),
+                        handler: Ext.bind(function() {
+                            this.reportEntry.timeStyle = 'LINE';
+                            this.loadReport(this.reportEntry);
+                        }, this)
+                    }, {
+                        xtype: 'button',
+                        hidden: this.reportEntry.timeStyle == 'BAR',
+                        text: i18n._("Switch to Bar Chart"),
+                        handler: Ext.bind(function() {
+                            this.reportEntry.timeStyle = 'BAR';
+                            this.loadReport(this.reportEntry);
+                        }, this)
+                    }, {
+                        xtype: 'button',
+                        hidden: this.reportEntry.timeStyle == 'BAR_OVERLAP' || reportEntry.timeDataColumns.length <= 1,
+                        text: i18n._("Switch to Overlapped Bar Chart"),
+                        handler: Ext.bind(function() {
+                            this.reportEntry.timeStyle = 'BAR_OVERLAP';
+                            this.loadReport(this.reportEntry);
+                        }, this)
+                    }],
+                    sprites: [{
+                        type: 'text',
+                        text: reportEntry.title,
+                        fontSize: 18,
+                        width: 100,
+                        height: 30,
+                        x: 10, // the sprite x position
+                        y: 22  // the sprite y position
+                    }, {
+                        type: 'text',
+                        text: reportEntry.description,
+                        fontSize: 12,
+                        x: 10,
+                        y: 40
+                    }],
+                    interactions: ['itemhighlight'],
+                    axes: [{
+                        type: (reportEntry.timeStyle == 'LINE') ? 'numeric' : 'numeric3d',
+                        fields: axesFields,
+                        position: 'left',
+                        grid: true,
+                        minimum: 0,
+                        renderer: function (v) {
+                            return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
+                        }
+                    }, {
+                        type: (reportEntry.timeStyle == 'LINE') ? 'category' : 'category3d',
+                        fields: 'time_trunc',
+                        position: 'bottom',
+                        grid: true,
+                        label: {
+                            rotate: {
+                                degrees: -45
+                            }
+                        }
+                    }]
+                };
+
+                if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
+                    chart.colors = reportEntry.colors;
+                }
+                
+                if(reportEntry.timeStyle == 'BAR') {
+                    chart.series = [{
+                        type: 'bar3d',
+                        axis: 'left',
+                        title: axesFields,
+                        xField: 'time_trunc',
+                        yField: axesFields,
+                        stacked: false,
+                        style: {
+                            opacity: 0.90,
+                            inGroupGapWidth: 1
                         },
-                        tbar: ['->', {
-                            xtype: 'button',
-                            text: i18n._("Switch to Line Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'LINE';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }, {
-                            xtype: 'button',
-                            hidden: reportEntry.timeDataColumns.length <= 1,
-                            text: i18n._("Switch to Overlapped Bar Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'BAR_OVERLAP';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }],
-                        sprites: [{
-                            type: 'text',
-                            text: reportEntry.title,
-                            fontSize: 18,
-                            width: 100,
-                            height: 30,
-                            x: 10, // the sprite x position
-                            y: 22  // the sprite y position
-                        }, {
-                            type: 'text',
-                            text: reportEntry.description,
-                            fontSize: 12,
-                            x: 10,
-                            y: 40
-                        }],
-                        interactions: ['itemhighlight'],
-                        axes: [{
-                            type: 'numeric3d',
-                            fields: axesFields,
-                            position: 'left',
-                            grid: true,
-                            minimum: 0,
-                            renderer: function (v) {
-                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
+                        highlight: true,
+                        tooltip: {
+                            trackMouse: true,
+                            style: 'background: #fff',
+                            renderer: function(storeItem, item) {
+                                var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
+                                this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units) + legendHint);
                             }
-                        }, {
-                            type: 'category3d',
-                            fields: 'time_trunc',
-                            position: 'bottom',
-                            grid: true,
-                            label: {
-                                rotate: {
-                                    degrees: -45
-                                }
-                            }
-                        }],
-                        series: [{
-                            type: 'bar3d',
-                            axis: 'left',
-                            title: axesFields,
-                            xField: 'time_trunc',
-                            yField: axesFields,
-                            stacked: false,
-                            style: {
-                                opacity: 0.90,
-                                inGroupGapWidth: 1
-                            },
-                            highlight: true,
-                            tooltip: {
-                                trackMouse: true,
-                                style: 'background: #fff',
-                                renderer: function(storeItem, item) {
-                                    var title = item.series.getTitle()[Ext.Array.indexOf(item.series.getYField(), item.field)];
-                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.field) + " " +i18n._(reportEntry.units));
-                                }
-                            }
-                        }]
-                    };                    
+                        }
+                    }];
                 } else if (reportEntry.timeStyle == 'BAR_OVERLAP') {
-                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
-                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
-                        axesFields.push(column);
-                        storeFields.push({name: column, convert: zeroFn});
-                        reportDataColumns.push({
-                            dataIndex: column,
-                            header: column,
-                            width: reportEntry.timeDataColumns.length>2? 60:90
-                        });
-                        console.log(column);
+                    for(i=0; i<axesFields.length; i++) {
                         series.push({
                             type: 'bar3d',
                             axis: 'left',
-                            title: column,
+                            title: axesFields[i],
                             xField: 'time_trunc',
-                            yField: column,
-                            smooth: true,
+                            yField: axesFields[i],
                             style: {
                                 opacity: 0.70,
                                 lineWidth: (i+1)*5
@@ -555,98 +556,20 @@ Ext.define('Ung.panel.Reports', {
                                 style: 'background: #fff',
                                 renderer: function(storeItem, item) {
                                     var title = item.series.getTitle();
-                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units));
+                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units) + legendHint);
                                 }
                             }
                         });
                     }
-                    
-                    dataStore = Ext.create('Ext.data.JsonStore', {
-                        fields: storeFields,
-                        data: data
-                    });
-                    chart = {
-                        xtype: 'cartesian',
-                        name: "chart",
-                        store: dataStore,
-                        theme: 'green-gradients',
-                        border: false,
-                        width: '100%',
-                        height: '100%',
-                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
-                        legend: {
-                            docked: 'bottom'
-                        },
-                        tbar: ['->', {
-                            xtype: 'button',
-                            text: i18n._("Switch to Bar Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'BAR';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }, {
-                            xtype: 'button',
-                            text: i18n._("Switch to Line Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'LINE';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }],
-                        sprites: [{
-                            type: 'text',
-                            text: reportEntry.title,
-                            fontSize: 18,
-                            width: 100,
-                            height: 30,
-                            x: 10, // the sprite x position
-                            y: 22  // the sprite y position
-                        }, {
-                            type: 'text',
-                            text: reportEntry.description,
-                            fontSize: 12,
-                            x: 10,
-                            y: 40
-                        }],
-                        interactions: ['itemhighlight'],
-                        axes: [{
-                            type: 'numeric3d',
-                            fields: axesFields,
-                            position: 'left',
-                            grid: true,
-                            minimum: 0,
-                            renderer: function (v) {
-                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
-                            }
-                        }, {
-                            type: 'category3d',
-                            fields: 'time_trunc',
-                            position: 'bottom',
-                            grid: true,
-                            label: {
-                                rotate: {
-                                    degrees: -45
-                                }
-                            }
-                        }],
-                        series: series
-                    };
+                    chart.series = series;
                 } else if (reportEntry.timeStyle == 'LINE') {
-                    for(i=0; i<reportEntry.timeDataColumns.length; i++) {
-                        column = reportEntry.timeDataColumns[i].split(" ").splice(-1)[0];
-                        axesFields.push(column);
-                        storeFields.push({name: column, convert: zeroFn});
-                        reportDataColumns.push({
-                            dataIndex: column,
-                            header: column,
-                            width: reportEntry.timeDataColumns.length>2? 60:90
-                        });
+                    for(i=0; i<axesFields.length; i++) {
                         series.push({
                             type: 'line',
                             axis: 'left',
-                            title: column,
+                            title: axesFields[i],
                             xField: 'time_trunc',
-                            yField: column,
-                            smooth: true,
+                            yField: axesFields[i],
                             style: {
                                 opacity: 0.90,
                                 lineWidth: 3
@@ -665,87 +588,12 @@ Ext.define('Ung.panel.Reports', {
                                 style: 'background: #fff',
                                 renderer: function(storeItem, item) {
                                     var title = item.series.getTitle();
-                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units));
+                                    this.setHtml(title + ' for ' + storeItem.get('time_trunc') + ': ' + storeItem.get(item.series.getYField()) + " " +i18n._(reportEntry.units) + legendHint);
                                 }
                             }
                         });
                     }
-                    
-                    dataStore = Ext.create('Ext.data.JsonStore', {
-                        fields: storeFields,
-                        data: data
-                    });
-                    chart = {
-                        xtype: 'cartesian',
-                        name: "chart",
-                        store: dataStore,
-                        theme: 'green-gradients',
-                        border: false,
-                        width: '100%',
-                        height: '100%',
-                        insetPadding: {top: 50, left: 10, right: 10, bottom: 10},
-                        legend: {
-                            docked: 'bottom'
-                        },
-                        tbar: ['->', {
-                            xtype: 'button',
-                            text: i18n._("Switch to Bar Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'BAR';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }, {
-                            xtype: 'button',
-                            hidden: reportEntry.timeDataColumns.length <= 1,
-                            text: i18n._("Switch to Overlapped Bar Chart"),
-                            handler: Ext.bind(function() {
-                                this.reportEntry.timeStyle = 'BAR_OVERLAP';
-                                this.loadReport(this.reportEntry);
-                            }, this)
-                        }],
-                        sprites: [{
-                            type: 'text',
-                            text: reportEntry.title,
-                            fontSize: 18,
-                            width: 100,
-                            height: 30,
-                            x: 10, // the sprite x position
-                            y: 22  // the sprite y position
-                        }, {
-                            type: 'text',
-                            text: reportEntry.description,
-                            fontSize: 12,
-                            x: 10,
-                            y: 40
-                        }],
-                        interactions: ['itemhighlight'],
-                        axes: [{
-                            type: 'numeric',
-                            fields: axesFields,
-                            position: 'left',
-                            grid: true,
-                            minimum: 0,
-                            renderer: function (v) {
-                                return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
-                            }
-                        }, {
-                            type: 'category',
-                            fields: 'time_trunc',
-                            position: 'bottom',
-                            grid: true,
-                            label: {
-                                rotate: {
-                                    degrees: -45
-                                }
-                            }
-                        }],
-                        series: series
-                    };
-                }
-
-
-                if ( reportEntry.colors != null && reportEntry.colors.length > 0 ) {
-                    chart.colors = reportEntry.colors;
+                    chart.series = series;
                 }
                 this.reportDataGrid.setColumns(reportDataColumns);
                 this.reportDataGrid.getStore().loadData(data);
@@ -838,9 +686,9 @@ Ext.define("Ung.panel.ExtraConditions", {
     collapsed: true,
     floatable: false,
     split: true,
+    defaultCount: 3,
     autoScroll: true,
-    count: 3,
-    layout: { type: 'table', columns: 4 },
+    layout: { type: 'vbox'},
     getColumnsForTable: function(table) {
         if(table != null && table.length > 2) {
             Ung.Main.getReportingManagerNew().getColumnsForTable(Ext.bind(function(result, exception) {
@@ -860,26 +708,10 @@ Ext.define("Ung.panel.ExtraConditions", {
             data: []
         });
 
-        var items = [{
-            title: i18n._("Column"),
-            padding: 0,
-            width: 256
-        }, {
-            title: i18n._("Operator"),
-            padding: 0,
-            width: 106
-        }, {
-            title: i18n._("Value"),
-            padding: 0,
-            width: 406
-        }, {
-            title: "&nbsp;",
-            width: 100
-        }];
-        for(var i=0; i<this.count; i++) {
-            items.push.apply(items, this.generateRow(i));
+        this.items = [];
+        for(var i=0; i<this.defaultCount; i++) {
+            this.items.push(this.generateRow());
         }
-        this.items = items;
         
         this.tbar = [{
             text: i18n._("Add Condition"),
@@ -900,104 +732,142 @@ Ext.define("Ung.panel.ExtraConditions", {
         }];
         this.callParent(arguments);
     },
-    generateRow: function(i, data) {
+    generateRow: function(data) {
         if(!data) {
             data = {column: "", operator:"=", value: ""};
         }
-        return [{
-            xtype: 'combo',
-            width: 250,
-            margin: 3,
-            emptyText: i18n._("[enter column]"),
-            dataIndex: "column",
-            name: "column"+i,
-            typeAhead: true,
-            valueField: "name",
-            displayField: "name",
-            queryMode: 'local',
-            store: this.columnsStore,
-            value: data.column,
-            listeners: {
-                change: {
-                    fn: function(combo, newValue, oldValue, opts) {
-                        this.setConditions();
-                    },
-                    scope: this
+        return {
+            xtype: 'container',
+            layout: 'column',
+            name: 'condition',
+            width: '100%',
+            defaults: {
+                margin: 3
+            },
+            items: [{
+                xtype: 'combo',
+                columnWidth: 0.4,
+                emptyText: i18n._("[enter column]"),
+                dataIndex: "column",
+                typeAhead: true,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                store: this.columnsStore,
+                value: data.column,
+                listeners: {
+                    change: {
+                        fn: function(combo, newValue, oldValue, opts) {
+                            this.setConditions();
+                        },
+                        scope: this
+                    }
                 }
-            }
-        }, {
-            xtype: 'combo',
-            width: 100,
-            margin: 3,
-            dataIndex: "operator",
-            name: "operator"+i,
-            editable: false,
-            valueField: "name",
-            displayField: "name",
-            queryMode: 'local',
-            value: data.operator,
-            disabled: Ext.isEmpty(data.column),
-            store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"],
-            listeners: {
-                change: {
-                    fn: function(combo, newValue, oldValue, opts) {
-                        this.setConditions();
-                    },
-                    scope: this
+            }, {
+                xtype: 'combo',
+                width: 100,
+                dataIndex: "operator",
+                editable: false,
+                valueField: "name",
+                displayField: "name",
+                queryMode: 'local',
+                value: data.operator,
+                disabled: Ext.isEmpty(data.column),
+                store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"],
+                listeners: {
+                    change: {
+                        fn: function(combo, newValue, oldValue, opts) {
+                            this.setConditions();
+                        },
+                        scope: this
+                    }
                 }
-            }
-        }, {
-            xtype: 'textfield',
-            dataIndex: "value",
-            name: "value"+i,
-            width: 400,
-            margin: 3,
-            disabled: Ext.isEmpty(data.column),
-            emptyText: i18n._("[no value]"),
-            value: data.value,
-            listeners: {
-                change: {
-                    fn: function() {
-                        this.setConditions();
-                    },
-                    scope: this,
-                    buffer: 500
+            }, {
+                xtype: 'textfield',
+                dataIndex: "value",
+                columnWidth: 0.6,
+                disabled: Ext.isEmpty(data.column),
+                emptyText: i18n._("[no value]"),
+                value: data.value,
+                listeners: {
+                    change: {
+                        fn: function() {
+                            this.setConditions();
+                        },
+                        scope: this,
+                        buffer: 500
+                    }
                 }
-            }
-        }, {
-            xtype: 'button',
-            dataIndex: "clear",
-            margin: 3,
-            name: "clear"+i,
-            text: i18n._("Clear"),
-            disabled: true,
-            handler: Ext.bind(function(button) {
-                button.prev("[dataIndex=column]").setRawValue("");
-                button.prev("[dataIndex=operator]").setRawValue("=");
-                button.prev("[dataIndex=value]").setRawValue("");
-                this.setConditions();
-            }, this)
-        }];
+            }, {
+                xtype: 'button',
+                name: "clear",
+                text: i18n._("Clear"),
+                disabled: Ext.isEmpty(data.column),
+                handler: Ext.bind(function(button) {
+                    this.bulkOperation = true;
+                    button.prev("[dataIndex=column]").setValue("");
+                    button.prev("[dataIndex=operator]").setValue("=");
+                    button.prev("[dataIndex=value]").setValue("");
+                    this.bulkOperation = false;
+                    this.setConditions();
+                }, this)
+            }, {
+                xtype: 'button',
+                name: "delete",
+                text: i18n._("Delete"),
+                handler: Ext.bind(function(button) {
+                    this.remove(button.up("container"));
+                    this.setConditions();
+                }, this)
+            }]
+        };
     },
     addRow: function(data) {
-      this.add(this.generateRow(this.count, data));
-      this.count++;
+      this.add(this.generateRow(data));
+    },
+    fillCondition: function(data) {
+        var added = false;
+        this.bulkOperation = true;
+        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+            if(Ext.isEmpty(item.down("[dataIndex=column]").getValue())) {
+                item.down("[dataIndex=column]").setValue(data.column);
+                item.down("[dataIndex=operator]").setValue(data.operator);
+                item.down("[dataIndex=value]").setValue(data.value);
+                added = true;
+                return false;
+            }
+        });
+        if(!added) {
+            this.addRow(data);
+        }
+        this.bulkOperation = false;
+        this.setConditions();
     },
     clearConditions: function() {
-        for(var i=0; i<this.count; i++) {
-            this.down("[name=column"+i+"]").setRawValue("");
-            this.down("[name=operator"+i+"]").setRawValue("=");
-            this.down("[name=value"+i+"]").setRawValue("");
-        }
+        var me = this;
+        this.bulkOperation = true;
+        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+            if(index < me.defaultCount) {
+                item.down("[dataIndex=column]").setValue("");
+                item.down("[dataIndex=operator]").setValue("=");
+                item.down("[dataIndex=value]").setValue("");
+            } else {
+                me.remove(item);
+            }
+        });
+        this.bulkOperation = false;
         this.setConditions();
     },
     setConditions: function() {
+        if(this.bulkOperation) {
+            return;
+        }
         var conditions = [], columnValue, operator, value, clearBtn, isEmptyColumn;
-        for(var i=0; i<this.count; i++) {
-            columnValue = this.down("combo[name=column"+i+"]").getValue();
-            operator = this.down("combo[name=operator"+i+"]");
-            value = this.down("textfield[name=value"+i+"]");
-            clearBtn = this.down("button[name=clear"+i+"]");
+        Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
+            columnValue = item.down("[dataIndex=column]").getValue();
+            operator = item.down("[dataIndex=operator]");
+            value = item.down("[dataIndex=value]");
+            clearBtn = item.down("button[name=clear]");
             isEmptyColumn = Ext.isEmpty(columnValue);
             if(!isEmptyColumn) {
                 conditions.push({
@@ -1010,8 +880,8 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
             clearBtn.setDisabled(isEmptyColumn);
-            
-        }
+        });
+
         this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
         this.setTitle((conditions.length>0)?Ext.String.format( i18n._("Extra conditions: {0}"), conditions.length):i18n._("Extra conditions: None"));
     }
