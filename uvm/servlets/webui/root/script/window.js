@@ -28,9 +28,6 @@ Ext.define('Ung.Window', {
     // size to rack right side on show
     sizeToRack: true,
     layout: 'fit',
-    defaults: {
-        autoScroll: true
-    },
     constructor: function(config) {
         var defaults = {
             closeAction: 'cancelAction'
