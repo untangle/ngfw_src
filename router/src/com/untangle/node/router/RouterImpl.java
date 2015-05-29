@@ -16,12 +16,9 @@ import com.untangle.uvm.vnet.PipelineConnector;
 public class RouterImpl extends NodeBase implements Router
 {
     private final RouterEventHandler handler;
-    private final RouterSessionManager sessionManager;
     private final DhcpMonitor dhcpMonitor;
 
     private final PipelineConnector routerConnector;
-    private final PipelineConnector routerFtpConnectorCtl;
-    private final PipelineConnector routerFtpConnectorData;
 
     private final PipelineConnector[] connectors;
 
@@ -32,7 +29,6 @@ public class RouterImpl extends NodeBase implements Router
         super( nodeSettings, nodeProperties );
 
         this.handler          = new RouterEventHandler(this);
-        this.sessionManager   = new RouterSessionManager();
         this.dhcpMonitor      = new DhcpMonitor( this );
 
         /**
@@ -40,13 +36,7 @@ public class RouterImpl extends NodeBase implements Router
          */
         routerConnector = UvmContextFactory.context().pipelineFoundry().create("router", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 32 - 1);
 
-        /**
-         * This subscription has to evaluate after NAT
-         */
-        routerFtpConnectorCtl = UvmContextFactory.context().pipelineFoundry().create("router-ftp-ctl", this, null, new RouterFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
-        routerFtpConnectorData = UvmContextFactory.context().pipelineFoundry().create("router-ftp-data", this, null, new RouterFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
-
-        connectors = new PipelineConnector[] { routerConnector, routerFtpConnectorCtl, routerFtpConnectorData };
+        connectors = new PipelineConnector[] { routerConnector };
     }
 
     @Override
@@ -72,10 +62,5 @@ public class RouterImpl extends NodeBase implements Router
         killAllSessions();
 
         dhcpMonitor.stop();
-    }
-
-    RouterSessionManager getSessionManager()
-    {
-        return sessionManager;
     }
 } 

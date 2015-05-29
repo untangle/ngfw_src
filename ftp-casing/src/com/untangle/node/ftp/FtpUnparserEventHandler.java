@@ -172,6 +172,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
              * address/port is an FTP_DATA_STREAM.
              * This is so we will get the access to the stream.
              */
+            logger.debug("Registering FTP data session hint/expectation: " + socketAddress);
             UvmContextFactory.context().pipelineFoundry().addConnectionFittingHint(socketAddress, Fitting.FTP_DATA_STREAM);
             /**
              * Keep the correlation between the data session and the control session that opened it

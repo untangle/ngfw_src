@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Enumeration of FTP functions.
- * XXX make 1.5 enum
  * @see "RFC 959, Section 4"
  */
 public class FtpFunction

@@ -20,7 +20,7 @@ import global_functions
 
 iperfServer = "10.111.56.32"
 ftp_server = "test.untangle.com"
-ftp_file_name = "/"
+ftp_file_name = ""
 ftp_client_external = "10.111.56.32"
 
 uvmContext = Uvm().getUvmContext()
@@ -652,11 +652,15 @@ class NetworkTests(unittest2.TestCase):
     def test_070_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
 
     # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
     def test_071_ftpModesFirewalled(self):
@@ -671,26 +675,37 @@ class NetworkTests(unittest2.TestCase):
         appendFWRule(nodeFW, createSingleMatcherFirewallRule("DST_PORT","21", blocked=False))
         appendFWRule(nodeFW, createSingleMatcherFirewallRule("PROTOCOL","TCP", blocked=True))
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
 
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
+
 
     # Test FTP (outbound) in active and passive modes with bypass
     def test_072_ftpModesBypassed(self):
         setFirstLevelRule(createBypassMatcherRule("DST_PORT","21"),'bypassRules')
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
 
     # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
     def test_073_ftpModesBypassedFiltered(self):
@@ -699,13 +714,18 @@ class NetworkTests(unittest2.TestCase):
         netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
 
     # Test FTP (inbound) in active and passive modes (untangle-vm should add port forwards for RELATED session)
     def test_074_ftpModesIncoming(self):
@@ -716,13 +736,18 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
 
     # Test FTP (inbound) in active and passive modes with bypass (nf_nat_ftp should add port forwards for RELATED session, nat filters should allow RELATED)
     def test_075_ftpModesIncomingBypassed(self):
@@ -735,13 +760,18 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        passiveResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        activeResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        print "activeResult: %i passiveResult: %i" % (activeResult,passiveResult)
-        assert (passiveResult == 0)
-        assert (activeResult == 0)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
+        assert (pasvResult == 0)
+        assert (portResult == 0)
+        assert (epsvResult == 0)
+        assert (eprtResult == 0)
 
     # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
     def test_080_routes(self):        

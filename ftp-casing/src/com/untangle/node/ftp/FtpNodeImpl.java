@@ -3,15 +3,17 @@
  */
 package com.untangle.node.ftp;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.SettingsManager;
-import org.apache.log4j.Logger;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.UvmContextFactory;
 
 /**
  * FTP node implementation.
@@ -30,18 +32,18 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
     private final PipelineConnector controlServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-control-server-side", this, null, serverSideCtlHandler, Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_STREAM, null, null );
     private final PipelineConnector dataClientSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-client-side", this, null, clientSideDataHandler, Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS, null, null );
     private final PipelineConnector dataServerSideConnector = UvmContextFactory.context().pipelineFoundry().create( "ftp-data-server-side", this, null, serverSideDataHandler, Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_STREAM, null, null );
-    private final PipelineConnector[] connectors = new PipelineConnector[] { controlClientSideConnector, controlServerSideConnector, dataClientSideConnector, dataServerSideConnector };
+
+    private final PipelineConnector natFtpConnectorCtl = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-ctl", this, null, new FtpNatHandler(), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, 0);
+    private final PipelineConnector natFtpConnectorData = UvmContextFactory.context().pipelineFoundry().create("nat-ftp-data", this, null, new FtpNatHandler(), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, 0);
+
+    private final PipelineConnector[] connectors = new PipelineConnector[] { controlClientSideConnector, controlServerSideConnector, dataClientSideConnector, dataServerSideConnector, natFtpConnectorCtl, natFtpConnectorData };
 
     private FtpSettings settings;
-
-    // constructors -----------------------------------------------------------
 
     public FtpNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
     }
-
-    // FtpNode methods ---------------------------------------------------
 
     public FtpSettings getFtpSettings()
     {
@@ -65,8 +67,6 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
         reconfigure();
     }
 
-    // Node methods ------------------------------------------------------
-
     public void reconfigure()
     {
         if ( settings != null ) {
@@ -77,6 +77,16 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
 
     public void initializeSettings() { }
 
+    public Object getSettings()
+    {
+        return getFtpSettings();
+    }
+
+    public void setSettings(Object settings)
+    {
+        setFtpSettings((FtpSettings)settings);
+    }
+    
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
@@ -123,6 +133,8 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
     {
         UvmContextFactory.context().pipelineFoundry().registerCasing( controlClientSideConnector, controlServerSideConnector );
         UvmContextFactory.context().pipelineFoundry().registerCasing( dataClientSideConnector, dataServerSideConnector );
+        UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( natFtpConnectorCtl );
+        UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( natFtpConnectorData );
     }
 
     @Override
@@ -130,16 +142,7 @@ public class FtpNodeImpl extends NodeBase implements FtpNode
     {
         UvmContextFactory.context().pipelineFoundry().deregisterCasing( controlClientSideConnector );
         UvmContextFactory.context().pipelineFoundry().deregisterCasing( dataClientSideConnector );
-    }
-    
-
-    public Object getSettings()
-    {
-        return getFtpSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setFtpSettings((FtpSettings)settings);
+        UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( natFtpConnectorCtl );
+        UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( natFtpConnectorData );
     }
 }
