@@ -750,7 +750,7 @@ Ext.define("Ung.Main", {
             var noIEDisplay = Ext.get('no-ie-container');
             noIEDisplay.show();
 
-            this.noIEToolTip= new Ext.ToolTip({
+            this.noIEToolTip= Ext.create('Ext.tip.ToolTip', {
                 target: document.getElementById("no-ie-container"),
                 dismissDelay: 0,
                 hideDelay: 1500,
@@ -771,7 +771,6 @@ Ext.define("Ung.Main", {
         rpc.alertManager.getAlerts(Ext.bind(function( result, exception, opt, handler ) {
             var alertDisplay = Ext.get('alert-container');
             var alertArr=[];
-
             if (result != null && result.list.length > 0) {
                 alertDisplay.show();
                 alertArr.push('<div class="title">'+i18n._("Alerts:")+'</div>');
@@ -782,7 +781,7 @@ Ext.define("Ung.Main", {
                 alertDisplay.hide();
             }
 
-            this.alertToolTip= new Ext.ToolTip({
+            this.alertToolTip= Ext.create('Ext.tip.ToolTip', {
                 target: document.getElementById("alert-container"),
                 dismissDelay: 0,
                 hideDelay: 1500,

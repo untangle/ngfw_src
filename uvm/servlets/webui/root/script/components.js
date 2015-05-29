@@ -392,7 +392,7 @@ Ext.define("Ung.Node", {
         this.subCmps.push(this.buttonsPanel);
         if(this.hasPowerButton) {
             Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
-            this.subCmps.push(Ext.create('Ext.ToolTip', {
+            this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                 html: [
                    '<div style="text-align: left;">',
                    i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
@@ -409,7 +409,7 @@ Ext.define("Ung.Node", {
                 dismissDelay: 0,
                 hideDelay: 0
             }));
-            this.subCmps.push(Ext.create('Ext.ToolTip', {
+            this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                 html: i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".'),
                 target: 'node-power_' + this.getId(),
                 showDelay: 20,
@@ -417,7 +417,7 @@ Ext.define("Ung.Node", {
                 hideDelay: 0
             }));
             if(!this.isNodeEditable) {
-                this.subCmps.push(Ext.create('Ext.ToolTip', {
+                this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                     html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
                     target: 'node_' + this.nodeId,
                     showDelay: 20,
