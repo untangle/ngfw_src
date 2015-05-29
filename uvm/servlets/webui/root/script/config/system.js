@@ -1046,7 +1046,9 @@ Ext.define('Webui.config.system', {
                 }
             }]
         });
-
+        this.panelShieldReports = Ext.create('Ung.panel.Reports', {
+            category: "Shield"
+        });
         this.panelShield = Ext.create('Ext.panel.Panel',{
             name: 'Shield',
             title: this.i18n._('Shield'),
@@ -1076,7 +1078,7 @@ Ext.define('Webui.config.system', {
                 deferredRender: false,
                 autoHeight: true,
                 flex: 1,
-                items: [this.gridShieldRules, this.gridShieldEventLog]
+                items: [this.gridShieldRules, this.gridShieldEventLog, this.panelShieldReports]
             }]
         });
     },

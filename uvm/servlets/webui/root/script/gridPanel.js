@@ -927,7 +927,7 @@ Ext.define('Ung.RowEditorWindow', {
 
 //Import Settings window
 Ext.define('Ung.ImportSettingsWindow', {
-    extend:'Ung.UpdateWindow',
+    extend:'Ung.EditWindow',
     // the editor grid
     grid: null,
     height: 230,
@@ -947,32 +947,8 @@ Ext.define('Ung.ImportSettingsWindow', {
         if (this.title == null) {
             this.title = i18n._('Import Settings');
         }
-        if(this.bbar == null) {
-            this.bbar  = [
-                '->',
-                {
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Done",
-                    id: this.getId() + "_doneBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Done'),
-                    handler: Ext.bind(function() {
-                        Ext.getCmp('import_settings_form'+this.getId()).getForm().submit({
-                            waitMsg: i18n._('Please wait while the settings are uploaded...'),
-                            success: Ext.bind(this.importSettingsSuccess, this ),
-                            failure: Ext.bind(this.importSettingsFailure, this )
-                        });
-                    }, this)
-                },'-'];
-        }
         this.items = Ext.create('Ext.panel.Panel',{
+            autoScroll: true,
             bodyStyle: 'padding:10px 10px 0px 10px;',
             items: [{
                 xtype: 'radio',
@@ -1054,6 +1030,13 @@ Ext.define('Ung.ImportSettingsWindow', {
             }
         }
         this.setPosition(objPosition);
+    },
+    updateAction: function() {
+        Ext.getCmp('import_settings_form'+this.getId()).getForm().submit({
+            waitMsg: i18n._('Please wait while the settings are uploaded...'),
+            success: Ext.bind(this.importSettingsSuccess, this ),
+            failure: Ext.bind(this.importSettingsFailure, this )
+        });
     },
     importSettingsSuccess: function (form, action) {
         var result = action.result;

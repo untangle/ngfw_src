@@ -142,7 +142,6 @@ Ext.define("Ung.SettingsWin", {
     dirtyFlag: false,
     hasApply: true,
     layout: 'fit',
-    parentPanel: null,
     // build Tab panel from an array of tab items
     constructor: function(config) {
         config.rpc = {};
@@ -158,10 +157,9 @@ Ext.define("Ung.SettingsWin", {
     buildTabPanel: function(itemsArray) {
         Ext.get("racks").hide();
         if(this.hasReports) {
-            this.parentPanel =  Ext.create('Ung.panel.Reports',{
+            itemsArray.push(Ext.create('Ung.panel.Reports',{
                 category: this.displayName
-            });
-            itemsArray.push(this.parentPanel);
+            }));
         }
         
         this.tabs = Ext.create('Ext.tab.Panel',{
@@ -510,55 +508,6 @@ Ext.define("Ung.StatusWin", {
     },
     isDirty: function() {
         return false;
-    }
-});
-
-// update window
-// has the content and 3 standard buttons: Save, Cancel, Apply
-Ext.define('Ung.UpdateWindow', {
-    extend: 'Ung.Window',
-    initComponent: function() {
-        if(this.bbar==null) {
-            this.bbar=[
-                '->',
-                {
-                    name: "Save",
-                    id: this.getId() + "_saveBtn",
-                    iconCls: 'save-icon',
-                    text: i18n._('Save'),
-                    handler: Ext.bind(function() {
-                        Ext.Function.defer(this.saveAction,1, this);
-                    }, this)
-                },'-',{
-                    name: "Cancel",
-                    id: this.getId() + "_cancelBtn",
-                    iconCls: 'cancel-icon',
-                    text: i18n._('Cancel'),
-                    handler: Ext.bind(function() {
-                        this.cancelAction();
-                    }, this)
-                },'-',{
-                    name: "Apply",
-                    id: this.getId() + "_applyBtn",
-                    iconCls: 'apply-icon',
-                    text: i18n._('Apply'),
-                    handler: Ext.bind(function() {
-                        Ext.Function.defer(this.applyAction,1, this, []);
-                    }, this)
-                },'-'];
-        }
-        this.callParent(arguments);
-    },
-    // the update actions
-    // to override
-    updateAction: function() {
-        Ung.Util.todo();
-    },
-    saveAction: function() {
-        Ung.Util.todo();
-    },
-    applyAction: function() {
-        Ung.Util.todo();
     }
 });
 
