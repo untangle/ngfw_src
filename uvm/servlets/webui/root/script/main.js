@@ -461,12 +461,12 @@ Ext.define("Ung.Main", {
                 this.buildPolicies();
             }, this));
         } else {
-            // no policy manager, just one policy (Default Rack)
+            // no policy manager, just one policy (Default Policy)
             rpc.policies = [{
                 javaClass: "com.untangle.node.policy.PolicySettings",
                 policyId: "1",
-                name: i18n._("Default Rack"),
-                description: i18n._("The Default Rack/Policy")
+                name: i18n._("Default Policy"),
+                description: i18n._("The Default Policy")
             }];
             this.buildPolicies();
         }

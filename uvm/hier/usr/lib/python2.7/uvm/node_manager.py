@@ -65,7 +65,7 @@ class NodeManager(Manager):
         node = self.__nodeManager.node( "untangle-node-policy" )
         if node == None:
             if (policyId == 1):
-                return "Default Rack"
+                return "Default Policy"
             return "Policy-%i" % policyId
         else:
             return node.getPolicyName( policyId )
