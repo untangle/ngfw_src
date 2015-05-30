@@ -23,15 +23,17 @@ public class HttpRequestEvent extends LogEvent
     private URI requestUri;
     private SessionEvent sessionEvent;
     private String host;
+    private String domain;
     private long contentLength;
 
     // constructors -----------------------------------------------------------
 
     public HttpRequestEvent() { }
 
-    public HttpRequestEvent(RequestLine requestLine, String host)
+    public HttpRequestEvent(RequestLine requestLine, String host )
     {
         this.host = host;
+        this.domain = getDomainForHost( host );
         this.requestId = requestLine.getRequestId();
         this.timeStamp = requestLine.getTimeStamp();
         this.method = requestLine.getMethod();
@@ -44,6 +46,7 @@ public class HttpRequestEvent extends LogEvent
     public HttpRequestEvent(RequestLine requestLine, String host, long contentLength)
     {
         this.host = host;
+        this.domain = getDomainForHost( host );
         this.contentLength = contentLength;
         this.requestId = requestLine.getRequestId();
         this.timeStamp = requestLine.getTimeStamp();
@@ -60,8 +63,18 @@ public class HttpRequestEvent extends LogEvent
      * The host, as specified by the request header.
      */
     public String getHost() { return host; }
-    public void setHost( String host ) { this.host = host; }
+    public void setHost( String newValue )
+    {
+        this.host = newValue;
+        this.domain = getDomainForHost( host );
+    }
 
+    /**
+     * The host, as specified by the request header.
+     */
+    public String getDomain() { return domain; }
+    public void setDomain( String newValue ) { this.domain = newValue; }
+    
     /**
      * Content length, as counted by the parser.
      */
@@ -105,10 +118,10 @@ public class HttpRequestEvent extends LogEvent
             "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
             "policy_id, username, " + 
             "request_id, method, uri, " + 
-            "host, c2s_content_length, " + 
+            "host, domain, c2s_content_length, " + 
             "hostname) " + 
             "values " +
-            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = conn.prepareStatement( sql );
 
@@ -131,6 +144,7 @@ public class HttpRequestEvent extends LogEvent
         pstmt.setString(++i, Character.toString(getMethod().getKey()));
         pstmt.setString(++i, getRequestUri().toString());
         pstmt.setString(++i, getHost());
+        pstmt.setString(++i, getDomain());
         pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getSessionEvent().getHostname());
 
@@ -150,6 +164,38 @@ public class HttpRequestEvent extends LogEvent
             ( sessionEvent.getSServerPort() == 443 ? "https" : "http" ) + "://" +
             getHost() + getRequestUri();
         return summary;
+    }
+
+
+    // translates a host to a "domain"
+    // foo.bar.yahoo.com -> yahoo.com
+    // foor.bar.co.uk -> bar.co.uk
+    private String getDomainForHost( String host )
+    {
+        if ( host == null )
+            return null;
+        
+        String[] parts = host.split("\\.");
+        int len = parts.length;
+        
+        if (parts.length <= 2) {
+            return host;
+        }
+        
+        String lastPart = parts[len-1];
+
+        switch ( lastPart ) {
+        case "au":
+        case "za":
+        case "uk":
+        if ( parts.length > 2 )
+            return parts[len-3] + "." + parts[len-2] + "." + parts[len-1];
+        else
+            return host;
+        
+        default:
+            return parts[len-2] + "." + parts[len-1];
+        }
     }
     
 }

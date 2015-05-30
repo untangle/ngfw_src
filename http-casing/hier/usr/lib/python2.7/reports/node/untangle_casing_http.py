@@ -55,6 +55,7 @@ CREATE TABLE reports.http_events (
     method character(1),
     uri text,
     host text,
+    domain text,
     c2s_content_length bigint,
     s2c_content_length bigint,
     s2c_content_type text,
@@ -86,6 +87,7 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action",
                                  "host",
+                                 "domain",
                                  "username",
                                  "hostname",
                                  "c_client_addr",
@@ -94,6 +96,8 @@ CREATE TABLE reports.http_events (
 
         sql_helper.drop_column('http_events','event_id') # 11.2 - drop unused column
         sql_helper.drop_column('http_events','adblocker_blocked') # 11.2 - drop unused column
+
+        sql_helper.add_column('http_events','domain', 'text') # 11.2 - new column
 
         sql_helper.rename_column('http_events','adblocker_cookie_ident','ad_blocker_cookie_ident') # 11.2
         sql_helper.rename_column('http_events','adblocker_action','ad_blocker_action') # 11.2
