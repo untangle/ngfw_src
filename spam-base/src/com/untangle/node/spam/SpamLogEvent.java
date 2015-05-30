@@ -160,13 +160,13 @@ public class SpamLogEvent extends LogEvent
         
         String prefix = ""; /* XXX this is a hack - we should use proper column names */
         if ("spamassassin".equals(getVendorName().toLowerCase()))
-            prefix = "spamassassin";
+            prefix = "spam_blocker_lite";
         else if ("spamblocker".equals(getVendorName().toLowerCase()))
-            prefix = "spamblocker";
+            prefix = "spam_blocker";
         else if ("clam".equals(getVendorName().toLowerCase()))
-            prefix = "phish";
+            prefix = "phish_blocker";
         else if ("phish".equals(getVendorName().toLowerCase()))
-            prefix = "phish";
+            prefix = "phish_blocker";
         else {
             throw new RuntimeException("Unknown vendor name: " + getVendorName());
         }
