@@ -314,6 +314,14 @@ public class ReportEntry implements Serializable, JSONString
             if ( conditions != null ) {
                 int i = 0;
                 for ( SqlCondition condition : conditions ) {
+                    
+                    // these operators are not supported with prepareStatement
+                    // as such there are hardcoded in the SQL query
+                    // skip to the next query
+                    if ("is".equalsIgnoreCase( condition.getOperator() )) {
+                        continue;
+                    }
+                    
                     i++;
                     String columnType = node.getReportingManagerNew().getColumnType( getTable(), condition.getColumn() );
                     String value = condition.getValue();
@@ -335,19 +343,28 @@ public class ReportEntry implements Serializable, JSONString
                     case "integer":
                     case "int2":
                     case "smallint":
-                        try {
-                            statement.setLong(i, Long.valueOf( value ));
-                        } catch (Exception e) {
-                            throw new RuntimeException( "Invalid number: " + value );
+                        if ("null".equalsIgnoreCase(value))
+                            statement.setNull(i, java.sql.Types.INTEGER);
+                        else {
+                            try {
+                                statement.setLong(i, Long.valueOf( value ));
+                            } catch (Exception e) {
+                                throw new RuntimeException( "Invalid number: " + value );
+                            }
                         }
                     break;
                     
                     case "inet":
-                        statement.setObject(i, value, java.sql.Types.OTHER);
+                        if ("null".equalsIgnoreCase(value))
+                            statement.setNull(i, java.sql.Types.OTHER);
+                        else 
+                            statement.setObject(i, value, java.sql.Types.OTHER);
                         break;
                     
                     case "bool":
-                        if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
+                        if ("null".equalsIgnoreCase(value))
+                            statement.setNull(i, java.sql.Types.BOOLEAN);
+                        else if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
                             statement.setBoolean(i, true);
                         else
                             statement.setBoolean(i, false);
@@ -357,7 +374,10 @@ public class ReportEntry implements Serializable, JSONString
                     case "character":
                     case "varchar":
                     case "text":
-                        statement.setString(i, condition.getValue());
+                        if ("null".equalsIgnoreCase(value))
+                            statement.setNull(i, java.sql.Types.VARCHAR);
+                        else
+                            statement.setString(i, condition.getValue());
                         break;
                     default:
                         logger.warn("Unknown column type: " + columnType);
@@ -392,8 +412,17 @@ public class ReportEntry implements Serializable, JSONString
                 continue;
             }
             
-            String columnType = 
-            str += " and " + condition.getColumn() + " " + condition.getOperator() + " ? ";
+            str += " and ";
+            // these operators are not supported with prepareStatement
+            // as such there are hardcoded in the SQL query
+            if ("is".equalsIgnoreCase( condition.getOperator() )) {
+                str += condition.getColumn() + " " + condition.getOperator() + " " + condition.getValue() + " ";
+            }
+            // otherwise use the PreparedStatement '?'
+            else {
+                str += condition.getColumn() + " " + condition.getOperator() + " ? ";
+            }
+
         }
 
         return str;
