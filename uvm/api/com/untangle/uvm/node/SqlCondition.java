@@ -57,17 +57,6 @@ public class SqlCondition implements Serializable, JSONString
         }
         this.operator = lowerValue;
     }
-
-    public String toPreparedString()
-    {
-        //Prepared statement does not support "not null" so we have a fake "is not" operator
-        //it is actually just "is" where it takes "foo" "is not" "bar" -> not(foo is bar) 
-        if ("is not".equalsIgnoreCase(getOperator())) {
-            return "not( " + getColumn() + " " + "is" + " ? )";
-        } else {
-            return getColumn() + " " + getOperator() + " ? ";
-        }
-    }
     
     public String toJSONString()
     {
