@@ -340,9 +340,6 @@ class DetailSection(Section):
                    ColumnDesc('firewall_blocked', _('Blocked (Firewall)'), 'Boolean'),
                    ColumnDesc('firewall_flagged', _('Flagged (Firewall)'), 'Boolean'),
                    ColumnDesc('firewall_rule_index', _('Rule Id (Firewall)')),
-                   ColumnDesc('ips_blocked', _('Blocked (IPS)'), 'Boolean'),
-                   ColumnDesc('ips_ruleid', _('Rule Id (IPS)')),
-                   ColumnDesc('ips_description', _('Rule Description (IPS)')),
                    ColumnDesc('captive_portal_rule_index', _('Rule ID (Captive Portal)')),
                    ColumnDesc('captive_portal_blocked', _('Captured'), 'Boolean')]
         return columns
@@ -355,20 +352,20 @@ class DetailSection(Section):
                    ColumnDesc('hostname', _('Hostname')),
                    ColumnDesc('uri', _('Uri')),
                    ColumnDesc('url', _('Url')),
-                   ColumnDesc('webfilter_blocked', _('Blocked (Webfilter Lite)'), 'Boolean'),
-                   ColumnDesc('webfilter_flagged', _('Flagged (Webfilter Lite)'), 'Boolean'),
-                   ColumnDesc('webfilter_reason', _('Reason For Action (Webfilter Lite)')),
-                   ColumnDesc('webfilter_category', _('Category (Webfilter Lite)')),
-                   ColumnDesc('sitefilter_blocked', _('Blocked  (Webfilter)'), 'Boolean'),
-                   ColumnDesc('sitefilter_flagged', _('Flagged (Webfilter)'), 'Boolean'),
-                   ColumnDesc('sitefilter_reason', _('Reason For Action (Webfilter)')),
-                   ColumnDesc('sitefilter_category', _('Category (Webfilter)')),
+                   ColumnDesc('web_filter_lite_blocked', _('Blocked (Webfilter Lite)'), 'Boolean'),
+                   ColumnDesc('web_filter_lite_flagged', _('Flagged (Webfilter Lite)'), 'Boolean'),
+                   ColumnDesc('web_filter_lite_reason', _('Reason For Action (Webfilter Lite)')),
+                   ColumnDesc('web_filter_lite_category', _('Category (Webfilter Lite)')),
+                   ColumnDesc('web_filter_blocked', _('Blocked  (Webfilter)'), 'Boolean'),
+                   ColumnDesc('web_filter_flagged', _('Flagged (Webfilter)'), 'Boolean'),
+                   ColumnDesc('web_filter_reason', _('Reason For Action (Webfilter)')),
+                   ColumnDesc('web_filter_category', _('Category (Webfilter)')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('s_server_port', _('Server Port'), 'Numeric'),
-                   ColumnDesc('adblocker_action', _('Action (Ad Blocker)')),
-                   ColumnDesc('adblocker_cookie_ident', _('Cookie')),
-                   ColumnDesc('clam_name', _('Virus Name (Clam)')),
-                   ColumnDesc('virusblocker_name', _('Virus Name (Virus Blocker)'))
+                   ColumnDesc('ad_blocker_action', _('Action (Ad Blocker)')),
+                   ColumnDesc('ad_blocker_cookie_ident', _('Cookie')),
+                   ColumnDesc('virus_blocker_lite_name', _('Virus Name (Clam)')),
+                   ColumnDesc('virus_blocker_name', _('Virus Name (Virus Blocker)'))
                    ]
         return columns
 
@@ -390,16 +387,16 @@ class DetailSection(Section):
                    ColumnDesc('c_client_addr', _('Client')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('s_server_addr', _('Server')),
-                   ColumnDesc('clam_name', _('Virus Name (Clam)')),
-                   ColumnDesc('virusblocker_name', _('Virus Name (Virus Blocker)')),
+                   ColumnDesc('virus_blocker_lite_name', _('Virus Name (Clam)')),
+                   ColumnDesc('virus_blocker_name', _('Virus Name (Virus Blocker)')),
                    ColumnDesc('addr', _('Receiver')),
                    ColumnDesc('sender', _('Sender')),
                    ColumnDesc('subject', _('Subject')),
-                   ColumnDesc('spamassassin_action', _('Action (Spamassassin)')),
-                   ColumnDesc('spamassassin_score', _('Spam score (Spamassassin)'),'Numeric'),
-                   ColumnDesc('spamblocker_action', _('Action (Spam Blocker)')),
-                   ColumnDesc('spamblocker_score', _('Spam score (Spam Blocker)'),'Numeric'),
-                   ColumnDesc('phish_action', _('Action (Phish)'))
+                   ColumnDesc('spam_blocker_lite_action', _('Action (Spamassassin)')),
+                   ColumnDesc('spam_blocker_lite_score', _('Spam score (Spamassassin)'),'Numeric'),
+                   ColumnDesc('spam_blocker_action', _('Action (Spam Blocker)')),
+                   ColumnDesc('spam_blocker_score', _('Spam score (Spam Blocker)'),'Numeric'),
+                   ColumnDesc('phish_blocker_action', _('Action (Phish)'))
                    ]
         return columns
 

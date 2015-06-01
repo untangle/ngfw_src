@@ -48,6 +48,7 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
     This is a test e-mail message.
     """
     remote_control.runCommand("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
+    time.sleep(2) # its run in the background so wait for it to start
     
     try:
        smtpObj = smtplib.SMTP(smtpHost)
@@ -278,6 +279,8 @@ class ReportTests(unittest2.TestCase):
         assert (result == 0)
     
     def test_020_sendReportOut(self):
+        print "XXXXXXXX 0"
+
         # raise unittest2.SkipTest("Review changes in test")        
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
@@ -287,16 +290,24 @@ class ReportTests(unittest2.TestCase):
         settings["reportingUsers"]["list"].append(createReportProfile(profile_email=testEmailAddress))
         node.setSettings(settings)
         
+        print "XXXXXXXX 1"
         createFakeEmailEnvironment(emailLogFile="test_020.log")
+        print "XXXXXXXX 2"
 
         report_date = time.strftime("%Y-%m-%d")
         # print "report_date %s" % report_date
+        print "XXXXXXXX 3"
         report_results = subprocess.call(["/usr/share/untangle/bin/reporting-generate-reports.py", "-r", "1", "-d",report_date],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # print "report_results %s" % report_results
+        print "XXXXXXXX 4"
+
         emailFound, emailContext, emailContext2 = findEmailContent('Untangle PDF Summary Reports', 'Content-Disposition')
         # Kill the mail sink
+        print "XXXXXXXX 5"
+
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
         # reset all settings to base.
+        print "XXXXXXXX 6"
         node.setSettings(orig_settings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # test if PDF is attached
