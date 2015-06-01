@@ -169,6 +169,7 @@ CREATE TABLE reports.sessions (
                                  "s_server_addr",
                                  "client_intf",
                                  "server_intf",
+                                 "firewall_rule_index",
                                  "firewall_flagged",
                                  "firewall_blocked",
                                  "application_control_application",
