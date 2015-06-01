@@ -118,6 +118,16 @@ public class SystemManagerImpl implements SystemManager
         if ( settings.getSnmpSettings().isEnabled() ) 
             restartSnmpDaemon();
 
+        /**
+         * If pyconnector state does not match the settings, re-sync them
+         */
+        File pyconnectorStartFile = new File( "/etc/rc5.d/S01untangle-pyconnector" );
+        if ( pyconnectorStartFile.exists() && !settings.getSupportEnabled() )
+            syncPyconnectorStart();
+        if ( !pyconnectorStartFile.exists() && settings.getSupportEnabled() )
+            syncPyconnectorStart();
+        
+        
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
 
         logger.info("Initialized SystemManager");
@@ -160,17 +170,7 @@ public class SystemManagerImpl implements SystemManager
                 UvmContextFactory.context().execManager().exec( "/bin/rm -f " + CRON_FILE );
         }
 
-        /**
-         * If support access in enabled, start pyconnector and enable on startup.
-         * If not, stop it and disable on startup
-         */
-        if ( settings.getSupportEnabled() ) {
-            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector defaults 95 5" );
-            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector restart" );
-        } else {
-            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector remove" );
-            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector stop" );
-        }
+        syncPyconnectorStart();
     }
 
     /**
@@ -327,6 +327,7 @@ public class SystemManagerImpl implements SystemManager
         int retCode = UvmContextFactory.context().execManager().execResult( "apt-get -s dist-upgrade | grep -q '^Inst'" );
         return (retCode == 0);
     }
+
     public boolean upgradesAvailable()
     {
         return upgradesAvailable( true );
@@ -660,6 +661,22 @@ public class SystemManagerImpl implements SystemManager
             return;
         }
     }
+
+    private void syncPyconnectorStart()
+    {
+        /**
+         * If support access in enabled, start pyconnector and enable on startup.
+         * If not, stop it and disable on startup
+         */
+        if ( settings.getSupportEnabled() ) {
+            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector defaults 95 5" );
+            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector restart" );
+        } else {
+            UvmContextFactory.context().execManager().exec( "update-rc.d untangle-pyconnector remove" );
+            UvmContextFactory.context().execManager().exec( "service untangle-pyconnector stop" );
+        }
+    }
+    
     private class SystemSupportLogDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
