@@ -727,7 +727,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
         
         rpc.nodeManager.getAllNodeProperties(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception)) return;
-            var data=[];
+            var data=[{displayName: 'System'}];
             var nodeProperties = result.list;
             for (var i=0; i< nodeProperties.length; i++) {
                 if(!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {

@@ -28,6 +28,7 @@ Ext.define("Ung.Main", {
     initialScreenAlreadyShown: false,
 
     init: function(config) {
+        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ext.apply(this, config);
         if (Ext.isGecko) {
             document.onkeypress = function(e) {
@@ -61,7 +62,6 @@ Ext.define("Ung.Main", {
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset()*60000)+rpc.timeZoneOffset
         });
-        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         Ung.Util.loadCss("/skins/"+rpc.skinSettings.skinName+"/css/admin.css");
         if (rpc.skinSettings.outOfDate) {
             var win = Ext.create('Ext.Window', {

@@ -507,7 +507,7 @@ Ext.define('Ung.panel.Reports', {
                         grid: true,
                         label: {
                             rotate: {
-                                degrees: -45
+                                degrees: -90
                             }
                         }
                     }]

@@ -31,8 +31,9 @@ Ext.define('Webui.config.system', {
         this.buildRestore();
         this.buildProtocols();
         this.buildShield();
+        this.buildSystemReports();
         // builds the tab panel with the tabs
-        this.buildTabPanel([this.panelRegional, this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocols, this.panelShield]);
+        this.buildTabPanel([this.panelRegional, this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocols, this.panelShield, this.panelSystemReports]);
         if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ) {
             this.panelProtocols.disable();
         }
@@ -1080,6 +1081,11 @@ Ext.define('Webui.config.system', {
                 flex: 1,
                 items: [this.gridShieldRules, this.gridShieldEventLog, this.panelShieldReports]
             }]
+        });
+    },
+    buildSystemReports: function() {
+        this.panelSystemReports = Ext.create('Ung.panel.Reports', {
+            category: "System"
         });
     },
     // validation function
