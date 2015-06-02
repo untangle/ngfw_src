@@ -101,14 +101,6 @@ Ext.define('Ung.panel.Reports', {
                         }, this)
                     }, {
                         xtype: 'button',
-                        name: "extraConditions",
-                        text: i18n._('Toggle Conditions'),
-                        tooltip: i18n._('Add extra SQL conditions to report'),
-                        handler: Ext.bind(function(button) {
-                            this.extraConditionsPanel.toggleCollapse();
-                        }, this)
-                    }, {
-                        xtype: 'button',
                         text: i18n._('Refresh'),
                         name: "refresh",
                         tooltip: i18n._('Flush Events from Memory to Database and then Refresh'),
@@ -681,12 +673,12 @@ Ext.define('Ung.panel.Reports', {
 
 Ext.define("Ung.panel.ExtraConditions", {
     extend: "Ext.panel.Panel",
-    title: i18n._('Extra conditions: None'),
+    title: Ext.String.format( i18n._("Conditions: {0}"), i18n._("None")),
     collapsible: true,
-    collapsed: true,
+    collapsed: false,
     floatable: false,
     split: true,
-    defaultCount: 3,
+    defaultCount: 1,
     autoScroll: true,
     layout: { type: 'vbox'},
     getColumnsForTable: function(table) {
@@ -722,11 +714,11 @@ Ext.define("Ung.panel.ExtraConditions", {
             },
             scope: this
         }, '->', {
-            text: i18n._("Clear All"),
-            tooltip: i18n._('Clear All Conditions'),
+            text: i18n._("Delete All"),
+            tooltip: i18n._('Delete All Conditions'),
             iconCls: 'cancel-icon',
             handler: function() {
-                this.clearConditions();
+                this.deleteConditions();
             },
             scope: this
         }];
@@ -800,19 +792,6 @@ Ext.define("Ung.panel.ExtraConditions", {
                 }
             }, {
                 xtype: 'button',
-                name: "clear",
-                text: i18n._("Clear"),
-                disabled: Ext.isEmpty(data.column),
-                handler: Ext.bind(function(button) {
-                    this.bulkOperation = true;
-                    button.prev("[dataIndex=column]").setValue("");
-                    button.prev("[dataIndex=operator]").setValue("=");
-                    button.prev("[dataIndex=value]").setValue("");
-                    this.bulkOperation = false;
-                    this.setConditions();
-                }, this)
-            }, {
-                xtype: 'button',
                 name: "delete",
                 text: i18n._("Delete"),
                 handler: Ext.bind(function(button) {
@@ -843,7 +822,7 @@ Ext.define("Ung.panel.ExtraConditions", {
         this.bulkOperation = false;
         this.setConditions();
     },
-    clearConditions: function() {
+    deleteConditions: function() {
         var me = this;
         this.bulkOperation = true;
         Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
@@ -862,12 +841,11 @@ Ext.define("Ung.panel.ExtraConditions", {
         if(this.bulkOperation) {
             return;
         }
-        var conditions = [], columnValue, operator, value, clearBtn, isEmptyColumn;
+        var conditions = [], columnValue, operator, value, isEmptyColumn;
         Ext.Array.each(this.query("container[name=condition]"), function(item, index, len) {
             columnValue = item.down("[dataIndex=column]").getValue();
             operator = item.down("[dataIndex=operator]");
             value = item.down("[dataIndex=value]");
-            clearBtn = item.down("button[name=clear]");
             isEmptyColumn = Ext.isEmpty(columnValue);
             if(!isEmptyColumn) {
                 conditions.push({
@@ -879,10 +857,9 @@ Ext.define("Ung.panel.ExtraConditions", {
             }
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
-            clearBtn.setDisabled(isEmptyColumn);
         });
 
         this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
-        this.setTitle((conditions.length>0)?Ext.String.format( i18n._("Extra conditions: {0}"), conditions.length):i18n._("Extra conditions: None"));
+        this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
     }
 });
