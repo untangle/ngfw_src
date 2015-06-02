@@ -255,8 +255,12 @@ Ext.define('Ung.panel.Reports', {
         this.setLoading(i18n._('Loading report... '));
         Ung.Main.getReportingManagerNew().getDataForReportEntry(Ext.bind(function(result, exception) {
             var i, column;
-            if(Ung.Util.handleException(exception)) return;
+            if(Ung.Util.handleException(exception)) {
+                this.setLoading(false);
+                return;
+            }
             if(!this.chartContainer || !this.chartContainer.isVisible()) {
+                this.setLoading(false);
                 return;
             }
             
@@ -599,7 +603,7 @@ Ext.define('Ung.panel.Reports', {
             
     },
     refreshHandler: function (forceFlush) {
-        if(!this.reportEntry) {
+        if(!this.reportEntry || this.autoRefreshEnabled) {
             return;
         }
         this.setLoading(i18n._('Refreshing report... '));
@@ -750,9 +754,11 @@ Ext.define("Ung.panel.ExtraConditions", {
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {
-                            this.setConditions();
+                            var skipReload = Ext.isEmpty(combo.next("[dataIndex=value]").getValue());
+                            this.setConditions(skipReload);
                         },
-                        scope: this
+                        scope: this,
+                        buffer: 200
                     }
                 }
             }, {
@@ -769,7 +775,8 @@ Ext.define("Ung.panel.ExtraConditions", {
                 listeners: {
                     change: {
                         fn: function(combo, newValue, oldValue, opts) {
-                            this.setConditions();
+                            var skipReload = Ext.isEmpty(combo.next("[dataIndex=value]").getValue());
+                            this.setConditions(skipReload);
                         },
                         scope: this
                     }
@@ -787,7 +794,16 @@ Ext.define("Ung.panel.ExtraConditions", {
                             this.setConditions();
                         },
                         scope: this,
-                        buffer: 500
+                        buffer: 1200
+                    },
+                    specialkey: {
+                        fn: function(field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                this.setConditions();
+                            }
+                            
+                        },
+                        scope: this
                     }
                 }
             }, {
@@ -795,8 +811,9 @@ Ext.define("Ung.panel.ExtraConditions", {
                 name: "delete",
                 text: i18n._("Delete"),
                 handler: Ext.bind(function(button) {
+                    var skipReload = Ext.isEmpty(button.prev("[dataIndex=column]").getValue());
                     this.remove(button.up("container"));
-                    this.setConditions();
+                    this.setConditions(skipReload);
                 }, this)
             }]
         };
@@ -835,9 +852,10 @@ Ext.define("Ung.panel.ExtraConditions", {
             }
         });
         this.bulkOperation = false;
-        this.setConditions();
+        var skipReload = !this.parentPanel.extraConditions || this.parentPanel.extraConditions.length==0;
+        this.setConditions(skipReload);
     },
-    setConditions: function() {
+    setConditions: function(skipReload) {
         if(this.bulkOperation) {
             return;
         }
@@ -858,8 +876,10 @@ Ext.define("Ung.panel.ExtraConditions", {
             operator.setDisabled(isEmptyColumn);
             value.setDisabled(isEmptyColumn);
         });
-
         this.parentPanel.extraConditions = (conditions.length>0)?conditions:null;
         this.setTitle(Ext.String.format( i18n._("Conditions: {0}"), (conditions.length>0)?conditions.length:i18n._("None")));
+        if(!skipReload) {
+            this.parentPanel.refreshHandler(true);
+        }
     }
 });
