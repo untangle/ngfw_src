@@ -277,6 +277,12 @@ Ext.define('Ung.panel.Reports', {
                 border: false,
                 width: '100%',
                 height: '100%',
+                tbar: ['->', {
+                    xtype: 'button',
+                    iconCls: 'icon-export',
+                    text: i18n._("Download"),
+                    handler: Ext.bind(this.downloadChart, this)
+                }],
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -333,6 +339,12 @@ Ext.define('Ung.panel.Reports', {
                 legend: {
                     docked: 'right'
                 },
+                tbar: ['->', {
+                    xtype: 'button',
+                    iconCls: 'icon-export',
+                    text: i18n._("Download"),
+                    handler: Ext.bind(this.downloadChart, this)
+                }],
                 sprites: [{
                     type: 'text',
                     text: reportEntry.title,
@@ -453,11 +465,11 @@ Ext.define('Ung.panel.Reports', {
                 legend: {
                     docked: 'bottom'
                 },
-                tbar: ['->', {
+                tbar: [{
                     xtype: 'button',
                     hidden: this.reportEntry.timeStyle == 'LINE',
                     iconCls: 'icon-line-chart',
-                    text: i18n._("Line Chart"),
+                    text: i18n._("Line"),
                     tooltip: i18n._("Switch to Line Chart"),
                     handler: Ext.bind(function() {
                         this.reportEntry.timeStyle = 'LINE';
@@ -467,7 +479,7 @@ Ext.define('Ung.panel.Reports', {
                     xtype: 'button',
                     hidden: this.reportEntry.timeStyle == 'BAR',
                     iconCls: 'icon-bar-chart',
-                    text: i18n._("Bar Chart"),
+                    text: i18n._("Bar"),
                     tooltip: i18n._("Switch to Bar Chart"),
                     handler: Ext.bind(function() {
                         this.reportEntry.timeStyle = 'BAR';
@@ -477,12 +489,17 @@ Ext.define('Ung.panel.Reports', {
                     xtype: 'button',
                     hidden: this.reportEntry.timeStyle == 'BAR_3D',
                     iconCls: 'icon-bar3d-chart',
-                    text: i18n._("Bar 3D Chart"),
+                    text: i18n._("Bar 3D"),
                     tooltip: i18n._("Switch to Bar 3D Chart"),
                     handler: Ext.bind(function() {
                         this.reportEntry.timeStyle = 'BAR_3D';
                         this.loadReport(this.reportEntry);
                     }, this)
+                }, '->', {
+                    xtype: 'button',
+                    iconCls: 'icon-export',
+                    text: i18n._("Download"),
+                    handler: Ext.bind(this.downloadChart, this)
                 }],
                 sprites: [{
                     type: 'text',
@@ -558,7 +575,7 @@ Ext.define('Ung.panel.Reports', {
                         yField: axesFields[i],
                         style: {
                             opacity: 0.70,
-                            lineWidth: 1+4*i
+                            lineWidth: 1+5*i
                         },
                         tooltip: {
                             trackMouse: true,
@@ -696,6 +713,24 @@ Ext.define('Ung.panel.Reports', {
         var content = list.join("");
         var fileName = this.reportEntry.title.trim().replace(/ /g,"_")+".csv";
         Ung.Util.download(content, fileName, 'text/csv');
+    },
+    downloadChart: function() {
+        if(!this.reportEntry) {
+            return;
+        }
+        var chart = this.chartContainer.down("[name=chart]");
+        if(!chart) {
+            return;
+        }
+        var fileName = this.reportEntry.title.trim().replace(/ /g,"_");
+        
+        if (Ext.os.is.Desktop) {
+            chart.download({
+                filename: fileName
+            });
+        } else {
+            chart.preview();
+        } 
     },
     isDirty: function() {
         return false;
