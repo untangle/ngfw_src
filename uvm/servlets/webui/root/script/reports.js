@@ -651,7 +651,37 @@ Ext.define('Ung.panel.Reports', {
         this.down('button[name=refresh]').enable();
     },
     exportHandler: function() {
-        //TODO: implement export
+        if(!this.reportEntry) {
+            return;
+        }
+        var processRow = function (row) {
+            var data = [];
+            for (var j = 0; j < row.length; j++) {
+                var innerValue = row[j] == null ? '' : row[j].toString();
+                data.push('"' + innerValue.replace(/"/g, '""') + '"');
+            }
+            return data.join(",") + '\r\n';
+        };
+
+        var records = this.reportDataGrid.getStore().getRange(), list=[], columns=[], headers=[], i, j, row;
+        var gridColumns = this.reportDataGrid.getColumns();
+        for(i=0; i<gridColumns.length;i++) {
+            if(gridColumns[i].initialConfig.dataIndex) {
+                columns.push(gridColumns[i].initialConfig.dataIndex);
+                headers.push(gridColumns[i].initialConfig.header);
+            }
+        }
+        list.push(processRow(headers));
+        for(i=0; i<records.length;i++) {
+            row = [];
+            for(j=0; j<columns.length;j++) {
+                row.push(records[i].get(columns[j]));
+            }
+            list.push(processRow(row));
+        }
+        var content = list.join("");
+        var fileName = this.reportEntry.title.trim().replace(/ /g,"_")+".csv";
+        Ung.Util.download(content, fileName, 'text/csv');
     },
     isDirty: function() {
         return false;
