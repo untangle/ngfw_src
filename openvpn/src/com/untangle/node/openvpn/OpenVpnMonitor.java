@@ -152,6 +152,8 @@ class OpenVpnMonitor implements Runnable
     {
         List<OpenVpnStatusEvent> list = new ArrayList<OpenVpnStatusEvent>();
 
+        if (activeMap == null) return list;
+
         synchronized( activeMap ) {
             for(ClientState stats : activeMap.values()) {
                 if(stats.isActive) {
