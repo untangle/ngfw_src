@@ -1093,7 +1093,7 @@ Ext.define('Webui.untangle-node-reporting.settings', {
                 width: 350,
                 store: [
                         ["BAR", this.i18n._("Bar")],
-                        ["BAR_OVERLAP", this.i18n._("Bar Overlap")],
+                        ["BAR_3D", this.i18n._("Bar 3D")],
                         ["LINE", this.i18n._("Line")]
                     ]
             }, {

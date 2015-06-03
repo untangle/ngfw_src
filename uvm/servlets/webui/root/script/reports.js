@@ -456,7 +456,9 @@ Ext.define('Ung.panel.Reports', {
                 tbar: ['->', {
                     xtype: 'button',
                     hidden: this.reportEntry.timeStyle == 'LINE',
-                    text: i18n._("Switch to Line Chart"),
+                    iconCls: 'icon-line-chart',
+                    text: i18n._("Line Chart"),
+                    tooltip: i18n._("Switch to Line Chart"),
                     handler: Ext.bind(function() {
                         this.reportEntry.timeStyle = 'LINE';
                         this.loadReport(this.reportEntry);
@@ -464,17 +466,21 @@ Ext.define('Ung.panel.Reports', {
                 }, {
                     xtype: 'button',
                     hidden: this.reportEntry.timeStyle == 'BAR',
-                    text: i18n._("Switch to Bar Chart"),
+                    iconCls: 'icon-bar-chart',
+                    text: i18n._("Bar Chart"),
+                    tooltip: i18n._("Switch to Bar Chart"),
                     handler: Ext.bind(function() {
                         this.reportEntry.timeStyle = 'BAR';
                         this.loadReport(this.reportEntry);
                     }, this)
                 }, {
                     xtype: 'button',
-                    hidden: this.reportEntry.timeStyle == 'BAR_OVERLAP' || reportEntry.timeDataColumns.length <= 1,
-                    text: i18n._("Switch to Overlapped Bar Chart"),
+                    hidden: this.reportEntry.timeStyle == 'BAR_3D',
+                    iconCls: 'icon-bar3d-chart',
+                    text: i18n._("Bar 3D Chart"),
+                    tooltip: i18n._("Switch to Bar 3D Chart"),
                     handler: Ext.bind(function() {
-                        this.reportEntry.timeStyle = 'BAR_OVERLAP';
+                        this.reportEntry.timeStyle = 'BAR_3D';
                         this.loadReport(this.reportEntry);
                     }, this)
                 }],
@@ -495,7 +501,7 @@ Ext.define('Ung.panel.Reports', {
                 }],
                 interactions: ['itemhighlight'],
                 axes: [{
-                    type: (reportEntry.timeStyle == 'LINE') ? 'numeric' : 'numeric3d',
+                    type: (reportEntry.timeStyle == 'BAR_3D') ? 'numeric3d' : 'numeric',
                     fields: axesFields,
                     position: 'left',
                     grid: true,
@@ -504,7 +510,7 @@ Ext.define('Ung.panel.Reports', {
                         return (reportEntry.units == "bytes") ? Ung.Util.bytesRenderer(v) : v + " " + i18n._(reportEntry.units);
                     }
                 }, {
-                    type: (reportEntry.timeStyle == 'LINE') ? 'category' : 'category3d',
+                    type: (reportEntry.timeStyle == 'BAR_3D') ? 'category3d' : 'category',
                     fields: 'time_trunc',
                     position: 'bottom',
                     grid: true,
@@ -522,7 +528,7 @@ Ext.define('Ung.panel.Reports', {
             
             if(reportEntry.timeStyle == 'BAR') {
                 chart.series = [{
-                    type: 'bar3d',
+                    type: 'bar',
                     axis: 'left',
                     title: axesFields,
                     xField: 'time_trunc',
@@ -542,7 +548,7 @@ Ext.define('Ung.panel.Reports', {
                         }
                     }
                 }];
-            } else if (reportEntry.timeStyle == 'BAR_OVERLAP') {
+            } else if (reportEntry.timeStyle == 'BAR_3D') {
                 for(i=0; i<axesFields.length; i++) {
                     series.push({
                         type: 'bar3d',
@@ -552,7 +558,7 @@ Ext.define('Ung.panel.Reports', {
                         yField: axesFields[i],
                         style: {
                             opacity: 0.70,
-                            lineWidth: (i+1)*5
+                            lineWidth: 1+4*i
                         },
                         tooltip: {
                             trackMouse: true,

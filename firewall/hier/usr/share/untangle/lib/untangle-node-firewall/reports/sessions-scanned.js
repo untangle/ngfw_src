@@ -29,7 +29,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_OVERLAP",
+    "timeStyle": "BAR_3D",
     "title": "Scanned Sessions (all)",
     "type": "TIME_GRAPH"
 }
