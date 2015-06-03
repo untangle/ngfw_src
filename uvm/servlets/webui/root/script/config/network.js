@@ -185,15 +185,22 @@ Ext.define('Webui.config.network', {
                     var isDirty = currentRow.dirty;
                     var deviceStatus = deviceStatusMap[currentRow.get("physicalDev")];
                     var interfaceStatus = interfaceStatusMap[currentRow.get("interfaceId")];
+                    var isWirelessIntf = currentRow.get("isWirelessInterface");
+                    var duplexStatus;
                     if(deviceStatus) {
                         if(!refresh) {
                             currentRow.set({
                                 "deviceName": deviceStatus.deviceName
                             });
                         }
+                        if (isWirelessIntf)
+                            duplexStatus = "HALF_DUPLEX";
+                        else
+                            duplexStatus = deviceStatus.duplex;
+
                         currentRow.set({
                             "macAddress": deviceStatus.macAddress,
-                            "duplex": deviceStatus.duplex,
+                            "duplex": duplexStatus,
                             "vendor": deviceStatus.vendor,
                             "mbit": deviceStatus.mbit,
                             "connected": deviceStatus.connected
