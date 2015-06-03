@@ -281,7 +281,7 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         return _getRemoteServersStatus();
     }
     
-    public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe" */ )
+    public String getClientDistributionDownloadLink( String clientName, String format /* "zip", "exe", "onc" */ )
     {
         /**
          * Find the client by that name
@@ -322,6 +322,10 @@ public class OpenVpnNodeImpl extends NodeBase implements OpenVpnNode
         else if ( "zip".equals(format) ) {
             this.openVpnManager.createClientDistributionZip( settings, client );
             fileName = "config.zip";
+        }
+        else if ( "onc".equals(format) ) {
+            this.openVpnManager.createClientDistributionOnc( settings, client );
+            fileName = "chrome.onc";
         }
         else {
             throw new RuntimeException("Unknown format: " + format);

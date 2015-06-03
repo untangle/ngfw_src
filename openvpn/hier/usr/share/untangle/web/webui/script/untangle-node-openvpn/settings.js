@@ -415,6 +415,10 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                             html:  " "
                         }, {
                             xtype: 'component',
+                            name: 'downloadChromebookConfigurationFile',
+                            html: " "
+                        }, {
+                            xtype: 'component',
                             name: 'downloadGenericConfigurationFile',
                             html: " "
                         }, {
@@ -439,19 +443,29 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
                     var windowsLink = this.down('[name="downloadWindowsInstaller"]');
                     var genericLink = this.down('[name="downloadGenericConfigurationFile"]');
                     var untangleLink = this.down('[name="downloadUntangleConfigurationFile"]');
+                    var chromebookLink = this.down('[name="downloadChromebookConfigurationFile"]');
+
                     windowsLink.update(this.i18n._('Loading...'));
                     genericLink.update(this.i18n._('Loading...'));
                     untangleLink.update(this.i18n._('Loading...'));
-                    
+                    chromebookLink.update(this.i18n._('Loading...'));
+
                     Ext.MessageBox.wait(this.i18n._( "Building OpenVPN Client..." ), this.i18n._( "Please Wait" ));
                     // populate download links
-                    var loadSemaphore = 2;
+                    var loadSemaphore = 3;
+
                     this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         windowsLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s Windows setup.exe file.') + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "exe" );
-                    
+
+                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        chromebookLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s configuration onc file for Chromebook.') + '</a>');
+                        if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
+                    }, this), this.record.data.name, "onc" );
+
                     this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         genericLink.update('<a href="'+result+'" target="_blank">'+this.i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc). ') + '</a>');

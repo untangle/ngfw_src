@@ -38,6 +38,7 @@ public class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = System.getProperty( "uvm.bin.dir" ) + "/openvpn-stop";
     private static final String GENERATE_ZIP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-zip";
     private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
+    private static final String GENERATE_ONC_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-onc";
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
     
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
@@ -195,7 +196,7 @@ public class OpenVpnManager
         writeRemoteClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
     }
     /**
-     * Create all of the client configuration files
+     * Create all of the client zip configuration files
      */
     protected void createClientDistributionZip( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
@@ -216,7 +217,7 @@ public class OpenVpnManager
     }
 
     /**
-     * Create all of the client configuration files
+     * Create all of the client exe configuration files
      */
     protected void createClientDistributionExe( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
@@ -235,7 +236,34 @@ public class OpenVpnManager
                 logger.info(GENERATE_EXE_SCRIPT + ": " + line);
         } catch (Exception e) {}
     }
-    
+
+    /**
+     * Create all of the client onc configuration files
+     */
+    protected void createClientDistributionOnc( OpenVpnSettings settings, OpenVpnRemoteClient client )
+    {
+        writeConfFiles( settings, client );
+
+        String cmdStr;
+        ExecManagerResult result;
+
+        String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
+
+        /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
+        publicAddress = publicAddress.split( ":" )[0];
+        publicAddress = publicAddress.trim();
+        
+        cmdStr = GENERATE_ONC_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"" + " " + "\"" + publicAddress + "\"";
+        logger.debug( "Executing: " + cmdStr );
+        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info( GENERATE_ONC_SCRIPT + ": ");
+            for ( String line : lines )
+                logger.info(GENERATE_ONC_SCRIPT + ": " + line);
+        } catch (Exception e) {}
+    }
+
     private void writeServerSettings( OpenVpnSettings settings )
     {
         if ( ! settings.getServerEnabled() )

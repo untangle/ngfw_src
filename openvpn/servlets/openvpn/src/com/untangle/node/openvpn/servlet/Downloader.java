@@ -31,6 +31,11 @@ public class Downloader extends HttpServlet
     private static final String SETUP_NAME_SUFFIX = ".exe";
     private static final String SETUP_TYPE        = "application/download";
 
+    private static final String CHROME_PAGE        = "/chrome.onc";
+    private static final String CHROME_NAME_PREFIX = "chrome-";
+    private static final String CHROME_NAME_SUFFIX = ".onc";
+    private static final String CHROME_TYPE        = "application/download";
+
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void service( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
@@ -49,6 +54,10 @@ public class Downloader extends HttpServlet
             fileName = "/tmp/openvpn/client-packages/" + "setup-" + commonName + ".exe";
             downloadFilename = "openvpn-" + commonName + "-setup.exe";
             type     = SETUP_TYPE;
+        } else if ( pageName.equalsIgnoreCase( CHROME_PAGE )) {
+            fileName = "/tmp/openvpn/client-packages/" + "chrome-" + commonName + ".onc";
+            downloadFilename = "openvpn-" + commonName + "-chrome.onc";
+            type     = CHROME_TYPE;
         } else {
             fileName = null;
             downloadFilename = null;

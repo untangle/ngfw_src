@@ -1,0 +1,93 @@
+#!/bin/bash
+
+#
+# This takes the client name and site name and generates the onc file for Chromebook
+# containing the configuration and certificates required for the specified client.
+# The specified client must already exist with all its config (cert etc)
+#
+
+commonName="${1}"
+siteName="${2}"
+publicAddress="${3}"
+
+if [ -z "${commonName}" ]; then
+    echo "Must specify a common name."
+    exit -3
+fi
+
+if [ -z "${siteName}" ]; then
+    echo "specify a site name."
+    exit -3
+fi
+
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+PACKAGE_DIR="/tmp/openvpn/client-packages"
+
+ONC_CONFIG_FILE=${PACKAGE_DIR}/chrome-${commonName}.onc
+CLI_CRT_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.crt
+CLI_KEY_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.key
+CA_CERT_FILE=${SETTINGS_DIR}/ca.crt
+
+# start by creating a PKCS file that has the client crt and key and then
+# dump it in the base64 format that the Chromebook expects
+CLI_PKCS_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.p12
+CLI_BASE_FILE=${SETTINGS_DIR}/remote-clients/client-${commonName}.b64
+openssl pkcs12 -export -in $CLI_CRT_FILE -inkey $CLI_KEY_FILE -out $CLI_PKCS_FILE -password pass:
+openssl base64 -in $CLI_PKCS_FILE > $CLI_BASE_FILE
+
+# the next two sed commands give us the cert files in a format that will
+# work with the Chromebook and were borrowed from this helpful script:
+# https://github.com/royans/ec2_chromeos_openvpn/blob/master/openvpn_config.sh
+CLI_BASE_DATA=$(cat $CLI_BASE_FILE | sed -e '1 s/^/"/' -e '$ s/$/"/' | tr -d '\n')
+CA_CERT_DATA=$(cat $CA_CERT_FILE |  sed -e '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/ !d' -e '1,1 d' -e '$ d' | sed -e '1 s/^/"-----BEGIN CERTIFICATE-----/' -e '$ s/$/-----END CERTIFICATE-----"/' | tr -d '\n')
+
+cat>$ONC_CONFIG_FILE<<EOF
+{
+"Type": "UnencryptedConfiguration",
+"NetworkConfigurations": [
+{
+    "GUID": "{$siteName-$commonName}",
+    "Name": "OpenVPN $siteName - $commonName",
+    "Type": "VPN",
+    "VPN":
+    {
+        "Type": "OpenVPN",
+        "Host": "$publicAddress",
+        "OpenVPN":
+        {
+            "Cipher": "AES-128-CBC",
+            "ClientCertType": "Ref",
+            "ClientCertRef": "{client-$siteName-$commonName}",
+            "CompLZO": "true",
+            "NsCertType": "server",
+            "Port": 1194,
+            "Proto": "udp",
+            "RemoteCertTLS": "none",
+            "Username": "$commonName",
+            "Password": "password",
+            "SaveCredentials": true,
+            "ServerCARef": "{server-$siteName}",
+            "Verb": "3",
+            "ServerPollTimeout": 360
+        },
+    }
+}
+],
+"Certificates": [
+{
+"GUID": "{server-$siteName}",
+"Type": "Authority",
+"X509":
+$CA_CERT_DATA
+},
+{
+"GUID": "{client-$siteName-$commonName}",
+"Type": "Client",
+"PKCS12":
+$CLI_BASE_DATA
+}
+]
+}
+EOF
+
+true

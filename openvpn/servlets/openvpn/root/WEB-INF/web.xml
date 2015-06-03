@@ -27,6 +27,11 @@
     <url-pattern>/config.zip</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>Downloader</servlet-name>
+    <url-pattern>/chrome.onc</url-pattern>
+  </servlet-mapping>
+
   <!-- Upload server zip config -->
   <servlet>
     <servlet-name>UploadConfig</servlet-name>
