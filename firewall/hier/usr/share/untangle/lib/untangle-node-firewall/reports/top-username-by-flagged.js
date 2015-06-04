@@ -9,14 +9,14 @@
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "username",
-    "pieSumColumn": "sum(firewall_flagged::int)",
+    "pieSumColumn": "count(*)",
     "preCompileResults": false,
     "conditions": [
         {
             "javaClass": "com.untangle.uvm.node.SqlCondition",
-            "column": "firewall_rule_index",
-            "operator": "is",
-            "value": "not null"
+            "column": "firewall_flagged",
+            "operator": "=",
+            "value": "true"
         }
     ],
     "readOnly": true,
