@@ -9,8 +9,16 @@
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "s_server_port",
-    "pieSumColumn": "coalesce(sum(firewall_blocked::int),0)",
+    "pieSumColumn": "sum(firewall_blocked::int)",
     "preCompileResults": false,
+    "conditions": [
+        {
+            "javaClass": "com.untangle.uvm.node.SqlCondition",
+            "column": "firewall_rule_index",
+            "operator": "is",
+            "value": "not null"
+        }
+    ],
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Server Ports",
