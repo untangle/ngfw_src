@@ -546,7 +546,12 @@ class IdpsTests(unittest2.TestCase):
         self.idps_interface.config_request( "save", self.idps_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        loopLimit = 10
+        result = 4 # Network failure
+        # If there is a network error with wget, retry up to ten times.
+        while (result == 4 and loopLimit > 0):
+            time.sleep(1)
+            result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         event = self.idps_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == False )
