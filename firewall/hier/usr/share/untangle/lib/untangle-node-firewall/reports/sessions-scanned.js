@@ -1,5 +1,5 @@
 {
-    "uniqueId": "firewall-GlzEJqEcXv",
+    "uniqueId": "firewall-8bTqxKxxUK",
     "category": "Firewall",
     "description": "The amount of scanned, flagged, and blocked sessions over time.",
     "displayOrder": 100,
@@ -30,6 +30,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D",
-    "title": "Scanned Sessions (all)",
+    "title": "Scanned Sessions",
     "type": "TIME_GRAPH"
 }
