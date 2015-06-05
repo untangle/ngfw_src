@@ -49,6 +49,13 @@ public abstract class LogEvent implements Serializable, JSONString
         time += min*60*1000;
         return new Timestamp(time);
     }
+
+    public Timestamp timeStampPlusSeconds( int sec )
+    {
+        long time = this.timeStamp.getTime();
+        time += sec*1000;
+        return new Timestamp(time);
+    }
     
     public abstract PreparedStatement getDirectEventSql( Connection conn ) throws Exception;
     public abstract String toSummaryString();

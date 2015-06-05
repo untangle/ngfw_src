@@ -262,6 +262,8 @@ Ung.CustomEventLog = {
             }, {
                 name: 'bandwidth_control_rule'
             }, {
+                name: 'protocol'
+            }, {
                 name: 'username'
             }, {
                 name: 'hostname'
@@ -340,6 +342,19 @@ Ung.CustomEventLog = {
                 dataIndex: 'time_stamp',
                 renderer: function(value) {
                     return i18n.timestampFormat(value);
+                }
+            }, {
+                hidden: visibleColumnsParam.indexOf('protocol') < 0,
+                header: i18n._("Protocol"),
+                width: Ung.Util.portFieldWidth,
+                sortable: true,
+                dataIndex: 'protocol',
+                renderer: function(value) {
+                    if (value == 17)
+                        return "UDP";
+                    if (value == 6)
+                        return "TCP";
+                    return value;
                 }
             }, {
                 hidden: visibleColumnsParam.indexOf('c_client_addr') < 0,
