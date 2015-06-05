@@ -474,7 +474,7 @@ Ung.CustomEventLog = {
                 dataIndex: 'application_control_detail'
             },{
                 hidden: visibleColumnsParam.indexOf('application_control_lite_protocol') < 0,
-                header: i18n._("Protocol"),
+                header: i18n._("Protocol (Application Control Lite)"),
                 width: 120,
                 sortable: true,
                 dataIndex: 'application_control_lite_protocol'
