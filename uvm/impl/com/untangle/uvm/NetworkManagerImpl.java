@@ -1010,7 +1010,7 @@ public class NetworkManagerImpl implements NetworkManager
                 IPMaskedAddress maskedAddr2 = new IPMaskedAddress( route2.getNetwork(), route2.getPrefix() );;
                 
                 if ( maskedAddr1.getMaskedAddress().equals(maskedAddr2.getMaskedAddress()) && route.getPrefix().equals(route2.getPrefix()) ) {
-                    throw new RuntimeException( route.getDescription() + " & " + route2.getDescription() + " route conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
+                    throw new RuntimeException( "\"" + route.getDescription() + "\" & \"" + route2.getDescription() + "\" routes conflict: " + maskedAddr1 + " = " + maskedAddr2 ); 
                 }
                 
             }

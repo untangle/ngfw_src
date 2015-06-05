@@ -646,6 +646,13 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify rules that both MUST match for the session to be blocked
+    def test_092_quotaAttainment(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule("CLIENT_QUOTA_ATTAINMENT", "<1.3", blocked=True) );
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
     # verify rules evaluated in order
     def test_100_ruleOrder(self):
         nukeRules();

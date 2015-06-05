@@ -121,6 +121,11 @@ public interface HostTable
     boolean hostQuotaExceeded( InetAddress address );
 
     /**
+     * Get the quota attainment ratio for an address
+     */
+    double hostQuotaAttainment( InetAddress address );
+    
+    /**
      * Return a list of all the table entries for hosts with quotas
      * This is used for display in the UI
      */

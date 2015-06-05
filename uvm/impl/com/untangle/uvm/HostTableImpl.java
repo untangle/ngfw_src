@@ -299,6 +299,37 @@ public class HostTableImpl implements HostTable
         return false;
     }
 
+    public double hostQuotaAttainment( InetAddress address )
+    {
+        if (address == null) {
+            logger.warn("Invalid argument: address is null");
+            return 0.0;
+        }
+        HostTableEntry entry = getHostTableEntry( address );
+        if ( entry == null )
+            return 0.0;
+        if (entry.getQuotaSize() <= 0)
+            return 0.0;
+
+        /**
+         * Check if its expired, if it is - remove the quota
+         */
+        long now = System.currentTimeMillis();
+        if (now > entry.getQuotaExpirationTime()) {
+            removeQuota( address );
+            return 0.0;
+        }
+        
+        long quotaRemaining = entry.getQuotaRemaining();
+        long quotaSize = entry.getQuotaSize();
+        long quotaUsed = quotaSize - quotaRemaining;
+        
+        long quotaUsedK = quotaUsed/1000;
+        long quotaSizeK = quotaSize/1000;
+
+        return ((double)quotaUsedK)/((double)quotaSizeK);
+    }
+    
     public synchronized void refillQuota(InetAddress address)
     {
         if (address == null) {

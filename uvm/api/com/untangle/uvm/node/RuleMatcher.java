@@ -61,6 +61,8 @@ public class RuleMatcher implements JSONString, Serializable
             SERVER_HAS_NO_QUOTA, /* none */
             CLIENT_QUOTA_EXCEEDED, /* none */
             SERVER_QUOTA_EXCEEDED, /* none */
+            CLIENT_QUOTA_ATTAINMENT, /* 0.9 1.1 */
+            SERVER_QUOTA_ATTAINMENT, /* 0.9 1.1 */
             DAY_OF_WEEK, /* "monday" "monday,tuesday" "any" */
             TIME_OF_DAY, /* "any" "10:00-11:00" */
 
@@ -348,6 +350,8 @@ public class RuleMatcher implements JSONString, Serializable
         case CLASSD_PRODUCTIVITY:
         case CLASSD_RISK:
         case HTTP_CONTENT_LENGTH:
+        case CLIENT_QUOTA_ATTAINMENT:
+        case SERVER_QUOTA_ATTAINMENT:
             try {
                 this.intMatcher = new IntMatcher(this.value);
             } catch (Exception e) {
@@ -375,6 +379,7 @@ public class RuleMatcher implements JSONString, Serializable
         String  attachment = null;
         Integer attachmentInt = null;
         Long    attachmentLong = null;
+        Double  attachmentDouble = null;
         HostTableEntry entry;
 
         switch (this.matcherType) {
@@ -444,6 +449,22 @@ public class RuleMatcher implements JSONString, Serializable
 
         case SERVER_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() );
+
+        case CLIENT_QUOTA_ATTAINMENT:
+            attachmentDouble = UvmContextFactory.context().hostTable().hostQuotaAttainment( sess.getClientAddr() );
+            if ( this.intMatcher == null ) {
+                logger.warn("Invalid Int Matcher: " + this.intMatcher);
+                return false;
+            }
+            return this.intMatcher.isMatch( attachmentDouble  );
+
+        case SERVER_QUOTA_ATTAINMENT:
+            attachmentDouble = UvmContextFactory.context().hostTable().hostQuotaAttainment( sess.getServerAddr() );
+            if ( this.intMatcher == null ) {
+                logger.warn("Invalid Int Matcher: " + this.intMatcher);
+                return false;
+            }
+            return this.intMatcher.isMatch( attachmentDouble  );
             
         case TIME_OF_DAY:
             if ( timeOfDayMatcher == null ) {
@@ -746,6 +767,7 @@ public class RuleMatcher implements JSONString, Serializable
                               int srcPort, int dstPort)
     {
         String attachment = null;
+        Double  attachmentDouble = null;
         HostTableEntry entry;
         
         switch (this.matcherType) {
@@ -891,6 +913,24 @@ public class RuleMatcher implements JSONString, Serializable
 
         case SERVER_QUOTA_EXCEEDED:
             return UvmContextFactory.context().hostTable().hostQuotaExceeded( dstAddress );
+
+        case CLIENT_QUOTA_ATTAINMENT:
+            attachmentDouble = UvmContextFactory.context().hostTable().hostQuotaAttainment( srcAddress );
+            if ( this.intMatcher == null ) {
+                logger.warn("Invalid Int Matcher: " + this.intMatcher);
+                return false;
+            }
+            
+            return this.intMatcher.isMatch( attachmentDouble  );
+
+        case SERVER_QUOTA_ATTAINMENT:
+            attachmentDouble = UvmContextFactory.context().hostTable().hostQuotaAttainment( dstAddress );
+            if ( this.intMatcher == null ) {
+                logger.warn("Invalid Int Matcher: " + this.intMatcher);
+                return false;
+            }
+
+            return this.intMatcher.isMatch( attachmentDouble  );
             
         case TIME_OF_DAY:
             if (timeOfDayMatcher == null) {

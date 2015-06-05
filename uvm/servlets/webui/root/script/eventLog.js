@@ -320,7 +320,6 @@ Ung.CustomEventLog = {
                 name: 'firewall_flagged'
             }, {
                 name: 'firewall_rule_index',
-                convert: Ung.CustomEventLog.mailEventConvertAction
             }, {
                 name: 'ips_blocked'
             }, {
@@ -547,7 +546,10 @@ Ung.CustomEventLog = {
                 width: 60,
                 sortable: true,
                 flex:1,
-                dataIndex: 'firewall_rule_index'
+                dataIndex: 'firewall_rule_index',
+                filter: {
+                    type: 'numeric'
+                }
             }, {
                 hidden: visibleColumnsParam.indexOf('s_server_addr') < 0,
                 header: i18n._("Server") ,
