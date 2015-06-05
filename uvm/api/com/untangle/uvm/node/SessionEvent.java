@@ -152,7 +152,7 @@ public class SessionEvent extends LogEvent
         pstmt.setLong(++i,getSessionId());
         pstmt.setTimestamp(++i,getTimeStamp());
         pstmt.setInt(++i,getProtocol());
-        pstmt.setTimestamp(++i,timeStampPlusMinutes(1)); // default end_time
+        pstmt.setTimestamp(++i,timeStampPlusSeconds(1)); // default end_time
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getUsername());
         pstmt.setLong(++i, (getPolicyId() == null ? 0 : getPolicyId() ));
