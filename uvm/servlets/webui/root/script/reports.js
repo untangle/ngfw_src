@@ -413,13 +413,13 @@ Ext.define('Ung.panel.Reports', {
                     iconCls: 'icon-filter-row',
                     tooltip: i18n._('Add Condition'),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        this.extraConditionsPanel.expand();
+                        this.buildWindowAddCondition();
                         var data = {
                             column: reportEntry.pieGroupColumn,
                             operator: "=",
                             value: record.get(reportEntry.pieGroupColumn)
                         };
-                        this.extraConditionsPanel.fillCondition(data);
+                        this.windowAddCondition.setCondition(data);
                     }, this)
                 }]
             }]);
@@ -731,6 +731,80 @@ Ext.define('Ung.panel.Reports', {
         } else {
             chart.preview();
         } 
+    },
+    buildWindowAddCondition: function() {
+        var me = this;
+        if(!this.windowAddCondition) {
+            this.windowAddCondition = Ext.create("Ung.EditWindow", {
+                title: i18n._("Add Condition"),
+                grid: null,
+                height: 150,
+                width: 600,
+                sizeToRack: false,
+                // size to grid on show
+                sizeToGrid: false,
+                center: true,
+                items: [{
+                    xtype: "panel",
+                    bodyStyle: 'padding:10px 10px 0px 10px;',
+                    items: [{
+                        xtype: "component",
+                        margin: '0 0 10 0',
+                        html: i18n._("Add a condition using report data:")
+                    }, {
+                        xtype: "container",
+                        layout: "column",
+                        defaults: {
+                            margin: '0 10 0 0'
+                        },
+                        items: [{
+                            xtype: "textfield",
+                            name: "column",
+                            width: 180,
+                            readOnly: true
+                        }, {
+                            xtype: 'combo',
+                            width: 90,
+                            name: "operator",
+                            editable: false,
+                            valueField: "name",
+                            displayField: "name",
+                            queryMode: 'local',
+                            value: "=",
+                            store: ["=", "!=", "<>", ">", "<", ">=", "<=", "between", "like", "in", "is"]
+                        }, {
+                            xtype: "textfield",
+                            name: "value",
+                            emptyText: i18n._("[no value]"),
+                            width: 180
+                        }]
+                    }]
+                }],
+                updateAction: function() {
+                    var data = {
+                        column: this.down("[name=column]").getValue(),
+                        operator: this.down("[name=operator]").getValue(),
+                        value: this.down("[name=value]").getValue()
+                    };
+                    me.extraConditionsPanel.expand();
+                    me.extraConditionsPanel.fillCondition(data);
+                    this.cancelAction();
+                },
+                setCondition: function(data) {
+                    this.show();
+                    this.down("[name=column]").setValue(data.column);
+                    this.down("[name=operator]").setValue(data.operator);
+                    this.down("[name=value]").setValue(data.value);
+                },
+                isDirty: function() {
+                    return false;
+                },
+                closeWindow: function() {
+                    this.hide();
+                }
+            });
+            this.subCmps.push(this.windowAddCondition);
+        }
     },
     isDirty: function() {
         return false;

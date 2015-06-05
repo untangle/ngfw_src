@@ -319,7 +319,7 @@ Ung.CustomEventLog = {
             }, {
                 name: 'firewall_flagged'
             }, {
-                name: 'firewall_rule_index',
+                name: 'firewall_rule_index'
             }, {
                 name: 'ips_blocked'
             }, {
