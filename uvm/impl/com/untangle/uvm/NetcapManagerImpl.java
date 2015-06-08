@@ -22,9 +22,6 @@ public class NetcapManagerImpl implements NetcapManager
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
     static final int SHUTDOWN_PAUSE    = 2000;
 
-    public static final int SCHED_NORMAL = 0;
-    public static final int SCHED_SOFTREAL = 4;
-
     /* Singleton */
     private static final NetcapManagerImpl INSTANCE = new NetcapManagerImpl();
 
@@ -35,8 +32,6 @@ public class NetcapManagerImpl implements NetcapManager
     int mvutilDebugLevel    = 0;
 
     int sessionThreadLimit  = 0;
-    int newSessionSchedPolicy  = SCHED_NORMAL;
-    int sessionSchedPolicy  = SCHED_NORMAL;
 
     /* Number of threads to donate to netcap */
     int numThreads        = 15;
@@ -102,17 +97,6 @@ public class NetcapManagerImpl implements NetcapManager
         if (( temp = System.getProperty( "netcap.sessionlimit" )) != null ) {
             sessionThreadLimit  = Integer.parseInt( temp );
         }
-
-        // Policy used for session threads (and new session threads if not specified below)
-        if (( temp = System.getProperty( "netcap.sessionSchedPolicy" )) != null ) {
-            sessionSchedPolicy  = Integer.parseInt( temp );
-            newSessionSchedPolicy  = sessionSchedPolicy;
-        }
-
-        // Policy used for newSession (Netcap Server) threads
-        if (( temp = System.getProperty( "netcap.newSessionSchedPolicy" )) != null ) {
-            newSessionSchedPolicy  = Integer.parseInt( temp );
-        }
     }
 
     /**
@@ -136,15 +120,9 @@ public class NetcapManagerImpl implements NetcapManager
             throw new Exception( "Unable to initialize netcap" );
         }
 
-        /* Start the scheduler */
-        Netcap.startScheduler();
-
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
         Vector.jvectorDebugLevel( jvectorDebugLevel );
-
-        Netcap.getInstance().setNewSessionSchedPolicy( this.newSessionSchedPolicy );
-        Netcap.getInstance().setSessionSchedPolicy( this.sessionSchedPolicy );
 
         if ( this.sessionThreadLimit > 0 )
             Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );

@@ -26,7 +26,6 @@
 #include "netcap_interface.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
-#include "netcap_sched.h"
 #include "netcap_nfconntrack.h"
 #include "netcap_virtual_interface.h"
 
@@ -152,8 +151,6 @@ static int _netcap_init()
         return perrlog("netcap_icmp_init");    
     if (netcap_server_init()<0) 
         return perrlog("netcap_server_init");
-    if (netcap_sched_init()<0)
-        return perrlog("netcap_sched_init");
     if (netcap_nfconntrack_init( nfconntrack_num_handles )<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
@@ -201,8 +198,6 @@ int netcap_cleanup()
         perrlog("netcap_sessions_cleanup");
     if (netcap_sesstable_cleanup()<0)
         perrlog("netcap_sesstable_cleanup");
-    if (netcap_sched_cleanup_z ( NULL ) < 0 )
-        perrlog("netcap_sched_cleanup");
     netcap_virtual_interface_destroy();
     
     debug(1,"NETCAP: Cleaned.\n");
