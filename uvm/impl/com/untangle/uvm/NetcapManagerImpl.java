@@ -123,6 +123,8 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.registerUDPHook( NetcapUDPHook.getInstance());
 
         Netcap.registerTCPHook( NetcapTCPHook.getInstance());
+
+        Netcap.registerConntrackHook( NetcapConntrackHook.getInstance());
     }
 
     /**
@@ -158,6 +160,7 @@ public class NetcapManagerImpl implements NetcapManager
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
+        Netcap.unregisterConntrackHook();
 
         SessionTable activeSessions = SessionTable.getInstance();
 

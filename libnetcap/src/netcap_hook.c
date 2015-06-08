@@ -11,10 +11,12 @@
 #include "netcap_globals.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
+#include "netcap_conntrack.h"
 
-netcap_tcp_hook_t     global_tcp_hook     = netcap_tcp_null_hook;
-netcap_tcp_syn_hook_t global_tcp_syn_hook = netcap_tcp_syn_null_hook;
-netcap_udp_hook_t     global_udp_hook     = netcap_udp_null_hook;
+netcap_tcp_hook_t     global_tcp_hook         = netcap_tcp_null_hook;
+netcap_tcp_syn_hook_t global_tcp_syn_hook     = netcap_tcp_syn_null_hook;
+netcap_udp_hook_t     global_udp_hook         = netcap_udp_null_hook;
+netcap_conntrack_hook_t global_conntrack_hook = netcap_conntrack_null_hook;
 
 int  netcap_hooks_init           ( void )
 {
@@ -26,6 +28,7 @@ int  netcap_hooks_cleanup        ( void )
 {
     netcap_udp_hook_unregister();
     netcap_tcp_hook_unregister();
+    netcap_conntrack_hook_unregister();
     return 0;
 }
 
@@ -54,5 +57,18 @@ int  netcap_udp_hook_register    ( netcap_udp_hook_t hook )
 int  netcap_udp_hook_unregister  ( void )
 {
     global_udp_hook = netcap_udp_cleanup_hook;
+    return 0;
+}
+
+int  netcap_conntrack_hook_register    ( netcap_conntrack_hook_t hook )
+{
+    if ( hook == NULL ) return errlogargs();
+    global_conntrack_hook = hook;
+    return 0;
+}
+
+int  netcap_conntrack_hook_unregister  ( void )
+{
+    global_conntrack_hook = netcap_conntrack_cleanup_hook;
     return 0;
 }

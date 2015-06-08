@@ -192,6 +192,11 @@ public final class Netcap
     public static native int registerTCPHook( NetcapCallback tcpHook );
 
     /**
+     * Setup a Conntrack hook 
+     */
+    public static native int registerConntrackHook( NetcapCallback udpHook );
+    
+    /**
      * Clear out the UDP hook 
      */
     public static native int unregisterUDPHook();
@@ -201,6 +206,11 @@ public final class Netcap
      */
     public static native int unregisterTCPHook();
 
+    /**
+     * Clear out the Conntrack hook 
+     */
+    public static native int unregisterConntrackHook( );
+    
     /**
      * Lookup MAC address for IP in ARP table
      */

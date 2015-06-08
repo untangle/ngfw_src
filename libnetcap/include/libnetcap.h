@@ -302,6 +302,7 @@ typedef struct netcap_session {
 
 typedef void (*netcap_tcp_hook_t)  (netcap_session_t* tcp_sess, void* arg);
 typedef void (*netcap_udp_hook_t)  (netcap_session_t* netcap_sess, void* arg);
+typedef void (*netcap_conntrack_hook_t)  ( /* dhan FIXME args ? */ void* arg);
 
 /**
  * Initialization, and global controls
@@ -315,6 +316,7 @@ void  netcap_debug_set_level   (int lev);
  * Thread management
  */
 void* netcap_thread_donate   (void* arg);
+void* netcap_conntrack_listen( void* arg );
 int   netcap_thread_undonate (int thread_id);
 
 /**
@@ -324,6 +326,8 @@ int   netcap_tcp_hook_register   (netcap_tcp_hook_t hook);
 int   netcap_tcp_hook_unregister ();
 int   netcap_udp_hook_register   (netcap_udp_hook_t hook);
 int   netcap_udp_hook_unregister ();
+int   netcap_conntrack_hook_register   (netcap_conntrack_hook_t hook);
+int   netcap_conntrack_hook_unregister ();
 
 /**
  * Packet Sending (XXX include pkt_create?)

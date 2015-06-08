@@ -72,6 +72,7 @@ static struct {
         jmethodID hook_method_id; /* Method identifier for the hook */
         jobject   tcp_hook;       /* TCP Hook */
         jobject   udp_hook;       /* UDP hook */
+        jobject   conntrack_hook; /* Conntrack Hook */
     } java;
     
     int session_limit;
@@ -123,13 +124,10 @@ static jnetcap_thread_t* jnetcap_thread_malloc();
 
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
+static void              _conntrack_hook( /* dhan FIXME args ? */ void* arg );
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
-
-/* Register/unregistering hooks */
-static int               _register_hook( JNIEnv *env, int protocol, jobject hook );
-static int               _unregister_hook( JNIEnv *env, int protocol );
 
 static int               jnetcap_thread_init( jnetcap_thread_t* input, void* (*thread_func)(void*), 
                                               void* arg, int policy, struct sched_param* param );
@@ -143,6 +141,10 @@ static void              jnetcap_thread_raze    ( jnetcap_thread_t* input );
 
 static int _increment_session_count();
 static int _decrement_session_count();
+
+static int               _unregister_udp_hook( JNIEnv* env );
+static int               _unregister_tcp_hook( JNIEnv* env );
+static int               _unregister_conntrack_hook( JNIEnv* env );
 
 static __inline__ void     _detach_thread( JavaVM* jvm ) 
 {
@@ -272,8 +274,9 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
     do {
         if ( _jnetcap.netcap == _INITIALIZED ) {
             /* Unregister all of the hooks */
-            _unregister_hook( env, IPPROTO_UDP );
-            _unregister_hook( env, IPPROTO_TCP );
+            _unregister_udp_hook( env );
+            _unregister_tcp_hook( env );
+            _unregister_conntrack_hook( env );
             
             netcap_cleanup();
         }
@@ -338,6 +341,8 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
     pthread_t id;
     jnetcap_thread_t* arg;
 
+    errlog( ERR_CRITICAL, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" );
+    
     _verify_netcap_initialized ();
 
     // if (( num_threads < 0 ) || ( num_threads > JN_Netcap( MAX_THREADS ))) return errlogargs();
@@ -356,6 +361,12 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
         }
     }
     
+    /* Donate a thread to conntrack */
+    if ( pthread_create( &id, &uthread_attr.other.medium, netcap_conntrack_listen, NULL )) {
+        perrlog( "pthread_create" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
+    }
+
     return 0;
 }
 
@@ -396,9 +407,31 @@ JNIEXPORT jint JNICALL JF_Netcap( startScheduler )
  * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( registerUDPHook )
-  (JNIEnv *env, jclass _class, jobject udp_hook )
+  (JNIEnv *env, jclass _class, jobject hook )
 {
-    return _register_hook( env, IPPROTO_UDP, udp_hook );
+    if ( hook == NULL ) return errlogargs();
+    _verify_netcap_initialized();
+    int ret;
+    jobject *global_hook = &_jnetcap.java.udp_hook;
+        
+    /* If necessary, remove the previous global reference */
+    if ( *global_hook != NULL ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        *global_hook = NULL;
+    }
+
+    if (( *global_hook = (*env)->NewGlobalRef( env, hook )) == NULL ) {
+        return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
+    }
+    
+    ret = netcap_udp_hook_register( _udp_hook ); 
+    
+    if ( ret < 0 ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        return errlog( ERR_CRITICAL, "netcap_*_hook_register\n" );
+    }
+    
+    return 0;
 }
 
 /*
@@ -407,9 +440,64 @@ JNIEXPORT jint JNICALL JF_Netcap( registerUDPHook )
  * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( registerTCPHook )
-  (JNIEnv *env, jclass _class, jobject tcp_hook )
+  (JNIEnv *env, jclass _class, jobject hook )
 {
-    return _register_hook( env, IPPROTO_TCP, tcp_hook );
+    if ( hook == NULL ) return errlogargs();
+    _verify_netcap_initialized();
+    int ret;
+    jobject *global_hook = &_jnetcap.java.tcp_hook;
+        
+    /* If necessary, remove the previous global reference */
+    if ( *global_hook != NULL ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        *global_hook = NULL;
+    }
+
+    if (( *global_hook = (*env)->NewGlobalRef( env, hook )) == NULL ) {
+        return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
+    }
+    
+    ret = netcap_tcp_hook_register( _tcp_hook ); 
+    
+    if ( ret < 0 ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        return errlog( ERR_CRITICAL, "netcap_*_hook_register\n" );
+    }
+    
+    return 0;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Netcap
+ * Method:    registerConntrackHook
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( registerConntrackHook )
+  (JNIEnv *env, jclass _class, jobject hook )
+{
+    if ( hook == NULL ) return errlogargs();
+    _verify_netcap_initialized();
+    int ret;
+    jobject *global_hook = &_jnetcap.java.conntrack_hook;
+        
+    /* If necessary, remove the previous global reference */
+    if ( *global_hook != NULL ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        *global_hook = NULL;
+    }
+
+    if (( *global_hook = (*env)->NewGlobalRef( env, hook )) == NULL ) {
+        return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
+    }
+    
+    ret = netcap_conntrack_hook_register( _conntrack_hook ); 
+    
+    if ( ret < 0 ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        return errlog( ERR_CRITICAL, "netcap_*_hook_register\n" );
+    }
+    
+    return 0;
 }
 
 /*
@@ -420,7 +508,29 @@ JNIEXPORT jint JNICALL JF_Netcap( registerTCPHook )
 JNIEXPORT jint JNICALL JF_Netcap( unregisterUDPHook )
 (JNIEnv *env, jclass _class )
 {
-    return _unregister_hook( env, IPPROTO_UDP );
+    return _unregister_udp_hook( env );
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Netcap
+ * Method:    unregisterTCPHook
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( unregisterTCPHook )
+(JNIEnv *env, jclass _class )
+{
+    return _unregister_tcp_hook( env );
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Netcap
+ * Method:    unregisterTCPHook
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( unregisterConntrackHook )
+(JNIEnv *env, jclass _class )
+{
+    return _unregister_conntrack_hook( env );
 }
 
 /*
@@ -442,17 +552,6 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
     }
 
     return (*env)->NewStringUTF(env, mac);
-}
-
-/*
- * Class:     com_untangle_jnetcap_Netcap
- * Method:    unregisterTCPHook
- * Signature: (Lcom/untangle/jnetcap/Hook;)I
- */
-JNIEXPORT jint JNICALL JF_Netcap( unregisterTCPHook )
-(JNIEnv *env, jclass _class )
-{
-    return _unregister_hook( env, IPPROTO_TCP );
 }
 
 /*
@@ -541,6 +640,36 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
         netcap_session_raze( netcap_sess );
         _decrement_session_count();
     }
+}
+
+static void              _conntrack_hook( void* arg )
+{
+    JNIEnv* env = jmvutil_get_java_env();
+    if ( env == NULL ) {
+        errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
+        return;
+    }
+
+    if (( _jnetcap.netcap != _INITIALIZED ) || ( NULL == _jnetcap.java.hook_class ) || ( NULL == _jnetcap.java.hook_method_id )) { 
+        errlog( ERR_CRITICAL, "_hook: unintialized\n" );
+        return;
+    }
+        
+    jobject global_hook = _jnetcap.java.conntrack_hook; 
+
+    if ( global_hook == NULL ) {
+        errlog( ERR_CRITICAL, "_hook: invalid hook\n" );
+        return;
+    }
+
+    debug( 10, "jnetcap: Calling hook\n" );
+
+    /* Call the global method */
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.hook_method_id, 0 );
+
+    debug( 10, "jnetcap: Exiting hook\n" );
+
+    return;
 }
 
 static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
@@ -656,74 +785,42 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
     _decrement_session_count();        
 }
 
-/* XXX Probably want a lock around this function */
-/* Consider: PTHREAD_RWLOCK_INITIALIZER */
-static int              _register_hook( JNIEnv* env, int protocol, jobject hook )
+static int               _unregister_udp_hook( JNIEnv* env )
 {
-    jobject *global_hook;
-    int ret;
-
     _verify_netcap_initialized();
-    
-    if ( hook == NULL ) return errlogargs();
 
-    switch( protocol ) {
-    case IPPROTO_UDP: global_hook = &_jnetcap.java.udp_hook; break;
-    case IPPROTO_TCP: global_hook = &_jnetcap.java.tcp_hook; break;
-    default: return errlog( ERR_CRITICAL, "_register_hook: invalid getProtocol(%d)\n", protocol );
-    }
-        
-    /* If necessary, remove the previous global reference */
+    jobject *global_hook = &_jnetcap.java.udp_hook;
+    netcap_udp_hook_unregister();
+    
     if ( *global_hook != NULL ) {
         (*env)->DeleteGlobalRef( env, *global_hook );
         *global_hook = NULL;
-    }
-
-    if (( *global_hook = (*env)->NewGlobalRef( env, hook )) == NULL ) {
-        return errlog( ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
-    }
-    
-    switch ( protocol ) {
-
-    case IPPROTO_UDP: 
-        ret = netcap_udp_hook_register( _udp_hook ); 
-        break;
-
-    case IPPROTO_TCP:
-        ret = netcap_tcp_hook_register( _tcp_hook );
-        break;
-
-    default:
-        ret = -1; /* IMPOSSIBLE */
-
-    }
-    
-    if ( ret < 0 ) {
-        (*env)->DeleteGlobalRef( env, *global_hook );
-        return errlog( ERR_CRITICAL, "netcap_*_hook_register\n" );
     }
     
     return 0;
 }
 
-static int               _unregister_hook( JNIEnv* env, int protocol )
+static int               _unregister_tcp_hook( JNIEnv* env )
 {
-    jobject *global_hook;
     _verify_netcap_initialized();
 
-    switch( protocol ) {
-    case IPPROTO_UDP: 
-        global_hook = &_jnetcap.java.udp_hook;
-        netcap_udp_hook_unregister();
-        break;
-
-    case IPPROTO_TCP: 
-        global_hook = &_jnetcap.java.tcp_hook;
-        netcap_tcp_hook_unregister();
-        break;
-        
-    default: return errlog( ERR_CRITICAL, "_register_hook: invalid getProtocol(%d)\n", protocol );
+    jobject *global_hook = &_jnetcap.java.tcp_hook;
+    netcap_tcp_hook_unregister();
+    
+    if ( *global_hook != NULL ) {
+        (*env)->DeleteGlobalRef( env, *global_hook );
+        *global_hook = NULL;
     }
+    
+    return 0;
+}
+
+static int               _unregister_conntrack_hook( JNIEnv* env )
+{
+    _verify_netcap_initialized();
+
+    jobject *global_hook = &_jnetcap.java.conntrack_hook;
+    netcap_conntrack_hook_unregister();
     
     if ( *global_hook != NULL ) {
         (*env)->DeleteGlobalRef( env, *global_hook );
